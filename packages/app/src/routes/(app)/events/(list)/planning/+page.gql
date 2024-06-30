@@ -1,0 +1,3 @@
+query PageEventsPlanning($now: String!) {
+  ...ListEventsByDay @with(after: $now) @loading
+}

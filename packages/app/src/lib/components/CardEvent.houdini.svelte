@@ -8,7 +8,7 @@
   import fr from 'date-fns/locale/fr/index.js';
   import { onDestroy, onMount } from 'svelte';
   import IconWhen from '~icons/mdi/calendar-outline';
-  import ChevronUp from '~icons/mdi/chevron-up';
+  import ChevronDown from '~icons/mdi/chevron-down';
   import IconDots from '~icons/mdi/dots-horizontal';
   import IconGear from '~icons/mdi/gear-outline';
   import IconLocation from '~icons/mdi/location-outline';
@@ -19,6 +19,7 @@
   export let collapsible = false;
   export let href: string;
   export let expandedEventId: string | undefined = undefined;
+  let collapsed = collapsible;
   $: collapsed = collapsible && expandedEventId !== $data?.id;
 
   export let event: CardEvent;
@@ -128,7 +129,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <article
   data-href={href}
-  class:collapsed
+  class:expanded={!collapsed}
   class="event"
   on:click={gotoEventIfNotLink}
   on:keypress={gotoEventIfNotLink}
@@ -153,15 +154,15 @@
     >
     {#if collapsible}
       <button
-        class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
+        class="expand-collapse chevron {collapsed ? '' : 'expanded'}"
         on:click={() => {
           if (!loaded($data.id)) return;
           expandedEventId = collapsed ? $data.id : '';
-        }}><ChevronUp /></button
+        }}><ChevronDown /></button
       >
     {/if}
   </section>
-  <section class="content {collapsed ? 'collapsed' : ''}">
+  <section class="content {collapsed ? '' : 'expanded'}">
     <section class="desc">
       <LoadingText value={$data.descriptionPreview} lines={2}></LoadingText>
       <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
@@ -284,7 +285,7 @@
     background-size: cover;
   }
 
-  .collapsed .title {
+  :not(.expanded) .title {
     height: 100%;
   }
 
@@ -307,14 +308,15 @@
 
   .content {
     position: relative;
-    margin: 1em;
     overflow: hidden;
     transition: margin 0.5s cubic-bezier(0, 1, 0, 1);
-  }
-
-  .content.collapsed {
     max-height: 0;
     margin: 0 1em;
+  }
+
+  .content.expanded {
+    max-height: unset;
+    margin: 1em;
   }
 
   .schedule,
@@ -337,7 +339,7 @@
     margin: 0.5em 0.5em 0 0;
   }
 
-  .chevron-up {
+  .chevron {
     flex-shrink: 0;
     padding: 0;
     margin: 0;
@@ -352,11 +354,12 @@
 
     /* Reset button properties */
     border: none;
-    transition: transform 0.1s ease-in-out;
+    transition: rotate 0.1s ease-in-out;
+    rotate: 0deg;
   }
 
-  .chevron-up.collapsed {
-    transform: rotate(180deg);
+  .chevron.expanded {
+    rotate: 180deg;
   }
 
   .button-admin {

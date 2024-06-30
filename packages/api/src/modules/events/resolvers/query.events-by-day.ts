@@ -42,7 +42,7 @@ builder.queryField('eventsByDay', (t) =>
 
       const constraints: Prisma.EventWhereInput = {};
       if (after) constraints.startsAt = { gte: startOfDay(dateFromDateCursor(after)) };
-      if (before) constraints.endsAt = { lte: endOfDay(dateFromDateCursor(before)) };
+      if (before) constraints.startsAt = { lte: endOfDay(dateFromDateCursor(before)) };
       if (kiosk) constraints.includeInKiosk = true;
 
       let include: Prisma.EventInclude = {
@@ -57,6 +57,8 @@ builder.queryField('eventsByDay', (t) =>
           include.managers = query.include.managers;
         if ('group' in query.include && query.include.group) include.group = query.include.group;
       }
+
+      console.log({ constraints })
 
       const events = await prisma.event
         .findMany({
