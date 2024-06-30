@@ -4,7 +4,10 @@ import { DateTimeScalar } from '#modules/global';
 export const BarWeekType = builder.prismaNode('BarWeek', {
   id: { field: 'id' },
   fields: (t) => ({
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('uid'),
     groups: t.relation('groups'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar }),

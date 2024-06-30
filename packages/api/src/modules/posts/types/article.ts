@@ -17,7 +17,10 @@ export const ArticleType = builder.prismaNode('Article', {
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
     eventId: t.exposeID('eventId', { nullable: true }),
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('uid'),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
