@@ -43,7 +43,7 @@ export function onReachingEndSoon(
     const intersectionObserver = new IntersectionObserver(
       async (entries) => {
         // If the last element is in view, we're at the bottom
-        if (entries[0].isIntersecting) {
+        if (entries.some((entry) => entry.isIntersecting)) {
           await callback();
           intersectionObserver.disconnect();
         }
@@ -64,11 +64,34 @@ export function onReachingEndSoon(
   // Start observing the container
   observer.observe(scrollableArea, { childList: true });
 
+  const infinitescrollBottom = scrollableArea.querySelector('[data-infinitescroll-bottom]');
+  let infinitescrollBottomIntersectionObserver: IntersectionObserver | undefined;
+  if (infinitescrollBottom) {
+    // Also watch for intersection with the "infinitescroll bottom" element(data-infinitescroll-bottom)
+    infinitescrollBottomIntersectionObserver = new IntersectionObserver(async (entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        console.warn(
+          `[infinitescroll] Reached data-infinitescroll-bottom, calling callback ${callback.name}`,
+        );
+        await callback();
+      }
+    });
+
+    infinitescrollBottomIntersectionObserver.observe(infinitescrollBottom);
+  }
+
   // Return a function to stop observing the container
-  return () => observer.disconnect();
+  return () => {
+    observer.disconnect();
+    infinitescrollBottomIntersectionObserver?.disconnect();
+  };
 }
 
-export const infinitescroll = (container: HTMLElement, callback: () => Promise<void>) => {
+export const infinitescroll = (
+  container: HTMLElement,
+  callback: undefined | (() => Promise<void>),
+) => {
+  if (!callback) return;
   const disconnect = onReachingEndSoon(callback, container, ':scope > *');
 
   return {

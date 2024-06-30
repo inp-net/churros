@@ -12,7 +12,7 @@
   $: resultDataNonNull = result.data as Result;
 </script>
 
-{#if result.data}
+{#if result.data && !result.fetching}
   <slot data={resultDataNonNull}></slot>
 {:else if result.errors}
   <h2>Oops!</h2>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { EventFrequency, fragment, graphql, PendingValue, type CardEvent } from '$houdini';
+  import { EventFrequency, fragment, graphql, type CardEvent } from '$houdini';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { formatDateTime, formatEventDates, formatRecurrence } from '$lib/dates';
   import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
@@ -12,7 +12,6 @@
   import IconDots from '~icons/mdi/dots-horizontal';
   import IconGear from '~icons/mdi/gear-outline';
   import IconLocation from '~icons/mdi/location-outline';
-  import AvatarPerson from './AvatarPerson.houdini.svelte';
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
 
@@ -46,15 +45,6 @@
           placesLeft
           capacity
         }
-        author {
-          uid
-          ...AvatarPerson
-        }
-        group {
-          name
-          uid
-          pictureFile
-        }
         canEdit
       }
     `),
@@ -63,7 +53,7 @@
   let shotgunsStart: Date | null;
   let shotgunsEnd: Date | null;
 
-  $: ({ tickets, author, group } = $data);
+  $: ({ tickets } = $data);
 
   function updateShotgunDates(tickets: (typeof $data)['tickets']) {
     if (!allLoaded(tickets)) return;
@@ -245,16 +235,6 @@
       </section>
     {/if}
 
-    <!-- Pas d'auteur si le bonhomme supprime son compte-->
-    {#if author}
-      <section class="author">
-        <AvatarPerson
-          href={onceLoaded(author.uid, (uid) => `/users/${uid}`, '')}
-          showRoleFor={onceLoaded(group, (g) => g.uid, PendingValue)}
-          person={author}
-        />
-      </section>
-    {/if}
     {#if loading($data.canEdit, false)}
       <div class="button-admin">
         <ButtonSecondary href={href + '/edit/'}><IconGear /></ButtonSecondary>

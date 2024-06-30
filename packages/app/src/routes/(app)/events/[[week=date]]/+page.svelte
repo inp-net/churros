@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
   import CardEvent from '$lib/components/CardEvent.houdini.svelte';
@@ -11,14 +12,18 @@
   import { infinitescroll } from '$lib/scroll';
   import { isDark } from '$lib/theme';
   import { notNull } from '$lib/typing';
-  import { format } from 'date-fns';
+  import { format, parseISO } from 'date-fns';
   import { Gif } from 'svelte-tenor';
   import IconChevronDown from '~icons/mdi/chevron-down';
+  import IconBackward from '~icons/mdi/chevron-left';
+  import IconForward from '~icons/mdi/chevron-right';
   import type { PageData } from './$houdini';
+  import { _weekArg as weekArg } from './+page';
 
   export let data: PageData;
-  $: ({ PageEventsPlanning } = data);
+  $: ({ PageEventsList } = data);
 
+  $: currentWeek = $page.params.week ? parseISO($page.params.week) : undefined;
   let expandedEventId: string | undefined = undefined;
   let openedShotgunsList: Date | undefined = undefined;
 
@@ -33,16 +38,27 @@
 
 <div class="content">
   <NavigationTabs
+    data-sveltekit-preload-data="tap"
     tabs={[
-      // { name: 'Semaine', href: `../week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
-      { name: 'Planning', href: '.' },
+      {
+        name: 'Semaine',
+        href: $page.params.week ? '.' : `/events/${weekArg(new Date(), 0)}`,
+      },
+      { name: 'Planning', href: $page.params.week ? '/events' : '.' },
       { name: 'Mes places', href: '/bookings' },
     ]}
   />
-  <MaybeError result={$PageEventsPlanning} let:data={{ eventsByDay }}>
+  {#if currentWeek}
+    <div data-sveltekit-preload-data="tap" class="navigation">
+      <a href="/events/{weekArg(currentWeek, -7)}"> <IconBackward /> Précédente </a>
+      <a href="/events/{weekArg(new Date(), 0)}"> Aujourd'hui</a>
+      <a href="/events/{weekArg(currentWeek, 7)}"> Suivante <IconForward /> </a>
+    </div>
+  {/if}
+  <MaybeError result={$PageEventsList} let:data={{ eventsByDay }}>
     <!-- waiting for https://github.com/sveltejs/svelte/pull/8637 -->
     {@const events = eventsByDay}
-    <div class="days" use:infinitescroll={async () => await PageEventsPlanning.loadNextPage()}>
+    <div class="days" use:infinitescroll={currentWeek ? undefined : PageEventsList.loadNextPage}>
       {#each events.edges.filter(notNull) as { node: { date, happening, shotgunning } }}
         <section class="day">
           <CalendarDay
@@ -136,11 +152,6 @@
             {/if}
           </div>
         </section>
-        {#if $PageEventsPlanning.pageInfo.hasNextPage}
-          <section class="loading">
-            <LoadingSpinner></LoadingSpinner>
-          </section>
-        {/if}
       {:else}
         <div class="empty">
           <Gif
@@ -155,11 +166,16 @@
           <p>Aucun événement à venir</p>
         </div>
       {/each}
+      {#if !currentWeek && $PageEventsList.pageInfo.hasNextPage}
+        <section data-infinitescroll-bottom class="loading">
+          <LoadingSpinner></LoadingSpinner>
+        </section>
+      {/if}
     </div>
   </MaybeError>
 </div>
 
-<style>
+<style lang="scss">
   .content {
     max-width: 600px;
     padding: 0 0.5rem 4rem;
@@ -284,6 +300,34 @@
     display: flex;
     justify-content: center;
     margin-top: 2rem;
+  }
+
+  .navigation {
+    position: fixed;
+    right: 0;
+    bottom: 2rem;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-around;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    color: var(--text);
+    background: var(--bg);
+    transition: bottom 0.5s ease;
+  }
+
+  @media (min-width: $breakpoint-navbar-side) {
+    .navigation {
+      position: fixed;
+      right: unset;
+      left: 50%;
+      min-width: 600px;
+      box-shadow: var(--shadow-big);
+      transform: translateX(-50%);
+    }
   }
 
   :global(.gif) {
