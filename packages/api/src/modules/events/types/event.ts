@@ -44,7 +44,10 @@ export const EventType = builder.prismaNode('Event', {
             .find((line) => line.trim() !== '') ?? ''
         ).slice(0, 255),
     }),
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('uid'),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
     frequency: t.expose('frequency', { type: EventFrequencyType }),

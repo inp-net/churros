@@ -120,7 +120,7 @@ model GodparentRequest {
 /// UserCandidates are users in the registration process
 model UserCandidate {
   id        String   @id @default(dbgenerated("nanoid('candidate:')"))
-  uid       String   @db.VarChar(255) @default("")
+  uid       String   @default("") @db.VarChar(255)
   createdAt DateTime @default(now())
 
   email          String  @unique @db.VarChar(255)
@@ -259,13 +259,13 @@ model Minor {
   id        String    @id @default(dbgenerated("nanoid('minor:')"))
   name      String
   shortName String    @default("")
-  uid       String // TODO rename to slug, since this is _not_ a universally unique uid
+  slug      String
   majors    Major[]
   yearTier  Int
   subjects  Subject[]
   users     User[]
 
-  @@unique([uid, yearTier])
+  @@unique([slug, yearTier])
 }
 
 model School {
@@ -501,7 +501,7 @@ model Article {
   id          String     @id @default(dbgenerated("nanoid('a:')"))
   authorId    String?
   groupId     String
-  uid         String     @db.VarChar(255) // TODO rename to slug, and possibly remove (use the local id in the URL)
+  slug        String     @db.VarChar(255)
   title       String     @db.VarChar(255)
   body        String     @db.Text
   published   Boolean    @default(false)
@@ -522,7 +522,7 @@ model Article {
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
-  @@unique([groupId, uid])
+  @@unique([groupId, slug])
   @@index([search], type: Gin)
 }
 
@@ -541,7 +541,7 @@ model Event {
   contactMail    String
   beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
   description    String         @db.Text
-  uid            String         @db.VarChar(255) // TODO rename to slug, and possibly remove (use the local id in the URL)
+  slug           String         @db.VarChar(255)
   title          String         @db.VarChar(255)
   startsAt       DateTime
   endsAt         DateTime
@@ -569,7 +569,7 @@ model Event {
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
-  @@unique([groupId, uid])
+  @@unique([groupId, slug])
   @@index([search], type: Gin)
 }
 
@@ -611,7 +611,7 @@ model TicketGroup {
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
   id                    String          @id @default(dbgenerated("nanoid('t:')"))
-  uid                   String // TODO rename to slug, and possibly remove (use the local id in the URL)
+  slug                  String
   eventId               String
   ticketGroupId         String?
   name                  String          @db.VarChar(255)
@@ -642,7 +642,7 @@ model Ticket {
   group               TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   subjectToPromotions Promotion[]
 
-  @@unique([eventId, ticketGroupId, uid])
+  @@unique([eventId, ticketGroupId, slug])
 }
 
 /// A reservation is a user's registration for a ticket
@@ -760,7 +760,7 @@ model PaypalTransaction {
 /// A bar week is a week during which some groups takeover the bar staff
 model BarWeek {
   id          String   @id @default(dbgenerated("nanoid('barweek:')"))
-  uid         String   @unique // TODO rename to slug, and possibly remove (use the local id in the URL)
+  slug        String
   groups      Group[]
   startsAt    DateTime
   endsAt      DateTime
@@ -840,7 +840,7 @@ model TeachingUnit {
 model Subject {
   id             String        @id @default(dbgenerated("nanoid('subj:')"))
   name           String
-  uid            String // TODO rename to slug, since this is _not_ a universally unique uid
+  slug           String
   shortName      String        @default("") @db.VarChar(255)
   yearTier       Int?
   forApprentices Boolean       @default(false)
@@ -856,7 +856,7 @@ model Subject {
   semester       Int?
   emoji          String        @default("") @db.VarChar(4)
 
-  @@unique([uid, yearTier, forApprentices])
+  @@unique([slug, yearTier, forApprentices])
 }
 
 enum DocumentType {
@@ -877,7 +877,7 @@ enum DocumentType {
 
 model Document {
   id         String   @id @default(dbgenerated("nanoid('doc:')"))
-  uid        String // TODO rename to slug, since this is _not_ a universally unique uid
+  slug       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   schoolYear Int // stored using the school year start's year
@@ -899,7 +899,7 @@ model Document {
 
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
-  @@unique([subjectId, uid])
+  @@unique([subjectId, slug])
   @@index([search], type: Gin)
 }
 
@@ -984,7 +984,7 @@ model Picture {
 
 model ShopItem {
   id                    String           @id @default(dbgenerated("nanoid('shopitem:')"))
-  uid                   String // TODO rename to slug, since this is _not_ a universally unique uid
+  slug                  String
   name                  String           @db.VarChar(255)
   price                 Float            @default(0)
   stock                 Int              @default(0)
@@ -1006,7 +1006,7 @@ model ShopItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([groupId, uid])
+  @@unique([groupId, slug])
 }
 
 model ShopPayment {

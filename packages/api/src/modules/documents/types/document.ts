@@ -13,7 +13,10 @@ export const DocumentType = builder.prismaNode('Document', {
     ReactableInterface,
   ],
   fields: (t) => ({
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('uid'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     schoolYear: t.exposeInt('schoolYear'),
