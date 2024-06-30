@@ -1,0 +1,31 @@
+query PageEventsPlanning($now: String!) {
+  eventsByDay(first: 5, after: $now) @loading @paginate {
+    pageInfo {
+      hasNextPage
+      startCursor
+    }
+    edges @loading(count: 5, cascade: true) {
+      node @loading {
+        date
+        happening @loading(count: 2) {
+          uid
+          group {
+            uid
+          }
+          ...CardEvent @loading
+        }
+        shotgunning {
+          group {
+            uid
+            name
+            pictureFile
+            pictureFileDark
+          }
+          uid
+          title
+          mySoonestShotgunOpensAt
+        }
+      }
+    }
+  }
+}

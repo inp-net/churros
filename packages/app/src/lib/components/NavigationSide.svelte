@@ -310,7 +310,7 @@
   </section>
 </div>
 
-<style lang="scss">
+<style>
   nav {
     display: flex;
     flex-direction: column;
@@ -423,7 +423,7 @@
     font-size: 0.8rem;
   }
 
-  @media (max-width: $breakpoint-navbar-side) {
+  @media (max-width: 899px) {
     nav {
       display: none;
     }

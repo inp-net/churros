@@ -3,6 +3,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { notNull } from '$lib/typing';
   import type { PageData } from './$houdini';
 
@@ -12,6 +13,13 @@
   let code = '';
 </script>
 
+<NavigationTabs
+  tabs={[
+    // { name: 'Semaine', href: `/events/week/${format(closestMonday(new Date()), 'yyyy-MM-dd')}` },
+    { name: 'Planning', href: '/events/planning' },
+    { name: 'Mes places', href: '.' },
+  ]}
+/>
 
 {#if $PageBookings.data?.me}
   <ul class="nobullet">

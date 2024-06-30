@@ -14,7 +14,7 @@
   }
 </script>
 
-<ul {...$$restProps}>
+<ul>
   {#each tabs as { href, name, active }}
     <li class:active={active || href === '.'}>
       <svelte:element

@@ -67,9 +67,6 @@ export interface PothosTypes {
   };
 }
 
-const SIMULATED_DELAY = 2000;
-const simulatedDelay = process.env.NODE_ENV === 'development' ? SIMULATED_DELAY : 0;
-
 export const builder = new SchemaBuilder<PothosTypes>({
   plugins: [
     ComplexityPlugin,
@@ -107,10 +104,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
     default: (config) => isRootField(config),
     wrap: (resolver, _options, config) => async (source, args, ctx, info) => {
       return runFunction(
-        async () => {
-          if (simulatedDelay) await new Promise((resolve) => setTimeout(resolve, simulatedDelay));
-          return resolver(source, args, ctx, info);
-        },
+        () => resolver(source, args, ctx, info),
         (_error, duration) => {
           console.info(
             `Executed \u001B[36;1m${config.parentType}.${
