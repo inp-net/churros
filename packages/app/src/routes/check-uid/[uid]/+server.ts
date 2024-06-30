@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import { readdirSync } from 'node:fs';
 
 graphql(`
-  query UIDIsAvailable($uid: UID!) {
+  query UIDIsAvailable($uid: UID!) @blocking {
     uidIsAvailable(uid: $uid)
   }
 `);
@@ -38,7 +38,7 @@ export async function GET(event) {
     },
   });
 
-  if (errors) {
+  if (errors || !data) {
     return json({
       available: true,
       errors,

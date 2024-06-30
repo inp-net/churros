@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import { page } from '$app/stores';
 import { env } from '$env/dynamic/public';
 import { error, type LoadEvent, type NumericRange } from '@sveltejs/kit';
@@ -106,6 +109,10 @@ export const scalars = ZeusScalars({
     decode: (value: unknown): Record<string, boolean> =>
       JSON.parse(value as string) as Record<string, boolean>,
     encode: (value: unknown): string => JSON.stringify(value as Record<string, boolean>),
+  },
+  UID: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => value as string,
   },
 });
 

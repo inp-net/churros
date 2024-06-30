@@ -62,30 +62,33 @@
         upsertGroup: [
           {
             uid: data.group.uid,
-            address,
-            color,
-            description,
-            email: email || undefined,
-            mailingList: mailingList || undefined,
-            links: links.filter((l) => Boolean(l.value)),
-            longDescription,
-            website,
-            name,
-            selfJoinable,
-            parentUid: parent?.uid,
-            type,
-            related: related.map(({ uid }) => uid),
-            studentAssociationUid: studentAssociation?.uid,
+            input: {
+              address,
+              color,
+              description,
+              email: email || undefined,
+              mailingList: mailingList || undefined,
+              links: links.filter((l) => Boolean(l.value)),
+              longDescription,
+              website,
+              name,
+              selfJoinable,
+              parent: parent?.uid,
+              type,
+              related: related.map(({ uid }) => uid),
+              studentAssociation: studentAssociation?.uid,
+            },
           },
           {
             '__typename': true,
             '...on Error': { message: true },
+            '...on ZodError': { message: true },
             '...on MutationUpsertGroupSuccess': { data: clubQuery },
           },
         ],
       });
 
-      if (upsertGroup.__typename === 'Error') {
+      if ('message' in upsertGroup) {
         serverError = upsertGroup.message;
         return;
       }

@@ -1,5 +1,4 @@
 <script lang="ts">
-  //@ts-expect-error Untyped lib
   import SEO from 'svelte-seo';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
