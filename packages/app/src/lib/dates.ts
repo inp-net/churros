@@ -102,12 +102,17 @@ export function formatOpenAtRange(startsAt: Date, endsAt: Date): string {
   return `du ${startsAtFormatted} au ${endsAtFormatted}`;
 }
 
-export function formatEventDates(
-  frequency: EventFrequency | EventFrequency$options,
-  startsAt: Date,
-  endsAt: Date,
-  recurringUntil: Date | undefined | null,
-): string {
+export function formatEventDates({
+  frequency,
+  startsAt,
+  endsAt,
+  recurringUntil,
+}: {
+  frequency: EventFrequency | EventFrequency$options;
+  startsAt: Date;
+  endsAt: Date;
+  recurringUntil: Date | undefined | null;
+}): string {
   try {
     switch (frequency) {
       case EventFrequency.Once: {
@@ -132,7 +137,7 @@ export function formatEventDates(
 }
 
 export function formatRecurrence(
-  frequency: EventFrequency | Visibility$options,
+  frequency: EventFrequency | EventFrequency$options,
   startsAt: Date,
   endsAt: Date,
 ): string {

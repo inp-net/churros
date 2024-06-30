@@ -138,12 +138,7 @@
             <h2>{event.title}</h2>
             <p class="where">{event.location}</p>
             <p class="when">
-              {formatEventDates(
-                event.frequency,
-                event.startsAt,
-                event.endsAt,
-                event.recurringUntil,
-              )}
+              {formatEventDates(event)}
             </p>
           </div>
         </a>

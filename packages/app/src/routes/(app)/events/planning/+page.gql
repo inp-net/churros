@@ -1,0 +1,18 @@
+query PageEventsPlanning {
+  events(future: true, upcomingShotguns: true) {
+    pageInfo {
+      hasNextPage
+      startCursor
+    }
+    edges {
+      node {
+        id
+        uid
+        group {
+          uid
+        }
+        ...CardEvent
+      }
+    }
+  }
+}
