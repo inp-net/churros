@@ -391,6 +391,7 @@ __metadata:
     "@types/node": "npm:^20.12.2"
     "@types/nodemailer": "npm:^6.4.14"
     "@types/qrcode": "npm:^1.5.5"
+    "@types/semver": "npm:^7.5.8"
     "@types/slug": "npm:^5.0.8"
     "@types/web-push": "npm:^3.6.3"
     "@types/which": "npm:^3.0.3"
