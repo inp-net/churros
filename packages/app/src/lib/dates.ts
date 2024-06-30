@@ -111,7 +111,7 @@ export function formatEventDates({
   frequency: EventFrequency | EventFrequency$options;
   startsAt: Date;
   endsAt: Date;
-  recurringUntil: Date | undefined | null;
+  recurringUntil?: Date | undefined | null;
 }): string {
   try {
     switch (frequency) {
