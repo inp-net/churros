@@ -11,6 +11,24 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- On peut doit maintenant choisir son @ à l'inscription! On ne peut pas choisir un @ qui soit déjà pris par un groupe, ou qui corresponde à l'identifiant d'une filière ou d'une matière.
+- La page d'évènements par semaine est de nouveau là, et est normalement raisonnablement rapide
+
+### Technique
+
+- Le champ de requêtes GraphQL `operationName` est exposé à Prometheus
+- Les paquets sont maintenant nommés `@churros/...`
+
+### Corrections
+
+- Ouvrir l'app installée demandait de rafraîchir pour être connecté sur l'interface
+
+### Améliorations
+
+- La page de planning des évènements devrait être plus rapide et a maintenant du scroll infini
+
 ## [1.65.1] - 2024-06-28
 
 ### Autres
