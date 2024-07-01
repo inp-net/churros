@@ -1,0 +1,26 @@
+{
+  "name": "@churros/sync",
+  "dependencies": {
+    "@churros/db": "workspace:^",
+    "@inp-net/ldap7": "^1.0.4"
+  },
+  "devDependencies": {
+    "@tsconfig/esm": "^1.0.5",
+    "@tsconfig/node18": "^18.2.4",
+    "@tsconfig/strictest": "^2.0.5",
+    "npm-run-all2": "^6.2.0",
+    "tsx": "^4.16.2"
+  },
+  "private": true,
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "type": "module",
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "release-it": {
+    "git": false,
+    "npm": false
+  }
+}
