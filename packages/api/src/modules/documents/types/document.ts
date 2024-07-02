@@ -16,7 +16,9 @@ export const DocumentType = builder.prismaNode('Document', {
     uid: t.exposeString('slug', {
       deprecationReason: 'Use `slug` instead. This field was never universally unique.',
     }),
-    slug: t.exposeString('uid'),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     schoolYear: t.exposeInt('schoolYear'),

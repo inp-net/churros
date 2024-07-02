@@ -8,7 +8,12 @@ import { GraphQLError } from 'graphql';
 export const ShopItemType = builder.prismaObject('ShopItem', {
   fields: (t) => ({
     id: t.exposeID('id'),
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     name: t.exposeString('name'),
     description: t.exposeString('description'),
     descriptionHtml: t.string({

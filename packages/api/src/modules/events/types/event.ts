@@ -47,7 +47,9 @@ export const EventType = builder.prismaNode('Event', {
     uid: t.exposeString('slug', {
       deprecationReason: 'Use `slug` instead. This field was never universally unique.',
     }),
-    slug: t.exposeString('uid'),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     title: t.exposeString('title'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
     frequency: t.expose('frequency', { type: EventFrequencyType }),

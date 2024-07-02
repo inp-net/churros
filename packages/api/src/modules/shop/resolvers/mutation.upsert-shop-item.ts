@@ -75,7 +75,7 @@ builder.mutationField('upsertShopItem', (t) =>
         ...query,
         where: { id: id ?? '' },
         create: {
-          uid: await createUid({ title: name, groupId: group.id }),
+          slug: await createUid({ title: name, groupId: group.id }),
           name,
           price,
           stock,

@@ -1,19 +1,17 @@
 import { builder, prisma } from '#lib';
-import { SubjectType } from '../index.js';
-// TODO rename to major.subjects
+import { MajorType, SubjectType } from '../index.js';
 
-builder.queryField('subjectsOfMajor', (t) =>
+builder.prismaObjectField(MajorType, 'subjects', (t) =>
   t.prismaField({
     type: [SubjectType],
     args: {
-      uid: t.arg.string({ required: true }),
       yearTier: t.arg.int({ required: false }),
       forApprentices: t.arg.boolean({ required: false }),
     },
     authScopes: () => true,
-    async resolve(query, _, { uid, yearTier, forApprentices }) {
+    async resolve(query, { id }, { yearTier, forApprentices }) {
       // XXX should become uniqueOrThrow at some point when all majors have uids
-      const major = await prisma.major.findFirstOrThrow({ where: { uid } });
+      // const major = await prisma.major.findFirstOrThrow({ where: { uid } });
       return prisma.subject.findMany({
         ...query,
         where: {
@@ -21,21 +19,13 @@ builder.queryField('subjectsOfMajor', (t) =>
           OR: [
             {
               yearTier,
-              majors: {
-                some: {
-                  id: major.id,
-                },
-              },
+              majors: { some: { id } },
             },
             {
               minors: {
                 some: {
                   ...(yearTier ? { yearTier } : {}),
-                  majors: {
-                    some: {
-                      id: major.id,
-                    },
-                  },
+                  majors: { some: { id } },
                 },
               },
             },

@@ -3,15 +3,13 @@ import { userIsOnBoardOf } from '#permissions';
 import { Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShopItemType } from '../index.js';
+import { GroupType } from '#modules/groups';
 
-builder.queryField('itemsOfGroup', (t) =>
+builder.prismaObjectField(GroupType, 'shopItems', (t) =>
   t.prismaConnection({
     type: ShopItemType,
     cursor: 'id',
-    args: {
-      groupId: t.arg.string(),
-    },
-    async resolve(query, _, { groupId }, { user }) {
+    async resolve(query, { id: groupId }, _, { user }) {
       const items = await prisma.shopItem.findMany({
         ...query,
         where: { groupId },

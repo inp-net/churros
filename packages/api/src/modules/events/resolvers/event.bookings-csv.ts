@@ -1,45 +1,20 @@
 import { builder, prisma, yearTier } from '#lib';
-
 import { fullName } from '#modules/users';
-import { userCanManageEvent } from '#permissions';
+import { canSeeBookings, EventType } from '../index.js';
 
-// TODO rename to event.bookings-csv
-
-builder.queryField('registrationsCsv', (t) =>
-  t.field({
-    type: 'String',
+builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
+  t.string({
+    description:
+      "Renvoie un texte au format CSV contenant un export des réservations de l'évènement.",
     errors: {},
-    args: {
-      eventUid: t.arg.string(),
-      groupUid: t.arg.string(),
+    async authScopes(event, _, { user: me }) {
+      return canSeeBookings(event, me);
     },
-    async authScopes(_, { eventUid, groupUid }, { user: me }) {
-      const event = await prisma.event.findFirstOrThrow({
-        where: {
-          uid: eventUid,
-          group: {
-            uid: groupUid,
-          },
-        },
-        include: {
-          managers: {
-            include: { user: true },
-          },
-        },
-      });
-
-      return userCanManageEvent(event, me, {});
-    },
-    async resolve(_, { eventUid, groupUid }) {
+    async resolve({ id }) {
       const registrations = await prisma.registration.findMany({
         where: {
           ticket: {
-            event: {
-              uid: eventUid,
-              group: {
-                uid: groupUid,
-              },
-            },
+            eventId: id,
           },
         },
         include: {

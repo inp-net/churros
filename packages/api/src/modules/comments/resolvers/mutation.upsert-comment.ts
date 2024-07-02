@@ -148,8 +148,8 @@ builder.mutationField('upsertComment', (t) =>
           ? `/documents/${documentMajor}/${
               comment.document.subject!.minors[0]?.yearTier ??
               yearTier(comment.author?.graduationYear ?? 1)
-            }a/${comment.document.subject!.uid}/${comment.document.uid}/`
-          : `/posts/${comment.article!.group.uid}/${comment.article!.uid}`) +
+            }a/${comment.document.subject!.slug}/${comment.document.slug}/`
+          : `/posts/${comment.article!.group.uid}/${comment.article!.slug}`) +
         `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`;
 
       if (

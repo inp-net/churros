@@ -77,7 +77,7 @@ export async function scheduleNewArticleNotification(
         data: {
           group: article.group.uid,
           channel: NotificationChannel.Articles,
-          goto: `/posts/${article.group.uid}/${article.uid}`,
+          goto: `/posts/${article.group.uid}/${article.slug}`,
         },
         async afterSent() {
           console.info(

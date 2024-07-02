@@ -97,7 +97,6 @@ export const GroupType = builder.prismaNode('Group', {
     root: t.relation('familyRoot', { nullable: true }),
     familyChildren: t.relation('familyChildren'),
     related: t.relation('related'),
-    shopItems: t.relation('shopItems'),
     canEditDetails: t.boolean({
       description: "Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe",
       resolve: async (group, _, { user }) => {

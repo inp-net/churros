@@ -43,6 +43,7 @@
     "@app": "yarn workspace @churros/app",
     "@api": "yarn workspace @churros/api",
     "build": "yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @churros/docs --interlaced --topological-dev -Apv run build",
+    "check": "yarn cp-env && yarn generate-buildinfo && yarn @api check && yarn @app generate && yarn @app check",
     "cp-env": "test -f .env || cp .env.example .env && cp .env packages/api/ && cp .env packages/app/ && cp .env packages/db/",
     "dev": "yarn sync-with-example-dotenv && yarn cp-env && docker compose up -d && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
     "format": "prettier . --write --ignore-unknown",

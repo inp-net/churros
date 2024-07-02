@@ -36,6 +36,8 @@ export interface PothosTypes {
   Context: Context;
   DefaultInputFieldRequiredness: true;
   PrismaTypes: PrismaTypes;
+  DefaultEdgesNullability: false;
+  DefaultNodeNullability: false;
   Scalars: {
     DateTime: {
       Input: Date;
@@ -99,6 +101,12 @@ export const builder = new SchemaBuilder<PothosTypes>({
     nodesOnConnection: true,
     nodeQueryOptions: false,
     nodesQueryOptions: false,
+    edgesFieldOptions: {
+      nullable: false,
+    },
+    nodeFieldOptions: {
+      nullable: false,
+    },
   },
   tracing: {
     default: (config) => isRootField(config),

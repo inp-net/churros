@@ -10,7 +10,12 @@ export const TicketType = builder.prismaNode('Ticket', {
   },
   fields: (t) => ({
     eventId: t.exposeID('eventId'),
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     ticketGroupId: t.exposeID('ticketGroupId', { nullable: true }),
     name: t.exposeString('name'),
     fullName: t.string({

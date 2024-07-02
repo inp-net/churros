@@ -2,13 +2,14 @@ import { builder, prisma } from '#lib';
 import { onBoard } from '#permissions';
 import { ShopPaymentType } from '../index.js';
 
+// TODO turn into prismaConnection
 builder.queryField('shopPayments', (t) =>
   t.prismaField({
     type: [ShopPaymentType],
     args: {
-      shopItemId: t.arg.id(),
+      item: t.arg.id(),
     },
-    async authScopes(_, { shopItemId }, { user }) {
+    async authScopes(_, { item: shopItemId }, { user }) {
       if (!user) return false;
       if (user.admin) return true;
 
@@ -38,12 +39,12 @@ builder.queryField('shopPayments', (t) =>
 
       return true;
     },
-    async resolve(query, _, { shopItemId }) {
+    async resolve(query, _, { item }) {
       return prisma.shopPayment.findMany({
         ...query,
         where: {
           shopItem: {
-            id: shopItemId,
+            id: item,
           },
         },
         include: {

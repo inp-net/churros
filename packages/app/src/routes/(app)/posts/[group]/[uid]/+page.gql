@@ -1,11 +1,11 @@
-query PagePostDetail($group: String!, $uid: String!, $loggedIn: LoggedIn!) {
+query PagePostDetail($group: UID!, $uid: String!, $loggedIn: LoggedIn!) {
   me @include(if: $loggedIn) @loading {
     ...AreaCommentsUser @loading
   }
 
-  article(uid: $uid, groupUid: $group) @loading {
+  article(slug: $uid, group: $group) @loading {
     id @loading
-    uid @loading
+    uid: slug @loading
     title @loading
     bodyHtml @loading
     visibility @loading
@@ -25,7 +25,7 @@ query PagePostDetail($group: String!, $uid: String!, $loggedIn: LoggedIn!) {
     ...AreaComments
     event @loading {
       id
-      uid
+      uid: slug
       title
       startsAt
       endsAt
