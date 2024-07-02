@@ -9,7 +9,6 @@ strict digraph ImportGraph {
     "events" -> "notifications";
     "events" -> "payments";
     "events" -> "reactions";
-    "events" -> "ticketing";
     "events" -> "users";
     "forms" -> "events";
     "forms" -> "groups";
@@ -30,7 +29,7 @@ strict digraph ImportGraph {
     "shop" -> "payments";
     "student-associations" -> "groups";
     "student-associations" -> "payments";
-    "ticketing" -> "links";
+    "ticketing" -> "events";
     "ticketing" -> "payments";
     "ticketing" -> "users";
     "users" -> "links";

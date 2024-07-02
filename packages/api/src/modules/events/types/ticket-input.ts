@@ -3,6 +3,8 @@ import { DateTimeScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { PaymentMethodEnum } from '#modules/payments';
 
+//TODO move to ticketing module once mutation upsertEvent has been split
+
 export const TicketInput = builder.inputType('TicketInput', {
   fields: (t) => ({
     allowedPaymentMethods: t.field({ type: [PaymentMethodEnum] }),

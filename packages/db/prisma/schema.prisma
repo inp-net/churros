@@ -642,7 +642,7 @@ model Ticket {
   group               TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   subjectToPromotions Promotion[]
 
-  @@unique([eventId, ticketGroupId, slug])
+  @@unique([eventId, slug])
 }
 
 /// A reservation is a user's registration for a ticket

@@ -1,6 +1,5 @@
 import { builder, prisma, subscriptionName } from '#lib';
-import { TicketType, placesLeft } from '#modules/ticketing';
-import { canSeePlacesLeftCount } from '../index.js';
+import { TicketType, placesLeft, canSeePlacesLeftCount } from '../index.js';
 
 builder.prismaObjectField(TicketType, 'placesLeft', (t) =>
   t.int({

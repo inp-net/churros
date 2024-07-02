@@ -1,6 +1,7 @@
 import { builder, prisma, yearTier } from '#lib';
+import { EventType } from '#modules/events';
 import { fullName } from '#modules/users';
-import { canSeeBookings, EventType } from '../index.js';
+import { canSeeBookings } from '../index.js';
 
 builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
   t.string({
