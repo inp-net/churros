@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Prometheus: La métrique qui compte le nombre de tokens créés est maintenant bien un histogramme (et non un compteur), et expose aussi les noms des clients tierces
+
 ## [1.66.0-rc.0] - 2024-06-30
 
 ### Nouveautés

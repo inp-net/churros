@@ -1,4 +1,4 @@
-import { Counter, Histogram } from 'prom-client';
+import { Histogram } from 'prom-client';
 import { PrometheusDriver } from 'prometheus-query';
 import { prisma } from './prisma.js';
 
@@ -16,10 +16,10 @@ const rateLimitsHistogram = new Histogram({
   buckets: [1, 5, 10, 30, 50, 100, 200, 500, 1000],
 });
 
-const createdTokens = new Counter({
+const createdTokens = new Histogram({
   name: 'tokens_created',
   help: 'Number of created tokens',
-  labelNames: ['oauth_client', 'user_id'],
+  labelNames: ['oauth_client', 'user_id', 'oauth_client_name'],
 });
 
 export async function updateQueryUsage({
@@ -85,14 +85,17 @@ export async function updateRateLimitHit({
 }
 
 export async function updateCreatedTokensCount({ token, user }: { token: string; user: string }) {
-  const app = await prisma.thirdPartyCredential.findFirst({ where: { value: token } });
+  const tok = await prisma.thirdPartyCredential.findFirst({
+    where: { value: token, include: { app: true } },
+  });
 
   createdTokens
     .labels({
-      oauth_client: app?.clientId ?? '',
+      oauth_client: tok?.clientId ?? '',
+      oauth_client_name: tok?.client.name ?? '',
       user_id: user,
     })
-    .inc();
+    .observe(1);
 }
 
 export const prometheusClient = new PrometheusDriver({
