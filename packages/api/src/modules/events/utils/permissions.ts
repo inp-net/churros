@@ -1,5 +1,4 @@
 import { type Context } from '#lib';
-import { canScanBookings } from '#modules/ticketing';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 import type { Event, EventManager, Group } from '@churros/db/prisma';
 
@@ -31,17 +30,6 @@ export function canEditManagers(
   const managementship = event.managers.find((m) => m.userId === user?.id);
   return !!managementship?.canEditPermissions;
 }
-
-export function canSeeBookings(
-  event: Event & {
-    managers: EventManager[];
-    group: Group;
-  },
-  user: Context['user'],
-) {
-  return canScanBookings(event, user) || canEdit(event, user);
-}
-
 export function canCreateEvent(group: Group, user: Context['user']) {
   if (userIsAdminOf(user, group.studentAssociationId)) return true;
 
@@ -52,20 +40,9 @@ export function canCreateEvent(group: Group, user: Context['user']) {
   return false;
 }
 
-export function canSeePlacesLeftCount(
-  event: Event & {
-    managers: Array<EventManager>;
-    group: Group;
-  },
-  user: Context['user'],
-  placesLeft: number,
-) {
-  return placesLeft === 0 || event.showPlacesLeft || canSeeBookings(event, user);
-}
-
 export function canSeeEventLogs(
   event: Event & { managers: EventManager[]; group: Group },
   user: Context['user'],
 ): boolean {
-  return canScanBookings(event, user);
+  return canEdit(event, user);
 }

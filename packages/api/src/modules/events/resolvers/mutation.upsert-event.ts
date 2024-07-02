@@ -1,7 +1,6 @@
 import { builder, log, prisma, publish, pubsub, subscriptionName } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
-import { TicketGroupInput, TicketInput, createTicketUid } from '#modules/ticketing';
 import * as PrismaTypes from '@churros/db/prisma';
 import { EventFrequency, GroupType, Visibility } from '@churros/db/prisma';
 import { isBefore } from 'date-fns';
@@ -11,12 +10,16 @@ import {
   EventFrequencyType,
   EventType,
   ManagerOfEventInput,
+  TicketGroupInput,
+  TicketInput,
   canCreateEvent,
   canEdit,
+  createTicketUid,
   createUid,
   scheduleShotgunNotifications,
 } from '../index.js';
 
+// TODO move to ticketing the parts about creating tickets...
 builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
     type: EventType,
@@ -260,7 +263,6 @@ builder.mutationField('upsertEvent', (t) =>
             slug: await createTicketUid({
               ...ticket,
               eventId: event.id,
-              ticketGroupId,
               ticketGroupName: ticket.groupName,
             }),
             id: undefined,

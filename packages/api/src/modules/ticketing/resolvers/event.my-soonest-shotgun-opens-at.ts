@@ -1,7 +1,7 @@
 import { builder, prisma, soonest } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { userCanSeeTicket } from '#permissions';
-import { EventType } from '../index.js';
+import { EventType } from '#modules/events';
 
 builder.prismaObjectField(EventType, 'mySoonestShotgunOpensAt', (t) =>
   t.field({

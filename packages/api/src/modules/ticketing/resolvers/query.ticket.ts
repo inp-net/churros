@@ -1,17 +1,28 @@
 import { builder, prisma } from '#lib';
-
+import { EventType } from '#modules/events';
 import { userCanAccessEvent } from '#permissions';
 import { TicketType } from '../index.js';
 
-builder.queryField('ticket', (t) =>
+builder.prismaObjectField(EventType, 'ticket', (t) =>
   t.prismaField({
     type: TicketType,
     args: {
-      id: t.arg.id(),
+      id: t.arg.id({ required: false }),
+      slug: t.arg.string({ required: false }),
     },
-    async authScopes(_, { id }, { user }) {
+    validate: [
+      [({ id, slug }) => Boolean(id || slug), { message: 'Il faut préciser un ID ou un slug' }],
+    ],
+    async authScopes({ id: eventId }, { id, slug }, { user }) {
       const ticket = await prisma.ticket.findUnique({
-        where: { id },
+        where: id
+          ? { id }
+          : {
+              eventId_slug: {
+                eventId,
+                slug: slug!, // guaranteed by validate
+              },
+            },
         include: {
           event: {
             include: {
@@ -28,9 +39,20 @@ builder.queryField('ticket', (t) =>
         },
       });
       if (!ticket) return false;
+
       return userCanAccessEvent(ticket.event, user);
     },
-    resolve: async (query, _, { id }) =>
-      prisma.ticket.findFirstOrThrow({ ...query, where: { id } }),
+    resolve: async (query, { id: eventId }, { id, slug }) =>
+      prisma.ticket.findUniqueOrThrow({
+        ...query,
+        where: id
+          ? { id }
+          : {
+              eventId_slug: {
+                eventId,
+                slug: slug!, // guaranteed by valiate
+              },
+            },
+      }),
   }),
 );
