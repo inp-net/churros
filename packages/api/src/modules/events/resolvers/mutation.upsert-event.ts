@@ -123,7 +123,7 @@ builder.mutationField('upsertEvent', (t) =>
         ...query,
         where: { id: id ?? '' },
         create: {
-          uid: await createUid({ title, groupId: group.id }),
+          slug: await createUid({ title, groupId: group.id }),
           description,
           group: { connect: { uid: groupUid } },
           contactMail,
@@ -257,7 +257,7 @@ builder.mutationField('upsertEvent', (t) =>
           where: { id: ticket.id ?? '' },
           create: {
             ...omit(ticket, ['groupName']),
-            uid: await createTicketUid({
+            slug: await createTicketUid({
               ...ticket,
               eventId: event.id,
               ticketGroupId,

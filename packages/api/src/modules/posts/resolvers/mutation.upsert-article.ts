@@ -79,7 +79,7 @@ builder.mutationField('upsertArticle', (t) =>
         where: { id: id ?? '' },
         create: {
           ...data,
-          uid: await createUid({ title, groupId }),
+          slug: await createUid({ title, groupId }),
           links: { create: links },
           event: eventId ? { connect: { id: eventId } } : undefined,
         },

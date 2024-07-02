@@ -1,13 +1,11 @@
 import { builder, prisma } from '#lib';
+import { GroupType } from '#modules/groups';
 import { ShopPaymentType } from '../index.js';
 
-builder.queryField('orders', (t) =>
+builder.prismaObjectField(GroupType, 'shopOrders', (t) =>
   t.prismaField({
     type: [ShopPaymentType],
-    args: {
-      groupUid: t.arg.string({ required: false }),
-    },
-    async resolve(query, _, { groupUid }, { user }) {
+    async resolve(query, { uid: groupUid }, _, { user }) {
       return prisma.shopPayment.findMany({
         ...query,
         where: {

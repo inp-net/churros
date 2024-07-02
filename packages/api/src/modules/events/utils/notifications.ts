@@ -138,14 +138,14 @@ export async function scheduleShotgunNotifications(
         data: {
           group: event.group.uid,
           channel: NotificationChannel.Shotguns,
-          goto: `/events/${event.group.uid}/${event.uid}`,
+          goto: `/events/${event.group.uid}/${event.slug}`,
         },
         image: event.pictureFile,
       };
 
       const openedShotgunActions: PushNotification['actions'] = [
         {
-          action: `/events/${event.group.uid}/${event.uid}`,
+          action: `/events/${event.group.uid}/${event.slug}`,
           title: 'Go !',
         },
       ];

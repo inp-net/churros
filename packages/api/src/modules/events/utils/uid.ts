@@ -7,7 +7,7 @@ export async function createUid({ title, groupId }: { title: string; groupId: st
   const n = await dichotomid(
     async (n) =>
       !(await prisma.event.findUnique({
-        where: { groupId_uid: { groupId, uid: `${base}${n > 1 ? `-${n}` : ''}` } },
+        where: { groupId_slug: { groupId, slug: `${base}${n > 1 ? `-${n}` : ''}` } },
       })),
   );
   return `${base}${n > 1 ? `-${n}` : ''}`;

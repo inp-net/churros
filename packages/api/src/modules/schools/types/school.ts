@@ -5,9 +5,7 @@ export const SchoolType = builder.prismaObject('School', {
   interfaces: [PicturedInterface],
   fields: (t) => ({
     id: t.exposeID('id'),
-    uid: t.exposeString('slug', {
-      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
-    }),
+    uid: t.exposeString('uid'),
     slug: t.exposeString('uid'),
     name: t.exposeString('name'),
     color: t.exposeString('color'),

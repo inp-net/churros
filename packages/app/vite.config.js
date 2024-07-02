@@ -3,6 +3,7 @@ import houdini from 'houdini/vite';
 import { fileURLToPath } from 'node:url';
 import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
+import { kitRoutes } from 'vite-plugin-kit-routes';
 
 export const commonConfig = defineConfig({
   plugins: [
@@ -27,7 +28,15 @@ export const commonConfig = defineConfig({
 export default mergeConfig(
   commonConfig,
   defineConfig({
-    plugins: [houdini(), sveltekit()],
+    plugins: [
+      houdini(),
+      sveltekit(),
+      kitRoutes({
+        format_short: true,
+        format: 'route(path)',
+        post_update_run: 'yarn format-at ./src/lib/ROUTES.ts',
+      }),
+    ],
     ssr: {
       noExternal: process.env.NODE_ENV === 'development' ? [] : ['@carbon/charts'],
     },

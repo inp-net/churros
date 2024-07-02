@@ -151,6 +151,7 @@
     "build:barrelize": "run-s barrelize",
     "build:api": "tsc",
     "build:post": "tsx ./src/post-build.ts",
+    "check": "yarn build",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
     "dev": "yarn tsx ./scripts/update-mail-templates-type.ts && yarn build:changelog && yarn barrelize && yarn run -T generate-buildinfo --stub && NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",

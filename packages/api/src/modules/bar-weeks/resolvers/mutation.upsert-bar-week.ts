@@ -53,7 +53,7 @@ builder.mutationField('upsertBarWeek', (t) =>
         startsAt,
         endsAt,
         description,
-        uid: slug(`${groupsUids.join('-')}-${startsAt.getFullYear()}-${startsAt.getMonth() + 1}`),
+        slug: slug(`${groupsUids.join('-')}-${startsAt.getFullYear()}-${startsAt.getMonth() + 1}`),
       };
       const barWeek = await prisma.barWeek.upsert({
         ...query,

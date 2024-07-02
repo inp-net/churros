@@ -221,7 +221,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.23.9, @babel/parser@npm:^7.24.7":
+"@babel/parser@npm:^7.23.0, @babel/parser@npm:^7.23.9, @babel/parser@npm:^7.24.7":
   version: 7.24.7
   resolution: "@babel/parser@npm:7.24.7"
   bin:
@@ -561,6 +561,7 @@ __metadata:
     ua-parser-js: "npm:^1.0.37"
     unplugin-icons: "npm:^0.18.5"
     vite: "npm:5.2.13"
+    vite-plugin-kit-routes: "npm:^0.6.2"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^1.4.30"
     ws: "npm:^8.16.0"
@@ -2189,6 +2190,18 @@ __metadata:
   dependencies:
     esm-env: "npm:^1.0.0"
   checksum: 10c0/ebb6003ad5bcea7f6c1db0275576a215f2513cbea810d63dcd91436f03d2f67a4d46f11561122ced91a8f7cf1c2a22881028c3d80cd5b95f3bb03c89d504a3f8
+  languageName: node
+  linkType: hard
+
+"@kitql/internals@npm:0.9.5":
+  version: 0.9.5
+  resolution: "@kitql/internals@npm:0.9.5"
+  dependencies:
+    "@babel/parser": "npm:^7.23.0"
+    "@kitql/helpers": "npm:0.8.9"
+    recast: "npm:^0.23.4"
+    svelte: "npm:4.2.1"
+  checksum: 10c0/7885f35a7563c4d868fb519e479438315ba1e1f6a7ed6e55dae748eb7ec91359c675d63ce6fa3f718336a1d6835726fc4dbe164c1555c912b697ae845371fd33
   languageName: node
   linkType: hard
 
@@ -4719,6 +4732,13 @@ __metadata:
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
   checksum: 10c0/cbd47ce380fe045313364e740bb03b936420b8b5558c7ea36a4563db1258c658f05e40feb5ddd41f6633fdd96d37ac2a76f884dad599c5b0224b4c451b3fa7ae
+  languageName: node
+  linkType: hard
+
+"axobject-query@npm:^3.2.1":
+  version: 3.2.3
+  resolution: "axobject-query@npm:3.2.3"
+  checksum: 10c0/18d23f6a3846add714a76caca08c0ded36c32fd7733aaaa7f3a604530e08b0b477892b89ed6ee64e7000dcd6d663bc84d8915c4131058907f94c9e7e5c33d38f
   languageName: node
   linkType: hard
 
@@ -14784,7 +14804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recast@npm:^0.23.1":
+"recast@npm:^0.23.1, recast@npm:^0.23.4":
   version: 0.23.9
   resolution: "recast@npm:0.23.9"
   dependencies:
@@ -16690,6 +16710,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svelte@npm:4.2.1":
+  version: 4.2.1
+  resolution: "svelte@npm:4.2.1"
+  dependencies:
+    "@ampproject/remapping": "npm:^2.2.1"
+    "@jridgewell/sourcemap-codec": "npm:^1.4.15"
+    "@jridgewell/trace-mapping": "npm:^0.3.18"
+    acorn: "npm:^8.9.0"
+    aria-query: "npm:^5.3.0"
+    axobject-query: "npm:^3.2.1"
+    code-red: "npm:^1.0.3"
+    css-tree: "npm:^2.3.1"
+    estree-walker: "npm:^3.0.3"
+    is-reference: "npm:^3.0.1"
+    locate-character: "npm:^3.0.0"
+    magic-string: "npm:^0.30.0"
+    periscopic: "npm:^3.1.0"
+  checksum: 10c0/5262dfceb99809a7ed01addc684351ac297dc2967b49dc99563af646c113c33a1535fe6ea5b9af4c6986880b6803ac0ca4fecb15a65bb18b641929c400d5dead
+  languageName: node
+  linkType: hard
+
 "svelte@npm:^3.57.0":
   version: 3.59.2
   resolution: "svelte@npm:3.59.2"
@@ -17761,7 +17802,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-watch-and-run@npm:^1.3.2":
+"vite-plugin-kit-routes@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "vite-plugin-kit-routes@npm:0.6.2"
+  dependencies:
+    "@babel/parser": "npm:^7.23.0"
+    "@kitql/helpers": "npm:0.8.9"
+    "@kitql/internals": "npm:0.9.5"
+    recast: "npm:^0.23.4"
+    vite-plugin-watch-and-run: "npm:1.7.0"
+  checksum: 10c0/9a2227db99dc2406202080e7c4983a4052aa91fd373910d49c62bf968522f21483ec9ee7ef60e486df2f8ba992f2192f17d12eb03f74ca89c31554451a46186f
+  languageName: node
+  linkType: hard
+
+"vite-plugin-watch-and-run@npm:1.7.0, vite-plugin-watch-and-run@npm:^1.3.2":
   version: 1.7.0
   resolution: "vite-plugin-watch-and-run@npm:1.7.0"
   dependencies:

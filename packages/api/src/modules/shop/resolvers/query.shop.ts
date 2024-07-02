@@ -8,14 +8,12 @@ builder.queryField('shopItem', (t) =>
   t.prismaField({
     type: ShopItemType,
     args: {
-      itemUid: t.arg.string(),
+      slug: t.arg.string(),
     },
-    async resolve(query, _, { itemUid }, { user }) {
+    async resolve(query, _, { slug }, { user }) {
       const item = await prisma.shopItem.findFirst({
         ...query,
-        where: {
-          uid: itemUid,
-        },
+        where: { slug },
         include: {
           group: {
             include: {

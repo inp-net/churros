@@ -4,7 +4,7 @@ import { userCanAccessEvent } from '#permissions';
 import { TicketType } from '../index.js';
 // TODO merge into query.ticket
 
-builder.queryField('ticketByUid', (t) =>
+builder.queryField('ticket', (t) =>
   t.prismaField({
     type: TicketType,
     args: {

@@ -9,18 +9,17 @@ import {
 } from '../index.js';
 // TODO rename to verify-booking.ts
 
-builder.mutationField('verifyRegistration', (t) =>
+builder.mutationField('verifyBooking', (t) =>
   t.field({
     type: RegistrationVerificationResultType,
     errors: {},
     args: {
       id: t.arg.id({ description: 'Identifiant de la place ou code de réservation' }),
-      groupUid: t.arg.string(),
-      eventUid: t.arg.string(),
+      event: t.arg.id({ description: 'Identifiant de l’événement' }),
     },
-    async authScopes(_, { groupUid, eventUid }, { user }) {
+    async authScopes(_, { event: eventId }, { user }) {
       const event = await prisma.event.findFirstOrThrow({
-        where: { uid: eventUid, group: { uid: groupUid } },
+        where: { id: eventId },
         include: {
           managers: true,
           group: true,
@@ -29,7 +28,7 @@ builder.mutationField('verifyRegistration', (t) =>
       if (!event) return false;
       return canScanBookings(event, user);
     },
-    async resolve(query, { id, eventUid, groupUid }, { user }) {
+    async resolve(query, { id, event: eventId }, { user }) {
       async function log(message: string, target?: string) {
         await prisma.logEntry.create({
           data: {
@@ -48,9 +47,7 @@ builder.mutationField('verifyRegistration', (t) =>
         where: { id: ensureHasIdPrefix(id.trim().toLowerCase(), 'Registration') },
         include: {
           verifiedBy: true,
-          ticket: {
-            include: { event: { include: { group: true } } },
-          },
+          ticket: true,
         },
       });
 
@@ -61,10 +58,7 @@ builder.mutationField('verifyRegistration', (t) =>
         };
       }
 
-      if (
-        registration.ticket.event.uid !== eventUid ||
-        registration.ticket.event.group.uid !== groupUid
-      ) {
+      if (registration.ticket.eventId !== eventId) {
         await log('Scan failed: registration is for another event');
         return {
           state: RegistrationVerificationState.OtherEvent,

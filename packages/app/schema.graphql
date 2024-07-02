@@ -728,8 +728,11 @@ type Article implements Commentable & Node & Pictured & Reactable {
   reacted(emoji: String!): Boolean!
   reactionCounts: Counts!
   reactions(emoji: String!): Int!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
   title: String!
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   visibility: Visibility!
 }
 
@@ -754,8 +757,11 @@ type BarWeek implements Node {
   endsAt: DateTime!
   groups: [Group!]!
   id: ID!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
   startsAt: DateTime!
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
 scalar BooleanMap
@@ -832,8 +838,8 @@ interface Commentable {
 }
 
 type CommentsConnection {
-  edges: [CommentsEdge]!
-  nodes: [Comment]!
+  edges: [CommentsEdge!]!
+  nodes: [Comment!]!
   pageInfo: PageInfo!
 }
 
@@ -900,15 +906,16 @@ type Document implements Commentable & Node & Reactable {
   reactions(emoji: String!): Int!
   schoolYear: Int!
 
-  """
-  Liste de chemins vers les fichiers représentant la correction.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
+
+  """Liste de chemins vers les fichiers représentant la correction."""
   solutionPaths: [String!]!
   subject: Subject
   subjectId: ID
   title: String!
   type: DocumentType!
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   updatedAt: DateTime!
   uploader: User
   uploaderId: ID
@@ -977,6 +984,7 @@ type Event implements Node & Pictured & Reactable {
   authorId: ID
   bannedUsers: [User!]!
   beneficiary: LydiaAccount
+  bookings(after: String, before: String, first: Int, last: Int): EventBookingsConnection!
 
   """
   L'utilisateur·ice connecté·e peut modifier cet évènement
@@ -1062,12 +1070,26 @@ type Event implements Node & Pictured & Reactable {
   Vrai si le nombre de places restantes doit être affiché
   """
   showPlacesLeft: Boolean!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
   startsAt: DateTime!
   ticketGroups: [TicketGroup!]!
   tickets: [Ticket!]!
   title: String!
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   visibility: Visibility!
+}
+
+type EventBookingsConnection {
+  edges: [EventBookingsConnectionEdge!]!
+  nodes: [Registration!]!
+  pageInfo: PageInfo!
+}
+
+type EventBookingsConnectionEdge {
+  cursor: String!
+  node: Registration!
 }
 
 enum EventFrequency {
@@ -1078,8 +1100,8 @@ enum EventFrequency {
 }
 
 type EventLogsConnection {
-  edges: [EventLogsConnectionEdge]!
-  nodes: [LogEntry]!
+  edges: [EventLogsConnectionEdge!]!
+  nodes: [LogEntry!]!
   pageInfo: PageInfo!
 }
 
@@ -1110,14 +1132,10 @@ enum EventManagerPowerLevel {
 type EventsByDay {
   date: DateTime!
 
-  """
-  Évènements qui ont lieu (commencent) à ce jour
-  """
+  """Évènements qui ont lieu (commencent) à ce jour"""
   happening: [Event!]!
 
-  """
-  Évènements qui ont leur premier shotgun à ce jour
-  """
+  """Évènements qui ont leur premier shotgun à ce jour"""
   shotgunning: [Event!]!
 }
 
@@ -1303,8 +1321,8 @@ type Form implements Node {
 }
 
 type FormAnswersByUserConnection {
-  edges: [FormAnswersByUserConnectionEdge]!
-  nodes: [AnswersOfUser]!
+  edges: [FormAnswersByUserConnectionEdge!]!
+  nodes: [AnswersOfUser!]!
   pageInfo: PageInfo!
 }
 
@@ -1314,8 +1332,8 @@ type FormAnswersByUserConnectionEdge {
 }
 
 type FormAnswersConnection {
-  edges: [FormAnswersConnectionEdge]!
-  nodes: [Answer]!
+  edges: [FormAnswersConnectionEdge!]!
+  nodes: [Answer!]!
   pageInfo: PageInfo!
 }
 
@@ -1325,8 +1343,8 @@ type FormAnswersConnectionEdge {
 }
 
 type FormQuestionsConnection {
-  edges: [FormQuestionsConnectionEdge]!
-  nodes: [Question]!
+  edges: [FormQuestionsConnectionEdge!]!
+  nodes: [Question!]!
   pageInfo: PageInfo!
 }
 
@@ -1400,8 +1418,8 @@ type FormSection {
 }
 
 type FormSectionAnswersConnection {
-  edges: [FormSectionAnswersConnectionEdge]!
-  nodes: [Answer]!
+  edges: [FormSectionAnswersConnectionEdge!]!
+  nodes: [Answer!]!
   pageInfo: PageInfo!
 }
 
@@ -1523,7 +1541,8 @@ type Group implements Node & Pictured {
   secretaries: [GroupMember!]!
   selfJoinable: Boolean!
   services: [Service!]!
-  shopItems: [ShopItem!]!
+  shopItems(after: String, before: String, first: Int, last: Int): GroupShopItemsConnection!
+  shopOrders: [ShopPayment!]!
   studentAssociation: StudentAssociation
   treasurers: [GroupMember!]!
   type: GroupType!
@@ -1533,8 +1552,8 @@ type Group implements Node & Pictured {
 }
 
 type GroupEventsConnection {
-  edges: [GroupEventsConnectionEdge]!
-  nodes: [Event]!
+  edges: [GroupEventsConnectionEdge!]!
+  nodes: [Event!]!
   pageInfo: PageInfo!
 }
 
@@ -1569,6 +1588,17 @@ type GroupSearchResult {
   id: ID!
   rank: Float
   similarity: Float!
+}
+
+type GroupShopItemsConnection {
+  edges: [GroupShopItemsConnectionEdge!]!
+  nodes: [ShopItem!]!
+  pageInfo: PageInfo!
+}
+
+type GroupShopItemsConnectionEdge {
+  cursor: String!
+  node: ShopItem!
 }
 
 enum GroupType {
@@ -1719,7 +1749,7 @@ type Major {
   name: String!
   schools: [School!]!
   shortName: String!
-  subjects: [Subject!]!
+  subjects(forApprentices: Boolean, yearTier: Int): [Subject!]!
   uid: String!
 }
 
@@ -1735,8 +1765,11 @@ type Minor implements Node {
   majors: [Major!]!
   name: String!
   shortName: String!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
   subjects: [Subject!]!
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   users: [User!]!
   yearTier: Int!
 }
@@ -1974,7 +2007,11 @@ type Mutation {
   deleteSchoolPicture(id: String!): String!
   deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
   deleteShopOption(optionIds: [String!]!): Boolean!
-  deleteTicket(id: ID!): Boolean!
+  deleteTicket(
+    """Supprimer le billet même s'il existe des réservations"""
+    force: Boolean! = false
+    id: ID!
+  ): Boolean!
   deleteTicketGroup(id: ID!): Boolean!
   deleteToken(id: ID!): Boolean!
   deleteUserPicture(uid: String!): Boolean!
@@ -2277,16 +2314,7 @@ type Mutation {
     startsAt: DateTime!
   ): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
-  upsertDocument(
-    description: String!
-    id: ID
-    schoolYear: Int!
-    subjectForApprentices: Boolean!
-    subjectUid: String!
-    subjectYearTier: Int
-    title: String!
-    type: DocumentType!
-  ): MutationUpsertDocumentResult!
+  upsertDocument(description: String!, id: ID, schoolYear: Int!, subject: ID!, title: String!, type: DocumentType!): MutationUpsertDocumentResult!
   upsertEvent(
     """
     List of user uids
@@ -2463,15 +2491,15 @@ type Mutation {
   ): TicketGroup!
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
   validateEmail(token: String!): MutationValidateEmailResult!
-  verifyRegistration(
-    eventUid: String!
-    groupUid: String!
+  verifyBooking(
+    """Identifiant de l’événement"""
+    event: ID!
 
     """
     Identifiant de la place ou code de réservation
     """
     id: ID!
-  ): MutationVerifyRegistrationResult!
+  ): MutationVerifyBookingResult!
 }
 
 union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess
@@ -2793,9 +2821,9 @@ type MutationValidateEmailSuccess {
   data: Boolean!
 }
 
-union MutationVerifyRegistrationResult = Error | MutationVerifyRegistrationSuccess
+union MutationVerifyBookingResult = Error | MutationVerifyBookingSuccess
 
-type MutationVerifyRegistrationSuccess {
+type MutationVerifyBookingSuccess {
   data: RegistrationVerificationResult!
 }
 
@@ -2944,8 +2972,8 @@ type PageInfo {
 }
 
 type PagesConnection {
-  edges: [PagesEdge]!
-  nodes: [Page]!
+  edges: [PagesEdge!]!
+  nodes: [Page!]!
   pageInfo: PageInfo!
 }
 
@@ -3042,9 +3070,9 @@ type Query {
   announcement(id: ID!): Announcement!
   announcements(after: String, before: String, first: Int, last: Int): QueryAnnouncementsConnection!
   announcementsNow: [Announcement!]!
-  article(groupUid: String!, uid: String!): Article!
-  barWeek(uid: String!): BarWeek!
-  barWeekNow(now: DateTime!): BarWeek!
+  article(group: UID!, slug: String!): Article!
+  barWeek(slug: String!): BarWeek!
+  barWeekNow(now: DateTime!): BarWeek
   barWeeks: [BarWeek!]!
   birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
 
@@ -3078,23 +3106,9 @@ type Query {
     to: String! = "dev"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
-  document(
-    documentUid: String!
-    subjectForApprentices: Boolean!
-    subjectUid: String!
-    subjectYearTier: Int!
-  ): Document!
+  document(slug: String!, subject: ID!): Document!
   documents(after: String, before: String, first: Int, last: Int): QueryDocumentsConnection!
-  documentsOfSubject(
-    after: String
-    before: String
-    first: Int
-    forApprentices: Boolean!
-    last: Int
-    subjectUid: String!
-    yearTier: Int!
-  ): QueryDocumentsOfSubjectConnection!
-  event(groupUid: String!, uid: String!): Event!
+  event(group: UID!, slug: String!): Event!
   eventManager(eventId: ID!, user: String!): EventManager!
   events(
     after: String
@@ -3128,13 +3142,6 @@ type Query {
     last: Int
   ): QueryEventsByDayConnection!
   eventsInWeek(today: DateTime!): [Event!]!
-  eventsOfGroup(
-    after: String
-    before: String
-    first: Int
-    groupUid: String!
-    last: Int
-  ): QueryEventsOfGroupConnection!
   existsInSchoolLdap(email: String!): Boolean!
 
   """
@@ -3168,13 +3175,6 @@ type Query {
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
   issue(number: Int!): Issue!
   issuesByUser: [Issue!]!
-  itemsOfGroup(
-    after: String
-    before: String
-    first: Int
-    groupId: String!
-    last: Int
-  ): QueryItemsOfGroupConnection!
   kioskReload: Boolean!
   logs(after: String, before: String, first: Int, last: Int): QueryLogsConnection!
   lydiaAccount(id: ID!): LydiaAccount!
@@ -3189,13 +3189,6 @@ type Query {
   me: User!
   minor(id: ID!): Minor!
   minors(after: String, before: String, first: Int, last: Int): QueryMinorsConnection!
-  minorsOfMajor(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    uid: String!
-  ): QueryMinorsOfMajorConnection!
   myApps: [ThirdPartyApp!]!
   notification(id: ID!): Notification!
   notificationSubscription(endpoint: String!): NotificationSubscription!
@@ -3214,7 +3207,6 @@ type Query {
   Returns how many people will be notified if an article of the given visibility and group is created.
   """
   notificationsSendCountForArticle(groupUid: String!, visibility: Visibility!): Int!
-  orders(groupUid: String): [ShopPayment!]!
 
   """
   Récupérer une page par son identifiant. Voir aussi `Group.page` et `StudentAssociation.page` pour des queries plus ergonomiques
@@ -3229,37 +3221,14 @@ type Query {
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
   registration(id: ID!): QueryRegistrationResult!
-  registrationOfUser(beneficiary: String, eventUid: String!): Registration!
 
   """
   Returns an SVG path of the QR Code for the given registration
   """
   registrationQRCode(id: ID!): QRCode!
   registrationsCsv(eventUid: String!, groupUid: String!): QueryRegistrationsCsvResult!
-  registrationsOfEvent(
-    after: String
-    before: String
-    eventUid: String!
-    first: Int
-    groupUid: String!
-    last: Int
-  ): QueryRegistrationsOfEventConnection!
-  registrationsOfUser(
-    after: String
-    before: String
-    first: Int
-    forUserOnly: Boolean
-    last: Int
-    userUid: String!
-  ): QueryRegistrationsOfUserConnection!
-    @deprecated(
-      reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`)."
-    )
-  registrationsOfUserForEvent(
-    eventUid: String!
-    groupUid: String!
-    userUid: String!
-  ): QueryRegistrationsOfUserForEventResult!
+  registrationsOfUser(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int, userUid: String!): QueryRegistrationsOfUserConnection! @deprecated(reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`).")
+  registrationsOfUserForEvent(eventUid: String!, groupUid: String!, userUid: String!): QueryRegistrationsOfUserForEventResult!
 
   """
   Rendu de markdown en HTML. Demande a être authentifié·e pour éviter tout abus.
@@ -3301,14 +3270,12 @@ type Query {
   searchUsers(q: String!, similarityCutoff: Float): [UserSearchResult!]!
   service(id: ID!): Service!
   services(groupUid: String, schoolUid: String, studentAssociationUid: String): [Service!]!
-  shopItem(itemUid: String!): ShopItem!
-  shopPayments(shopItemId: ID!): [ShopPayment!]!
+  shopItem(slug: String!): ShopItem!
+  shopPayments(item: ID!): [ShopPayment!]!
   studentAssociation(uid: String!): StudentAssociation!
   studentAssociations(canContributeOnly: Boolean): [StudentAssociation!]!
-  subject(forApprentices: Boolean!, uid: String!, yearTier: Int!): Subject!
+  subject(forApprentices: Boolean!, slug: String!, yearTier: Int!): Subject!
   subjects: [Subject!]!
-  subjectsOfMajor(forApprentices: Boolean, uid: String!, yearTier: Int): [Subject!]!
-  subjectsOfMinor(uid: String!, yearTier: Int!): [Subject!]!
   thirdPartyApp(
     """
     The third party app's client_id. The 'app:' id prefix is optional.
@@ -3339,8 +3306,8 @@ type Query {
 }
 
 type QueryAllFormsConnection {
-  edges: [QueryAllFormsConnectionEdge]!
-  nodes: [Form]!
+  edges: [QueryAllFormsConnectionEdge!]!
+  nodes: [Form!]!
   pageInfo: PageInfo!
 }
 
@@ -3350,8 +3317,8 @@ type QueryAllFormsConnectionEdge {
 }
 
 type QueryAllUsersConnection {
-  edges: [QueryAllUsersConnectionEdge]!
-  nodes: [User]!
+  edges: [QueryAllUsersConnectionEdge!]!
+  nodes: [User!]!
   pageInfo: PageInfo!
 }
 
@@ -3361,8 +3328,8 @@ type QueryAllUsersConnectionEdge {
 }
 
 type QueryAnnouncementsConnection {
-  edges: [QueryAnnouncementsConnectionEdge]!
-  nodes: [Announcement]!
+  edges: [QueryAnnouncementsConnectionEdge!]!
+  nodes: [Announcement!]!
   pageInfo: PageInfo!
 }
 
@@ -3384,8 +3351,8 @@ type QueryCombinedChangelogSuccess {
 }
 
 type QueryDocumentsConnection {
-  edges: [QueryDocumentsConnectionEdge]!
-  nodes: [Document]!
+  edges: [QueryDocumentsConnectionEdge!]!
+  nodes: [Document!]!
   pageInfo: PageInfo!
 }
 
@@ -3394,20 +3361,9 @@ type QueryDocumentsConnectionEdge {
   node: Document!
 }
 
-type QueryDocumentsOfSubjectConnection {
-  edges: [QueryDocumentsOfSubjectConnectionEdge]!
-  nodes: [Document]!
-  pageInfo: PageInfo!
-}
-
-type QueryDocumentsOfSubjectConnectionEdge {
-  cursor: String!
-  node: Document!
-}
-
 type QueryEventsByDayConnection {
-  edges: [QueryEventsByDayConnectionEdge]!
-  nodes: [EventsByDay]!
+  edges: [QueryEventsByDayConnectionEdge!]!
+  nodes: [EventsByDay!]!
   pageInfo: PageInfo!
 }
 
@@ -3417,8 +3373,8 @@ type QueryEventsByDayConnectionEdge {
 }
 
 type QueryEventsConnection {
-  edges: [QueryEventsConnectionEdge]!
-  nodes: [Event]!
+  edges: [QueryEventsConnectionEdge!]!
+  nodes: [Event!]!
   pageInfo: PageInfo!
 }
 
@@ -3427,20 +3383,9 @@ type QueryEventsConnectionEdge {
   node: Event!
 }
 
-type QueryEventsOfGroupConnection {
-  edges: [QueryEventsOfGroupConnectionEdge]!
-  nodes: [Event]!
-  pageInfo: PageInfo!
-}
-
-type QueryEventsOfGroupConnectionEdge {
-  cursor: String!
-  node: Event!
-}
-
 type QueryFormsConnection {
-  edges: [QueryFormsConnectionEdge]!
-  nodes: [Form]!
+  edges: [QueryFormsConnectionEdge!]!
+  nodes: [Form!]!
   pageInfo: PageInfo!
 }
 
@@ -3456,8 +3401,8 @@ type QueryGroupMembersCsvSuccess {
 }
 
 type QueryHomepageConnection {
-  edges: [QueryHomepageConnectionEdge]!
-  nodes: [Article]!
+  edges: [QueryHomepageConnectionEdge!]!
+  nodes: [Article!]!
   pageInfo: PageInfo!
 }
 
@@ -3466,20 +3411,9 @@ type QueryHomepageConnectionEdge {
   node: Article!
 }
 
-type QueryItemsOfGroupConnection {
-  edges: [QueryItemsOfGroupConnectionEdge]!
-  nodes: [ShopItem]!
-  pageInfo: PageInfo!
-}
-
-type QueryItemsOfGroupConnectionEdge {
-  cursor: String!
-  node: ShopItem!
-}
-
 type QueryLogsConnection {
-  edges: [QueryLogsConnectionEdge]!
-  nodes: [LogEntry]!
+  edges: [QueryLogsConnectionEdge!]!
+  nodes: [LogEntry!]!
   pageInfo: PageInfo!
 }
 
@@ -3489,8 +3423,8 @@ type QueryLogsConnectionEdge {
 }
 
 type QueryMinorsConnection {
-  edges: [QueryMinorsConnectionEdge]!
-  nodes: [Minor]!
+  edges: [QueryMinorsConnectionEdge!]!
+  nodes: [Minor!]!
   pageInfo: PageInfo!
 }
 
@@ -3499,20 +3433,9 @@ type QueryMinorsConnectionEdge {
   node: Minor!
 }
 
-type QueryMinorsOfMajorConnection {
-  edges: [QueryMinorsOfMajorConnectionEdge]!
-  nodes: [Minor]!
-  pageInfo: PageInfo!
-}
-
-type QueryMinorsOfMajorConnectionEdge {
-  cursor: String!
-  node: Minor!
-}
-
 type QueryNotificationsConnection {
-  edges: [QueryNotificationsConnectionEdge]!
-  nodes: [Notification]!
+  edges: [QueryNotificationsConnectionEdge!]!
+  nodes: [Notification!]!
   pageInfo: PageInfo!
 }
 
@@ -3522,8 +3445,8 @@ type QueryNotificationsConnectionEdge {
 }
 
 type QueryPagesConnection {
-  edges: [QueryPagesConnectionEdge]!
-  nodes: [Page]!
+  edges: [QueryPagesConnectionEdge!]!
+  nodes: [Page!]!
   pageInfo: PageInfo!
 }
 
@@ -3533,8 +3456,8 @@ type QueryPagesConnectionEdge {
 }
 
 type QueryQuickSignupsConnection {
-  edges: [QueryQuickSignupsConnectionEdge]!
-  nodes: [QuickSignup]!
+  edges: [QueryQuickSignupsConnectionEdge!]!
+  nodes: [QuickSignup!]!
   pageInfo: PageInfo!
 }
 
@@ -3544,8 +3467,8 @@ type QueryQuickSignupsConnectionEdge {
 }
 
 type QueryReactionsConnection {
-  edges: [QueryReactionsConnectionEdge]!
-  nodes: [Reaction]!
+  edges: [QueryReactionsConnectionEdge!]!
+  nodes: [Reaction!]!
   pageInfo: PageInfo!
 }
 
@@ -3566,20 +3489,9 @@ type QueryRegistrationsCsvSuccess {
   data: String!
 }
 
-type QueryRegistrationsOfEventConnection {
-  edges: [QueryRegistrationsOfEventConnectionEdge]!
-  nodes: [Registration]!
-  pageInfo: PageInfo!
-}
-
-type QueryRegistrationsOfEventConnectionEdge {
-  cursor: String!
-  node: Registration!
-}
-
 type QueryRegistrationsOfUserConnection {
-  edges: [QueryRegistrationsOfUserConnectionEdge]!
-  nodes: [Registration]!
+  edges: [QueryRegistrationsOfUserConnectionEdge!]!
+  nodes: [Registration!]!
   pageInfo: PageInfo!
 }
 
@@ -3601,8 +3513,8 @@ type QueryUpcomingChangelogSuccess {
 }
 
 type QueryUserCandidatesConnection {
-  edges: [QueryUserCandidatesConnectionEdge]!
-  nodes: [UserCandidate]!
+  edges: [QueryUserCandidatesConnectionEdge!]!
+  nodes: [UserCandidate!]!
   pageInfo: PageInfo!
 }
 
@@ -3688,8 +3600,8 @@ interface Question {
 }
 
 type QuestionAnswersConnection {
-  edges: [QuestionAnswersConnectionEdge]!
-  nodes: [Answer]!
+  edges: [QuestionAnswersConnectionEdge!]!
+  nodes: [Answer!]!
   pageInfo: PageInfo!
 }
 
@@ -4460,6 +4372,7 @@ type School implements Pictured {
     dark: Boolean! = false
   ): String!
   services: [Service!]!
+  slug: String!
   studentAssociations: [StudentAssociation!]!
   studentMailDomain: String!
   uid: String!
@@ -4507,10 +4420,13 @@ type ShopItem {
   pictures: [Picture!]!
   price: Float!
   shopPayments: [ShopPayment!]!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
   startsAt: DateTime
   stock: Int!
   stockLeft: Int!
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   updatedAt: DateTime!
   visibility: Visibility!
 }
@@ -4651,8 +4567,8 @@ type StudentAssociation implements Pictured {
 }
 
 type StudentAssociationGroupsConnection {
-  edges: [StudentAssociationGroupsConnectionEdge]!
-  nodes: [Group]!
+  edges: [StudentAssociationGroupsConnectionEdge!]!
+  nodes: [Group!]!
   pageInfo: PageInfo!
 }
 
@@ -4675,15 +4591,18 @@ type Subject {
   nextExamAt: DateTime
   semester: Int
   shortName: String!
-  uid: String!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   unit: TeachingUnit
   unitId: ID
   yearTier: Int
 }
 
 type SubjectDocumentsConnection {
-  edges: [SubjectDocumentsConnectionEdge]!
-  nodes: [Document]!
+  edges: [SubjectDocumentsConnectionEdge!]!
+  nodes: [Document!]!
   pageInfo: PageInfo!
 }
 
@@ -4697,8 +4616,8 @@ type SubjectDocumentsConnectionEdge {
 """
 type Subscription {
   announcementsNow: [Announcement!]!
-  article(groupUid: String!, uid: String!): Article!
-  event(groupUid: String!, uid: String!): Event!
+  article(group: UID!, slug: String!): Article!
+  event(group: UID!, slug: String!): Event!
 
   """
   Récupère un formulaire. On peut utiliser une subscription pour avoir la mise à jour en temps réel des réponses au formulaire.
@@ -4771,8 +4690,8 @@ type ThirdPartyApp {
 }
 
 type ThirdPartyAppApiUsageConnection {
-  edges: [ThirdPartyAppApiUsageConnectionEdge]!
-  nodes: [ApiUsage]!
+  edges: [ThirdPartyAppApiUsageConnectionEdge!]!
+  nodes: [ApiUsage!]!
   pageInfo: PageInfo!
 }
 
@@ -4782,8 +4701,8 @@ type ThirdPartyAppApiUsageConnectionEdge {
 }
 
 type ThirdPartyAppLogsConnection {
-  edges: [ThirdPartyAppLogsConnectionEdge]!
-  nodes: [LogEntry]!
+  edges: [ThirdPartyAppLogsConnectionEdge!]!
+  nodes: [LogEntry!]!
   pageInfo: PageInfo!
 }
 
@@ -4793,8 +4712,8 @@ type ThirdPartyAppLogsConnectionEdge {
 }
 
 type ThirdPartyAppRateLimitHitsConnection {
-  edges: [ThirdPartyAppRateLimitHitsConnectionEdge]!
-  nodes: [ApiRateLimitHits]!
+  edges: [ThirdPartyAppRateLimitHitsConnectionEdge!]!
+  nodes: [ApiRateLimitHits!]!
   pageInfo: PageInfo!
 }
 
@@ -4809,8 +4728,8 @@ type ThirdPartyAppRegistrationResponse {
 }
 
 type ThirdPartyAppUsersConnection {
-  edges: [ThirdPartyAppUsersConnectionEdge]!
-  nodes: [User]!
+  edges: [ThirdPartyAppUsersConnectionEdge!]!
+  nodes: [User!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
@@ -4861,8 +4780,11 @@ type Ticket implements Node {
   price: Float!
   registrations: [Registration!]!
   remainingGodsons: Int!
+
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  slug: String!
   ticketGroupId: ID
-  uid: String!
+  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
 """
@@ -4970,13 +4892,8 @@ type User implements Node & Pictured {
   Les affiliations de l'utilisateur à des groupes dont iel est au bureau
   """
   boardMemberships: [GroupMember!]!
-  bookings(
-    after: String
-    before: String
-    first: Int
-    forUserOnly: Boolean
-    last: Int
-  ): UserBookingsConnection!
+  booking(beneficiary: String, event: ID!): Registration!
+  bookings(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int): UserBookingsConnection!
 
   """
   Vrai si cet utilisateur est un bot (i.e. ne représente pas une personne physique)
@@ -5068,8 +4985,8 @@ type User implements Node & Pictured {
 }
 
 type UserAnsweredFormsConnection {
-  edges: [UserAnsweredFormsConnectionEdge]!
-  nodes: [Form]!
+  edges: [UserAnsweredFormsConnectionEdge!]!
+  nodes: [Form!]!
   pageInfo: PageInfo!
 }
 
@@ -5079,8 +4996,8 @@ type UserAnsweredFormsConnectionEdge {
 }
 
 type UserArticlesConnection {
-  edges: [UserArticlesConnectionEdge]!
-  nodes: [Article]!
+  edges: [UserArticlesConnectionEdge!]!
+  nodes: [Article!]!
   pageInfo: PageInfo!
 }
 
@@ -5090,8 +5007,8 @@ type UserArticlesConnectionEdge {
 }
 
 type UserBookingsConnection {
-  edges: [UserBookingsConnectionEdge]!
-  nodes: [Registration]!
+  edges: [UserBookingsConnectionEdge!]!
+  nodes: [Registration!]!
   pageInfo: PageInfo!
 }
 
@@ -5152,8 +5069,8 @@ type UserCandidate implements Node {
 }
 
 type UserPartiallyAnsweredFormsConnection {
-  edges: [UserPartiallyAnsweredFormsConnectionEdge]!
-  nodes: [Form]!
+  edges: [UserPartiallyAnsweredFormsConnectionEdge!]!
+  nodes: [Form!]!
   pageInfo: PageInfo!
 }
 

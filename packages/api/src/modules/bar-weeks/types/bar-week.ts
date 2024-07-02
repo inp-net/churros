@@ -7,7 +7,9 @@ export const BarWeekType = builder.prismaNode('BarWeek', {
     uid: t.exposeString('slug', {
       deprecationReason: 'Use `slug` instead. This field was never universally unique.',
     }),
-    slug: t.exposeString('uid'),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     groups: t.relation('groups'),
     startsAt: t.expose('startsAt', { type: DateTimeScalar }),
     endsAt: t.expose('endsAt', { type: DateTimeScalar }),

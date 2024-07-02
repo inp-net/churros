@@ -20,7 +20,9 @@ export const ArticleType = builder.prismaNode('Article', {
     uid: t.exposeString('slug', {
       deprecationReason: 'Use `slug` instead. This field was never universally unique.',
     }),
-    slug: t.exposeString('uid'),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
     bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),

@@ -1,24 +1,23 @@
 import { builder, prisma } from '#lib';
-
-import { fullName } from '#modules/users';
+import { fullName, UserType } from '#modules/users';
 import { GraphQLError } from 'graphql';
 import { RegistrationType, authorIsBeneficiary } from '../index.js';
-// TODO rename to user.booking
-builder.queryField('registrationOfUser', (t) =>
+
+builder.prismaObjectField(UserType, 'booking', (t) =>
   t.prismaField({
     type: RegistrationType,
     args: {
-      eventUid: t.arg.string(),
+      event: t.arg.id(),
       beneficiary: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { eventUid, beneficiary: argBeneficiary }, { user }) {
+    async resolve(query, _, { event: eventId, beneficiary: argBeneficiary }, { user }) {
       if (!user) throw new GraphQLError('User not found');
       const registrations = await prisma.registration.findMany({
         include: {
           ...query.include,
           author: query.include && 'author' in query.include ? query.include.author : true,
         },
-        where: { ticket: { event: { uid: eventUid } } },
+        where: { ticket: {eventId} },
       });
 
       const registration = registrations.find(

@@ -1,10 +1,4 @@
-query AppLayout(
-  $version: String!
-  $loggedIn: LoggedIn!
-  $groupUid: String!
-  $eventUid: String!
-  $scanningEvent: Boolean!
-) {
+query AppLayout($version: String!, $loggedIn: LoggedIn!) {
   me @include(if: $loggedIn) @loading {
     ...NavigationSide
     ...NavigationTop
@@ -25,9 +19,5 @@ query AppLayout(
 
   combinedChangelog(sort: Descending, to: $version) {
     ...ModalChangelog
-  }
-
-  scanningEvent: event(groupUid: $groupUid, uid: $eventUid) @include(if: $scanningEvent) @loading {
-    ...NavigationTopCurrentEvent @loading
   }
 }
