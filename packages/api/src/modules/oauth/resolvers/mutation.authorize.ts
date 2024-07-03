@@ -1,7 +1,7 @@
 import {
   builder,
-  generateThirdPartyToken,
   ensureGlobalId,
+  generateThirdPartyToken,
   isLocalNetwork,
   log,
   prisma,

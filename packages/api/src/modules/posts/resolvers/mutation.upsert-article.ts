@@ -16,8 +16,8 @@ builder.mutationField('upsertArticle', (t) =>
       group: t.arg({ type: UIDScalar }),
       title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
-      publishedAt: t.arg({ type: DateTimeScalar }),
-      links: t.arg({ type: [LinkInput] }),
+      publishedAt: t.arg({ type: DateTimeScalar, required: false }),
+      links: t.arg({ type: [LinkInput], defaultValue: [] }),
       event: t.arg.id({ required: false }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
@@ -28,9 +28,9 @@ builder.mutationField('upsertArticle', (t) =>
         { message: 'Impossible de créer un post publié dans le passé.' },
       ],
     ],
-    async authScopes(_, { id, group: groupUid }, { user }) {
+    async authScopes(_, { id, group: groupUid }, { user, token, client }) {
       const creating = !id;
-      if (token && !user && client) return client.ownerId === groupId;
+      if (token && !user && client) return client.owner.uid === groupUid;
 
       if (!user) return false;
       if (user.canEditGroups) return true;
@@ -58,8 +58,7 @@ builder.mutationField('upsertArticle', (t) =>
       { id, event: eventId, visibility, group: groupUid, title, body, publishedAt, links },
       { user },
     ) {
-      if (!user) throw new UnauthorizedError();
-      eventId = ensureGlobalId(eventId, 'Event');
+      eventId = eventId ? ensureGlobalId(eventId, 'Event') : null;
       const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       publishedAt ??= new Date();

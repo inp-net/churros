@@ -1,4 +1,4 @@
-import { ensureHasIdPrefix, prisma } from '#lib';
+import { ensureGlobalId, prisma } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {
@@ -165,7 +165,7 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
 
     // get the corresponding oauth client
     const client = await prisma.thirdPartyApp.findUnique({
-      where: { id: ensureHasIdPrefix(clientId, 'ThirdPartyApp') },
+      where: { id: ensureGlobalId(clientId, 'ThirdPartyApp') },
       include: { owner: true },
     });
     if (!client || !(await verify(client.secret, clientSecret)))
