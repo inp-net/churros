@@ -8,7 +8,7 @@
 
   export let data: PageData;
 
-  const { orders } = data;
+  const { group: {shopOrders} } = data;
 
   let warningToastId: string;
 
@@ -43,10 +43,10 @@
   <h1>Mes achats</h1>
 </div>
 <div class="content">
-  {#if orders.length === 0}
+  {#if shopOrders.length === 0}
     <p class="text-center">Aucun article</p>
   {/if}
-  {#each orders as order}
+  {#each shopOrders as order}
     <ItemOrder {order} />
   {/each}
 </div>

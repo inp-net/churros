@@ -27,59 +27,64 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
 
   const data = await loadQuery(
     {
-      shopItem: [
-        { itemUid: params.itemUid },
+      group: [
+        { uid: params.uid },
         {
-          id: true,
-          uid: true,
-          name: true,
-          price: true,
-          stock: true,
-          max: true,
-          description: true,
-          startsAt: true,
-          endsAt: true,
-          visibility: true,
-          paymentMethods: true,
-          lydiaAccount: {
-            id: true,
-            name: true,
-          },
-          group: {
-            uid: true,
-            name: true,
-            pictureFile: true,
-            pictureFileDark: true,
-            boardMembers: {
-              member: {
+          shopItem: [
+            { itemUid: params.itemUid },
+            {
+              id: true,
+              uid: true,
+              name: true,
+              price: true,
+              stock: true,
+              max: true,
+              description: true,
+              startsAt: true,
+              endsAt: true,
+              visibility: true,
+              paymentMethods: true,
+              lydiaAccount: {
+                id: true,
+                name: true,
+              },
+              group: {
                 uid: true,
+                name: true,
+                pictureFile: true,
+                pictureFileDark: true,
+                boardMembers: {
+                  member: {
+                    uid: true,
+                  },
+                },
+              },
+              pictures: {
+                id: true,
+                path: true,
+                position: true,
+              },
+              itemOptions: {
+                id: true,
+                name: true,
+                options: true,
+                required: true,
+                otherToggle: true,
               },
             },
-          },
-          pictures: {
-            id: true,
-            path: true,
-            position: true,
-          },
-          itemOptions: {
+          ],
+          lydiaAccounts: {
             id: true,
             name: true,
-            options: true,
-            required: true,
-            otherToggle: true,
+            group: {
+              uid: true,
+              name: true,
+              pictureFile: true,
+              pictureFileDark: true,
+            },
           },
         },
       ],
-      lydiaAccounts: {
-        id: true,
-        name: true,
-        group: {
-          uid: true,
-          name: true,
-          pictureFile: true,
-          pictureFileDark: true,
-        },
-      },
     },
     { fetch, parent },
   );

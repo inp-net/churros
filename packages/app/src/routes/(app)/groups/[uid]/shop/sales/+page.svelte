@@ -38,7 +38,7 @@
 </div>
 
 <div class="content">
-  <ShopItemTable {shopItems} />
+  <ShopItemTable shopItems={shopItems.nodes} />
 </div>
 
 <style>
