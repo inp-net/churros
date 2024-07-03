@@ -1,4 +1,4 @@
-import { builder, inDevelopment, isThirdPartyToken, prisma } from '#lib';
+import { builder, isThirdPartyToken, prisma } from '#lib';
 import {
   NotificationChannel as NotificationChannelPrisma,
   ThirdPartyCredentialType,
@@ -7,7 +7,7 @@ import { notify, type PushNotification } from '../index.js';
 
 builder.mutationField('sendNotification', (t) =>
   t.boolean({
-    directives: inDevelopment() ? { rateLimit: { duration: 3600, limit: 1 } } : {},
+    directives: { rateLimit: { duration: 3600, limit: 1 } },
     description:
       "Envoie une notification à l'utilisateur connecté. Limité à une notification par heure. Si l'utilisateur a désactivé les notifications de type “Autres” pour le groupe responsable du [client OAuth](/oauth) faisant la requête, la notification ne lui sera pas envoyée.",
     args: {

@@ -1,4 +1,4 @@
-import { builder, prisma, publish, UnauthorizedError } from '#lib';
+import { builder, ensureHasIdPrefix, prisma, publish } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@churros/db/prisma';
@@ -21,8 +21,10 @@ builder.mutationField('upsertArticle', (t) =>
       eventId: t.arg.id({ required: false }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
-    async authScopes(_, { id, authorId, groupId }, { user }) {
+    async authScopes(_, { id, authorId, groupId }, { user, token, client }) {
       const creating = !id;
+      if (token && !user && client) return client.ownerId === groupId;
+
       if (!user) return false;
       if (user.canEditGroups) return true;
 
@@ -43,23 +45,25 @@ builder.mutationField('upsertArticle', (t) =>
     async resolve(
       query,
       _,
-      { id, eventId, visibility, authorId, groupId, title, body, publishedAt, links },
+      { id, eventId, visibility, groupId, title, body, publishedAt, links },
       { user },
     ) {
-      if (!user) throw new UnauthorizedError();
+      eventId = eventId ? ensureHasIdPrefix(eventId, 'Event') : null;
+      const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
+      publishedAt ??= new Date();
       const data = {
         // eslint-disable-next-line unicorn/no-null
         notifiedAt: null,
-        author: {
-          connect: {
-            id: authorId ?? user.id,
-          },
-        },
+        author: user
+          ? {
+              connect: {
+                id: user.id,
+              },
+            }
+          : undefined,
         group: {
-          connect: {
-            id: groupId,
-          },
+          connect: { id: group.id },
         },
         title,
         body,

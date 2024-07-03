@@ -1706,8 +1706,8 @@ type Mutation {
   updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
   updateUserPicture(file: File!, uid: String!): String!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
-  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): Announcement!
-  upsertArticle(authorId: ID, body: String!, eventId: ID, groupId: ID!, id: ID, links: [LinkInput!]!, publishedAt: DateTime!, title: String!, visibility: Visibility!): MutationUpsertArticleResult!
+  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
+  upsertArticle(body: String!, event: ID, group: UID!, id: ID, links: [LinkInput!]! = [], publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult!
   upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(description: String!, id: ID, schoolYear: Int!, subjectForApprentices: Boolean!, subjectUid: String!, subjectYearTier: Int, title: String!, type: DocumentType!): MutationUpsertDocumentResult!

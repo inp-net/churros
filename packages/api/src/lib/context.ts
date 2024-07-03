@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { ensureHasIdPrefix, prisma } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {
@@ -14,6 +14,7 @@ import {
   type User,
 } from '@churros/db/prisma';
 import type { YogaInitialContext } from '@graphql-yoga/node';
+import { verify } from 'argon2';
 import { GraphQLError } from 'graphql';
 import { isThirdPartyToken } from './auth.js';
 import { yearTier } from './date.js';
@@ -153,7 +154,28 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
         ? new Headers((rest.connectionParams as { headers: Headers }).headers)
         : new Headers();
 
-  if (headers.get('Authorization')?.startsWith('Basic ')) return {};
+  if (headers.get('Authorization')?.startsWith('Basic ')) {
+    // base64-decode a string of "client_id:client_secret"
+    const encodedValue = headers.get('Authorization')!.slice('Basic '.length);
+    const [clientId, clientSecret] = Buffer.from(encodedValue, 'base64')
+      .toString('utf8')
+      .split(':');
+
+    if (!clientId || !clientSecret) throw new GraphQLError('Invalid client credentials');
+
+    // get the corresponding oauth client
+    const client = await prisma.thirdPartyApp.findUnique({
+      where: { id: ensureHasIdPrefix(clientId, 'ThirdPartyApp') },
+      include: { owner: true },
+    });
+    if (!client || !(await verify(client.secret, clientSecret)))
+      throw new GraphQLError('Invalid client credentials');
+
+    return {
+      token: `churros_clientcredentials_${encodedValue}`,
+      client,
+    };
+  }
 
   const token = getToken(headers);
   if (!token) return {};

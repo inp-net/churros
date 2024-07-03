@@ -1,6 +1,7 @@
 import {
   builder,
   ensureHasIdPrefix,
+  generateThirdPartyToken,
   isLocalNetwork,
   log,
   prisma,
@@ -8,7 +9,7 @@ import {
 } from '#lib';
 import { ThirdPartyCredentialType } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
-import { OAuth2Error, OAuth2ErrorCode, generateThirdPartyToken, normalizeUrl } from '../index.js';
+import { OAuth2Error, OAuth2ErrorCode, normalizeUrl } from '../index.js';
 // TODO rename to authorize-third-party-app
 
 builder.mutationField('authorize', (t) =>
