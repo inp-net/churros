@@ -1,0 +1,5 @@
+query PageAnnouncementEdit($id: ID!) {
+  announcement(id: $id) {
+    ...FormAnnouncement
+  }
+}

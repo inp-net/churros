@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, makeGoogleWalletObject, prisma } from '#lib';
+import { builder, ensureGlobalId, makeGoogleWalletObject, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 
@@ -11,7 +11,7 @@ builder.mutationField('createGoogleWalletPass', (t) =>
     async resolve(_, { code }) {
       const booking = await prisma.registration.findUnique({
         where: {
-          id: ensureHasIdPrefix(code.toLowerCase(), 'Registration'),
+          id: ensureGlobalId(code.toLowerCase(), 'Registration'),
         },
         include: { ticket: { include: { event: { include: { group: true } } } }, author: true },
       });

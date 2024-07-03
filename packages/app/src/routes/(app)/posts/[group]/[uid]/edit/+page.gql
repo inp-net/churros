@@ -1,8 +1,12 @@
 query PagePostEdit($group: UID!, $uid: String!) {
   article(slug: $uid, group: $group) {
     id
-    uid: slug
+    slug
     ...FormPicture @mask_disable
     ...FormArticle
+  }
+
+  groups(canCreatePosts: true) {
+    ...FormArticleGroups @mask_disable
   }
 }

@@ -230,10 +230,10 @@
                 if (!loaded($data.id)) return;
                 const result = await AddFile.mutate({ id: $data.id, file });
                 toasts.mutation(
+                  result,
                   'addFileToPage',
                   `${file.name} ajouté`,
                   `Impossible d'ajouter ${file.name}`,
-                  result,
                 );
                 files = withoutFilename(files, file.name);
               }),

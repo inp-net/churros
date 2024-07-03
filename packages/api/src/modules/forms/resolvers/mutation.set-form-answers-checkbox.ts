@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, log, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { FormType } from '../types/form.js';
 import {
   canSetFormAnswerCheckboxes,
@@ -16,7 +16,7 @@ builder.mutationField('setFormAnswersCheckbox', (t) =>
       checked: t.arg.boolean({ description: 'Vrai pour cocher la case, faux pour la décocher' }),
     },
     async authScopes(_, { form: formId }, { user }) {
-      formId = ensureHasIdPrefix(formId, 'Form');
+      formId = ensureGlobalId(formId, 'Form');
       const form = await prisma.form.findUniqueOrThrow({
         where: { id: formId },
         include: requiredIncludesForPermissions,

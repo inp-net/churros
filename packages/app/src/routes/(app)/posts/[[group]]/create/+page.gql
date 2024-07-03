@@ -1,0 +1,5 @@
+query PagePostCreateWithGroup {
+  groups(canCreatePosts: true) {
+    ...FormArticleGroups @mask_disable
+  }
+}

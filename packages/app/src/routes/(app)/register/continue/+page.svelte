@@ -75,7 +75,7 @@
       loading = true;
       const result = await CompleteSignup.mutate(args);
 
-      if (!toasts.mutation('completeRegistration', '', "Impossible de s'inscrire", result)) {
+      if (!toasts.mutation(result, 'completeRegistration', '', "Impossible de s'inscrire")) {
         if (result.data?.completeRegistration && 'fieldErrors' in result.data.completeRegistration)
           formErrors = fieldErrorsToFormattedError(result.data.completeRegistration.fieldErrors);
         return;
@@ -86,7 +86,7 @@
           emailOrUid: result.data.completeRegistration.data.uid,
           password,
         });
-        if (toasts.mutation('login', '', 'Impossible de se connecter', login)) {
+        if (toasts.mutation(login, 'login', '', 'Impossible de se connecter')) {
           saveSessionToken(document, login.data.login.data);
           location.href = '/welcome/';
         }

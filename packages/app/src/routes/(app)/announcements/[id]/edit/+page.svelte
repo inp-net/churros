@@ -1,14 +1,18 @@
 <script lang="ts">
   import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import FormAnnouncement from '$lib/components/FormAnnouncement.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageAnnouncementEdit } = data);
 </script>
 
 <div class="content">
   <h1><ButtonBack /> Modifier une annonce</h1>
-  <FormAnnouncement bind:data={data.announcement} />
+  <MaybeError result={$PageAnnouncementEdit} let:data={{ announcement }}>
+    <FormAnnouncement {announcement} />
+  </MaybeError>
 </div>
 
 <style>

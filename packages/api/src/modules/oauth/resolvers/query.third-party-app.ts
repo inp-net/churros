@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma } from '#lib';
 
 builder.queryField('thirdPartyApp', (t) =>
   t.prismaField({
@@ -12,7 +12,7 @@ builder.queryField('thirdPartyApp', (t) =>
     async resolve(query, _, { id }) {
       return prisma.thirdPartyApp.findUniqueOrThrow({
         ...query,
-        where: { id: ensureHasIdPrefix(id, 'ThirdPartyApp') },
+        where: { id: ensureGlobalId(id, 'ThirdPartyApp') },
       });
     },
   }),

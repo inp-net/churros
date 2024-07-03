@@ -1,38 +1,38 @@
-<script context="module" lang="ts">
-  export type Group = {
-    id: string;
-    uid: string;
-    name: string;
-    pictureFile: string;
-    pictureFileDark: string;
-  };
-</script>
-
 <script lang="ts">
-  import InputField from './InputField.svelte';
-  import IconCheck from '~icons/mdi/check';
+  import { graphql, type InputGroups, type InputGroups$data } from '$houdini';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
+  import IconCheck from '~icons/mdi/check';
+  import InputField from './InputField.svelte';
   import InputPickObjects from './InputPickObjects.svelte';
+
+  export let options: InputGroups$data[];
+  graphql(`
+    fragment InputGroups on Group {
+      id
+      uid
+      name
+      pictureFile
+      pictureFileDark
+    }
+  `);
 
   export let clearButtonLabel = 'Effacer';
   export let label: string;
-  export let disallowed: Group[] = [];
+  export let disallowed: InputGroups$data[] = [];
   export let required = false;
-  export let group: Group | undefined | null = undefined;
-  export let groups: Group[] = [];
+  export let groups: InputGroups$data[] = [];
+  export let group: InputGroups$data | undefined | null = undefined;
   export let clearable = !required;
   export let multiple = false;
-  export let options: Group[];
-  export let disallowedExplanation: (g: Group) => string = () => 'Impossible';
+  export let disallowedExplanation: (g: InputGroups$data) => string = () => 'Impossible';
   export let name: string | undefined = undefined;
 
   export let placeholder = '';
 </script>
 
 {#if name && group}
-  <input type="hidden" name="{name}/uid" value={group.uid} />
-  <input type="hidden" name="{name}/id" value={group.id} />
+  <input type="hidden" name="{name}/uid" value={group} />
 {/if}
 
 <InputField {label} {required}>
@@ -40,8 +40,9 @@
     {clearButtonLabel}
     {clearable}
     {multiple}
-    bind:selection={groups}
     bind:value={group}
+    bind:selection={groups}
+    key="uid"
     disabledOptions={disallowed}
     searchKeys={['name', 'uid']}
     threshold={0.3}

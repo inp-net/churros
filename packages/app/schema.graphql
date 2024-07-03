@@ -985,6 +985,12 @@ type Event implements Node & Pictured & Reactable {
   bannedUsers: [User!]!
   beneficiary: LydiaAccount
   bookings(after: String, before: String, first: Int, last: Int): EventBookingsConnection!
+  bookingsCounts: RegistrationsCounts!
+
+  """
+  Renvoie un texte au format CSV contenant un export des réservations de l'évènement.
+  """
+  bookingsCsv: EventBookingsCsvResult!
 
   """
   L'utilisateur·ice connecté·e peut modifier cet évènement
@@ -998,11 +1004,6 @@ type Event implements Node & Pictured & Reactable {
 
   """
   L'utilisateur·ice connecté·e peut scanner les réservations de cet évènement
-  """
-  canScanBookings: Boolean!
-
-  """
-  L'utilisateur·ice connecté·e peut voir toutes les réservations de cet évènement
   """
   canSeeBookings: Boolean!
 
@@ -1040,6 +1041,9 @@ type Event implements Node & Pictured & Reactable {
   logs(after: String, before: String, first: Int, last: Int): EventLogsConnection!
   lydiaAccountId: ID
   managers: [EventManager!]!
+
+  """Réservations faites par et/ou pour l'utilisateur.ice connecté.e"""
+  myBookings: EventMyBookingsResult!
   myReactions: BooleanMap!
   mySoonestShotgunOpensAt: DateTime
   pictureFile: String!
@@ -1064,7 +1068,7 @@ type Event implements Node & Pictured & Reactable {
   reactionCounts: Counts!
   reactions(emoji: String!): Int!
   recurringUntil: DateTime
-  registrationsCounts: RegistrationsCounts!
+  searchBookings(q: String!): [RegistrationSearchResult!]!
 
   """
   Vrai si le nombre de places restantes doit être affiché
@@ -1074,6 +1078,7 @@ type Event implements Node & Pictured & Reactable {
   """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   startsAt: DateTime!
+  ticket(id: ID, slug: String): Ticket!
   ticketGroups: [TicketGroup!]!
   tickets: [Ticket!]!
   title: String!
@@ -1090,6 +1095,12 @@ type EventBookingsConnection {
 type EventBookingsConnectionEdge {
   cursor: String!
   node: Registration!
+}
+
+union EventBookingsCsvResult = Error | EventBookingsCsvSuccess
+
+type EventBookingsCsvSuccess {
+  data: String!
 }
 
 enum EventFrequency {
@@ -1127,6 +1138,12 @@ enum EventManagerPowerLevel {
   EditPermissions
   ReadOnly
   ScanTickets
+}
+
+union EventMyBookingsResult = Error | EventMyBookingsSuccess
+
+type EventMyBookingsSuccess {
+  data: [Registration!]!
 }
 
 type EventsByDay {
@@ -2648,6 +2665,12 @@ type MutationUpdateUserSuccess {
   data: User!
 }
 
+union MutationUpsertAnnouncementResult = Error | MutationUpsertAnnouncementSuccess | ZodError
+
+type MutationUpsertAnnouncementSuccess {
+  data: Announcement!
+}
+
 union MutationUpsertArticleResult = Error | MutationUpsertArticleSuccess
 
 type MutationUpsertArticleSuccess {
@@ -3067,7 +3090,10 @@ type Query {
   """
   allForms(after: String, before: String, first: Int, last: Int): QueryAllFormsConnection!
   allUsers(after: String, before: String, first: Int, last: Int): QueryAllUsersConnection!
-  announcement(id: ID!): Announcement!
+  announcement(
+    """ID local ou global"""
+    id: ID!
+  ): Announcement!
   announcements(after: String, before: String, first: Int, last: Int): QueryAnnouncementsConnection!
   announcementsNow: [Announcement!]!
   article(group: UID!, slug: String!): Article!
@@ -3162,7 +3188,13 @@ type Query {
   godparentRequests: [GodparentRequest!]!
   group(uid: String!): Group!
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
-  groups(types: [GroupType!]): [Group!]!
+  groups(
+    """
+    Ne renvoyer que les groupes sur lesquels l'utilisateur·ice connecté·e peut créer des posts
+    """
+    canCreatePosts: Boolean! = false
+    types: [GroupType!]
+  ): [Group!]!
 
   """
   - **Rate limit:** 5/seconde
@@ -3206,7 +3238,7 @@ type Query {
   """
   Returns how many people will be notified if an article of the given visibility and group is created.
   """
-  notificationsSendCountForArticle(groupUid: String!, visibility: Visibility!): Int!
+  notificationsSendCountForArticle(group: UID!, visibility: Visibility!): Int!
 
   """
   Récupérer une page par son identifiant. Voir aussi `Group.page` et `StudentAssociation.page` pour des queries plus ergonomiques
@@ -3226,9 +3258,7 @@ type Query {
   Returns an SVG path of the QR Code for the given registration
   """
   registrationQRCode(id: ID!): QRCode!
-  registrationsCsv(eventUid: String!, groupUid: String!): QueryRegistrationsCsvResult!
   registrationsOfUser(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int, userUid: String!): QueryRegistrationsOfUserConnection! @deprecated(reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`).")
-  registrationsOfUserForEvent(eventUid: String!, groupUid: String!, userUid: String!): QueryRegistrationsOfUserForEventResult!
 
   """
   Rendu de markdown en HTML. Demande a être authentifié·e pour éviter tout abus.
@@ -3262,11 +3292,6 @@ type Query {
     similarityCutoff: Float
   ): [FormSearchResult!]!
   searchGroups(q: String!, similarityCutoff: Float): [GroupSearchResult!]!
-  searchRegistrations(
-    eventUid: String!
-    groupUid: String!
-    q: String!
-  ): [RegistrationSearchResult!]!
   searchUsers(q: String!, similarityCutoff: Float): [UserSearchResult!]!
   service(id: ID!): Service!
   services(groupUid: String, schoolUid: String, studentAssociationUid: String): [Service!]!
@@ -3282,10 +3307,7 @@ type Query {
     """
     id: ID!
   ): ThirdPartyApp!
-  ticket(id: ID!): Ticket!
-  ticketByUid(eventUid: String!, groupUid: String!, uid: String!): Ticket!
   ticketGroup(id: ID!): TicketGroup!
-  ticketsOfEvent(eventUid: String!, groupUid: String!): [Ticket!]!
 
   """
   Vérifie si un identifiant (un “@” dans l'interface) est disponible
@@ -3483,12 +3505,6 @@ type QueryRegistrationSuccess {
   data: Registration!
 }
 
-union QueryRegistrationsCsvResult = Error | QueryRegistrationsCsvSuccess
-
-type QueryRegistrationsCsvSuccess {
-  data: String!
-}
-
 type QueryRegistrationsOfUserConnection {
   edges: [QueryRegistrationsOfUserConnectionEdge!]!
   nodes: [Registration!]!
@@ -3498,12 +3514,6 @@ type QueryRegistrationsOfUserConnection {
 type QueryRegistrationsOfUserConnectionEdge {
   cursor: String!
   node: Registration!
-}
-
-union QueryRegistrationsOfUserForEventResult = Error | QueryRegistrationsOfUserForEventSuccess
-
-type QueryRegistrationsOfUserForEventSuccess {
-  data: [Registration!]!
 }
 
 union QueryUpcomingChangelogResult = Error | QueryUpcomingChangelogSuccess

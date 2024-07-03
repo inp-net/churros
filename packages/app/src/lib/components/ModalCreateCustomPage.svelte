@@ -69,7 +69,7 @@
         path: path,
         title: title,
       });
-      toasts.mutation('upsertPage', 'Page créée', 'Impossible de créer la page', result);
+      toasts.mutation(result, 'upsertPage', 'Page créée', 'Impossible de créer la page');
       if (result.data?.upsertPage && 'data' in result.data.upsertPage) {
         const page = result.data.upsertPage.data;
         const parentResourceUid = page[parentResource]?.uid;

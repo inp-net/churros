@@ -1,30 +1,25 @@
 <script lang="ts">
-  import IconClose from '~icons/mdi/close';
   import IconEvent from '~icons/mdi/calendar-outline';
-  import type { Visibility } from '$lib/zeus';
+  import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
-  import InputEvent from './InputEvent.svelte';
-  import type { Visibility$options } from '$houdini';
+  import InputEvent from './InputEvent.houdini.svelte';
+  import { type InputEvent$data } from '$houdini';
 
-  type Event = {
-    id: string;
-    uid: string;
-    title: string;
-    pictureFile: string;
-    startsAt: Date;
-    visibility: Visibility | Visibility$options;
-  };
-  export let groupUid: string;
+  /**
+   * The event's group UID.
+   */
+  export let group: string;
+
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let event: Event | undefined | null = undefined;
-  export let suggestions: Event[] = [];
+  export let event: InputEvent$data | undefined | null = undefined;
+  export let suggestions: InputEvent$data[] = [];
   export let clearable = false;
 
-  const asEventType = (x: unknown) => x as Event;
+  const asEventType = (x: unknown) => x as InputEvent$data;
 </script>
 
-<InputEvent {groupUid} {clearable} {allow} {except} {suggestions} bind:event>
+<InputEvent {group} {clearable} {allow} {except} {suggestions} bind:event>
   <div class:empty={!event} class="pill" slot="input" let:value let:openPicker let:clear>
     <ButtonGhost on:click={openPicker}>
       <span class="icon">

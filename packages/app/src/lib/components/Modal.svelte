@@ -4,11 +4,15 @@
   const dispatch = createEventDispatcher();
 
   export let element: HTMLDialogElement;
-  export let open = false;
+  export let opened = false;
   export let maxWidth = 'unset';
+  export const open = () => {
+    dispatch('open');
+    element.showModal();
+  };
 
   onMount(() => {
-    if (open) element.showModal();
+    if (opened) element.showModal();
   });
 </script>
 

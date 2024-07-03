@@ -1,7 +1,7 @@
 import {
   builder,
-  ensureHasIdPrefix,
   generateThirdPartyToken,
+  ensureGlobalId,
   isLocalNetwork,
   log,
   prisma,
@@ -53,7 +53,7 @@ Do a \`POST\` request to \`${process.env.FRONTEND_ORIGIN}/token\` with a \`appli
     async resolve(_, { clientId, redirectUri }, { user }) {
       if (!user) throw new GraphQLError('Not logged in');
       const client = await prisma.thirdPartyApp.findUniqueOrThrow({
-        where: { id: ensureHasIdPrefix(clientId, 'ThirdPartyApp') },
+        where: { id: ensureGlobalId(clientId, 'ThirdPartyApp') },
       });
 
       if (!client.active && !isLocalNetwork(redirectUri)) {

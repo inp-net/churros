@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, prisma, publish } from '#lib';
 
 import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
@@ -44,7 +44,7 @@ builder.mutationField('verifyBooking', (t) =>
       if (!user) throw new GraphQLError('Must be logged in to verify a registration');
 
       let registration = await prisma.registration.findUnique({
-        where: { id: ensureHasIdPrefix(id.trim().toLowerCase(), 'Registration') },
+        where: { id: ensureGlobalId(id.trim().toLowerCase(), 'Registration') },
         include: {
           verifiedBy: true,
           ticket: true,

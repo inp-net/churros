@@ -1,10 +1,12 @@
 import { builder, prisma, publish } from '#lib';
 import { DateTimeScalar } from '#modules/global';
+import { ZodError } from 'zod';
 import { AnnouncementType } from '../index.js';
 
 builder.mutationField('upsertAnnouncement', (t) =>
   t.prismaField({
     type: AnnouncementType,
+    errors: { types: [Error, ZodError] },
     args: {
       id: t.arg.id({ required: false }),
       title: t.arg.string(),

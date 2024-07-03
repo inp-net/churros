@@ -3,13 +3,16 @@
   import IconLater from '~icons/mdi/clock-outline';
   import ButtonGhost from './ButtonGhost.svelte';
   import { formatISO, intlFormatDistance, parseISO } from 'date-fns';
+  import { createEventDispatcher } from 'svelte';
   export let value: Date | undefined;
   export let after: Date | undefined = undefined;
+  const dispatch = createEventDispatcher<{ change: typeof value }>();
 
   let _valueString = value ? formatISO(value) : undefined;
   let inputElement: HTMLInputElement;
 
   $: value = _valueString ? parseISO(_valueString) : undefined;
+  $: dispatch('change', value);
 </script>
 
 <div class="pill input-pill-date" class:empty={!value}>
@@ -31,6 +34,7 @@
       bind:this={inputElement}
       type="datetime-local"
       bind:value={_valueString}
+      on:input
     />
   </ButtonGhost>
   {#if value}

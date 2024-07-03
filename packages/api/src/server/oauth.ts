@@ -1,4 +1,4 @@
-import { ensureHasIdPrefix, generateThirdPartyToken, isLocalNetwork, log, prisma } from '#lib';
+import { ensureGlobalId, generateThirdPartyToken, isLocalNetwork, log, prisma } from '#lib';
 import { OAuth2ErrorCode, normalizeUrl } from '#modules/oauth';
 import { ThirdPartyCredentialType } from '@churros/db/prisma';
 import { verify } from 'argon2';
@@ -25,7 +25,7 @@ api.use('/token', async (request, response) => {
       'oauth',
       'token/error',
       { err: text, authorizationCode: authorizationCode, ...otherData },
-      ensureHasIdPrefix(clientId, 'ThirdPartyApp'),
+      ensureGlobalId(clientId, 'ThirdPartyApp'),
     );
     return response.status(401).send(
       JSON.stringify({
@@ -77,7 +77,7 @@ api.use('/token', async (request, response) => {
   if (client_id) clientId = client_id;
   if (client_secret) clientSecret = client_secret;
 
-  await log('oauth', 'token/request', request.body, ensureHasIdPrefix(clientId, 'ThirdPartyApp'));
+  await log('oauth', 'token/request', request.body, ensureGlobalId(clientId, 'ThirdPartyApp'));
 
   if (!clientId || !clientSecret) {
     return error(
@@ -100,7 +100,7 @@ api.use('/token', async (request, response) => {
   if (credential.expiresAt && credential.expiresAt < new Date())
     return error('Access code expired', { clientId, authorizationCode, formData });
   if (
-    credential.client.id !== ensureHasIdPrefix(clientId, 'ThirdPartyApp') ||
+    credential.client.id !== ensureGlobalId(clientId, 'ThirdPartyApp') ||
     !(await verify(credential.client.secret, clientSecret))
   )
     return error('Invalid client_id/client_secret pair', { clientId, authorizationCode, formData });
@@ -144,7 +144,7 @@ api.use('/token', async (request, response) => {
     'oauth',
     'token/ok',
     { ...token, code: authorizationCode },
-    ensureHasIdPrefix(clientId, 'ThirdPartyApp'),
+    ensureGlobalId(clientId, 'ThirdPartyApp'),
   );
 
   return response.json(token);

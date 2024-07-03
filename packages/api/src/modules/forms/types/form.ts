@@ -1,7 +1,7 @@
 import {
   TYPENAMES_TO_ID_PREFIXES,
   builder,
-  ensureHasIdPrefix,
+  ensureGlobalId,
   prisma,
   splitID,
   toHtml,
@@ -170,7 +170,7 @@ export const FormType = builder.prismaNode('Form', {
       resolve: async (query, { id: formId }, { id }) =>
         prisma.formSection.findFirstOrThrow({
           ...query,
-          where: { formId, id: id ? ensureHasIdPrefix(id, 'FormSection') : undefined },
+          where: { formId, id: id ? ensureGlobalId(id, 'FormSection') : undefined },
         }),
     }),
     questions: t.prismaConnection({

@@ -7,8 +7,13 @@ builder.queryField('groups', (t) =>
     type: [GroupType],
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
+      canCreatePosts: t.arg.boolean({
+        defaultValue: false,
+        description:
+          "Ne renvoyer que les groupes sur lesquels l'utilisateur·ice connecté·e peut créer des posts",
+      }),
     },
-    resolve: async (query, _, { types }, { user }) =>
+    resolve: async (query, _, { types, canCreatePosts }, { user }) =>
       prisma.group.findMany({
         ...query,
         where: {

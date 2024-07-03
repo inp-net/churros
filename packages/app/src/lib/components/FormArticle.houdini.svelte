@@ -1,25 +1,33 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { fragment, graphql, type FormArticle } from '$houdini';
+  import {
+    fragment,
+    graphql,
+    PendingValue,
+    Visibility,
+    type FormArticle,
+    type FormArticleGroups$data,
+    type InputEvent$data,
+    type UpdateArticle$input,
+  } from '$houdini';
+  import { track } from '$lib/analytics';
   import Alert from '$lib/components/Alert.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
-  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import { HELP_VISIBILITY, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
+  import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
-  import { me } from '$lib/session';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import { zeusVisibility } from '$lib/typing';
-  import { Visibility, zeus } from '$lib/zeus';
-  import { isFuture, isPast } from 'date-fns';
-  import IconEvent from '~icons/mdi/calendar-outline';
+  import { zeus } from '$lib/zeus';
+  import { isFuture } from 'date-fns';
   import IconClose from '~icons/mdi/close';
   import IconSend from '~icons/mdi/send-outline';
   import BadgeVisibility from './BadgeVisibility.svelte';
   import ButtonBack from './ButtonBack.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import InputGroups from './InputGroups.svelte';
+  import InputGroups from './InputGroups.houdini.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputPillDate from './InputPillDate.svelte';
   import InputPillEvent from './InputPillEvent.svelte';
@@ -27,21 +35,48 @@
   import InputVisibility from './InputVisibility.houdini.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import Modal from './Modal.svelte';
-  import { track } from '$lib/analytics';
 
   export let afterGoTo: (article: { group: { uid: string }; uid: string }) => string = (article) =>
     `/posts/${article.group.uid}/${article.uid}/`;
 
-  export let article: FormArticle;
+  export let groups: FormArticleGroups$data[];
+  graphql(`
+    fragment FormArticleGroups on Group {
+      ...InputGroups @mask_disable
+      uid
+      name
+      children {
+        name
+        studentAssociation {
+          school {
+            name
+          }
+        }
+      }
+      studentAssociation {
+        school {
+          name
+        }
+      }
+      events {
+        nodes {
+          ...InputEvent @mask_disable
+        }
+      }
+    }
+  `);
+
+  export let article: FormArticle | null;
   $: data = fragment(
     article,
     graphql(`
-      fragment FormArticle on Article {
+      fragment FormArticle on Article @loading(cascade: true) {
         uid
         id
         title
         body
         visibility
+        published
         group {
           uid
           name
@@ -100,72 +135,62 @@
     `),
   );
 
-  $: ({ id, event, title, author, body, visibility, links, group } = $data);
-
   let serverError = '';
 
   let confirmingDelete = false;
 
-  let publishLater: Date | undefined = isFuture($data.publishedAt) ? $data.publishedAt : undefined;
+  const updating = false;
 
-  $: pastDate = publishLater === undefined ? false : isPast(publishLater);
+  // If $data is not provided, immediately mark the data has loaded
+  // (there's no data to load)
+  let inputLoaded = Boolean($data);
+  let input: Omit<UpdateArticle$input, 'group' | 'eventId'> = {
+    body: '',
+    id: '',
+    links: [],
+    publishedAt: new Date(),
+    title: '',
+    visibility: Visibility.Public,
+  };
 
-  const loading = false;
-  // const updateArticle = async () => {
-  //   if (loading) return;
-  //   try {
-  //     loading = true;
-  //     const { upsertArticle } = await $zeus.mutate({
-  //       upsertArticle: [
-  //         {
-  //           id,
-  //           authorId: (author ?? $me)!.id,
-  //           eventId: event?.id ?? '',
-  //           groupId: group.id,
-  //           title,
-  //           body,
-  //           publishedAt: (publishLater ?? $data.publishedAt ?? new Date()).toISOString(),
-  //           links,
-  //           visibility,
-  //         },
-  //         {
-  //           '__typename': true,
-  //           '...on Error': { message: true },
-  //           '...on MutationUpsertArticleSuccess': {
-  //             data: _articleQuery,
-  //           },
-  //         },
-  //       ],
-  //     });
+  $: console.log({ selectedGroup });
 
-  //     if (upsertArticle.__typename === 'Error') {
-  //       serverError = upsertArticle.message;
-  //       return;
-  //     }
+  export let selectedGroup: FormArticleGroups$data | null = null;
+  export let selectedEvent: InputEvent$data | null = null;
 
-  //     serverError = '';
-  //     $data = upsertArticle.data;
-  //     ({ id, event, title, author, body, links, group, visibility } = $data);
-  //     if ($data.uid) {
-  //       toasts.success(
-  //         `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
-  //           id ? 'modifié' : 'créé'
-  //         }`,
-  //       );
-  //       await goto(afterGoTo($data));
-  //     }
-  //   } finally {
-  //     loading = false;
-  //   }
+  $: if (!inputLoaded && allLoaded($data) && $data) {
+    input = structuredClone({
+      ...$data,
+      links: $data.links.map(({ value, name }) => ({ value, name })),
+      group: $data.group.uid,
+    });
+    inputLoaded = true;
+  }
+
+  // $: ({ body } = input);
+
+  // $: input = {
+  //   body: loading($data?.body ?? '', ''),
+  //   group: loading($data?.group.uid ?? '', ''),
+  //   id: loading($data?.id ?? '', ''),
+  //   links: $data?.links.filter(allLoaded) ?? [],
+  //   publishedAt: loading($data?.publishedAt, null) ?? new Date(),
+  //   title: loading($data?.title ?? '', ''),
+  //   visibility: loading($data?.visibility ?? Visibility.Public, Visibility.Public),
+  //   eventId: loading($data?.eventId, null),
   // };
 
   async function updateArticle() {
+    if (!allLoaded($data)) return;
+    if (!selectedGroup) {
+      toasts.error('Impossible de créer le post', 'Il faut choisir un groupe');
+      return;
+    }
     await graphql(`
       mutation UpdateArticle(
         $id: ID!
-        $authorId: ID!
         $eventId: ID
-        $groupId: ID!
+        $group: UID!
         $title: String!
         $body: String!
         $publishedAt: DateTime!
@@ -174,9 +199,8 @@
       ) {
         upsertArticle(
           id: $id
-          authorId: $authorId
-          eventId: $eventId
-          groupId: $groupId
+          event: $eventId
+          group: $group
           title: $title
           body: $body
           publishedAt: $publishedAt
@@ -199,56 +223,62 @@
       }
     `)
       .mutate({
-        id,
-        authorId: (author ?? $me!).id,
-        eventId: event?.id,
-        groupId: group.id,
-        title,
-        body,
-        publishedAt: publishLater ?? $data.publishedAt ?? new Date(),
-        links,
-        visibility,
+        ...input,
+        group: selectedGroup.uid,
+        eventId: selectedEvent?.id,
       })
-      .then(({ data, errors }) => {
-        if (!data) {
-          serverError = errors?.map((e) => e.message).join(', ') ?? 'Erreur inattendue';
-          return;
-        }
-
-        if (data.upsertArticle.__typename === 'Error') {
-          serverError = data.upsertArticle.message;
-          return;
-        }
-
-        serverError = '';
-        if (data.upsertArticle.data.uid) {
-          toasts.success(
-            `Ton article ${DISPLAY_VISIBILITIES[visibility].toLowerCase()} a bien été ${
-              id ? 'modifié' : 'créé'
-            }`,
-          );
-          goto(afterGoTo(data.upsertArticle.data));
+      .then((result) => {
+        if (
+          toasts.mutation(
+            result,
+            'upsertArticle',
+            `Ton post a bien été ${input.id ? 'modifié' : 'créé'}`,
+            'Impossible de sauvegarder le post',
+          )
+        ) {
+          goto(afterGoTo(result.data.upsertArticle.data));
         }
       });
   }
 
-  $: canChangeGroup = !id;
+  // $: canChangeGroup = !id;
 
   let modalWarnNotifications: HTMLDialogElement;
+  let openModalWarnNotifications: () => void;
+  let notificationsSendCountForArticle: MaybeLoading<number> = PendingValue;
+  const NotificationSendCountQuery = graphql(`
+    query NotificationsSendCountForPost($visibility: Visibility!, $group: UID!) {
+      notificationsSendCountForArticle(visibility: $visibility, group: $group)
+    }
+  `);
 </script>
 
-<Modal bind:element={modalWarnNotifications}>
+<Modal
+  bind:element={modalWarnNotifications}
+  bind:open={openModalWarnNotifications}
+  on:open={async () => {
+    console.log('fetching notification send count');
+    if (!selectedGroup) return;
+    const result = await NotificationSendCountQuery.fetch({
+      variables: {
+        group: selectedGroup.uid,
+        visibility: input.visibility,
+      },
+    });
+    if (result.data) ({ notificationsSendCountForArticle } = result.data);
+  }}
+>
   <div class="modal-content">
     <h1>Sûr·e de toi?</h1>
     <p>
       Tu t'apprêtes à envoyer une notification à <strong
         >plus de
         <span class="notified-count">
-          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility: zeusVisibility(visibility), groupUid: group.uid }, true] }, )}
+          {#if !loaded(notificationsSendCountForArticle)}
             <LoadingSpinner></LoadingSpinner>
-          {:then { notificationsSendCountForArticle }}
+          {:else}
             {notificationsSendCountForArticle}
-          {/await}
+          {/if}
         </span>
         personnes</strong
       >. Utilise plutôt la visibilité
@@ -275,9 +305,12 @@
 <form
   class="form-article"
   on:submit|preventDefault={async () => {
-    if (!id && (visibility === Visibility.Public || visibility === Visibility.SchoolRestricted)) {
-      modalWarnNotifications.showModal();
-      track('post-visibiliy-warning-shown', { visibility });
+    if (
+      !input.id &&
+      (input.visibility === Visibility.Public || input.visibility === Visibility.SchoolRestricted)
+    ) {
+      openModalWarnNotifications()
+      track('post-visibiliy-warning-shown', { visibility: input.visibility });
     } else {
       await updateArticle();
     }
@@ -285,54 +318,63 @@
 >
   <h1>
     <ButtonBack />
-    <InputText required label="" bind:value={title}></InputText>
+    <InputText required label="" bind:value={input.title}></InputText>
   </h1>
   <div class="content">
     <div class="description">
-      <InputLongText rich bind:value={body} label=""></InputLongText>
+      <InputLongText rich bind:value={input.body} label=""></InputLongText>
     </div>
     <section class="author">
-      {#if canChangeGroup}
-        {#await $zeus.query( { groups: [{}, { id: true, name: true, uid: true, pictureFile: true, pictureFileDark: true }] }, )}
-          <LoadingSpinner></LoadingSpinner>
-        {:then { groups: options }}
-          <InputGroups required label="" {options} bind:group></InputGroups>
-        {/await}
-      {:else}
-        <a href="/groups/{group.uid}" class="group-link">
-          <img src={groupLogoSrc($isDark, group)} alt={group.name} class="group-logo" />
+      {#if !input.id}
+        <InputGroups required label="" options={groups} bind:group={selectedGroup}></InputGroups>
+      {:else if selectedGroup}
+        <a href="/groups/{selectedGroup}" class="group-link">
+          <img
+            src={groupLogoSrc($isDark, selectedGroup)}
+            alt={selectedGroup.name}
+            class="group-logo"
+          />
         </a>
-        <a href="/groups/{group.uid}" class="group">{group.name}</a>
+        <a href="/groups/{selectedGroup.uid}" class="group">
+          <LoadingText value={selectedGroup.name}>Lorem ipsum</LoadingText>
+        </a>
       {/if}
-      <InputVisibility bind:value={visibility}></InputVisibility>
+      <InputVisibility bind:value={input.visibility}></InputVisibility>
     </section>
     <p class="explain-visibility">
-      {HELP_VISIBILITY_DYNAMIC([group, ...group.children])[visibility]}
+      {#if selectedGroup}
+        {HELP_VISIBILITY_DYNAMIC([selectedGroup, ...selectedGroup.children])[input.visibility]}
+      {:else}
+        {HELP_VISIBILITY[input.visibility]}
+      {/if}
     </p>
   </div>
   <section class="pills">
-    {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { nodes: { id: true, uid: true, title: true, pictureFile: true, startsAt: true, visibility: true } }] }, )}
-      <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
-    {:then { eventsOfGroup: { nodes } }}
-      <InputPillEvent suggestions={nodes} bind:event groupUid={$page.params.group}></InputPillEvent>
-    {/await}
-    <InputPillDate after={new Date()} bind:value={publishLater}>Publier plus tard</InputPillDate>
+    {#if selectedGroup}
+      <InputPillEvent
+        suggestions={groups.flatMap((g) => g.events.nodes)}
+        bind:event={selectedEvent}
+        group={selectedGroup.uid}
+      ></InputPillEvent>
+    {/if}
+    {#if !$data || !$data.published}
+      <InputPillDate
+        after={new Date()}
+        on:change={({ detail }) => (input.publishedAt = detail ?? new Date())}
+        value={!input.id && isFuture(input.publishedAt) ? input.publishedAt : undefined}
+        >Publier plus tard</InputPillDate
+      >
+    {/if}
   </section>
-  <InputLinks label="Liens" bind:value={links} />
+  <InputLinks label="Liens" bind:value={input.links} />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert
     >
   {/if}
-  {#if pastDate}
-    <Alert theme="danger"
-      >Impossible de programmer une publication à cette date <br /><strong>{serverError}</strong
-      ></Alert
-    >
-  {/if}
   <section class="submit">
-    {#if id === ''}
-      <ButtonPrimary {loading} submits disabled={pastDate}>Publier</ButtonPrimary>
+    {#if !input.id}
+      <ButtonPrimary loading={updating} submits>Publier</ButtonPrimary>
     {:else if confirmingDelete}
       <h2>Es-tu sûr·e ?</h2>
       <ButtonSecondary
@@ -342,36 +384,34 @@
       >
       <ButtonSecondary
         on:click={async () => {
-          toasts.success(
-            `Post ${title.slice(0, 20)}${title.length >= 20 ? '…' : ''} supprimé`,
-            '',
-            {
-              lifetime: 5000,
-              showLifetime: true,
-              data: {
-                id: $data.id,
-                confirm: true,
-                gotoOnCancel: `${afterGoTo($data)}/edit/`.replaceAll('//', '/'),
-              },
-              labels: {
-                action: 'Annuler',
-                close: 'OK',
-              },
-              async action({ data, id }) {
-                data.confirm = false;
-                await toasts.remove(id);
-                await goto(data.gotoOnCancel);
-              },
-              async closed({ data: { id, confirm } }) {
-                if (confirm) {
-                  await $zeus.mutate({
-                    deleteArticlePicture: [{ id }, true],
-                    deleteArticle: [{ id }, true],
-                  });
-                }
-              },
+          if (!input.id) return;
+          toasts.success(`Post supprimé`, '', {
+            lifetime: 5000,
+            showLifetime: true,
+            data: {
+              id: input.id,
+              confirm: true,
+              // gotoOnCancel: `${afterGoTo($data)}/edit/`.replaceAll('//', '/'),
+              gotoOnCancel: `/events/${input.id}/edit`,
             },
-          );
+            labels: {
+              action: 'Annuler',
+              close: 'OK',
+            },
+            async action({ data, id }) {
+              data.confirm = false;
+              await toasts.remove(id);
+              await goto(data.gotoOnCancel);
+            },
+            async closed({ data: { id, confirm } }) {
+              if (confirm) {
+                await $zeus.mutate({
+                  deleteArticlePicture: [{ id }, true],
+                  deleteArticle: [{ id }, true],
+                });
+              }
+            },
+          });
           confirmingDelete = false;
           await goto('/');
         }}
@@ -379,13 +419,13 @@
       >
       <ButtonSecondary
         on:click={() => {
-          visibility = Visibility.Private;
+          input.visibility = Visibility.Private;
           confirmingDelete = false;
         }}>Rendre privé</ButtonSecondary
       >
     {:else}
-      <ButtonPrimary {loading} submits disabled={pastDate}>Enregistrer</ButtonPrimary>
-      {#if $data.id}
+      <ButtonPrimary loading={updating} submits>Enregistrer</ButtonPrimary>
+      {#if input.id}
         <ButtonSecondary
           danger
           on:click={() => {
