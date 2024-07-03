@@ -7,13 +7,9 @@ builder.queryField('groups', (t) =>
     type: [GroupType],
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
-      canCreatePosts: t.arg.boolean({
-        defaultValue: false,
-        description:
-          "Ne renvoyer que les groupes sur lesquels l'utilisateur·ice connecté·e peut créer des posts",
-      }),
+
     },
-    resolve: async (query, _, { types, canCreatePosts }, { user }) =>
+    resolve: async (query, _, { types }, { user }) =>
       prisma.group.findMany({
         ...query,
         where: {
@@ -24,14 +20,8 @@ builder.queryField('groups', (t) =>
                 studentAssociation: {
                   school: {
                     OR: [
-                      {
-                        id: {
-                          in: user?.major?.schools.map(({ id }) => id) ?? [],
-                        },
-                      },
-                      {
-                        uid: process.env.PUBLIC_SCHOOL_UID,
-                      },
+                      { id: { in: user?.major?.schools.map(({ id }) => id) ?? [] } },
+                      { uid: process.env.PUBLIC_SCHOOL_UID },
                     ],
                   },
                 },

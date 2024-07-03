@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import FormArticle from '$lib/components/FormArticle.houdini.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
@@ -10,9 +9,13 @@
 </script>
 
 <div class="content">
-  <MaybeError result={$PagePostEdit} let:data={{ article, groups }}>
+  <MaybeError result={$PagePostEdit} let:data={{ article, me }}>
     <FormPicture rectangular objectName="Article" object={article} />
-    <FormArticle preselectedGroup={$page.params.group} {groups} {article} />
+    <FormArticle
+      {article}
+      groups={me.canCreatePostsOn}
+      selectedGroup={me.canCreatePostsOn.find((g) => g.uid === article.group.uid)}
+    />
   </MaybeError>
 </div>
 

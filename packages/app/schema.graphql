@@ -3188,13 +3188,7 @@ type Query {
   godparentRequests: [GodparentRequest!]!
   group(uid: String!): Group!
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
-  groups(
-    """
-    Ne renvoyer que les groupes sur lesquels l'utilisateur·ice connecté·e peut créer des posts
-    """
-    canCreatePosts: Boolean! = false
-    types: [GroupType!]
-  ): [Group!]!
+  groups(types: [GroupType!]): [Group!]!
 
   """
   - **Rate limit:** 5/seconde
@@ -4912,9 +4906,10 @@ type User implements Node & Pictured {
   canAccessDocuments: Boolean!
   canBeEdited: Boolean!
 
-  """
-  Vrai si cette personne peut éditer le groupe donné
-  """
+  """Groupes sur lesquels l'utilisateur·ice peut créer des posts"""
+  canCreatePostsOn: [Group!]!
+
+  """Vrai si cette personne peut éditer le groupe donné"""
   canEditGroup(
     """
     UID du groupe

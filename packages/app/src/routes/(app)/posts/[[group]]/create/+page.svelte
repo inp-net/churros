@@ -10,11 +10,12 @@
 
 <div class="content">
   <h2>Nouveau post</h2>
-  <MaybeError result={$PagePostCreateWithGroup} let:data={{ groups }}>
-    {@debug groups}
-    {@const selectedGroup = groups.find((g) => g.uid === $page.params.uid) ?? null}
-    {@debug selectedGroup}
-    <FormArticle article={null} {groups} {selectedGroup} />
+  <MaybeError result={$PagePostCreateWithGroup} let:data={{ me }}>
+    <FormArticle
+      groups={me.canCreatePostsOn}
+      article={null}
+      selectedGroup={me.canCreatePostsOn.find((g) => g.uid === $page.params.group) ?? null}
+    />
   </MaybeError>
 </div>
 

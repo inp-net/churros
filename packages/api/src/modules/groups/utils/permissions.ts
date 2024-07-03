@@ -148,3 +148,24 @@ function groupsAreTheSame<G extends { id: string } | { uid: string }>(
 function equalOrBothNotProvided<T>(a: T | null | undefined, b: T | null | undefined): boolean {
   return a === null || a === undefined ? b === null || b === undefined : a === b;
 }
+
+export function prismaQueryOnClubBoard(): Prisma.GroupMemberWhereInput {
+  return {
+    OR: [{ president: true }, { secretary: true }, { vicePresident: true }, { treasurer: true }],
+  };
+}
+export function prismaQueryCanCreatePostsOn(user: { id: string }): Prisma.GroupWhereInput {
+  return {
+    OR: [
+      { studentAssociation: { admins: { some: { id: user.id } } } },
+      {
+        members: {
+          some: {
+            memberId: user.id,
+            OR: [prismaQueryOnClubBoard(), { canEditArticles: true }, { member: { admin: true } }],
+          },
+        },
+      },
+    ],
+  };
+}
