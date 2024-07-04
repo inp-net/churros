@@ -86,7 +86,8 @@ export async function updateRateLimitHit({
 
 export async function updateCreatedTokensCount({ token, user }: { token: string; user: string }) {
   const tok = await prisma.thirdPartyCredential.findFirst({
-    where: { value: token, include: { app: true } },
+    where: { value: token },
+    include: { client: true },
   });
 
   createdTokens
