@@ -38,19 +38,16 @@ build:
 pages:
   stage: deploy
   extends: .volta
-  needs:
-    - deploy_api
-  only:
-    - tags
-  variables:
-    PUBLIC_API_URL: https://churros.inpt.fr/graphql
-    PUBLIC_API_WEBSOCKET_URL: wss://churros.inpt.fr/graphql
+  rules:
+    # build on tags, but not pre-releases
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    # allow manual triggers
+    - when: manual
   script:
-    - yarn workspace @churros/docs install --immutable
-    - yarn workspace @churros/docs create-dotenv
+    - yarn workspace @churros/api install --immutable
     - yarn generate-buildinfo
-    - yarn workspace @churros/docs build
-    - mv packages/docs/build public
+    - yarn workspace @churros/api graphinx --build-area .graphinx
+    - mv packages/api/.graphinx/build public
   artifacts:
     paths:
       - public

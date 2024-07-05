@@ -1,0 +1,100 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ewen-lbh/graphinx/main/config.schema.json
+template: ewen-lbh/graphinx/packages/template#v0.4.0
+
+schema: ../app/schema.graphql
+
+branding:
+  logo: https://churros.inpt.fr/logo.svg
+  name: Churros API
+
+pages: ./docs
+static: ./docs/static
+
+environment:
+  PUBLIC_API_URL: https://churros.app/graphql
+  PUBLIC_API_WEBSOCKET_URL: wss://churros.app/graphql
+  CURRENT_COMMIT: dev
+  CURRENT_VERSION: dev
+  CURRENT_COMMIT_SHORT: dev
+
+modules:
+  index:
+    title: Index
+    description: Le schéma GraphQL entier
+  filesystem:
+    names:
+      in: src/modules
+    intro: src/modules/%module%/README.md
+    icon: src/modules/%module%/icon.svg
+    items:
+      - files: src/modules/%module%/{resolvers,types}/*.ts
+        match: "builder.((query|mutation|subscription)Field|\\w+Type)\\('(?<name>[^']+)'"
+        contribution: https://git.inpt.fr/inp-net/churros/-/blob/main/src/modules/%module%/
+      - files: src/modules/%module%/types/*.ts
+        match: "builder.\\w+Type\\(.+, \\{ name: '(?<name>[^']+)' \\}"
+        contribution: https://git.inpt.fr/inp-net/churros/-/blob/main/src/modules/%module%/
+    order:
+      - global
+      - users
+      - groups
+      - posts
+      - events
+      - ticketing
+      - shop
+      - forms
+      - documents
+      - notifications
+      - services
+      - bar-weeks
+      - student-associations
+      - pages
+      - schools
+      - curriculum
+      - comments
+      - reactions
+      - links
+      - oauth
+      - announcements
+      - payments
+      - gitlab
+      - changelogs
+      - logs
+      - health-checks
+
+footer: |
+  <p>
+    Churros API, version %$CURRENT_VERSION% (at
+    <a href="https://git.inpt.fr/inp-net/churros/-/commit/%$CURRENT_COMMIT%">
+      <code class="no-color">%$CURRENT_COMMIT_SHORT%</code></a
+    >)
+  </p>
+  <a class="net7" href="https://net7.dev"
+    >Made with <span style:color="red"><strong>&lt;3</strong></span> by
+    <img src="https://churros.inpt.fr/storage/groups/dark/net7-n7.png" alt="net7" /></a
+  >
+
+  <style>
+    .net7 {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 1ch;
+      align-items: center;
+      justify-content: center;
+      margin-top: 5rem;
+      font-family: 'Space Mono', monospace;
+      color: var(--fg);
+      text-decoration: none;
+      border-radius: 2rem;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .net7:hover,
+    .net7:focus-visible {
+      box-shadow: 0 0 50px 3px color-mix(in oklab, var(--fg) 15%, var(--shadow));
+    }
+
+    .net7 img {
+      width: 100px;
+      margin-left: 1em;
+    }
+  </style>
