@@ -505,6 +505,7 @@ __metadata:
     "@types/js-cookie": "npm:^3.0.6"
     "@types/lodash.debounce": "npm:^4.0.9"
     "@types/lodash.groupby": "npm:^4.6.9"
+    "@types/lodash.throttle": "npm:^4.1.9"
     "@types/semver": "npm:^7.5.8"
     "@types/ua-parser-js": "npm:^0.7.39"
     arborist: "workspace:^"
@@ -3701,6 +3702,15 @@ __metadata:
   dependencies:
     "@types/lodash": "npm:*"
   checksum: 10c0/d21ed4c18f958aa447520eaf6e5113415bec2c2a7e016a54aa39228f45179ee3523732f4959ea31cffcf8dcf9d28d17c7188e38a835dfad54d5fe3d457d5bcf9
+  languageName: node
+  linkType: hard
+
+"@types/lodash.throttle@npm:^4.1.9":
+  version: 4.1.9
+  resolution: "@types/lodash.throttle@npm:4.1.9"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10c0/93f7096dcaea8f54a4f52d5175d97a471f155f5bae4649c967cc29bcae506a456476d13b4392361799b31c3b96659560e1bbfddf00f550a50c685f6c037411a6
   languageName: node
   linkType: hard
 
