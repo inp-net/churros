@@ -1,7 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/ewen-lbh/graphinx/main/config.schema.json
-template: ewen-lbh/graphinx/packages/template#v0.4.0
+template: ewen-lbh/graphinx/packages/template#v0.5.3
 
-schema: ../app/schema.graphql
+schema:
+  static: ../app/schema.graphql
 
 branding:
   logo: https://churros.inpt.fr/logo.svg

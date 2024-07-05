@@ -415,7 +415,7 @@ __metadata:
     google-auth-library: "npm:^9.10.0"
     googleapis: "npm:105.0.0"
     graph-cycles: "npm:^3.0.0"
-    graphinx: "npm:^0.4.0"
+    graphinx: "npm:^0.5.3"
     graphql: "npm:^16.8.1"
     graphql-rate-limit-directive: "npm:^2.0.5"
     graphql-scalars: "npm:^1.23.0"
@@ -9055,9 +9055,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphinx@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "graphinx@npm:0.4.0"
+"graphinx@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "graphinx@npm:0.5.3"
   dependencies:
     commander: "npm:^12.1.0"
     degit: "npm:^2.8.4"
@@ -9077,7 +9077,7 @@ __metadata:
     yaml: "npm:^2.4.5"
   bin:
     graphinx: dist/cli.js
-  checksum: 10c0/818b485c75b18c2fa7f620961873d0680e7836d07a7aba9835fbba271f3281cf6e1118a33ce197f88573ec71c7205b40e82d664ec3ad13c205b9727a832619f3
+  checksum: 10c0/971d03037fec24e76115acbeb9dd0ae3d05fb33a8339ca0f268df8dd605131777a5c1188463ecf5c0e5fa4cbcf3981c83c5f2e99622cfd844c2e9578aa08a27b
   languageName: node
   linkType: hard
 
