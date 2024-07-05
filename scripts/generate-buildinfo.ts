@@ -11,7 +11,6 @@ const stub = process.argv.length >= 3 && process.argv[2] === '--stub';
 let targets = [
   'packages/app/src/lib/buildinfo.ts',
   'packages/api/src/lib/buildinfo.ts',
-  'packages/docs/src/lib/buildinfo.ts',
   'packages/app/svelte.config.js',
 ];
 
