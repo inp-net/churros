@@ -44,10 +44,10 @@ pages:
     # allow manual triggers
     - when: manual
   script:
-    - yarn workspace @churros/api install
+    - yarn workspace @churros/api install --immutable
     - yarn generate-buildinfo
-    - yarn workspace @churros/api graphinx --build-area .graphinx
-    - mv packages/api/.graphinx/build public
+    - yarn workspace @churros/api graphinx
+    - mv /tmp/graphinx-*/build public
   artifacts:
     paths:
       - public
