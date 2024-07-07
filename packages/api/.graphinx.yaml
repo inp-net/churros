@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/ewen-lbh/graphinx/main/config.schema.json
-template: ewen-lbh/graphinx/packages/template#v0.6.0-3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/main/config.schema.json
+template: graphinx/templates/default
 
 schema:
   static: ../app/schema.graphql
