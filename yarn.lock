@@ -415,7 +415,7 @@ __metadata:
     google-auth-library: "npm:^9.10.0"
     googleapis: "npm:105.0.0"
     graph-cycles: "npm:^3.0.0"
-    graphinx: "npm:^0.7.0"
+    graphinx: "npm:^0.9.0"
     graphql: "npm:^16.8.1"
     graphql-rate-limit-directive: "npm:^2.0.5"
     graphql-scalars: "npm:^1.23.0"
@@ -9071,9 +9071,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphinx@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "graphinx@npm:0.7.0"
+"graphinx@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "graphinx@npm:0.9.0"
   dependencies:
     chalk: "npm:^5.3.0"
     cheerio: "npm:^1.0.0-rc.12"
@@ -9090,12 +9090,13 @@ __metadata:
     remark-parse: "npm:^11.0.0"
     remark-rehype: "npm:^11.1.0"
     rimraf: "npm:^5.0.8"
+    string-width: "npm:^7.2.0"
     unified: "npm:^11.0.5"
     vfile-matter: "npm:^5.0.0"
     yaml: "npm:^2.4.5"
   bin:
     graphinx: dist/cli.js
-  checksum: 10c0/8b8d27d1cf7f7e8627615b5d19430daa8abcaf28a9c21f7d8e26db1bf521e67d8ebe032b908278c393618fd0f302b13b87f15f1d858350d59c7876211c33d8ba
+  checksum: 10c0/ebc4c66fd7433e85f2df8f9dd5b72b2e2e846838e13e19edc30761d6821d312f8be4162c7e5aeac0c6ed96806904290646e57b004e5a4b6a18dff9d188220a25
   languageName: node
   linkType: hard
 
@@ -16145,6 +16146,17 @@ __metadata:
     get-east-asian-width: "npm:^1.0.0"
     strip-ansi: "npm:^7.1.0"
   checksum: 10c0/68a99fbc3bd3d8eb42886ff38dce819767dee55f606f74dfa4687a07dfd21262745d9683df0aa53bf81a5dd47c13da921a501925b974bec66a7ddd634fef0634
+  languageName: node
+  linkType: hard
+
+"string-width@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "string-width@npm:7.2.0"
+  dependencies:
+    emoji-regex: "npm:^10.3.0"
+    get-east-asian-width: "npm:^1.0.0"
+    strip-ansi: "npm:^7.1.0"
+  checksum: 10c0/eb0430dd43f3199c7a46dcbf7a0b34539c76fe3aa62763d0b0655acdcbdf360b3f66f3d58ca25ba0205f42ea3491fa00f09426d3b7d3040e506878fc7664c9b9
   languageName: node
   linkType: hard
 
