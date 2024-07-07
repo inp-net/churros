@@ -171,6 +171,11 @@ Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-gu
   },
 });
 
+builder.subscriptionType({
+  description: `Permet de faire des requêtes de données temps-réel, via des _websockets_.
+L'endpoint pour le temps réel est \`${process.env.PUBLIC_API_WEBSOCKET_URL}\`. Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-guild.dev/graphql/ws/get-started#use-the-client)`,
+});
+
 // Parse GraphQL IDs as strings
 const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;
 
