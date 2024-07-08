@@ -46,8 +46,7 @@ pages:
   script:
     - yarn workspace @churros/api install --immutable
     - yarn generate-buildinfo
-    - yarn workspace @churros/api graphinx
-    - mv /tmp/graphinx-*/build public
+    - yarn workspace @churros/api graphinx build public
   artifacts:
     paths:
       - public

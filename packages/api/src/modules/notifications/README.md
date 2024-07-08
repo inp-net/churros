@@ -1,5 +1,5 @@
 ---
-inline_types: [NotificationSubscriptionKeysInput]
+color: yellow
 ---
 
 # Notifications

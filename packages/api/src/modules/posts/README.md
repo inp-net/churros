@@ -1,3 +1,7 @@
+---
+color: green
+---
+
 # Posts
 
 Les différents posts publiés par les différents [groupes](../groups)

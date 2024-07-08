@@ -92,7 +92,15 @@ export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSch
       if (!rateLimitDirective) return type;
       return new GraphQLObjectType({
         ...type.toConfig(),
-        description: appendRateLimitToDescription(type.description, rateLimitDirective),
+        description: appendRateLimitToDescription(
+          [
+            schema.getQueryType()?.name,
+            schema.getMutationType()?.name,
+            schema.getSubscriptionType()?.name,
+          ].includes(type.name),
+          type.description,
+          rateLimitDirective,
+        ),
       });
     },
 
@@ -104,19 +112,22 @@ export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSch
       if (!rateLimitDirective) return fieldConfig;
       return {
         ...fieldConfig,
-        description: appendRateLimitToDescription(fieldConfig.description, rateLimitDirective),
+        description: appendRateLimitToDescription(
+          false,
+          fieldConfig.description,
+          rateLimitDirective,
+        ),
       };
     },
   });
 }
 
 function appendRateLimitToDescription(
+  isRootType: boolean,
   description: Maybe<string>,
   directive: RateLimitDirective['args'],
 ): string {
-  return (
-    (description ? description + '\n\n' : '') + `- **Rate limit:** ${formatRateLimit(directive)}`
-  );
+  return `${description ? `${description}\n\n` : ''}- **Rate limit${isRootType ? ' par défault' : ''}:** ${formatRateLimit(directive)}${isRootType ? ' (par utilisateur·ice et par query)' : ''}`;
 }
 
 export function formatRateLimit({ limit, duration }: RateLimitDirective['args'], locale?: Locale) {

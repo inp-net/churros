@@ -30,6 +30,7 @@ declare namespace NodeJS {
     /** @see https://yarnpkg.com/advanced/lifecycle-scripts/#environment-variables */
     PROJECT_CWD: string;
     PUBLIC_API_URL: string;
+    PUBLIC_API_WEBSOCKET_URL: string;
     PUBLIC_STORAGE_URL: string;
     /**
      * SMTP options string.

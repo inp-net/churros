@@ -1,3 +1,7 @@
+---
+color: pink
+---
+
 # Semaines de bar
 
 Spécifique à l'AEn7, représente une semaine où un club organise des activités et staff pour le bar du Foyer.

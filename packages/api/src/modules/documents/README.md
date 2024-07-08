@@ -1,5 +1,5 @@
 ---
-inline_types_from: [HealthCheck]
+color: blue
 ---
 
 # Documents (La Frappe)

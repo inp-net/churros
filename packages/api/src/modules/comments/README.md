@@ -1,3 +1,7 @@
+---
+color: blue
+---
+
 # Commentaires
 
 Les différents commentaires postés.

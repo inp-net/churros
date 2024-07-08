@@ -1,3 +1,7 @@
+---
+color: cyan
+---
+
 # Évènements
 
 Les différents évènements organisés par des [groupes](../groups).

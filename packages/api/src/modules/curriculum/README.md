@@ -1,3 +1,7 @@
+---
+color: orange
+---
+
 # Curriculum
 
 Différentes matières enseignées dans les écoles, et leur organisation au sein de celle-ci.

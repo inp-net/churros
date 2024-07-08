@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/v0.9.0/config.schema.json
-template: graphinx/templates/default#v0.9.0
+# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/v0.11.0/config.schema.json
+template: graphinx/templates/default#v0.11.0
 
 schema:
   static: ../app/schema.graphql
@@ -11,7 +11,7 @@ branding:
   name: Churros API
 
 pages: ./docs
-static: ./docs/static
+static: ./docs
 
 environment:
   PUBLIC_API_URL: https://churros.app/graphql
@@ -39,12 +39,17 @@ modules:
     items:
       - files: src/modules/%module%/**/*.ts
         match: //\s*[gG]raphinx:?\s*(?<name>[^:]+)
+      - files: src/modules/%module%/README.md
+        match: >-
+          include: \[.*(?<name>.+).*\]
       - files: src/modules/%module%/types/*.ts
         match: >-
           variant: '(?<name>[^']+)
         contribution: https://git.inpt.fr/inp-net/churros/-/blob/main/packages/api/src/modules/%module%/
       - files: src/modules/%module%/types/*.ts
         match: \.\w+Ref<.+>\('(?<name>[^']+)
+      - files: src/modules/%module%/types/*.ts
+        match: \.addScalarType\('(?<name>[^']+)
       - files: src/modules/%module%/{resolvers,types}/*.ts
         match: builder.((query|mutation|subscription)Field|\w+(Type|Node|Object|Interface))\('(?<name>[^']+)'
         contribution: https://git.inpt.fr/inp-net/churros/-/blob/main/src/modules/%module%/
@@ -90,7 +95,7 @@ description: |
 
   ### L'explorateur interactif
 
-  Avant de se lancer dans l'utilisation programmatique de l'API, il peut être pratique d'en faire un tour d'horizon avec un _playground_ interactif, disponible en accédant à [%$PUBLIC_API_URL_DISPLAY%](%$PUBLIC_API_URL%) depuis son navigateur. 
+  Avant de se lancer dans l'utilisation programmatique de l'API, il peut être pratique d'en faire un tour d'horizon avec un _playground_ interactif, disponible en accédant à [%$PUBLIC_API_URL_DISPLAY%](%$PUBLIC_API_URL%) depuis son navigateur.
 
   ### Une première requête
 
@@ -159,7 +164,7 @@ description: |
 
   ## Types spéciaux
 
-  ### `...Result`
+  ### `Result<T>`
 
   Ce type représente une réponse de l'API qui pourrait être une erreur. C'est un union constitué de:
 
@@ -167,9 +172,9 @@ description: |
   - `Error`: si la requête échoue. Contient un champ `message` de type `String` qui contient le message d'erreur.
   - Potentiellement d'autres types d'erreur (par exemple pour la mutation [`authorize`](/oauth#mutation/authorize))
 
-  ### `...Connection`
+  ### `Connection<T>`
 
-  Ces types représentent des réponses paginées de l'API: en effet, il est irréaliste de vouloir renvoyer d'un coup un très grand nombre d'objets, donc l'API n'envoie que les _n_ premiers objets, et fourni un moyen d'avoir accès aux objets suivants si l'on souhaite avoir la liste complète. 
+  Ces types représentent des réponses paginées de l'API: en effet, il est irréaliste de vouloir renvoyer d'un coup un très grand nombre d'objets, donc l'API n'envoie que les _n_ premiers objets, et fourni un moyen d'avoir accès aux objets suivants si l'on souhaite avoir la liste complète.
 
   Dans l'API GraphQL, ces type/Resuls portent comme nom `QueryNomDeLaQueryConnection`, et sont composés de:
 
@@ -180,7 +185,7 @@ description: |
     - `endCursor`: le curseur du dernier élément de la page courante
   - `nodes`: la liste des éléments demandés
   - `edges`: une liste d'objets contenant:
-    - `node`: élément 
+    - `node`: élément
     - `cursor`: le curseur de l'élément
 
   Pour récupérer la page suivante, il suffit de ré-appeler la _query_ renvoyant la Connection en question, en fournissant comme argument `after` le champ `endCursor` de la page courante. Par exemple, pour récupérer la page suivante de la liste des groupes:

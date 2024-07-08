@@ -1,3 +1,7 @@
+---
+color: green
+---
+
 # Health Checks
 
 Différents "health checks" de l'application, des tests permettant de vérifier que l'application fonctionne correctement.

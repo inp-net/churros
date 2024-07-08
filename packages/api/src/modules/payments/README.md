@@ -1,5 +1,5 @@
 ---
-inline_types_from: [ProfitsBreakdown]
+color: yellow
 ---
 
 # Paiements
