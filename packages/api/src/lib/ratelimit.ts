@@ -1,5 +1,3 @@
-import type { PothosTypes } from '#lib';
-import { updateRateLimitHit, type Context } from '#lib';
 import { MapperKind, getDirective, mapSchema, type Maybe } from '@graphql-tools/utils';
 import { formatDuration, intervalToDuration, type Locale } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
@@ -9,6 +7,8 @@ import {
   defaultOnLimit,
   rateLimitDirective,
 } from 'graphql-rate-limit-directive';
+import type { Context } from './context.js';
+import { updateRateLimitHit } from './prometheus.js';
 
 export type RateLimitDirective = {
   locations: 'OBJECT' | 'FIELD_DEFINITION';
@@ -32,28 +32,6 @@ export const DEFAULT_RATE_LIMITS = {
     duration: 10 * 60,
   },
 } as const;
-
-export function setDefaultRateLimits(
-  b: PothosSchemaTypes.SchemaBuilder<PothosSchemaTypes.ExtendDefaultTypes<PothosTypes>>,
-) {
-  b.queryType({
-    directives: {
-      rateLimit: DEFAULT_RATE_LIMITS.Query,
-    },
-  });
-
-  b.mutationType({
-    directives: {
-      rateLimit: DEFAULT_RATE_LIMITS.Mutation,
-    },
-  });
-
-  b.subscriptionType({
-    directives: {
-      rateLimit: DEFAULT_RATE_LIMITS.Subscription,
-    },
-  });
-}
 
 export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSchema {
   const { rateLimitDirectiveTransformer: transformer } = rateLimitDirective({
