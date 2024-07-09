@@ -1,4 +1,3 @@
-import { ensureGlobalId, prisma } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {
@@ -18,6 +17,8 @@ import { verify } from 'argon2';
 import { GraphQLError } from 'graphql';
 import { isThirdPartyToken } from './auth.js';
 import { yearTier } from './date.js';
+import { ensureGlobalId } from './global-id.js';
+import { prisma } from './prisma.js';
 
 const getToken = (headers: Headers) => {
   const auth = headers.get('Authorization');

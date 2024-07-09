@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { UIDScalar } from '#modules/global';
 import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { ArticleType } from '../index.js';

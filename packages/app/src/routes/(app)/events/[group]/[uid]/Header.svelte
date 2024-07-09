@@ -68,7 +68,7 @@
     {#if startsAt && endsAt}
       <p class="when">
         <IconWhen />
-        {formatEventDates({frequency, startsAt, endsAt, recurringUntil})}
+        {formatEventDates({ frequency, startsAt, endsAt, recurringUntil })}
       </p>
     {/if}
     {#if location}

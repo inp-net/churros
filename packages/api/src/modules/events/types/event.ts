@@ -3,9 +3,7 @@ import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/glob
 import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
-import {
-  prismaQueryAccessibleArticles
-} from '#permissions';
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
 import { EventFrequencyType, eventCapacity } from '../index.js';
 import { canEdit, canEditManagers, canSeeEventLogs } from '../utils/index.js';

@@ -15,7 +15,7 @@ builder.mutationField('upsertAnnouncement', (t) =>
       endsAt: t.arg({ type: DateTimeScalar }),
       warning: t.arg.boolean(),
     },
-    authScopes(_, {}, { user }) {
+    authScopes(_, __, { user }) {
       return Boolean(user?.admin);
     },
     async resolve(query, _, { id, title, body, startsAt, endsAt, warning }, { user }) {

@@ -1,0 +1,1950 @@
+Injecting build info into packages/app/src/lib/buildinfo.ts, packages/api/src/lib/buildinfo.ts, packages/docs/src/lib/buildinfo.ts, packages/app/svelte.config.js
+Injecting CURRENT_COMMIT="a5fa3a79ad49578ab6ec2aeb4560afab2676d907" into packages/app/src/lib/buildinfo.ts
+Injecting CURRENT_VERSION="1.66.0-rc.0" into packages/app/src/lib/buildinfo.ts
+Injecting CURRENT_COMMIT="a5fa3a79ad49578ab6ec2aeb4560afab2676d907" into packages/docs/src/lib/buildinfo.ts
+Injecting CURRENT_VERSION="1.66.0-rc.0" into packages/docs/src/lib/buildinfo.ts
+Injecting CURRENT_COMMIT="a5fa3a79ad49578ab6ec2aeb4560afab2676d907" into packages/app/svelte.config.js
+Injecting CURRENT_VERSION="1.66.0-rc.0" into packages/app/svelte.config.js
+Injecting CURRENT_COMMIT="a5fa3a79ad49578ab6ec2aeb4560afab2676d907" into packages/api/src/lib/buildinfo.ts
+Injecting CURRENT_VERSION="1.66.0-rc.0" into packages/api/src/lib/buildinfo.ts
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.16.1) to ./src/client in 895ms
+
+✔ Generated Pothos integration to ./src/pothos/index.d.ts in 355ms
+
+Start using Prisma Client in Node.js (See: https://pris.ly/d/client)
+```
+import { PrismaClient } from './src/client'
+const prisma = new PrismaClient()
+```
+or start using Prisma Client at the edge (See: https://pris.ly/d/accelerate)
+```
+import { PrismaClient } from './src/client/edge'
+const prisma = new PrismaClient()
+```
+
+See other ways of importing Prisma Client: http://pris.ly/d/importing-client
+
+┌─────────────────────────────────────────────────────────────┐
+│  Deploying your app to serverless or edge functions?        │
+│  Try Prisma Accelerate for connection pooling and caching.  │
+│  https://pris.ly/cli/--accelerate                           │
+└─────────────────────────────────────────────────────────────┘
+
+patching file src/client/runtime/library.d.ts
+Hunk #1 succeeded at 2732 (offset 43 lines).
+Constructing ID_PREFIXES_TO_TYPENAMES from /home/uwun/projects.local/churros/packages/db/prisma/schema.prisma
+Injecting ID_PREFIXES_TO_TYPENAMES in /home/uwun/projects.local/churros/packages/api/src/lib/global-id.ts
+Injecting ID_PREFIXES_TO_TYPENAMES in /home/uwun/projects.local/churros/packages/app/src/lib/typenames.ts
+Updated barrelsby.config.json
+Generated index.ts for modules announcements bar-weeks changelogs comments curriculum documents events forms gitlab global groups health-checks links logs mails notifications oauth pages payments posts reactions schools services shop student-associations ticketing users
+Running barrelsby
+Fixed extension-less imports from barrelsby in 617 files
+Formatting barrels for consistency
+Successfully compiled 10 mail templates: booking, form-answers, group-board-updated, reset-password, signup-accepted, signup-done, signup-rejected, signup-verify-mail, verify-mail, welcome
+✨ Schema exported in [36;1m25.1 ms[0m
+📄 Copied mail template [36;1msignup-accepted.mjml[0m
+📄 Copied mail template [36;1msignup-done.mjml[0m
+📄 Copied mail template [36;1m_footer.mjml[0m
+📄 Copied mail template [36;1m_head.mjml[0m
+📄 Copied mail template [36;1mgroup-board-updated.mjml[0m
+📄 Copied mail template [36;1mbooking.mjml[0m
+📄 Copied mail template [36;1mreset-password.mjml[0m
+📄 Copied mail template [36;1m_header.mjml[0m
+📄 Copied mail template [36;1mform-answers.mjml[0m
+📄 Copied mail template [36;1msignup-rejected.mjml[0m
+📄 Copied mail template [36;1msignup-verify-mail.mjml[0m
+📄 Copied mail template [36;1mverify-mail.mjml[0m
+📄 Copied mail template [36;1mwelcome.mjml[0m
+Injecting PUBLIC_STORAGE_URL=`https://${sw.location.hostname}/storage` into /home/uwun/projects.local/churros/packages/app/src/service-worker.ts
+🎩 Generating runtime...
+📃 Unchanged: 59
+✨ New: 10
+    FormArticleGroups
+    NotificationsSendCountForPost
+    FormAnnouncement
+    UpsertAnnouncement
+    InputEvent
+    ... 5 more
+✏️  Changed: 5
+    FormArticle
+    UpdateArticle
+    PagePostDetail
+    AppLayout
+    PagePostEdit
+
+====================================
+Loading svelte-check in workspace: /home/uwun/projects.local/churros/packages/app
+Getting Svelte diagnostics...
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/+page.ts:20:11
+Error: Object literal may only specify known properties, and 'id' does not exist in type '[{ forApprentices?: boolean | Variable<any, string> | null | undefined; yearTier?: number | Variable<any, string> | null | undefined; }, AliasType<{ apogeeCode?: boolean | `@${string}` | undefined; ... 17 more ...; __typename?: boolean | ... 1 more ... | undefined; }>]'. 
+        subjects: {
+          id: true,
+        },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.ts:14:11
+Error: Object literal may only specify known properties, and 'uid' does not exist in type '{ forApprentices: boolean | Variable<any, string>; slug: string | Variable<any, string>; yearTier: number | Variable<any, string>; }'. 
+      subject: [
+        { uid: params.subject, yearTier, forApprentices },
+        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.ts:14:11
+Error: Object literal may only specify known properties, and 'uid' does not exist in type '{ forApprentices: boolean | Variable<any, string>; slug: string | Variable<any, string>; yearTier: number | Variable<any, string>; }'. 
+      subject: [
+        { uid: params.subject, yearTier, forApprentices },
+        { name: true, shortName: true, uid: true, id: true, emoji: true },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.ts:19:11
+Error: Object literal may only specify known properties, but 'subjectUid' does not exist in type '{ slug: string | Variable<any, string>; subject: string | Variable<any, string>; }'. Did you mean to write 'subject'? 
+        {
+          subjectUid: params.subject,
+          subjectYearTier: yearTier,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.ts:14:11
+Error: Object literal may only specify known properties, and 'uid' does not exist in type '{ forApprentices: boolean | Variable<any, string>; slug: string | Variable<any, string>; yearTier: number | Variable<any, string>; }'. 
+      subject: [
+        { uid: params.subject, yearTier, forApprentices },
+        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.ts:27:11
+Error: Object literal may only specify known properties, but 'subjectUid' does not exist in type '{ slug: string | Variable<any, string>; subject: string | Variable<any, string>; }'. Did you mean to write 'subject'? 
+        {
+          subjectUid: params.subject,
+          documentUid: params.document,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.ts:14:11
+Error: Object literal may only specify known properties, and 'uid' does not exist in type '{ forApprentices: boolean | Variable<any, string>; slug: string | Variable<any, string>; yearTier: number | Variable<any, string>; }'. 
+      subject: [
+        { uid: params.subject, yearTier, forApprentices },
+        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+layout.ts:9:11
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. 
+        {
+          groupUid: params.group,
+          uid: params.uid,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+layout.ts:13:11
+Error: Type 'boolean' is not assignable to type 'never'. 
+        Selector('Event')({
+          canScanBookings: true,
+          canEdit: true,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.ts:103:13
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. 
+        event: [
+          { groupUid: params.group, uid: params.uid },
+          Selector('Event')({
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/book/[ticket]/+page.ts:7:7
+Error: Object literal may only specify known properties, and 'ticketByUid' does not exist in type 'AliasType<{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ...'. 
+    {
+      ticketByUid: [
+        { uid: params.ticket, eventUid: params.uid, groupUid: params.group },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:23:11
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. 
+        {
+          groupUid: params.group,
+          uid: params.uid,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:202:12
+Error: Property 'group' does not exist on type '{ createdAt: never; __typename: never; __directives: never; __alias: never; title: never; president: boolean | `@${string}` | undefined; secretary: boolean | `@${string}` | undefined; vicePresident: boolean | ... 1 more ... | undefined; ... 8 more ...; memberId: never; } | undefined'. 
+      me.groups.some(
+        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id,
+      ),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:202:19
+Error: Property 'canEditArticles' does not exist on type '{ createdAt: never; __typename: never; __directives: never; __alias: never; title: never; president: boolean | `@${string}` | undefined; secretary: boolean | `@${string}` | undefined; vicePresident: boolean | ... 1 more ... | undefined; ... 8 more ...; memberId: never; } | undefined'. 
+      me.groups.some(
+        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id,
+      ),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:202:73
+Error: 'data.event' is possibly 'undefined'. 
+      me.groups.some(
+        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id,
+      ),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:202:73
+Error: 'data.event.group' is possibly 'undefined'. 
+      me.groups.some(
+        ({ group, canEditArticles }) => canEditArticles && group.id === data.event.group.id,
+      ),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:205:13
+Error: 'data.event' is possibly 'undefined'. 
+    ) ||
+    Boolean(data.event.managers.some(({ user, canEdit }) => canEdit && user.uid === me.uid));
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:205:41
+Error: Property 'user' does not exist on type '{ __typename: never; __directives: never; __alias: never; canEdit: boolean | `@${string}` | undefined; canEditPermissions: boolean | `@${string}` | undefined; canVerifyRegistrations: boolean | `@${string}` | undefined; event: { ...; } | undefined; user: { ...; } | undefined; power: never; } | undefined'. 
+    ) ||
+    Boolean(data.event.managers.some(({ user, canEdit }) => canEdit && user.uid === me.uid));
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.ts:205:47
+Error: Property 'canEdit' does not exist on type '{ __typename: never; __directives: never; __alias: never; canEdit: boolean | `@${string}` | undefined; canEditPermissions: boolean | `@${string}` | undefined; canVerifyRegistrations: boolean | `@${string}` | undefined; event: { ...; } | undefined; user: { ...; } | undefined; power: never; } | undefined'. 
+    ) ||
+    Boolean(data.event.managers.some(({ user, canEdit }) => canEdit && user.uid === me.uid));
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.ts:4:45
+Error: Argument of type '"QueryRegistrationsOfEventConnection"' is not assignable to parameter of type 'keyof ValueTypes'. 
+
+export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection')({
+  pageInfo: { hasNextPage: true, endCursor: true },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.ts:5:3
+Error: Type '{ hasNextPage: true; endCursor: true; }' is not assignable to type 'never'. 
+export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection')({
+  pageInfo: { hasNextPage: true, endCursor: true },
+  edges: {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.ts:6:3
+Error: Type '{ cursor: true; node: { id: true; paid: true; opposed: true; opposedAt: true; opposedBy: { uid: true; fullName: true; pictureFile: true; }; cancelled: true; cancelledAt: true; cancelledBy: { uid: true; fullName: true; pictureFile: true; }; ... 10 more ...; updatedAt: true; }; }' is not assignable to type 'never'. 
+  pageInfo: { hasNextPage: true, endCursor: true },
+  edges: {
+    cursor: true,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.ts:72:11
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. 
+      event: [
+        { groupUid: params.group, uid: params.uid },
+        Selector('Event')({
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.ts:75:11
+Error: Type '{ total: true; paid: true; verified: true; unpaidLydia: true; }' is not assignable to type 'never'. 
+          id: true,
+          registrationsCounts: { total: true, paid: true, verified: true, unpaidLydia: true },
+          profitsBreakdown: { total: true },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/write/+page.ts:9:11
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. 
+        {
+          groupUid: params.group,
+          uid: params.uid,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/+page.ts:256:7
+Error: Object literal may only specify known properties, and 'itemsOfGroup' does not exist in type 'AliasType<{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ...'. 
+    {
+      itemsOfGroup: [
+        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/+page.ts:294:32
+Error: Property 'itemsOfGroup' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. 
+    },
+    itemsOfGroup: itemsOfGroup.itemsOfGroup.edges.map(({ node }) => node),
+  };
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/+page.ts:294:58
+Error: Binding element 'node' implicitly has an 'any' type. 
+    },
+    itemsOfGroup: itemsOfGroup.itemsOfGroup.edges.map(({ node }) => node),
+  };
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.ts:26:7
+Error: Object literal may only specify known properties, and 'itemsOfGroup' does not exist in type 'AliasType<{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ...'. 
+    {
+      itemsOfGroup: [
+        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.ts:12:11
+Error: Object literal may only specify known properties, and 'itemUid' does not exist in type '{ slug: string | Variable<any, string>; }'. 
+      shopItem: [
+        { itemUid: params.itemUid },
+        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.ts:33:11
+Error: Object literal may only specify known properties, but 'shopItem' does not exist in type 'AliasType<{ address?: boolean | `@${string}` | undefined; ancestors?: AliasType<...> | undefined; articles?: AliasType<{ author?: AliasType<{ address?: boolean | `@${string}` | undefined; admin?: boolean | `@${string}` | undefined; ... 56 more ...; __typename?: boolean | ... 1 more ... | undefined; }> | undefined; ....'. Did you mean to write 'shopItems'? 
+        {
+          shopItem: [
+            { itemUid: params.itemUid },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.ts:92:19
+Error: 'data.shopItem' is possibly 'undefined'. 
+  if (
+    !(me.admin || data.shopItem.group.boardMembers.some((member) => member.member.uid === me.uid))
+  )
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.ts:92:19
+Error: 'data.shopItem.group' is possibly 'undefined'. 
+  if (
+    !(me.admin || data.shopItem.group.boardMembers.some((member) => member.member.uid === me.uid))
+  )
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.ts:92:69
+Error: 'member' is possibly 'undefined'. 
+  if (
+    !(me.admin || data.shopItem.group.boardMembers.some((member) => member.member.uid === me.uid))
+  )
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.ts:92:69
+Error: 'member.member' is possibly 'undefined'. 
+  if (
+    !(me.admin || data.shopItem.group.boardMembers.some((member) => member.member.uid === me.uid))
+  )
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:154:13
+Error: Object literal may only specify known properties, and 'authorId' does not exist in type '{ body: string | Variable<any, string>; event?: string | Variable<any, string> | null | undefined; group: unknown; id?: string | Variable<any, string> | null | undefined; links: Variable<...> | { ...; }[]; publishedAt?: unknown; title: string | Variable<...>; visibility: Variable<...> | Visibility; }'. (ts)
+            id,
+            authorId: (author ?? $me)!.id,
+            eventId: event?.id ?? '',
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:174:9
+Error: Type 'unknown' is not assignable to type 'string'. (ts)
+      if (upsertArticle.__typename === 'Error') {
+        serverError = upsertArticle.message;
+        return;
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:179:7
+Error: Type 'unknown' is not assignable to type '{ uid: string; id: string; title: string; body: string; visibility: Visibility; group: { uid: string; name: string; id: string; pictureFile: string; pictureFileDark: string; studentAssociation?: { ...; } | undefined; children: { ...; }[]; }; ... 5 more ...; pictureFile: string; }'. (ts)
+      serverError = '';
+      data.article = upsertArticle.data;
+      ({ id, event, title, author, body, links, group, visibility } = data.article);
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:206:83
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; visibility: Variable<any, string> | Visibility; }'. (ts)
+        <span class="notified-count">
+          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility, groupUid: group.uid }, true] }, )}
+            <LoadingSpinner></LoadingSpinner>
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:273:28
+Error: Object literal may only specify known properties, and 'eventsOfGroup' does not exist in type '{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ... 2 more...'. (ts)
+  <section class="pills">
+    {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, )}
+      <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:275:14
+Error: Property 'eventsOfGroup' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. (ts)
+      <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
+    {:then { eventsOfGroup: { edges } }}
+      <InputPillEvent
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:277:33
+Error: Parameter 'n' implicitly has an 'any' type. (ts)
+      <InputPillEvent
+        suggestions={edges.map((n) => n.node)}
+        bind:event
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormArticle.svelte:278:14
+Error: Type '{ id: string; uid: string; title: string; startsAt: Date; endsAt: Date; visibility: Visibility; pictureFile: string; recurringUntil?: Date | undefined; location: string; frequency: EventFrequency; } | undefined' is not assignable to type 'InputEvent$data | null | undefined'.
+  Type '{ id: string; uid: string; title: string; startsAt: Date; endsAt: Date; visibility: Visibility; pictureFile: string; recurringUntil?: Date | undefined; location: string; frequency: EventFrequency; }' is missing the following properties from type 'InputEvent$data': slug, pictureURL (ts)
+        suggestions={edges.map((n) => n.node)}
+        bind:event
+        groupUid={$page.params.group}
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:55:11
+Error: Object literal may only specify known properties, but 'subjectUid' does not exist in type '{ description: string | Variable<any, string>; id?: string | Variable<any, string> | null | undefined; schoolYear: number | Variable<any, string>; subject: string | Variable<...>; title: string | Variable<...>; type: Variable<...> | DocumentType; }'. Did you mean to write 'subject'? (ts)
+          id: data.id,
+          subjectUid: data.subject.uid,
+          subjectForApprentices: data.subject.forApprentices ?? false,
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:80:7
+Error: Type 'unknown' is not assignable to type 'string'. (ts)
+    if (upsertDocument.__typename === 'Error') {
+      serverError = upsertDocument.message;
+      toasts.error(`Impossible de sauvegarder`, serverError);
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:92:31
+Error: 'upsertDocument.data' is of type 'unknown'. (ts)
+                {
+                  documentId: upsertDocument.data.id,
+                  file: Zvar('file', 'File!'),
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:112:27
+Error: 'upsertDocument.data' is of type 'unknown'. (ts)
+            {
+              documentId: upsertDocument.data.id,
+              filename: path,
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:125:27
+Error: 'upsertDocument.data' is of type 'unknown'. (ts)
+            {
+              documentId: upsertDocument.data.id,
+              filename: path,
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:134:13
+Error: Property 'subject' does not exist on type 'unknown'. (ts)
+    );
+    const { subject } = upsertDocument.data;
+    const majorUid =
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:138:43
+Error: 'upsertDocument.data' is of type 'unknown'. (ts)
+    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier ?? $me?.yearTier;
+    toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
+    await goto(
+
+
+/home/uwun/projects.local/churros/packages/app/src/lib/components/FormDocument.svelte:142:11
+Error: 'upsertDocument.data' is of type 'unknown'. (ts)
+        subject?.uid ?? 'all'
+      }/${upsertDocument.data.uid}`,
+    );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/+layout.svelte:109:29
+Error: Property 'scanningEvent' does not exist on type 'AppLayout$result'.
+  Property 'scanningEvent' does not exist on type '{ readonly me: { readonly major: { readonly schools: { readonly studentAssociations: { readonly groupsCount: number; readonly uid: string | null; readonly canCreateGroups: boolean; }[]; }[]; } | null; readonly bookings: { ...; }; readonly " $fragments": { ...; }; } | undefined; readonly combinedChangelog: { ...; }; }'. (ts)
+    user={$AppLayout.data?.me ?? null}
+    event={$AppLayout.data?.scanningEvent ?? null}
+  />
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/+page.svelte:10:69
+Error: 'm' is possibly 'undefined'. (ts)
+
+  const majorsBySchool = Object.entries(groupBy(data.majors, (m) => m.schools[0]?.uid))
+    .map(([schoolUid, majors]) => [schoolUid, majors.filter((m) => m.subjects.length > 0)])
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/+page.svelte:11:68
+Error: 'm' is possibly 'undefined'. (ts)
+  const majorsBySchool = Object.entries(groupBy(data.majors, (m) => m.schools[0]?.uid))
+    .map(([schoolUid, majors]) => [schoolUid, majors.filter((m) => m.subjects.length > 0)])
+    .filter(([_, majors]) => majors.length > 0)
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/+page.svelte:23:45
+Error: 's' is possibly 'undefined'. (ts)
+{#each majorsBySchool as [schoolUid, majorsOfSchool]}
+  {@const school = data.schools.find((s) => s.uid === schoolUid)}
+  <section class="majors-of-school">
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/+page.svelte:33:20
+Error: Type '{ id?: undefined; uid?: undefined; __typename?: undefined; __directives?: undefined; __alias?: undefined; name?: undefined; shortName?: undefined; subjects?: ({ id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | undefine...' is not assignable to type '{ href: string; name: string; shortName?: string | undefined; }'.
+  Types of property 'name' are incompatible.
+    Type 'undefined' is not assignable to type 'string'. (ts)
+        <li>
+          <CardMajor href="./{major.uid}" {...major}></CardMajor>
+        </li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/+page.svelte:33:31
+Error: 'major' is possibly 'undefined'. (ts)
+        <li>
+          <CardMajor href="./{major.uid}" {...major}></CardMajor>
+        </li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:17:45
+Error: Property 'flatMap' does not exist on type 'never'. (ts)
+  const minors = Object.values(
+    Object.fromEntries(data.subjectsOfMajor.flatMap(({ minors }) => minors).map((m) => [m.uid, m])),
+  );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:17:56
+Error: Binding element 'minors' implicitly has an 'any' type. (ts)
+  const minors = Object.values(
+    Object.fromEntries(data.subjectsOfMajor.flatMap(({ minors }) => minors).map((m) => [m.uid, m])),
+  );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:17:82
+Error: Parameter 'm' implicitly has an 'any' type. (ts)
+  const minors = Object.values(
+    Object.fromEntries(data.subjectsOfMajor.flatMap(({ minors }) => minors).map((m) => [m.uid, m])),
+  );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:22:8
+Error: Property 'filter' does not exist on type 'never'. (ts)
+    return data.subjectsOfMajor
+      .filter(({ minors }) =>
+        minor === undefined ? minors.length === 0 : minors.some((m) => m.uid === minor.uid),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:22:18
+Error: Binding element 'minors' implicitly has an 'any' type. (ts)
+    return data.subjectsOfMajor
+      .filter(({ minors }) =>
+        minor === undefined ? minors.length === 0 : minors.some((m) => m.uid === minor.uid),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:23:66
+Error: Parameter 'm' implicitly has an 'any' type. (ts)
+      .filter(({ minors }) =>
+        minor === undefined ? minors.length === 0 : minors.some((m) => m.uid === minor.uid),
+      )
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:26:10
+Error: Parameter 'a' implicitly has an 'any' type. (ts)
+      .sort(
+        (a, b) =>
+          (a.semester ?? 0) - (b.semester ?? 0) ||
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:26:13
+Error: Parameter 'b' implicitly has an 'any' type. (ts)
+      .sort(
+        (a, b) =>
+          (a.semester ?? 0) - (b.semester ?? 0) ||
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:24:10
+Error: Property 'documentsOfSubject' does not exist on type '{ mobile: boolean; token?: string | undefined; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+    type,
+    data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
+  ]).sort(
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:24:45
+Error: Binding element 'node' implicitly has an 'any' type. (ts)
+    type,
+    data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
+  ]).sort(
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:24:81
+Error: Parameter 'e' implicitly has an 'any' type. (ts)
+    type,
+    data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
+  ]).sort(
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:28:39
+Error: Property 'documentsOfSubject' does not exist on type '{ mobile: boolean; token?: string | undefined; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+  ) as unknown as Array<
+    [DocumentType, Array<(typeof data.documentsOfSubject.edges)[number]['node']>]
+  >;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:33:29
+Error: 'data.major' is possibly 'undefined'. (ts)
+<Breadcrumbs root="/documents">
+  <Breadcrumb href="../..">{data.major.shortName}</Breadcrumb>
+  <Breadcrumb href="..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:36:7
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb
+    >{data.subject.emoji ? `${data.subject.emoji} ` : ''}{data.subject.shortName ||
+      data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:36:31
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb
+    >{data.subject.emoji ? `${data.subject.emoji} ` : ''}{data.subject.shortName ||
+      data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:36:59
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb
+    >{data.subject.emoji ? `${data.subject.emoji} ` : ''}{data.subject.shortName ||
+      data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:37:7
+Error: 'data.subject' is possibly 'undefined'. (ts)
+    >{data.subject.emoji ? `${data.subject.emoji} ` : ''}{data.subject.shortName ||
+      data.subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:43:6
+Error: 'data.subject' is possibly 'undefined'. (ts)
+
+{#if data.subject.links.length > 0}
+  <section class="links">
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:46:38
+Error: Property 'name' does not exist on type '{ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined'. (ts)
+    <ul class="nobullet">
+      {#each data.subject.links as { name, computedValue }}
+        <li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:46:44
+Error: Property 'computedValue' does not exist on type '{ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined'. (ts)
+    <ul class="nobullet">
+      {#each data.subject.links as { name, computedValue }}
+        <li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:46:14
+Error: 'data.subject' is possibly 'undefined'. (ts)
+    <ul class="nobullet">
+      {#each data.subject.links as { name, computedValue }}
+        <li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.svelte:55:11
+Error: Property 'documentsOfSubject' does not exist on type '{ mobile: boolean; token?: string | undefined; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+
+{#if data.documentsOfSubject.edges.length > 0}
+  {#each documentsByType as [type, documents]}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:49:23
+Error: 'document' is possibly 'undefined'. (ts)
+        {
+          resourceId: document.id,
+          ...(comment ?? newComment),
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:5
+Error: 'data.document' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    if (!comment) {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:5
+Error: 'data.document.comments' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    if (!comment) {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:37
+Error: Type '{ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies: ...' is not assignable to type '{ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies: ...'. Two different types with this name exist, but they are unrelated.
+  Type '{ node: { createdAt: Date; id: string; updatedAt: Date; author?: { fullName: string; pictureFile: string; uid: string; } | undefined; body: string; bodyHtml: string; inReplyToId?: string | undefined; }; }' is missing the following properties from type '{ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies: ...': __typename, __directives, __alias, cursor (ts)
+    });
+    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    if (!comment) {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:40
+Error: 'data.document' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    if (!comment) {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:40
+Error: 'data.document.comments' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    if (!comment) {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:70
+Error: Type '{ node: { createdAt: Date; id: string; updatedAt: Date; author?: { fullName: string; pictureFile: string; uid: string; } | undefined; body: string; bodyHtml: string; inReplyToId?: string | undefined; }; }' is missing the following properties from type '{ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies: ...': __typename, __directives, __alias, cursor (ts)
+    });
+    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+    if (!comment) {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:81:23
+Error: 'document' is possibly 'undefined'. (ts)
+          id,
+          resourceId: document.id,
+          body,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:5
+Error: 'data.document' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:5
+Error: 'data.document.comments' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:5
+Error: Type '{ node: any; }[]' is not assignable to type '({ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies:...'.
+  Type '{ node: any; }' is missing the following properties from type '{ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies: ...': __typename, __directives, __alias, cursor (ts)
+    });
+    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:36
+Error: 'data.document' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:36
+Error: 'data.document.comments' is possibly 'undefined'. (ts)
+    });
+    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:72
+Error: Property 'node' does not exist on type '{ __typename: never; __directives: never; __alias: never; cursor: never; node: { createdAt: never; id: never; __typename: never; __directives: never; __alias: never; document?: { createdAt: never; ... 20 more ...; uploaderId?: boolean | ... 1 more ... | undefined; } | { ...; } | undefined; ... 10 more ...; replies: ...'. (ts)
+    });
+    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+      node.id === upsertComment.id ? { node: upsertComment } : { node },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:110:7
+Error: Property 'title' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+    document: {
+      title,
+      schoolYear,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:111:7
+Error: Property 'schoolYear' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      title,
+      schoolYear,
+      descriptionHtml,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:112:7
+Error: Property 'descriptionHtml' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      schoolYear,
+      descriptionHtml,
+      createdAt,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:113:7
+Error: Property 'createdAt' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      descriptionHtml,
+      createdAt,
+      updatedAt,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:114:7
+Error: Property 'updatedAt' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      createdAt,
+      updatedAt,
+      uploader,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:115:7
+Error: Property 'uploader' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      updatedAt,
+      uploader,
+      comments,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:116:7
+Error: Property 'comments' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      uploader,
+      comments,
+      solutionPaths,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:117:7
+Error: Property 'solutionPaths' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      comments,
+      solutionPaths,
+      paperPaths,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:118:7
+Error: Property 'paperPaths' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      solutionPaths,
+      paperPaths,
+      type,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:119:7
+Error: Property 'type' does not exist on type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...'. (ts)
+      paperPaths,
+      type,
+    },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:126:11
+Error: 'subject' is possibly 'undefined'. (ts)
+<SEO
+  title="{subject.shortName || subject.name} - {title}"
+  description="La Frappe sur Churros: Sauve tes partiels!\n{descriptionHtml}"
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:126:32
+Error: 'subject' is possibly 'undefined'. (ts)
+<SEO
+  title="{subject.shortName || subject.name} - {title}"
+  description="La Frappe sur Churros: Sauve tes partiels!\n{descriptionHtml}"
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:129:14
+Error: 'subject' is possibly 'undefined'. (ts)
+  applicationName="Churros"
+  keywords="{subject.uid}, document, cours"
+></SEO>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:133:32
+Error: 'major' is possibly 'undefined'. (ts)
+<Breadcrumbs root="/documents">
+  <Breadcrumb href="../../..">{major.shortName}</Breadcrumb>
+  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:136:6
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb href="..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {subject.shortName || subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:136:30
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb href="..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {subject.shortName || subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:137:6
+Error: 'subject' is possibly 'undefined'. (ts)
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {subject.shortName || subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:137:27
+Error: 'subject' is possibly 'undefined'. (ts)
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {subject.shortName || subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:166:40
+Error: 'document' is possibly 'undefined'. (ts)
+              await $zeus.mutate({
+                deleteDocument: [{ id: document.id }, true],
+              });
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:209:46
+Error: 'document' is possibly 'undefined'. (ts)
+      <p>Ce document n'a aucun fichier… Plutôt cringe</p>
+    {:else if documentTypesWithSolutions.has(document.type)}
+      {#if paperPaths.length > 0}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:260:14
+Error: 'document' is possibly 'undefined'. (ts)
+    <div class="id typo-details">
+      <code>{document.id.replace(/^doc:/, '')}</code>
+    </div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:260:26
+Error: Property 'replace' does not exist on type 'never'. (ts)
+    <div class="id typo-details">
+      <code>{document.id.replace(/^doc:/, '')}</code>
+    </div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:285:45
+Error: Binding element 'inReplyToId' implicitly has an 'any' type. (ts)
+  <ul class="nobullet comments">
+    {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
+      <li class="comment">
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:298:32
+Error: Binding element 'inReplyToId' implicitly has an 'any' type. (ts)
+          replies={comments.edges
+            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
+            .map((c) => c.node)}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:299:19
+Error: Parameter 'c' implicitly has an 'any' type. (ts)
+            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
+            .map((c) => c.node)}
+        ></CardComment>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:12:35
+Error: 'data.major' is possibly 'undefined'. (ts)
+<Breadcrumbs root="/documents">
+  <Breadcrumb href="../../../..">{data.major.shortName}</Breadcrumb>
+  <Breadcrumb href="../../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:16:6
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb href="../..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:16:30
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb href="../..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:17:6
+Error: 'data.subject' is possibly 'undefined'. (ts)
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:17:32
+Error: 'data.subject' is possibly 'undefined'. (ts)
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:20:7
+Error: 'data.document' is possibly 'undefined'. (ts)
+  <Breadcrumb href=".."
+    >{data.document.title} <span class="muted">&nbsp;({data.document.schoolYear})</span></Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:20:56
+Error: 'data.document' is possibly 'undefined'. (ts)
+  <Breadcrumb href=".."
+    >{data.document.title} <span class="muted">&nbsp;({data.document.schoolYear})</span></Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:25:15
+Error: 'data.document' is possibly 'undefined'. (ts)
+
+<h2>Modifier {data.document.title}</h2>
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:27:15
+Error: Type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; title: never; subject?: { id: never; links: ({ createdAt: never; ... 6 more ...; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | ...' is not assignable to type '{ id: string; title: string; schoolYear: number; description: string; subject?: { uid: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefin...'.
+  Type 'undefined' is not assignable to type '{ id: string; title: string; schoolYear: number; description: string; subject?: { uid: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefin...'. (ts)
+
+<FormDocument data={data.document}></FormDocument>
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:47:32
+Error: 'data.major' is possibly 'undefined'. (ts)
+<Breadcrumbs root="/documents">
+  <Breadcrumb href="../../..">{data.major.shortName}</Breadcrumb>
+  <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:50:6
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb href="..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:50:30
+Error: 'data.subject' is possibly 'undefined'. (ts)
+  <Breadcrumb href="..">
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:51:6
+Error: 'data.subject' is possibly 'undefined'. (ts)
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:51:32
+Error: 'data.subject' is possibly 'undefined'. (ts)
+    {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+    {data.subject.shortName || data.subject.name}</Breadcrumb
+  >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:56:42
+Error: 'document.subject' is possibly 'undefined'. (ts)
+
+<h2>{documentTypeSentence(document.type, document.subject.shortName || document.subject.name)}</h2>
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:56:72
+Error: 'document.subject' is possibly 'undefined'. (ts)
+
+<h2>{documentTypeSentence(document.type, document.subject.shortName || document.subject.name)}</h2>
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:58:20
+Error: Type '{ id: string; title: string; description: string; type: DocumentType; subject: { id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 18 more ...; unitId?: boolean | ... 1 more ... | undefined;...' is not assignable to type '{ id: string; title: string; schoolYear: number; description: string; subject?: { uid: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefin...'.
+  Types of property 'subject' are incompatible.
+    Type '{ id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; uid: never; yearTier?: boolean | `@${string}` | undefined; ... 16 more ...; unitId?: boolean | ... 1 more ... | undefined; } | undefined' is not assignable to type '{ uid: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined'.
+      Type '{ id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; uid: never; yearTier?: boolean | `@${string}` | undefined; ... 16 more ...; unitId?: boolean | ... 1 more ... | undefined; }' is not assignable to type '{ uid: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; }'.
+        Types of property 'minors' are incompatible.
+          Type '({ id: never; uid: never; yearTier: never; __typename: never; __directives: never; __alias: never; name: never; shortName: never; slug: never; majors: ({ id: never; uid: never; __typename: never; __directives: never; ... 6 more ...; schools: ({ ...; } | undefined)[]; } | undefined)[]; subjects: ({ ...; } | undefined...' is not assignable to type '{ name: string; uid: string; shortName: string; }[]'.
+            Type '{ id: never; uid: never; yearTier: never; __typename: never; __directives: never; __alias: never; name: never; shortName: never; slug: never; majors: ({ id: never; uid: never; __typename: never; __directives: never; ... 6 more ...; schools: ({ ...; } | undefined)[]; } | undefined)[]; subjects: ({ ...; } | undefined)...' is not assignable to type '{ name: string; uid: string; shortName: string; }'.
+              Type 'undefined' is not assignable to type '{ name: string; uid: string; shortName: string; }'. (ts)
+
+<FormDocument bind:data={document}></FormDocument>
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+layout.svelte:19:6
+Error: Type '{ '': true; edit: boolean | `@${string}` | undefined; registrations: boolean | `@${string}` | undefined; scan: any; }' is not assignable to type 'Record<"" | "registrations" | "edit" | "scan", boolean>'.
+  Types of property 'registrations' are incompatible.
+    Type 'boolean | `@${string}` | undefined' is not assignable to type 'boolean'.
+      Type 'undefined' is not assignable to type 'boolean'. (ts)
+  let tabsToShow: Record<keyof typeof TABS, boolean>;
+  $: tabsToShow = {
+    '': true,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+layout.svelte:23:25
+Error: Property 'canScanBookings' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. Did you mean 'canSeeBookings'? (ts)
+    'registrations': permissions.canSeeBookings,
+    'scan': permissions.canScanBookings,
+  };
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:25:5
+Error: Property 'descriptionHtml' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+  let {
+    descriptionHtml,
+    links,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:26:5
+Error: Property 'links' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    descriptionHtml,
+    links,
+    group,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:27:5
+Error: Property 'group' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    links,
+    group,
+    coOrganizers,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:28:5
+Error: Property 'coOrganizers' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    group,
+    coOrganizers,
+    contactMail,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:29:5
+Error: Property 'contactMail' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    coOrganizers,
+    contactMail,
+    articles,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:30:5
+Error: Property 'articles' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    contactMail,
+    articles,
+    capacity,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:31:5
+Error: Property 'capacity' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    articles,
+    capacity,
+    reactionCounts,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:32:5
+Error: Property 'reactionCounts' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    capacity,
+    reactionCounts,
+    myReactions,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:33:5
+Error: Property 'myReactions' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    reactionCounts,
+    myReactions,
+    forms,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:34:5
+Error: Property 'forms' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    myReactions,
+    forms,
+  } = data.event;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:42:19
+Error: 'data.event' is possibly 'undefined'. (ts)
+
+  $: placesLeft = data.event.placesLeft;
+  $: tickets = data.ticketsOfEvent;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:43:21
+Error: Property 'ticketsOfEvent' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 94 more ...; cl...'. (ts)
+  $: placesLeft = data.event.placesLeft;
+  $: tickets = data.ticketsOfEvent;
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:49:13
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. (ts)
+        event: [
+          { groupUid: $page.params.group, uid: $page.params.uid },
+          { placesLeft: true, tickets: { placesLeft: true, id: true } },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:57:9
+Error: 'data.event' is possibly 'undefined'. (ts)
+        if (!freshData.event) return;
+        data.event.placesLeft = freshData.event.placesLeft as unknown as number | undefined;
+        // @ts-expect-error dunnot what is happening here, but typing with zeus and $subscribe is kinda cursed anyway
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:57:9
+Error: Type 'number | undefined' is not assignable to type 'boolean | `@${string}` | undefined'.
+  Type 'number' is not assignable to type 'boolean | `@${string}` | undefined'. (ts)
+        if (!freshData.event) return;
+        data.event.placesLeft = freshData.event.placesLeft as unknown as number | undefined;
+        // @ts-expect-error dunnot what is happening here, but typing with zeus and $subscribe is kinda cursed anyway
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:76:15
+Error: Parameter 't' implicitly has an 'any' type. (ts)
+  $: usersRegistration = tickets
+    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
+    .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:77:16
+Error: Binding element 'beneficiary' implicitly has an 'any' type. (ts)
+    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
+    .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:77:29
+Error: Binding element 'author' implicitly has an 'any' type. (ts)
+    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
+    .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:82:38
+Error: Argument of type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...' is not assignable to parameter of type '{ title: string; descriptionHtml: string; description: string; startsAt: Date; endsAt: Date; location: string; uid: string; group: { uid: string; }; frequency: EventFrequency; recurringUntil?: Date | undefined; }'.
+  Type 'undefined' is not assignable to type '{ title: string; descriptionHtml: string; description: string; startsAt: Date; endsAt: Date; location: string; uid: string; group: { uid: string; }; frequency: EventFrequency; recurringUntil?: Date | undefined; }'. (ts)
+
+  const calendarURLs = calendarLinks(data.event);
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:90:7
+Error: Type '{ articles?: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[] | undefi...' is not assignable to type '{ title: string; startsAt?: Date | undefined; pictureFile: string; endsAt?: Date | undefined; location?: string | undefined; frequency: EventFrequency; recurringUntil?: Date | undefined; subtitle?: string | undefined; visibility?: Visibility | undefined; }'.
+  Types of property 'title' are incompatible.
+    Type 'undefined' is not assignable to type 'string'. (ts)
+
+<Header {...data.event} />
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:133:78
+Error: 'data.event' is possibly 'undefined'. (ts)
+<section class="reactions">
+  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: data.event.id }} />
+</section>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:140:16
+Error: This comparison appears to be unintentional because the types 'string | boolean' and 'number' have no overlap. (ts)
+      Places {#if placesLeft !== undefined && placesLeft !== null}<span class="places">
+          {#if placesLeft === Number.POSITIVE_INFINITY || capacity === 0}
+            Illimitées
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:143:54
+Error: Operator '>' cannot be applied to types 'string | boolean' and 'number'. (ts)
+          {:else}
+            <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
+              class="capacity">{capacity}</span
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:151:29
+Error: Parameter 'a' implicitly has an 'any' type. (ts)
+    <ul class="nobullet">
+      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? ''), ) as { id, ...ticket } (id)}
+        <li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:151:32
+Error: Parameter 'b' implicitly has an 'any' type. (ts)
+    <ul class="nobullet">
+      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? ''), ) as { id, ...ticket } (id)}
+        <li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:178:24
+Error: 'data.event' is possibly 'undefined'. (ts)
+
+    {#if $me?.admin || data.event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
+      <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:178:52
+Error: Property 'user' does not exist on type '{ __typename: never; __directives: never; __alias: never; canEdit: boolean | `@${string}` | undefined; canEditPermissions: boolean | `@${string}` | undefined; canVerifyRegistrations: boolean | `@${string}` | undefined; event: { ...; } | undefined; user: { ...; } | undefined; power: never; } | undefined'. (ts)
+
+    {#if $me?.admin || data.event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
+      <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/+page.svelte:178:58
+Error: Property 'canEdit' does not exist on type '{ __typename: never; __directives: never; __alias: never; canEdit: boolean | `@${string}` | undefined; canEditPermissions: boolean | `@${string}` | undefined; canVerifyRegistrations: boolean | `@${string}` | undefined; event: { ...; } | undefined; user: { ...; } | undefined; power: never; } | undefined'. (ts)
+
+    {#if $me?.admin || data.event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
+      <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/book/[ticket]/+page.svelte:49:12
+Error: Property 'ticketByUid' does not exist on type '{ mobile: boolean; token?: string | undefined; canEditGroup: boolean; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | ... 1 more ... | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+    price,
+  } = data.ticketByUid;
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/book/[ticket]/+page.svelte:51:35
+Error: Property 'ticketByUid' does not exist on type '{ mobile: boolean; token?: string | undefined; canEditGroup: boolean; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | ... 1 more ... | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+
+  let { remainingGodsons } = data.ticketByUid;
+  $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/book/[ticket]/+page.svelte:234:53
+Error: Parameter 'm' implicitly has an 'any' type. (ts)
+
+    {#if onlyManagersCanProvide && !managers?.some((m) => m.user.uid === $me?.uid)}
+      <h2>Seul·e un·e manager peut te fournir cette place.</h2>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/book/[ticket]/+page.svelte:255:23
+Error: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<PaymentMethod, typeof SvelteComponent<any>>'. (ts)
+                disabled={Boolean(choosingPaymentMethodLoading)}
+                icon={PAYMENT_METHODS_ICONS[method]}
+                on:click={async () => payBy(method)}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/book/[ticket]/+page.svelte:258:18
+Error: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<PaymentMethod, string>'. (ts)
+              >
+                {DISPLAY_PAYMENT_METHODS[method]}
+              </ButtonSecondary>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.svelte:12:5
+Error: Type '({ id: never; __typename: never; __directives: never; __alias: never; name: never; group?: { address: never; articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; ... 27 more ...; visibility: never; } | undefined)[]; ... 48 more ...; website: never; } | { ...; } | undefined; grou...' is not assignable to type '{ name: string; id: string; group?: { pictureFile: string; pictureFileDark: string; name: string; } | undefined; }[]'.
+  Type '{ id: never; __typename: never; __directives: never; __alias: never; name: never; group?: { address: never; articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; ... 27 more ...; visibility: never; } | undefined)[]; ... 48 more ...; website: never; } | { ...; } | undefined; group...' is not assignable to type '{ name: string; id: string; group?: { pictureFile: string; pictureFileDark: string; name: string; } | undefined; }'.
+    Type 'undefined' is not assignable to type '{ name: string; id: string; group?: { pictureFile: string; pictureFileDark: string; name: string; } | undefined; }'. (ts)
+    redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
+    availableLydiaAccounts={data.lydiaAccounts}
+    bind:event={data.event}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/edit/+page.svelte:13:10
+Error: Type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...' is not assignable to type '{ tickets: Ticket[]; pictureFile: string; id: string; ticketGroups: { id: string; name: string; capacity: number; tickets: Ticket[]; }[]; includeInKiosk: boolean; showPlacesLeft: boolean; ... 15 more ...; bannedUsers: { ...; }[]; }'.
+  Type 'undefined' is not assignable to type '{ tickets: Ticket[]; pictureFile: string; id: string; ticketGroups: { id: string; name: string; capacity: number; tickets: Ticket[]; }[]; includeInKiosk: boolean; showPlacesLeft: boolean; ... 15 more ...; bannedUsers: { ...; }[]; }'. (ts)
+    availableLydiaAccounts={data.lydiaAccounts}
+    bind:event={data.event}
+  />
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:44:40
+Error: 'data.event' is possibly 'undefined'. (ts)
+  let loadingSearchResults = false;
+  let initialRegistrationsTotalCount = data.event.registrationsCounts.total;
+  let newRegistrationsSinceLoad = 0;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:44:51
+Error: Property 'registrationsCounts' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. Did you mean 'reactionCounts'? (ts)
+  let loadingSearchResults = false;
+  let initialRegistrationsTotalCount = data.event.registrationsCounts.total;
+  let newRegistrationsSinceLoad = 0;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:61:13
+Error: Object literal may only specify known properties, and 'uid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. (ts)
+          {
+            uid: $page.params.uid,
+            groupUid: $page.params.group,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:65:13
+Error: Object literal may only specify known properties, but 'registrationsCounts' does not exist in type 'AliasType<{ articles?: AliasType<{ author?: AliasType<{ address?: boolean | `@${string}` | undefined; admin?: boolean | `@${string}` | undefined; adminOf?: [{ studentAssociation: string | Variable<any, string>; }, boolean | `@${string}`] | undefined; ... 55 more ...; __typename?: boolean | ... 1 more ... | undefined...'. Did you mean to write 'reactionCounts'? (ts)
+          {
+            registrationsCounts: {
+              cancelled: true,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:78:46
+Error: Property 'registrationsCounts' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. Did you mean 'reactionCounts'? (ts)
+        if ('errors' in freshData) return;
+        const freshCounts = freshData.event?.registrationsCounts;
+        if (!freshCounts) return;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:83:9
+Error: 'data.event' is possibly 'undefined'. (ts)
+
+        data.event.registrationsCounts = freshCounts;
+      },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:83:20
+Error: Property 'registrationsCounts' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. Did you mean 'reactionCounts'? (ts)
+
+        data.event.registrationsCounts = freshCounts;
+      },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:97:9
+Error: Object literal may only specify known properties, and 'searchRegistrations' does not exist in type '{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ... 2 more...'. (ts)
+      const results = await $zeus.query({
+        searchRegistrations: [
+          {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:111:24
+Error: Property 'searchRegistrations' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. (ts)
+        pageInfo: { endCursor: '', hasNextPage: false },
+        edges: results.searchRegistrations.map(({ registration }) => ({
+          cursor: '',
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:111:51
+Error: Binding element 'registration' implicitly has an 'any' type. (ts)
+        pageInfo: { endCursor: '', hasNextPage: false },
+        edges: results.searchRegistrations.map(({ registration }) => ({
+          cursor: '',
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:125:9
+Error: Object literal may only specify known properties, but 'registrationsOfEvent' does not exist in type '{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ... 2 more...'. Did you mean to write 'registrationsOfUser'? (ts)
+      const result = await $zeus.query({
+        registrationsOfEvent: [
+          {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:127:25
+Error: Property 'registrationsOfEvent' does not exist on type '{ mobile: boolean; token?: string | undefined; canEditGroup: boolean; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | ... 1 more ... | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. Did you mean 'registrationsOfUser'? (ts)
+          {
+            after: data.registrationsOfEvent.pageInfo.endCursor,
+            groupUid: $page.params.group,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:134:39
+Error: Property 'registrationsOfEvent' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. Did you mean 'registrationsOfUser'? (ts)
+      });
+      registrations.pageInfo = result.registrationsOfEvent.pageInfo;
+      registrations.edges = [...registrations.edges, ...result.registrationsOfEvent.edges];
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:135:64
+Error: Property 'registrationsOfEvent' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. Did you mean 'registrationsOfUser'? (ts)
+      registrations.pageInfo = result.registrationsOfEvent.pageInfo;
+      registrations.edges = [...registrations.edges, ...result.registrationsOfEvent.edges];
+    } finally {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:143:13
+Error: Property 'registrationsCsv' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. (ts)
+    if (!registrations) return;
+    const { registrationsCsv } = await $zeus.query({
+      registrationsCsv: [
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:144:7
+Error: Object literal may only specify known properties, but 'registrationsCsv' does not exist in type '{ allApps?: AliasType<{ active?: boolean | `@${string}` | undefined; allowedRedirectUris?: boolean | `@${string}` | undefined; apiUsage?: [{ after?: string | Variable<any, string> | null | undefined; before?: string | ... 2 more ... | undefined; first?: number | ... 2 more ... | undefined; last?: number | ... 2 more...'. Did you mean to write 'registration'? (ts)
+    const { registrationsCsv } = await $zeus.query({
+      registrationsCsv: [
+        { eventUid: $page.params.uid, groupUid: $page.params.group },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:163:5
+Error: Property 'registrationsOfEvent' does not exist on type '{ mobile: boolean; token?: string | undefined; canEditGroup: boolean; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | ... 1 more ... | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+  $: ({
+    registrationsOfEvent: registrations,
+    event: { registrationsCounts, profitsBreakdown },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:164:14
+Error: Property 'registrationsCounts' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    registrationsOfEvent: registrations,
+    event: { registrationsCounts, profitsBreakdown },
+  } = data);
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:164:35
+Error: Property 'profitsBreakdown' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. (ts)
+    registrationsOfEvent: registrations,
+    event: { registrationsCounts, profitsBreakdown },
+  } = data);
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:166:68
+Error: Binding element 'node' implicitly has an 'any' type. (ts)
+  } = data);
+  $: rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:237:34
+Error: Parameter 'c' implicitly has an 'any' type. (ts)
+          benefUser(r)
+            ?.contributesTo.map((c) => c.name)
+            .join(', ') ?? '';
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:289:50
+Error: Parameter 'r' implicitly has an 'any' type. (ts)
+    if (opposeRegistration.data) {
+      const idx = registrations.edges.findIndex((r) => r.node.id === registration.id);
+      registrations.edges[idx].node.opposed = true;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:321:40
+Error: Parameter 'r' implicitly has an 'any' type. (ts)
+      registrations.edges[
+        registrations.edges.findIndex((r) => r.node.id === registration.id)
+      ].node.paid = upsertRegistration.data.paid;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:330:17
+Error: Parameter 'a' implicitly has an 'any' type. (ts)
+    $searchQuery && !loadingSearchResults ? searchResults : registrations
+  ).edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id));
+</script>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:330:20
+Error: Parameter 'b' implicitly has an 'any' type. (ts)
+    $searchQuery && !loadingSearchResults ? searchResults : registrations
+  ).edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id));
+</script>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:374:17
+Error: Object literal may only specify known properties, and 'groupUid' does not exist in type '{ group: unknown; slug: string | Variable<any, string>; }'. (ts)
+            event: [
+              { groupUid: $page.params.group, uid: $page.params.uid },
+              {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:376:17
+Error: Object literal may only specify known properties, but 'registrationsCounts' does not exist in type 'AliasType<{ articles?: AliasType<{ author?: AliasType<{ address?: boolean | `@${string}` | undefined; admin?: boolean | `@${string}` | undefined; adminOf?: [{ studentAssociation: string | Variable<any, string>; }, boolean | `@${string}`] | undefined; ... 55 more ...; __typename?: boolean | ... 1 more ... | undefined...'. Did you mean to write 'reactionCounts'? (ts)
+              {
+                registrationsCounts: {
+                  total: true,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:382:16
+Error: Property 'registrationsOfEvent' does not exist on type '{ mobile: boolean; token?: string | undefined; canEditGroup: boolean; AppLayout: AppLayoutStore; me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | ... 1 more ... | undefined; ... 57 more ...; __alias: never; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. Did you mean 'registrationsOfUser'? (ts)
+          });
+          data.registrationsOfEvent = newData.registrationsOfEvent;
+          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:382:47
+Error: Property 'registrationsOfEvent' does not exist on type '{ me: { address: never; admin: boolean | `@${string}` | undefined; adminOf: boolean | `@${string}` | undefined; allowedApps: ({ createdAt: never; description: never; id: never; __typename: never; ... 15 more ...; usersCount: never; } | undefined)[]; ... 56 more ...; __alias: never; } | undefined; ... 88 more ...; us...'. Did you mean 'registrationsOfUser'? (ts)
+          });
+          data.registrationsOfEvent = newData.registrationsOfEvent;
+          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:383:44
+Error: 'newData.event' is possibly 'undefined'. (ts)
+          data.registrationsOfEvent = newData.registrationsOfEvent;
+          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+          newRegistrationsSinceLoad = 0;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:383:58
+Error: Property 'registrationsCounts' does not exist on type '{ articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined)[]; ... 53 m...'. Did you mean 'reactionCounts'? (ts)
+          data.registrationsOfEvent = newData.registrationsOfEvent;
+          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+          newRegistrationsSinceLoad = 0;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:500:44
+Error: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<PaymentMethod, string>'. (ts)
+              class="centered"
+              use:tooltip={paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
+            >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:502:39
+Error: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<PaymentMethod, typeof SvelteComponent<any>>'. (ts)
+            >
+              <svelte:component this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']} />
+            </td>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:520:63
+Error: Binding element 'name' implicitly has an 'any' type. (ts)
+                {#if benef.contributesTo.length > 0}
+                  {#if compact && benef.contributesTo.find(({ name }) => name === 'AEn7')}
+                    <IconCheck />
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:523:49
+Error: Binding element 'name' implicitly has an 'any' type. (ts)
+                  {:else}
+                    {benef.contributesTo.map(({ name }) => name).join(', ')}
+                  {/if}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:574:29
+Error: Property 'verifyRegistration' does not exist on type '{ __typename: never; __directives: never; __alias: never; acceptRegistration: ({ [x: string]: unknown; } | { [x: string]: unknown; }) & {}; acknowledgeChangelog: boolean | `@${string}` | undefined; activateApp: boolean | ... 1 more ... | undefined; ... 113 more ...; verifyBooking: ({ ...; } | { ...; }) & {}; }'. (ts)
+                    await updatePaidStatus(true, registration);
+                    const { verifyRegistration } = await $zeus.mutate({
+                      verifyRegistration: [
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:575:23
+Error: Object literal may only specify known properties, and 'verifyRegistration' does not exist in type '{ acceptRegistration?: [{ email: string | Variable<any, string>; }, AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAcceptRegistrationSuccess": AliasType<...>; __typename?: boolean | ... 1 more ... | undefined; }...'. (ts)
+                    const { verifyRegistration } = await $zeus.mutate({
+                      verifyRegistration: [
+                        {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:610:56
+Error: Parameter 'r' implicitly has an 'any' type. (ts)
+                      registrations.edges[
+                        registrations.edges.findIndex((r) => r.node.id === registration.id)
+                      ].node.verifiedAt = verifyRegistration.data.registration?.verifiedAt;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/registrations/+page.svelte:613:56
+Error: Parameter 'r' implicitly has an 'any' type. (ts)
+                      registrations.edges[
+                        registrations.edges.findIndex((r) => r.node.id === registration.id)
+                      ].node.verifiedBy = verifyRegistration.data.registration?.verifiedBy;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/scan/+page.svelte:147:13
+Error: Property 'verifyRegistration' does not exist on type '{ __typename: never; __directives: never; __alias: never; acceptRegistration: ({ [x: string]: unknown; } | { [x: string]: unknown; }) & {}; acknowledgeChangelog: boolean | `@${string}` | undefined; activateApp: boolean | ... 1 more ... | undefined; ... 113 more ...; verifyBooking: ({ ...; } | { ...; }) & {}; }'. (ts)
+
+    const { verifyRegistration } = await $zeus.mutate({
+      verifyRegistration: [
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/scan/+page.svelte:148:7
+Error: Object literal may only specify known properties, and 'verifyRegistration' does not exist in type '{ acceptRegistration?: [{ email: string | Variable<any, string>; }, AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAcceptRegistrationSuccess": AliasType<...>; __typename?: boolean | ... 1 more ... | undefined; }...'. (ts)
+    const { verifyRegistration } = await $zeus.mutate({
+      verifyRegistration: [
+        { id: decodedContents, groupUid: $page.params.group, eventUid: $page.params.uid },
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/write/+page.svelte:15:19
+Error: 'data.event' is possibly 'undefined'. (ts)
+      author: $me,
+      visibility: data.event.visibility,
+      title: '',
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/write/+page.svelte:21:16
+Error: 'data.event' is possibly 'undefined'. (ts)
+      publishedAt: new Date(),
+      eventId: data.event.id,
+      event: data.event,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/write/+page.svelte:28:42
+Error: 'data.event' is possibly 'undefined'. (ts)
+<div class="content">
+  <h1><ButtonBack /> Écrire un post sur {data.event.title}</h1>
+  <FormArticle afterGoTo={() => '..'} bind:data={articleData} />
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/events/[group]/[uid]/write/+page.svelte:29:44
+Error: Type '{ article: { uid: string; id: string; group: { address: never; articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; ... 4 more ...; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefined...' is not assignable to type '{ article: { uid: string; id: string; title: string; body: string; visibility: Visibility; group: { uid: string; name: string; id: string; pictureFile: string; pictureFileDark: string; studentAssociation?: { ...; } | undefined; children: { ...; }[]; }; ... 5 more ...; pictureFile: string; }; }'.
+  The types of 'article.group' are incompatible between these types.
+    Type '{ address: never; articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; links: ({ createdAt: never; id: never; __typename: never; __directives: never; __alias: never; name: never; value: never; computedValue: never; } | undefined)[]; ... 26 more ...; visibility: never; } | undefi...' is not assignable to type '{ uid: string; name: string; id: string; pictureFile: string; pictureFileDark: string; studentAssociation?: { school: { name: string; }; } | undefined; children: { name: string; studentAssociation?: { ...; } | undefined; }[]; }'.
+      Type 'undefined' is not assignable to type '{ uid: string; name: string; id: string; pictureFile: string; pictureFileDark: string; studentAssociation?: { school: { name: string; }; } | undefined; children: { name: string; studentAssociation?: { ...; } | undefined; }[]; }'. (ts)
+  <h1><ButtonBack /> Écrire un post sur {data.event.title}</h1>
+  <FormArticle afterGoTo={() => '..'} bind:data={articleData} />
+</div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.svelte:12:26
+Error: Property 'itemsOfGroup' does not exist on type '{ mobile: boolean; token?: string | undefined; canEditGroup: boolean; AppLayout: AppLayoutStore; canListPages?: boolean | undefined; me: { admin: boolean; apprentice: boolean; ... 18 more ...; yearTier: number; } | undefined; ... 88 more ...; userServices: ({ ...; } | undefined)[]; }'. (ts)
+
+  const shopItems = data.itemsOfGroup.edges.flatMap(({ node }) => node);
+  const group = data.group;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.svelte:12:56
+Error: Binding element 'node' implicitly has an 'any' type. (ts)
+
+  const shopItems = data.itemsOfGroup.edges.flatMap(({ node }) => node);
+  const group = data.group;
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.svelte:16:5
+Error: 'group' is possibly 'undefined'. (ts)
+  const isOnClubBoard = Boolean(
+    group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+  );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.svelte:16:36
+Error: 's' is possibly 'undefined'. (ts)
+  const isOnClubBoard = Boolean(
+    group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+  );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.svelte:16:36
+Error: 's.member' is possibly 'undefined'. (ts)
+  const isOnClubBoard = Boolean(
+    group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+  );
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.svelte:48:20
+Error: 'group' is possibly 'undefined'. (ts)
+  <BackButton go="../." />
+  <h1>Boutique de {group.name}</h1>
+  <div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:36:24
+Error: 'shopItem' is possibly 'undefined'. (ts)
+  let quantity = 1;
+  const max = Math.min(shopItem.max, shopItem.stockLeft);
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:36:38
+Error: 'shopItem' is possibly 'undefined'. (ts)
+  let quantity = 1;
+  const max = Math.min(shopItem.max, shopItem.stockLeft);
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:38:19
+Error: 'data.shopItem' is possibly 'undefined'. (ts)
+
+  for (const _ of data.shopItem.itemOptions) {
+    dropdown.push('');
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:52:23
+Error: 'shopItem' is possibly 'undefined'. (ts)
+          userUid: $me?.uid ?? '',
+          shopItemId: shopItem.id,
+          quantity,
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:116:34
+Error: 'shopItem' is possibly 'undefined'. (ts)
+      <div class="left">
+        <ShopImageCaroussel url={shopItem.pictures.map((p) => p.path)} />
+      </div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:116:63
+Error: 'p' is possibly 'undefined'. (ts)
+      <div class="left">
+        <ShopImageCaroussel url={shopItem.pictures.map((p) => p.path)} />
+      </div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:121:16
+Error: 'shopItem' is possibly 'undefined'. (ts)
+          <BackButton go="../." />
+          <h2>{shopItem.name}</h2>
+          <ButtonShare />
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:123:30
+Error: 'shopItem' is possibly 'undefined'. (ts)
+          <ButtonShare />
+          {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
+            <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:123:30
+Error: 'shopItem.group' is possibly 'undefined'. (ts)
+          <ButtonShare />
+          {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
+            <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:123:70
+Error: 'm' is possibly 'undefined'. (ts)
+          <ButtonShare />
+          {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
+            <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:123:70
+Error: 'm.member' is possibly 'undefined'. (ts)
+          <ButtonShare />
+          {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
+            <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:129:18
+Error: 'shopItem' is possibly 'undefined'. (ts)
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html shopItem.descriptionHtml}
+        </div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:135:18
+Error: 'shopItem' is possibly 'undefined'. (ts)
+      <h2>Acheter</h2>
+      <p>Stock: {shopItem.stock === 0 ? '+∞' : shopItem.stock}</p>
+      <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:135:48
+Error: 'shopItem' is possibly 'undefined'. (ts)
+      <h2>Acheter</h2>
+      <p>Stock: {shopItem.stock === 0 ? '+∞' : shopItem.stock}</p>
+      <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:136:20
+Error: 'shopItem' is possibly 'undefined'. (ts)
+      <p>Stock: {shopItem.stock === 0 ? '+∞' : shopItem.stock}</p>
+      <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
+      <p>Prix: {shopItem.price} €</p>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:136:50
+Error: 'shopItem' is possibly 'undefined'. (ts)
+      <p>Stock: {shopItem.stock === 0 ? '+∞' : shopItem.stock}</p>
+      <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
+      <p>Prix: {shopItem.price} €</p>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:137:17
+Error: 'shopItem' is possibly 'undefined'. (ts)
+      <p>Restant: {shopItem.stock === 0 ? '+∞' : shopItem.stockLeft}</p>
+      <p>Prix: {shopItem.price} €</p>
+      <InputNumber
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:147:12
+Error: 'shopItem' is possibly 'undefined'. (ts)
+
+      {#if shopItem.itemOptions.length > 0}
+        <div class="options">
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:149:18
+Error: 'shopItem' is possibly 'undefined'. (ts)
+        <div class="options">
+          {#each shopItem.itemOptions as option, i}
+            <InputSelectOneDropdown
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:151:22
+Error: 'option' is possibly 'undefined'. (ts)
+            <InputSelectOneDropdown
+              label={option.name}
+              options={option.options}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:152:24
+Error: 'option' is possibly 'undefined'. (ts)
+              label={option.name}
+              options={option.options}
+              bind:value={dropdown[i]}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:154:15
+Error: Type 'boolean | `@${string}` | undefined' is not assignable to type 'boolean | undefined'.
+  Type '`@${string}`' is not assignable to type 'boolean | undefined'. (ts)
+              bind:value={dropdown[i]}
+              required={option.required}
+              other={option.otherToggle}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:154:25
+Error: 'option' is possibly 'undefined'. (ts)
+              bind:value={dropdown[i]}
+              required={option.required}
+              other={option.otherToggle}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:155:15
+Error: Type 'boolean | `@${string}` | undefined' is not assignable to type 'boolean | undefined'. (ts)
+              required={option.required}
+              other={option.otherToggle}
+              on:input={() => {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:155:22
+Error: 'option' is possibly 'undefined'. (ts)
+              required={option.required}
+              other={option.otherToggle}
+              on:input={() => {
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:161:76
+Error: 'option' is possibly 'undefined'. (ts)
+            {#if dropdown[i] === 'Autre'}
+              <InputText label={'Autre'} bind:value={answers[i]} required={option.required} />
+            {/if}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:169:20
+Error: 'shopItem' is possibly 'undefined'. (ts)
+          <ul class="nobullet payment-methods">
+            {#each shopItem.paymentMethods as method}
+              <li>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:182:77
+Error: 'data.shopItem' is possibly 'undefined'. (ts)
+              <li class="no-payment-methods danger">
+                Aucun moyen de paiement disponible. Contactez le bureau de {data.shopItem.group
+                  .name}.
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:182:77
+Error: 'data.shopItem.group' is possibly 'undefined'. (ts)
+              <li class="no-payment-methods danger">
+                Aucun moyen de paiement disponible. Contactez le bureau de {data.shopItem.group
+                  .name}.
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/+page.svelte:232:38
+Error: 'shopItem' is possibly 'undefined'. (ts)
+                <ButtonPrimary loading={paymentLoading} submits
+                  >Payer {quantity * shopItem.price}€</ButtonPrimary
+                >
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:26:31
+Error: 'data.shopItem' is possibly 'undefined'. (ts)
+  <BackButton go="../." />
+  <h1>Modifier un article de {data.shopItem.group.name}</h1>
+</div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:26:31
+Error: 'data.shopItem.group' is possibly 'undefined'. (ts)
+  <BackButton go="../." />
+  <h1>Modifier un article de {data.shopItem.group.name}</h1>
+</div>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:29:11
+Error: 'data.shopItem' is possibly 'undefined'. (ts)
+<FormPictureItem
+  itemId={data.shopItem.id}
+  groupUid={data.shopItem.group.uid}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:30:13
+Error: 'data.shopItem' is possibly 'undefined'. (ts)
+  itemId={data.shopItem.id}
+  groupUid={data.shopItem.group.uid}
+  pictures={data.shopItem.pictures}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:30:13
+Error: 'data.shopItem.group' is possibly 'undefined'. (ts)
+  itemId={data.shopItem.id}
+  groupUid={data.shopItem.group.uid}
+  pictures={data.shopItem.pictures}
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:31:3
+Error: Type '({ id: never; __typename: never; __directives: never; __alias: never; path: never; position: never; } | undefined)[]' is not assignable to type '{ id: string; path: string; position: Number; }[]'.
+  Type '{ id: never; __typename: never; __directives: never; __alias: never; path: never; position: never; } | undefined' is not assignable to type '{ id: string; path: string; position: Number; }'.
+    Type 'undefined' is not assignable to type '{ id: string; path: string; position: Number; }'. (ts)
+  groupUid={data.shopItem.group.uid}
+  pictures={data.shopItem.pictures}
+/>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:31:13
+Error: 'data.shopItem' is possibly 'undefined'. (ts)
+  groupUid={data.shopItem.group.uid}
+  pictures={data.shopItem.pictures}
+/>
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:33:15
+Error: Type '{ createdAt: never; description: never; descriptionHtml: never; id: never; uid: never; __typename: never; __directives: never; __alias: never; name: never; group: { address: never; articles: ({ ...; } | undefined)[]; ... 48 more ...; website: never; } | undefined; ... 13 more ...; stockLeft: never; } | undefined' is not assignable to type '{ id: string; uid: string; name: string; price: number; stock: number; max: number; description: string; startsAt?: Date | undefined; endsAt?: Date | undefined; visibility: Visibility; paymentMethods: PaymentMethod[]; itemOptions: { ...; }[]; group: { ...; }; lydiaAccount?: { ...; } | undefined; }'.
+  Type 'undefined' is not assignable to type '{ id: string; uid: string; name: string; price: number; stock: number; max: number; description: string; startsAt?: Date | undefined; endsAt?: Date | undefined; visibility: Visibility; paymentMethods: PaymentMethod[]; itemOptions: { ...; }[]; group: { ...; }; lydiaAccount?: { ...; } | undefined; }'. (ts)
+/>
+<FormShopItem data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />
+
+
+
+/home/uwun/projects.local/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[itemUid]/edit/+page.svelte:33:36
+Error: Type '({ id: never; __typename: never; __directives: never; __alias: never; name: never; group?: { address: never; articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; ... 27 more ...; visibility: never; } | undefined)[]; ... 48 more ...; website: never; } | { ...; } | undefined; grou...' is not assignable to type '{ name: string; id: string; group?: { pictureFile: string; pictureFileDark: string; name: string; } | undefined; }[]'.
+  Type '{ id: never; __typename: never; __directives: never; __alias: never; name: never; group?: { address: never; articles: ({ canBeEdited: boolean | `@${string}` | undefined; createdAt: never; id: never; ... 27 more ...; visibility: never; } | undefined)[]; ... 48 more ...; website: never; } | { ...; } | undefined; group...' is not assignable to type '{ name: string; id: string; group?: { pictureFile: string; pictureFileDark: string; name: string; } | undefined; }'.
+    Type 'undefined' is not assignable to type '{ name: string; id: string; group?: { pictureFile: string; pictureFileDark: string; name: string; } | undefined; }'. (ts)
+/>
+<FormShopItem data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />
+
+
+
+====================================
+svelte-check found 262 errors and 0 warnings in 34 files

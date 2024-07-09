@@ -4,13 +4,15 @@ import { LinkInput } from '#modules/links';
 import { Visibility } from '@churros/db/prisma';
 import { differenceInDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
+import { ZodError } from 'zod';
 import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
 import { canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticle', (t) =>
   t.prismaField({
     type: ArticleType,
-    errors: {},
+    description: 'Crée ou met à jour un post',
+    errors: { types: [Error, ZodError] },
     args: {
       id: t.arg.id({ required: false }),
       group: t.arg({ type: UIDScalar }),

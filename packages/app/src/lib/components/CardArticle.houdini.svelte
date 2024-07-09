@@ -204,9 +204,7 @@
               <h2>{event.title}</h2>
               <p class="where">{event.location}</p>
               <p class="when">
-                {formatEventDates(
-                  event
-                )}
+                {formatEventDates(event)}
               </p>
             </div>
           </a>

@@ -1,26 +1,28 @@
 <script lang="ts">
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import CardMajor from '$lib/components/CardMajor.svelte';
-  import groupBy from 'lodash.groupby';
-  import type { PageData } from './$types';
-  import { me } from '$lib/session';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageDocuments } = data);
 
-  const majorsBySchool = Object.entries(groupBy(data.majors, (m) => m.schools[0]?.uid))
-    .map(([schoolUid, majors]) => [schoolUid, majors.filter((m) => m.subjects.length > 0)])
-    .filter(([_, majors]) => majors.length > 0)
-    .sort(([schoolUid]) => {
-      // Put schools of the user first
-      if ($me?.major?.schools.some((s) => s.uid === schoolUid)) return -1;
-      return 1;
-    }) as Array<[string, typeof data.majors]>;
+  $: schools = $PageDocuments.data?.schools ?? [];
+  $: majors = schools.flatMap((s) => s.majors);
+
+  // const majorsBySchool = Object.entries(groupBy(majors, (m) => m.schools[0]?.uid))
+  //   .map(([schoolUid, majors]) => [schoolUid, majors.filter((m) => m.subjects.length > 0)])
+  //   .filter(([_, majors]) => majors.length > 0)
+  //   .sort(([schoolUid]) => {
+  //     // Put schools of the user first
+  //     if ($me?.major?.schools.some((s) => s.uid === schoolUid)) return -1;
+  //     return 1;
+  //   }) as Array<[string, typeof majors]>; -->
 </script>
 
 <Breadcrumbs root="/documents/"></Breadcrumbs>
 
-{#each majorsBySchool as [schoolUid, majorsOfSchool]}
-  {@const school = data.schools.find((s) => s.uid === schoolUid)}
+{#each schools as { uid: schoolUid, majors: majorsOfSchool }}
+  {@const school = schools.find((s) => s.uid === schoolUid)}
   <section class="majors-of-school">
     {#if school}
       <h2 class="typo-field-label">{school.name}</h2>

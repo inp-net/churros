@@ -1,0 +1,12 @@
+query PageDocuments {
+  schools {
+    uid
+    name
+    majors {
+      id
+      name
+      shortName
+      uid
+    }
+  }
+}

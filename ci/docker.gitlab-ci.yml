@@ -35,4 +35,3 @@ deploy_app:
       --dockerfile "$CI_PROJECT_DIR/Dockerfile"
       --target "app"
       --destination "$HARBOR_REGISTRY_IMAGE/app:$CI_COMMIT_TAG"
-

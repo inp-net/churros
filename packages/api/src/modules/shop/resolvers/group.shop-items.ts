@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { GroupType } from '#modules/groups';
 import { userIsOnBoardOf } from '#permissions';
 import { Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';

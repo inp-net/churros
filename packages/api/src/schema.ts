@@ -1,6 +1,7 @@
 import { builder } from '#lib';
 import { printSchema } from 'graphql';
 import { writeFile } from 'node:fs/promises';
+import * as path from 'node:path';
 import { rateLimitDirectiveTransformer } from './lib/ratelimit.js';
 
 import '#modules/announcements';
@@ -33,5 +34,11 @@ import '#modules/users';
 
 export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
 
-export const writeSchema = async () =>
-  writeFile(new URL('build/schema.graphql', `file:///${process.cwd()}/`), printSchema(schema));
+export async function writeSchema() {
+  await writeFile(
+    new URL('build/schema.graphql', `file:///${process.cwd()}/`),
+    printSchema(schema),
+  );
+  const here = path.dirname(new URL(import.meta.url).pathname);
+  await writeFile(path.join(here, '../../app/schema.graphql'), printSchema(schema));
+}
