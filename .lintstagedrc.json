@@ -1,10 +1,5 @@
 {
-  "(**/*.{js,svelte}|packages/!(api)/**/*.ts)": "eslint --fix",
+  "*.{js,ts,svelte}": "eslint --fix",
   "*.{css,scss,svelte}": "stylelint --fix",
-  "*": "prettier --write --ignore-unknown",
-  "packages/api/**/*.ts": [
-    "yarn workspace @churros/api barrelize",
-    "git add packages/api/src/modules/**/index.ts packages/api/barrelsby.config.json",
-    "eslint --fix"
-  ]
+  "*": "prettier --write --ignore-unknown"
 }
