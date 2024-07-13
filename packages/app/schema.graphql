@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -176,14 +171,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -729,7 +717,9 @@ type Article implements Commentable & Node & Pictured & Reactable {
   reactionCounts: Counts!
   reactions(emoji: String!): Int!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   title: String!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
@@ -758,7 +748,9 @@ type BarWeek implements Node {
   groups: [Group!]!
   id: ID!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   startsAt: DateTime!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
@@ -906,10 +898,14 @@ type Document implements Commentable & Node & Reactable {
   reactions(emoji: String!): Int!
   schoolYear: Int!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
 
-  """Liste de chemins vers les fichiers représentant la correction."""
+  """
+  Liste de chemins vers les fichiers représentant la correction.
+  """
   solutionPaths: [String!]!
   subject: Subject
   subjectId: ID
@@ -1005,6 +1001,11 @@ type Event implements Node & Pictured & Reactable {
   """
   L'utilisateur·ice connecté·e peut scanner les réservations de cet évènement
   """
+  canScanBookings: Boolean!
+
+  """
+  L'utilisateur·ice connecté·e peut scanner les réservations de cet évènement
+  """
   canSeeBookings: Boolean!
 
   """
@@ -1042,7 +1043,9 @@ type Event implements Node & Pictured & Reactable {
   lydiaAccountId: ID
   managers: [EventManager!]!
 
-  """Réservations faites par et/ou pour l'utilisateur.ice connecté.e"""
+  """
+  Réservations faites par et/ou pour l'utilisateur.ice connecté.e
+  """
   myBookings: EventMyBookingsResult!
   myReactions: BooleanMap!
   mySoonestShotgunOpensAt: DateTime
@@ -1075,7 +1078,9 @@ type Event implements Node & Pictured & Reactable {
   """
   showPlacesLeft: Boolean!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   startsAt: DateTime!
   ticket(id: ID, slug: String): Ticket!
@@ -1149,10 +1154,14 @@ type EventMyBookingsSuccess {
 type EventsByDay {
   date: DateTime!
 
-  """Évènements qui ont lieu (commencent) à ce jour"""
+  """
+  Évènements qui ont lieu (commencent) à ce jour
+  """
   happening: [Event!]!
 
-  """Évènements qui ont leur premier shotgun à ce jour"""
+  """
+  Évènements qui ont leur premier shotgun à ce jour
+  """
   shotgunning: [Event!]!
 }
 
@@ -1506,6 +1515,7 @@ type Group implements Node & Pictured {
   links: [Link!]!
   longDescription: String!
   longDescriptionHtml: String!
+  lydiaAccounts: [LydiaAccount!]!
   mailingList: String!
   members: [GroupMember!]!
   name: String!
@@ -1558,6 +1568,7 @@ type Group implements Node & Pictured {
   secretaries: [GroupMember!]!
   selfJoinable: Boolean!
   services: [Service!]!
+  shopItem(slug: String!): ShopItem
   shopItems(after: String, before: String, first: Int, last: Int): GroupShopItemsConnection!
   shopOrders: [ShopPayment!]!
   studentAssociation: StudentAssociation
@@ -1783,7 +1794,9 @@ type Minor implements Node {
   name: String!
   shortName: String!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   subjects: [Subject!]!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
@@ -1792,7 +1805,7 @@ type Minor implements Node {
 }
 
 """
-- **Rate limit:** 1200 / 10 minutes
+- **Rate limit par défault:** 1200 / 10 minutes (par utilisateur·ice et par query)
 """
 type Mutation {
   acceptRegistration(email: String!): MutationAcceptRegistrationResult!
@@ -1800,7 +1813,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "dev"): Boolean!
+  acknowledgeChangelog(version: String! = "1.66.0-rc.0"): Boolean!
 
   """
   Activate a third-party app. Only admins can do this.
@@ -1841,28 +1854,7 @@ type Mutation {
     section: ID!
   ): MutationAnswerFormSectionResult!
 
-  """
-  Authorize a third-party client to access the user's data.
-  Returns an access code.
-
-  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
-
-  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
-
-  - `<clientId>`: The client ID of the app. See registerApp to get this.
-  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
-  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
-
-  Use that code to get an access token with /token:
-
-  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
-
-  - `grant_type`: `authorization_code`
-  - `code`: The code returned by this endpoint
-  - `client_id`: The client ID of the app
-  - `client_secret`: The client secret of the app
-  - `redirect_uri`: The redirect URI used in this request
-  """
+  "\nAuthorize a third-party client to access the user's data. \nReturns an access code. \n\nUse the frontend's /authorize endpoint instead of this, as it requires already being logged-in.\n\nDo a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:\n\n- `<clientId>`: The client ID of the app. See registerApp to get this.\n- `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`\n- `<state>`: A random string generated from personal information used to prevent CSRF attacks.\n\nUse that code to get an access token with /token:\n\nDo a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:\n\n- `grant_type`: `authorization_code`\n- `code`: The code returned by this endpoint\n- `client_id`: The client ID of the app\n- `client_secret`: The client secret of the app\n- `redirect_uri`: The redirect URI used in this request\n      "
   authorize(
     """
     The client ID of the app. See registerApp to get this.
@@ -2025,7 +2017,9 @@ type Mutation {
   deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
   deleteShopOption(optionIds: [String!]!): Boolean!
   deleteTicket(
-    """Supprimer le billet même s'il existe des réservations"""
+    """
+    Supprimer le billet même s'il existe des réservations
+    """
     force: Boolean! = false
     id: ID!
   ): Boolean!
@@ -2311,15 +2305,18 @@ type Mutation {
     startsAt: DateTime!
     title: String!
     warning: Boolean!
-  ): Announcement!
+  ): MutationUpsertAnnouncementResult!
+
+  """
+  Crée ou met à jour un post
+  """
   upsertArticle(
-    authorId: ID
     body: String!
-    eventId: ID
-    groupId: ID!
+    event: ID
+    group: UID!
     id: ID
-    links: [LinkInput!]!
-    publishedAt: DateTime!
+    links: [LinkInput!]! = []
+    publishedAt: DateTime
     title: String!
     visibility: Visibility!
   ): MutationUpsertArticleResult!
@@ -2331,7 +2328,14 @@ type Mutation {
     startsAt: DateTime!
   ): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
-  upsertDocument(description: String!, id: ID, schoolYear: Int!, subject: ID!, title: String!, type: DocumentType!): MutationUpsertDocumentResult!
+  upsertDocument(
+    description: String!
+    id: ID
+    schoolYear: Int!
+    subject: ID!
+    title: String!
+    type: DocumentType!
+  ): MutationUpsertDocumentResult!
   upsertEvent(
     """
     List of user uids
@@ -2509,7 +2513,9 @@ type Mutation {
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
   validateEmail(token: String!): MutationValidateEmailResult!
   verifyBooking(
-    """Identifiant de l’événement"""
+    """
+    Identifiant de l’événement
+    """
     event: ID!
 
     """
@@ -2671,7 +2677,7 @@ type MutationUpsertAnnouncementSuccess {
   data: Announcement!
 }
 
-union MutationUpsertArticleResult = Error | MutationUpsertArticleSuccess
+union MutationUpsertArticleResult = Error | MutationUpsertArticleSuccess | ZodError
 
 type MutationUpsertArticleSuccess {
   data: Article!
@@ -3077,7 +3083,7 @@ type QRCode {
 }
 
 """
-- **Rate limit:** 1200/minute
+- **Rate limit par défault:** 1200/minute (par utilisateur·ice et par query)
 """
 type Query {
   """
@@ -3091,7 +3097,9 @@ type Query {
   allForms(after: String, before: String, first: Int, last: Int): QueryAllFormsConnection!
   allUsers(after: String, before: String, first: Int, last: Int): QueryAllUsersConnection!
   announcement(
-    """ID local ou global"""
+    """
+    ID local ou global
+    """
     id: ID!
   ): Announcement!
   announcements(after: String, before: String, first: Int, last: Int): QueryAnnouncementsConnection!
@@ -3108,7 +3116,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (dev).
+    The version to request a changelog for. Defaults to the current version (1.66.0-rc.0).
     """
     version: String
   ): ChangelogRelease!
@@ -3127,9 +3135,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
+    The version to end at, **inclusive**. Leave empty to end at the current version (1.66.0-rc.0).
     """
-    to: String! = "dev"
+    to: String! = "1.66.0-rc.0"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
@@ -3205,7 +3213,6 @@ type Query {
   logs(after: String, before: String, first: Int, last: Int): QueryLogsConnection!
   lydiaAccount(id: ID!): LydiaAccount!
   lydiaAccounts: [LydiaAccount!]!
-  lydiaAccountsOfGroup(uid: String!): [LydiaAccount!]!
   major(uid: String!): Major!
   majors: [Major!]!
 
@@ -3252,7 +3259,17 @@ type Query {
   Returns an SVG path of the QR Code for the given registration
   """
   registrationQRCode(id: ID!): QRCode!
-  registrationsOfUser(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int, userUid: String!): QueryRegistrationsOfUserConnection! @deprecated(reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`).")
+  registrationsOfUser(
+    after: String
+    before: String
+    first: Int
+    forUserOnly: Boolean
+    last: Int
+    userUid: String!
+  ): QueryRegistrationsOfUserConnection!
+    @deprecated(
+      reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`)."
+    )
 
   """
   Rendu de markdown en HTML. Demande a être authentifié·e pour éviter tout abus.
@@ -4358,6 +4375,7 @@ type School implements Pictured {
   color: String!
   description: String!
   id: ID!
+  majors: [Major!]!
   name: String!
   pictureFile: String!
 
@@ -4425,7 +4443,9 @@ type ShopItem {
   price: Float!
   shopPayments: [ShopPayment!]!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   startsAt: DateTime
   stock: Int!
@@ -4596,7 +4616,9 @@ type Subject {
   semester: Int
   shortName: String!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   unit: TeachingUnit
@@ -4616,7 +4638,12 @@ type SubjectDocumentsConnectionEdge {
 }
 
 """
-- **Rate limit:** 600 / 10 minutes
+Permet de faire des requêtes de données temps-réel, via des _websockets_.
+L'endpoint pour le temps réel est `ws://localhost:4000/graphql`.
+
+Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-guild.dev/graphql/ws/get-started#use-the-client)
+
+- **Rate limit par défault:** 600 / 10 minutes (par utilisateur·ice et par query)
 """
 type Subscription {
   announcementsNow: [Announcement!]!
@@ -4785,7 +4812,9 @@ type Ticket implements Node {
   registrations: [Registration!]!
   remainingGodsons: Int!
 
-  """Un nom lisible sans espaces, adaptés pour des URLs."""
+  """
+  Un nom lisible sans espaces, adaptés pour des URLs.
+  """
   slug: String!
   ticketGroupId: ID
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
@@ -4897,7 +4926,13 @@ type User implements Node & Pictured {
   """
   boardMemberships: [GroupMember!]!
   booking(beneficiary: String, event: ID!): Registration!
-  bookings(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int): UserBookingsConnection!
+  bookings(
+    after: String
+    before: String
+    first: Int
+    forUserOnly: Boolean
+    last: Int
+  ): UserBookingsConnection!
 
   """
   Vrai si cet utilisateur est un bot (i.e. ne représente pas une personne physique)
@@ -4906,10 +4941,14 @@ type User implements Node & Pictured {
   canAccessDocuments: Boolean!
   canBeEdited: Boolean!
 
-  """Groupes sur lesquels l'utilisateur·ice peut créer des posts"""
+  """
+  Groupes sur lesquels l'utilisateur·ice peut créer des posts
+  """
   canCreatePostsOn: [Group!]!
 
-  """Vrai si cette personne peut éditer le groupe donné"""
+  """
+  Vrai si cette personne peut éditer le groupe donné
+  """
   canEditGroup(
     """
     UID du groupe

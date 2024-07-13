@@ -1,5 +1,6 @@
 import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus';
+import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
@@ -8,41 +9,45 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
 
   const data = await loadQuery(
     {
-      shopItem: [
-        { itemUid: params.itemUid },
+      group: [
+        { uid: params.uid },
         {
-          id: true,
+          uid: true,
           name: true,
-          price: true,
-          stock: true,
-          stockLeft: true,
-          max: true,
-          descriptionHtml: true,
-          paymentMethods: true,
-          pictures: {
-            path: true,
-            position: true,
-          },
-          group: {
-            uid: true,
-            name: true,
-            boardMembers: {
-              member: {
-                uid: true,
-              },
+          boardMembers: {
+            member: {
+              uid: true,
             },
           },
-          itemOptions: {
-            id: true,
-            name: true,
-            options: true,
-            required: true,
-            otherToggle: true,
-          },
+          shopItem: [
+            { slug: params.itemUid },
+            {
+              id: true,
+              name: true,
+              price: true,
+              stock: true,
+              stockLeft: true,
+              max: true,
+              descriptionHtml: true,
+              paymentMethods: true,
+              pictures: {
+                path: true,
+                position: true,
+              },
+              itemOptions: {
+                id: true,
+                name: true,
+                options: true,
+                required: true,
+                otherToggle: true,
+              },
+            },
+          ],
         },
       ],
     },
     { fetch, parent },
   );
+  if (!data.group.shopItem) error(404, { message: 'Article inexistant' });
   return data;
 };

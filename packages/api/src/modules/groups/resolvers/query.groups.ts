@@ -7,7 +7,6 @@ builder.queryField('groups', (t) =>
     type: [GroupType],
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
-
     },
     resolve: async (query, _, { types }, { user }) =>
       prisma.group.findMany({

@@ -24,6 +24,10 @@ export const _clubQuery = Selector('Group')({
     name: true,
     value: true,
   },
+  lydiaAccounts: {
+    id: true,
+    name: true,
+  },
   studentAssociation: {
     uid: true,
     name: true,
@@ -64,13 +68,6 @@ export const load: PageLoad = async ({ fetch, params, url, parent }) => {
   return loadQuery(
     {
       group: [params, _clubQuery],
-      lydiaAccountsOfGroup: [
-        { uid: params.uid },
-        Selector('LydiaAccount')({
-          id: true,
-          name: true,
-        }),
-      ],
       schoolGroups: { names: true, majors: { id: true, name: true } },
     },
     { fetch, token },

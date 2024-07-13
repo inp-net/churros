@@ -1,37 +1,21 @@
 import { redirectToLogin } from '$lib/session';
 import { loadQuery } from '$lib/zeus.js';
-import { redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent, url }) => {
   const { me } = await parent();
   if (!me) throw redirectToLogin(url.pathname);
 
-  /*   const { group } = await loadQuery(
-    {
-      group: [
-        { uid: params.uid },
-        {
-          pictureFile: true,
-          pictureFileDark: true,
-          uid: true,
-          name: true,
-          members: {
-            member: { uid: true },
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  ); */
-
   const data = await loadQuery(
     {
       group: [
         { uid: params.uid },
         {
+          name: true,
+          uid: true,
           shopItem: [
-            { itemUid: params.itemUid },
+            { slug: params.itemUid },
             {
               id: true,
               uid: true,
@@ -88,9 +72,6 @@ export const load: PageLoad = async ({ fetch, params, parent, url }) => {
     },
     { fetch, parent },
   );
-  if (
-    !(me.admin || data.shopItem.group.boardMembers.some((member) => member.member.uid === me.uid))
-  )
-    throw redirect(307, '..');
+  if (!data.group?.shopItem) error(404, { message: 'Article inexistant' });
   return data;
 };

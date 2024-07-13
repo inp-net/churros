@@ -7,6 +7,7 @@
   import FormPictureItem from '$lib/components/FormPictureItem.svelte';
 
   export let data: PageData;
+  $: shopItem = data.group.shopItem!;
 
   let warningToastId: string;
 
@@ -23,14 +24,10 @@
 
 <div class="header">
   <BackButton go="../." />
-  <h1>Modifier un article de {data.shopItem.group.name}</h1>
+  <h1>Modifier un article de {data.group.name}</h1>
 </div>
-<FormPictureItem
-  itemId={data.shopItem.id}
-  groupUid={data.shopItem.group.uid}
-  pictures={data.shopItem.pictures}
-/>
-<FormShopItem data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />
+<FormPictureItem itemId={shopItem.id} groupUid={data.group.uid} pictures={shopItem.pictures} />
+<FormShopItem data={shopItem} availableLydiaAccounts={data.group.lydiaAccounts} />
 
 <style>
   .header {

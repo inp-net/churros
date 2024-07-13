@@ -100,7 +100,7 @@
   $: myPermissions = $me?.groups?.find(({ group: { uid } }) => uid === group.uid);
 
   $: ({ group } = data);
-  $: ShopItems = data.itemsOfGroup;
+  $: ShopItems = data.group.shopItems;
 
   $: canEditArticles = Boolean(
     myPermissions?.canEditArticles || meOnClubBoard || data.canEditGroup,
@@ -352,7 +352,7 @@
       <ButtonSecondary href="./shop/" icon={IconStore}>Voir</ButtonSecondary>
     </h2>
     <div class="shoppreview">
-      {#each ShopItems.slice(0, 6) as shopItem}
+      {#each ShopItems.edges.map((e) => e.node).slice(0, 6) as shopItem}
         <ShopItem {shopItem} small={true} />
       {/each}
     </div>

@@ -40,13 +40,13 @@
   let updatedTicketsIds: string[] = [];
 
   $: placesLeft = data.event.placesLeft;
-  $: tickets = data.ticketsOfEvent;
+  $: tickets = data.event.tickets;
 
   onMount(() => {
     $subscribe(
       {
         event: [
-          { groupUid: $page.params.group, uid: $page.params.uid },
+          { group: $page.params.group, slug: $page.params.uid },
           { placesLeft: true, tickets: { placesLeft: true, id: true } },
         ],
       },
@@ -56,7 +56,7 @@
         if (!freshData.event) return;
         data.event.placesLeft = freshData.event.placesLeft as unknown as number | undefined;
         // @ts-expect-error dunnot what is happening here, but typing with zeus and $subscribe is kinda cursed anyway
-        data.ticketsOfEvent = data.ticketsOfEvent.map((t) => {
+        data.event.tickets = data.event.tickets.map((t) => {
           const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id);
           if (freshTicket?.placesLeft !== t.placesLeft) updatedTicketsIds.push(t.id);
           return { ...t, ...freshTicket };

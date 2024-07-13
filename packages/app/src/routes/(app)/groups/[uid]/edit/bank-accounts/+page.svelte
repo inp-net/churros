@@ -9,7 +9,10 @@
 
   export let data: PageData;
 
-  $: ({ group, lydiaAccountsOfGroup } = data);
+  $: ({
+    group,
+    group: { lydiaAccounts: lydiaAccountsOfGroup },
+  } = data);
 
   let loading = false;
   let phone = '';

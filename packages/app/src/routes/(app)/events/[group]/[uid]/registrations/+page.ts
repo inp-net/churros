@@ -1,7 +1,7 @@
 import { Selector, loadQuery } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
-export const _registrationsQuery = Selector('QueryRegistrationsOfEventConnection')({
+export const _bookingsQuery = Selector('EventBookingsConnection')({
   pageInfo: { hasNextPage: true, endCursor: true },
   edges: {
     cursor: true,
@@ -69,19 +69,13 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
       event: [
-        { groupUid: params.group, uid: params.uid },
+        { group: params.group, slug: params.uid },
         Selector('Event')({
           id: true,
-          registrationsCounts: { total: true, paid: true, verified: true, unpaidLydia: true },
+          bookingsCounts: { total: true, paid: true, verified: true, unpaidLydia: true },
           profitsBreakdown: { total: true },
+          bookings: [{}, _bookingsQuery],
         }),
-      ],
-      registrationsOfEvent: [
-        {
-          eventUid: params.uid,
-          groupUid: params.group,
-        },
-        _registrationsQuery,
       ],
     },
     { fetch, parent },

@@ -41,11 +41,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) => {
       },
       { fetch, parent },
     )),
-    lydiaAccountsOfGroup: [],
     group: {
       id: '',
       uid: '',
       type: GroupType.Group,
+      lydiaAccounts: [],
       parentId,
       parent: { ...parentGroup, id: parentId },
       groupId: '',

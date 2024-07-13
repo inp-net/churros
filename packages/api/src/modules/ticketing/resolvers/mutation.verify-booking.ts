@@ -7,7 +7,6 @@ import {
   RegistrationVerificationState,
   canScanBookings,
 } from '../index.js';
-// TODO rename to verify-booking.ts
 
 builder.mutationField('verifyBooking', (t) =>
   t.field({

@@ -3,12 +3,14 @@
   import { type Visibility, zeus } from '$lib/zeus';
   import InputPickObjects from './InputPickObjects.svelte';
   import type { Visibility$options } from '$houdini';
+  import { isDark } from '$lib/theme';
 
   type Event = {
     id: string;
-    uid: string;
+    slug: string;
     title: string;
     pictureFile: string;
+    pictureURL: string;
     startsAt: Date;
     visibility: Visibility | Visibility$options;
   };
@@ -19,10 +21,10 @@
   export let suggestions: Event[] = [];
   export let clearable = false;
 
-  function allowed(uid: string) {
+  function allowed(slug: string) {
     const result =
-      (allow.length > 0 ? allow.includes(uid) : true) &&
-      (except.length > 0 ? !except.includes(uid) : true);
+      (allow.length > 0 ? allow.includes(slug) : true) &&
+      (except.length > 0 ? !except.includes(slug) : true);
     return result;
   }
 
@@ -32,9 +34,10 @@
         { q: query, groupUid },
         {
           event: {
-            uid: true,
             id: true,
+            slug: true,
             title: true,
+            pictureURL: [{ dark: $isDark }, true],
             pictureFile: true,
             startsAt: true,
             visibility: true,
@@ -43,7 +46,7 @@
       ],
     });
     return searchEvents
-      .filter(({ event: { uid } }) => allowed(uid))
+      .filter(({ event: { slug } }) => allowed(slug))
       .map(({ event }) => ({ item: event }));
   }
 </script>

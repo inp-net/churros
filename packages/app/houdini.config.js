@@ -93,7 +93,7 @@ const config = {
     UID: {
       type: 'string',
       marshal: (x) => {
-        // Allow empty UID scalars: some GraphQL documents might accept UID scalars that are non-nullable to satisfy typing requirements 
+        // Allow empty UID scalars: some GraphQL documents might accept UID scalars that are non-nullable to satisfy typing requirements
         // but can actually be empty sometimes (in which case the query is skipped with a @include of another variable)
         // We can't unfortunately do sth like `field(...: $a (of type T!)) @include(if: $a (of type T)) {... $a is now of type T!...}
         // See https://github.com/graphql/graphql-spec/issues/275

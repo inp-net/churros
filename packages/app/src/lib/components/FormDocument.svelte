@@ -28,6 +28,7 @@
     subject?:
       | undefined
       | {
+          id: string;
           uid: string;
           name: string;
           shortName: string;
@@ -52,9 +53,7 @@
           title: data.title,
           type: data.type,
           id: data.id,
-          subjectUid: data.subject.uid,
-          subjectForApprentices: data.subject.forApprentices ?? false,
-          subjectYearTier: data.subject.yearTier,
+          subject: data.subject.id,
         },
         {
           '__typename': true,

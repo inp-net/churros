@@ -40,13 +40,15 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
   return loadQuery(
     {
-      group: [{ uid: params.uid }, _clubQuery],
-      lydiaAccountsOfGroup: [
+      group: [
         { uid: params.uid },
-        Selector('LydiaAccount')({
-          id: true,
-          name: true,
-        }),
+        {
+          ..._clubQuery,
+          lydiaAccounts: {
+            id: true,
+            name: true,
+          },
+        },
       ],
     },
     { fetch, token },

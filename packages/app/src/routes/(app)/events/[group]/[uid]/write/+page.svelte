@@ -8,7 +8,8 @@
 
   let articleData = {
     article: {
-      uid: '',
+      slug: '',
+      pictureURL: '',
       id: '',
       group: data.group,
       author: $me,

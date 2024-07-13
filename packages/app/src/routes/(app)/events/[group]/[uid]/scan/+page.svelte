@@ -1,27 +1,29 @@
 <script lang="ts">
-  import IconChevronRight from '~icons/mdi/chevron-right';
-  import IconClose from '~icons/mdi/close';
-  import IconGear from '~icons/mdi/gear-outline';
-  import IconGearCancel from '~icons/mdi/cog-off-outline';
-  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
-  import IconCheck from '~icons/mdi/check';
-  import IconRepeatOff from '~icons/mdi/repeat-off';
-  import IconOtherEvent from '~icons/mdi/circle-off-outline';
-  import IconNotPaid from '~icons/mdi/credit-card-off-outline';
-  import { type PaymentMethod, zeus, RegistrationVerificationState } from '$lib/zeus';
-  import { type SvelteComponent, onDestroy, onMount } from 'svelte';
-  import { Html5QrcodeScanner } from 'html5-qrcode';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { browser } from '$app/environment';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import Card from '$lib/components/Card.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import { browser } from '$app/environment';
-  import type { QrBounds } from 'html5-qrcode/esm/core';
-  import { page } from '$app/stores';
   import { formatDateTime } from '$lib/dates';
-  import { format, isToday } from 'date-fns';
+  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
   import { toasts } from '$lib/toasts';
+  import { type PaymentMethod, RegistrationVerificationState, zeus } from '$lib/zeus';
+  import { format, isToday } from 'date-fns';
+  import { Html5QrcodeScanner } from 'html5-qrcode';
+  import type { QrBounds } from 'html5-qrcode/esm/core';
+  import { type SvelteComponent, onDestroy, onMount } from 'svelte';
+  import IconCheck from '~icons/mdi/check';
+  import IconChevronRight from '~icons/mdi/chevron-right';
+  import IconOtherEvent from '~icons/mdi/circle-off-outline';
+  import IconClose from '~icons/mdi/close';
+  import IconGearCancel from '~icons/mdi/cog-off-outline';
+  import IconNotPaid from '~icons/mdi/credit-card-off-outline';
+  import IconGear from '~icons/mdi/gear-outline';
+  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
+  import IconRepeatOff from '~icons/mdi/repeat-off';
+  import type { PageData } from './$types';
+
+  export let data: PageData;
 
   const SCAN_COOLDOWN = 300; /* ms */
   let lastScanTimestamp = 0;
@@ -143,16 +145,17 @@
 
   async function check(decodedContents: string): Promise<typeof result> {
     if (!decodedContents.startsWith('r:')) return undefined;
+    if (!data.event) return undefined;
 
-    const { verifyRegistration } = await $zeus.mutate({
-      verifyRegistration: [
-        { id: decodedContents, groupUid: $page.params.group, eventUid: $page.params.uid },
+    const { verifyBooking } = await $zeus.mutate({
+      verifyBooking: [
+        { id: decodedContents, event: data.event.id },
         {
           '__typename': true,
           '...on Error': {
             message: true,
           },
-          '...on MutationVerifyRegistrationSuccess': {
+          '...on MutationVerifyBookingSuccess': {
             data: {
               state: true,
               registration: {
@@ -193,11 +196,11 @@
       state: RegistrationVerificationState.NotFound,
     };
 
-    if (verifyRegistration.__typename === 'Error') {
-      errorWhileVerifying = verifyRegistration.message;
+    if (verifyBooking.__typename === 'Error') {
+      errorWhileVerifying = verifyBooking.message;
     } else {
       errorWhileVerifying = '';
-      r = verifyRegistration.data;
+      r = verifyBooking.data;
     }
 
     if (window.navigator.vibrate) {

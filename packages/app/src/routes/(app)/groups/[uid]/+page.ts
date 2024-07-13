@@ -11,6 +11,32 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
         me && !me.external
           ? // Authenticated query
             {
+              shopItems: [
+                {},
+                {
+                  edges: {
+                    node: {
+                      uid: true,
+                      id: true,
+                      name: true,
+                      price: true,
+                      max: true,
+                      descriptionHtml: true,
+                      stock: true,
+                      stockLeft: true,
+                      pictures: {
+                        id: true,
+                        path: true,
+                        position: true,
+                      },
+                      group: {
+                        uid: true,
+                      },
+                      visibility: true,
+                    },
+                  },
+                },
+              ],
               id: true,
               canEditDetails: true,
               uid: true,
@@ -155,6 +181,32 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
             }
           : // Unauthenticated query
             {
+              shopItems: [
+                {},
+                {
+                  edges: {
+                    node: {
+                      uid: true,
+                      id: true,
+                      name: true,
+                      price: true,
+                      max: true,
+                      descriptionHtml: true,
+                      stock: true,
+                      stockLeft: true,
+                      pictures: {
+                        id: true,
+                        path: true,
+                        position: true,
+                      },
+                      group: {
+                        uid: true,
+                      },
+                      visibility: true,
+                    },
+                  },
+                },
+              ],
               id: true,
               uid: true,
               type: true,
@@ -251,39 +303,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     },
     { fetch, parent },
   );
-  const itemsOfGroup = await loadQuery(
-    {
-      itemsOfGroup: [
-        {
-          groupId: data.group.id,
-        },
-        {
-          edges: {
-            node: {
-              uid: true,
-              id: true,
-              name: true,
-              price: true,
-              max: true,
-              descriptionHtml: true,
-              stock: true,
-              stockLeft: true,
-              pictures: {
-                id: true,
-                path: true,
-                position: true,
-              },
-              group: {
-                uid: true,
-              },
-              visibility: true,
-            },
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+
   return {
     ...data,
     group: {
@@ -291,6 +311,5 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       members: data.group.members?.sort(byMemberGroupTitleImportance),
       canListPages,
     },
-    itemsOfGroup: itemsOfGroup.itemsOfGroup.edges.map(({ node }) => node),
   };
 };

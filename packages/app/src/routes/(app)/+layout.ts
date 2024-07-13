@@ -2,6 +2,7 @@ import {
   graphql,
   load_AppLayout,
   load_AppLayoutScanningEvent,
+  loadAll,
   type AppLayout$input,
 } from '$houdini';
 import { CURRENT_VERSION } from '$lib/buildinfo';
@@ -9,8 +10,8 @@ import type { LayoutRouteId } from './$types.js';
 export const ssr = false;
 
 graphql(`
-  query AppLayoutScanningEvent($group: UID!, $slug: String!) {
-    event(group: $group, slug: $slug) @loading {
+  query AppLayoutScanningEvent($scanningEvent: Boolean!, $group: UID!, $slug: String!) {
+    currentEvent: event(group: $group, slug: $slug) @loading @include(if: $scanningEvent) {
       ...NavigationTopCurrentEvent
     }
   }
@@ -20,25 +21,21 @@ graphql(`
 const scanningEventsRouteId: LayoutRouteId = '/(app)/events/[group]/[uid]/scan';
 
 export async function load(event) {
-  const data = await load_AppLayout({
-    event,
-    variables: {
-      version: CURRENT_VERSION,
-    } as AppLayout$input, // see https://github.com/HoudiniGraphql/houdini/issues/1308
-  });
+  return loadAll(
+    load_AppLayout({
+      event,
+      variables: {
+        version: CURRENT_VERSION,
+      } as AppLayout$input, // see https://github.com/HoudiniGraphql/houdini/issues/1308
+    }),
 
-  if (event.route.id === scanningEventsRouteId) {
-    return {
-      ...data,
-      ...(await load_AppLayoutScanningEvent({
-        event,
-        variables: {
-          group: event.params.group!,
-          slug: event.params.uid!,
-        },
-      })),
-    };
-  }
-
-  return data;
+    load_AppLayoutScanningEvent({
+      event,
+      variables: {
+        scanningEvent: event.route.id === scanningEventsRouteId,
+        group: event.params.group ?? '',
+        slug: event.params.uid ?? '',
+      },
+    }),
+  );
 }

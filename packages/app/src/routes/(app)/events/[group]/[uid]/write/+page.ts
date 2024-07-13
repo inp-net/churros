@@ -6,15 +6,16 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
     {
       event: [
         {
-          groupUid: params.group,
-          uid: params.uid,
+          group: params.group,
+          slug: params.uid,
         },
         {
           title: true,
           visibility: true,
           frequency: true,
           id: true,
-          uid: true,
+          slug: true,
+          pictureURL: [{ dark: false }, true],
           startsAt: true,
           endsAt: true,
           pictureFile: true,

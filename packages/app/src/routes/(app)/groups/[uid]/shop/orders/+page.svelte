@@ -8,7 +8,9 @@
 
   export let data: PageData;
 
-  const { group: {shopOrders} } = data;
+  const {
+    group: { shopOrders },
+  } = data;
 
   let warningToastId: string;
 

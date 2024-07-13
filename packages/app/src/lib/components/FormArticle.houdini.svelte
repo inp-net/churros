@@ -135,7 +135,7 @@
     `),
   );
 
-  let serverError = '';
+  const serverError = '';
 
   let confirmingDelete = false;
 
@@ -152,8 +152,6 @@
     title: '',
     visibility: Visibility.Public,
   };
-
-  $: console.log({ selectedGroup });
 
   export let selectedGroup: FormArticleGroups$data | null = null;
   export let selectedEvent: InputEvent$data | null = null;
@@ -235,9 +233,9 @@
             `Ton post a bien été ${input.id ? 'modifié' : 'créé'}`,
             'Impossible de sauvegarder le post',
           )
-        ) {
+        ) 
           goto(afterGoTo(result.data.upsertArticle.data));
-        }
+        
       });
   }
 
@@ -257,7 +255,6 @@
   bind:element={modalWarnNotifications}
   bind:open={openModalWarnNotifications}
   on:open={async () => {
-    console.log('fetching notification send count');
     if (!selectedGroup) return;
     const result = await NotificationSendCountQuery.fetch({
       variables: {
@@ -309,7 +306,7 @@
       !input.id &&
       (input.visibility === Visibility.Public || input.visibility === Visibility.SchoolRestricted)
     ) {
-      openModalWarnNotifications()
+      openModalWarnNotifications();
       track('post-visibiliy-warning-shown', { visibility: input.visibility });
     } else {
       await updateArticle();

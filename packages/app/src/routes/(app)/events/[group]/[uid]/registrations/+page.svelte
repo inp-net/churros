@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import Alert from '$lib/components/Alert.svelte';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import Badge from '$lib/components/Badge.svelte';
-  import IconRefresh from '~icons/mdi/refresh';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputText from '$lib/components/InputText.svelte';
@@ -30,18 +30,18 @@
   import IconDownload from '~icons/mdi/download-outline';
   import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
   import IconSearch from '~icons/mdi/magnify';
+  import IconRefresh from '~icons/mdi/refresh';
   import IconSortDown from '~icons/mdi/triangle-small-down';
   import IconSortUp from '~icons/mdi/triangle-small-up';
   import type { PageData } from './$types';
-  import { _registrationsQuery } from './+page';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import { _bookingsQuery as _registrationsQuery } from './+page';
 
   export let data: PageData;
   let compact = false;
   let loadingMore = false;
   let csvExportError = '';
   let loadingSearchResults = false;
-  let initialRegistrationsTotalCount = data.event.registrationsCounts.total;
+  let initialRegistrationsTotalCount = data.event.bookingsCounts.total;
   let newRegistrationsSinceLoad = 0;
   const searchQuery = queryParam('q', {
     encode: (v) => v || undefined,
@@ -58,11 +58,11 @@
       {
         event: [
           {
-            uid: $page.params.uid,
-            groupUid: $page.params.group,
+            slug: $page.params.uid,
+            group: $page.params.group,
           },
           {
-            registrationsCounts: {
+            bookingsCounts: {
               cancelled: true,
               paid: true,
               unpaidLydia: true,
@@ -75,12 +75,12 @@
       async (eventData) => {
         const freshData = await eventData;
         if ('errors' in freshData) return;
-        const freshCounts = freshData.event?.registrationsCounts;
+        const freshCounts = freshData.event?.bookingsCounts;
         if (!freshCounts) return;
         if (freshCounts.total > initialRegistrationsTotalCount)
           newRegistrationsSinceLoad = freshCounts.total - initialRegistrationsTotalCount;
 
-        data.event.registrationsCounts = freshCounts;
+        data.event.bookingsCounts = freshCounts;
       },
     );
   });
@@ -94,21 +94,22 @@
     loadingSearchResults = true;
     await debounce(async () => {
       const results = await $zeus.query({
-        searchRegistrations: [
+        event: [
+          { group: $page.params.group, slug: $page.params.uid },
           {
-            eventUid: $page.params.uid,
-            groupUid: $page.params.group,
-            q,
-          },
-          {
-            registration: _registrationsQuery.edges.node,
+            searchBookings: [
+              { q },
+              {
+                registration: _registrationsQuery.edges.node,
+              },
+            ],
           },
         ],
       });
 
       searchResults = {
         pageInfo: { endCursor: '', hasNextPage: false },
-        edges: results.searchRegistrations.map(({ registration }) => ({
+        edges: results.event.searchBookings.map(({ registration }) => ({
           cursor: '',
           node: registration,
         })),
@@ -122,17 +123,20 @@
     try {
       loadingMore = true;
       const result = await $zeus.query({
-        registrationsOfEvent: [
+        event: [
+          { group: $page.params.group, slug: $page.params.uid },
           {
-            after: data.registrationsOfEvent.pageInfo.endCursor,
-            groupUid: $page.params.group,
-            eventUid: $page.params.uid,
+            bookings: [
+              {
+                after: data.event.bookings.pageInfo.endCursor,
+              },
+              _registrationsQuery,
+            ],
           },
-          _registrationsQuery,
         ],
       });
-      registrations.pageInfo = result.registrationsOfEvent.pageInfo;
-      registrations.edges = [...registrations.edges, ...result.registrationsOfEvent.edges];
+      registrations.pageInfo = result.event.bookings.pageInfo;
+      registrations.edges = [...registrations.edges, ...result.event.bookings.edges];
     } finally {
       loadingMore = false;
     }
@@ -140,13 +144,17 @@
 
   async function csv() {
     if (!registrations) return;
-    const { registrationsCsv } = await $zeus.query({
-      registrationsCsv: [
-        { eventUid: $page.params.uid, groupUid: $page.params.group },
+    const {
+      event: { bookingsCsv: registrationsCsv },
+    } = await $zeus.query({
+      event: [
+        { group: $page.params.group, slug: $page.params.uid },
         {
-          '__typename': true,
-          '...on Error': { message: true },
-          '...on QueryRegistrationsCsvSuccess': { data: true },
+          bookingsCsv: {
+            '__typename': true,
+            '...on Error': { message: true },
+            '...on EventBookingsCsvSuccess': { data: true },
+          },
         },
       ],
     });
@@ -160,8 +168,7 @@
   }
 
   $: ({
-    registrationsOfEvent: registrations,
-    event: { registrationsCounts, profitsBreakdown },
+    event: { bookingsCounts: registrationsCounts, profitsBreakdown, bookings: registrations },
   } = data);
   $: rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
@@ -366,21 +373,18 @@
         icon={IconRefresh}
         on:click={async () => {
           const newData = await $zeus.query({
-            registrationsOfEvent: [
-              { groupUid: $page.params.group, eventUid: $page.params.uid },
-              _registrationsQuery,
-            ],
             event: [
-              { groupUid: $page.params.group, uid: $page.params.uid },
+              { group: $page.params.group, slug: $page.params.uid },
               {
-                registrationsCounts: {
+                bookingsCounts: {
                   total: true,
                 },
+                bookings: [{}, _registrationsQuery],
               },
             ],
           });
-          data.registrationsOfEvent = newData.registrationsOfEvent;
-          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+          data.event.bookings = newData.event.bookings;
+          initialRegistrationsTotalCount = newData.event.bookingsCounts.total;
           newRegistrationsSinceLoad = 0;
         }}>Afficher</ButtonInk
       >
@@ -571,11 +575,10 @@
                   help={'Vérifier la réservation'}
                   on:click={async () => {
                     await updatePaidStatus(true, registration);
-                    const { verifyRegistration } = await $zeus.mutate({
-                      verifyRegistration: [
+                    const { verifyBooking } = await $zeus.mutate({
+                      verifyBooking: [
                         {
-                          eventUid: $page.params.uid,
-                          groupUid: $page.params.group,
+                          event: data.event.id,
                           id,
                         },
                         {
@@ -583,7 +586,7 @@
                           '...on Error': {
                             message: true,
                           },
-                          '...on MutationVerifyRegistrationSuccess': {
+                          '...on MutationVerifyBookingSuccess': {
                             data: {
                               registration: {
                                 paid: true,
@@ -600,18 +603,18 @@
                       ],
                     });
 
-                    if (verifyRegistration.__typename === 'Error') {
-                      toasts.error(`Impossible de vérifier ${id}`, verifyRegistration.message);
+                    if (verifyBooking.__typename === 'Error') {
+                      toasts.error(`Impossible de vérifier ${id}`, verifyBooking.message);
                       return;
                     }
 
-                    if (verifyRegistration.__typename === 'MutationVerifyRegistrationSuccess') {
+                    if (verifyBooking.__typename === 'MutationVerifyBookingSuccess') {
                       registrations.edges[
                         registrations.edges.findIndex((r) => r.node.id === registration.id)
-                      ].node.verifiedAt = verifyRegistration.data.registration?.verifiedAt;
+                      ].node.verifiedAt = verifyBooking.data.registration?.verifiedAt;
                       registrations.edges[
                         registrations.edges.findIndex((r) => r.node.id === registration.id)
-                      ].node.verifiedBy = verifyRegistration.data.registration?.verifiedBy;
+                      ].node.verifiedBy = verifyBooking.data.registration?.verifiedBy;
                     }
                   }}
                 >

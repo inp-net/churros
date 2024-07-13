@@ -9,7 +9,7 @@
   import BackButton from '$lib/components/ButtonBack.svelte';
   export let data: PageData;
 
-  const shopItems = data.itemsOfGroup.edges.flatMap(({ node }) => node);
+  const shopItems = data.group.shopItems.edges.flatMap(({ node }) => node);
   const group = data.group;
 
   const isOnClubBoard = Boolean(

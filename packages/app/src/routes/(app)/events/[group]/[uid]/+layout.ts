@@ -1,4 +1,4 @@
-import { Selector, loadQuery } from '$lib/zeus';
+import { loadQuery } from '$lib/zeus';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch, parent, params }) => {
@@ -6,14 +6,15 @@ export const load: LayoutLoad = async ({ fetch, parent, params }) => {
     {
       event: [
         {
-          groupUid: params.group,
-          uid: params.uid,
+          group: params.group,
+          slug: params.uid,
         },
-        Selector('Event')({
+        {
+          id: true,
           canScanBookings: true,
           canEdit: true,
           canSeeBookings: true,
-        }),
+        },
       ],
     },
     { fetch, parent },

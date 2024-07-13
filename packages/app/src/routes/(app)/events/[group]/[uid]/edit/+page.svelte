@@ -4,13 +4,15 @@
   import { page } from '$app/stores';
 
   export let data: PageData;
+  $: event = data.event!;
+  $: availableLydiaAccounts = data.groups.flatMap((g) => g.lydiaAccounts!);
 </script>
 
 <div class="content">
   <FormEvent
     redirectAfterSave={() => $page.url.searchParams.get('back') || '../'}
-    availableLydiaAccounts={data.lydiaAccounts}
-    bind:event={data.event}
+    {availableLydiaAccounts}
+    {event}
   />
 </div>
 

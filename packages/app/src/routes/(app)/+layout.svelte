@@ -22,7 +22,7 @@
   import { allLoaded } from '$lib/loading';
 
   export let data: PageData;
-  $: ({ AppLayout } = data);
+  $: ({ AppLayout, AppLayoutScanningEvent } = data);
 
   export const snapshot: Snapshot<number> = {
     capture: () => scrollableArea.scrollTop,
@@ -106,7 +106,7 @@
     {scrolled}
     userIsLoading={$AppLayout.fetching}
     user={$AppLayout.data?.me ?? null}
-    event={$AppLayout.data?.scanningEvent ?? null}
+    event={$AppLayoutScanningEvent.data?.currentEvent ?? null}
   />
 
   {#if $theme === 'noel'}
