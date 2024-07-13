@@ -1,25 +1,36 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Build
+name: CI
 
 on:
   push:
-    branches: ['main']
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
   pull_request:
-    branches: ['main']
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     steps:
-      - uses: actions/checkout@v3
-      - uses: volta-cli/action@v3
-      - uses: actions/cache@v3
-        with:
-          path: |
-            .yarn
-            node_modules
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-      - run: yarn install --immutable
-      - run: yarn build
+      - uses: actions/checkout@v2
+      - name: Setup Volta
+        run: |
+          sudo apt-get update && sudo apt-get install -y curl git jq moreutils
+          export VOLTA_HOME=/root/.volta
+          export PATH=$VOLTA_HOME/bin:$PATH
+          curl https://get.volta.sh | bash -s -- --skip-setup
+          echo 'export VOLTA_HOME=/root/.volta' >> $GITHUB_ENV
+          echo 'export PATH=$VOLTA_HOME/bin:$PATH' >> $GITHUB_ENV
+      - name: Install Yarn
+        run: |
+          yarn config set enableGlobalCache false
+          yarn config set enableImmutableInstalls true
+          yarn install
+      - name: Build
+        run: yarn build
+        if: github.event.pull_request.draft == false || github.event_name == 'push'
