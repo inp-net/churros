@@ -20,6 +20,7 @@ strict digraph ImportGraph {
     "oauth" -> "users";
     "pages" -> "groups";
     "pages" -> "student-associations";
+    "payments" -> "groups";
     "posts" -> "comments";
     "posts" -> "links";
     "posts" -> "notifications";
