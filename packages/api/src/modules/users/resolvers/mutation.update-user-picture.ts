@@ -1,12 +1,12 @@
 import { builder, objectValuesFlat, prisma, updatePicture } from '#lib';
-import { FileScalar } from '#modules/global';
+import { FileScalar, UIDScalar } from '#modules/global';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('updateUserPicture', (t) =>
   t.field({
     type: 'String',
     args: {
-      uid: t.arg.string(),
+      uid: t.arg({ type: UIDScalar }),
       file: t.arg({ type: FileScalar }),
     },
     async authScopes(_, { uid }, { user }) {

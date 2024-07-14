@@ -24,17 +24,14 @@ export async function load(event) {
   return loadAll(
     load_AppLayout({
       event,
-      variables: {
-        version: CURRENT_VERSION,
-      } as AppLayout$input, // see https://github.com/HoudiniGraphql/houdini/issues/1308
+      variables: { version: CURRENT_VERSION } as AppLayout$input,
     }),
-
     load_AppLayoutScanningEvent({
       event,
       variables: {
-        scanningEvent: event.route.id === scanningEventsRouteId,
-        group: event.params.group ?? '',
-        slug: event.params.uid ?? '',
+        group: event.params.group ?? 'unknown',
+        slug: event.params.uid ?? 'unknown',
+        scanningEvent: scanningEventsRouteId === event.route.id,
       },
     }),
   );

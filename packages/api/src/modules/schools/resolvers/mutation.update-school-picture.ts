@@ -6,7 +6,7 @@ builder.mutationField('updateSchoolPicture', (t) =>
   t.field({
     type: 'String',
     args: {
-      id: t.arg.string(),
+      id: t.arg.id(),
       file: t.arg({ type: FileScalar }),
     },
     authScopes: (_, __, { user }) => Boolean(user?.admin),

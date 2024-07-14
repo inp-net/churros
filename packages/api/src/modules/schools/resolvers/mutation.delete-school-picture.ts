@@ -7,7 +7,7 @@ builder.mutationField('deleteSchoolPicture', (t) =>
   t.field({
     type: 'String',
     args: {
-      id: t.arg.string(),
+      id: t.arg.id(),
     },
     authScopes: (_, __, { user }) => Boolean(user?.admin),
     async resolve(_, { id }, { user }) {

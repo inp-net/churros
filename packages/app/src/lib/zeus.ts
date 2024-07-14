@@ -111,8 +111,8 @@ export const scalars = ZeusScalars({
     encode: (value: unknown): string => JSON.stringify(value as Record<string, boolean>),
   },
   UID: {
-    decode: (value: unknown): string => value as string,
-    encode: (value: unknown): string => value as string,
+    decode: (value: unknown): string => JSON.stringify(value),
+    encode: (value: unknown): string => JSON.stringify(value),
   },
 });
 

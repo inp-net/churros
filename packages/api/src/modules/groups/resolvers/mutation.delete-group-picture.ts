@@ -1,5 +1,5 @@
 import { builder, objectValuesFlat, prisma } from '#lib';
-
+import { UIDScalar } from '#modules/global';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
@@ -8,7 +8,7 @@ import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.j
 builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
     type: 'Boolean',
-    args: { uid: t.arg.string(), dark: t.arg.boolean() },
+    args: { uid: t.arg({ type: UIDScalar }), dark: t.arg.boolean() },
     async authScopes(_, { uid }, { user }) {
       const studentAssociationIds = objectValuesFlat(
         await prisma.group.findUniqueOrThrow({

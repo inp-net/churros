@@ -77,6 +77,8 @@ export const saveSessionToken = (
   document.cookie = cookie.serialize('token', token, {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
+    // required to not be "logged out" on initial page load from a PWA
+    // see https://stackoverflow.com/a/77697914/9943464
     sameSite: 'lax',
   });
 };
@@ -87,7 +89,7 @@ export function aled(...o: unknown[]) {
   // void fetch(`https://churros.inpt.fr/log?message=${encodeURIComponent(JSON.stringify(o))}`);
 }
 
-/** Returns a temporary redirect object. */
+/** Causes a temporary redirect */
 export const redirectToLogin = (
   to: string,
   searchParams: URLSearchParams | Record<string, string> = {},

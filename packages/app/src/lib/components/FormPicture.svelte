@@ -3,13 +3,12 @@
   import { graphql } from '$houdini';
   import FileInput from '$lib/components/InputFile.svelte';
   import { toasts } from '$lib/toasts';
-  import { zeus } from '$lib/zeus';
   import IconAdd from '~icons/mdi/add';
   import IconTrash from '~icons/mdi/delete';
   import IconEdit from '~icons/mdi/pencil';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import { deleteObjectPicture, mutateObjectPicture } from './FormPicture.tsunsafe';
   import InputField from './InputField.svelte';
+  import { changePicture, removePicture } from './FormPicture';
 
   export const LEGENDS = {
     Group: 'Logo du groupe',
@@ -49,8 +48,7 @@
     if (updating) return;
     try {
       updating = true;
-      const result = await mutateObjectPicture($zeus, objectName, id, uid, dark, files[0]);
-      /* @ts-enable */
+      const result = await changePicture(objectName, files[0], { id, uid, dark });
       toasts.success(`${LEGENDS[objectName]} mis${objectName === 'Group' ? '' : 'e'} à jour`);
       // Add a timestamp to the URL to force the browser to reload the image
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -65,7 +63,7 @@
     if (deleting) return;
     try {
       deleting = true;
-      const deleted = await deleteObjectPicture($zeus, objectName, id, uid, dark);
+      const deleted = await removePicture(objectName, { id, uid, dark });
       if (deleted) object[pictureFilePropertyName] = '';
     } finally {
       deleting = false;

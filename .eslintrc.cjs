@@ -71,6 +71,12 @@ module.exports = {
       },
     },
     {
+      files: ['packages/app/src/lib/components/*.ts'],
+      rules: {
+        'unicorn/filename-case': ['error', { case: 'pascalCase' }],
+      },
+    },
+    {
       files: ['*.svelte'],
       parser: 'svelte-eslint-parser',
       parserOptions: {
