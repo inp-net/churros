@@ -8,3 +8,4 @@ projects:
       - packages/app/**/*.svelte
       - packages/app/**/*.ts
       - packages/app/$houdini/graphql/documents.gql
+      - packages/api/**/*.hurl

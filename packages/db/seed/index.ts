@@ -414,7 +414,7 @@ const contributionOptions = await prisma.contributionOption.findMany({
 });
 
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
-const usersData = [
+const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
   { firstName: 'Bernard', lastName: 'Tichaut' },
   { firstName: 'Camille', lastName: 'Honnête' },
@@ -441,6 +441,7 @@ const usersData = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  { uid: "exte", firstName: "Jaipa", lastName: "Dékol", minor: {}, major:{} } // Compte exté
 ];
 
 //création d'une liste des réseaux sociaux qu'on peut ref sur son profil churros
@@ -471,7 +472,6 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
 
   const { uid } = await prisma.user.create({
     data: {
-      ...data,
       uid: await createUid(data),
       email: faker.internet.email({ firstName: data.firstName, lastName: data.lastName }),
       description: faker.lorem.paragraph({ min: 0, max: 50 }),
@@ -509,6 +509,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       minor: { connect: { id: minor.id } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
       canAccessDocuments: true,
+      ...data,
     },
   });
 
