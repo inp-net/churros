@@ -139,6 +139,7 @@
     background-repeat: repeat-x;
     background-size: auto 100%;
     transition: box-shadow 0.25s ease;
+    view-transition-name: navigation-top;
   }
 
   nav.scrolled {

@@ -40,6 +40,7 @@
     padding-left: 0;
     margin: 0 auto;
     list-style: none;
+    view-transition-name: navigation-tabs;
   }
 
   .tab-link {
@@ -66,5 +67,6 @@
     border-top-left-radius: var(--radius-block);
     border-top-right-radius: var(--radius-block);
     transform: translateX(-1rem);
+    view-timeline-name: navigation-tabs-indicator;
   }
 </style>

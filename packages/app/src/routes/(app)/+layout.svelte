@@ -20,6 +20,10 @@
   import { writable } from 'svelte/store';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { allLoaded } from '$lib/loading';
+  import { onNavigate } from '$app/navigation';
+  import { setupViewTransition } from '$lib/view-transitions';
+
+  onNavigate(setupViewTransition);
 
   export let data: PageData;
   $: ({ AppLayout, AppLayoutScanningEvent } = data);
@@ -250,6 +254,7 @@ The root layout is composed of several elements:
     display: flex;
     flex-flow: column wrap;
     width: 100%;
+    view-timeline-name: announcements;
   }
 
   .announcement {
@@ -351,5 +356,41 @@ The root layout is composed of several elements:
         }
       }
     }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-from-right {
+    from {
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes slide-to-left {
+    to {
+      transform: scale(1.05);
+    }
+  }
+
+  :root::view-transition-old(root) {
+    animation:
+      90ms ease both fade-out,
+      200ms ease both slide-to-left;
+  }
+
+  :root::view-transition-new(root) {
+    animation:
+      110ms ease both fade-in,
+      200ms ease both slide-from-right;
   }
 </style>

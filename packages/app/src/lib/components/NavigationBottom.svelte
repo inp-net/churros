@@ -210,6 +210,7 @@
     background-repeat: repeat-x;
     background-size: auto 100%;
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
+    view-transition-name: navigation-bottom;
   }
 
   nav.noel {

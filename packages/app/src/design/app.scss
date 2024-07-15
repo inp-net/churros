@@ -288,3 +288,11 @@ div.skeleton-effect-wave {
     mask-position: -150% top;
   }
 }
+
+@media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

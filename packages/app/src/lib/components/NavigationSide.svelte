@@ -316,6 +316,7 @@
     flex-direction: column;
     gap: 0.25rem;
     padding: 1rem;
+    view-transition-name: navigation-side;
   }
 
   nav .bottom {
