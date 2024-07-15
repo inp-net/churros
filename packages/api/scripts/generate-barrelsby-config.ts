@@ -39,6 +39,10 @@ const main = () => {
         continue;
       }
 
+      if (!readdirSync(dir).some((file) => file.endsWith('.ts'))) {
+        continue;
+      }
+
       barrelsbyConfig.directory.push(`./${dir}`);
     }
   };
