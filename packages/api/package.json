@@ -95,6 +95,7 @@
   },
   "devDependencies": {
     "@clack/prompts": "^0.7.0",
+    "@orangeopensource/hurl": "^4.3.2",
     "@tsconfig/esm": "^1.0.5",
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
@@ -162,7 +163,8 @@
     "add-search-support": "tsx ./scripts/add-search-support.ts",
     "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --png",
     "migration": "yarn run -T migration",
-    "watch-barrels": "nodemon --exec 'yarn barrelize' --watch src/modules -e ts --ignore 'src/modules/**/index.ts'"
+    "watch-barrels": "nodemon --exec 'yarn barrelize' --watch src/modules -e ts --ignore 'src/modules/**/index.ts'",
+    "test": "echo Logging in… && http post :4000/graphql query='mutation { login(email: \"versairea\", password: \"a\") { ...on MutationLoginSuccess { data { token } } } }' | jq -r .data.login.data.token | xargs -I@ hurl --parallel --test --variable token=@ --variable host=http://localhost:4000 --glob src/modules/*/tests/*.hurl"
   },
   "type": "module",
   "volta": {
