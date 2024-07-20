@@ -11,6 +11,8 @@ graphql(`
       lastName
       email
       admin
+      yearTier
+      graduationYear
       major {
         ldapSchool {
           studentMailDomain

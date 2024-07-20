@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- L'endpoint `/identity` expose maintenant les champs `graduationYear` et `yearTier` (#957)
+
 ## [1.66.0] - 2024-07-20
 
 ### Nouveautés
