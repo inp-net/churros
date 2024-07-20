@@ -1,17 +1,11 @@
-import { ensureHasIdPrefix, log, prisma } from '#lib';
+import { cacheSession, ensureHasIdPrefix, getCachedSession, log, prisma } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {
   CredentialType,
   ThirdPartyCredentialType,
-  type Event,
-  type EventManager,
   type Group,
-  type GroupMember,
-  type Major,
-  type School,
   type StudentAssociation,
-  type User,
 } from '@churros/db/prisma';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import { verify } from 'argon2';
@@ -24,23 +18,6 @@ const getToken = (headers: Headers) => {
   if (!auth) return;
   // Some clients can fuck shit up and have "Bearer bearer thetoken" as the Authorization value…
   return auth.split(/bearer /i).at(-1);
-};
-
-/** In memory store for sessions. */
-const sessions = new Map<
-  string,
-  User & { fullName: string; yearTier: number } & {
-    groups: Array<GroupMember & { group: Group }>;
-    major: null | (Major & { schools: School[] });
-    managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
-    adminOfStudentAssociations: StudentAssociation[];
-    canEditGroups: StudentAssociation[];
-  }
->();
-
-/** Deletes the session cache for a given user id. */
-export const purgeUserSessions = (uid: User['uid']) => {
-  for (const [token, user] of sessions) if (user.uid === uid) sessions.delete(token);
 };
 
 export const getUserFromThirdPartyToken = async (token: string) => {
@@ -85,7 +62,9 @@ export const getUserFromThirdPartyToken = async (token: string) => {
 
 /** Returns the user associated with `token` or throws. */
 const getUser = async (token: string) => {
-  if (sessions.has(token)) return sessions.get(token)!;
+  const cached = await getCachedSession(token);
+  if (cached) return cached;
+  console.info(`Session cache miss for token ${token}`);
 
   const credential = await prisma.credential
     .findFirstOrThrow({
@@ -128,21 +107,14 @@ const getUser = async (token: string) => {
   // @ts-expect-error
   normalizePermissions({ user: user });
 
-  // When the in memory store grows too big, delete some sessions
-  if (sessions.size > 10_000)
-    for (const [i, token] of [...sessions.keys()].entries()) if (i % 2) sessions.delete(token);
-
-  sessions.set(token, {
-    ...user,
-    fullName: fullName(user),
-    yearTier: yearTier(user.graduationYear),
-  });
-
-  return {
+  const session = {
     ...user,
     fullName: fullName(user),
     yearTier: yearTier(user.graduationYear),
   };
+
+  await cacheSession(token, session);
+  return session;
 };
 
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
