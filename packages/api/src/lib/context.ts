@@ -22,7 +22,8 @@ import { yearTier } from './date.js';
 const getToken = (headers: Headers) => {
   const auth = headers.get('Authorization');
   if (!auth) return;
-  return auth.slice('Bearer '.length);
+  // Some clients can fuck shit up and have "Bearer bearer thetoken" as the Authorization value…
+  return auth.split(/bearer /i).at(-1);
 };
 
 /** In memory store for sessions. */
