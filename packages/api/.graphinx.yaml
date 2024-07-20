@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/v0.11.0/config.schema.json
-template: graphinx/templates/default#v0.11.0
+template: graphinx/templates/default#v0.11.0-2
 
 schema:
   static: ../app/schema.graphql
@@ -19,6 +19,20 @@ environment:
   CURRENT_COMMIT: dev
   CURRENT_VERSION: dev
   CURRENT_COMMIT_SHORT: dev
+  PUBLIC_AUTH_TYPE: UserPassword # available: OAuth (PKCE flow), OpenID, UserPassword, Token, None (default)
+  PUBLIC_AUTH_HEADER: Bearer # available: Bearer (for all AUTH_TYPEs), Basic (for UserPassword, takes the base64 of the form `username:password`), plain (for all types, just puts the token as is)
+  PUBLIC_AUTH_QUERY: |
+    mutation APIDocsLogin($user: String!, $password: String!) {
+      login(email: $user, password: $password) {
+          ...on MutationLoginSuccess {
+              data {
+                  token
+              }
+          }
+      }
+    }
+  PUBLIC_AUTH_QUERY_PATH: login.data.token
+  PUBLIC_AUTH_LOGOUT_QUERY: 'mutation APIDocsLogout { logout }'
 
 relay:
   connection: ^[A-Z]\w+Connection$
