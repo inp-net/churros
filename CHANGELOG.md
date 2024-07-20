@@ -22,6 +22,7 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - Les paquets sont maintenant nommés `@churros/...`
 - OAuth: on supporte maintenant le flow _client credentials_, qui permet de s'authentifier directemnt avec un client_id et un client_secret, sans passer par une redirection utilisateur. On ne peut donc effectuer seulement des queries qui peuvent ne pas être faites en tant qu'une personne. Pour l'instant, ça se limite à la mutation `upsertArticle`. Le post sera créé dans le groupe propriétaire de l'application tierce.
 - Prometheus: La métrique qui compte le nombre de tokens créés est maintenant bien un histogramme (et non un compteur), et expose aussi les noms des clients tierces
+- Il y a du logging (admins-only) quand un token third-party est invalide (pratique pour débugger…)
 
 ### Corrections
 

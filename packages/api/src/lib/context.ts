@@ -1,4 +1,4 @@
-import { ensureHasIdPrefix, prisma } from '#lib';
+import { ensureHasIdPrefix, log, prisma } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {
@@ -58,8 +58,9 @@ export const getUserFromThirdPartyToken = async (token: string) => {
         },
       },
     })
-    .catch(() => {
-      throw new GraphQLError('Invalid token.');
+    .catch(async () => {
+      await log('oauth', 'user-from-token/error', { why: 'invalid token', token });
+      throw new GraphQLError('Invalid third-party token.');
     });
 
   // If the session expired, delete it
