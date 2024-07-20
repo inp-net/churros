@@ -185,7 +185,9 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
     const user = await (isThirdPartyToken(token) ? getUserFromThirdPartyToken : getUser)(token);
     return { token, user };
   } catch (error) {
-    console.error(error);
+    console.error(
+      `Could not get user from token ${JSON.stringify(token)}: ${error?.toString() ?? 'undefined'}`,
+    );
     return {};
   }
 };
