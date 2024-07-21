@@ -143,7 +143,7 @@ builder.mutationField('upsertComment', (t) =>
         comment.document?.subject!.minors[0]?.majors[0]?.uid ??
         'unknown';
       const commentUrl =
-        process.env.FRONTEND_ORIGIN +
+        process.env.PUBLIC_FRONTEND_ORIGIN +
         (comment.document
           ? `/documents/${documentMajor}/${
               comment.document.subject!.minors[0]?.yearTier ??

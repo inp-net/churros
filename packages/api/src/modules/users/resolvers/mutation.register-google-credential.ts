@@ -16,7 +16,10 @@ builder.mutationField('registerGoogleCredential', (t) =>
       const client = new Google.OAuth2Client({
         clientId: process.env.PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        redirectUri: new URL('/connect/google/callback', process.env.FRONTEND_ORIGIN).toString(),
+        redirectUri: new URL(
+          '/connect/google/callback',
+          process.env.PUBLIC_FRONTEND_ORIGIN,
+        ).toString(),
       });
       const { tokens } = await client.getToken(code.toString()).catch((error_) => {
         console.error(error_);

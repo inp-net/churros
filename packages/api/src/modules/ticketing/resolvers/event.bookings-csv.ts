@@ -96,7 +96,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           'Année': benef ? `${yearTier(benef.graduationYear)}A` : '',
           'Promo': benef?.graduationYear.toString() ?? '',
           'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
-          'Lien vers la place': `${process.env.FRONTEND_ORIGIN}/bookings/${id.replace(/^r:/, '')}/`,
+          'Lien vers la place': `${process.env.PUBLIC_FRONTEND_ORIGIN}/bookings/${id.replace(/^r:/, '')}/`,
         }) satisfies Record<(typeof columns)[number], string>;
 
       result = columns.join(',') + '\n';

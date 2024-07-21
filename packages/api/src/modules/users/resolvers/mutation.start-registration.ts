@@ -73,7 +73,7 @@ export const register = async (email: string, quickSignupCode?: string): Promise
 
   await log('signups', 'start', { schoolUser, email, token }, email);
 
-  const url = new URL('/register/continue', process.env.FRONTEND_ORIGIN);
+  const url = new URL('/register/continue', process.env.PUBLIC_FRONTEND_ORIGIN);
   url.searchParams.append('token', token);
 
   await sendMail(

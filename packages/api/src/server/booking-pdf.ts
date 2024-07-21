@@ -84,7 +84,7 @@ export function generatePDF(
                     text: registration.id.replace(/^r:/, '').toUpperCase() + '\n',
                     link: new URL(
                       `/bookings/${registration.id}`,
-                      process.env.FRONTEND_ORIGIN,
+                      process.env.PUBLIC_FRONTEND_ORIGIN,
                     ).toString(),
                     style: {
                       font: 'SpaceMono',

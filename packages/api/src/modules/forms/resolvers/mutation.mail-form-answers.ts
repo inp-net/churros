@@ -52,7 +52,7 @@ builder.mutationField('mailFormAnswers', (t) =>
           formId: form.id,
           linkToAnswers: new URL(
             `/forms/${splitID(form.id)[1]}/answer`,
-            process.env.FRONTEND_ORIGIN,
+            process.env.PUBLIC_FRONTEND_ORIGIN,
           ).toString(),
         },
         {},

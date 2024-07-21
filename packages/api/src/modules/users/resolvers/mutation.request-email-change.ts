@@ -11,7 +11,7 @@ export async function requestEmailChange(email: string, userId: string): Promise
 
   const url = new URL(
     `/validate-email/${request.id.split(':', 2)[1]!.toUpperCase()}`,
-    process.env.FRONTEND_ORIGIN,
+    process.env.PUBLIC_FRONTEND_ORIGIN,
   );
 
   await sendMail('verify-mail', email, { url: url.toString() }, {});
