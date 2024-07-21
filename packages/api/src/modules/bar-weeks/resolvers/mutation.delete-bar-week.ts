@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma, log } from '#lib';
 import { userIsAdminOf, userIsOnBoardOf } from '#permissions';
 
 builder.mutationField('deleteBarWeek', (t) =>
@@ -22,15 +22,7 @@ builder.mutationField('deleteBarWeek', (t) =>
     },
     async resolve(_, { id }, { user }) {
       await prisma.barWeek.delete({ where: { id } });
-      await prisma.logEntry.create({
-        data: {
-          area: 'bar-week',
-          action: 'delete',
-          target: id,
-          message: `Bar week ${id} deleted`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('bar-week', 'delete', { message: `Bar week ${id} deleted` }, id, user);
       return true;
     },
   }),

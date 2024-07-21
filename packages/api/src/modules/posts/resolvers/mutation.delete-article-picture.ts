@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { log, builder, prisma } from '#lib';
 
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
@@ -37,15 +37,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
 
       if (pictureFile) await unlink(path.join(root, pictureFile));
       await prisma.article.update({ where: { id }, data: { pictureFile: '' } });
-      await prisma.logEntry.create({
-        data: {
-          area: 'article',
-          action: 'delete',
-          target: id,
-          message: `Article ${id} picture deleted`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('article', 'delete', { message: `Article ${id} picture deleted` }, id, user);
       return true;
     },
   }),

@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, log } from '#lib';
 
 import { userIsPresidentOf, userIsTreasurerOf } from '#permissions';
 import { LydiaAccountType, checkLydiaAccount } from '../index.js';
@@ -33,15 +33,7 @@ builder.mutationField('upsertLydiaAccount', (t) =>
           id: id ?? '',
         },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'lydiaAccounts',
-          action: id ? 'update' : 'create',
-          target: lydiaAccount.id,
-          message: `Lydia account ${id ? 'updated' : 'created'}: ${name}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('lydiaAccounts', id ? 'update' : 'create', { message: `Lydia account ${id ? 'updated' : 'created'}: ${name}` }, lydiaAccount.id, user);
       return lydiaAccount;
     },
   }),

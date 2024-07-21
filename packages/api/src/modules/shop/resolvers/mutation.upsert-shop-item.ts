@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, log } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { onBoard } from '#permissions';
@@ -107,15 +107,7 @@ builder.mutationField('upsertShopItem', (t) =>
         },
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'shop',
-          action: id ? 'update' : 'create',
-          target: shopItem.id,
-          message: `Service ${shopItem.id} created: ${shopItem.name}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('shop', id ? 'update' : 'create', { message: `Service ${shopItem.id} created: ${shopItem.name}` }, shopItem.id, user);
 
       return shopItem;
     },

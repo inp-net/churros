@@ -1,4 +1,4 @@
-import { builder, prisma, updatePicture } from '#lib';
+import { builder, prisma, updatePicture, log } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { PictureType } from '../index.js';
@@ -16,15 +16,7 @@ builder.mutationField('updateItemPicture', (t) =>
     async resolve(_, { itemId, file, groupUid }, { user }) {
       if (!(user?.admin || userIsOnBoardOf(user, groupUid)))
         throw new GraphQLError('You do not have the rights to update this picture');
-      await prisma.logEntry.create({
-        data: {
-          area: 'shop',
-          action: 'update',
-          target: itemId,
-          message: `Updated item ${itemId} pictures`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('shop', 'update', { message: `Updated item ${itemId} pictures` }, itemId, user);
       let picture = await prisma.picture.create({
         data: { path: '' },
       });

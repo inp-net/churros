@@ -1,4 +1,4 @@
-import { builder, createLdapUser, freeUidValidator, prisma, yearTier } from '#lib';
+import { builder, createLdapUser, freeUidValidator, log, prisma, yearTier } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { notify } from '#modules/notifications';
 import { NotificationChannel, Prisma, type Major, type UserCandidate } from '@churros/db/prisma';
@@ -55,16 +55,16 @@ builder.mutationField('completeRegistration', (t) =>
         apprentice,
       },
     ) {
-      await prisma.logEntry.create({
-        data: {
-          action: 'complete',
-          area: 'signups',
+      await log(
+        'signups',
+        'complete',
+        {
           message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
             graduationYear,
           ).toString()}A ${phone}`,
-          target: `token ${token}`,
         },
-      });
+        `token ${token}`,
+      );
       const user = await completeRegistration(
         await prisma.userCandidate.update({
           where: { token },

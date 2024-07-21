@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { log, prisma } from '#lib';
 import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import {
@@ -41,14 +41,12 @@ export async function payEventRegistrationViaLydia(
   if (registration.lydiaTransaction?.requestId && registration.lydiaTransaction.requestUuid) {
     const state = await checkLydiaTransaction(registration.lydiaTransaction);
     if (state === LydiaTransactionState.Paid) {
-      await prisma.logEntry.create({
-        data: {
-          action: 'fallback mark as paid',
-          area: 'lydia',
-          message: 'Transaction was already paid for, marking registration as paid',
-          target: registration.id,
-        },
-      });
+      await log(
+        'lydia',
+        'fallback mark as paid',
+        { message: 'Transaction was already paid for, marking registration as paid' },
+        registration.id,
+      );
       await prisma.registration.update({
         where: { id: registrationId },
         data: {
@@ -118,14 +116,12 @@ export async function payShopPaymentViaLydia(
   if (shopPayment.lydiaTransaction?.requestId && shopPayment.lydiaTransaction.requestUuid) {
     const state = await checkLydiaTransaction(shopPayment.lydiaTransaction);
     if (state === LydiaTransactionState.Paid) {
-      await prisma.logEntry.create({
-        data: {
-          action: 'fallback mark as paid',
-          area: 'lydia',
-          message: 'Transaction was already paid for, marking registration as paid',
-          target: shopPayment.id,
-        },
-      });
+      await log(
+        'lydia',
+        'fallback mark as paid',
+        { message: 'Transaction was already paid for, marking registration as paid' },
+        shopPayment.id,
+      );
       await prisma.shopPayment.update({
         where: { id: shopPayment.id },
         data: {

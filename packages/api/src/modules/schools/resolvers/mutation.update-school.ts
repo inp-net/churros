@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, log } from '#lib';
 import { SchoolType } from '../index.js';
 
 builder.mutationField('updateSchool', (t) =>
@@ -20,15 +20,7 @@ builder.mutationField('updateSchool', (t) =>
       { uid, name, address, description, studentMailDomain, aliasMailDomains },
       { user },
     ) {
-      await prisma.logEntry.create({
-        data: {
-          area: 'school',
-          action: 'update',
-          target: uid,
-          message: `School ${uid} updated`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('school', 'update', { message: `School ${uid} updated` }, uid, user);
       return prisma.school.update({
         where: { uid },
         data: {

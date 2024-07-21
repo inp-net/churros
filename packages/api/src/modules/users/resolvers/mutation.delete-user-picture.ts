@@ -1,5 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
-
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { userIsAdminOf } from '../../../permissions/index.js';
@@ -22,7 +21,7 @@ builder.mutationField('deleteUserPicture', (t) =>
 
       return Boolean(userIsAdminOf(user, studentAssociationsIds) || uid === user?.uid);
     },
-    async resolve(_, { uid }) {
+    async resolve(_, { uid }, { user: me }) {
       const { pictureFile } = await prisma.user.findUniqueOrThrow({
         where: { uid },
         select: { pictureFile: true },
@@ -36,15 +35,7 @@ builder.mutationField('deleteUserPicture', (t) =>
         where: { uid },
         data: { pictureFile: '' },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'user',
-          action: 'update',
-          target: uid,
-          message: `Deleted user ${uid} picture`,
-          user: { connect: { uid } },
-        },
-      });
+      await log('user', 'update', { message: `Deleted user ${uid} picture` }, uid, me);
       return true;
     },
   }),

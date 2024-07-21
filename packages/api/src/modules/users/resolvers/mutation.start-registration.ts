@@ -1,4 +1,4 @@
-import { builder, findSchoolUser, fromYearTier, makeGlobalID, prisma, sendMail } from '#lib';
+import { builder, findSchoolUser, fromYearTier, log, makeGlobalID, prisma, sendMail } from '#lib';
 
 import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
@@ -71,14 +71,7 @@ export const register = async (email: string, quickSignupCode?: string): Promise
         update: {},
       });
 
-  await prisma.logEntry.create({
-    data: {
-      action: 'start',
-      area: 'signups',
-      message: `Inscription de ${email} démarrée. schoolUser: ${JSON.stringify(schoolUser)}`,
-      target: `token ${token}`,
-    },
-  });
+  await log('signups', 'start', { schoolUser, email, token }, email);
 
   const url = new URL('/register/continue', process.env.FRONTEND_ORIGIN);
   url.searchParams.append('token', token);
