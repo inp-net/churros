@@ -48,6 +48,7 @@
   import IconStore from '~icons/mdi/store';
   import type { PageData } from './$types';
   import ShopItem from '$lib/components/ShopItem.svelte';
+  import { route } from '$lib/ROUTES';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -365,8 +366,8 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
-        <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
+      {#each group.articles.slice(0, 3) as { localID, ...article } (article.id)}
+        <CardArticle hideGroup {group} href={route('/posts/[id]', localID)} {...article} />
       {/each}
     </ul>
   </section>

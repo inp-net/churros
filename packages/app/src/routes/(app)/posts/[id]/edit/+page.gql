@@ -1,5 +1,5 @@
-query PagePostEdit($group: UID!, $uid: String!) {
-  article(slug: $uid, group: $group) {
+query PagePostEdit($id: LocalID!) {
+  article(id: $id) {
     id
     slug
     group {

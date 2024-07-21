@@ -19,6 +19,7 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LoadingText from './LoadingText.svelte';
+  import { route } from '$lib/ROUTES';
 
   const ToggleLike = graphql(`
     mutation CardArticle_ToggleLike($articleId: ID!) {
@@ -36,7 +37,7 @@
     graphql(`
       fragment CardArticle on Article @loading {
         id
-        uid
+        localID
         title
         bodyPreview
         publishedAt
@@ -77,6 +78,7 @@
   );
   $: ({
     id,
+    localID,
     title,
     bodyPreview,
     publishedAt,
@@ -85,7 +87,6 @@
     links,
     group,
     author,
-    uid,
     event,
     visibility,
     pictureURL,
@@ -94,6 +95,7 @@
     ({
       __typename: PendingValue,
       id: PendingValue,
+      localID: PendingValue,
       title: PendingValue,
       bodyPreview: PendingValue,
       publishedAt: PendingValue,
@@ -113,7 +115,6 @@
         fullName: PendingValue,
         pictureURL: PendingValue,
       },
-      uid: PendingValue,
       event: {
         id: PendingValue,
         title: PendingValue,
@@ -132,7 +133,7 @@
 
   export let hideGroup = false;
   export let href: string | undefined = undefined;
-  $: href ??= loaded(uid) && loaded(group.uid) ? `/posts/${group.uid}/${uid}` : undefined;
+  $: href ??= loaded(localID) ? route('/posts/[id]', localID) : undefined;
 
   $: authorSrc = hideGroup
     ? allLoaded(author) && author
@@ -141,7 +142,11 @@
     : groupLogoSrc($isDark, group);
 
   $: authorHref =
-    hideGroup && allLoaded(author) && allLoaded(group) ? `/@${author?.uid ?? group.uid}` : '';
+    allLoaded(author) && allLoaded(group)
+      ? hideGroup && author
+        ? route('/users/[uid]', author.uid)
+        : route('/groups/[uid]', group.uid)
+      : '';
   $: notPublishedYet = onceLoaded(publishedAt, isFuture, false);
 </script>
 

@@ -17,6 +17,7 @@
   import { HELP_VISIBILITY, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
   import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
+  import { route } from '$lib/ROUTES';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
@@ -36,8 +37,9 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
   import Modal from './Modal.svelte';
 
-  export let afterGoTo: (article: { group: { uid: string }; uid: string }) => string = (article) =>
-    `/posts/${article.group.uid}/${article.uid}/`;
+  export let afterGoTo: (article: { group: { uid: string }; localID: string }) => string = (
+    article,
+  ) => route('/posts/[id]', article.localID);
 
   export let groups: FormArticleGroups$data[];
   graphql(`
@@ -135,7 +137,7 @@
     `),
   );
 
-  let serverError = '';
+  const serverError = '';
 
   let confirmingDelete = false;
 
@@ -152,8 +154,6 @@
     title: '',
     visibility: Visibility.Public,
   };
-
-  $: console.log({ selectedGroup });
 
   export let selectedGroup: FormArticleGroups$data | null = null;
   export let selectedEvent: InputEvent$data | null = null;
@@ -212,7 +212,7 @@
           }
           ... on MutationUpsertArticleSuccess {
             data {
-              uid
+              localID
               group {
                 uid
               }
@@ -235,9 +235,9 @@
             `Ton post a bien été ${input.id ? 'modifié' : 'créé'}`,
             'Impossible de sauvegarder le post',
           )
-        ) {
+        ) 
           goto(afterGoTo(result.data.upsertArticle.data));
-        }
+        
       });
   }
 
@@ -257,7 +257,6 @@
   bind:element={modalWarnNotifications}
   bind:open={openModalWarnNotifications}
   on:open={async () => {
-    console.log('fetching notification send count');
     if (!selectedGroup) return;
     const result = await NotificationSendCountQuery.fetch({
       variables: {
@@ -309,7 +308,7 @@
       !input.id &&
       (input.visibility === Visibility.Public || input.visibility === Visibility.SchoolRestricted)
     ) {
-      openModalWarnNotifications()
+      openModalWarnNotifications();
       track('post-visibiliy-warning-shown', { visibility: input.visibility });
     } else {
       await updateArticle();

@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
-import { RegistrationType, canSeeBookings } from '#modules/ticketing';
 import { EventType } from '#modules/events';
+import { RegistrationType, canSeeBookings } from '#modules/ticketing';
 
 builder.prismaObjectField(EventType, 'bookings', (t) =>
   t.prismaConnection({

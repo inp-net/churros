@@ -1,9 +1,30 @@
 import { byMemberGroupTitleImportance } from '$lib/sorting';
-import { loadQuery } from '$lib/zeus';
+import { loadQuery, Selector } from '$lib/zeus';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
   const { me, canListPages } = await parent();
+  const itemsQuery = Selector('GroupShopItemsConnection')({
+    nodes: {
+      uid: true,
+      id: true,
+      name: true,
+      price: true,
+      max: true,
+      descriptionHtml: true,
+      stock: true,
+      stockLeft: true,
+      pictures: {
+        id: true,
+        path: true,
+        position: true,
+      },
+      group: {
+        uid: true,
+      },
+      visibility: true,
+    },
+  });
   const data = await loadQuery(
     {
       group: [
@@ -70,6 +91,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                 id: true,
                 visibility: true,
                 uid: true,
+                localID: true,
                 title: true,
                 bodyHtml: true,
                 bodyPreview: true,
@@ -152,6 +174,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                   },
                 },
               ],
+              shopItems: [{}, itemsQuery],
             }
           : // Unauthenticated query
             {
@@ -170,6 +193,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               selfJoinable: true,
               articles: {
                 id: true,
+                localID: true,
                 visibility: true,
                 uid: true,
                 title: true,
@@ -246,44 +270,13 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                   },
                 },
               ],
+              shopItems: [{}, itemsQuery],
             },
       ],
     },
     { fetch, parent },
   );
-  const itemsOfGroup = await loadQuery(
-    {
-      itemsOfGroup: [
-        {
-          groupId: data.group.id,
-        },
-        {
-          edges: {
-            node: {
-              uid: true,
-              id: true,
-              name: true,
-              price: true,
-              max: true,
-              descriptionHtml: true,
-              stock: true,
-              stockLeft: true,
-              pictures: {
-                id: true,
-                path: true,
-                position: true,
-              },
-              group: {
-                uid: true,
-              },
-              visibility: true,
-            },
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+
   return {
     ...data,
     group: {
@@ -291,6 +284,6 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
       members: data.group.members?.sort(byMemberGroupTitleImportance),
       canListPages,
     },
-    itemsOfGroup: itemsOfGroup.itemsOfGroup.edges.map(({ node }) => node),
+    itemsOfGroup: data.group.shopItems.nodes,
   };
 };

@@ -114,6 +114,10 @@ export const scalars = ZeusScalars({
     decode: (value: unknown): string => value as string,
     encode: (value: unknown): string => value as string,
   },
+  LocalID: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => value as string,
+  },
 });
 
 export const zeus = derived(page, ({ data }) => {

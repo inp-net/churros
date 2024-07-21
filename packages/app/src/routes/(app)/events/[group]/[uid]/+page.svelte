@@ -18,6 +18,7 @@
   import { subscribe } from '$lib/subscriptions';
   import { page } from '$app/stores';
   import IconForm from '~icons/mdi/form-select';
+  import { route } from '$lib/ROUTES';
 
   export let data: PageData;
 
@@ -40,13 +41,13 @@
   let updatedTicketsIds: string[] = [];
 
   $: placesLeft = data.event.placesLeft;
-  $: tickets = data.ticketsOfEvent;
+  $: tickets = data.event.tickets;
 
   onMount(() => {
     $subscribe(
       {
         event: [
-          { groupUid: $page.params.group, uid: $page.params.uid },
+          { group: $page.params.group, slug: $page.params.uid },
           { placesLeft: true, tickets: { placesLeft: true, id: true } },
         ],
       },
@@ -180,12 +181,12 @@
     {/if}
   </h2>
   <ul class="nobullet">
-    {#each articles as { uid, reactionCounts, myReactions, ...article } (uid)}
+    {#each articles as { localID, reactionCounts, myReactions, ...article } (localID)}
       <li>
         <CardArticle
           likes={reactionCounts['❤️']}
           liked={myReactions['❤️']}
-          href="/posts/{article.group.uid}/{uid}/"
+          href={route('/posts/[id]', localID)}
           {...article}
         />
       </li>

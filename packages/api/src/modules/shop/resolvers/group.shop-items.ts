@@ -4,7 +4,6 @@ import { userIsOnBoardOf } from '#permissions';
 import { Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShopItemType } from '../index.js';
-import { GroupType } from '#modules/groups';
 
 builder.prismaObjectField(GroupType, 'shopItems', (t) =>
   t.prismaConnection({

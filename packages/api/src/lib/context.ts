@@ -1,4 +1,4 @@
-import { cacheSession, ensureHasIdPrefix, getCachedSession, log, prisma } from '#lib';
+import { cacheSession, getCachedSession, log } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {

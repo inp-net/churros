@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
-import { canSeeBookings, RegistrationSearchResultType } from '../index.js';
 import { EventType } from '#modules/events';
+import { canSeeBookings, RegistrationSearchResultType } from '../index.js';
 
 builder.prismaObjectField(EventType, 'searchBookings', (t) =>
   t.field({

@@ -44,7 +44,7 @@
       "name": "Évènements",
       "short_name": "Évènements",
       "description": "Voir les évènements à venir",
-      "url": "https://churros.inpt.fr/events/planning",
+      "url": "https://churros.inpt.fr/events",
       "icons": [
         {
           "src": "https://churros.inpt.fr/icons/planning.png",
