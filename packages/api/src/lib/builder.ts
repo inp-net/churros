@@ -63,6 +63,10 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    LocalID: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;
