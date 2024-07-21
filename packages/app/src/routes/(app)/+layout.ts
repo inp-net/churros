@@ -9,15 +9,15 @@ import type { LayoutRouteId } from './$types.js';
 export const ssr = false;
 
 graphql(`
-  query AppLayoutScanningEvent($group: UID!, $slug: String!) {
-    event(group: $group, slug: $slug) @loading {
+  query AppLayoutScanningEvent($id: LocalID!) {
+    scanningEvent: event(id: $id) @loading {
       ...NavigationTopCurrentEvent
     }
   }
 `);
 
 // Ensures type safety (if the page is moved, typescript will force us to update this value)
-const scanningEventsRouteId: LayoutRouteId = '/(app)/events/[group]/[uid]/scan';
+const scanningEventsRouteId: LayoutRouteId = '/(app)/events/[id]/scan';
 
 export async function load(event) {
   const data = await load_AppLayout({
@@ -32,10 +32,7 @@ export async function load(event) {
       ...data,
       ...(await load_AppLayoutScanningEvent({
         event,
-        variables: {
-          group: event.params.group!,
-          slug: event.params.uid!,
-        },
+        variables: { id: event.params.id! },
       })),
     };
   }

@@ -15,6 +15,7 @@
   import { tooltip } from '$lib/tooltip';
   import { isDark } from '$lib/theme';
   import { groupLogoSrc } from '$lib/logos';
+  import { route } from '$lib/ROUTES';
 
   export let group: undefined | { name: string } = undefined;
   export let descriptionHtml: string;
@@ -25,7 +26,7 @@
   export let price: number;
   export let closesAt: Date | undefined = undefined;
   export let opensAt: Date | undefined = undefined;
-  export let event: { group: { uid: string }; uid: string };
+  export let event: { localID: string };
   export let openToGroups: Array<{
     uid: string;
     name: string;
@@ -139,10 +140,10 @@
         {#if shotgunning}
           <ButtonSecondary
             track="book"
-            trackData={{ event: `${event.group.uid}/${event.uid}`, ticket: uid }}
+            trackData={{ event: route('/events/[id]', event.localID), ticket: uid }}
             help={placesLeft === 0 ? 'Plus de places :/' : ''}
             disabled={placesLeft === 0}
-            href="/events/{event.group.uid}/{event.uid}/book/{uid}"
+            href={route('/events/[id]/book/[ticket]', { id: event.localID, ticket: uid })}
           >
             Réserver
             <strong>

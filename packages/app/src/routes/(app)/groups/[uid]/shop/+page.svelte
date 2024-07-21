@@ -9,8 +9,8 @@
   import BackButton from '$lib/components/ButtonBack.svelte';
   export let data: PageData;
 
-  const shopItems = data.itemsOfGroup.edges.flatMap(({ node }) => node);
   const group = data.group;
+  const shopItems = group.shopItems.nodes
 
   const isOnClubBoard = Boolean(
     group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),

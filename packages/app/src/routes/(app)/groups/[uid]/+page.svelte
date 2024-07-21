@@ -110,15 +110,15 @@
   $: canEditMembers = Boolean(myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup);
   $: canEditDetails = Boolean(group?.canEditDetails || data.canEditGroup);
 
-  const joinGroup = async (groupUid: string) => {
+  const joinGroup = async (uid: string) => {
     if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+        selfJoinGroup: [{ uid }, { groupId: true }],
       });
       window.location.reload();
     } catch (error: unknown) {
-      toasts.error(`Impossible de rejoindre ${group.name}`, error?.toString());
+      toasts.error(`Impossible de rejoindre ${uid}`, error?.toString());
     }
   };
 
@@ -385,7 +385,7 @@
           likes={node.reactionCounts['❤️']}
           liked={node.myReactions['❤']}
           {...node}
-          href="/events/{node.group.uid}/{node.uid}"
+          href={route('/events/[id]', node.localID)}
         />
       {/each}
     </ul>

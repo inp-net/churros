@@ -8,10 +8,7 @@ query PageEventsList($after: String) {
       node @loading(cascade: true) {
         date
         happening @loading(count: 2) {
-          uid
-          group {
-            uid
-          }
+          localID
           ...CardEvent @loading
         }
         shotgunning {
@@ -21,7 +18,7 @@ query PageEventsList($after: String) {
             pictureFile
             pictureFileDark
           }
-          uid
+          localID
           title
           mySoonestShotgunOpensAt
         }

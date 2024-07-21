@@ -46,9 +46,9 @@
     event: { contactMail, title, pictureFile, startsAt, managers },
     links,
     price,
-  } = data.ticketByUid;
+  } = data.event.ticket;
 
-  let { remainingGodsons } = data.ticketByUid;
+  let { remainingGodsons } = data.event.ticket;
   $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
 
   async function payBy(method: PaymentMethod | undefined) {

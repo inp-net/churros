@@ -10,6 +10,7 @@
     name: string;
     group?:
       | undefined
+      | null
       | {
           name: string;
           pictureFile: string;
@@ -19,7 +20,7 @@
   export let label: string;
   export let disallowed: LydiaAccount[] = [];
   export let required = false;
-  export let account: LydiaAccount | undefined = undefined;
+  export let account: LydiaAccount | undefined |null = undefined;
   export let accounts: LydiaAccount[] = [];
   export let clearable = !required;
   export let options: LydiaAccount[] = [];

@@ -23,7 +23,7 @@
   import { format, isToday } from 'date-fns';
   import { toasts } from '$lib/toasts';
 
-  const SCAN_COOLDOWN = 300; /* ms */
+  const SCAN_COOLDOWN = 300; /* ms */ // TODO increase to 800 ?
   let lastScanTimestamp = 0;
   let previousDecodedContents: undefined | string = undefined;
 
@@ -144,15 +144,15 @@
   async function check(decodedContents: string): Promise<typeof result> {
     if (!decodedContents.startsWith('r:')) return undefined;
 
-    const { verifyRegistration } = await $zeus.mutate({
-      verifyRegistration: [
-        { id: decodedContents, groupUid: $page.params.group, eventUid: $page.params.uid },
+    const { verifyBooking: verifyRegistration } = await $zeus.mutate({
+      verifyBooking: [
+        { id: decodedContents, event: $page.params.id },
         {
           '__typename': true,
           '...on Error': {
             message: true,
           },
-          '...on MutationVerifyRegistrationSuccess': {
+          '...on MutationVerifyBookingSuccess': {
             data: {
               state: true,
               registration: {

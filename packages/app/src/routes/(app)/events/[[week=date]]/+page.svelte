@@ -7,7 +7,7 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { allLoaded, loaded, loading, mapLoading, onceAllLoaded } from '$lib/loading';
+  import { allLoaded, loaded, loading, mapLoading, onceAllLoaded, onceLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
   import { infinitescroll } from '$lib/scroll';
   import { isDark } from '$lib/theme';
@@ -19,6 +19,7 @@
   import IconForward from '~icons/mdi/chevron-right';
   import type { PageData } from './$houdini';
   import { _weekArg as weekArg } from './+page';
+  import { route } from '$lib/ROUTES';
 
   export let data: PageData;
   $: ({ PageEventsList } = data);
@@ -112,7 +113,7 @@
                         alt={loading(shotgun.group.name, '')}
                       />
                       {#if allLoaded(shotgun)}
-                        <a href="/events/{shotgun.group.uid}/{shotgun.uid}">{shotgun.title}</a>
+                        <a href={route("/events/[id]", shotgun.localID)}>{shotgun.title}</a>
                       {:else}
                         <LoadingText>Lorem ipsum</LoadingText>
                       {/if}
@@ -138,11 +139,7 @@
                       <CardEvent
                         bind:expandedEventId
                         collapsible
-                        href={onceAllLoaded(
-                          [event.group.uid, event.uid],
-                          (groupUid, uid) => `/events/${groupUid}/${uid}`,
-                          '',
-                        )}
+                        href={onceLoaded(event.localID, (id) => route('/events/[id]', id), '')}
                         {event}
                       />
                     {/if}

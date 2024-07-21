@@ -23,14 +23,14 @@
 
 <div class="header">
   <BackButton go="../." />
-  <h1>Modifier un article de {data.shopItem.group.name}</h1>
+  <h1>Modifier un article de {data.group.name}</h1>
 </div>
 <FormPictureItem
-  itemId={data.shopItem.id}
-  groupUid={data.shopItem.group.uid}
-  pictures={data.shopItem.pictures}
+  itemId={data.group.shopItem.id}
+  groupUid={data.group.uid}
+  pictures={data.group.shopItem.pictures}
 />
-<FormShopItem data={data.shopItem} availableLydiaAccounts={data.lydiaAccounts} />
+<FormShopItem data={data.group.shopItem} availableLydiaAccounts={data.group.lydiaAccounts} />
 
 <style>
   .header {

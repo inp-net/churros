@@ -1,12 +1,16 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import type { PageData } from './$types';
-
-  $: ({ group, uid } = $page.params);
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
-  $: ({ ...permissions } = data.event);
+  $: ({ LayoutEventPage } = data);
+  $: permissions = $LayoutEventPage.data?.event ?? {
+    canScanBookings: false,
+    canSeeBookings: false,
+    canEdit: false,
+  };
+  $: ({ group, uid } = $page.params);
 
   const TABS = {
     '': 'Infos',

@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
     {
       major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
       subject: [
-        { uid: params.subject, yearTier, forApprentices },
+        { slug: params.subject, yearTier, forApprentices },
         {
           name: true,
           shortName: true,
@@ -24,10 +24,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
       ],
       document: [
         {
-          subjectUid: params.subject,
-          documentUid: params.document,
-          subjectYearTier: yearTier,
-          subjectForApprentices: forApprentices,
+          subject: params.subject,
+          slug: params.document,
         },
         {
           title: true,

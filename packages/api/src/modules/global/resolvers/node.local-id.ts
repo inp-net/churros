@@ -9,6 +9,6 @@ builder.interfaceField(
     t.field({
       type: LocalID,
       resolve: ({ id }) => splitID(id)[1],
-      description: "L'identifiant local de l'objet (sans préfixe)",
+      description: "L'identifiant local de la ressource (sans préfixe)",
     }),
 );

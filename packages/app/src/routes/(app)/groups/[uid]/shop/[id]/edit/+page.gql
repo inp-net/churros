@@ -1,0 +1,57 @@
+query PageShopItemEdit($uid: String!, $id: LocalID!) {
+  group(uid: $uid) {
+    name
+    uid
+    shopItem(id: $id) {
+      id
+      uid
+      name
+      price
+      stock
+      max
+      description
+      startsAt
+      endsAt
+      visibility
+      paymentMethods
+      lydiaAccount {
+        id
+        name
+      }
+      group {
+        uid
+        name
+        pictureFile
+        pictureFileDark
+        boardMembers {
+          member {
+            uid
+          }
+        }
+      }
+      pictures {
+        id
+        path
+        position
+      }
+      itemOptions {
+        id
+        name
+        options
+        required
+        otherToggle
+      }
+    }
+    lydiaAccounts {
+      id
+      name
+      # TODO remove
+      group {
+        uid
+        name
+        pictureFile
+        pictureFileDark
+      }
+    }
+  }
+}

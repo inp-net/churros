@@ -5,11 +5,9 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
       event: [
+        { id: params.id },
         {
-          groupUid: params.group,
-          uid: params.uid,
-        },
-        {
+          localID: true,
           title: true,
           visibility: true,
           frequency: true,

@@ -1,8 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import type { PaymentMethod$options, Visibility$options } from '$houdini';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { DISPLAY_VISIBILITIES, SHOP_PAYMENT_METHODS } from '$lib/display';
   import { toasts } from '$lib/toasts';
+  import { zeusVisibility, zeusPaymentMethod } from '$lib/typing';
   import { PaymentMethod, zeus, type Visibility } from '$lib/zeus';
   import Alert from './Alert.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
@@ -24,10 +26,10 @@
     stock: number;
     max: number;
     description: string;
-    startsAt?: Date | undefined;
-    endsAt?: Date | undefined;
-    visibility: Visibility;
-    paymentMethods: PaymentMethod[];
+    startsAt?: Date | undefined | null;
+    endsAt?: Date | undefined | null;
+    visibility: Visibility | Visibility$options;
+    paymentMethods: Array<PaymentMethod | PaymentMethod$options>;
     itemOptions: {
       id: string;
       name: string;
@@ -43,7 +45,8 @@
           id: string;
           name: string;
         }
-      | undefined;
+      | undefined
+      | null;
   };
 
   export let availableLydiaAccounts: Array<{
@@ -51,6 +54,7 @@
     id: string;
     group?:
       | undefined
+      | null
       | {
           pictureFile: string;
           pictureFileDark: string;
@@ -95,10 +99,10 @@
           startsAt: data.startsAt,
           endsAt: data.endsAt,
           description: data.description,
-          paymentMethods: data.paymentMethods,
+          paymentMethods: data.paymentMethods.map(zeusPaymentMethod),
           groupUid: data.group.uid,
           lydiaAccounId: data.lydiaAccount?.id,
-          visibility: data.visibility,
+          visibility: zeusVisibility(data.visibility),
         },
         {
           '__typename': true,

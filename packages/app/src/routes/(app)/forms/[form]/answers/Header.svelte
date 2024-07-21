@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import { zeus } from '$lib/zeus';
@@ -17,7 +18,7 @@
   export let linkedGoogleSheetUrl: string | undefined;
   export let formId: string;
   export let answerCount: number;
-  export let linkedEvent: { group: { uid: string }; uid: string } | undefined;
+  export let linkedEvent: {localID: string} | undefined;
   export let searching = false;
   export let canSeeAnswerStats = false;
 
@@ -107,7 +108,7 @@
     <ButtonInk
       icon={IconOpenInNewTab}
       newTab
-      href="/events/{linkedEvent.group.uid}/{linkedEvent.uid}">Évènement lié</ButtonInk
+      href={route("/events/[id]", linkedEvent.localID)} >Évènement lié</ButtonInk
     >
   {/if}
   <slot />

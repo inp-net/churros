@@ -391,7 +391,7 @@
               id: input.id,
               confirm: true,
               // gotoOnCancel: `${afterGoTo($data)}/edit/`.replaceAll('//', '/'),
-              gotoOnCancel: `/events/${input.id}/edit`,
+              gotoOnCancel: route('/posts/[id]/edit', input.id)
             },
             labels: {
               action: 'Annuler',

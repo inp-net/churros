@@ -5,6 +5,7 @@ import { LydiaAccountType } from '../index.js';
 
 builder.queryField('lydiaAccountsOfGroup', (t) =>
   t.prismaField({
+    deprecationReason: "Use group.lydiaAccounts instead",
     type: [LydiaAccountType],
     args: {
       uid: t.arg.string(),

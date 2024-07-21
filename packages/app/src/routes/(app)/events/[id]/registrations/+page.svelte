@@ -41,7 +41,7 @@
   let loadingMore = false;
   let csvExportError = '';
   let loadingSearchResults = false;
-  let initialRegistrationsTotalCount = data.event.registrationsCounts.total;
+  let initialRegistrationsTotalCount = data.event.bookingsCounts.total;
   let newRegistrationsSinceLoad = 0;
   const searchQuery = queryParam('q', {
     encode: (v) => v || undefined,
@@ -57,12 +57,9 @@
     $subscribe(
       {
         event: [
+          { id: $page.params.id },
           {
-            uid: $page.params.uid,
-            groupUid: $page.params.group,
-          },
-          {
-            registrationsCounts: {
+            bookingsCounts: {
               cancelled: true,
               paid: true,
               unpaidLydia: true,
@@ -75,12 +72,12 @@
       async (eventData) => {
         const freshData = await eventData;
         if ('errors' in freshData) return;
-        const freshCounts = freshData.event?.registrationsCounts;
+        const freshCounts = freshData.event?.bookingsCounts;
         if (!freshCounts) return;
         if (freshCounts.total > initialRegistrationsTotalCount)
           newRegistrationsSinceLoad = freshCounts.total - initialRegistrationsTotalCount;
 
-        data.event.registrationsCounts = freshCounts;
+        data.event.bookingsCounts = freshCounts;
       },
     );
   });
@@ -94,21 +91,26 @@
     loadingSearchResults = true;
     await debounce(async () => {
       const results = await $zeus.query({
-        searchRegistrations: [
+        event: [
+          { id: $page.params.id },
           {
-            eventUid: $page.params.uid,
-            groupUid: $page.params.group,
-            q,
-          },
-          {
-            registration: _registrationsQuery.edges.node,
+            searchBookings: [
+              {
+                eventUid: $page.params.uid,
+                groupUid: $page.params.group,
+                q,
+              },
+              {
+                registration: _registrationsQuery.edges.node,
+              },
+            ],
           },
         ],
       });
 
       searchResults = {
         pageInfo: { endCursor: '', hasNextPage: false },
-        edges: results.searchRegistrations.map(({ registration }) => ({
+        edges: results.event.searchBookings.map(({ registration }) => ({
           cursor: '',
           node: registration,
         })),
@@ -122,17 +124,20 @@
     try {
       loadingMore = true;
       const result = await $zeus.query({
-        registrationsOfEvent: [
+        event: [
+          { id: $page.params.id },
           {
-            after: data.registrationsOfEvent.pageInfo.endCursor,
-            groupUid: $page.params.group,
-            eventUid: $page.params.uid,
+            bookings: [
+              {
+                after: data.event.bookings.pageInfo.endCursor,
+              },
+              _registrationsQuery,
+            ],
           },
-          _registrationsQuery,
         ],
       });
-      registrations.pageInfo = result.registrationsOfEvent.pageInfo;
-      registrations.edges = [...registrations.edges, ...result.registrationsOfEvent.edges];
+      registrations.pageInfo = result.event.bookings.pageInfo;
+      registrations.edges = [...registrations.edges, ...result.event.bookings.edges];
     } finally {
       loadingMore = false;
     }
@@ -140,13 +145,17 @@
 
   async function csv() {
     if (!registrations) return;
-    const { registrationsCsv } = await $zeus.query({
-      registrationsCsv: [
-        { eventUid: $page.params.uid, groupUid: $page.params.group },
+    const {
+      event: { bookingsCsv: registrationsCsv },
+    } = await $zeus.query({
+      event: [
+        { id: $page.params.id },
         {
-          '__typename': true,
-          '...on Error': { message: true },
-          '...on QueryRegistrationsCsvSuccess': { data: true },
+          bookingsCsv: {
+            '__typename': true,
+            '...on Error': { message: true },
+            '...on EventBookingsCsvSuccess': { data: true },
+          },
         },
       ],
     });
@@ -160,8 +169,7 @@
   }
 
   $: ({
-    registrationsOfEvent: registrations,
-    event: { registrationsCounts, profitsBreakdown },
+    event: { bookingsCounts: registrationsCounts, profitsBreakdown, bookings: registrations },
   } = data);
   $: rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
 
@@ -366,21 +374,18 @@
         icon={IconRefresh}
         on:click={async () => {
           const newData = await $zeus.query({
-            registrationsOfEvent: [
-              { groupUid: $page.params.group, eventUid: $page.params.uid },
-              _registrationsQuery,
-            ],
             event: [
-              { groupUid: $page.params.group, uid: $page.params.uid },
+              { id: $page.params.id },
               {
-                registrationsCounts: {
+                bookingsCounts: {
                   total: true,
                 },
+                bookings: [{}, _registrationsQuery],
               },
             ],
           });
-          data.registrationsOfEvent = newData.registrationsOfEvent;
-          initialRegistrationsTotalCount = newData.event.registrationsCounts.total;
+          data.event.bookings = newData.event.bookings;
+          initialRegistrationsTotalCount = newData.event.bookingsCounts.total;
           newRegistrationsSinceLoad = 0;
         }}>Afficher</ButtonInk
       >
@@ -571,11 +576,10 @@
                   help={'Vérifier la réservation'}
                   on:click={async () => {
                     await updatePaidStatus(true, registration);
-                    const { verifyRegistration } = await $zeus.mutate({
-                      verifyRegistration: [
+                    const { verifyBooking: verifyRegistration } = await $zeus.mutate({
+                      verifyBooking: [
                         {
-                          eventUid: $page.params.uid,
-                          groupUid: $page.params.group,
+                          event: $page.params.id,
                           id,
                         },
                         {
@@ -583,7 +587,7 @@
                           '...on Error': {
                             message: true,
                           },
-                          '...on MutationVerifyRegistrationSuccess': {
+                          '...on MutationVerifyBookingSuccess': {
                             data: {
                               registration: {
                                 paid: true,
@@ -605,7 +609,7 @@
                       return;
                     }
 
-                    if (verifyRegistration.__typename === 'MutationVerifyRegistrationSuccess') {
+                    if (verifyRegistration.__typename === 'MutationVerifyBookingSuccess') {
                       registrations.edges[
                         registrations.edges.findIndex((r) => r.node.id === registration.id)
                       ].node.verifiedAt = verifyRegistration.data.registration?.verifiedAt;

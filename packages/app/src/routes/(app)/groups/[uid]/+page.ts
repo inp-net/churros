@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
     nodes: {
       uid: true,
       id: true,
+      localID: true,
       name: true,
       price: true,
       max: true,
@@ -33,6 +34,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
           ? // Authenticated query
             {
               id: true,
+              localID: true,
               canEditDetails: true,
               uid: true,
               type: true,
@@ -89,9 +91,9 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
               ancestors: { uid: true, name: true, pictureFile: true },
               articles: {
                 id: true,
+                localID: true,
                 visibility: true,
                 uid: true,
-                localID: true,
                 title: true,
                 bodyHtml: true,
                 bodyPreview: true,
@@ -131,6 +133,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                   edges: {
                     node: {
                       id: true,
+                      localID:true,
                       descriptionHtml: true,
                       descriptionPreview: true,
                       uid: true,
@@ -233,6 +236,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                   edges: {
                     node: {
                       id: true,
+                      localID: true,
                       descriptionHtml: true,
                       descriptionPreview: true,
                       frequency: true,

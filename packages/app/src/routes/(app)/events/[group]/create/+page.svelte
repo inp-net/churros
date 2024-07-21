@@ -8,6 +8,7 @@
   export let data: PageData;
   let event = {
     id: '',
+    localID: '',
     uid: '',
     ticketGroups: [],
     tickets: [],

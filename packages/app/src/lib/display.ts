@@ -1,3 +1,4 @@
+import type { PaymentMethod$options } from '$houdini';
 import {
   DocumentType,
   IssueState,
