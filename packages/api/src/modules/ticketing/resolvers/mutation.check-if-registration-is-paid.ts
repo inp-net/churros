@@ -26,7 +26,15 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
       if (!registration.paid && registration.lydiaTransaction?.requestId) {
         const state = await checkLydiaTransaction(registration.lydiaTransaction);
         if (state === LydiaTransactionState.Paid) {
-          await log('registration', 'lydia fallback mark as paid', { message: 'Transaction was already paid for, marking registration as paid (from registration query)' }, registration.id);
+          await log(
+            'registration',
+            'lydia fallback mark as paid',
+            {
+              message:
+                'Transaction was already paid for, marking registration as paid (from registration query)',
+            },
+            registration.id,
+          );
           await prisma.registration.update({
             where: { id: registration.id },
             data: {

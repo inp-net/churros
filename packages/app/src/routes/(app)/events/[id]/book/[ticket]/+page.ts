@@ -1,12 +1,18 @@
 import { loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, fetch, parent }) =>
-  loadQuery(
+export async function load({ params, fetch, parent }) {
+  const { event } = await loadQuery(
     {
       event: [
         { id: params.id },
         {
+          title: true,
+          contactMail: true,
+          pictureFile: true,
+          startsAt: true,
+          managers: {
+            user: { uid: true },
+          },
           ticket: [
             { slug: params.ticket },
             {
@@ -16,15 +22,6 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
               onlyManagersCanProvide: true,
               price: true,
               allowedPaymentMethods: true,
-              event: {
-                title: true,
-                contactMail: true,
-                pictureFile: true,
-                startsAt: true,
-                managers: {
-                  user: { uid: true },
-                },
-              },
               links: {
                 name: true,
                 computedValue: true,
@@ -37,3 +34,6 @@ export const load: PageLoad = async ({ params, fetch, parent }) =>
     },
     { fetch, parent },
   );
+
+  return { event };
+}

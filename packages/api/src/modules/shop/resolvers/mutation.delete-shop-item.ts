@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
@@ -39,7 +39,13 @@ builder.mutationField('deleteShopItem', (t) =>
         where: { id: itemId },
       });
 
-      await log('group', 'delete', { message: `Suppression de l'article ${shopItem.name} par ${user?.uid}` }, itemId, user);
+      await log(
+        'group',
+        'delete',
+        { message: `Suppression de l'article ${shopItem.name} par ${user?.uid}` },
+        itemId,
+        user,
+      );
 
       return true;
     },

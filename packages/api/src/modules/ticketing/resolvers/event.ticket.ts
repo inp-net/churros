@@ -15,10 +15,9 @@ builder.prismaObjectField(EventType, 'ticket', (t) =>
       slug: t.arg.string({ required: true }),
     },
     async authScopes(event, { slug }, { user }) {
-      const ticket = await prisma.ticket.findFirst({
+      const ticket = await prisma.ticket.findUnique({
         where: {
-          slug,
-          eventId: event.id,
+          eventId_slug: { slug, eventId: event.id },
         },
         include: userCanSeeTicketPrismaIncludes,
       });

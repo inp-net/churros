@@ -113,7 +113,7 @@
                         alt={loading(shotgun.group.name, '')}
                       />
                       {#if allLoaded(shotgun)}
-                        <a href={route("/events/[id]", shotgun.localID)}>{shotgun.title}</a>
+                        <a href={route('/events/[id]', shotgun.localID)}>{shotgun.title}</a>
                       {:else}
                         <LoadingText>Lorem ipsum</LoadingText>
                       {/if}

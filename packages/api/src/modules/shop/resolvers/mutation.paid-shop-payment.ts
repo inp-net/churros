@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { PaymentMethodEnum, payShopPaymentViaLydia } from '#modules/payments';
 import { userIsOnBoardOf } from '#permissions';
 import {
@@ -83,7 +83,15 @@ builder.mutationField('paidShopPayment', (t) =>
 
       // Process payment
       await pay({ shopPayment, phone: phone ?? '' });
-      await log('shop payment', 'update', { message: `${user.uid} tried to pay for shop payment ${shopPaymentId} with ${paymentMethod}, current state is ${shopPayment.paid}` }, shopPaymentId, user);
+      await log(
+        'shop payment',
+        'update',
+        {
+          message: `${user.uid} tried to pay for shop payment ${shopPaymentId} with ${paymentMethod}, current state is ${shopPayment.paid}`,
+        },
+        shopPaymentId,
+        user,
+      );
 
       return prisma.shopPayment.update({
         ...query,

@@ -9,8 +9,9 @@
   let articleData = {
     article: {
       uid: '',
+      localID: '',
       id: '',
-      group: data.group,
+      group: data.event.group,
       author: $me,
       visibility: data.event.visibility,
       title: '',

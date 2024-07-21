@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { SchoolType } from '../index.js';
 
 builder.mutationField('updateSchool', (t) =>

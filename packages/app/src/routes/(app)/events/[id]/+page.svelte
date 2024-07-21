@@ -22,6 +22,8 @@
 
   export let data: PageData;
 
+  const event = data.event!;
+
   let {
     descriptionHtml,
     links,
@@ -33,15 +35,15 @@
     reactionCounts,
     myReactions,
     forms,
-  } = data.event;
+    placesLeft,
+  } = event;
 
   /**
    * List of ticket IDs that received new data from the websocket connection
    */
   let updatedTicketsIds: string[] = [];
 
-  $: placesLeft = data.event.placesLeft;
-  $: tickets = data.event.tickets;
+  $: tickets = event.tickets;
 
   onMount(() => {
     $subscribe(
@@ -55,7 +57,7 @@
         const freshData = await eventData;
         if ('errors' in freshData) return;
         if (!freshData.event) return;
-        data.event.placesLeft = freshData.event.placesLeft as unknown as number | undefined;
+        placesLeft = freshData.event.placesLeft as unknown as number | null;
         // @ts-expect-error dunnot what is happening here, but typing with zeus and $subscribe is kinda cursed anyway
         data.ticketsOfEvent = data.ticketsOfEvent.map((t) => {
           const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id);
@@ -80,7 +82,7 @@
   const bookingURL = (registrationId: string) =>
     `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
 
-  const calendarURLs = calendarLinks(data.event);
+  const calendarURLs = calendarLinks(event);
 
   onMount(() => {
     if (data.claimedCode) toasts.success('Ton code de réduction a bien été appliqué ;)');
@@ -88,7 +90,7 @@
   });
 </script>
 
-<Header {...data.event} />
+<Header {...event} />
 
 {#if usersRegistration.length > 0}
   <ul class="nobullet bookings">
@@ -131,7 +133,7 @@
 </section>
 
 <section class="reactions">
-  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: data.event.id }} />
+  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: event.id }} />
 </section>
 
 {#if tickets.length > 0}
@@ -151,7 +153,7 @@
     <ul class="nobullet">
       {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? ''), ) as { id, ...ticket } (id)}
         <li>
-          <ItemTicket {...ticket} event={data.event} />
+          <ItemTicket {...ticket} {event} />
         </li>
       {/each}
     </ul>
@@ -176,7 +178,7 @@
   <h2>
     Actualités
 
-    {#if $me?.admin || data.event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
+    {#if $me?.admin || event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
       <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
     {/if}
   </h2>

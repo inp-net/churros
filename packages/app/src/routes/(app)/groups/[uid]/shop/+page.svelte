@@ -10,7 +10,7 @@
   export let data: PageData;
 
   const group = data.group;
-  const shopItems = group.shopItems.nodes
+  const shopItems = group.shopItems.nodes;
 
   const isOnClubBoard = Boolean(
     group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),

@@ -1,32 +1,32 @@
 <script lang="ts">
-  import Alert from '$lib/components/Alert.svelte';
-  import { type EventFrequency, Visibility, zeus, Selector } from '$lib/zeus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import IconSend from '~icons/mdi/send-outline';
-  import InputText from './InputText.svelte';
-  import InputLongText from './InputLongText.svelte';
+  import { track } from '$lib/analytics';
+  import Alert from '$lib/components/Alert.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
+  import { DISPLAY_VISIBILITIES, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
+  import { groupLogoSrc } from '$lib/logos';
+  import { route } from '$lib/ROUTES';
+  import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
-  import InputVisibility from './InputVisibility.svelte';
-  import InputPillDate from './InputPillDate.svelte';
-  import InputGroups from './InputGroups.svelte';
+  import { notUndefined } from '$lib/typing';
+  import { type EventFrequency, Selector, Visibility, zeus } from '$lib/zeus';
+  import { isFuture, isPast } from 'date-fns';
   import IconEvent from '~icons/mdi/calendar-outline';
   import IconClose from '~icons/mdi/close';
-  import { me } from '$lib/session';
-  import ButtonBack from './ButtonBack.svelte';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
-  import { isFuture, isPast } from 'date-fns';
-  import Modal from './Modal.svelte';
-  import LoadingSpinner from './LoadingSpinner.svelte';
+  import IconSend from '~icons/mdi/send-outline';
   import BadgeVisibility from './BadgeVisibility.svelte';
+  import ButtonBack from './ButtonBack.svelte';
+  import ButtonPrimary from './ButtonPrimary.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputGroups from './InputGroups.svelte';
+  import InputLongText from './InputLongText.svelte';
+  import InputPillDate from './InputPillDate.svelte';
   import InputPillEvent from './InputPillEvent.svelte';
-  import { track } from '$lib/analytics';
-  import { route } from '$lib/ROUTES';
+  import InputText from './InputText.svelte';
+  import InputVisibility from './InputVisibility.svelte';
+  import LoadingSpinner from './LoadingSpinner.svelte';
+  import Modal from './Modal.svelte';
 
   const _articleQuery = Selector('Article')({
     id: true,
@@ -64,6 +64,8 @@
       startsAt: true,
       endsAt: true,
       pictureFile: true,
+      pictureURL: [{ dark: false }, true],
+      slug: true,
       visibility: true,
       recurringUntil: true,
       frequency: true,
@@ -126,6 +128,8 @@
         recurringUntil?: Date | undefined;
         location: string;
         frequency: EventFrequency;
+        pictureURL: string;
+        slug: string;
       };
       links: Array<{ name: string; value: string }>;
       publishedAt: Date;
@@ -154,9 +158,8 @@
         upsertArticle: [
           {
             id,
-            authorId: (author ?? $me)!.id,
-            eventId: event?.id ?? '',
-            groupId: group.id,
+            event: event?.id ?? '',
+            group: group.uid,
             title,
             body,
             publishedAt: (publishLater ?? data.article.publishedAt ?? new Date()).toISOString(),
@@ -166,6 +169,7 @@
           {
             '__typename': true,
             '...on Error': { message: true },
+            '...on ZodError': { message: true },
             '...on MutationUpsertArticleSuccess': {
               data: _articleQuery,
             },
@@ -173,7 +177,7 @@
         ],
       });
 
-      if (upsertArticle.__typename === 'Error') {
+      if ('message' in upsertArticle) {
         serverError = upsertArticle.message;
         return;
       }
@@ -206,7 +210,7 @@
       Tu t'apprêtes à envoyer une notification à <strong
         >plus de
         <span class="notified-count">
-          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility, groupUid: group.uid }, true] }, )}
+          {#await $zeus.query( { notificationsSendCountForArticle: [{ visibility, group: group.uid }, true] }, )}
             <LoadingSpinner></LoadingSpinner>
           {:then { notificationsSendCountForArticle }}
             {notificationsSendCountForArticle}
@@ -273,13 +277,10 @@
     </p>
   </div>
   <section class="pills">
-    {#await $zeus.query( { eventsOfGroup: [{ groupUid: group.uid }, { edges: { node: _articleQuery.event } }] }, )}
+    {#await $zeus.query( { group: [{ uid: group.uid }, { events: [{}, { nodes: _articleQuery.event }] }] }, )}
       <ButtonSecondary loading icon={IconEvent}>Évènement</ButtonSecondary>
-    {:then { eventsOfGroup: { edges } }}
-      <InputPillEvent
-        suggestions={edges.map((n) => n.node)}
-        bind:event
-        groupUid={$page.params.group}
+    {:then { group: { events: { nodes } } }}
+      <InputPillEvent suggestions={nodes.filter(notUndefined)} bind:event group={$page.params.group}
       ></InputPillEvent>
     {/await}
     <InputPillDate after={new Date()} bind:value={publishLater}>Publier plus tard</InputPillDate>

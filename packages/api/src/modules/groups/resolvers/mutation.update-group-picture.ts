@@ -1,4 +1,4 @@
-import { log, builder, objectValuesFlat, prisma, updatePicture } from '#lib';
+import { builder, log, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 
@@ -33,7 +33,13 @@ builder.mutationField('updateGroupPicture', (t) =>
         identifier: uid,
         propertyName: dark ? 'pictureFileDark' : 'pictureFile',
       });
-      await log('group', 'update', { message: `Mise à jour de la photo ${dark ? 'sombre' : 'claire'}` }, uid, user);
+      await log(
+        'group',
+        'update',
+        { message: `Mise à jour de la photo ${dark ? 'sombre' : 'claire'}` },
+        uid,
+        user,
+      );
       return picture;
     },
   }),

@@ -18,7 +18,7 @@
   export let linkedGoogleSheetUrl: string | undefined;
   export let formId: string;
   export let answerCount: number;
-  export let linkedEvent: {localID: string} | undefined;
+  export let linkedEvent: { localID: string } | undefined;
   export let searching = false;
   export let canSeeAnswerStats = false;
 
@@ -105,10 +105,8 @@
     {/if}
   </ButtonInk>
   {#if linkedEvent}
-    <ButtonInk
-      icon={IconOpenInNewTab}
-      newTab
-      href={route("/events/[id]", linkedEvent.localID)} >Évènement lié</ButtonInk
+    <ButtonInk icon={IconOpenInNewTab} newTab href={route('/events/[id]', linkedEvent.localID)}
+      >Évènement lié</ButtonInk
     >
   {/if}
   <slot />

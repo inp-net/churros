@@ -12,16 +12,17 @@
   import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
   import { DISPLAY_VISIBILITIES } from '$lib/display';
   import IndicatorVisibility from '$lib/components/IndicatorVisibility.svelte';
+  import type { EventFrequency$options, Visibility$options } from '$houdini';
 
   export let title: string;
-  export let startsAt: Date | undefined = undefined;
+  export let startsAt: Date | undefined | null = undefined;
   export let pictureFile: string;
-  export let endsAt: Date | undefined = undefined;
+  export let endsAt: Date | undefined | null = undefined;
   export let location = '';
-  export let frequency: EventFrequency;
-  export let recurringUntil: Date | undefined = undefined;
+  export let frequency: EventFrequency | EventFrequency$options;
+  export let recurringUntil: Date | undefined | null = undefined;
   export let subtitle = '';
-  export let visibility: Visibility | undefined = undefined;
+  export let visibility: Visibility | Visibility$options | undefined = undefined;
 
   onMount(() => {
     if (browser) document.querySelector('main')?.classList.add('fullsize');

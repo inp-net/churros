@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, log } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf, userIsOnBoardOf } from '#permissions';
 
 builder.mutationField('deleteBarWeek', (t) =>

@@ -260,7 +260,7 @@
       <dd>{DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}</dd>
       <dt>Évènement</dt>
       <dd>
-        <a href={route("/events/[id]", ticket.event.localID)}>{ticket.event.title}</a>
+        <a href={route('/events/[id]', ticket.event.localID)}>{ticket.event.title}</a>
         {#if ticket.event.startsAt}({dateTimeFormatter.format(
             new Date(ticket.event.startsAt),
           )}){/if}

@@ -1,4 +1,4 @@
-import { builder, prisma, purgeUserSessions, log } from '#lib';
+import { builder, log, prisma, purgeUserSessions } from '#lib';
 
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { fullName } from '#modules/users';
@@ -70,7 +70,13 @@ builder.mutationField('addGroupMember', (t) =>
           await addMemberToGroupMailingList(groupUid, email);
         }
 
-        await log('group-member', 'create', { message: `${uid} a été ajouté·e à ${groupUid}` }, groupMember.groupId, user);
+        await log(
+          'group-member',
+          'create',
+          { message: `${uid} a été ajouté·e à ${groupUid}` },
+          groupMember.groupId,
+          user,
+        );
         return groupMember;
       } catch (error: unknown) {
         if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002')

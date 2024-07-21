@@ -17,15 +17,15 @@
   import { groupLogoSrc } from '$lib/logos';
   import { route } from '$lib/ROUTES';
 
-  export let group: undefined | { name: string } = undefined;
+  export let group: undefined | null | { name: string } = undefined;
   export let descriptionHtml: string;
   export let name: string;
   export let placesLeft: number | null | undefined = undefined;
   export let capacity: number;
   export let uid: string;
   export let price: number;
-  export let closesAt: Date | undefined = undefined;
-  export let opensAt: Date | undefined = undefined;
+  export let closesAt: Date | undefined | null = undefined;
+  export let opensAt: Date | undefined | null = undefined;
   export let event: { localID: string };
   export let openToGroups: Array<{
     uid: string;

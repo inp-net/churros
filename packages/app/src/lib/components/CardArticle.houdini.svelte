@@ -197,7 +197,7 @@
         </p>
         {#if event && allLoaded(event)}
           <a
-            href={route("/events/[id]", event.localID)}
+            href={route('/events/[id]', event.localID)}
             class="event"
             style:background-image="url({event.pictureURL})"
           >

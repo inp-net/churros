@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import { LogoSourceTypeEnum, ServiceType } from '../index.js';
 
@@ -70,7 +70,13 @@ builder.mutationField('upsertService', (t) =>
         },
       });
 
-      await log('service', 'create', { message: `Service ${service.id} created: ${service.name}` }, service.id, user);
+      await log(
+        'service',
+        'create',
+        { message: `Service ${service.id} created: ${service.name}` },
+        service.id,
+        user,
+      );
 
       return service;
     },

@@ -1,4 +1,4 @@
-import { log,builder, objectValuesFlat, prisma, updatePicture } from '#lib';
+import { builder, log, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf } from '#permissions';
 

@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -118,7 +123,16 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
+  """
+  
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+      
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+        
+  """
   answer: [String!]!
 
   """ID de la question à laquelle répondre"""
@@ -809,7 +823,7 @@ type Event implements Node & Pictured & Reactable {
   """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   startsAt: DateTime!
-  ticket(id: ID, slug: String): Ticket!
+  ticket(slug: String!): Ticket
   ticketGroups: [TicketGroup!]!
   tickets: [Ticket!]!
   title: String!
@@ -1433,7 +1447,7 @@ type Mutation {
   acceptRegistration(email: String!): MutationAcceptRegistrationResult!
 
   """Marks the user as having seen the given version's changelog."""
-  acknowledgeChangelog(version: String! = "1.67.1-rc.0"): Boolean!
+  acknowledgeChangelog(version: String! = "dev"): Boolean!
 
   """Activate a third-party app. Only admins can do this."""
   activateApp(
@@ -1462,7 +1476,30 @@ type Mutation {
     section: ID!
   ): MutationAnswerFormSectionResult!
 
-  "\nAuthorize a third-party client to access the user's data. \nReturns an access code. \n\nUse the frontend's /authorize endpoint instead of this, as it requires already being logged-in.\n\nDo a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:\n\n- `<clientId>`: The client ID of the app. See registerApp to get this.\n- `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`\n- `<state>`: A random string generated from personal information used to prevent CSRF attacks.\n\nUse that code to get an access token with /token:\n\nDo a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:\n\n- `grant_type`: `authorization_code`\n- `code`: The code returned by this endpoint\n- `client_id`: The client ID of the app\n- `client_secret`: The client secret of the app\n- `redirect_uri`: The redirect URI used in this request\n      "
+  """
+  
+  Authorize a third-party client to access the user's data. 
+  Returns an access code. 
+  
+  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
+  
+  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
+  
+  - `<clientId>`: The client ID of the app. See registerApp to get this.
+  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
+  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
+  
+  Use that code to get an access token with /token:
+  
+  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
+  
+  - `grant_type`: `authorization_code`
+  - `code`: The code returned by this endpoint
+  - `client_id`: The client ID of the app
+  - `client_secret`: The client secret of the app
+  - `redirect_uri`: The redirect URI used in this request
+        
+  """
   authorize(
     """The client ID of the app. See registerApp to get this."""
     clientId: String!
@@ -2423,7 +2460,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (1.67.1-rc.0).
+    The version to request a changelog for. Defaults to the current version (dev).
     """
     version: String
   ): ChangelogRelease!
@@ -2442,9 +2479,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (1.67.1-rc.0).
+    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
     """
-    to: String! = "1.67.1-rc.0"
+    to: String! = "dev"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!

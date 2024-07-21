@@ -1,4 +1,4 @@
-import { log, builder, prisma, purgeUserSessions, UnauthorizedError } from '#lib';
+import { builder, log, prisma, purgeUserSessions, UnauthorizedError } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { GraphQLError } from 'graphql';
@@ -44,7 +44,13 @@ builder.mutationField('selfJoinGroup', (t) =>
       });
       await addMemberToGroupMailingList(uid, email);
 
-      await log('group-member', 'create', { message: `${me.uid} a rejoins ${uid}` }, groupMember.groupId, me);
+      await log(
+        'group-member',
+        'create',
+        { message: `${me.uid} a rejoins ${uid}` },
+        groupMember.groupId,
+        me,
+      );
       return groupMember;
     },
   }),

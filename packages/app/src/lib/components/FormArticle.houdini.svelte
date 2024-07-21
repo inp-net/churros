@@ -235,9 +235,8 @@
             `Ton post a bien été ${input.id ? 'modifié' : 'créé'}`,
             'Impossible de sauvegarder le post',
           )
-        ) 
+        )
           goto(afterGoTo(result.data.upsertArticle.data));
-        
       });
   }
 
@@ -391,7 +390,7 @@
               id: input.id,
               confirm: true,
               // gotoOnCancel: `${afterGoTo($data)}/edit/`.replaceAll('//', '/'),
-              gotoOnCancel: route('/posts/[id]/edit', input.id)
+              gotoOnCancel: route('/posts/[id]/edit', input.id),
             },
             labels: {
               action: 'Annuler',

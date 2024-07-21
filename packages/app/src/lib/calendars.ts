@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/public';
+import type { EventFrequency$options } from '$houdini';
 import { route } from '$lib/ROUTES';
 import { google, ics, type CalendarEvent } from 'calendar-link';
 import { formatISO } from 'date-fns';
@@ -12,7 +13,7 @@ export function calendarLinks(event: {
   endsAt: Date;
   location: string;
   localID: string;
-  frequency: EventFrequency;
+  frequency: EventFrequency | EventFrequency$options;
   recurringUntil?: Date | undefined;
 }): { google: string; ical: string } {
   const eventURL = new URL(

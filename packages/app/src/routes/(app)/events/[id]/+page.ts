@@ -1,5 +1,6 @@
 import { graphql, load_PageEvent } from '$houdini';
 import { ZeusError, makeMutation } from '$lib/zeus';
+import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
 
@@ -22,6 +23,7 @@ graphql(`
       articles {
         id
         uid
+        localID
         bodyHtml
         bodyPreview
         publishedAt
@@ -160,9 +162,12 @@ export const load: PageLoad = async (event) => {
     }
   }
 
-  const { data } = await load_PageEvent({ event, variables: params }).then((stores) =>
+  const { data, errors } = await load_PageEvent({ event, variables: params }).then((stores) =>
     get(stores.PageEvent),
   );
+
+  if (!data) error(500, { message: 'Erreur: ' + errors?.map((e) => e.message).join(', ') });
+  if (!data.event) error(404, { message: 'Événement indisponible' });
 
   return {
     ...data,

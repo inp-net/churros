@@ -133,7 +133,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
                   edges: {
                     node: {
                       id: true,
-                      localID:true,
+                      localID: true,
                       descriptionHtml: true,
                       descriptionPreview: true,
                       uid: true,

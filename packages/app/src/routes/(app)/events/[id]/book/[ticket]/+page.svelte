@@ -38,17 +38,12 @@
   let beneficiary: string;
   let authorEmail = '';
   let payingForThemself = true;
-  const {
-    id,
-    allowedPaymentMethods,
-    onlyManagersCanProvide,
-    name,
-    event: { contactMail, title, pictureFile, startsAt, managers },
-    links,
-    price,
-  } = data.event.ticket;
+  const { id, allowedPaymentMethods, onlyManagersCanProvide, name, links, price } =
+    data.event.ticket!;
 
-  let { remainingGodsons } = data.event.ticket;
+  const { contactMail, title, pictureFile, startsAt, managers } = data.event;
+
+  let { remainingGodsons } = data.event.ticket!;
   $: remainingGodsons = remainingGodsons === -1 ? Number.POSITIVE_INFINITY : remainingGodsons;
 
   async function payBy(method: PaymentMethod | undefined) {

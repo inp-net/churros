@@ -1,4 +1,4 @@
-import { builder, prisma, updatePicture, log } from '#lib';
+import { builder, log, prisma, updatePicture } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { PictureType } from '../index.js';

@@ -44,6 +44,7 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             forApprentices: true,
             yearTier: true,
             uid: true,
+            id: true,
             minors: {
               uid: true,
               name: true,

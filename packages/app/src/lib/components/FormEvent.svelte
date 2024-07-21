@@ -809,7 +809,7 @@
               data: {
                 confirm: true,
                 id: event.id,
-                gotoOnCancel: route("/posts/[id]/edit", event.localID)
+                gotoOnCancel: route('/posts/[id]/edit', event.localID),
               },
               labels: {
                 action: 'Annuler',
