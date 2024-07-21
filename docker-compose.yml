@@ -11,9 +11,10 @@ services:
       - 1025:1025
       - 8025:8025
   redis:
-    image: redis:7.2.4
+    image: redis/redis-stack:7.2.0-v11
     ports:
       - 6379:6379
+      - 8001:8001
 
   # peut être commenté pour alléger la charge du serveur de développement, si l'on est pas en train de tester des choses qui dépendent de prometheus
   prometheus:

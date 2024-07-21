@@ -25,6 +25,7 @@ export * from './pubsub.js';
 export * from './qrcode.js';
 export * from './ratelimit.js';
 export * from './search.js';
+export * from './sessioncache.js';
 export * from './uid.js';
 export * from './urls.js';
 export * from './user-names.js';

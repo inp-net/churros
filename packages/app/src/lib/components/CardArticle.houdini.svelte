@@ -132,7 +132,7 @@
 
   export let hideGroup = false;
   export let href: string | undefined = undefined;
-  $: href ??= loaded(uid) && loaded(group.uid) ? `/posts/${group.uid}/${uid}` : '#';
+  $: href ??= loaded(uid) && loaded(group.uid) ? `/posts/${group.uid}/${uid}` : undefined;
 
   $: authorSrc = hideGroup
     ? allLoaded(author) && author
