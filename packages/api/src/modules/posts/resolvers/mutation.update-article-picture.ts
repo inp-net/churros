@@ -1,4 +1,4 @@
-import { log, builder, prisma, updatePicture } from '#lib';
+import { builder, log, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 
 builder.mutationField('updateArticlePicture', (t) =>

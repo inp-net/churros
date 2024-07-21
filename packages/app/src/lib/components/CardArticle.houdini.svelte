@@ -61,10 +61,7 @@
         }
         event {
           title
-          uid
-          group {
-            uid
-          }
+          localID
           pictureURL
           location
           startsAt
@@ -118,8 +115,7 @@
       event: {
         id: PendingValue,
         title: PendingValue,
-        uid: PendingValue,
-        group: { id: PendingValue, uid: PendingValue },
+        localID: PendingValue,
         pictureURL: PendingValue,
         location: PendingValue,
         startsAt: PendingValue,
@@ -201,7 +197,7 @@
         </p>
         {#if event && allLoaded(event)}
           <a
-            href="/events/{event.group.uid}/{event.uid}"
+            href={route('/events/[id]', event.localID)}
             class="event"
             style:background-image="url({event.pictureURL})"
           >

@@ -31,6 +31,7 @@
   import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
+  import { route } from '$lib/ROUTES';
   const dispatch = createEventDispatcher();
 
   let serverError = '';
@@ -116,6 +117,7 @@
           },
           '...on MutationUpsertEventSuccess': {
             data: {
+              localID: true,
               author: {
                 uid: true,
               },
@@ -230,7 +232,7 @@
         upsertEvent.data.visibility
       ].toLowerCase()} a bien été ${event.uid ? 'modifié' : 'créé'}`,
     );
-    await goto(redirectAfterSave(upsertEvent.data.uid, upsertEvent.data.group.uid));
+    await goto(redirectAfterSave(upsertEvent.data.localID));
   }
 
   let expandedTicketId = '';
@@ -311,8 +313,8 @@
     }>;
   };
 
-  export let redirectAfterSave: (uid: string, groupUid: string) => string = (uid, groupUid) =>
-    `/events/${groupUid}/${uid}/edit`;
+  export let redirectAfterSave: (localID: string) => string = (localID) =>
+    route('/events/[id]', localID);
 
   export let availableLydiaAccounts: Array<{
     name: string;
@@ -327,6 +329,7 @@
   }>;
 
   export let event: {
+    localID: string;
     tickets: Ticket[];
     pictureFile: string;
     id: string;
@@ -806,7 +809,7 @@
               data: {
                 confirm: true,
                 id: event.id,
-                gotoOnCancel: `/events/${event.group.uid}/${event.uid}/edit/`,
+                gotoOnCancel: route('/posts/[id]/edit', event.localID),
               },
               labels: {
                 action: 'Annuler',

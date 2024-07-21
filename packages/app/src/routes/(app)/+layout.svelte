@@ -2,7 +2,7 @@
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { graphql } from '$houdini';
+  import { AppLayoutScanningEventStore, graphql, type NavigationTopCurrentEvent } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
@@ -16,13 +16,26 @@
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import type { Snapshot } from './$types';
+  import type { LayoutRouteId, Snapshot } from './$types';
   import { writable } from 'svelte/store';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { allLoaded } from '$lib/loading';
+  import { onMount } from 'svelte';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
+
+  const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
+  let scanningEvent: NavigationTopCurrentEvent | null = null;
+  onMount(async () => {
+    if (!browser) return;
+    if ($page.route.id === scanningEventsRouteID) {
+      const store = new AppLayoutScanningEventStore();
+      scanningEvent = await store
+        .fetch({ variables: { id: $page.params.id! } })
+        .then((r) => r.data?.scanningEvent ?? null);
+    }
+  });
 
   export const snapshot: Snapshot<number> = {
     capture: () => scrollableArea.scrollTop,
@@ -106,7 +119,7 @@
     {scrolled}
     userIsLoading={$AppLayout.fetching}
     user={$AppLayout.data?.me ?? null}
-    event={$AppLayout.data?.scanningEvent ?? null}
+    event={scanningEvent}
   />
 
   {#if $theme === 'noel'}

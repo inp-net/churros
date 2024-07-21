@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, log } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 
 /** Deletes a group. */

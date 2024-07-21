@@ -87,6 +87,7 @@ export const load: PageServerLoad = async ({ fetch, parent, params, url }) => {
                   title: true,
                   startsAt: true,
                   group: { uid: true },
+                  localID: true,
                 },
               },
             },

@@ -19,7 +19,8 @@
 
   export let data: PageData;
 
-  const { shopItem } = data;
+  const { group } = data;
+  const shopItem = group.shopItem!;
 
   let warningToastId: string;
   // ESlint ne sais pas que serverError est utilisé
@@ -35,7 +36,7 @@
   let quantity = 1;
   const max = Math.min(shopItem.max, shopItem.stockLeft);
 
-  for (const _ of data.shopItem.itemOptions) {
+  for (const _ of shopItem.itemOptions) {
     dropdown.push('');
     answers.push('');
   }
@@ -120,7 +121,7 @@
           <BackButton go="../." />
           <h2>{shopItem.name}</h2>
           <ButtonShare />
-          {#if $me?.admin || shopItem.group.boardMembers.find((m) => m.member.uid === $me?.uid)}
+          {#if $me?.admin || group.boardMembers.find((m) => m.member.uid === $me?.uid)}
             <ButtonGhost href="./edit/"><IconEdit /></ButtonGhost>
           {/if}
         </div>
@@ -179,8 +180,7 @@
               </li>
             {:else}
               <li class="no-payment-methods danger">
-                Aucun moyen de paiement disponible. Contactez le bureau de {data.shopItem.group
-                  .name}.
+                Aucun moyen de paiement disponible. Contactez le bureau de {group.name}.
               </li>
             {/each}
           </ul>

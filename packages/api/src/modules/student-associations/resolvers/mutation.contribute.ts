@@ -1,4 +1,4 @@
-import { builder, prisma, log } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { cancelLydiaTransaction, sendLydiaPaymentRequest } from '#modules/payments';
 import { GraphQLError } from 'graphql';
 

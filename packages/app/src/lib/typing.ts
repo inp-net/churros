@@ -1,5 +1,10 @@
-import type { PendingValue, VariableFunction, Visibility$options } from '$houdini';
-import type { Visibility } from '$lib/zeus';
+import type {
+  PaymentMethod$options,
+  PendingValue,
+  VariableFunction,
+  Visibility$options,
+} from '$houdini';
+import type { PaymentMethod, Visibility } from '$lib/zeus';
 
 export function hasNoUndefineds<T>(items: T[]): items is NonNullable<T>[] {
   return items.every(Boolean);
@@ -7,6 +12,10 @@ export function hasNoUndefineds<T>(items: T[]): items is NonNullable<T>[] {
 
 export function notNull<T>(value: T | null): value is T {
   return value !== null;
+}
+
+export function notUndefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
 }
 
 // Infers LoadingNode to Node on calls... can't use this yet.
@@ -22,6 +31,10 @@ export function edges<LoadingNode, Node>({
 
 export function zeusVisibility(houdiniVisibility: Visibility$options): Visibility {
   return houdiniVisibility as Visibility;
+}
+
+export function zeusPaymentMethod(houdiniPaymentMethod: PaymentMethod$options): PaymentMethod {
+  return houdiniPaymentMethod as PaymentMethod;
 }
 
 export type WithoutRuntimeScalars<T> = Omit<T, 'loggedIn'>;

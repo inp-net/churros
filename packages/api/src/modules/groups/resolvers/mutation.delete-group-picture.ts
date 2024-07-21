@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, log } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
@@ -36,7 +36,13 @@ builder.mutationField('deleteGroupPicture', (t) =>
         where: { uid },
         data: { [dark ? 'pictureFileDark' : 'pictureFile']: '' },
       });
-      await log('group', 'update', { message: `Suppression de la photo ${dark ? 'sombre' : 'claire'}` }, uid, user);
+      await log(
+        'group',
+        'update',
+        { message: `Suppression de la photo ${dark ? 'sombre' : 'claire'}` },
+        uid,
+        user,
+      );
       return true;
     },
   }),

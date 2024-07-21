@@ -1,3 +1,6 @@
+import { env } from '$env/dynamic/public';
+import type { EventFrequency$options } from '$houdini';
+import { route } from '$lib/ROUTES';
 import { google, ics, type CalendarEvent } from 'calendar-link';
 import { formatISO } from 'date-fns';
 import { EventFrequency } from '../zeus';
@@ -9,9 +12,8 @@ export function calendarLinks(event: {
   startsAt: Date;
   endsAt: Date;
   location: string;
-  uid: string;
-  group: { uid: string };
-  frequency: EventFrequency;
+  localID: string;
+  frequency: EventFrequency | EventFrequency$options;
   recurringUntil?: Date | undefined;
 }): { google: string; ical: string } {
   const calendarEvent: CalendarEvent = {

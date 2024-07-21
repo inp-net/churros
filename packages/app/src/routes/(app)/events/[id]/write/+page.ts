@@ -5,11 +5,11 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
   loadQuery(
     {
       event: [
+        { id: params.id },
         {
-          groupUid: params.group,
-          uid: params.uid,
-        },
-        {
+          localID: true,
+          pictureURL: [{ dark: false }, true],
+          slug: true,
           title: true,
           visibility: true,
           frequency: true,
@@ -20,20 +20,17 @@ export const load: PageLoad = async ({ fetch, parent, params }) =>
           pictureFile: true,
           recurringUntil: true,
           location: true,
-        },
-      ],
-      group: [
-        { uid: params.group },
-        {
-          pictureFile: true,
-          pictureFileDark: true,
-          name: true,
-          uid: true,
-          id: true,
-          studentAssociation: { school: { name: true } },
-          children: {
+          group: {
+            pictureFile: true,
+            pictureFileDark: true,
             name: true,
+            uid: true,
+            id: true,
             studentAssociation: { school: { name: true } },
+            children: {
+              name: true,
+              studentAssociation: { school: { name: true } },
+            },
           },
         },
       ],

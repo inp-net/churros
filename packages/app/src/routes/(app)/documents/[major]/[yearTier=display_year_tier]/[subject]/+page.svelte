@@ -21,11 +21,11 @@
 
   const documentsByType = ORDER_DOCUMENT_TYPES.map((type) => [
     type,
-    data.documentsOfSubject.edges.filter(({ node }) => node.type === type).map((e) => e.node),
+    data.subject.documents.edges.filter(({ node }) => node.type === type).map((e) => e.node),
   ]).sort(
     ([_, aDocs], [__, bDocs]) => Number(bDocs.length > 0) - Number(aDocs.length > 0),
   ) as unknown as Array<
-    [DocumentType, Array<(typeof data.documentsOfSubject.edges)[number]['node']>]
+    [DocumentType, Array<(typeof data.subject.documents.edges)[number]['node']>]
   >;
 </script>
 
@@ -52,7 +52,7 @@
   </section>
 {/if}
 
-{#if data.documentsOfSubject.edges.length > 0}
+{#if data.subject.documents.edges.length > 0}
   {#each documentsByType as [type, documents]}
     <section class={type.toLowerCase()}>
       <h2 class="typo-field-label">

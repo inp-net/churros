@@ -115,7 +115,7 @@
 
   <a
     class="navigation-item"
-    href="/events/planning/"
+    href="/events"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
   >

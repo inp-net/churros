@@ -1,4 +1,4 @@
-import {log, builder, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@churros/db/prisma';
@@ -69,7 +69,13 @@ builder.mutationField('upsertGodparentRequest', (t) =>
         create: upsertData,
         update: upsertData,
       });
-      await log('godparent-request', id ? 'update' : 'create', { message: `Godparent request ${id ? 'updated' : 'created'}` }, godParentRequest.id, user);
+      await log(
+        'godparent-request',
+        id ? 'update' : 'create',
+        { message: `Godparent request ${id ? 'updated' : 'created'}` },
+        godParentRequest.id,
+        user,
+      );
       return godParentRequest;
     },
   }),

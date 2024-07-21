@@ -74,33 +74,26 @@ const PAGES = {
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
     return `/events${params?.week ? `/${params?.week}` : ''}`;
   },
-  '/events/[group]/[uid]': (params: { group: string | number; uid: string | number }) => {
-    return `/events/${params.group}/${params.uid}`;
-  },
-  '/events/[group]/[uid]/book/[ticket]': (params: {
-    group: string | number;
-    uid: string | number;
-    ticket: string | number;
-  }) => {
-    return `/events/${params.group}/${params.uid}/book/${params.ticket}`;
-  },
-  '/events/[group]/[uid]/edit': (params: { group: string | number; uid: string | number }) => {
-    return `/events/${params.group}/${params.uid}/edit`;
-  },
-  '/events/[group]/[uid]/registrations': (params: {
-    group: string | number;
-    uid: string | number;
-  }) => {
-    return `/events/${params.group}/${params.uid}/registrations`;
-  },
-  '/events/[group]/[uid]/scan': (params: { group: string | number; uid: string | number }) => {
-    return `/events/${params.group}/${params.uid}/scan`;
-  },
-  '/events/[group]/[uid]/write': (params: { group: string | number; uid: string | number }) => {
-    return `/events/${params.group}/${params.uid}/write`;
-  },
   '/events/[group]/create': (group: string | number, params?: {}) => {
     return `/events/${group}/create`;
+  },
+  '/events/[id]': (id: string | number, params?: {}) => {
+    return `/events/${id}`;
+  },
+  '/events/[id]/book/[ticket]': (params: { id: string | number; ticket: string | number }) => {
+    return `/events/${params.id}/book/${params.ticket}`;
+  },
+  '/events/[id]/edit': (id: string | number, params?: {}) => {
+    return `/events/${id}/edit`;
+  },
+  '/events/[id]/registrations': (id: string | number, params?: {}) => {
+    return `/events/${id}/registrations`;
+  },
+  '/events/[id]/scan': (id: string | number, params?: {}) => {
+    return `/events/${id}/scan`;
+  },
+  '/events/[id]/write': (id: string | number, params?: {}) => {
+    return `/events/${id}/write`;
   },
   '/events/create': `/events/create`,
   '/forms': `/forms`,
@@ -154,14 +147,11 @@ const PAGES = {
   '/groups/[uid]/shop': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/shop`;
   },
-  '/groups/[uid]/shop/[itemUid]': (params: { uid: string | number; itemUid: string | number }) => {
-    return `/groups/${params.uid}/shop/${params.itemUid}`;
+  '/groups/[uid]/shop/[id]': (params: { uid: string | number; id: string | number }) => {
+    return `/groups/${params.uid}/shop/${params.id}`;
   },
-  '/groups/[uid]/shop/[itemUid]/edit': (params: {
-    uid: string | number;
-    itemUid: string | number;
-  }) => {
-    return `/groups/${params.uid}/shop/${params.itemUid}/edit`;
+  '/groups/[uid]/shop/[id]/edit': (params: { uid: string | number; id: string | number }) => {
+    return `/groups/${params.uid}/shop/${params.id}/edit`;
   },
   '/groups/[uid]/shop/create': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/shop/create`;
@@ -285,7 +275,13 @@ const SERVERS = {
   'GET /bookings/[pseudoID].pdf': (pseudoID: string | number, params?: {}) => {
     return `/bookings/${pseudoID}.pdf`;
   },
-  'GET /events/feed': `/events/feed`,
+  'GET /events/[group]/[slug]/[...path]': (params: {
+    group: string | number;
+    slug: string | number;
+    path: (string | number)[];
+  }) => {
+    return `/events/${params.group}/${params.slug}/${params.path?.join('/')}`;
+  },
   'GET /events/planning': `/events/planning`,
   'GET /events/week/[monday]': (monday: string | number, params?: {}) => {
     return `/events/week/${monday}`;
@@ -476,13 +472,13 @@ export type KIT_ROUTES = {
       | 'subject';
     '/documents/create': never;
     '/events': 'week';
-    '/events/[group]/[uid]': 'group' | 'uid';
-    '/events/[group]/[uid]/book/[ticket]': 'group' | 'uid' | 'ticket';
-    '/events/[group]/[uid]/edit': 'group' | 'uid';
-    '/events/[group]/[uid]/registrations': 'group' | 'uid';
-    '/events/[group]/[uid]/scan': 'group' | 'uid';
-    '/events/[group]/[uid]/write': 'group' | 'uid';
     '/events/[group]/create': 'group';
+    '/events/[id]': 'id';
+    '/events/[id]/book/[ticket]': 'id' | 'ticket';
+    '/events/[id]/edit': 'id';
+    '/events/[id]/registrations': 'id';
+    '/events/[id]/scan': 'id';
+    '/events/[id]/write': 'id';
     '/events/create': never;
     '/forms': never;
     '/forms/[form]/answer': 'form' | 'section';
@@ -502,8 +498,8 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/pages/[...page]': 'uid' | 'page';
     '/groups/[uid]/members': 'uid';
     '/groups/[uid]/shop': 'uid';
-    '/groups/[uid]/shop/[itemUid]': 'uid' | 'itemUid';
-    '/groups/[uid]/shop/[itemUid]/edit': 'uid' | 'itemUid';
+    '/groups/[uid]/shop/[id]': 'uid' | 'id';
+    '/groups/[uid]/shop/[id]/edit': 'uid' | 'id';
     '/groups/[uid]/shop/create': 'uid';
     '/groups/[uid]/shop/orders': 'uid';
     '/groups/[uid]/shop/sales': 'uid';
@@ -554,7 +550,7 @@ export type KIT_ROUTES = {
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
     'GET /bookings/[pseudoID].pdf': 'pseudoID';
-    'GET /events/feed': never;
+    'GET /events/[group]/[slug]/[...path]': 'group' | 'slug' | 'path';
     'GET /events/planning': never;
     'GET /events/week/[monday]': 'monday';
     'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
@@ -586,10 +582,10 @@ export type KIT_ROUTES = {
     document: never;
     week: never;
     group: never;
-    uid: never;
     ticket: never;
     form: never;
     section: never;
+    uid: never;
     page: never;
     itemUid: never;
     token: never;
@@ -599,6 +595,8 @@ export type KIT_ROUTES = {
     email: never;
     componentName: never;
     entity: never;
+    slug: never;
+    path: never;
     monday: never;
     extension: never;
   };

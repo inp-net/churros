@@ -1,20 +1,39 @@
-import { builder, prisma } from '#lib';
-import { UIDScalar } from '#modules/global';
-
+import { builder, ensureGlobalId, prisma } from '#lib';
+import { LocalID, UIDScalar } from '#modules/global';
 import { userCanAccessEvent } from '#permissions';
+import { GraphQLError } from 'graphql';
 import { EventType } from '../index.js';
 
 builder.queryField('event', (t) =>
   t.prismaField({
     type: EventType,
     args: {
-      slug: t.arg.string(),
-      group: t.arg({ type: UIDScalar }),
+      group: t.arg({ type: UIDScalar, required: false }),
+      slug: t.arg.string({ required: false }),
+      id: t.arg({ type: LocalID, required: false }),
     },
+    validate: [
+      [
+        ({ group, slug, id }) => Boolean(id || (group && slug)),
+        {
+          message: "Préciser l'identifiant ou le groupe et le slug de l'événement",
+        },
+      ],
+    ],
     smartSubscription: true,
-    async authScopes(_, { slug, group: groupUid }, { user }) {
-      const event = await prisma.event.findFirstOrThrow({
-        where: { slug, group: { uid: groupUid } },
+    async authScopes(_, { id, group, slug }, { user }) {
+      if (!id) {
+        const event = await prisma.event.findFirst({
+          where: { slug: slug!, group: { uid: group! } },
+          select: { id: true },
+        });
+        if (event) id = event.id;
+      }
+
+      if (!id) throw new GraphQLError('Événement non trouvé');
+
+      const event = await prisma.event.findUnique({
+        where: { id: ensureGlobalId(id, 'Event') },
         include: {
           coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
           group: { include: { studentAssociation: { include: { school: true } } } },
@@ -24,7 +43,21 @@ builder.queryField('event', (t) =>
       });
       return userCanAccessEvent(event, user);
     },
-    resolve: async (query, _, { slug, group }) =>
-      prisma.event.findFirstOrThrow({ ...query, where: { slug, group: { uid: group } } }),
+    async resolve(query, _, { slug, group, id }) {
+      if (!id) {
+        const event = await prisma.event.findFirst({
+          where: { slug: slug!, group: { uid: group! } },
+          select: { id: true },
+        });
+        if (event) id = event.id;
+      }
+
+      if (!id) throw new GraphQLError('Événement non trouvé');
+
+      return prisma.event.findUniqueOrThrow({
+        ...query,
+        where: { id: ensureGlobalId(id, 'Event') },
+      });
+    },
   }),
 );

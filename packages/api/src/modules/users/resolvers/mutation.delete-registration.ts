@@ -1,4 +1,4 @@
-import { log,builder, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '../../../permissions/index.js';
 
 builder.mutationField('deleteRegistration', (t) =>
