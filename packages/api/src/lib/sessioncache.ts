@@ -46,7 +46,7 @@ export async function cacheSession(token: string, session: CachedSession) {
     .multi()
     .call('JSON.SET', sessionCacheKey(token), '$', JSON.stringify(session))
     .expire(sessionCacheKey(token), SESSION_KEY_LIFETIME_SECONDS)
-    .lpush(userSessionsKey(session.uid), token)
+    .sadd(userSessionsKey(session.uid), token)
     .exec()
     .catch((error) => {
       console.error(`Failed to cache session for ${token}: ${error?.toString()}`);
