@@ -192,11 +192,11 @@ const PAGES = {
   '/posts/create': (params?: { group?: string | number }) => {
     return `/posts${params?.group ? `/${params?.group}` : ''}/create`;
   },
-  '/posts/[group]/[uid]': (params: { group: string | number; uid: string | number }) => {
-    return `/posts/${params.group}/${params.uid}`;
+  '/posts/[id]': (id: string | number, params?: {}) => {
+    return `/posts/${id}`;
   },
-  '/posts/[group]/[uid]/edit': (params: { group: string | number; uid: string | number }) => {
-    return `/posts/${params.group}/${params.uid}/edit`;
+  '/posts/[id]/edit': (id: string | number, params?: {}) => {
+    return `/posts/${id}/edit`;
   },
   '/quick-signups/create': `/quick-signups/create`,
   '/quick-signups/manage': `/quick-signups/manage`,
@@ -516,8 +516,8 @@ export type KIT_ROUTES = {
     '/logs': never;
     '/notifications': never;
     '/posts/create': 'group';
-    '/posts/[group]/[uid]': 'group' | 'uid';
-    '/posts/[group]/[uid]/edit': 'group' | 'uid';
+    '/posts/[id]': 'id';
+    '/posts/[id]/edit': 'id';
     '/quick-signups/create': never;
     '/quick-signups/manage': never;
     '/quick-signups/qr/[code]': 'code';

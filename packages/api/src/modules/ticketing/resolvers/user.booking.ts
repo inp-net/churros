@@ -1,7 +1,7 @@
 import { builder, prisma } from '#lib';
 import { fullName, UserType } from '#modules/users';
 import { GraphQLError } from 'graphql';
-import { RegistrationType, authorIsBeneficiary } from '../index.js';
+import { authorIsBeneficiary, RegistrationType } from '../index.js';
 
 builder.prismaObjectField(UserType, 'booking', (t) =>
   t.prismaField({
@@ -17,7 +17,7 @@ builder.prismaObjectField(UserType, 'booking', (t) =>
           ...query.include,
           author: query.include && 'author' in query.include ? query.include.author : true,
         },
-        where: { ticket: {eventId} },
+        where: { ticket: { eventId } },
       });
 
       const registration = registrations.find(

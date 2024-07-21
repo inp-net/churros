@@ -6,8 +6,8 @@ export const load: LayoutLoad = async ({ fetch, parent, params }) => {
     {
       event: [
         {
-          groupUid: params.group,
-          uid: params.uid,
+          group: params.group,
+          slug: params.uid,
         },
         Selector('Event')({
           canScanBookings: true,

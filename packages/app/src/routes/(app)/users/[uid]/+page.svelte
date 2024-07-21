@@ -31,6 +31,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { tooltip } from '$lib/tooltip';
   import AreaContribute from '$lib/components/AreaContribute.svelte';
+  import { route } from '$lib/ROUTES';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -301,7 +302,7 @@
     <ul class="nobullet">
       {#each data.user.articles.edges.map(({ node }) => node) as article}
         <li>
-          <CardArticle href="/posts/{article.group.uid}/{article.uid}" {...article} />
+          <CardArticle href={route('/posts/[id]', article.localID)} {...article} />
         </li>
       {:else}
         <li>Aucun post</li>

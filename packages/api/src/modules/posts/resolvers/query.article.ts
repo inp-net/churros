@@ -1,27 +1,43 @@
-import { builder, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma, splitID } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
 import { GraphQLError } from 'graphql';
+import { LocalID } from '../../global/types/local-id.js';
 import { ArticleType } from '../index.js';
-import { UIDScalar } from '#modules/global';
+
+builder.queryField('articleID', (t) =>
+  t.field({
+    type: LocalID,
+    nullable: true,
+    description:
+      "Récupérer l'ID d'un article à partir de son groupe et de son slug. Pensé pour les redirections d'URLs anciennes.",
+    deprecationReason: 'Utilisez `article` à la place',
+    args: {
+      group: t.arg({ type: UIDScalar }),
+      slug: t.arg.string(),
+    },
+    resolve: async (_, { group, slug }) =>
+      prisma.article
+        .findFirst({ where: { slug, group: { uid: group } } })
+        .then((a) => (a ? splitID(a.id)[1] : null)),
+  }),
+);
 
 builder.queryField('article', (t) =>
   t.prismaField({
     type: ArticleType,
     smartSubscription: true,
     args: {
-      group: t.arg({ type: UIDScalar }),
-      slug: t.arg.string(),
+      id: t.arg({ type: LocalID }),
     },
-    async resolve(query, _, { slug, group: groupUid }, { user }) {
-      const article = await prisma.article.findFirstOrThrow({
+    async resolve(query, _, { id }, { user }) {
+      const article = await prisma.article.findUnique({
         ...query,
         where: {
+          id: ensureGlobalId(id, 'Article'),
           AND: [
             prismaQueryAccessibleArticles(user, 'can'),
             {
-              slug,
-              group: { uid: groupUid },
               OR: [
                 { eventId: null },
                 {

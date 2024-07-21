@@ -26,10 +26,12 @@
   import BadgeVisibility from './BadgeVisibility.svelte';
   import InputPillEvent from './InputPillEvent.svelte';
   import { track } from '$lib/analytics';
+  import { route } from '$lib/ROUTES';
 
   const _articleQuery = Selector('Article')({
     id: true,
     uid: true,
+    localID: true,
     title: true,
     body: true,
     bodyHtml: true,
@@ -77,10 +79,11 @@
   });
 
   export let afterGoTo: (article: (typeof data)['article']) => string = (article) =>
-    `/posts/${article.group.uid}/${article.uid}/`;
+    route('/posts/[id]', article.localID);
   export let data: {
     article: {
       uid: string;
+      localID: string;
       id: string;
       title: string;
       body: string;

@@ -26,81 +26,8 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
   try {
     const data = await loadQuery(
       {
-        ticketsOfEvent: [
-          {
-            eventUid: params.uid,
-            groupUid: params.group,
-          },
-          {
-            uid: true,
-            id: true,
-            name: true,
-            descriptionHtml: true,
-            price: true,
-            capacity: true,
-            placesLeft: true,
-            opensAt: true,
-            closesAt: true,
-            group: {
-              capacity: true,
-              name: true,
-            },
-            links: {
-              name: true,
-              value: true,
-              computedValue: true,
-            },
-            ...(me
-              ? {
-                  registrations: {
-                    id: true,
-                    opposed: true,
-                    cancelled: true,
-                    beneficiary: true,
-                    beneficiaryUser: {
-                      uid: true,
-                      firstName: true,
-                      fullName: true,
-                      lastName: true,
-                    },
-                    authorIsBeneficiary: true,
-                    author: {
-                      uid: true,
-                    },
-                    paid: true,
-                    ticket: {
-                      name: true,
-                    },
-                  },
-                }
-              : {}),
-            openToAlumni: true,
-            openToExternal: true,
-            openToGroups: {
-              uid: true,
-              name: true,
-              pictureFile: true,
-              pictureFileDark: true,
-            },
-            openToContributors: true,
-            openToSchools: {
-              uid: true,
-              name: true,
-              color: true,
-              id: true,
-            },
-            openToPromotions: true,
-            openToMajors: {
-              name: true,
-              shortName: true,
-              id: true,
-            },
-            onlyManagersCanProvide: true,
-            event: { id: true },
-          },
-        ],
         event: [
-          { groupUid: params.group, uid: params.uid },
+          { group: params.group, slug: params.uid },
           Selector('Event')({
             startsAt: true,
             endsAt: true,
@@ -165,6 +92,73 @@ export const load: PageLoad = async ({ fetch, parent, params, url }) => {
             forms: {
               localId: true,
               title: true,
+            },
+            tickets: {
+              uid: true,
+              id: true,
+              name: true,
+              descriptionHtml: true,
+              price: true,
+              capacity: true,
+              placesLeft: true,
+              opensAt: true,
+              closesAt: true,
+              group: {
+                capacity: true,
+                name: true,
+              },
+              links: {
+                name: true,
+                value: true,
+                computedValue: true,
+              },
+              ...(me
+                ? {
+                    registrations: {
+                      id: true,
+                      opposed: true,
+                      cancelled: true,
+                      beneficiary: true,
+                      beneficiaryUser: {
+                        uid: true,
+                        firstName: true,
+                        fullName: true,
+                        lastName: true,
+                      },
+                      authorIsBeneficiary: true,
+                      author: {
+                        uid: true,
+                      },
+                      paid: true,
+                      ticket: {
+                        name: true,
+                      },
+                    },
+                  }
+                : {}),
+              openToAlumni: true,
+              openToExternal: true,
+              openToGroups: {
+                uid: true,
+                name: true,
+                pictureFile: true,
+                pictureFileDark: true,
+              },
+              openToContributors: true,
+              openToSchools: {
+                uid: true,
+                name: true,
+                color: true,
+                id: true,
+              },
+              openToPromotions: true,
+              openToMajors: {
+                name: true,
+                shortName: true,
+                id: true,
+              },
+              onlyManagersCanProvide: true,
+              event: { id: true },
             },
           }),
         ],

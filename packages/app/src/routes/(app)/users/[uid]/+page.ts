@@ -120,6 +120,7 @@ export const load: PageLoad = async (event) => {
               edges: {
                 node: {
                   id: true,
+                  localID: true,
                   title: true,
                   uid: true,
                   group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
