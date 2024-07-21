@@ -22,7 +22,7 @@ declare namespace NodeJS {
      *
      * @remark /!\ Without trailing slash, it's an origin
      */
-    FRONTEND_ORIGIN: string;
+    PUBLIC_FRONTEND_ORIGIN: string;
     /** @see https://yarnpkg.com/advanced/lifecycle-scripts/#environment-variables */
     INIT_CWD: string;
     /** Settings object for reference LDAP servers. */

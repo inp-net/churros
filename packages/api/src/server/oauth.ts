@@ -30,7 +30,7 @@ api.use('/token', async (request, response) => {
     return response.status(401).send(
       JSON.stringify({
         code: OAuth2ErrorCode.invalid_request,
-        message: `${text}\n\nSee the documentation of the 'authorize' mutation for more information: <a href="${process.env.FRONTEND_ORIGIN}/graphql">${process.env.FRONTEND_ORIGIN}/graphql</a>`,
+        message: `${text}\n\nSee the documentation of the 'authorize' mutation for more information: <a href="${process.env.PUBLIC_FRONTEND_ORIGIN}/graphql">${process.env.PUBLIC_FRONTEND_ORIGIN}/graphql</a>`,
       }),
     );
   }

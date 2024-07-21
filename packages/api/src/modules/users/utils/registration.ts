@@ -75,7 +75,7 @@ export const saveUser = async (
   await sendMail(
     'welcome',
     email,
-    { url: new URL('/welcome/', process.env.FRONTEND_ORIGIN).toString() },
+    { url: new URL('/welcome/', process.env.PUBLIC_FRONTEND_ORIGIN).toString() },
     {},
   );
 

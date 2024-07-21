@@ -286,7 +286,10 @@ builder.mutationField('upsertRegistration', (t) =>
             beneficiary: beneficiary ?? null,
             bookingCode: pseudoID,
             eventTitle: ticket.event.title,
-            bookingLink: new URL(`/bookings/${pseudoID}`, process.env.FRONTEND_ORIGIN).toString(),
+            bookingLink: new URL(
+              `/bookings/${pseudoID}`,
+              process.env.PUBLIC_FRONTEND_ORIGIN,
+            ).toString(),
           },
           {
             attachments: {

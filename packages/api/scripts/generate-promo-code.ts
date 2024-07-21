@@ -84,7 +84,7 @@ for (let i = 0; i < count; i++) {
   console.log(
     new URL(
       event ? `/events/${event.group.uid}/${event.slug}?claimCode=${code}` : `/claim-code/${code}`,
-      process.env.FRONTEND_ORIGIN,
+      process.env.PUBLIC_FRONTEND_ORIGIN,
     ).toString(),
   );
 }

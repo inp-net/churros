@@ -27,7 +27,10 @@ export function makeGoogleWalletObject(
     classId: GOOGLE_WALLET_CLASS.id,
     logo: {
       sourceUri: {
-        uri: noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
+        uri: noLocalhostURL(
+          'android-chrome-512x512.png',
+          process.env.PUBLIC_FRONTEND_ORIGIN,
+        ).toString(),
       },
       contentDescription: {
         defaultValue: {
@@ -89,7 +92,10 @@ export function makeGoogleWalletObject(
       sourceUri: {
         uri: event.pictureFile
           ? noLocalhostURL(event.pictureFile, process.env.PUBLIC_STORAGE_URL).toString()
-          : noLocalhostURL('android-chrome-512x512.png', process.env.FRONTEND_ORIGIN).toString(),
+          : noLocalhostURL(
+              'android-chrome-512x512.png',
+              process.env.PUBLIC_FRONTEND_ORIGIN,
+            ).toString(),
       },
       contentDescription: {
         defaultValue: {
