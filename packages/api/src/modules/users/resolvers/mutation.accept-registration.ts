@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 
 import { Prisma } from '@churros/db/prisma';
@@ -20,15 +20,14 @@ builder.mutationField('acceptRegistration', (t) =>
       });
       if (!candidate) throw new GraphQLError('Candidat·e introuvable');
 
-      await prisma.logEntry.create({
-        data: {
-          action: 'accept',
-          area: 'signups',
-          message: `Acceptation de l'inscription de ${email}`,
-          user: { connect: { id: user!.id } },
-          target: `token ${candidate.token}`,
-        },
-      });
+      await log(
+        'signup',
+        'accept',
+        { message: `Acceptation de l'inscription de ${email}`, candidate },
+        candidate.id,
+        user,
+      );
+
       try {
         return saveUser(candidate, query);
       } catch (error) {

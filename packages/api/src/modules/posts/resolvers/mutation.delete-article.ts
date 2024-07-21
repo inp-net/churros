@@ -1,4 +1,4 @@
-import { builder, prisma, publish } from '#lib';
+import { builder, prisma, publish, log } from '#lib';
 
 builder.mutationField('deleteArticle', (t) =>
   t.field({
@@ -25,15 +25,7 @@ builder.mutationField('deleteArticle', (t) =>
     async resolve(_, { id }, { user }) {
       await prisma.article.delete({ where: { id } });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'article',
-          action: 'delete',
-          target: id,
-          message: `Article ${id} deleted`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('article', 'delete', { message: `Article ${id} deleted` }, id, user);
       publish(id, 'deleted', id);
       return true;
     },

@@ -1,4 +1,4 @@
-import { builder, prisma, publish } from '#lib';
+import { builder, prisma, publish, log } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { ZodError } from 'zod';
 import { AnnouncementType } from '../index.js';
@@ -35,15 +35,7 @@ builder.mutationField('upsertAnnouncement', (t) =>
         update: upsertData,
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'announcements',
-          action: id ? 'update' : 'create',
-          target: announcement.id,
-          message: `Announcement ${announcement.id} ${id ? 'updated' : 'created'}: ${title}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('announcements', id ? 'update' : 'create', { message: `Announcement ${announcement.id} ${id ? 'updated' : 'created'}: ${title}` }, announcement.id, user);
 
       publish(announcement.id, id ? 'updated' : 'created', announcement);
 

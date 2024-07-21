@@ -1,5 +1,4 @@
-import { builder, ensureGlobalId, prisma, publish } from '#lib';
-
+import { log as _log, builder, ensureGlobalId, prisma, publish } from '#lib';
 import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import {
@@ -30,15 +29,7 @@ builder.mutationField('verifyBooking', (t) =>
     },
     async resolve(query, { id, event: eventId }, { user }) {
       async function log(message: string, target?: string) {
-        await prisma.logEntry.create({
-          data: {
-            action: 'scan',
-            area: 'scans',
-            message,
-            user: user ? { connect: { id: user.id } } : undefined,
-            target,
-          },
-        });
+        return _log('scans', 'scan', { message }, target, user);
       }
 
       if (!user) throw new GraphQLError('Must be logged in to verify a registration');

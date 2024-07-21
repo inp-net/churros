@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, prisma, publish, log } from '#lib';
 import { DateTimeScalar, UIDScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@churros/db/prisma';
@@ -102,15 +102,7 @@ builder.mutationField('upsertArticle', (t) =>
         },
       });
       publish(result.id, id ? 'updated' : 'created', result);
-      await prisma.logEntry.create({
-        data: {
-          area: 'article',
-          action: id ? 'update' : 'create',
-          target: result.id,
-          message: `Article ${id ? 'updated' : 'created'}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('article', id ? 'update' : 'create', { message: `Article ${id ? 'updated' : 'created'}` }, result.id, user);
       const visibilitiesByVerbosity = [
         Visibility.Private,
         Visibility.Unlisted,

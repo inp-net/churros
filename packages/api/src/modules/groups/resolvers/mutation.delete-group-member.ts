@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, objectValuesFlat, prisma, purgeUserSessions, log } from '#lib';
 import { removeMemberFromGroupMailingList, updateMemberBoardLists } from '#modules/mails';
 import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
 
@@ -41,15 +41,7 @@ builder.mutationField('deleteGroupMember', (t) =>
 
       purgeUserSessions(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });
-      await prisma.logEntry.create({
-        data: {
-          area: 'group-member',
-          action: 'delete',
-          target: groupId,
-          message: `${uid} a été supprimé·e de ${groupId}`,
-          user: me ? { connect: { id: me.id } } : undefined,
-        },
-      });
+      await log('group-member', 'delete', { message: `${uid} a été supprimé·e de ${groupId}` }, groupId, me);
       return true;
     },
   }),

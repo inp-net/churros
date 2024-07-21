@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, purgeUserSessions, sendMail } from '#lib';
+import { log, builder, objectValuesFlat, prisma, purgeUserSessions, sendMail } from '#lib';
 import { updateMemberBoardLists } from '#modules/mails';
 import { fullName } from '#modules/users';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
@@ -83,15 +83,7 @@ builder.mutationField('upsertGroupMember', (t) =>
             canScanEvents: false,
           },
         });
-        await prisma.logEntry.create({
-          data: {
-            area: 'group-member',
-            action: 'update',
-            target: groupId,
-            message: `${uid} a été nommé·e président·e de ${groupId}`,
-            user: me ? { connect: { id: me.id } } : undefined,
-          },
-        });
+        await log('group-member', 'update', { message: `${uid} a été nommé·e président·e de ${groupId}` }, groupId, me);
       }
 
       const quittingBoard =
@@ -125,15 +117,7 @@ builder.mutationField('upsertGroupMember', (t) =>
 
       await updateMemberBoardLists(memberId, groupId, group.type);
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'group-member',
-          action: 'update',
-          target: groupId,
-          message: `${uid} a été mis·e à jour dans ${groupId}`,
-          user: me ? { connect: { id: me.id } } : undefined,
-        },
-      });
+      await log('group-member', 'update', { message: `${uid} a été mis·e à jour dans ${groupId}` }, groupId, me);
 
       const boardKeys = ['president', 'vicePresident', 'treasurer', 'secretary'] as const;
 

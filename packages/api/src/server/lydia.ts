@@ -43,50 +43,37 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
       sig,
     );
 
-    await prisma.logEntry.create({
-      data: {
-        action: 'receive',
-        area: 'lydia webhook',
-        message: JSON.stringify({ verified, transaction }),
-        target: transaction_identifier,
-      },
-    });
+    await log('lydia', 'webhook', { verified, transaction }, transaction_identifier);
 
     if (!verified) {
-      await prisma.logEntry.create({
-        data: {
-          area: 'lydia webhook',
-          action: 'fail',
-          message: 'transaction signature invalid',
-          target: transaction_identifier,
-        },
-      });
+      await log(
+        'lydia',
+        'webhook/error',
+        { verified, transaction, why: 'Transaction signature is invalid' },
+        transaction_identifier,
+      );
       return res.status(400).send('Transaction signature is invalid');
     }
 
     if (!transaction) {
-      await prisma.logEntry.create({
-        data: {
-          area: 'lydia webhook',
-          action: 'fail',
-          message: 'transaction not found',
-          target: transaction_identifier,
-        },
-      });
+      await log(
+        'lydia',
+        'webhook/error',
+        { verified, transaction, why: 'Transaction not found' },
+        transaction_identifier,
+      );
       return res.status(400).send('Transaction not found');
     }
 
     // Check if the beneficiary exists
     if (transaction.registration) {
       if (!transaction.registration.ticket.event.beneficiary) {
-        await prisma.logEntry.create({
-          data: {
-            area: 'lydia webhook',
-            action: 'fail',
-            message: 'beneficiary not found',
-            target: transaction_identifier,
-          },
-        });
+        await log(
+          'lydia',
+          'webhook/error',
+          { verified, transaction, why: 'Beneficiary not found' },
+          transaction_identifier,
+        );
         return res.status(400).send('Beneficiary not found');
       }
 
@@ -94,14 +81,12 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
         sig ===
         lydiaSignature(transaction.registration.ticket.event.beneficiary, signatureParameters)
       ) {
-        await prisma.logEntry.create({
-          data: {
-            area: 'lydia webhook',
-            action: 'success',
-            message: `booking transaction marked as paid`,
-            target: transaction_identifier,
-          },
-        });
+        await log(
+          'lydia',
+          'webhook/mark-booking',
+          { verified, transaction, message: 'making booking transaction as paid' },
+          transaction_identifier,
+        );
         await prisma.lydiaTransaction.update({
           where: {
             id: transaction.id,
@@ -120,13 +105,12 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
     } else if (transaction.contribution) {
       const { beneficiary } = transaction.contribution.option;
       if (!beneficiary) {
-        await prisma.logEntry.create({
-          data: {
-            area: 'lydia webhook',
-            action: 'fail',
-            message: 'no lydia account linked',
-          },
-        });
+        await log(
+          'lydia',
+          'webhook/error',
+          { verified, transaction, why: 'No lydia account linked' },
+          transaction_identifier,
+        );
         return res.status(400).send('No lydia accounts for this student association');
       }
 
@@ -151,18 +135,12 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
           );
         }
 
-        await prisma.logEntry.create({
-          data: {
-            area: 'lydia webhook',
-            action: 'success',
-            message: `contribution transaction marked as paid: ${JSON.stringify(
-              { beneficiary },
-              undefined,
-              2,
-            )}`,
-            target: transaction_identifier,
-          },
-        });
+        await log(
+          'lydia',
+          'webhook/mark-contribution',
+          { verified, transaction, message: 'making contribution transaction as paid' },
+          transaction_identifier,
+        );
         return res.status(200).send('OK');
       }
     }

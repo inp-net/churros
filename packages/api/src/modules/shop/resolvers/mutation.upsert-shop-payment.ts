@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, log } from '#lib';
 import { onBoard } from '#permissions';
 import { PaymentMethod as PaymentMethodPrisma, Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
@@ -165,15 +165,7 @@ builder.mutationField('upsertShopPayment', (t) =>
           lydiaTransaction: true,
         },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'shop payment',
-          action: 'create',
-          target: shopPayment.id,
-          message: `${shopItem.name} (x${quantity}) for ${userUid}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('shop payment', 'create', { message: `${shopItem.name} (x${quantity}) for ${userUid}` }, shopPayment.id, user);
       await prisma.shopItemAnswer.create({
         data: {
           shopPayment: { connect: { id: shopPayment.id } },

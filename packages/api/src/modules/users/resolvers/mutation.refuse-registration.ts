@@ -1,4 +1,4 @@
-import { builder, prisma, sendMail } from '#lib';
+import { builder, log, prisma, sendMail } from '#lib';
 import { GraphQLError } from 'graphql';
 import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 
@@ -19,15 +19,13 @@ builder.mutationField('refuseRegistration', (t) =>
       await sendMail('signup-rejected', email, { reason }, {});
       candidate = await prisma.userCandidate.delete({ where: { email } });
 
-      await prisma.logEntry.create({
-        data: {
-          action: 'refuse',
-          area: 'signups',
-          message: `Refus de l'inscription de ${email} pour ${reason}`,
-          user: { connect: { id: user!.id } },
-          target: `token ${candidate.token}`,
-        },
-      });
+      await log(
+        'signup',
+        'refuse',
+        { message: `Refus de l'inscription de ${email} pour ${reason}` },
+        candidate.id,
+        user,
+      );
       return true;
     },
   }),

@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { UserType } from '../index.js';
@@ -42,17 +42,7 @@ builder.mutationField('updateUserPermissions', (t) =>
         where: { uid },
         data: { canAccessDocuments },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'permission',
-          action: 'update',
-          target: userUpdated.id,
-          message: `Updated user ${userUpdated.uid} permissions: ${JSON.stringify({
-            canAccessDocuments,
-          })}`,
-          user: { connect: { id: user?.id } },
-        },
-      });
+      await log('permission', 'update', { userUpdated, canAccessDocuments }, userUpdated.id, user);
       return userUpdated;
     },
   }),

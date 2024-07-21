@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, log } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { userIsAdminOf, userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
@@ -71,15 +71,7 @@ builder.mutationField('upsertBarWeek', (t) =>
           },
         },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'bar-week',
-          action: id ? 'update' : 'create',
-          target: barWeek.id,
-          message: `Bar week ${barWeek.id} upserted: ${barWeek.description}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('bar-week', id ? 'update' : 'create', { message: `Bar week ${barWeek.id} upserted: ${barWeek.description}` }, barWeek.id, user);
       return barWeek;
     },
   }),
