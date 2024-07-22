@@ -11,6 +11,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Cliquer sur un post depuis la page d'accueil faisait parfois rien
+
+### Technique
+
+- Churros a maintenant besoin d'un serveur Redis avec le [module ReJSON](https://redis.io/json/): on stocke maintenant le cache des sessions dans Redis au lieu de en mémoire (ce qui permet d'assurer la cohérence du cache si jamais on a plusieurs replicas de l'API)
+
 ## [1.67.1-rc.0] - 2024-07-21
 
 ### Corrections
