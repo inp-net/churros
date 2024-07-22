@@ -15,9 +15,7 @@ export const CommentableInterface = builder.interfaceRef<Commentable>('Commentab
     comments: t.connection(
       {
         type: CommentType,
-        resolve: (parent) =>
-          // @ts-expect-error dunno why it complainnns
-          parent.comments,
+        resolve: (parent) => parent.comments,
       },
       CommentsConnectionType,
     ),
