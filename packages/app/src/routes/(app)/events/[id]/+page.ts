@@ -5,7 +5,7 @@ import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
 
 graphql(`
-  query PageEvent($id: LocalID!) {
+  query PageEvent($id: LocalID!) @blocking {
     event(id: $id) {
       startsAt
       endsAt
