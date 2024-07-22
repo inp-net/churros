@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { fragment, graphql, type NavigationTop, type NavigationTopCurrentEvent } from '$houdini';
   import { formatDate } from '$lib/dates';
-  import { loaded, loading, onceLoaded } from '$lib/loading';
+  import { loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
   import { theme } from '$lib/theme';
   import IconAccount from '~icons/mdi/account-circle-outline';
   import IconNotifFilled from '~icons/mdi/bell';
@@ -15,6 +15,7 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LogoChurros from './LogoChurros.svelte';
   import ModalReportIssue from './ModalReportIssue.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
 
   export let scrolled = false;
   let deviceWidth = browser ? window.innerWidth : 500;
@@ -43,8 +44,6 @@
       }
     `),
   );
-
-  $: scanningTickets = Boolean($currentEvent);
 </script>
 
 <svelte:window
@@ -55,13 +54,17 @@
 
 <ModalReportIssue bind:element={reportIssueDialogElement} />
 
-<nav id="navigation-top" class:scrolled class:transparent={scanningTickets} class={$theme}>
-  {#if scanningTickets}
+<nav id="navigation-top" class:scrolled class:transparent={Boolean($currentEvent)} class={$theme}>
+  {#if $currentEvent}
     <div class="current-event">
       <ButtonBack />
       <div class="event-name">
-        <h1>{$currentEvent?.title ?? 'Chargement…'}</h1>
-        <p>{$currentEvent ? formatDate($currentEvent.startsAt) : 'Chargement…'}</p>
+        <h1><LoadingText value={$currentEvent.title}>Lorem ipsum sit dolor</LoadingText></h1>
+        <p>
+          <LoadingText value={mapLoading($currentEvent.startsAt, formatDate)}
+            >16 juillet 2003</LoadingText
+          >
+        </p>
       </div>
     </div>
   {:else}
@@ -71,7 +74,7 @@
   {/if}
 
   <div class="actions">
-    {#if scanningTickets}
+    {#if $currentEvent}
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
         on:click={() => {

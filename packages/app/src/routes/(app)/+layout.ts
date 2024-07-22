@@ -4,7 +4,7 @@ export const ssr = false;
 
 graphql(`
   query AppLayoutScanningEvent($id: LocalID!) {
-    scanningEvent: event(id: $id) @loading {
+    scanningEvent: event(id: $id) @loading(cascade: true) {
       ...NavigationTopCurrentEvent
     }
   }

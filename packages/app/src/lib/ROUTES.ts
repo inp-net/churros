@@ -83,11 +83,11 @@ const PAGES = {
   '/events/[id]/book/[ticket]': (params: { id: string | number; ticket: string | number }) => {
     return `/events/${params.id}/book/${params.ticket}`;
   },
+  '/events/[id]/bookings': (id: string | number, params?: {}) => {
+    return `/events/${id}/bookings`;
+  },
   '/events/[id]/edit': (id: string | number, params?: {}) => {
     return `/events/${id}/edit`;
-  },
-  '/events/[id]/registrations': (id: string | number, params?: {}) => {
-    return `/events/${id}/registrations`;
   },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
@@ -475,8 +475,8 @@ export type KIT_ROUTES = {
     '/events/[group]/create': 'group';
     '/events/[id]': 'id';
     '/events/[id]/book/[ticket]': 'id' | 'ticket';
+    '/events/[id]/bookings': 'id';
     '/events/[id]/edit': 'id';
-    '/events/[id]/registrations': 'id';
     '/events/[id]/scan': 'id';
     '/events/[id]/write': 'id';
     '/events/create': never;

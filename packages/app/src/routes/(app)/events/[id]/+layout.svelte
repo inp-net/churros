@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { route, type KIT_ROUTES } from '$lib/ROUTES';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -10,20 +11,26 @@
     canSeeBookings: false,
     canEdit: false,
   };
-  $: ({ group, uid } = $page.params);
 
   const TABS = {
     '': 'Infos',
     'edit': 'Modifier',
-    'registrations': 'Places',
+    'bookings': 'Places',
     'scan': 'Vérifier',
   } as const;
+
+  const TABS_HREFS = {
+    '': '/events/[id]',
+    'edit': '/events/[id]/edit',
+    'bookings': '/events/[id]/bookings',
+    'scan': '/events/[id]/scan',
+  } satisfies Record<keyof typeof TABS, keyof KIT_ROUTES['PAGES']>;
 
   let tabsToShow: Record<keyof typeof TABS, boolean>;
   $: tabsToShow = {
     '': true,
     'edit': permissions.canEdit,
-    'registrations': permissions.canSeeBookings,
+    'bookings': permissions.canSeeBookings,
     'scan': permissions.canScanBookings,
   };
 
@@ -39,7 +46,9 @@
     currentTab = pathLeaf in TABS ? (pathLeaf as keyof typeof TABS) : '';
   }
 
-  const tabHref = (tab: string) => `/events/${group}/${uid}/${tab}`;
+  function tabHref(tab: keyof typeof TABS) {
+    return route(TABS_HREFS[tab], $page.params.id);
+  }
 </script>
 
 <section class="tabs">

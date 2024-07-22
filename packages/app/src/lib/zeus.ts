@@ -112,11 +112,11 @@ export const scalars = ZeusScalars({
   },
   UID: {
     decode: (value: unknown): string => value as string,
-    encode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
   },
   LocalID: {
     decode: (value: unknown): string => value as string,
-    encode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
   },
 });
 
