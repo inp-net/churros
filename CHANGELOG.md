@@ -11,6 +11,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.67.1] - 2024-07-22
+
 ### Corrections
 
 - Cliquer sur un post depuis la page d'accueil faisait parfois rien
@@ -729,7 +731,7 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
 [1.40.0]: https://git.inpt.fr/inp-net/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.67.1-rc.0...main
+[unreleased]: https://git.inpt.fr/inp-net/churros/-/compare/v1.67.1...main
 [1.44.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.44.1
 [1.62.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.62.0
 [1.61.3]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.61.3
@@ -784,6 +786,7 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 [1.42.2]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.42.2
 [1.42.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.42.1
 [1.42.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.42.0
+[1.67.1]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.67.1
 [1.67.1-rc.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.67.1-rc.0
 [1.67.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.67.0
 [1.66.0]: https://git.inpt.fr/inp-net/churros/-/releases/tag/v1.66.0
