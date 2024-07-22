@@ -85,7 +85,7 @@
         pathWasUserEdited = true;
       }}
       label="Chemin"
-      actionIcon={path !== suggestedPath ? IconReset : undefined}
+      actionIcon={path === suggestedPath ? undefined : IconReset}
       on:action={() => {
         path = suggestedPath;
         pathWasUserEdited = false;
@@ -107,8 +107,8 @@
 <style>
   section.submit {
     display: flex;
-    margin-top: 1rem;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
   }
 </style>
