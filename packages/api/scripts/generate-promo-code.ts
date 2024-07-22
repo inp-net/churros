@@ -1,5 +1,5 @@
+import { localID } from '#lib';
 import { PrismaClient, PromotionType, type Event, type Group } from '@churros/db/prisma';
-import { splitID } from '../src/lib/global-id.js';
 
 function usage(): never {
   console.error(
@@ -84,7 +84,7 @@ for (let i = 0; i < count; i++) {
   });
   console.log(
     new URL(
-      event ? `/events/${splitID(event.id)[1]}?claimCode=${code}` : `/claim-code/${code}`,
+      event ? `/events/${localID(event.id)}?claimCode=${code}` : `/claim-code/${code}`,
       process.env.PUBLIC_FRONTEND_ORIGIN,
     ).toString(),
   );

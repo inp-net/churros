@@ -1,4 +1,4 @@
-import { builder, splitID } from '#lib';
+import { builder, localID } from '#lib';
 import type { InterfaceRef } from '@pothos/core';
 import { LocalID } from '../types/local-id.js';
 
@@ -8,7 +8,7 @@ builder.interfaceField(
   (t) =>
     t.field({
       type: LocalID,
-      resolve: ({ id }) => splitID(id)[1],
+      resolve: ({ id }) => localID(id),
       description: "L'identifiant local de la ressource (sans préfixe)",
     }),
 );

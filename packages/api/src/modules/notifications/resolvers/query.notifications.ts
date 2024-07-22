@@ -1,5 +1,4 @@
 import { builder, prisma } from '#lib';
-
 import { GraphQLError } from 'graphql';
 import { NotificationChannel, NotificationType } from '../index.js';
 

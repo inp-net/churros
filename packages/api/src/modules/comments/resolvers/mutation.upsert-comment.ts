@@ -1,6 +1,7 @@
 import {
   TYPENAMES_TO_ID_PREFIXES,
   builder,
+  localID,
   log,
   objectValuesFlat,
   prisma,
@@ -149,7 +150,7 @@ builder.mutationField('upsertComment', (t) =>
               comment.document.subject!.minors[0]?.yearTier ??
               yearTier(comment.author?.graduationYear ?? 1)
             }a/${comment.document.subject!.slug}/${comment.document.slug}/`
-          : `/posts/${splitID(comment.articleId!)[1]}`) +
+          : `/posts/${localID(comment.articleId!)}`) +
         `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`;
 
       if (

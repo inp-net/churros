@@ -1,7 +1,7 @@
 import { fullName } from '#modules/users';
 import type { Event, Group, Registration, User } from '@churros/db/prisma';
 import { GoogleAuth, type JWTInput } from 'google-auth-library';
-import { splitID } from './global-id.js';
+import { localID } from './global-id.js';
 
 const GOOGLE_WALLET_ISSUER_ID = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
 
@@ -23,7 +23,7 @@ export function makeGoogleWalletObject(
   registration: Registration & { author: User | null },
 ) {
   return {
-    id: `${GOOGLE_WALLET_CLASS.id}_${splitID(registration.id)[1]}`,
+    id: `${GOOGLE_WALLET_CLASS.id}_${localID(registration.id)}`,
     classId: GOOGLE_WALLET_CLASS.id,
     logo: {
       sourceUri: {
@@ -84,7 +84,7 @@ export function makeGoogleWalletObject(
     barcode: {
       type: 'QR_CODE',
       value: registration.id,
-      alternateText: splitID(registration.id)[1].toUpperCase(),
+      alternateText: localID(registration.id).toUpperCase(),
     },
     // hexBackgroundColor: event.group.color,
     hexBackgroundColor: '#ffffff',

@@ -1,4 +1,4 @@
-import { prisma, splitID } from '#lib';
+import { localID, prisma } from '#lib';
 
 import type { PushNotification } from '#modules/notifications';
 import { scheduleNotification } from '#modules/notifications';
@@ -138,14 +138,14 @@ export async function scheduleShotgunNotifications(
         data: {
           group: event.group.uid,
           channel: NotificationChannel.Shotguns,
-          goto: `/events/${splitID(event.id)[1]}`,
+          goto: `/events/${localID(event.id)}`,
         },
         image: event.pictureFile,
       };
 
       const openedShotgunActions: PushNotification['actions'] = [
         {
-          action: `/events/${splitID(event.id)[1]}`,
+          action: `/events/${localID(event.id)}`,
           title: 'Go !',
         },
       ];

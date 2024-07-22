@@ -1,4 +1,4 @@
-import { builder, formatDateTime, prisma, sendMail, splitID } from '#lib';
+import { builder, formatDateTime, localID, prisma, sendMail } from '#lib';
 import { GraphQLError } from 'graphql';
 import { answerToString } from '../utils/answers.js';
 
@@ -51,7 +51,7 @@ builder.mutationField('mailFormAnswers', (t) =>
           title: form.title,
           formId: form.id,
           linkToAnswers: new URL(
-            `/forms/${splitID(form.id)[1]}/answer`,
+            `/forms/${localID(form.id)}/answer`,
             process.env.PUBLIC_FRONTEND_ORIGIN,
           ).toString(),
         },

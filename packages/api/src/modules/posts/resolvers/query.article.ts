@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, prisma, splitID } from '#lib';
+import { builder, ensureGlobalId, localID, prisma } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
 import { GraphQLError } from 'graphql';
@@ -19,7 +19,7 @@ builder.queryField('articleID', (t) =>
     resolve: async (_, { group, slug }) =>
       prisma.article
         .findFirst({ where: { slug, group: { uid: group } } })
-        .then((a) => (a ? splitID(a.id)[1] : null)),
+        .then((a) => (a ? localID(a.id) : null)),
   }),
 );
 
