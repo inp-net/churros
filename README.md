@@ -1,3 +1,5 @@
+_Can't read french? An intro to the project is available on [Ewen Le Bihan's portfolio](https://en.ewen.works/churros)_
+
 # Churros
 
 [![Application: Status](https://status.inpt.fr/api/badge/278/status?style=flat&label=Application)](https://churros.inpt.fr)
