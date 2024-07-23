@@ -39,6 +39,10 @@ export async function writeSchema() {
     new URL('build/schema.graphql', `file:///${process.cwd()}/`),
     printSchema(schema),
   );
-  const here = path.dirname(new URL(import.meta.url).pathname);
-  await writeFile(path.join(here, '../../app/schema.graphql'), printSchema(schema));
+  try {
+    const here = path.dirname(new URL(import.meta.url).pathname);
+    await writeFile(path.join(here, '../../app/schema.graphql'), printSchema(schema));
+  } catch {
+    console.warn('Could not write schema to app directory, this is fine in production');
+  }
 }

@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## Technique
+
+- Ne pas crash quand le serveur API ne peut pas écrire de schéma GraphQL à ../../app (en production par exemple)
+
 ## [1.68.2] - 2024-07-23
 
 ### Technique
