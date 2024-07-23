@@ -6,8 +6,8 @@ import { Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 
 export const ShopItemType = builder.prismaNode('ShopItem', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     uid: t.exposeString('slug', {
       deprecationReason: 'Use `slug` instead. This field was never universally unique.',
     }),
