@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib';
-
+import { builder, ensureGlobalId, prisma } from '#lib';
+import { LocalID } from '#modules/global';
 import { GraphQLError } from 'graphql';
 import { ServiceType } from '../index.js';
 
@@ -7,7 +7,7 @@ builder.queryField('service', (t) =>
   t.prismaField({
     type: ServiceType,
     args: {
-      id: t.arg.id(),
+      id: t.arg({ type: LocalID }),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin);
@@ -16,7 +16,7 @@ builder.queryField('service', (t) =>
       const service = await prisma.service.findUnique({
         ...query,
         where: {
-          id: id ?? undefined,
+          id: ensureGlobalId(id, 'Service'),
         },
         include: {
           group: true,

@@ -6,6 +6,7 @@ query PageServices {
     logo
     logoSourceType
     id
+    localID
     group {
       pictureFile
       pictureFileDark
