@@ -1,4 +1,4 @@
-import { builder, prisma, updatePicture } from '#lib';
+import { builder, log, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 
 builder.mutationField('updateArticlePicture', (t) =>
@@ -27,15 +27,7 @@ builder.mutationField('updateArticlePicture', (t) =>
       );
     },
     async resolve(_, { id, file }, { user }) {
-      await prisma.logEntry.create({
-        data: {
-          area: 'article',
-          action: 'update',
-          target: id,
-          message: `Article ${id} picture updated`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('article', 'update', { message: `Article ${id} picture updated` }, id, user);
       return updatePicture({
         resource: 'article',
         folder: 'articles',

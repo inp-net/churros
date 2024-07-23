@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, googleSheetsClient, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, googleSheetsClient, prisma, publish } from '#lib';
 import { GraphQLError } from 'graphql';
 import uniqBy from 'lodash.uniqby';
 import { AnswerInput, AnswerType } from '../types/index.js';
@@ -41,7 +41,7 @@ builder.mutationField('answerFormSection', (t) =>
       ],
     ],
     async authScopes(_, { section }, { user }) {
-      section = ensureHasIdPrefix(section, 'FormSection');
+      section = ensureGlobalId(section, 'FormSection');
 
       const form = await prisma.formSection
         .findUniqueOrThrow({ where: { id: section } })

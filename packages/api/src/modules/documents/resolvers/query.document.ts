@@ -6,29 +6,17 @@ builder.queryField('document', (t) =>
   t.prismaField({
     type: DocumentType,
     args: {
-      subjectUid: t.arg.string(),
-      subjectYearTier: t.arg.int({ required: true }),
-      subjectForApprentices: t.arg.boolean(),
-      documentUid: t.arg.string(),
+      subject: t.arg.id({ required: true }),
+      slug: t.arg.string(),
     },
     authScopes(_, {}, { user }) {
       return Boolean(user?.admin || user?.canAccessDocuments);
     },
-    async resolve(query, _, { subjectUid, documentUid, subjectYearTier, subjectForApprentices }) {
-      /* eslint-disable unicorn/no-null */
-      const subject = await prisma.subject.findFirstOrThrow({
-        where: {
-          OR: [
-            { uid: subjectUid, yearTier: subjectYearTier, forApprentices: subjectForApprentices },
-            { uid: subjectUid, yearTier: null, forApprentices: subjectForApprentices },
-          ],
-        },
-      });
-      /* eslint-enable unicorn/no-null */
+    async resolve(query, _, { subject, slug }) {
       return prisma.document.findUniqueOrThrow({
         ...query,
         where: {
-          subjectId_uid: { subjectId: subject.id, uid: documentUid },
+          subjectId_slug: { subjectId: subject, slug },
         },
       });
     },

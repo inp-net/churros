@@ -1,6 +1,29 @@
 import { prisma } from '#lib';
 import type { Prisma } from '@churros/db/prisma';
 
+export const userCanSeeTicketPrismaIncludes = {
+  openToGroups: true,
+  openToSchools: true,
+  openToMajors: true,
+  event: {
+    include: {
+      managers: { include: { user: true } },
+      bannedUsers: true,
+      group: {
+        include: {
+          studentAssociation: true,
+        },
+      },
+    },
+  },
+} as const satisfies Prisma.TicketInclude;
+
+export const userCanSeeTicketPrismaIncludesForUser = {
+  contributions: { include: { option: { include: { paysFor: { include: { school: true } } } } } },
+  major: { include: { schools: true } },
+  groups: { include: { group: true } },
+} as const satisfies Prisma.UserInclude;
+
 export function userCanSeeTicket(
   {
     event,

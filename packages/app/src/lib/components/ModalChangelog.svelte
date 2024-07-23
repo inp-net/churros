@@ -141,7 +141,7 @@
 </script>
 
 <Modal
-  open={open && totalChangesCount(changes) > 0}
+  opened={open && totalChangesCount(changes) > 0}
   maxWidth="800px"
   bind:element
   on:close-by-outside-click={acknowledge}

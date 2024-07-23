@@ -202,15 +202,13 @@ builder.mutationField('updateUser', (t) =>
         await log('ldap-sync', 'mark as contributor', { err: error }, userUpdated.uid);
       }
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'user',
-          action: 'update',
-          target: userUpdated.id,
-          message: `Updated user ${userUpdated.uid}`,
-          user: { connect: { id: user.id } },
-        },
-      });
+      await log(
+        'user',
+        'update',
+        { message: `Updated user ${userUpdated.uid}` },
+        userUpdated.id,
+        user,
+      );
       return userUpdated;
     },
   }),

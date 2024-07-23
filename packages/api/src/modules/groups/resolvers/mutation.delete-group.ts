@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 
 /** Deletes a group. */
@@ -22,15 +22,7 @@ builder.mutationField('deleteGroup', (t) =>
     },
     async resolve(_, { uid }, { user }) {
       await prisma.group.delete({ where: { uid } });
-      await prisma.logEntry.create({
-        data: {
-          area: 'group',
-          action: 'delete',
-          target: uid,
-          message: `${uid} a été supprimé`,
-          user: { connect: { id: user?.id } },
-        },
-      });
+      await log('group', 'delete', { message: `${uid} a été supprimé` }, uid, user);
       return true;
     },
   }),

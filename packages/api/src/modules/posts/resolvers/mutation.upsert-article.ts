@@ -1,38 +1,47 @@
-import { builder, ensureHasIdPrefix, prisma, publish } from '#lib';
-import { DateTimeScalar, VisibilityEnum } from '#modules/global';
+import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
+import { DateTimeScalar, UIDScalar, VisibilityEnum } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { Visibility } from '@churros/db/prisma';
+import { differenceInDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
+import { ZodError } from 'zod';
 import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
 import { canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticle', (t) =>
   t.prismaField({
     type: ArticleType,
-    errors: {},
+    description: 'Crée ou met à jour un post',
+    errors: { types: [Error, ZodError] },
     args: {
       id: t.arg.id({ required: false }),
-      authorId: t.arg.id({ required: false }),
-      groupId: t.arg.id(),
+      group: t.arg({ type: UIDScalar }),
       title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
-      publishedAt: t.arg({ type: DateTimeScalar }),
-      links: t.arg({ type: [LinkInput] }),
-      eventId: t.arg.id({ required: false }),
+      publishedAt: t.arg({ type: DateTimeScalar, required: false }),
+      links: t.arg({ type: [LinkInput], defaultValue: [] }),
+      event: t.arg.id({ required: false }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
-    async authScopes(_, { id, authorId, groupId }, { user, token, client }) {
+    validate: [
+      [
+        ({ publishedAt, id }) =>
+          Boolean(id || !publishedAt || differenceInDays(publishedAt, new Date()) <= 1),
+        { message: 'Impossible de créer un post publié dans le passé.' },
+      ],
+    ],
+    async authScopes(_, { id, group: groupUid }, { user, token, client }) {
       const creating = !id;
-      if (token && !user && client) return client.ownerId === groupId;
+      if (token && !user && client) return client.owner.uid === groupUid;
 
       if (!user) return false;
       if (user.canEditGroups) return true;
 
       if (creating) {
-        if (!groupId) return false;
+        if (!groupUid) return false;
         return Boolean(
           user.groups.some(
-            ({ group: { id }, canEditArticles }) => canEditArticles && groupId === id,
+            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
           ),
         );
       }
@@ -40,16 +49,19 @@ builder.mutationField('upsertArticle', (t) =>
       const article = await prisma.article.findUniqueOrThrow({ where: { id } });
       if (!article) throw new GraphQLError('Post non trouvé');
 
-      return canEditArticle(article, { authorId: authorId ?? user.id, groupId }, user);
+      const group = await prisma.group.findUnique({ where: { uid: groupUid } });
+      if (!group) throw new GraphQLError('Groupe non trouvé');
+
+      return canEditArticle(article, { authorId: user.id, groupId: group.id }, user);
     },
     async resolve(
       query,
       _,
-      { id, eventId, visibility, groupId, title, body, publishedAt, links },
+      { id, event: eventId, visibility, group: groupUid, title, body, publishedAt, links },
       { user },
     ) {
-      eventId = eventId ? ensureHasIdPrefix(eventId, 'Event') : null;
-      const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
+      eventId = eventId ? ensureGlobalId(eventId, 'Event') : null;
+      const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
       const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
       publishedAt ??= new Date();
       const data = {
@@ -79,7 +91,7 @@ builder.mutationField('upsertArticle', (t) =>
         where: { id: id ?? '' },
         create: {
           ...data,
-          uid: await createUid({ title, groupId }),
+          slug: await createUid({ title, groupId: group.id }),
           links: { create: links },
           event: eventId ? { connect: { id: eventId } } : undefined,
         },
@@ -90,15 +102,13 @@ builder.mutationField('upsertArticle', (t) =>
         },
       });
       publish(result.id, id ? 'updated' : 'created', result);
-      await prisma.logEntry.create({
-        data: {
-          area: 'article',
-          action: id ? 'update' : 'create',
-          target: result.id,
-          message: `Article ${id ? 'updated' : 'created'}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log(
+        'article',
+        id ? 'update' : 'create',
+        { message: `Article ${id ? 'updated' : 'created'}` },
+        result.id,
+        user,
+      );
       const visibilitiesByVerbosity = [
         Visibility.Private,
         Visibility.Unlisted,

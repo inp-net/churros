@@ -9,3 +9,5 @@ export * from './event-search-result.js';
 export * from './event.js';
 export * from './events-by-day.js';
 export * from './manager-of-event-input.js';
+export * from './ticket-group-input.js';
+export * from './ticket-input.js';

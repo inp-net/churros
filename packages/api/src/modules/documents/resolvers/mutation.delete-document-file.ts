@@ -33,9 +33,9 @@ builder.mutationField('deleteDocumentFile', (t) =>
         where: { id: documentId },
         include: { subject: true },
       });
-      const { subject, uid, solutionPaths, id } = document;
+      const { subject, slug, solutionPaths, id } = document;
       const root = new URL(process.env.STORAGE).pathname;
-      const path = join(root, 'documents', subject?.uid ?? 'unknown', uid, filename);
+      const path = join(root, 'documents', subject?.slug ?? 'unknown', slug, filename);
       try {
         unlinkSync(path);
       } catch {}

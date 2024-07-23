@@ -1,4 +1,4 @@
-import { cacheSession, ensureHasIdPrefix, getCachedSession, log, prisma } from '#lib';
+import { cacheSession, getCachedSession, log } from '#lib';
 import { fullName } from '#modules/users';
 import { onBoard } from '#permissions';
 import {
@@ -12,6 +12,8 @@ import { verify } from 'argon2';
 import { GraphQLError } from 'graphql';
 import { isThirdPartyToken } from './auth.js';
 import { yearTier } from './date.js';
+import { ensureGlobalId } from './global-id.js';
+import { prisma } from './prisma.js';
 
 const getToken = (headers: Headers) => {
   const auth = headers.get('Authorization');
@@ -139,7 +141,7 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
 
     // get the corresponding oauth client
     const client = await prisma.thirdPartyApp.findUnique({
-      where: { id: ensureHasIdPrefix(clientId, 'ThirdPartyApp') },
+      where: { id: ensureGlobalId(clientId, 'ThirdPartyApp') },
       include: { owner: true },
     });
     if (!client || !(await verify(client.secret, clientSecret)))

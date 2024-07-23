@@ -221,7 +221,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.23.9, @babel/parser@npm:^7.24.7":
+"@babel/parser@npm:^7.23.0, @babel/parser@npm:^7.23.9, @babel/parser@npm:^7.24.7":
   version: 7.24.7
   resolution: "@babel/parser@npm:7.24.7"
   bin:
@@ -357,19 +357,19 @@ __metadata:
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.0"
     "@inp-net/ldap7": "npm:^1.0.4"
-    "@pothos/core": "npm:3.41.0"
-    "@pothos/plugin-complexity": "npm:^3.13.0"
-    "@pothos/plugin-dataloader": "npm:^3.18.1"
-    "@pothos/plugin-directives": "npm:^3.10.2"
-    "@pothos/plugin-errors": "npm:^3.11.1"
-    "@pothos/plugin-prisma": "npm:^3.65.0"
-    "@pothos/plugin-relay": "npm:^3.46.0"
-    "@pothos/plugin-scope-auth": "npm:^3.21.1"
-    "@pothos/plugin-simple-objects": "npm:^3.7.0"
-    "@pothos/plugin-smart-subscriptions": "npm:^3.7.2"
-    "@pothos/plugin-tracing": "npm:^0.5.8"
-    "@pothos/plugin-validation": "npm:^3.10.1"
-    "@pothos/plugin-with-input": "npm:^3.10.1"
+    "@pothos/core": "npm:4.0.2"
+    "@pothos/plugin-complexity": "npm:^4.0.2"
+    "@pothos/plugin-dataloader": "npm:^4.0.2"
+    "@pothos/plugin-directives": "npm:^4.0.1"
+    "@pothos/plugin-errors": "npm:^4.0.2"
+    "@pothos/plugin-prisma": "npm:^4.0.5"
+    "@pothos/plugin-relay": "npm:^4.0.2"
+    "@pothos/plugin-scope-auth": "npm:^4.0.2"
+    "@pothos/plugin-simple-objects": "npm:^4.0.3"
+    "@pothos/plugin-smart-subscriptions": "npm:^4.0.2"
+    "@pothos/plugin-tracing": "npm:^1.0.2"
+    "@pothos/plugin-with-input": "npm:^4.0.2"
+    "@pothos/plugin-zod": "npm:^4.0.2"
     "@prisma/client": "npm:^5.15.1"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
@@ -561,6 +561,7 @@ __metadata:
     ua-parser-js: "npm:^1.0.37"
     unplugin-icons: "npm:^0.18.5"
     vite: "npm:5.2.13"
+    vite-plugin-kit-routes: "npm:^0.6.2"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^1.4.30"
     ws: "npm:^8.16.0"
@@ -574,8 +575,8 @@ __metadata:
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
     "@faker-js/faker": "npm:^8.4.1"
-    "@pothos/core": "npm:^3.41.2"
-    "@pothos/plugin-prisma": "npm:^3.65.2"
+    "@pothos/core": "npm:^4.0.2"
+    "@pothos/plugin-prisma": "npm:^4.0.5"
     "@prisma/client": "npm:^5.15.1"
     graphql: "npm:^16.8.1"
     npm-run-all2: "npm:^6.2.0"
@@ -2192,6 +2193,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kitql/internals@npm:0.9.5":
+  version: 0.9.5
+  resolution: "@kitql/internals@npm:0.9.5"
+  dependencies:
+    "@babel/parser": "npm:^7.23.0"
+    "@kitql/helpers": "npm:0.8.9"
+    recast: "npm:^0.23.4"
+    svelte: "npm:4.2.1"
+  checksum: 10c0/7885f35a7563c4d868fb519e479438315ba1e1f6a7ed6e55dae748eb7ec91359c675d63ce6fa3f718336a1d6835726fc4dbe164c1555c912b697ae845371fd33
+  languageName: node
+  linkType: hard
+
 "@ldapjs/asn1@npm:2.0.0, @ldapjs/asn1@npm:^2.0.0":
   version: 2.0.0
   resolution: "@ldapjs/asn1@npm:2.0.0"
@@ -2575,148 +2588,139 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:3.41.0":
-  version: 3.41.0
-  resolution: "@pothos/core@npm:3.41.0"
+"@pothos/core@npm:4.0.2, @pothos/core@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/core@npm:4.0.2"
   peerDependencies:
-    graphql: ">=15.1.0"
-  checksum: 10c0/41e60dd29a6205e8c4d3167822a2f87b9bd658ec5e7f2a254aa6ae9910255740ef3a8e7e5bc706de12a6901ae58d2f39090d9ef8ad7717a50d84e1f3ac31081d
-  languageName: node
-  linkType: hard
-
-"@pothos/core@npm:^3.41.2":
-  version: 3.41.2
-  resolution: "@pothos/core@npm:3.41.2"
-  peerDependencies:
-    graphql: ">=15.1.0"
-  checksum: 10c0/87ace79c21398262f8f088824bd3f681f2e87232016d1c5d271c063277db1728643d484d98a8e63e07d50025f12632df6a6ac927e6f387e5582be9f0b09d8049
-  languageName: node
-  linkType: hard
-
-"@pothos/plugin-complexity@npm:^3.13.0":
-  version: 3.13.1
-  resolution: "@pothos/plugin-complexity@npm:3.13.1"
-  peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/42284b00561dfbbc04d36ce197e81928fafd21ef731b9f7e981bcfeb35f18a7214f0ad19cff065ddb447fa31ceb7fbce1107a4a1cfa5ad316109014e411e5f3f
-  languageName: node
-  linkType: hard
-
-"@pothos/plugin-dataloader@npm:^3.18.1":
-  version: 3.18.2
-  resolution: "@pothos/plugin-dataloader@npm:3.18.2"
-  peerDependencies:
-    "@pothos/core": "*"
-    dataloader: 2
-    graphql: ">=15.1.0"
-  checksum: 10c0/fc5da1f8a638d42b11bfb7b00adfaca1b7fda8e74977d81a2217847ebebe22447b70ba43d1b3e279ff3c26377616b00a77c37eaa7c93109ead2ecf6f90082486
-  languageName: node
-  linkType: hard
-
-"@pothos/plugin-directives@npm:^3.10.2":
-  version: 3.10.3
-  resolution: "@pothos/plugin-directives@npm:3.10.3"
-  peerDependencies:
-    graphql: ">=15.1.0"
-  checksum: 10c0/4d0edf9f03e8e3e84373b8077b14f17935ac94fa28dd88b01155a737544b394645d1bd8ce0d7a20960ec15386e573d59c58bf6d5af2513d4d79bb1fbaede1c51
-  languageName: node
-  linkType: hard
-
-"@pothos/plugin-errors@npm:^3.11.1":
-  version: 3.11.2
-  resolution: "@pothos/plugin-errors@npm:3.11.2"
-  peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/f24316cec1cd3abb924227bb5e907e79322754de2c128c524003aff5400f7ae43f67eb9b8abb4f49881f0420df46a19d7e38082f717fcdb94838463262b86ae0
-  languageName: node
-  linkType: hard
-
-"@pothos/plugin-prisma@npm:^3.65.0, @pothos/plugin-prisma@npm:^3.65.2":
-  version: 3.65.3
-  resolution: "@pothos/plugin-prisma@npm:3.65.3"
-  dependencies:
-    "@prisma/generator-helper": "npm:^5.13.0"
-  peerDependencies:
-    "@pothos/core": "*"
-    "@prisma/client": "*"
     graphql: ^16.8.1
+  checksum: 10c0/03108583a2d17a38158de5e901f00269dbc8777d2aa5e946e3d142fd27749ac50b4eb00f5c79175370d63924d0dfdef6e03d7e137c7d05f1695c4b8ad9a103d9
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-complexity@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-complexity@npm:4.0.2"
+  peerDependencies:
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/cfa908df140ef9141bfa32a9af282aa6a1caf3893fb40860b208049ff138df0ee9da3bccb69246ef3ad072667954c61bc16bd0b96877d5e93f3f67f4dfb98825
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-dataloader@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-dataloader@npm:4.0.2"
+  peerDependencies:
+    "@pothos/core": 4.0.2
+    dataloader: 2
+    graphql: ">=16.6.0"
+  checksum: 10c0/a06155e0b82678eb66ee32497e438e001515297bd91ed30528ac751c6eaf443647559e4415c054af421087f7663da04c7aa904ef623b55f037f540e36a17b0ec
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-directives@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@pothos/plugin-directives@npm:4.0.1"
+  peerDependencies:
+    graphql: ">=16.6.0"
+  checksum: 10c0/4bef4dc6957a313f9666881f650cfa1cc79fb97e5794766e2b8702313bd411677bd49a7ab23a99b0ff18e8f09ba2b000b09ed4fd45bfd687964784302390c22f
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-errors@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-errors@npm:4.0.2"
+  peerDependencies:
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/f26dd89b08f89ec31b13637d32ad57638377920b36e13bb8160f3f7173c438f33b5f85f5634b958eb4d0d1a7ba588aeb1900a38b532c929cdfbaf8fe2e268778
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-prisma@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "@pothos/plugin-prisma@npm:4.0.5"
+  dependencies:
+    "@prisma/generator-helper": "npm:^5.16.2"
+  peerDependencies:
+    "@pothos/core": 4.0.2
+    "@prisma/client": "*"
+    graphql: ">=16.6.0"
     typescript: ">=4.7.2"
   bin:
     prisma-pothos-types: bin/generator.js
-  checksum: 10c0/fa0e9287380243462b6b9e3b0194a3ca8a467f6636832e7ec97a47ba03718935377f78899c35cc622ee7cbf027c499a22342ffee6aeae130fd5d2f3e9bbfb88f
+  checksum: 10c0/248e70fd3d5f02fbd6e635b4f681debeb081e36aa8d3bc5cdb325d175c40a550719287050089adbb013b0e2f9f956e3aeba571abecca43723de14c9df42ff256
   languageName: node
   linkType: hard
 
-"@pothos/plugin-relay@npm:^3.46.0":
-  version: 3.46.1
-  resolution: "@pothos/plugin-relay@npm:3.46.1"
+"@pothos/plugin-relay@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-relay@npm:4.0.2"
   peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/09c19adfc515f4dc246ad9107801646ada8fc4c96bb7be913224a5e0cc6d9b21a25478cce1764fae3ca8412cfdaf9e410b432530ccc0109f98f2059762ea3e7e
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/17636ef117f131096e218f2a9a33795d41fe4dd59a6acd8ad793184f2033b485b0ac1c67742b586e0316d1992e4b0e34618bae077eec5589cb6bb865f1c3ea1c
   languageName: node
   linkType: hard
 
-"@pothos/plugin-scope-auth@npm:^3.21.1":
-  version: 3.22.1
-  resolution: "@pothos/plugin-scope-auth@npm:3.22.1"
+"@pothos/plugin-scope-auth@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-scope-auth@npm:4.0.2"
   peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/1fe894c548222ac35ccbe6405c706a347ece13148c2a69239f58e8a2c716c3f98b1743516f0f201218e151c19e18711d0a3e83933bd6f61e0247e77dc8ff743e
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/63035d265f9c237dd82901be26f005f17117ea321318e345b83c268cb0542c63fcf4b8174ac46cb20907b67242f0c33cfde2f07ea359614b63cb26876a83346a
   languageName: node
   linkType: hard
 
-"@pothos/plugin-simple-objects@npm:^3.7.0":
-  version: 3.7.1
-  resolution: "@pothos/plugin-simple-objects@npm:3.7.1"
+"@pothos/plugin-simple-objects@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@pothos/plugin-simple-objects@npm:4.0.3"
   peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/494073d9aeddffce2bc7a794131888fc18b40f574ecedaec030ba98144b4f92fb42cdcabd5f4473d0bb512b4c4dc21e6c443d88406551bf029bce6fbc14ab5bd
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/e8359daff265813eacc52ccd33dcb02e643d304ceffa67f6e85150c0995283ea6243cb53a01a34476f710eee72cb66d5b340c2241e67557a32796c966fa521f0
   languageName: node
   linkType: hard
 
-"@pothos/plugin-smart-subscriptions@npm:^3.7.2":
-  version: 3.7.3
-  resolution: "@pothos/plugin-smart-subscriptions@npm:3.7.3"
+"@pothos/plugin-smart-subscriptions@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-smart-subscriptions@npm:4.0.2"
   peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/d1684dc1cce6d408fe371c8ea1b8ee4499955f63a111d34b8de21c87f3a7566b9796471c0bf613d5a490494ca81dd21a8a4e3ac3c4e8d62696a025cc5a4620db
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/b628eaa1710c7be616ef00758368ae5f9f6583430b4a8bf3f17bac52bff9ec51fa22a4b99804e0e095d3e2d16e1f2a42419bcd0bf7f42624fa5a5448089112cf
   languageName: node
   linkType: hard
 
-"@pothos/plugin-tracing@npm:^0.5.8":
-  version: 0.5.8
-  resolution: "@pothos/plugin-tracing@npm:0.5.8"
+"@pothos/plugin-tracing@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@pothos/plugin-tracing@npm:1.0.2"
   peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/b05960dbe8f309b83ec1c797ca9d753df5de20149413442fff27ccadef5926e47c4c93b07d904e740fdcb8cd95583deb12480898441eb39db6bdd55bdcc8f513
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/6b2cfe17ce1e88bda374804759ccd5a00de19d805337161ca5c4bb6933875be1d4500b14a6cbdc4011f26d57c308c80351dcbdd7a8751903da5a37372e257d0e
   languageName: node
   linkType: hard
 
-"@pothos/plugin-validation@npm:^3.10.1":
-  version: 3.10.2
-  resolution: "@pothos/plugin-validation@npm:3.10.2"
+"@pothos/plugin-with-input@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-with-input@npm:4.0.2"
   peerDependencies:
-    "@pothos/core": "*"
-    graphql: ^16.8.1
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
+  checksum: 10c0/9629add5a96f417a7d12f74a5f4b70e91d02f5c193a873e65bd3b13597f23efcd36453c1f91d3ff9f454adff21d65eb11690a1fbfba3aab47af8f60cec044cbf
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-zod@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@pothos/plugin-zod@npm:4.0.2"
+  peerDependencies:
+    "@pothos/core": 4.0.2
+    graphql: ">=16.6.0"
     zod: "*"
-  checksum: 10c0/983bb431e03c37b37cfb576316cbc4dfe4632e28d09e515e35337a134e999e64d33ca21fe1c6c14db55a4f9e1ade0e4b3b58d4694115d2bc6b54a48410a73cc7
-  languageName: node
-  linkType: hard
-
-"@pothos/plugin-with-input@npm:^3.10.1":
-  version: 3.10.2
-  resolution: "@pothos/plugin-with-input@npm:3.10.2"
-  peerDependencies:
-    "@pothos/core": "*"
-    graphql: ">=15.1.0"
-  checksum: 10c0/777c56e42fce251705b2d42d44c3b3e35a9f7337e0cebb08eb187b81ff4ce02383e4541a0423803256802a7843de5407bff3e17116233ed50f308c2faa2dac03
+  checksum: 10c0/97c20dc168fb443aa5f786316cff0edea7e9ba64af5bfc23afd9348b7178966af32ade347f25cccc65095066a5fb9c8c82e2c42e1e1a1e810cdf5d3bad8a2c14
   languageName: node
   linkType: hard
 
@@ -2743,6 +2747,13 @@ __metadata:
   version: 5.16.1
   resolution: "@prisma/debug@npm:5.16.1"
   checksum: 10c0/f2e536b4b3479feee00adcacb5988d37027b771e682cf8f8a29c30b9216706aa39942fe14bf7fd8bb41c71f1b01074e3dca0632e359253def0bc4a86a5cfb3fd
+  languageName: node
+  linkType: hard
+
+"@prisma/debug@npm:5.17.0":
+  version: 5.17.0
+  resolution: "@prisma/debug@npm:5.17.0"
+  checksum: 10c0/10aca89c8cd3a96c7f1153792110f33d96d1875e4af807002b9ca061eda255b1aa21e757b9e7a1690ac0676fb2312c441191cdb357acf45617dd658678984053
   languageName: node
   linkType: hard
 
@@ -2806,12 +2817,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/generator-helper@npm:^5.13.0":
-  version: 5.16.1
-  resolution: "@prisma/generator-helper@npm:5.16.1"
+"@prisma/generator-helper@npm:^5.16.2":
+  version: 5.17.0
+  resolution: "@prisma/generator-helper@npm:5.17.0"
   dependencies:
-    "@prisma/debug": "npm:5.16.1"
-  checksum: 10c0/77f33856e4a9b31305344247ddc22278607c42bd380fa978cf80ee326f22e0a1f7a959e0f0be971afc8bf6b1f9e0fe375b1134c446f5e07f8259efb868b9c1bb
+    "@prisma/debug": "npm:5.17.0"
+  checksum: 10c0/edf1c8a8ea34fb86a8836aa5b2a933fb1bae949bdede17f2f153de2db27f8c523595518a92f791047fd994701c15c4a0847c448dd4349aa892d5dd3a1ffab7b4
   languageName: node
   linkType: hard
 
@@ -4719,6 +4730,13 @@ __metadata:
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
   checksum: 10c0/cbd47ce380fe045313364e740bb03b936420b8b5558c7ea36a4563db1258c658f05e40feb5ddd41f6633fdd96d37ac2a76f884dad599c5b0224b4c451b3fa7ae
+  languageName: node
+  linkType: hard
+
+"axobject-query@npm:^3.2.1":
+  version: 3.2.3
+  resolution: "axobject-query@npm:3.2.3"
+  checksum: 10c0/18d23f6a3846add714a76caca08c0ded36c32fd7733aaaa7f3a604530e08b0b477892b89ed6ee64e7000dcd6d663bc84d8915c4131058907f94c9e7e5c33d38f
   languageName: node
   linkType: hard
 
@@ -14784,7 +14802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recast@npm:^0.23.1":
+"recast@npm:^0.23.1, recast@npm:^0.23.4":
   version: 0.23.9
   resolution: "recast@npm:0.23.9"
   dependencies:
@@ -16690,6 +16708,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svelte@npm:4.2.1":
+  version: 4.2.1
+  resolution: "svelte@npm:4.2.1"
+  dependencies:
+    "@ampproject/remapping": "npm:^2.2.1"
+    "@jridgewell/sourcemap-codec": "npm:^1.4.15"
+    "@jridgewell/trace-mapping": "npm:^0.3.18"
+    acorn: "npm:^8.9.0"
+    aria-query: "npm:^5.3.0"
+    axobject-query: "npm:^3.2.1"
+    code-red: "npm:^1.0.3"
+    css-tree: "npm:^2.3.1"
+    estree-walker: "npm:^3.0.3"
+    is-reference: "npm:^3.0.1"
+    locate-character: "npm:^3.0.0"
+    magic-string: "npm:^0.30.0"
+    periscopic: "npm:^3.1.0"
+  checksum: 10c0/5262dfceb99809a7ed01addc684351ac297dc2967b49dc99563af646c113c33a1535fe6ea5b9af4c6986880b6803ac0ca4fecb15a65bb18b641929c400d5dead
+  languageName: node
+  linkType: hard
+
 "svelte@npm:^3.57.0":
   version: 3.59.2
   resolution: "svelte@npm:3.59.2"
@@ -17761,7 +17800,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-watch-and-run@npm:^1.3.2":
+"vite-plugin-kit-routes@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "vite-plugin-kit-routes@npm:0.6.2"
+  dependencies:
+    "@babel/parser": "npm:^7.23.0"
+    "@kitql/helpers": "npm:0.8.9"
+    "@kitql/internals": "npm:0.9.5"
+    recast: "npm:^0.23.4"
+    vite-plugin-watch-and-run: "npm:1.7.0"
+  checksum: 10c0/9a2227db99dc2406202080e7c4983a4052aa91fd373910d49c62bf968522f21483ec9ee7ef60e486df2f8ba992f2192f17d12eb03f74ca89c31554451a46186f
+  languageName: node
+  linkType: hard
+
+"vite-plugin-watch-and-run@npm:1.7.0, vite-plugin-watch-and-run@npm:^1.3.2":
   version: 1.7.0
   resolution: "vite-plugin-watch-and-run@npm:1.7.0"
   dependencies:

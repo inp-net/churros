@@ -1,6 +1,7 @@
 import {
   TYPENAMES_TO_ID_PREFIXES,
   builder,
+  localID,
   log,
   objectValuesFlat,
   prisma,
@@ -143,13 +144,13 @@ builder.mutationField('upsertComment', (t) =>
         comment.document?.subject!.minors[0]?.majors[0]?.uid ??
         'unknown';
       const commentUrl =
-        process.env.FRONTEND_ORIGIN +
+        process.env.PUBLIC_FRONTEND_ORIGIN +
         (comment.document
           ? `/documents/${documentMajor}/${
               comment.document.subject!.minors[0]?.yearTier ??
               yearTier(comment.author?.graduationYear ?? 1)
-            }a/${comment.document.subject!.uid}/${comment.document.uid}/`
-          : `/posts/${comment.article!.group.uid}/${comment.article!.uid}`) +
+            }a/${comment.document.subject!.slug}/${comment.document.slug}/`
+          : `/posts/${localID(comment.articleId!)}`) +
         `#comment-${comment.id.replace(TYPENAMES_TO_ID_PREFIXES.Comment + ':', '')}`;
 
       if (

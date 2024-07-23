@@ -18,6 +18,7 @@ builder.prismaObjectFields(StudentAssociationType, (t) => ({
       description: "Les pages associées à l'AE",
       authScopes: async ({ id }, _, { user }) => canListStudentAssociationPages(user, id),
     },
+    // @ts-expect-error FIXME: error appeared after migration to Pothos v4
     PagesConnectionType,
   ),
 }));

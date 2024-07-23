@@ -29,13 +29,17 @@
   export let rectangular = false;
   export let objectName: 'Group' | 'User' | 'Article' | 'Event' | 'School';
   export let dark = false;
-  export let object: { pictureFile: string; uid: string; id: string; pictureFileDark?: string };
+  export let object: { pictureFile: string; id: string; pictureFileDark?: string } & (
+    | { uid: string }
+    | { slug: string }
+  );
   export let alt = '';
 
   $: filepath = dark ? object.pictureFileDark : object.pictureFile;
   const pictureFilePropertyName: 'pictureFile' | 'pictureFileDark' =
     objectName === 'Group' && dark ? 'pictureFileDark' : 'pictureFile';
-  $: ({ uid, id } = object);
+  $: ({ id } = object);
+  $: uid = 'uid' in object ? object.uid : object.slug;
   $: alt = alt || uid;
 
   let files: FileList;

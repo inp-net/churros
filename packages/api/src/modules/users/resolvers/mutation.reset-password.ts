@@ -1,4 +1,11 @@
-import { builder, objectValuesFlat, prisma, purgeUserSessions, resetLdapUserPassword } from '#lib';
+import {
+  builder,
+  log,
+  objectValuesFlat,
+  prisma,
+  purgeUserSessions,
+  resetLdapUserPassword,
+} from '#lib';
 import { hashPassword, verifyPassword } from '#modules/users/utils';
 
 import { userIsAdminOf } from '#permissions';
@@ -80,15 +87,13 @@ builder.mutationField('resetPassword', (t) =>
             }
           }
 
-          await prisma.logEntry.create({
-            data: {
-              area: 'password-reset',
-              action: 'reset',
-              target: userEdited.id,
-              message: `Reset password for ${userEdited.email}`,
-              user: { connect: { id: user?.id } },
-            },
-          });
+          await log(
+            'password-reset',
+            'reset',
+            { message: `Reset password for ${userEdited.email}` },
+            userEdited.id,
+            user,
+          );
 
           if (disconnectAll) purgeUserSessions(userEdited.uid);
 

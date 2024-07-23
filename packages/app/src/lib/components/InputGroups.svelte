@@ -19,7 +19,7 @@
   export let label: string;
   export let disallowed: Group[] = [];
   export let required = false;
-  export let group: Group | undefined = undefined;
+  export let group: Group | undefined | null = undefined;
   export let groups: Group[] = [];
   export let clearable = !required;
   export let multiple = false;

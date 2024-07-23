@@ -1,10 +1,12 @@
-import { builder, prisma, splitID } from '#lib';
+import { builder, localID, prisma } from '#lib';
 import type { ThirdPartyApp as ThirdPartyAppPrisma } from '@churros/db/prisma';
 import { createWriteStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import * as https from 'node:https';
 import * as path from 'node:path';
 import { ThirdPartyApp } from '../types/third-party-app.js';
+
+// TODO implement Pictured instead
 
 builder.objectField(ThirdPartyApp, 'faviconUrl', (t) =>
   t.string({
@@ -39,7 +41,7 @@ async function fetchFavicon(website: URL, app: ThirdPartyAppPrisma): Promise<str
 
 /** Download the favicon of the website to /storage/third-party-apps/{id}/logo.png */
 async function downloadFavicon(faviconUrl: URL, app: ThirdPartyAppPrisma): Promise<string> {
-  const relativePath = path.join('third-party-apps', splitID(app.id)[1], 'logo.png');
+  const relativePath = path.join('third-party-apps', localID(app.id), 'logo.png');
   const destination = path.join(new URL(process.env.STORAGE).pathname, relativePath);
   await mkdir(path.dirname(destination), { recursive: true });
   // Download app.faviconUrl to destination

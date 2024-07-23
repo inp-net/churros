@@ -28,6 +28,7 @@
 
   import { me } from '$lib/session';
   import type { SvelteComponent } from 'svelte';
+  import { route } from '$lib/ROUTES';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -61,7 +62,7 @@
       pictureFile: string;
       pictureFileDark: string;
     } | null;
-    id?: string;
+    localID?: string;
     description?: string;
   };
 
@@ -71,10 +72,10 @@
 </script>
 
 <a class="card-service" href={service.url} class:dashed-border={dashedBorder} class:small>
-  {#if ($me?.admin ?? false) && service.id}
+  {#if ($me?.admin ?? false) && service.localID}
     <a
       class="edit-icon"
-      href="/services/{service?.id}/edit/"
+      href={route('/services/[id]/edit', service.localID)}
       on:mouseover={() => (hover = true)}
       on:focus={() => (hover = true)}
       on:mouseleave={() => (hover = false)}

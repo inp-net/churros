@@ -10,8 +10,7 @@ export async function load({ fetch, parent, params }) {
           answerCount: true,
           linkedGoogleSheetUrl: true,
           event: {
-            group: { uid: true },
-            uid: true,
+            localID: true,
             title: true,
           },
           questions: [

@@ -1,28 +1,20 @@
-import type { AppLayout$input } from '$houdini';
+import { graphql, load_AppLayout, type AppLayout$input } from '$houdini';
 import { CURRENT_VERSION } from '$lib/buildinfo';
-import type { VariableFunctionFixed } from '$lib/typing';
-import type { LayoutParams } from './$houdini';
-
 export const ssr = false;
-export const _AppLayoutVariables: VariableFunctionFixed<LayoutParams, AppLayout$input> = async ({
-  route,
-  params,
-}) => {
-  let vars = {
-    version: CURRENT_VERSION,
-    eventUid: '',
-    groupUid: '',
-    scanningEvent: false,
-  };
 
-  if (route.id === '/(app)/events/[group]/[uid]/scan') {
-    vars = {
-      ...vars,
-      eventUid: params.uid ?? '',
-      groupUid: params.group ?? '',
-      scanningEvent: true,
-    };
+graphql(`
+  query AppLayoutScanningEvent($id: LocalID!) {
+    scanningEvent: event(id: $id) @loading(cascade: true) {
+      ...NavigationTopCurrentEvent
+    }
   }
+`);
 
-  return vars;
-};
+export async function load(event) {
+  return await load_AppLayout({
+    event,
+    variables: {
+      version: CURRENT_VERSION,
+    } as AppLayout$input, // see https://github.com/HoudiniGraphql/houdini/issues/1308
+  });
+}

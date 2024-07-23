@@ -9,9 +9,11 @@
   import InputSchools from './InputSchools.svelte';
   import InputStudentAssociations from './InputStudentAssociations.svelte';
   import InputNumber from './InputNumber.svelte';
+  import { route } from '$lib/ROUTES';
 
   export let service: {
     id?: string;
+    localID?: string;
     name: string;
     description: string;
     url: string;
@@ -57,6 +59,7 @@
             '...on MutationUpsertServiceSuccess': {
               data: {
                 id: true,
+                localID: true,
                 name: true,
                 url: true,
                 description: true,
@@ -85,7 +88,7 @@
 
       serverError = '';
       service = upsertService.data;
-      if (service.id) await goto(`/services/${service.id}/edit`);
+      if (service.localID) await goto(route('/services/[id]/edit', service.localID));
     } finally {
       loading = false;
     }

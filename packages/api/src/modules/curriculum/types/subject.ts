@@ -1,5 +1,4 @@
 import { builder, prisma } from '#lib';
-import { DocumentType } from '#modules/documents';
 import { DateTimeScalar } from '#modules/global';
 
 export const SubjectType = builder.prismaObject('Subject', {
@@ -8,7 +7,12 @@ export const SubjectType = builder.prismaObject('Subject', {
     name: t.exposeString('name'),
     shortName: t.exposeString('shortName'),
     emoji: t.exposeString('emoji'),
-    uid: t.exposeString('uid'),
+    uid: t.exposeString('slug', {
+      deprecationReason: 'Use `slug` instead. This field was never universally unique.',
+    }),
+    slug: t.exposeString('slug', {
+      description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
+    }),
     nextExamAt: t.expose('nextExamAt', { type: DateTimeScalar, nullable: true }),
     majors: t.relation('majors'),
     minors: t.relation('minors'),
@@ -19,10 +23,6 @@ export const SubjectType = builder.prismaObject('Subject', {
     semester: t.exposeInt('semester', { nullable: true }),
     yearTier: t.exposeInt('yearTier', { nullable: true }),
     forApprentices: t.exposeBoolean('forApprentices'),
-    documents: t.relatedConnection('documents', {
-      type: DocumentType,
-      cursor: 'id',
-    }),
     documentsCount: t.int({
       async resolve({ id }) {
         return prisma.document.count({ where: { subject: { id } } });

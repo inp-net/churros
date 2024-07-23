@@ -1,4 +1,4 @@
-import { builder, prisma, splitID, subscriptionName } from '#lib';
+import { builder, localID, prisma, subscriptionName } from '#lib';
 import { LogType } from '../../logs/types/log-entry.js';
 import { ThirdPartyApp } from '../types/third-party-app.js';
 import { canManageThirdPartyApp } from '../utils/permissions.js';
@@ -21,7 +21,7 @@ builder.prismaObjectField(ThirdPartyApp, 'logs', (t) =>
         ...query,
         where: {
           target: {
-            in: [id, splitID(id)[1]],
+            in: [id, localID(id)],
           },
           area: 'oauth',
         },

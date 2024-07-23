@@ -1,3 +1,6 @@
+import { env } from '$env/dynamic/public';
+import type { EventFrequency$options } from '$houdini';
+import { route } from '$lib/ROUTES';
 import { google, ics, type CalendarEvent } from 'calendar-link';
 import { formatISO } from 'date-fns';
 import { EventFrequency } from '../zeus';
@@ -9,22 +12,21 @@ export function calendarLinks(event: {
   startsAt: Date;
   endsAt: Date;
   location: string;
-  uid: string;
-  group: { uid: string };
-  frequency: EventFrequency;
+  localID: string;
+  frequency: EventFrequency | EventFrequency$options;
   recurringUntil?: Date | undefined;
 }): { google: string; ical: string } {
+  const eventURL = new URL(
+    route('/events/[id]', event.localID),
+    env.PUBLIC_FRONTEND_ORIGIN,
+  ).toString();
   const calendarEvent: CalendarEvent = {
     title: event.title,
     start: formatISO(event.startsAt),
     end: formatISO(event.endsAt),
-    // XXX HARDCODED FRONTEND_ORIGIN since it's a private env var (should be public)
-    description:
-      event.descriptionHtml +
-      `\n\n<a href="https://churros.inpt.fr/events/${event.group.uid}/${event.uid}">Plus d'infos sur Churros</a>`,
+    description: event.descriptionHtml + `\n\n<a href="${eventURL}">Plus d'infos sur Churros</a>`,
     location: event.location,
-    // XXX HARDCODED FRONTEND_ORIGIN since it's a private env var (should be public)
-    url: `https://churros.inpt.fr/events/${event.group.uid}/${event.uid}`,
+    url: eventURL,
   };
 
   if (event.frequency !== EventFrequency.Once) {

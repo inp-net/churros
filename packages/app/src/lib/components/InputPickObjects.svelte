@@ -10,6 +10,7 @@
   import InputText from './InputText.svelte';
 
   type T = $$Generic<{ id: string }>;
+  type K = $$Generic<keyof T>;
   export let clearable = false;
   export let disabledOptions: T[] = [];
   export let multiple = false;
@@ -21,10 +22,16 @@
   export let threshold: number | undefined = undefined;
   export let selection: T[] = [];
   export let options: T[];
+  export let selectionKeys: T[K][] = [];
+  export let selectedKey: T[K] | undefined | null = undefined;
+  export let key: K = 'id' as K;
   export let pickerTitle = 'Choisir';
   export let clearButtonLabel = 'Effacer';
   const closeOnSelect = !multiple;
   let query = '';
+
+  $: selectionKeys = selection.map((s) => s[key]);
+  $: selectedKey = value?.[key];
 
   // Used to store the selection when the picker is opened. The actual selection is set to this when the picker is closed using the "OK" button (the close "X" button cancels the selection modification)
   $: temporarySelection = structuredClone(selection);

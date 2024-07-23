@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteEvent', (t) =>
@@ -21,15 +21,7 @@ builder.mutationField('deleteEvent', (t) =>
       await prisma.event.delete({
         where: { id },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'event',
-          action: 'delete',
-          target: id,
-          message: `Deleted event ${id}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('event', 'delete', { message: `Deleted event ${id}` }, id, user);
       return true;
     },
   }),

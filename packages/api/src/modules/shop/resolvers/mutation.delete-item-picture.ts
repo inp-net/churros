@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
@@ -28,15 +28,7 @@ builder.mutationField('deleteItemPicture', (t) =>
         where: { id: itemId },
         data: { pictures: { disconnect: { id: pictureId } } },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'shop',
-          action: 'update',
-          target: itemId,
-          message: `Suppression de la photo`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('shop', 'update', { message: `Suppression de la photo` }, itemId, user);
       return true;
     },
   }),

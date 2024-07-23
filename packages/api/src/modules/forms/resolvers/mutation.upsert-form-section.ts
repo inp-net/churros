@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma } from '#lib';
 import {} from '#modules/global';
 import { canEditForm, requiredIncludesForPermissions } from '../index.js';
 
@@ -28,7 +28,7 @@ builder.mutationField('upsertFormSection', (t) =>
       }),
     },
     async authScopes(_, { input: { formId: formIdRaw } }, { user }) {
-      const formId = ensureHasIdPrefix(formIdRaw, 'Form');
+      const formId = ensureGlobalId(formIdRaw, 'Form');
       const form = await prisma.form.findUniqueOrThrow({
         where: { id: formId },
         include: requiredIncludesForPermissions,
@@ -36,7 +36,7 @@ builder.mutationField('upsertFormSection', (t) =>
       return canEditForm(form, form.event, user);
     },
     async resolve(query, _, { input: { id, formId: formIdRaw, ...input } }) {
-      const formId = ensureHasIdPrefix(formIdRaw, 'Form');
+      const formId = ensureGlobalId(formIdRaw, 'Form');
       // Figure out the section's order if we are creating a new section
       const defaultOrder = async () => {
         // get next available order

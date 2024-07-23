@@ -35,10 +35,10 @@
       if (!loaded($data.id) || !loaded(resourceUid)) return;
       const result = await new DeletePageStore().mutate({ id: $data.id });
       toasts.mutation(
+        result,
         'deletePage',
         ({ title }) => `Page “${title}” supprimée`,
         'Erreur lors de la suppression',
-        result,
       );
       await goto(
         `/${isLinkedToGroup ? 'groups' : 'student-associations'}/${resourceUid}/edit/pages`,

@@ -8,7 +8,7 @@ import {
   type AuthScopes,
 } from '#lib';
 import type PrismaTypes from '@churros/db/pothos';
-import SchemaBuilder, { type BuiltinScalarRef } from '@pothos/core';
+import SchemaBuilder from '@pothos/core';
 import ComplexityPlugin from '@pothos/plugin-complexity';
 import DataloaderPlugin from '@pothos/plugin-dataloader';
 import DirectivePlugin from '@pothos/plugin-directives';
@@ -21,9 +21,9 @@ import SmartSubscriptionsPlugin, {
   subscribeOptionsFromIterator,
 } from '@pothos/plugin-smart-subscriptions';
 import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing';
-import ValidationPlugin from '@pothos/plugin-validation';
 import WithInputPlugin from '@pothos/plugin-with-input';
-import { GraphQLError, Kind } from 'graphql';
+import ZodPlugin from '@pothos/plugin-zod';
+import { GraphQLError } from 'graphql';
 import { default as parseUserAgent } from 'ua-parser-js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
@@ -36,6 +36,9 @@ export interface PothosTypes {
   Context: Context;
   DefaultInputFieldRequiredness: true;
   PrismaTypes: PrismaTypes;
+  DefaultFieldNullability: false;
+  DefaultEdgesNullability: false;
+  DefaultNodeNullability: false;
   Scalars: {
     DateTime: {
       Input: Date;
@@ -61,6 +64,10 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    LocalID: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;
@@ -77,28 +84,34 @@ export const builder = new SchemaBuilder<PothosTypes>({
     ScopeAuthPlugin,
     SimpleObjectsPlugin,
     TracingPlugin,
-    ValidationPlugin,
+    ZodPlugin,
     SmartSubscriptionsPlugin,
     DirectivePlugin,
     WithInputPlugin,
   ],
-  authScopes,
   complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
   defaultInputFieldRequiredness: true,
+  defaultFieldNullability: false,
   withInput: {},
-  errorOptions: { defaultTypes: [Error] },
+  errors: { defaultTypes: [Error] },
   prisma: { client: prisma, exposeDescriptions: true },
-  scopeAuthOptions: {
+  scopeAuth: {
     unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),
+    authScopes,
   },
-  relayOptions: {
-    clientMutationId: 'omit',
-    cursorType: 'String',
+  relay: {
     encodeGlobalID,
     decodeGlobalID,
     nodesOnConnection: true,
     nodeQueryOptions: false,
     nodesQueryOptions: false,
+    brandLoadedObjects: true,
+    edgesFieldOptions: {
+      nullable: false,
+    },
+    nodeFieldOptions: {
+      nullable: false,
+    },
   },
   tracing: {
     default: (config) => isRootField(config),
@@ -162,18 +175,3 @@ Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-gu
     rateLimit: DEFAULT_RATE_LIMITS.Subscription,
   },
 });
-
-// Parse GraphQL IDs as strings
-const id = (builder.configStore.getInputTypeRef('ID') as BuiltinScalarRef<string, string>).type;
-
-id.parseValue = (value: unknown) => {
-  if (typeof value === 'number') return value.toString();
-  if (typeof value === 'string') return value;
-  throw new GraphQLError('Expected ID to be a number or a string.');
-};
-
-id.parseLiteral = (node) => {
-  if (node.kind !== Kind.INT && node.kind !== Kind.STRING)
-    throw new GraphQLError('Expected ID to be a numeric.');
-  return id.parseValue(node.value);
-};

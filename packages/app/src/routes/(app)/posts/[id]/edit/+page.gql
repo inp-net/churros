@@ -1,0 +1,17 @@
+query PagePostEdit($id: LocalID!) {
+  article(id: $id) {
+    id
+    slug
+    group {
+      uid
+    }
+    ...FormPicture @mask_disable
+    ...FormArticle
+  }
+
+  me {
+    canCreatePostsOn {
+      ...FormArticleGroups @mask_disable
+    }
+  }
+}

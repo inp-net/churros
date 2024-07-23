@@ -1,12 +1,13 @@
 import { loadQuery } from '$lib/zeus';
+import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, parent }) =>
-  loadQuery(
+export const load: PageLoad = async ({ fetch, params, parent }) => {
+  const { shopItem } = await loadQuery(
     {
       shopItem: [
         {
-          itemUid: params.itemUid,
+          slug: params.itemUid,
         },
         {
           id: true,
@@ -35,3 +36,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) =>
     },
     { fetch, parent },
   );
+
+  if (!shopItem) error(404, { message: `Article de boutique ${params.itemUid} introuvable` });
+  return { shopItem };
+};

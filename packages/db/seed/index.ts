@@ -257,7 +257,7 @@ const majors = [mecaniqueDesFluides, sciencesDuNumerique, elec];
 const plomberie = await prisma.minor.create({
   data: {
     name: 'Plomberie',
-    uid: 'plomberie',
+    slug: 'plomberie',
     majors: { connect: [{ id: mecaniqueDesFluides.id }] },
     yearTier: 1,
   },
@@ -266,7 +266,7 @@ const plomberie = await prisma.minor.create({
 const chomeur = await prisma.minor.create({
   data: {
     name: 'Chomeur',
-    uid: 'chomeur',
+    slug: 'chomeur',
     majors: { connect: [{ id: mecaniqueDesFluides.id }] },
     yearTier: 1,
   },
@@ -275,7 +275,7 @@ const chomeur = await prisma.minor.create({
 const transistor = await prisma.minor.create({
   data: {
     name: 'Transistor',
-    uid: 'transistor',
+    slug: 'transistor',
     majors: { connect: [{ id: elec.id }] },
     yearTier: 1,
   },
@@ -283,7 +283,7 @@ const transistor = await prisma.minor.create({
 const cableElec = await prisma.minor.create({
   data: {
     name: 'Cable Elec',
-    uid: 'cable-elec',
+    slug: 'cable-elec',
     majors: { connect: [{ id: elec.id }] },
     yearTier: 1,
   },
@@ -292,7 +292,7 @@ const cableElec = await prisma.minor.create({
 const ia = await prisma.minor.create({
   data: {
     name: 'IA (fraude)',
-    uid: 'ia',
+    slug: 'ia',
     majors: { connect: [{ id: sciencesDuNumerique.id }] },
     yearTier: 1,
   },
@@ -301,7 +301,7 @@ const ia = await prisma.minor.create({
 const rezo = await prisma.minor.create({
   data: {
     name: 'Rezo',
-    uid: 'rezo',
+    slug: 'rezo',
     majors: { connect: [{ id: elec.id }] },
     yearTier: 1,
   },
@@ -616,7 +616,7 @@ for (const [_, minor] of tqdm([...minors.entries()])) {
     const subject = await prisma.subject.create({
       data: {
         name: title,
-        uid: slug(title),
+        slug: slug(title),
         minors: { connect: { id: minor.id } },
       },
     });
@@ -624,7 +624,7 @@ for (const [_, minor] of tqdm([...minors.entries()])) {
       data: {
         description: faker.lorem.paragraph({ min: 2, max: 10 }),
         title: 'Un document',
-        uid: 'un-document',
+        slug: 'un-document',
         schoolYear: faker.number.int({ min: 2015, max: 2024 }),
         subject: { connect: { id: subject.id } },
         type: faker.helpers.enumValue(DocumentType),
@@ -860,7 +860,7 @@ const endDate = new Date(faker.date.future({ refDate: startDate })).getTime();
 for (let i = 0; i < end; i++) {
   const group = faker.helpers.arrayElement(groups);
   articleData.push({
-    uid: `article-${i}`,
+    slug: `article-${i}`,
     title: `Article ${i}`,
     group: {
       connect: {
@@ -917,7 +917,7 @@ await prisma.article.create({
   data: {
     title: "C'est le début de l'inté",
     body: `début de l'inté, vous allez devenir alcoolique et vomir partout`,
-    uid: 'cest-le-debut-de-l-inte',
+    slug: 'cest-le-debut-de-l-inte',
     group: {
       connect: { id: IntégrationGroup.id },
     },
@@ -932,7 +932,7 @@ await prisma.article.create({
   data: {
     title: 'Le nouveau seeding semble ok',
     body: `début de l'inté, vous allez devenir alcoolique et vomir partout`,
-    uid: 'le-nouveau-seeding-semble-ok',
+    slug: 'le-nouveau-seeding-semble-ok',
     group: {
       connect: { id: IntégrationGroup.id },
     },
@@ -961,7 +961,7 @@ for (const element of tqdm(selectedClub)) {
       ),
       location: faker.datatype.boolean(0.85) ? faker.location.streetAddress() : '',
       includeInKiosk: faker.datatype.boolean(0.85),
-      uid: slug(eventName),
+      slug: slug(eventName),
       title: eventName,
       group: { connect: { id: element!.id } },
       visibility: Visibility.Public,
@@ -971,7 +971,7 @@ for (const element of tqdm(selectedClub)) {
             {
               body: "Ceci est un article d'événement",
               groupId: element!.id,
-              uid: 'ceci-est-un-article-d-evenement',
+              slug: 'ceci-est-un-article-d-evenement',
               title: "Ceci est un article d'événement",
             },
           ],
@@ -995,7 +995,7 @@ for (const element of tqdm(selectedClub)) {
         createMany: {
           data: [
             {
-              uid: `event-${element!.uid}`,
+              slug: `event-${element!.uid}`,
               name: `Event ${element!.name}`,
               description: 'blablabla ramenez vos culs par pitié je vous en supplie',
               price: faker.number.int({ min: 0, max: 30 }),
@@ -1106,7 +1106,7 @@ await prisma.barWeek.create({
   data: {
     endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
     startsAt: new Date(),
-    uid: `${clubForBarWeek.name}-2023`,
+    slug: `${clubForBarWeek.name}-2023`,
     description: `Semaine de bar de ${clubForBarWeek.name}!`,
     groups: {
       connect: [{ uid: clubForBarWeek.uid }],
@@ -1135,7 +1135,7 @@ await prisma.thirdPartyApp.create({
 
 await prisma.shopItem.create({
   data: {
-    uid: 'boules-quies',
+    slug: 'boules-quies',
     name: 'Boules quies',
     description: 'Acheter des boules quies pour pas entendre Téo',
     price: 10,
@@ -1148,7 +1148,7 @@ await prisma.shopItem.create({
 
 await prisma.shopItem.create({
   data: {
-    uid: 'server',
+    slug: 'server',
     name: 'Server',
     description: 'Atom 2 duo',
     price: 100_000,
@@ -1161,7 +1161,7 @@ await prisma.shopItem.create({
 
 await prisma.shopItem.create({
   data: {
-    uid: 'rechauffement',
+    slug: 'rechauffement',
     name: 'Réchauffement Climatique',
     description:
       "Acheter un peu de réchauffement climatique, c'est gratuit et on en a en trop ! ![](https://jancovici.com/wp-content/uploads/2016/10/GES_graph13_en.png)",

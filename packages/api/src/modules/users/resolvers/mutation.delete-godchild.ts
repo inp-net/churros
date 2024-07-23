@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 
 builder.mutationField('deleteGodchild', (t) =>
   t.field({
@@ -19,15 +19,13 @@ builder.mutationField('deleteGodchild', (t) =>
           godparent: { disconnect: true },
         },
       });
-      await prisma.logEntry.create({
-        data: {
-          area: 'godparent',
-          action: 'delete',
-          target: godchild.id,
-          message: `Deleted godchild ${godchild.uid}`,
-          user: { connect: { id: parent.id } },
-        },
-      });
+      await log(
+        'godparent',
+        'delete',
+        { message: `Deleted godchild ${godchild.uid}` },
+        godchild.id,
+        parent,
+      );
       return true;
     },
   }),

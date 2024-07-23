@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, resetLdapUserPassword } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, log, prisma, resetLdapUserPassword } from '#lib';
 import { hashPassword } from '#modules/users/utils';
 
 import { CredentialType as PrismaCredentialType } from '@churros/db/prisma';
@@ -57,14 +57,12 @@ builder.mutationField('usePasswordReset', (t) =>
         }
       }
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'password-reset',
-          action: 'use',
-          target: reset.id,
-          message: `Used password reset for ${reset.user.email}`,
-        },
-      });
+      await log(
+        'password-reset',
+        'use',
+        { message: `Used password reset for ${reset.user.email}` },
+        reset.id,
+      );
       return true;
     },
   }),

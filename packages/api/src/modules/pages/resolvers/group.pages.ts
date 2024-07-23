@@ -18,6 +18,7 @@ builder.prismaObjectFields(GroupType, (t) => ({
       description: 'Les pages associées au groupe',
       authScopes: async (group, _, { user }) => canListGroupPages(user, group),
     },
+    // @ts-expect-error FIXME: error appeared after migration to Pothos v4
     PagesConnectionType,
   ),
 }));

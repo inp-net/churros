@@ -55,10 +55,10 @@
           page: $page.params.page,
         });
         toasts.mutation(
+          result,
           'upsertPage',
           'Modifications enregistrées',
           'Impossible de sauvegarder les modifications',
-          result,
         );
       }}
     ></FormPage>

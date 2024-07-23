@@ -69,7 +69,7 @@
         path: path,
         title: title,
       });
-      toasts.mutation('upsertPage', 'Page créée', 'Impossible de créer la page', result);
+      toasts.mutation(result, 'upsertPage', 'Page créée', 'Impossible de créer la page');
       if (result.data?.upsertPage && 'data' in result.data.upsertPage) {
         const page = result.data.upsertPage.data;
         const parentResourceUid = page[parentResource]?.uid;
@@ -85,7 +85,7 @@
         pathWasUserEdited = true;
       }}
       label="Chemin"
-      actionIcon={path !== suggestedPath ? IconReset : undefined}
+      actionIcon={path === suggestedPath ? undefined : IconReset}
       on:action={() => {
         path = suggestedPath;
         pathWasUserEdited = false;
@@ -107,8 +107,8 @@
 <style>
   section.submit {
     display: flex;
-    margin-top: 1rem;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
   }
 </style>

@@ -19,7 +19,7 @@
     paymentMethod: PaymentMethod;
     quantity: number;
     totalPrice: number;
-    shopItemAnswer: { options: Array<string> };
+    shopItemAnswer?: { options: Array<string> } | undefined | null;
   }>;
 
   type shopItemOptions = Array<{
@@ -83,8 +83,10 @@
           </td>
           <td>x{payment.quantity}</td>
           <td>{payment.totalPrice} €</td>
-          {#each payment.shopItemAnswer.options as option}
-            <td>{option}</td>
+          {#each options.keys() as i}
+            <td class:muted={!payment.shopItemAnswer?.options[i]}
+              >{payment.shopItemAnswer?.options[i] ?? '(sans réponse)'}</td
+            >
           {/each}
           <td>{payment.paid ? 'Oui' : 'Non'}</td>
           <td class="payicon">

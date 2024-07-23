@@ -99,7 +99,7 @@
   </button>
 
   <a
-    href="/events/planning/"
+    href="/events"
     class:current={!flyoutOpen && current === 'events'}
     class:disabled={flyoutOpen}
     use:tooltip={'Événements'}

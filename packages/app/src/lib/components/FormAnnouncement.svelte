@@ -1,66 +1,103 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { zeus } from '$lib/zeus';
+  import { fragment, graphql, type FormAnnouncement } from '$houdini';
+  import { addDays } from 'date-fns';
   import Alert from './Alert.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputDate from './InputDate.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputText from './InputText.svelte';
+  import { toasts } from '$lib/toasts';
 
-  export let data: {
-    title: string;
-    body: string;
-    startsAt: Date;
-    endsAt: Date;
-    warning: boolean;
-    id: string;
-  };
+  export let announcement: FormAnnouncement | null;
+  $: data = fragment(
+    announcement,
+    graphql(`
+      fragment FormAnnouncement on Announcement {
+        title
+        body
+        startsAt
+        endsAt
+        warning
+        id
+      }
+    `),
+  );
+
+  $: ({ title, body, startsAt, endsAt, warning } = $data ?? {
+    title: '',
+    body: '',
+    startsAt: new Date(),
+    endsAt: addDays(new Date(), 1),
+    warning: false,
+    id: null,
+  });
 
   let loading = false;
 
   $: startsAtAfterEndsAt =
-    data.startsAt === undefined || data.endsAt === undefined
-      ? true
-      : data.startsAt.getTime() > data.endsAt.getTime();
+    startsAt === undefined || endsAt === undefined ? true : startsAt.getTime() > endsAt.getTime();
   $: dateIsInvalid = startsAtAfterEndsAt;
 
   async function saveChanges() {
     loading = true;
-    const { upsertAnnouncement } = await $zeus.mutate({
-      upsertAnnouncement: [
-        {
-          id: data.id,
-          title: data.title,
-          body: data.body,
-          startsAt: data.startsAt.toISOString(),
-          endsAt: data.endsAt.toISOString(),
-          warning: data.warning,
-        },
-        {
-          title: true,
-          body: true,
-          startsAt: true,
-          endsAt: true,
-          warning: true,
-          id: true,
-        },
-      ],
-    });
-    loading = false;
-    data = upsertAnnouncement;
-    await goto('/announcements');
+    const result = await graphql(`
+      mutation UpsertAnnouncement(
+        $id: ID
+        $title: String!
+        $body: String!
+        $startsAt: DateTime!
+        $endsAt: DateTime!
+        $warning: Boolean!
+      ) {
+        upsertAnnouncement(
+          id: $id
+          title: $title
+          body: $body
+          startsAt: $startsAt
+          endsAt: $endsAt
+          warning: $warning
+        ) {
+          ... on MutationUpsertAnnouncementSuccess {
+            data {
+              ...FormAnnouncement
+            }
+          }
+          ... on Error {
+            message
+          }
+          ... on ZodError {
+            fieldErrors {
+              path
+              message
+            }
+          }
+        }
+      }
+    `).mutate({ id: $data?.id, title, body, startsAt, endsAt, warning });
+
+    if (
+      toasts.mutation(
+        result,
+        'upsertAnnouncement',
+        'Annonce sauvegardée',
+        "Impossible de sauvegarder l'annonce",
+      )
+    )
+      await goto('/announcements');
+    else loading = false;
   }
 </script>
 
 <form on:submit|preventDefault={saveChanges}>
-  <InputText label="Titre" maxlength={255} bind:value={data.title} />
-  <InputLongText rich label="Message" bind:value={data.body} />
+  <InputText label="Titre" maxlength={255} bind:value={title} />
+  <InputLongText rich label="Message" bind:value={body} />
   <div class="side-by-side">
-    <InputDate time label="Début" bind:value={data.startsAt} />
-    <InputDate time label="Fin" bind:value={data.endsAt} />
+    <InputDate time label="Début" bind:value={startsAt} />
+    <InputDate time label="Fin" bind:value={endsAt} />
   </div>
-  <InputCheckbox bind:value={data.warning} label="Avertissement" />
+  <InputCheckbox bind:value={warning} label="Avertissement" />
 
   <section class="submit">
     <ButtonPrimary {loading} submits disabled={dateIsInvalid}>Sauvegarder</ButtonPrimary>

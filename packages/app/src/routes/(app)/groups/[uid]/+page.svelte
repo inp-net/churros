@@ -48,6 +48,7 @@
   import IconStore from '~icons/mdi/store';
   import type { PageData } from './$types';
   import ShopItem from '$lib/components/ShopItem.svelte';
+  import { route } from '$lib/ROUTES';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -109,15 +110,15 @@
   $: canEditMembers = Boolean(myPermissions?.canEditMembers || meOnClubBoard || data.canEditGroup);
   $: canEditDetails = Boolean(group?.canEditDetails || data.canEditGroup);
 
-  const joinGroup = async (groupUid: string) => {
+  const joinGroup = async (uid: string) => {
     if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
     try {
       await $zeus.mutate({
-        selfJoinGroup: [{ groupUid, uid: $me.uid }, { groupId: true }],
+        selfJoinGroup: [{ uid }, { groupId: true }],
       });
       window.location.reload();
     } catch (error: unknown) {
-      toasts.error(`Impossible de rejoindre ${group.name}`, error?.toString());
+      toasts.error(`Impossible de rejoindre ${uid}`, error?.toString());
     }
   };
 
@@ -365,8 +366,8 @@
     </h2>
 
     <ul class="nobullet">
-      {#each group.articles.slice(0, 3) as { uid, ...article } (article.id)}
-        <CardArticle hideGroup {group} href="/posts/{group.uid}/{uid}" {...article} />
+      {#each group.articles.slice(0, 3) as { localID, ...article } (article.id)}
+        <CardArticle hideGroup {group} href={route('/posts/[id]', localID)} {...article} />
       {/each}
     </ul>
   </section>
@@ -384,7 +385,7 @@
           likes={node.reactionCounts['❤️']}
           liked={node.myReactions['❤']}
           {...node}
-          href="/events/{node.group.uid}/{node.uid}"
+          href={route('/events/[id]', node.localID)}
         />
       {/each}
     </ul>

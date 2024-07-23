@@ -5,6 +5,7 @@
 export * from './date-time.js';
 export * from './errors.js';
 export * from './file.js';
+export * from './local-id.js';
 export * from './mixed-search-result.js';
 export * from './pictured.js';
 export * from './qr-code.js';

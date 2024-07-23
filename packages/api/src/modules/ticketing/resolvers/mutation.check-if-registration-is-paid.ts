@@ -1,5 +1,4 @@
 import { builder, log, prisma } from '#lib';
-
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
@@ -27,15 +26,15 @@ builder.mutationField('checkIfRegistrationIsPaid', (t) =>
       if (!registration.paid && registration.lydiaTransaction?.requestId) {
         const state = await checkLydiaTransaction(registration.lydiaTransaction);
         if (state === LydiaTransactionState.Paid) {
-          await prisma.logEntry.create({
-            data: {
-              action: 'lydia fallback mark as paid',
-              area: 'registration',
+          await log(
+            'registration',
+            'lydia fallback mark as paid',
+            {
               message:
                 'Transaction was already paid for, marking registration as paid (from registration query)',
-              target: registration.id,
             },
-          });
+            registration.id,
+          );
           await prisma.registration.update({
             where: { id: registration.id },
             data: {

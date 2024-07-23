@@ -1,0 +1,7 @@
+query PagePostCreateWithGroup {
+  me {
+    canCreatePostsOn {
+      ...FormArticleGroups @mask_disable
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma, updatePicture } from '#lib';
+import { builder, log, objectValuesFlat, prisma, updatePicture } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf } from '#permissions';
 
@@ -24,15 +24,7 @@ builder.mutationField('updateUserPicture', (t) =>
       return Boolean(userIsAdminOf(user, studentAssociations) || uid === user?.uid);
     },
     async resolve(_, { uid, file }, { user }) {
-      await prisma.logEntry.create({
-        data: {
-          area: 'user',
-          action: 'update',
-          target: user?.id ?? '',
-          message: `Updated user ${uid} picture`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log('user', 'update', { message: `Updated user ${uid} picture` }, user?.id ?? '', user);
       return updatePicture({
         resource: 'user',
         folder: 'users',

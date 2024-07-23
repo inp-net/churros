@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { localID, prisma } from '#lib';
 import { scheduleNotification } from '#modules/notifications';
 import { NotificationChannel, Visibility } from '@churros/db/prisma';
 import { mappedGetAncestors } from 'arborist';
@@ -77,7 +77,7 @@ export async function scheduleNewArticleNotification(
         data: {
           group: article.group.uid,
           channel: NotificationChannel.Articles,
-          goto: `/posts/${article.group.uid}/${article.uid}`,
+          goto: `/posts/${localID(article.id)}`,
         },
         async afterSent() {
           console.info(

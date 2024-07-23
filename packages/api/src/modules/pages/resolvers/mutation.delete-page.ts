@@ -1,7 +1,7 @@
 import { builder, log, prisma, UnauthorizedError } from '#lib';
 import { PageType } from '#modules/pages/types';
 import { canEditPage } from '#modules/pages/utils';
-import type { InputFieldRef, InputShapeFromFields } from '@pothos/core';
+import type { InputFieldRef, InputShapeFromFields, SchemaTypes } from '@pothos/core';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 
@@ -78,10 +78,10 @@ function prismaWhereClause({
   studentAssociation,
   id,
 }: InputShapeFromFields<{
-  path: InputFieldRef<string | null | undefined>;
-  group: InputFieldRef<string | null | undefined>;
-  studentAssociation: InputFieldRef<string | null | undefined>;
-  id: InputFieldRef<string | null | undefined>;
+  path: InputFieldRef<SchemaTypes, string | null | undefined>;
+  group: InputFieldRef<SchemaTypes, string | null | undefined>;
+  studentAssociation: InputFieldRef<SchemaTypes, string | null | undefined>;
+  id: InputFieldRef<SchemaTypes, string | null | undefined>;
 }>):
   | { path: string; group: { uid: string } }
   | { path: string; studentAssociation: { uid: string } }

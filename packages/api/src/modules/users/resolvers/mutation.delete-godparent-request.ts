@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@churros/db/prisma';
@@ -80,15 +80,14 @@ builder.mutationField('deleteGodparentRequest', (t) =>
         });
       }
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'godparent-request',
-          action: 'delete',
-          target: request.id,
-          message: `Godparent request ${accept ? 'accepted' : 'rejected'}`,
-          user: { connect: { id: request.godparentId } },
-        },
-      });
+      await log(
+        'godparent-request',
+        'delete',
+        { message: `Godparent request ${accept ? 'accepted' : 'rejected'}` },
+        request.id,
+        request.godparent,
+      );
+
       return request;
     },
   }),

@@ -11,6 +11,22 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Les URLs vers les posts et évènements sont maintenant plus stables et courtes: c'est `/posts/(identifiant)` et plus `/posts/(groupe)/(titre)`. Bien évidemment, les anciennes URLs continueront de fonctionner, et redirigent vers les nouvelles.
+- Ajout d'un nouveau scalaire `LocalID` qui représente un identifiant dont la partie "préfixe" (par exemple `a:` dans `a:iughrei2763`) est:
+  - optionnelle (pour les arguments et inputs)
+  - absente (pour ce que l'API renvoie)
+- Les champs `uid` ont été dépréciés, et renommés en `slug` sur un bon nombre de ressources. En effet, ces UID n'en ont jamais vraiment été: ils étaient uniques _pour leur ressource uniquement_, et non pour l'ensemble des ressources de l'API.
+- Les arguments nommés `groupUid` et/ou `uid` ont été renommés en `group` (de type `UID`) et `slug`, pour refléter ces changements.
+- `Query.article` et `Query.event` prennent maintenant également un argument `id` (on peut les appeler avec un coupe `group`/`slug` ou juste un `id`). Les arguments `group` et `slug` restent disponibles et seront dépréciés plus tard.
+- Les `uid` subsistants sont maintenant bien _universellement_ uniques: un groupe et une AE par exemple, ne peuvent pas avoir le même `uid`.
+- Billetterie: Les queries et mutations comportant le mot `registration` sont remplacés par le mot `bookings`, pour plus de clartés (registration dénote aussi les inscriptions, qui seront prochainement totalement renommés en `signups`).
+- Boutiques: argument `shopItemId` de `shopPayments` renommé en `item`
+- Frappe et Billetterie: de nombreuses queries de la forme `machinOfTruc` ont été supprimées, et remplacées par des champs `machins` dans les types `Truc`. Par exemple, `subjectsOfMajor` est maintenant `major(uid: ...).subjects`. C'est bien plus dans l'esprit GraphQL et c'est plus performant!
+- Le type des `node` dans les champs `edges` dans les Connections Relay est maintenant non-nullable (i.e. `edges` a un type `[T!]!` au lieu de `[T]!`)
+- `selfJoinGroup` ne permet plus de spécifier l'uid de la personne à ajouter au groupe: il y a `upsertGroupMember` pour ça.
+
 ## [1.67.1] - 2024-07-22
 
 ### Corrections

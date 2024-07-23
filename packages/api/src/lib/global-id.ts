@@ -70,7 +70,12 @@ export function removeIdPrefix(id: string): string {
   return rest;
 }
 
-export function ensureHasIdPrefix(id: string, typename: keyof typeof TYPENAMES_TO_ID_PREFIXES) {
+export function ensureGlobalId(id: string, typename: keyof typeof TYPENAMES_TO_ID_PREFIXES): string;
+export function ensureGlobalId(
+  id: string | null | undefined,
+  typename: keyof typeof TYPENAMES_TO_ID_PREFIXES,
+): string | null | undefined {
+  if (!id) return id;
   if (id.split(':').length === 2) return id;
   if (!(typename in TYPENAMES_TO_ID_PREFIXES)) throw new Error(`Unknown typename: ${typename}`);
   return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${id}`;
@@ -85,6 +90,10 @@ export function splitID(id: string): [keyof typeof TYPENAMES_TO_ID_PREFIXES, str
   const [prefix, rest] = id.split(':') as [string, string];
   if (!(prefix in ID_PREFIXES_TO_TYPENAMES)) throw new Error(`Unknown prefix: ${prefix}`);
   return [ID_PREFIXES_TO_TYPENAMES[prefix as keyof typeof ID_PREFIXES_TO_TYPENAMES], rest];
+}
+
+export function localID(id: string) {
+  return splitID(id)[1];
 }
 
 export function makeGlobalID(typename: keyof typeof TYPENAMES_TO_ID_PREFIXES, localID: string) {

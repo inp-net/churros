@@ -34,7 +34,7 @@ builder.mutationField('createPasswordReset', (t) =>
 
       const url = new URL(
         `login/reset/${result.id.split(':', 2)[1]!.toUpperCase()}`,
-        process.env.FRONTEND_ORIGIN,
+        process.env.PUBLIC_FRONTEND_ORIGIN,
       );
 
       await sendMail(

@@ -1,3 +1,4 @@
+import { localID } from '#lib';
 import { PrismaClient, PromotionType, type Event, type Group } from '@churros/db/prisma';
 
 function usage(): never {
@@ -51,14 +52,14 @@ if (!promotion) {
 let event: undefined | (Event & { group: Group });
 
 if (groupAndEvent) {
-  const [groupUid, eventUid] = groupAndEvent ? groupAndEvent.split('/') : [];
-  if (!groupUid || !eventUid) {
-    console.error('Invalid group/event UID');
+  const [groupUid, eventSlug] = groupAndEvent ? groupAndEvent.split('/') : [];
+  if (!groupUid || !eventSlug) {
+    console.error('Invalid group/event UID/slug');
     usage();
   }
   const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
   event = await prisma.event.findUniqueOrThrow({
-    where: { groupId_uid: { groupId: group.id, uid: eventUid } },
+    where: { groupId_slug: { groupId: group.id, slug: eventSlug } },
     include: { group: true },
   });
   const tickets = await prisma.ticket.findMany({ where: { event: { id: event.id } } });
@@ -83,8 +84,8 @@ for (let i = 0; i < count; i++) {
   });
   console.log(
     new URL(
-      event ? `/events/${event.group.uid}/${event.uid}?claimCode=${code}` : `/claim-code/${code}`,
-      process.env.FRONTEND_ORIGIN,
+      event ? `/events/${localID(event.id)}?claimCode=${code}` : `/claim-code/${code}`,
+      process.env.PUBLIC_FRONTEND_ORIGIN,
     ).toString(),
   );
 }

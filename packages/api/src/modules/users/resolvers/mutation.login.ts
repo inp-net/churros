@@ -1,4 +1,4 @@
-import { builder, ensureHasIdPrefix, log, prisma } from '#lib';
+import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import type { Prisma } from '@churros/db/prisma';
 import { CredentialType as CredentialPrismaType, NotificationChannel } from '@churros/db/prisma';
@@ -33,7 +33,7 @@ builder.mutationField('login', (t) =>
           'oauth',
           'login',
           { clientId, email, userAgent },
-          ensureHasIdPrefix(clientId, 'ThirdPartyApp'),
+          ensureGlobalId(clientId, 'ThirdPartyApp'),
         );
       }
 

@@ -2,9 +2,9 @@ import { builder } from '#lib';
 
 import { LogoSourceTypeEnum } from '../index.js';
 
-export const ServiceType = builder.prismaObject('Service', {
+export const ServiceType = builder.prismaNode('Service', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     name: t.exposeString('name'),
     url: t.exposeString('url'),
     description: t.exposeString('description'),

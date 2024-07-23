@@ -80,17 +80,20 @@
     "typescript": "^5.4.3",
     "unplugin-icons": "^0.18.5",
     "vite": "5.2.13",
+    "vite-plugin-kit-routes": "^0.6.2",
     "wait-port": "^1.1.0",
     "ws": "^8.16.0",
     "zod": "^3.22.4"
   },
   "private": true,
   "scripts": {
-    "build": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync && yarn zeus && houdini generate && yarn check --threshold warning && vite build",
+    "generate": "node src/scripts/generate-dotenv-service-worker.js && svelte-kit sync && yarn zeus && houdini generate",
+    "build": "yarn generate && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
     "dev": "yarn run -T generate-buildinfo --stub && yarn zeus && wait-port 4000 && vite dev --host",
     "preview": "vite preview",
+    "format-at": "prettier --write",
     "start": "node ./build/index.js",
     "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
   },

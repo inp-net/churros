@@ -1,10 +1,12 @@
-import { builder, prisma, publish } from '#lib';
+import { builder, log, prisma, publish } from '#lib';
 import { DateTimeScalar } from '#modules/global';
+import { ZodError } from 'zod';
 import { AnnouncementType } from '../index.js';
 
 builder.mutationField('upsertAnnouncement', (t) =>
   t.prismaField({
     type: AnnouncementType,
+    errors: { types: [Error, ZodError] },
     args: {
       id: t.arg.id({ required: false }),
       title: t.arg.string(),
@@ -13,7 +15,7 @@ builder.mutationField('upsertAnnouncement', (t) =>
       endsAt: t.arg({ type: DateTimeScalar }),
       warning: t.arg.boolean(),
     },
-    authScopes(_, {}, { user }) {
+    authScopes(_, __, { user }) {
       return Boolean(user?.admin);
     },
     async resolve(query, _, { id, title, body, startsAt, endsAt, warning }, { user }) {
@@ -33,15 +35,13 @@ builder.mutationField('upsertAnnouncement', (t) =>
         update: upsertData,
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'announcements',
-          action: id ? 'update' : 'create',
-          target: announcement.id,
-          message: `Announcement ${announcement.id} ${id ? 'updated' : 'created'}: ${title}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log(
+        'announcements',
+        id ? 'update' : 'create',
+        { message: `Announcement ${announcement.id} ${id ? 'updated' : 'created'}: ${title}` },
+        announcement.id,
+        user,
+      );
 
       publish(announcement.id, id ? 'updated' : 'created', announcement);
 

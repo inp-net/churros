@@ -1,5 +1,4 @@
-import { builder, prisma } from '#lib';
-
+import { builder, log, prisma } from '#lib';
 import { cancelLydiaTransaction, sendLydiaPaymentRequest } from '#modules/payments';
 import { GraphQLError } from 'graphql';
 
@@ -80,15 +79,7 @@ builder.mutationField('contribute', (t) =>
         },
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'contribution',
-          action: 'create',
-          target: optionId,
-          message: JSON.stringify(contributionOption),
-          user: { connect: { id: user.id } },
-        },
-      });
+      await log('contribution', 'create', contributionOption, optionId, user);
 
       return true;
     },

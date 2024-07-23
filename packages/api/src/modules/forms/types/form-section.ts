@@ -1,4 +1,4 @@
-import { builder, prisma, splitID, toHtml } from '#lib';
+import { builder, localID, prisma, toHtml } from '#lib';
 import {
   canSeeAllAnswers,
   canSeeForm,
@@ -20,7 +20,7 @@ export const FormSectionType = builder.prismaObject('FormSection', {
   fields: (t) => ({
     id: t.exposeID('id'),
     localId: t.string({
-      resolve: ({ id }) => splitID(id)[1],
+      resolve: ({ id }) => localID(id),
       description: 'Identifiant local de la section du formulaire',
     }),
     order: t.exposeInt('order', { description: 'Ordre de la section dans le formulaire' }),

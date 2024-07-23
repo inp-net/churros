@@ -1,28 +1,42 @@
+<script lang="ts" context="module">
+  export const AppLayoutScanningEvent = new AppLayoutScanningEventStore();
+</script>
+
 <script lang="ts">
-  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import { browser } from '$app/environment';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { graphql } from '$houdini';
+  import { AppLayoutScanningEventStore, graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
+  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import NavigationTop from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
+  import { allLoaded } from '$lib/loading';
   import { setupScrollPositionRestorer } from '$lib/scroll';
   import { currentTabDesktop, currentTabMobile } from '$lib/tabs';
   import { theme } from '$lib/theme.js';
+  import { syncToLocalStorage } from 'svelte-store2storage';
+  import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
   import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import type { Snapshot } from './$types';
-  import { writable } from 'svelte/store';
-  import { syncToLocalStorage } from 'svelte-store2storage';
-  import { allLoaded } from '$lib/loading';
+  import type { LayoutRouteId, Snapshot } from './$types';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
+
+  const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
+  afterNavigate(async ({ to }) => {
+    if (!browser) return;
+    if (!to) return;
+    if (to.route.id === scanningEventsRouteID) 
+      await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
+    
+  });
 
   export const snapshot: Snapshot<number> = {
     capture: () => scrollableArea.scrollTop,
@@ -106,7 +120,9 @@
     {scrolled}
     userIsLoading={$AppLayout.fetching}
     user={$AppLayout.data?.me ?? null}
-    event={$AppLayout.data?.scanningEvent ?? null}
+    event={$page.route.id === scanningEventsRouteID
+      ? $AppLayoutScanningEvent.data?.scanningEvent ?? null
+      : null}
   />
 
   {#if $theme === 'noel'}

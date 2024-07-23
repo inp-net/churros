@@ -30,8 +30,7 @@ export async function load({ fetch, parent, params, url: { searchParams } }) {
           canSetCheckboxes: true,
           canSeeAnswerStats: true,
           event: {
-            group: { uid: true },
-            uid: true,
+            localID: true,
             title: true,
           },
           questions: [

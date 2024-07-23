@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
@@ -39,15 +39,13 @@ builder.mutationField('deleteShopItem', (t) =>
         where: { id: itemId },
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'group',
-          action: 'delete',
-          target: itemId,
-          message: `Suppression de l'article ${shopItem.name} par ${user?.uid}`,
-          user: user ? { connect: { id: user.id } } : undefined,
-        },
-      });
+      await log(
+        'group',
+        'delete',
+        { message: `Suppression de l'article ${shopItem.name} par ${user?.uid}` },
+        itemId,
+        user,
+      );
 
       return true;
     },

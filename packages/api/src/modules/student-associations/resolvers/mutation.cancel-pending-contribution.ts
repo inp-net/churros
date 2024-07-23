@@ -1,5 +1,4 @@
-import { builder, prisma } from '#lib';
-
+import { builder, log, prisma } from '#lib';
 import { cancelLydiaTransaction } from '#modules/payments';
 
 // TODO maybe query to get list of all contributors of a student association
@@ -48,15 +47,13 @@ builder.mutationField('cancelPendingContribution', (t) =>
         },
       });
 
-      await prisma.logEntry.create({
-        data: {
-          area: 'contribution',
-          action: 'delete',
-          target: optionId,
-          message: `Deleted contribution ${optionId}`,
-          user: { connect: { id: user.id } },
-        },
-      });
+      await log(
+        'contribution',
+        'delete',
+        { message: `Deleted contribution ${optionId}` },
+        optionId,
+        user,
+      );
       return true;
     },
   }),

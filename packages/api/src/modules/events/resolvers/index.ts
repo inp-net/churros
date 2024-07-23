@@ -3,7 +3,6 @@
  */
 
 export * from './event.managers.js';
-export * from './event.my-soonest-shotgun-opens-at.js';
 export * from './group.co-organized-events.js';
 export * from './group.events.js';
 export * from './group.own-events.js';
@@ -19,9 +18,6 @@ export * from './query.event-manager.js';
 export * from './query.event.js';
 export * from './query.events-by-day.js';
 export * from './query.events-in-week.js';
-export * from './query.events-of-group.js';
 export * from './query.events.js';
-export * from './query.registrations-of-event.js';
 export * from './query.search-events.js';
 export * from './subscription.kiosk-reload.js';
-export * from './ticket.places-left.js';

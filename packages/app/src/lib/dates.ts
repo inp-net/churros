@@ -1,4 +1,4 @@
-import type { EventFrequency$options, Visibility$options } from '$houdini';
+import type { EventFrequency$options } from '$houdini';
 import { EventFrequency } from '$lib/zeus';
 import { format, isMonday, isToday, previousMonday } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';

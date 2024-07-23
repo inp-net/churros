@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { PendingValue } from '$houdini';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardArticle from '$lib/components/CardArticle.houdini.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import { loaded, type MaybeLoading } from '$lib/loading';
   import { infinitescroll } from '$lib/scroll';
   import { notNull } from '$lib/typing';
   import type { PageData } from './$houdini';
@@ -11,20 +13,23 @@
   export let data: PageData;
   $: ({ PageHomeFeed, Birthdays, MyGroups } = data);
 
-  let defaultBirthdaysSection = '';
-  let selectedBirthdaysYearTier = 'all';
+  let defaultBirthdaysSection: MaybeLoading<string> = PendingValue;
+  let selectedBirthdaysYearTier: string | undefined = undefined;
 
   $: shownBirthdays =
     $Birthdays.data?.birthdays.filter(
       (u) =>
+        selectedBirthdaysYearTier === undefined ||
         selectedBirthdaysYearTier === 'all' ||
         u.yearTier === Number.parseFloat(selectedBirthdaysYearTier),
     ) ?? [];
 
+  $: if (loaded(defaultBirthdaysSection) && !selectedBirthdaysYearTier)
+    selectedBirthdaysYearTier = defaultBirthdaysSection;
+
   $: {
     const yearTier = $Birthdays.data?.me?.yearTier;
     defaultBirthdaysSection = yearTier ? (yearTier <= 3 ? yearTier.toString() : 'all') : 'all';
-    if (selectedBirthdaysYearTier === 'all') selectedBirthdaysYearTier = defaultBirthdaysSection;
   }
 </script>
 

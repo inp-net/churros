@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-import { VisibilityEnum } from '#modules/global';
+import { UIDScalar, VisibilityEnum } from '#modules/global';
 import { NotificationChannel as NotificationChannelPrisma, Visibility } from '@churros/db/prisma';
 import { userUniqueSubscriptionsCount } from '../index.js';
 // TODO rename to article.notification-send-count
@@ -9,10 +9,10 @@ builder.queryField('notificationsSendCountForArticle', (t) =>
     description:
       'Returns how many people will be notified if an article of the given visibility and group is created.',
     args: {
-      groupUid: t.arg.string(),
+      group: t.arg({ type: UIDScalar }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
-    async resolve(_, { groupUid, visibility }) {
+    async resolve(_, { group: groupUid, visibility }) {
       switch (visibility) {
         // For public stuff, _everyone_ gets notified
         case Visibility.Public: {
