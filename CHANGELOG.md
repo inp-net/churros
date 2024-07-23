@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Fix d'une migration après application partielle
+
 ## [1.68.1] - 2024-07-23
 
 ### Technique

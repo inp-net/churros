@@ -5,7 +5,7 @@
 
 */
 -- DropIndex
-DROP INDEX IF NOT EXISTS "Ticket_eventId_ticketGroupId_slug_key";
+DROP INDEX "Ticket_eventId_ticketGroupId_slug_key";
 
 -- AlterTable
 ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
