@@ -5,7 +5,7 @@ import { onBoard } from '#permissions';
 import { Visibility } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 
-export const ShopItemType = builder.prismaObject('ShopItem', {
+export const ShopItemType = builder.prismaNode('ShopItem', {
   fields: (t) => ({
     id: t.exposeID('id'),
     uid: t.exposeString('slug', {

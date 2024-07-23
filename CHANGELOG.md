@@ -11,9 +11,13 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui empêchait les pages de groupes de charger
+
 ## [1.68.3] - 2024-07-23
 
-## Technique
+### Technique
 
 - Ne pas crash quand le serveur API ne peut pas écrire de schéma GraphQL à ../../app (en production par exemple)
 
