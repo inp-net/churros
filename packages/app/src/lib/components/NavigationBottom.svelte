@@ -1,62 +1,30 @@
 <script lang="ts">
-  import { beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { scrollToTop } from '$lib/scroll';
-  import { me } from '$lib/session';
   import type { MOBILE_NAVIGATION_TABS } from '$lib/tabs';
   import { theme } from '$lib/theme';
   import { tooltip } from '$lib/tooltip';
-  import IconPeople from '~icons/mdi/account-add-outline';
-  import IconGroup from '~icons/mdi/account-group';
-  import IconGroupOutline from '~icons/mdi/account-group-outline';
-  import IconBarWeek from '~icons/mdi/beer-outline';
-  import IconAnnouncement from '~icons/mdi/bullhorn-outline';
-  import IconCalendar from '~icons/mdi/calendar';
-  import IconCalendarOutline from '~icons/mdi/calendar-blank-outline';
-  import IconEvent from '~icons/mdi/calendar-plus';
-  import IconDotsCircle from '~icons/mdi/dots-horizontal-circle';
-  import IconDotsCircleOutline from '~icons/mdi/dots-horizontal-circle-outline';
-  import IconForms from '~icons/mdi/format-list-bulleted';
-  import IconHome from '~icons/mdi/home';
-  import IconHomeOutline from '~icons/mdi/home-outline';
-  import IconArticle from '~icons/mdi/newspaper';
-  import IconAddCircle from '~icons/mdi/plus-circle';
-  import IconAddCircleOutline from '~icons/mdi/plus-circle-outline';
-  import LogoFrappe from './LogoFrappe.svelte';
+  import IconCalendar from '~icons/msl/calendar-month';
+  import IconCalendarOutline from '~icons/msl/calendar-today-outline';
+  import IconDotsCircle from '~icons/msl/view-comfy-alt';
+  import IconDotsCircleOutline from '~icons/msl/view-comfy-alt-outline';
+  import IconHome from '~icons/msl/home';
+  import IconHomeOutline from '~icons/msl/home-outline';
+  import IconAccount from '~icons/msl/account-circle';
+  import IconAccountOutline from '~icons/msl/account-circle-outline';
+  import IconSearch from '~icons/msl/search';
+  import { scanningEventsRouteID } from '../../routes/(app)/+layout.svelte';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
-  export let openNewGroupModal: () => void;
-  let flyoutOpen = false;
-
-  beforeNavigate(() => {
-    flyoutOpen = false;
-  });
 </script>
 
-{#if $theme === 'pan7on' && !$page.url.pathname.endsWith('/scan/')}
-  <img src="/ChurrosPan7onTelBas.png" alt="ChurrosPcPan7on" class="temple" />
-{/if}
-{#if $theme === 'ber7ker' && !$page.url.pathname.endsWith('/scan/')}
-  <img src="/dessinBer7ker.png" alt="illustrationBer7ker" class="ber7kersboat" />
-  <img src="/LogoBer7kerReverse.png" alt="illustrationBer7ker" class="ber7kersboatpc" />
-{/if}
-<nav
-  class:flyout-open={flyoutOpen}
-  class:transparent={$page.url.pathname.endsWith('/scan/') && !flyoutOpen}
-  class={$theme}
->
+<nav class:transparent={$page.route.id === scanningEventsRouteID} class={$theme}>
   {#if $page.url.pathname === '/'}
-    <button class="current" class:disabled={flyoutOpen} on:click={scrollToTop}>
+    <button class="current" on:click={scrollToTop}>
       <IconHome />
     </button>
   {:else}
-    <a
-      href="/"
-      class:current={!flyoutOpen && current === 'home'}
-      class:disabled={flyoutOpen}
-      use:tooltip={'Mon feed'}
-    >
+    <a href="/" class:current={current === 'home'} use:tooltip={'Mon feed'}>
       {#if current === 'home'}
         <IconHome style="color:var(--nav-text)" />
       {:else}
@@ -66,44 +34,20 @@
   {/if}
 
   {#if $page.url.pathname === '/groups/'}
-    <button class="current" class:disabled={flyoutOpen} on:click={scrollToTop}>
-      <IconGroup></IconGroup>
+    <button class="current" on:click={scrollToTop}>
+      <IconSearch></IconSearch>
     </button>
   {:else}
-    <a
-      href="/groups"
-      class:current={!flyoutOpen && current === 'groups'}
-      class:disabled={flyoutOpen}
-      use:tooltip={'Clubs'}
-    >
-      {#if current === 'groups'}
-        <IconGroup style="color:var(--nav-text)" />
+    <a href="/search" class:current={current === 'search'} use:tooltip={'Clubs'}>
+      {#if current === 'search'}
+        <IconSearch style="color:var(--nav-text);stroke-width:10px;" />
       {:else}
-        <IconGroupOutline style="color:var(--nav-text)" />
+        <IconSearch style="color:var(--nav-text)" />
       {/if}
     </a>
   {/if}
 
-  <button
-    class:current={flyoutOpen}
-    on:click={() => {
-      flyoutOpen = !flyoutOpen;
-    }}
-    use:tooltip={'Créer…'}
-  >
-    {#if flyoutOpen}
-      <IconAddCircle style="color:var(--nav-text)" />
-    {:else}
-      <IconAddCircleOutline style="color:var(--nav-text)" />
-    {/if}
-  </button>
-
-  <a
-    href="/events"
-    class:current={!flyoutOpen && current === 'events'}
-    class:disabled={flyoutOpen}
-    use:tooltip={'Événements'}
-  >
+  <a href="/events" class:current={current === 'events'} use:tooltip={'Événements'}>
     {#if current === 'events'}
       <IconCalendar style="color:var(--nav-text)" />
     {:else}
@@ -111,16 +55,19 @@
     {/if}
   </a>
 
-  <a
-    href="/services/"
-    class:current={!flyoutOpen && current === 'services'}
-    class:disabled={flyoutOpen}
-    use:tooltip={'Les autres services'}
-  >
+  <a href="/services/" class:current={current === 'services'} use:tooltip={'Les autres services'}>
     {#if current === 'services'}
       <IconDotsCircle style="color:var(--nav-text)" />
     {:else}
       <IconDotsCircleOutline style="color:var(--nav-text)" />
+    {/if}
+  </a>
+
+  <a href="/me" class:current={current === 'me'}>
+    {#if current === 'services'}
+      <IconAccount style="color:var(--nav-text)" />
+    {:else}
+      <IconAccountOutline style="color:var(--nav-text)" />
     {/if}
   </a>
 </nav>
@@ -128,74 +75,11 @@
 <svelte:window
   on:keydown={(e) => {
     if (!(e instanceof KeyboardEvent)) return;
-    if (!flyoutOpen) return;
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape') 
       e.preventDefault();
-      flyoutOpen = false;
-    }
+    
   }}
 />
-
-<!-- eslint-disable-next-line svelte/a11y-click-events-have-key-events handled by svelte:window above -->
-<!-- eslint-disable-next-line svelte/a11y-no-noninteractive-element-interactions -->
-<div
-  class="flyout-backdrop"
-  on:click={() => {
-    flyoutOpen = false;
-  }}
-  class:open={flyoutOpen}
-  role="presentation"
->
-  <section class="flyout" class:open={flyoutOpen}>
-    {#if $me?.admin}
-      <a href="/bar-weeks">
-        <IconBarWeek />
-        <span>Semaine de bar</span>
-      </a>
-    {/if}
-
-    {#if $me?.admin || $me?.canEditGroups || $me?.studentAssociationAdmin}
-      <ButtonGhost on:click={openNewGroupModal}>
-        <IconGroupOutline />
-        <span>Groupe</span>
-      </ButtonGhost>
-    {/if}
-
-    {#if $me?.admin}
-      <a href="/announcements">
-        <IconAnnouncement />
-        <span>Annonces</span>
-      </a>
-    {/if}
-
-    <a href="/documents/create">
-      <LogoFrappe />
-      <span>Frappe</span>
-    </a>
-
-    <a href="/posts/create">
-      <IconArticle />
-      <span>Post</span>
-    </a>
-
-    <a href="/events/create">
-      <IconEvent />
-      <span>Événement</span>
-    </a>
-
-    <a href="/forms/create">
-      <IconForms></IconForms>
-      <span>Formulaire</span>
-    </a>
-
-    {#if $me?.admin || $me?.studentAssociationAdmin}
-      <a href="/signups">
-        <IconPeople />
-        <span>Inscriptions</span>
-      </a>
-    {/if}
-  </section>
-</div>
 
 <style>
   nav {
@@ -235,10 +119,6 @@
     --text: white;
   }
 
-  nav.flyout-open {
-    border-top-color: var(--bg);
-  }
-
   button {
     padding: 0;
     margin: 0;
@@ -262,14 +142,6 @@
     color: var(--primary-link);
   }
 
-  .flyout-backdrop.open {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgb(0 0 0 / 50%);
-    animation: fade-in-backdrop 0.2s ease-in-out;
-  }
-
   @keyframes fade-in-backdrop {
     from {
       background: rgb(0 0 0 / 0%);
@@ -280,96 +152,8 @@
     }
   }
 
-  .flyout {
-    position: fixed;
-    right: 0;
-    bottom: 3rem;
-    left: 0;
-    z-index: 30;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-evenly;
-    max-height: 75vh;
-    padding: 1rem;
-    background: var(--bg);
-    border-top: var(--border-block) solid rgb(0 0 0 / 5%);
-    border-top-left-radius: calc(4 * var(--radius-block));
-    border-top-right-radius: calc(4 * var(--radius-block));
-    transition: bottom 0.2s ease-in-out;
-  }
-
-  .flyout:not(.open) {
-    bottom: -100%;
-  }
-
-  .flyout a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: calc(min(max(5rem, 33%), 10rem));
-    aspect-ratio: 1;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-  }
-
-  .flyout a span {
-    margin-top: 0.2rem;
-    font-size: 0.8rem;
-  }
-
   @media (min-width: 900px) {
     nav {
-      display: none;
-    }
-  }
-
-  @media (min-width: 570px) {
-    .temple {
-      display: none;
-    }
-  }
-
-  .temple {
-    position: fixed;
-    bottom: 55px;
-    z-index: 100;
-    color: transparent;
-    pointer-events: none;
-    background: none;
-    background-color: transparent;
-  }
-
-  .ber7kersboat {
-    position: fixed;
-    bottom: 23px;
-    left: -38px;
-    z-index: 1;
-    width: 13rem;
-    color: transparent;
-    pointer-events: none;
-    background: none;
-    background-color: transparent;
-
-    @media (min-width: 570px) {
-      display: none;
-    }
-  }
-
-  .ber7kersboatpc {
-    position: fixed;
-    right: -2rem;
-    bottom: -3rem;
-    z-index: 1;
-    width: 20rem;
-    color: transparent;
-    pointer-events: none;
-    background: none;
-    background-color: transparent;
-
-    @media (max-width: 570px) {
       display: none;
     }
   }

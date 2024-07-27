@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   export const AppLayoutScanningEvent = new AppLayoutScanningEventStore();
+  export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
 </script>
 
 <script lang="ts">
@@ -12,7 +13,7 @@
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
-  import NavigationTop from '$lib/components/NavigationTop.svelte';
+  import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import { allLoaded } from '$lib/loading';
   import { setupScrollPositionRestorer } from '$lib/scroll';
@@ -25,11 +26,11 @@
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import type { LayoutRouteId, Snapshot } from './$types';
+  import { setContext } from 'svelte';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
 
-  const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
   afterNavigate(async ({ to }) => {
     if (!browser) return;
     if (!to) return;
@@ -95,6 +96,14 @@
   let changelogAcknowledged = false;
 
   let newGroupDialog: HTMLDialogElement;
+
+  const navtop = writable<NavigationContext>({
+    actions: [],
+    title: null,
+    quickAction: null,
+    back: null,
+  });
+  setContext('navtop', navtop);
 </script>
 
 {#if !changelogAcknowledged && $AppLayout.data?.combinedChangelog}
@@ -115,14 +124,15 @@
 {/if}
 
 <div class="layout">
-  <NavigationTop
+  <NavigationTop {scrolled}></NavigationTop>
+  <!-- <NavigationTop
     {scrolled}
     userIsLoading={$AppLayout.fetching}
     user={$AppLayout.data?.me ?? null}
     event={$page.route.id === scanningEventsRouteID
       ? ($AppLayoutScanningEvent.data?.scanningEvent ?? null)
       : null}
-  />
+  /> -->
 
   {#if $theme === 'noel'}
     {#each { length: 100 } as _}

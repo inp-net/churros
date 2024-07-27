@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { track } from '$lib/analytics';
 import {
   mutationErrorMessages,
@@ -74,6 +75,7 @@ export const toasts = {
     return id;
   },
   _add<T>(toast: Toast<T>) {
+    if (!browser) return;
     toasts.update((ts) => [
       ...ts.slice(0, MAX_TOASTS_COUNT - 1),
       {

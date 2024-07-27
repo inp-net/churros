@@ -7,12 +7,14 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
   import { formatEventDates } from '$lib/dates';
+  import { allLoaded, loaded, loading } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
-  import { subMinutes, formatDistance, intlFormatDistance, isPast } from 'date-fns';
+  import { formatDistance, intlFormatDistance, isPast, subMinutes } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import IconNotifications from '~icons/mdi/bell-outline';
   import IconGear from '~icons/mdi/gear-outline';
@@ -20,8 +22,6 @@
   import IconHeart from '~icons/mdi/heart-outline';
   import IconInfo from '~icons/mdi/information-outline';
   import type { PageData } from './$houdini';
-  import { allLoaded, loaded, loading } from '$lib/loading';
-  import LoadingText from '$lib/components/LoadingText.svelte';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);

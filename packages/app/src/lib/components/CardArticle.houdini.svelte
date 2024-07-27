@@ -20,6 +20,7 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LoadingText from './LoadingText.svelte';
   import { route } from '$lib/ROUTES';
+  import { addReferrer } from '$lib/navigation';
 
   const ToggleLike = graphql(`
     mutation CardArticle_ToggleLike($articleId: ID!) {
@@ -152,9 +153,9 @@
       <IconInfo></IconInfo> Ce post n'est pas encore publié
     </div>
   {/if}
-  <a {href} class="post-link">
+  <a href={addReferrer(href)} class="post-link">
     <article class="post">
-      <a href={authorHref} class="group-link">
+      <a href={addReferrer(authorHref)} class="group-link">
         {#if authorSrc}
           <img src={authorSrc} alt={loading(group.name, '')} class="group-logo" />
         {:else}
