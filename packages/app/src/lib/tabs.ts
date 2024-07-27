@@ -11,7 +11,7 @@ export const DESKTOP_NAVIGATION_TABS = [
   'forms',
 ] as const;
 
-export const MOBILE_NAVIGATION_TABS = ['home', 'groups', 'events', 'services'] as const;
+export const MOBILE_NAVIGATION_TABS = ['home', 'search', 'events', 'services', 'me'] as const;
 
 export function currentTabDesktop(url: URL): (typeof DESKTOP_NAVIGATION_TABS)[number] {
   const starts = (segment: string) => url.pathname.startsWith(segment);

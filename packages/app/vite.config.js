@@ -11,8 +11,19 @@ export const commonConfig = defineConfig({
       compiler: 'svelte',
       defaultClass: 'icon',
       scale: 1.5,
+      iconCustomizer(collection, icon, props) {
+        if (collection === 'material-symbols-light') {
+          props.width = '1.2em';
+          props.height = '1.2em';
+        }
+      },
     }),
   ],
+  resolve: {
+    alias: {
+      '~icons/msl': '~icons/material-symbols-light',
+    },
+  },
   css: {
     preprocessorOptions: {
       scss: {

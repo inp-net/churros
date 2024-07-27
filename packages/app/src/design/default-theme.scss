@@ -82,16 +82,13 @@ dialog,
   --nav-text: #{$slate-800};
 
   // Logo colors
-  --logo-stroke-width: 7.606;
-  --logo-highlight: #fbbe1f;
-  --logo-base: #ca7e17;
-  --logo-shadows: #843e2a;
-  --logo-highlight-fill: var(--logo-highlight);
-  --logo-highlight-stroke: var(--logo-highlight);
-  --logo-base-fill: var(--logo-base);
-  --logo-base-stroke: var(--logo-base);
-  --logo-shadows-fill: var(--logo-shadows);
-  --logo-shadows-stroke: var(--logo-shadows);
+  --logo-stroke-width: 20px;
+  --logo-highlight-fill: var(--bg);
+  --logo-base-fill: var(--bg);
+  --logo-shadows-fill: var(--bg);
+  --logo-highlight-stroke: var(--text);
+  --logo-base-stroke: var(--text);
+  --logo-shadows-stroke: var(--text);
 
   // === Other props ===
   --border-inline: 1px;

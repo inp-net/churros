@@ -10,6 +10,7 @@
     "@swc/core": "^1.4.11",
     "@swc/wasm": "^1.4.11",
     "arborist": "workspace:^0.1.0",
+    "bits-ui": "^0.21.12",
     "calendar-link": "^2.6.0",
     "cookie": "^0.6.0",
     "date-fns": "^2.30.0",
@@ -41,6 +42,7 @@
     "svelte-tenor": "^0.2.0",
     "sveltejs-tippy": "^3.0.0",
     "ua-parser-js": "^1.0.37",
+    "vaul-svelte": "^0.3.2",
     "write-excel-file": "^1.4.30",
     "xss": "^1.0.15"
   },
@@ -48,6 +50,7 @@
     "@babel/core": "^7.24.3",
     "@churros/api": "workspace:^",
     "@iconify-json/material-symbols": "^1.1.76",
+    "@iconify-json/material-symbols-light": "^1.1.25",
     "@iconify-json/mdi": "^1.1.64",
     "@iconify-json/simple-icons": "^1.1.97",
     "@sveltejs/adapter-node": "^5.0.1",
