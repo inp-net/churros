@@ -2,7 +2,7 @@ import { pushState } from '$app/navigation';
 import { page } from '$app/stores';
 import { route } from '$lib/ROUTES';
 import { get } from 'svelte/store';
-import IconAdd from '~icons/msl/add';
+import IconAdd from '~icons/msl/add-circle-outline';
 import IconAnnouncement from '~icons/msl/campaign-outline';
 import IconXML from '~icons/msl/code';
 import IconTrash from '~icons/msl/delete-outline';
@@ -103,6 +103,7 @@ const quickActionConfigureNotations = {
 
 const quickActionAdd = {
   icon: IconAdd,
+  // mobileOnly: true,
   overflow: [
     {
       icon: IconPost,
