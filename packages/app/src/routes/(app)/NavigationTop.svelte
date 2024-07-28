@@ -33,13 +33,14 @@
     ? topnavConfigs[$page.route.id as NonNullable<LayoutRouteId>]
     : undefined;
 
-  $: if (topnavConfig)
-    {({
+  $: if (topnavConfig) {
+    ({
       back,
       title,
       quickAction,
       actions = [],
-    } = typeof topnavConfig === 'function' ? topnavConfig($page.params) : topnavConfig);}
+    } = typeof topnavConfig === 'function' ? topnavConfig($page.params) : topnavConfig);
+  }
 
   $: backHref = $page.url.searchParams.get('from') ?? back;
 

@@ -1,20 +1,28 @@
 import { pushState } from '$app/navigation';
 import { page } from '$app/stores';
-import type { OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
 import { route } from '$lib/ROUTES';
 import { get } from 'svelte/store';
 import IconAdd from '~icons/msl/add';
 import IconAnnouncement from '~icons/msl/campaign-outline';
 import IconXML from '~icons/msl/code';
+import IconTrash from '~icons/msl/delete-outline';
+import IconDownload from '~icons/msl/download';
 import IconPen from '~icons/msl/edit-outline';
+import IconDonate from '~icons/msl/euro';
 import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
 import IconForm from '~icons/msl/list-alt-outline';
+import IconNotificationSettings from '~icons/msl/notifications-outline';
+import IconPostAdd from '~icons/msl/post-add';
 import IconPin from '~icons/msl/push-pin-outline';
+import IconScanQR from '~icons/msl/qr-code-scanner';
+import IconCog from '~icons/msl/settings-outline';
 import IconShield from '~icons/msl/shield-outline';
 import IconPost from '~icons/msl/text-ad-outline';
+import IconBookingsList from '~icons/msl/view-list-outline';
+import IconWallet from '~icons/msl/wallet';
 import type { LayoutRouteId } from '../routes/$types';
 import type {
   NavigationContext,
@@ -38,6 +46,22 @@ export function addReferrer(
   return u.toString();
 }
 
+export type NavigationTopActionEvent = `NAVTOP_${'COPY_ID' | 'DOWNLOAD_BOOKINGS_EXCEL'}`;
+const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
+  window.dispatchEvent(new CustomEvent(eventID));
+};
+
+export type NotificationTopStateKeys =
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY'}`;
+
+export type NotificationTopState = Partial<Record<NotificationTopStateKeys, boolean>>;
+
+function navtopPushState(key: NotificationTopStateKeys) {
+  pushState('', {
+    [key]: true,
+  } satisfies NotificationTopState);
+}
+
 const commonActions = {
   pin: {
     label: 'Accès rapide',
@@ -46,8 +70,36 @@ const commonActions = {
       // TODO
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as const satisfies Record<string, OverflowMenuAction<any>>;
+  delete: {
+    label: 'Supprimer',
+    icon: IconTrash,
+    do() {
+      navtopPushState('NAVTOP_DELETING');
+    },
+  },
+  edit: {
+    label: 'Modifier',
+    icon: IconPen,
+  },
+  settings: {
+    label: 'Paramètres',
+    icon: IconCog,
+  },
+  copyID: {
+    label: "Copier l'ID",
+    icon: IconXML,
+    do() {
+      navigationTopActionEventDispatcher('NAVTOP_COPY_ID');
+    },
+  },
+} as const;
+
+const quickActionConfigureNotations = {
+  icon: IconNotificationSettings,
+  do() {
+    navtopPushState('NAVTOP_NOTIFICATION_SETTINGS');
+  },
+};
 
 const quickActionAdd = {
   icon: IconAdd,
@@ -124,9 +176,7 @@ export const topnavConfigs: Partial<
         icon: IconPin,
         label: 'Épingler…',
         do() {
-          pushState('./pinning', {
-            editingPings: true,
-          });
+          navtopPushState('NAVTOP_PINNING');
         },
       },
       {
@@ -137,16 +187,95 @@ export const topnavConfigs: Partial<
       ...rootPagesActions,
     ],
   },
-  '/(app)/posts/[id]': {
-    actions: [commonActions.pin],
+  '/(app)/posts/[id]': ({ id }) => ({
+    actions: [
+      commonActions.delete,
+      { ...commonActions.edit, href: route('/posts/[id]/edit', id) },
+      commonActions.pin,
+    ],
     title: 'Post',
-  },
+  }),
   '/(app)/groups/[uid]': ({ uid }) => ({
-    actions: [commonActions.pin],
+    quickAction: quickActionConfigureNotations,
+    actions: [
+      { ...commonActions.settings, href: route('/groups/[uid]/edit', uid) },
+      commonActions.pin,
+      commonActions.copyID,
+    ],
     title: uid,
   }),
   '/(app)/users/[uid]': ({ uid }) => ({
-    actions: [commonActions.pin],
+    actions: [
+      { ...commonActions.edit, href: route('/users/[uid]/edit', uid) },
+      commonActions.pin,
+      commonActions.copyID,
+    ],
     title: uid,
+  }),
+  '/(app)/student-associations/[uid]': ({ uid }) => ({
+    title: uid,
+    quickAction: quickActionConfigureNotations,
+    actions: [
+      { ...commonActions.settings, do: () => alert('TODO') },
+      {
+        icon: IconDonate,
+        label: 'Cotiser',
+        do: () => alert('TODO'),
+      },
+      commonActions.pin,
+      commonActions.copyID,
+    ],
+  }),
+  '/(app)/events/[[week=date]]': {
+    quickAction: {
+      icon: IconWallet,
+      href: route('/bookings'),
+    },
+    actions: [
+      {
+        icon: IconEvent,
+        label: 'Aller à…',
+        do: () => navtopPushState('NAVTOP_GO_TO_EVENT_DAY'),
+      },
+      ...rootPagesActions,
+    ],
+  },
+  '/(app)/events/[id]': ({ id }) => ({
+    title: 'Évènement',
+    quickAction: {
+      icon: IconScanQR,
+      href: route('/events/[id]/scan', id),
+    },
+    actions: [
+      { ...commonActions.edit, href: route('/events/[id]/edit', id) },
+      {
+        icon: IconBookingsList,
+        label: 'Réservations',
+        href: route('/events/[id]/bookings', id),
+      },
+      {
+        icon: IconPostAdd,
+        label: 'Post lié',
+        href: route('/events/[id]/write', id),
+      },
+      commonActions.pin,
+      commonActions.copyID,
+    ],
+  }),
+  '/(app)/events/[id]/bookings': ({ id }) => ({
+    title: 'Réservations',
+    quickAction: {
+      icon: IconScanQR,
+      href: route('/events/[id]/scan', id),
+    },
+    actions: [
+      { ...commonActions.edit, href: route('/events/[id]/edit', id) },
+      {
+        icon: IconDownload,
+        label: 'Excel',
+        do: () => navigationTopActionEventDispatcher('NAVTOP_DOWNLOAD_BOOKINGS_EXCEL'),
+      },
+      commonActions.pin,
+    ],
   }),
 };

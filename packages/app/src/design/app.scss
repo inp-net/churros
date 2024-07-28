@@ -292,4 +292,8 @@ div.skeleton-effect-wave {
 button {
   font-size: 1em;
   color: currentcolor;
+  appearance: none;
+  background: var(--bg);
+  border: none;
+  box-shadow: none;
 }

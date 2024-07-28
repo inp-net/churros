@@ -8,12 +8,14 @@
   import { debugging, themeDebugger } from '$lib/debugging';
   import { theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
-  import { onMount } from 'svelte';
+  import { onMount, setContext } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
+
+  setContext('mobile', data.mobile);
 
   onMount(() => {
     // if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -93,26 +95,28 @@
   <AnalyticsTracker user={$RootLayout.data?.me ?? null} />
 </svelte:head>
 
-{#if browser}
-  <section class="toasts">
-    {#each $toasts as toast (toast.id)}
-      <Toast
-        on:action={async () => {
-          if (toast.callbacks.action) await toast.callbacks.action(toast);
-        }}
-        action={toast.labels.action}
-        closeLabel={toast.labels.close}
-        {...toast}
-      ></Toast>
-    {/each}
-  </section>
-{/if}
+<div data-vaul-drawer-wrapper="">
+  {#if browser}
+    <section class="toasts">
+      {#each $toasts as toast (toast.id)}
+        <Toast
+          on:action={async () => {
+            if (toast.callbacks.action) await toast.callbacks.action(toast);
+          }}
+          action={toast.labels.action}
+          closeLabel={toast.labels.close}
+          {...toast}
+        ></Toast>
+      {/each}
+    </section>
+  {/if}
 
-{#if $themeDebugger}
-  <ModalThemeVariables />
-{/if}
+  {#if $themeDebugger}
+    <ModalThemeVariables />
+  {/if}
 
-<slot />
+  <slot />
+</div>
 
 <style lang="scss">
   section.toasts {
@@ -136,5 +140,10 @@
       padding: 0 2rem 0 0;
       transform: unset;
     }
+  }
+
+  [data-vaul-drawer-wrapper] {
+    min-height: 100%;
+    background-color: var(--bg);
   }
 </style>
