@@ -18,15 +18,14 @@
   import { allLoaded } from '$lib/loading';
   import { setupScrollPositionRestorer } from '$lib/scroll';
   import { currentTabDesktop, currentTabMobile } from '$lib/tabs';
-  import { theme } from '$lib/theme.js';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
-  import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import type { LayoutRouteId, Snapshot } from './$types';
   import { setContext } from 'svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
@@ -124,30 +123,14 @@
 {/if}
 
 <div class="layout">
-  <NavigationTop {scrolled}></NavigationTop>
-  <!-- <NavigationTop
-    {scrolled}
-    userIsLoading={$AppLayout.fetching}
+  <NavigationSide
+    openNewGroupModal={() => newGroupDialog.showModal()}
+    current={currentTabDesktop($page.url)}
     user={$AppLayout.data?.me ?? null}
-    event={$page.route.id === scanningEventsRouteID
-      ? ($AppLayoutScanningEvent.data?.scanningEvent ?? null)
-      : null}
-  /> -->
+  />
 
-  {#if $theme === 'noel'}
-    {#each { length: 100 } as _}
-      <div class="flake">
-        <Snowflake />
-      </div>
-    {/each}
-  {/if}
-
-  <div class="page-and-sidenav">
-    <NavigationSide
-      openNewGroupModal={() => newGroupDialog.showModal()}
-      current={currentTabDesktop($page.url)}
-      user={$AppLayout.data?.me ?? null}
-    />
+  <div class="mobile-area">
+    <NavigationTop {scrolled}></NavigationTop>
     <div
       id="scrollable-area"
       class="contents-and-announcements"
@@ -176,70 +159,38 @@
       </section>
       <main>
         <slot />
-        {#if $theme == 'pan7on'}
-          <div class="pan7div"></div>
-        {/if}
-        {#if $theme == 'ber7ker'}
-          <div class="ber7div"></div>
-        {/if}
       </main>
     </div>
+    <NavigationBottom current={currentTabMobile($page.url)} />
   </div>
 
-  <NavigationBottom
-    openNewGroupModal={() => newGroupDialog.showModal()}
-    current={currentTabMobile($page.url)}
-  />
+  <section class="quick-access">
+    <h2>
+      Accès rapide
+
+      <ButtonInk>Modifier</ButtonInk>
+    </h2>
+  </section>
 </div>
 
 <style lang="scss">
   @use 'sass:math';
 
-  /*
-
-The root layout is composed of several elements:
-
-- atop everything, positionned absolutely:
-  - the loading overlay
-  - toasts
-  - quick bookings
-
-- the top navbar
-- horizontally:
-  - the side navbar (desktop only)
-  - vertically (this is the content that scrolls):
-    - the announcements
-    - the page content
-- the bottom navbar (mobile only)
-*/
-  .pan7div {
-    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
-    // m'engage à laver les ecocups.
-    height: 3rem;
-  }
-
-  .ber7div {
-    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
-    // je m'engage à trouver quelqu'un de ber7ker.
-    height: 6rem;
-  }
-
   .layout {
     display: grid;
-    grid-template-rows: max-content 1fr max-content;
-    width: 100dvw;
-    height: 100dvh;
+    grid-template-columns: 1fr minmax(300px, 700px) 1fr;
+    gap: 2rem;
+    width: 100svw;
+    height: 100svh;
   }
 
-  .page-and-sidenav {
-    display: grid;
-    gap: 2rem;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
 
-    @media (min-width: 900px) {
-      grid-template-columns: max-content 1fr;
+    .layout :global(> *:not(.mobile-area)) {
+      display: none;
     }
   }
 
@@ -257,13 +208,30 @@ The root layout is composed of several elements:
     flex-grow: 1;
   }
 
-  .contents-and-announcements:not(.fullsize) main {
-    padding: 0 1rem;
+  section.quick-access {
+    padding-top: 100px;
+  }
+
+  .mobile-area {
+    display: grid;
+    grid-template-rows: 5rem auto;
+    height: 100svh;
   }
 
   #scrollable-area {
     display: flex;
     flex-direction: column;
+
+    // height: 0;
+    // min-height: calc(100% - 5rem);
+  }
+
+  @media (min-width: 900px) {
+    #scrollable-area {
+      padding: 1rem;
+      border-radius: 20px 20px 0 0;
+      box-shadow: var(--shadow-big);
+    }
   }
 
   :global(*::-webkit-scrollbar *) {
@@ -330,51 +298,5 @@ The root layout is composed of several elements:
     --text: #25bf22;
     --border: #25bf22;
     --primary-link: #54fe54;
-  }
-
-  @function random-range($min, $max) {
-    $rand: math.random();
-    $random-range: $min + math.floor($rand * (($max - $min) + 1));
-
-    @return $random-range;
-  }
-
-  .flake {
-    position: absolute;
-    z-index: -10;
-    width: 10px;
-    height: 10px;
-    background: transparent;
-    border-radius: 50%;
-
-    $total: 200;
-
-    @for $i from 1 through $total {
-      $random-x: random-range(100000, 900000) * 0.0001vw;
-      $random-offset: random-range(-100000, 100000) * 0.0001vw;
-      $random-x-end: $random-x + $random-offset;
-      $random-x-end-yoyo: $random-x + (math.div($random-offset, 2));
-      $random-yoyo-time: math.div(random-range(30000, 80000), 100000);
-      $random-yoyo-y: $random-yoyo-time * 100vh;
-      $random-scale: math.random(15000) * 0.0001;
-      $fall-duration: random-range(15, 30) * 1s;
-      $fall-delay: math.random(30) * -1s;
-
-      &:nth-child(#{$i}) {
-        opacity: math.random(10000) * 0.0001;
-        transform: translate($random-x, -10px) scale($random-scale);
-        animation: fall-#{$i} $fall-duration $fall-delay linear infinite;
-      }
-
-      @keyframes fall-#{$i} {
-        #{percentage($random-yoyo-time)} {
-          transform: translate($random-x-end, $random-yoyo-y) scale($random-scale);
-        }
-
-        100% {
-          transform: translate($random-x-end-yoyo, 90vh) scale($random-scale);
-        }
-      }
-    }
   }
 </style>

@@ -9,11 +9,13 @@
   import IconBack from '~icons/msl/arrow-back';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import type { LayoutRouteId } from '../$types';
+  import { getContext } from 'svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type NavigationQuickAction = Omit<OverflowMenuAction<any>, 'label'> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     overflow?: OverflowMenuAction<any>[];
+    mobileOnly?: boolean;
   };
 
   export type NavigationContext = {
@@ -45,9 +47,12 @@
   $: backHref = $page.url.searchParams.get('from') ?? back;
 
   let reportIssueDialogElement: HTMLDialogElement;
+  const mobile = getContext<boolean>('mobile');
 </script>
 
-<ModalReportIssue bind:element={reportIssueDialogElement} />
+{#if mobile}
+  <ModalReportIssue bind:element={reportIssueDialogElement} />
+{/if}
 
 <nav class:scrolled>
   <div class="left">
@@ -69,10 +74,12 @@
     {/if}
   </div>
   <div class="actions">
-    <ButtonGhost danger on:click={() => reportIssueDialogElement.showModal()}>
-      <IconBugReport></IconBugReport>
-    </ButtonGhost>
-    {#if quickAction}
+    {#if mobile}
+      <ButtonGhost danger on:click={() => reportIssueDialogElement.showModal()}>
+        <IconBugReport></IconBugReport>
+      </ButtonGhost>
+    {/if}
+    {#if quickAction && !(quickAction.mobileOnly && !mobile)}
       {#if quickAction.overflow}
         <OverflowMenu actions={quickAction.overflow}>
           <svelte:component this={quickAction.icon}></svelte:component>
