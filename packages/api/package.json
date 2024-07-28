@@ -156,7 +156,7 @@
     "check": "yarn build",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",
-    "dev": "yarn tsx ./scripts/update-mail-templates-type.ts && yarn build:changelog && yarn barrelize && yarn run -T generate-buildinfo --stub && NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
+    "dev": "NODE_ENV=development tsx watch --conditions=development --clear-screen=false ./src/index.ts",
     "migrate-old-data": "cd scripts && yarn tsc import-old-data.ts --lib es2021,DOM --module es2022 --target es2022 --moduleResolution node --allowSyntheticDefaultImports && yarn node import-old-data.js",
     "start": "node ./build/src/index.js",
     "barrelize": "tsx scripts/generate-barrelsby-config.ts && echo Running barrelsby && barrelsby --config barrelsby.config.json && tsx scripts/fix-extensionless-barrel-imports.ts && echo Formatting barrels for consistency && yarn format-at ./src/modules/**/index.ts --log-level silent",

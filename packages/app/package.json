@@ -95,7 +95,7 @@
     "build": "yarn generate && yarn check --threshold warning && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "clean": "git clean -Xdf .",
-    "dev": "yarn run -T generate-buildinfo --stub && yarn zeus && wait-port 4000 && vite dev --host",
+    "dev": "yarn zeus && wait-port 4000 && vite dev --host",
     "preview": "vite preview",
     "format-at": "prettier --write",
     "start": "node ./build/index.js",

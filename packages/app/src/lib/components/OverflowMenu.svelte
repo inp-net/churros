@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import type { Page } from '@sveltejs/kit';
   import { DropdownMenu } from 'bits-ui';
   import type { SvelteComponent } from 'svelte';
   import { getContext } from 'svelte';
@@ -7,21 +8,27 @@
   import { Drawer } from 'vaul-svelte';
   import IconDots from '~icons/msl/more-vert';
 
-  export type OverflowMenuAction<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
+  export type ActionData<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
     icon: IconType;
     help?: string;
     label: string;
     href?: string;
     do?: () => void | Promise<void>;
+    disabled?: boolean;
+    hidden?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     overflow?: OverflowMenuAction<any>[];
   };
+
+  export type OverflowMenuAction<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> =
+    | ActionData<IconType>
+    | ((page: Page) => Promise<ActionData<IconType>> | ActionData<IconType>);
 </script>
 
 <script lang="ts" generics="IconType extends SvelteComponent<SvelteHTMLElements['svg']>">
-  import type { TransitionConfig } from 'svelte/transition';
-
+  import OverflowMenuItem from '$lib/components/OverflowMenuItem.svelte';
   import { cubicOut } from 'svelte/easing';
+  import type { TransitionConfig } from 'svelte/transition';
 
   // eslint-disable-next-line no-undef
   export let actions: OverflowMenuAction<IconType>[];
@@ -84,30 +91,26 @@
 {#if mobile}
   <Drawer.Root bind:open={drawerOpen} shouldScaleBackground>
     <Drawer.Trigger>
-      <slot><IconDots></IconDots></slot>
+      {#if drawerOpen}
+        <slot name="open">
+          <slot>
+            <IconDots></IconDots>
+          </slot>
+        </slot>
+      {:else}
+        <slot><IconDots></IconDots></slot>
+      {/if}
     </Drawer.Trigger>
     <Drawer.Portal>
       <Drawer.Overlay></Drawer.Overlay>
       <Drawer.Content>
-        {#each actions as { label, icon, help, ...exec }}
-          <svelte:element
-            this={'href' in exec ? 'a' : 'button'}
-            class="item"
+        {#each actions as action}
+          <OverflowMenuItem
             on:click={() => {
               drawerOpen = false;
-              exec.do?.();
             }}
-            href={'href' in exec ? exec.href : undefined}
-            role={'href' in exec ? 'link' : 'button'}
-          >
-            <svelte:component this={icon}></svelte:component>
-            <div class="label">
-              <span class="main">{label}</span>
-              {#if help}
-                <span class="sub">{help}</span>
-              {/if}
-            </div>
-          </svelte:element>
+            {action}
+          />
         {/each}
       </Drawer.Content>
     </Drawer.Portal>
@@ -119,26 +122,17 @@
         <slot>
           <IconDots></IconDots>
         </slot>
+        <slot name="hovering" slot="hovering">
+          <slot>
+            <IconDots></IconDots>
+          </slot>
+        </slot>
       </ButtonGhost>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content transition={flyAndScale}>
-      {#each actions as { label, icon, help, ...exec }}
+      {#each actions as action}
         <DropdownMenu.Item>
-          <svelte:element
-            this={'href' in exec ? 'a' : 'button'}
-            class="item"
-            on:click={'do' in exec ? () => exec.do?.() : undefined}
-            href={'href' in exec ? exec.href : undefined}
-            role={'href' in exec ? 'link' : 'button'}
-          >
-            <svelte:component this={icon}></svelte:component>
-            <div class="label">
-              <span class="main">{label}</span>
-              {#if help}
-                <span class="sub">{help}</span>
-              {/if}
-            </div>
-          </svelte:element>
+          <OverflowMenuItem {action} />
         </DropdownMenu.Item>
       {/each}
     </DropdownMenu.Content>
@@ -146,33 +140,6 @@
 {/if}
 
 <style>
-  .item {
-    display: flex;
-    gap: 1em;
-    align-items: center;
-    padding: 0.5em 1em;
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-
-  .label {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    line-height: 1;
-  }
-
-  .label .sub {
-    font-size: 0.75em;
-    color: var(--muted);
-  }
-
-  button {
-    font-size: 1em;
-    background: var(--bg);
-    border: none;
-  }
-
   :global([data-menu-trigger]) {
     padding: 0;
     border: none;

@@ -1,6 +1,5 @@
 /* eslint-disable unicorn/filename-case */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
+import { $ as Zvar } from '$lib/zeus';
 
 export async function mutateObjectPicture(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

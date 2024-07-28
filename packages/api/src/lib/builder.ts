@@ -120,7 +120,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
         () => resolver(source, args, ctx, info),
         (_error, duration) => {
           console.info(
-            `Executed \u001B[36;1m${config.parentType}.${
+            `Executed \u001B[36;1m${info.operation.name?.value.padStart(20) ?? ''} ${config.parentType}.${
               config.name
             }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
           );

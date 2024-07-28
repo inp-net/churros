@@ -2187,6 +2187,16 @@ type Mutation {
     phone: String
     shopPaymentId: ID!
   ): MutationPaidShopPaymentResult!
+
+  """
+  Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
+  """
+  pin(
+    """
+    Chemin de la page à épingler
+    """
+    path: String!
+  ): Pin!
   refuseRegistration(email: String!, reason: String!): Boolean!
 
   """
@@ -2317,6 +2327,16 @@ type Mutation {
     emoji: String!
     eventId: ID
   ): Reactable!
+
+  """
+  Enlève une page de l'accès rapide
+  """
+  unpin(
+    """
+    Chemin de la page à désépingler
+    """
+    path: String!
+  ): Pin
   updateArticlePicture(file: File!, id: ID!): String!
   updateEventPicture(file: File!, id: ID!): String!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
@@ -3163,6 +3183,29 @@ interface Pictured {
   ): String!
 }
 
+"""
+Une page épinglée pour en faire un accès rapide pour un·e utilisateur·rice
+"""
+type Pin implements Node {
+  id: ID!
+
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
+
+  """
+  Chemin de la page
+  """
+  path: String!
+
+  """
+  Type de la page
+  """
+  type: String!
+  user: User!
+}
+
 type ProfitsBreakdown {
   byPaymentMethod: ProfitsBreakdownByPaymentMethod!
   byTicket: [ProfitsBreakdownByTicket!]!
@@ -3369,6 +3412,16 @@ type Query {
   Récupère toutes les pages existantes. Réservé aux administrateur·ice.s.
   """
   pages(after: String, before: String, first: Int, last: Int): QueryPagesConnection!
+
+  """
+  Si la page donnée est épinglée par l'utilisateur·ice connecté·e
+  """
+  pinned(
+    """
+    Chemin de la page
+    """
+    path: String!
+  ): Boolean!
   quickSignups(after: String, before: String, first: Int, last: Int): QueryQuickSignupsConnection!
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
@@ -5176,6 +5229,11 @@ type User implements Node & Pictured {
     """
     dark: Boolean! = false
   ): String!
+
+  """
+  Les accès rapides de l'utilisateur·rice
+  """
+  pins: [Pin!]!
   schoolUid: String
 
   """

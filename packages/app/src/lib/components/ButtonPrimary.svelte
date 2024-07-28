@@ -47,12 +47,12 @@
     flex: initial;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.75rem;
+    padding: 0.25rem 0.75rem;
     color: var(--text);
     cursor: pointer;
     background-color: var(--bg);
     border: none;
-    border-radius: 1000px;
+    border-radius: 5px;
 
     &.loading .content {
       opacity: 0;
@@ -63,10 +63,6 @@
       cursor: default;
       background: var(--disabled-bg);
     }
-  }
-
-  .button-primary.smaller {
-    padding: 0.5rem 1rem;
   }
 
   .button-primary:hover:not([disabled]),

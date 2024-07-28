@@ -1,21 +1,24 @@
 <script lang="ts" context="module">
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
-  import type { OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
+  import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
   import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import { topnavConfigs } from '$lib/navigation';
+  import { getContext, SvelteComponent } from 'svelte';
   import IconBack from '~icons/msl/arrow-back';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import type { LayoutRouteId } from '../$types';
-  import { getContext } from 'svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export type NavigationQuickAction = Omit<OverflowMenuAction<any>, 'label'> & {
+  export type NavigationQuickAction = Omit<ActionData<any>, 'label'> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     overflow?: OverflowMenuAction<any>[];
     mobileOnly?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filledIcon?: typeof SvelteComponent<any>;
   };
 
   export type NavigationContext = {
@@ -41,7 +44,7 @@
       title,
       quickAction,
       actions = [],
-    } = typeof topnavConfig === 'function' ? topnavConfig($page.params) : topnavConfig);
+    } = typeof topnavConfig === 'function' ? topnavConfig($page) : topnavConfig);
   }
 
   $: backHref = $page.url.searchParams.get('from') ?? back;
@@ -61,7 +64,7 @@
         <ButtonGhost href={backHref}>
           <IconBack></IconBack>
         </ButtonGhost>
-      {:else if history.length > 1}
+      {:else if browser && history.length > 1}
         <ButtonGhost on:click={() => history.back()}>
           <IconBack></IconBack>
         </ButtonGhost>
@@ -83,10 +86,16 @@
       {#if quickAction.overflow}
         <OverflowMenu actions={quickAction.overflow}>
           <svelte:component this={quickAction.icon}></svelte:component>
+          <svelte:fragment slot="open">
+            <svelte:component this={quickAction.filledIcon ?? quickAction.icon}></svelte:component>
+          </svelte:fragment>
         </OverflowMenu>
       {:else}
         <ButtonGhost>
           <svelte:component this={quickAction.icon}></svelte:component>
+          <svelte:fragment slot="hovering">
+            <svelte:component this={quickAction.filledIcon ?? quickAction.icon}></svelte:component>
+          </svelte:fragment>
         </ButtonGhost>
       {/if}
     {/if}

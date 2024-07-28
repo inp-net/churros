@@ -15,6 +15,7 @@
   export let tight = false;
   export let inline = false;
   export let loading = false;
+  export let hovering = false;
 </script>
 
 <svelte:element
@@ -30,6 +31,18 @@
   class:tight
   class:danger
   class:success
+  on:mouseenter={() => {
+    hovering = true;
+  }}
+  on:mouseleave={() => {
+    hovering = false;
+  }}
+  on:focus={() => {
+    hovering = true;
+  }}
+  on:blur={() => {
+    hovering = false;
+  }}
   {disabled}
   {type}
   {href}
@@ -41,6 +54,10 @@
 >
   {#if loading}
     <div class="loading-blackout"><slot /></div>
+  {:else if hovering}
+    <slot name="hovering">
+      <slot></slot>
+    </slot>
   {:else}
     <slot />
   {/if}
