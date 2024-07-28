@@ -1384,5 +1384,26 @@ await prisma.blockedUid.createMany({
     { uid: 'root' },
   ],
 });
+await prisma.user.update({
+  where: {uid: 'versairea'},
+  data: {
+    pins: {
+      create: {
+        path: "/users/alamaternitei"
+      }
+    }
+  }
+})
+
+await prisma.user.update({
+  where: {uid: 'alamaternitei'},
+  data: {
+    pins: {
+      create: {
+        path: "/users/versairea"
+      }
+    }
+  }
+})
 
 exit(0);

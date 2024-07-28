@@ -1,8 +1,13 @@
 import { pushState } from '$app/navigation';
 import { page } from '$app/stores';
+import { currentPageIsPinned, pinCurrentPage, unpinCurrentPage } from '$lib/pins';
 import { route } from '$lib/ROUTES';
+import type { Page } from '@sveltejs/kit';
 import { get } from 'svelte/store';
+import IconAddFilled from '~icons/msl/add-circle';
 import IconAdd from '~icons/msl/add-circle-outline';
+import IconPin from '~icons/msl/bookmark-outline';
+import IconPinRemove from '~icons/msl/bookmark-remove';
 import IconAnnouncement from '~icons/msl/campaign-outline';
 import IconXML from '~icons/msl/code';
 import IconTrash from '~icons/msl/delete-outline';
@@ -16,7 +21,6 @@ import IconInformation from '~icons/msl/info-outline';
 import IconForm from '~icons/msl/list-alt-outline';
 import IconNotificationSettings from '~icons/msl/notifications-outline';
 import IconPostAdd from '~icons/msl/post-add';
-import IconPin from '~icons/msl/push-pin-outline';
 import IconScanQR from '~icons/msl/qr-code-scanner';
 import IconCog from '~icons/msl/settings-outline';
 import IconShield from '~icons/msl/shield-outline';
@@ -40,13 +44,14 @@ export function addReferrer(
 ): string | undefined {
   if (!url) return undefined;
   const u = new URL(url, typeof url === 'string' ? get(page).url : undefined);
-  u.searchParams.set('from', referrer?.toString() ?? get(page).url.toString());
+  u.searchParams.set('from', referrer?.toString() ?? get(page).url.pathname.toString());
   u.host = '';
   u.protocol = '';
   return u.toString();
 }
 
-export type NavigationTopActionEvent = `NAVTOP_${'COPY_ID' | 'DOWNLOAD_BOOKINGS_EXCEL'}`;
+export type NavigationTopActionEvent =
+  `NAVTOP_${'COPY_ID' | 'DOWNLOAD_BOOKINGS_EXCEL' | 'PIN_PAGE'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
@@ -63,12 +68,16 @@ function navtopPushState(key: NotificationTopStateKeys) {
 }
 
 const commonActions = {
-  pin: {
-    label: 'Accès rapide',
-    icon: IconPin,
-    async do() {
-      // TODO
-    },
+  pin: async (page: Page) => {
+    const pinned = await currentPageIsPinned(page);
+    return {
+      label: pinned ? "Retirer de l'accès rapide" : 'Accès rapide',
+      icon: pinned ? IconPinRemove : IconPin,
+      async do() {
+        if (pinned) await unpinCurrentPage(page);
+        else pinCurrentPage(page);
+      },
+    };
   },
   delete: {
     label: 'Supprimer',
@@ -103,6 +112,7 @@ const quickActionConfigureNotations = {
 
 const quickActionAdd = {
   icon: IconAdd,
+  filledIcon: IconAddFilled,
   // mobileOnly: true,
   overflow: [
     {
@@ -157,10 +167,7 @@ const rootPagesActions = [
 ];
 
 export const topnavConfigs: Partial<
-  Record<
-    NonNullable<LayoutRouteId>,
-    NavigationContext | ((pageParams: Record<string, string>) => NavigationContext)
-  >
+  Record<NonNullable<LayoutRouteId>, NavigationContext | ((page: Page) => NavigationContext)>
 > = {
   '/(app)': {
     quickAction: quickActionAdd,
@@ -188,7 +195,7 @@ export const topnavConfigs: Partial<
       ...rootPagesActions,
     ],
   },
-  '/(app)/posts/[id]': ({ id }) => ({
+  '/(app)/posts/[id]': ({ params: { id } }) => ({
     actions: [
       commonActions.delete,
       { ...commonActions.edit, href: route('/posts/[id]/edit', id) },
@@ -196,7 +203,7 @@ export const topnavConfigs: Partial<
     ],
     title: 'Post',
   }),
-  '/(app)/groups/[uid]': ({ uid }) => ({
+  '/(app)/groups/[uid]': ({ params: { uid } }) => ({
     quickAction: quickActionConfigureNotations,
     actions: [
       { ...commonActions.settings, href: route('/groups/[uid]/edit', uid) },
@@ -205,7 +212,7 @@ export const topnavConfigs: Partial<
     ],
     title: uid,
   }),
-  '/(app)/users/[uid]': ({ uid }) => ({
+  '/(app)/users/[uid]': ({ params: { uid } }) => ({
     actions: [
       { ...commonActions.edit, href: route('/users/[uid]/edit', uid) },
       commonActions.pin,
@@ -213,7 +220,7 @@ export const topnavConfigs: Partial<
     ],
     title: uid,
   }),
-  '/(app)/student-associations/[uid]': ({ uid }) => ({
+  '/(app)/student-associations/[uid]': ({ params: { uid } }) => ({
     title: uid,
     quickAction: quickActionConfigureNotations,
     actions: [
@@ -241,7 +248,7 @@ export const topnavConfigs: Partial<
       ...rootPagesActions,
     ],
   },
-  '/(app)/events/[id]': ({ id }) => ({
+  '/(app)/events/[id]': ({ params: { id } }) => ({
     title: 'Évènement',
     quickAction: {
       icon: IconScanQR,
@@ -263,7 +270,7 @@ export const topnavConfigs: Partial<
       commonActions.copyID,
     ],
   }),
-  '/(app)/events/[id]/bookings': ({ id }) => ({
+  '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
     quickAction: {
       icon: IconScanQR,
@@ -280,3 +287,5 @@ export const topnavConfigs: Partial<
     ],
   }),
 };
+
+export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';

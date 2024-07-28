@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
   export const AppLayoutScanningEvent = new AppLayoutScanningEventStore();
-  export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
 </script>
 
 <script lang="ts">
@@ -8,24 +7,28 @@
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { AppLayoutScanningEventStore, graphql } from '$houdini';
+  import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
-  import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
+  import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { allLoaded } from '$lib/loading';
+  import { scanningEventsRouteID } from '$lib/navigation';
   import { setupScrollPositionRestorer } from '$lib/scroll';
-  import { currentTabDesktop, currentTabMobile } from '$lib/tabs';
+  import { currentTabMobile } from '$lib/tabs';
+  import { isDark } from '$lib/theme';
+  import { setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import type { LayoutRouteId, Snapshot } from './$types';
-  import { setContext } from 'svelte';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import type { Snapshot } from './$types';
+  import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
 
   export let data: PageData;
   $: ({ AppLayout } = data);
@@ -123,11 +126,7 @@
 {/if}
 
 <div class="layout">
-  <NavigationSide
-    openNewGroupModal={() => newGroupDialog.showModal()}
-    current={currentTabDesktop($page.url)}
-    user={$AppLayout.data?.me ?? null}
-  />
+  <NavigationSide user={$AppLayout.data?.me ?? null} />
 
   <div class="mobile-area">
     <NavigationTop {scrolled}></NavigationTop>
@@ -164,13 +163,44 @@
     <NavigationBottom current={currentTabMobile($page.url)} />
   </div>
 
-  <section class="quick-access">
-    <h2>
-      Accès rapide
-
-      <ButtonInk>Modifier</ButtonInk>
-    </h2>
-  </section>
+  <div class="right">
+    {#if $AppLayout.data?.me}
+      <section class="quick-access">
+        <QuickAccessList pins={$AppLayout.data.me} />
+      </section>
+    {:else}
+      <section class="login">
+        <h2>Connexion</h2>
+        <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
+        <section class="actions">
+          <ButtonSecondary href="/login">Connexion</ButtonSecondary>
+          <ButtonSecondary href="/register">Inscription</ButtonSecondary>
+        </section>
+      </section>
+    {/if}
+    <footer class="muted">
+      <p>
+        Churros v{CURRENT_VERSION}
+        · <wbr />Made by <a href="https://net7.dev">net7</a>
+        · <wbr /><a href="/credits">À propos</a>
+        · <wbr /><a href="https://git.inpt.fr/inp-net/churros">Code source</a>
+        · <wbr /><a href="https://www.gnu.org/licenses/agpl-3.0.en.html#license-text"
+          >Licensed under AGPL-v3.0</a
+        >
+        · <wbr />&copy;&nbsp;{new Date().getFullYear()}&nbsp;<a href="https://churros.app/@devs"
+          >Churros DevTeam</a
+        >
+      </p>
+      <a href="https://net7.dev" class="net7-logo">
+        <img
+          height="50px"
+          width="100px"
+          src="https://net7.dev/images/net7_{$isDark ? 'white' : 'dark'}.svg"
+          alt="net7"
+        />
+      </a>
+    </footer>
+  </div>
 </div>
 
 <style lang="scss">
@@ -180,8 +210,8 @@
     display: grid;
     grid-template-columns: 1fr minmax(300px, 700px) 1fr;
     gap: 2rem;
-    width: 100svw;
-    height: 100svh;
+    width: 100dvw;
+    height: 100dvh;
   }
 
   @media (max-width: 900px) {
@@ -208,8 +238,39 @@
     flex-grow: 1;
   }
 
-  section.quick-access {
+  .layout .right {
+    max-width: 300px;
     padding-top: 100px;
+  }
+
+  .login .actions {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
+  }
+
+  footer {
+    margin-top: 4rem;
+  }
+
+  footer p {
+    margin-bottom: 2rem;
+    font-size: 0.8rem;
+  }
+
+  footer p a {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-thickness: unset;
+    text-underline-offset: unset;
+  }
+
+  footer .net7-logo {
+    opacity: 0.5;
+  }
+
+  footer .net7-logo:hover {
+    opacity: 1;
   }
 
   .mobile-area {
@@ -253,7 +314,6 @@
     padding: 0.5rem 2rem;
     color: var(--text);
     background: var(--bg);
-    background-image: url('/gd7t-t.jpg');
   }
 
   @media (min-width: 900px) {

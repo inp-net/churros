@@ -5,6 +5,7 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ChurrosLogo from '$lib/components/LogoChurros.svelte';
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
+  import { allLoaded } from '$lib/loading';
   import { route } from '$lib/ROUTES';
   import { tooltip } from '$lib/tooltip';
   import { graphql } from 'graphql';
@@ -54,7 +55,7 @@
     <a
       href="/"
       class:current={isCurrent('/(app)')}
-      use:tooltip={{ content: 'Accueil', placement: 'left-start' }}
+      use:tooltip={{ content: 'Accueil', placement: 'left' }}
     >
       {#if isCurrent('/(app)')}
         <IconHomeFilled />
@@ -65,14 +66,14 @@
     <a
       href={route('/search')}
       class:current={isCurrent('/(app)/search/[[q]]')}
-      use:tooltip={{ content: 'Explorer', placement: 'left-start' }}
+      use:tooltip={{ content: 'Explorer', placement: 'left' }}
     >
       <IconSearch></IconSearch>
     </a>
     <a
       href={route('/events')}
       class:current={isCurrent('/(app)/events/[[week=date]]')}
-      use:tooltip={{ content: 'Événements', placement: 'left-start' }}
+      use:tooltip={{ content: 'Événements', placement: 'left' }}
     >
       {#if isCurrent('/(app)/events/[[week=date]]')}
         <IconEventsFilled />
@@ -83,7 +84,7 @@
     <a
       href={route('/services')}
       class:current={isCurrent('/(app)/services')}
-      use:tooltip={{ content: 'Services', placement: 'left-start' }}
+      use:tooltip={{ content: 'Services', placement: 'left' }}
     >
       {#if isCurrent('/(app)/services')}
         <IconServicesFilled />
@@ -91,11 +92,11 @@
         <IconServices />
       {/if}
     </a>
-    {#if $data}
+    {#if $data && allLoaded($data)}
       <a
         href={route('/users/[uid]', $data?.uid)}
         class:current={isCurrent('/(app)/users/[uid]')}
-        use:tooltip={{ content: 'Mon profil', placement: 'left-start' }}
+        use:tooltip={{ content: 'Mon profil', placement: 'left' }}
       >
         {#if isCurrent('/(app)/users/[uid]')}
           <IconAccountFilled />
@@ -105,7 +106,7 @@
       </a>
       <a
         href={route('/users/[uid]/edit', $data?.uid)}
-        use:tooltip={{ content: 'Paramètres', placement: 'left-start' }}
+        use:tooltip={{ content: 'Paramètres', placement: 'left' }}
       >
         {#if isCurrent('/(app)/users/[uid]/edit')}
           <IconSettingsFilled />

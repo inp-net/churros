@@ -72,9 +72,9 @@
     padding: 0.25rem 0.75rem;
     color: var(--text);
     cursor: pointer;
-    background: var(--bg);
-    border: var(--border-block) solid var(--border);
-    border-radius: 1000px;
+    background: transparent;
+    border: solid 1px var(--text);
+    border-radius: 5px;
     transition: all 200ms ease;
   }
 
@@ -104,11 +104,8 @@
 
   .button-secondary:not(:disabled):hover,
   .button-secondary:not(:disabled):focus-visible {
-    color: var(--hover-text);
-
-    /* color: var(--bg); */
-    background: var(--secondary-bg);
-    border: var(--border-block) solid var(--secondary-hover-border, var(--secondary-bg));
+    color: var(--bg);
+    background: var(--text);
   }
 
   .icon {

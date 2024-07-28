@@ -1,7 +1,8 @@
-query AppLayout($version: String!, $loggedIn: LoggedIn!) {
+query AppLayout($version: String!, $pagePath: String!, $loggedIn: LoggedIn!) {
   me @include(if: $loggedIn) @loading {
     ...NavigationSide
     ...NavigationTop
+    ...QuickAccessList
     major {
       schools {
         studentAssociations {
@@ -16,6 +17,8 @@ query AppLayout($version: String!, $loggedIn: LoggedIn!) {
       ...OverlayQuickBookings
     }
   }
+
+  currentPageIsPinned: pinned(path: $pagePath)
 
   combinedChangelog(sort: Descending, to: $version) {
     ...ModalChangelog

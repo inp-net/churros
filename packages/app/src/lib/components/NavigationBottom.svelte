@@ -1,19 +1,19 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { scanningEventsRouteID } from '$lib/navigation';
   import { scrollToTop } from '$lib/scroll';
   import type { MOBILE_NAVIGATION_TABS } from '$lib/tabs';
   import { theme } from '$lib/theme';
   import { tooltip } from '$lib/tooltip';
-  import IconCalendar from '~icons/msl/calendar-month';
-  import IconCalendarOutline from '~icons/msl/calendar-today-outline';
-  import IconDotsCircle from '~icons/msl/view-comfy-alt';
-  import IconDotsCircleOutline from '~icons/msl/view-comfy-alt-outline';
-  import IconHome from '~icons/msl/home';
-  import IconHomeOutline from '~icons/msl/home-outline';
   import IconAccount from '~icons/msl/account-circle';
   import IconAccountOutline from '~icons/msl/account-circle-outline';
+  import IconCalendar from '~icons/msl/calendar-month';
+  import IconCalendarOutline from '~icons/msl/calendar-today-outline';
+  import IconHome from '~icons/msl/home';
+  import IconHomeOutline from '~icons/msl/home-outline';
   import IconSearch from '~icons/msl/search';
-  import { scanningEventsRouteID } from '../../routes/(app)/+layout.svelte';
+  import IconDotsCircle from '~icons/msl/view-comfy-alt';
+  import IconDotsCircleOutline from '~icons/msl/view-comfy-alt-outline';
 
   export let current: (typeof MOBILE_NAVIGATION_TABS)[number];
 </script>
@@ -21,7 +21,7 @@
 <nav class:transparent={$page.route.id === scanningEventsRouteID} class={$theme}>
   {#if $page.url.pathname === '/'}
     <button class="current" on:click={scrollToTop}>
-      <IconHome />
+      <IconHome style="color:var(--primary)" />
     </button>
   {:else}
     <a href="/" class:current={current === 'home'} use:tooltip={'Mon feed'}>
@@ -75,9 +75,7 @@
 <svelte:window
   on:keydown={(e) => {
     if (!(e instanceof KeyboardEvent)) return;
-    if (e.key === 'Escape') 
-      e.preventDefault();
-    
+    if (e.key === 'Escape') e.preventDefault();
   }}
 />
 
