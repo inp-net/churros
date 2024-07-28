@@ -2,19 +2,20 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { DropdownMenu } from 'bits-ui';
   import type { SvelteComponent } from 'svelte';
+  import { getContext } from 'svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
+  import { Drawer } from 'vaul-svelte';
   import IconDots from '~icons/msl/more-vert';
 
   export type OverflowMenuAction<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
     icon: IconType;
     help?: string;
     label: string;
-  } & (
-    | { href: string }
-    | { do: () => void | Promise<void> }
+    href?: string;
+    do?: () => void | Promise<void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    | { overflow: OverflowMenuAction<any>[] }
-  );
+    overflow?: OverflowMenuAction<any>[];
+  };
 </script>
 
 <script lang="ts" generics="IconType extends SvelteComponent<SvelteHTMLElements['svg']>">
@@ -24,6 +25,7 @@
 
   // eslint-disable-next-line no-undef
   export let actions: OverflowMenuAction<IconType>[];
+  const mobile = getContext<boolean>('mobile');
 
   type FlyAndScaleParams = {
     y?: number;
@@ -75,38 +77,73 @@
       easing: cubicOut,
     };
   }
+
+  let drawerOpen = false;
 </script>
 
-<DropdownMenu.Root>
-  <DropdownMenu.Trigger>
-    <ButtonGhost>
-      <slot>
-        <IconDots></IconDots>
-      </slot>
-    </ButtonGhost>
-  </DropdownMenu.Trigger>
-  <DropdownMenu.Content transition={flyAndScale}>
-    {#each actions as { label, icon, help, ...exec }}
-      <DropdownMenu.Item>
-        <svelte:element
-          this={'href' in exec ? 'a' : 'button'}
-          class="item"
-          on:click={'do' in exec ? () => exec.do() : undefined}
-          href={'href' in exec ? exec.href : undefined}
-          role={'href' in exec ? 'link' : 'button'}
-        >
-          <svelte:component this={icon}></svelte:component>
-          <div class="label">
-            <span class="main">{label}</span>
-            {#if help}
-              <span class="sub">{help}</span>
-            {/if}
-          </div>
-        </svelte:element>
-      </DropdownMenu.Item>
-    {/each}
-  </DropdownMenu.Content>
-</DropdownMenu.Root>
+{#if mobile}
+  <Drawer.Root bind:open={drawerOpen} shouldScaleBackground>
+    <Drawer.Trigger>
+      <slot><IconDots></IconDots></slot>
+    </Drawer.Trigger>
+    <Drawer.Portal>
+      <Drawer.Overlay></Drawer.Overlay>
+      <Drawer.Content>
+        {#each actions as { label, icon, help, ...exec }}
+          <svelte:element
+            this={'href' in exec ? 'a' : 'button'}
+            class="item"
+            on:click={() => {
+              drawerOpen = false;
+              exec.do?.();
+            }}
+            href={'href' in exec ? exec.href : undefined}
+            role={'href' in exec ? 'link' : 'button'}
+          >
+            <svelte:component this={icon}></svelte:component>
+            <div class="label">
+              <span class="main">{label}</span>
+              {#if help}
+                <span class="sub">{help}</span>
+              {/if}
+            </div>
+          </svelte:element>
+        {/each}
+      </Drawer.Content>
+    </Drawer.Portal>
+  </Drawer.Root>
+{:else}
+  <DropdownMenu.Root>
+    <DropdownMenu.Trigger>
+      <ButtonGhost>
+        <slot>
+          <IconDots></IconDots>
+        </slot>
+      </ButtonGhost>
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content transition={flyAndScale}>
+      {#each actions as { label, icon, help, ...exec }}
+        <DropdownMenu.Item>
+          <svelte:element
+            this={'href' in exec ? 'a' : 'button'}
+            class="item"
+            on:click={'do' in exec ? () => exec.do?.() : undefined}
+            href={'href' in exec ? exec.href : undefined}
+            role={'href' in exec ? 'link' : 'button'}
+          >
+            <svelte:component this={icon}></svelte:component>
+            <div class="label">
+              <span class="main">{label}</span>
+              {#if help}
+                <span class="sub">{help}</span>
+              {/if}
+            </div>
+          </svelte:element>
+        </DropdownMenu.Item>
+      {/each}
+    </DropdownMenu.Content>
+  </DropdownMenu.Root>
+{/if}
 
 <style>
   .item {
@@ -114,7 +151,7 @@
     gap: 1em;
     align-items: center;
     padding: 0.5em 1em;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
   }
 
@@ -142,6 +179,43 @@
   }
 
   :global([data-menu-content]) {
+    padding: 0.5em 0;
     background-color: var(--bg);
+    border-radius: var(--radius-block);
+    box-shadow: var(--shadow);
+  }
+
+  :global([data-vaul-overlay]) {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background-color: rgb(0 0 0 / 50%);
+  }
+
+  :global([data-vaul-drawer]) {
+    --corner-radius: 20px;
+
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 1em 0;
+
+    /* height: 30%; */
+    background: var(--bg);
+    border-radius: var(--corner-radius) var(--corner-radius) 0 0;
+  }
+
+  :global([data-vaul-drawer])::before {
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    width: 25%;
+    height: 0.25rem;
+    content: '';
+    background-color: var(--muted);
+    border-radius: 9999px;
+    translate: -50%;
   }
 </style>
