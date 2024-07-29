@@ -11,6 +11,14 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Ajouter de vars d'env pour désactiver les inscriptions
+
+### Corrections
+
+- Réglage de bugs concernant les inscriptions
+
 ## [1.68.4] - 2024-07-23
 
 ### Corrections
