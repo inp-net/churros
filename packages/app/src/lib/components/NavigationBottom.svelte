@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { scanningEventsRouteID } from '$lib/navigation';
-  import { scrollToTop } from '$lib/scroll';
   import type { MOBILE_NAVIGATION_TABS } from '$lib/tabs';
   import { theme } from '$lib/theme';
   import { tooltip } from '$lib/tooltip';
@@ -20,7 +19,12 @@
 
 <nav class:transparent={$page.route.id === scanningEventsRouteID} class={$theme}>
   {#if $page.url.pathname === '/'}
-    <button class="current" on:click={scrollToTop}>
+    <button
+      class="current"
+      on:click={() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }}
+    >
       <IconHome style="color:var(--primary)" />
     </button>
   {:else}
@@ -34,7 +38,12 @@
   {/if}
 
   {#if $page.url.pathname === '/groups/'}
-    <button class="current" on:click={scrollToTop}>
+    <button
+      class="current"
+      on:click={() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }}
+    >
       <IconSearch></IconSearch>
     </button>
   {:else}

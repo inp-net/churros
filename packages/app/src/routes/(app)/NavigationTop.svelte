@@ -78,9 +78,9 @@
   </div>
   <div class="actions">
     {#if mobile}
-      <ButtonGhost danger on:click={() => reportIssueDialogElement.showModal()}>
+      <button class="bug-report" on:click={() => reportIssueDialogElement.showModal()}>
         <IconBugReport></IconBugReport>
-      </ButtonGhost>
+      </button>
     {/if}
     {#if quickAction && !(quickAction.mobileOnly && !mobile)}
       {#if quickAction.overflow}
@@ -122,5 +122,10 @@
 
   .logo {
     max-width: 33vw;
+    height: 2rem;
+  }
+
+  .bug-report {
+    color: var(--danger-link);
   }
 </style>

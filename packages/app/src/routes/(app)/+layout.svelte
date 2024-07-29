@@ -21,7 +21,7 @@
   import { setupScrollPositionRestorer } from '$lib/scroll';
   import { currentTabMobile } from '$lib/tabs';
   import { isDark } from '$lib/theme';
-  import { setContext } from 'svelte';
+  import { onMount, setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
@@ -38,29 +38,24 @@
     if (!to) return;
     if (to.route.id === scanningEventsRouteID)
       await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
+    
   });
 
   export const snapshot: Snapshot<number> = {
-    capture: () => scrollableArea.scrollTop,
+    capture: () => document.body.scrollTop,
     restore(y) {
-      scrollableArea.scrollTo(0, y);
+      console.log('restoring scroll position', y);
+      window.scrollTo(0, y);
     },
   };
 
-  let scrollableArea: HTMLElement;
   let scrolled = false;
-  $: if (scrollableArea) {
-    setupScrollPositionRestorer(scrollableArea, (isScrolled) => {
+  $: if (browser)
+    setupScrollPositionRestorer(document.body, (isScrolled) => {
       scrolled = isScrolled;
     });
-  }
 
   const now = new Date();
-
-  function pageIsFullsize(url: URL) {
-    const fragments = url.pathname.split('/');
-    return fragments[1] === 'club' && fragments[3] === 'event';
-  }
 
   function announcementHiddenByUser(id: string, hiddenAnnouncements: string[]): boolean {
     return !browser || hiddenAnnouncements.includes(id);
@@ -126,16 +121,25 @@
 {/if}
 
 <div class="layout">
-  <NavigationSide user={$AppLayout.data?.me ?? null} />
+  <div class="left">
+    <NavigationSide user={$AppLayout.data?.me ?? null} />
+  </div>
 
   <div class="mobile-area">
-    <NavigationTop {scrolled}></NavigationTop>
-    <div
-      id="scrollable-area"
-      class="contents-and-announcements"
-      class:fullsize={pageIsFullsize($page.url)}
-      bind:this={scrollableArea}
-    >
+    <div class="nav-top" class:transparent={scanningTickets}>
+      <NavigationTop {scrolled}></NavigationTop>
+      <div class="cap">
+        <div class="corner-left-wrapper corner-wrapper">
+          <div class="corner-left"></div>
+        </div>
+        <div class="middle"></div>
+        <div class="corner-right-wrapper corner-wrapper">
+          <div class="corner-right"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="scrollable-area" class="contents-and-announcements">
       <section class="announcements fullsize">
         {#if !scanningTickets && !showingTicket && $announcements.data?.announcementsNow}
           {#each $announcements.data?.announcementsNow.filter(({ id }) => !announcementHiddenByUser(id, $hiddenAnnouncements)) as { title, bodyHtml, warning, id } (id)}
@@ -160,7 +164,9 @@
         <slot />
       </main>
     </div>
-    <NavigationBottom current={currentTabMobile($page.url)} />
+    <div class="nav-bottom">
+      <NavigationBottom current={currentTabMobile($page.url)} />
+    </div>
   </div>
 
   <div class="right">
@@ -211,25 +217,111 @@
     grid-template-columns: 1fr minmax(300px, 700px) 1fr;
     gap: 2rem;
     width: 100dvw;
-    height: 100dvh;
+
+    --scrollable-area-border-color: var(--danger-disabled-border);
+  }
+
+  .mobile-area {
+    grid-column: 2;
+  }
+
+  .mobile-area .nav-bottom {
+    display: none;
+  }
+
+  .nav-top:not(.transparent) {
+    background: var(--bg);
+  }
+
+  .cap {
+    height: 30px;
+    justify-content: space-between;
+    display: flex;
+  }
+
+  .cap .middle {
+    flex-grow: 1;
+    border-top: 1px solid var(--scrollable-area-border-color);
+  }
+
+  .cap .corner-wrapper {
+    background: var(--bg);
+    height: 30px;
+    width: 30px;
+    position: relative;
+  }
+
+  .cap .corner-left,
+  .cap .corner-right {
+    position: absolute;
+    inset: 0;
+    // z-index: 11;
+  }
+
+  .cap .corner-left {
+    border-left: solid 1px var(--scrollable-area-border-color);
+    border-top: solid 1px var(--scrollable-area-border-color);
+    border-top-left-radius: 30px;
+  }
+
+  .cap .corner-right {
+    border-right: solid 1px var(--scrollable-area-border-color);
+    border-top: solid 1px var(--scrollable-area-border-color);
+    border-top-right-radius: 30px;
+  }
+
+  .layout .left {
+    position: fixed;
+    align-self: start;
+    top: 0;
+    left: 0;
+    bottom: 0;
+  }
+
+  .layout .right {
+    position: sticky;
+    align-self: start;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .nav-top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
   }
 
   @media (max-width: 900px) {
-    .layout {
-      grid-template-columns: 1fr;
-    }
-
-    .layout :global(> *:not(.mobile-area)) {
+    .layout .left {
       display: none;
     }
-  }
+    .layout .right {
+      display: none;
+    }
+    .mobile-area .nav-top,
+    .mobile-area .nav-bottom {
+      display: block;
+    }
 
-  .contents-and-announcements {
-    min-height: 0;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
-    overflow-y: scroll;
-    scrollbar-width: thin;
+    #scrollable-area {
+      margin-top: 60px;
+    }
+
+    .nav-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
   }
 
   main {
@@ -275,29 +367,22 @@
 
   .mobile-area {
     display: grid;
-    grid-template-rows: 5rem auto;
-    height: 100svh;
+    grid-template-rows: 60px auto;
   }
 
   #scrollable-area {
     display: flex;
     flex-direction: column;
-
-    // height: 0;
-    // min-height: calc(100% - 5rem);
   }
 
   @media (min-width: 900px) {
     #scrollable-area {
       padding: 1rem;
       border-radius: 20px 20px 0 0;
-      box-shadow: var(--shadow-big);
+      height: 100%;
+      border-left: solid 1px var(--scrollable-area-border-color);
+      border-right: solid 1px var(--scrollable-area-border-color);
     }
-  }
-
-  :global(*::-webkit-scrollbar *) {
-    width: 100px;
-    background-color: red;
   }
 
   .announcements {

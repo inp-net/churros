@@ -5,13 +5,17 @@
   import CardArticle from '$lib/components/CardArticle.houdini.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { infinitescroll } from '$lib/scroll';
   import { notNull } from '$lib/typing';
+  import { getContext } from 'svelte';
   import type { PageData } from './$houdini';
 
+  let mobile = getContext<boolean>('mobile');
+
   export let data: PageData;
-  $: ({ PageHomeFeed, Birthdays, MyGroups } = data);
+  $: ({ PageHomeFeed, Birthdays, MyGroups, AppLayout } = data);
 
   let defaultBirthdaysSection: MaybeLoading<string> = PendingValue;
   let selectedBirthdaysYearTier: string | undefined = undefined;
@@ -73,6 +77,10 @@
       {/each}
     </ul>
   </section>
+{/if}
+
+{#if mobile}
+  <QuickAccessList pins={$AppLayout?.data?.me ?? null} />
 {/if}
 
 <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>

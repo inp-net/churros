@@ -5,15 +5,6 @@ import { onMount } from 'svelte';
 import { syncToLocalStorage } from 'svelte-store2storage';
 import { get, writable, type Writable } from 'svelte/store';
 
-export function scrollToTop(): void {
-  if (!browser) return;
-
-  document.querySelector('#scrollable-area')?.scrollTo({
-    top: 0,
-    behavior: 'smooth',
-  });
-}
-
 /**
  * Uses an intersection observer on a container to fire a callback when we are a certain number of elements within a container from reaching the bottom. Returns a function to stop listening.
  * @param scrollableArea the container to search elements in
