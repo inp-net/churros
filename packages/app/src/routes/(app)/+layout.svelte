@@ -33,9 +33,8 @@
   afterNavigate(async ({ to }) => {
     if (!browser) return;
     if (!to) return;
-    if (to.route.id === scanningEventsRouteID) 
+    if (to.route.id === scanningEventsRouteID)
       await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
-    
   });
 
   export const snapshot: Snapshot<number> = {
