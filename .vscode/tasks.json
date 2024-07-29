@@ -1,0 +1,54 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Develop API",
+      "type": "shell",
+      "command": "yarn @api dev",
+      "presentation": {
+        "group": "dev"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Develop App",
+      "type": "shell",
+      "command": "yarn @app dev",
+      "presentation": {
+        "group": "dev"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Reset database",
+      "type": "shell",
+      "command": "yarn reset"
+    },
+    {
+      "label": "Install dependencies",
+      "type": "shell",
+      "command": "yarn install"
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "yarn build"
+    },
+    {
+      "label": "Setup environment",
+      "dependsOn": ["Install dependencies", "Reset database", "Build", "Pre-dev", "Develop"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Pre-dev",
+      "type": "shell",
+      "command": "yarn pre:dev"
+    },
+    {
+      "label": "Develop",
+      "dependsOn": ["Develop API", "Develop App"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

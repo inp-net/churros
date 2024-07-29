@@ -27,6 +27,8 @@
 git clone https://git.inpt.fr/inp-net/churros.git
 ```
 
+> **NOTE:** Si vous utilisez VS Code, vous pouvez ouvrir le projet dans VS Code et lancher la tache "Setup environment" (<kbbd>Ctrl+Shift+P</kbd> puis taper "Run Task" et sélectionner "Setup environment"). C'est l'équivalent des commandes ci-dessous.
+
 2. Installer les dépendances (Volta s'occupera de Node et Yarn pour vous et installera automatiquement les bonnes versions au lancement de cette commande)
 
 ```
