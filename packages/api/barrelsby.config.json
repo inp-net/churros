@@ -69,6 +69,7 @@
     "./src/modules/shop/utils",
     "./src/modules/student-associations/resolvers",
     "./src/modules/student-associations/types",
+    "./src/modules/student-associations/utils",
     "./src/modules/ticketing/resolvers",
     "./src/modules/ticketing/types",
     "./src/modules/ticketing/utils",

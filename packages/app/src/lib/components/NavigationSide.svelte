@@ -106,6 +106,7 @@
       </a>
       <a
         href={route('/users/[uid]/edit', $data?.uid)}
+        class:current={isCurrent('/(app)/users/[uid]/edit')}
         use:tooltip={{ content: 'Paramètres', placement: 'left' }}
       >
         {#if isCurrent('/(app)/users/[uid]/edit')}
@@ -121,9 +122,11 @@
     <ButtonGhost danger on:click={() => reportIssueDialogElement.showModal()}>
       <IconBugReport></IconBugReport>
     </ButtonGhost>
-    <ButtonGhost href={route('GET /logout')}>
-      <IconLogout></IconLogout>
-    </ButtonGhost>
+    {#if $page.data.token}
+      <ButtonGhost href="{route('GET /logout')}?token={encodeURIComponent($page.data.token)}">
+        <IconLogout></IconLogout>
+      </ButtonGhost>
+    {/if}
   </div>
 </nav>
 
@@ -138,6 +141,10 @@
     justify-content: space-between;
     width: 90px;
     padding: 1rem;
+  }
+
+  a.current {
+    color: var(--primary-link);
   }
 
   nav .top {

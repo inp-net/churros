@@ -169,3 +169,19 @@ export function prismaQueryCanCreatePostsOn(user: { id: string }): Prisma.GroupW
     ],
   };
 }
+
+export function prismaQueryCanCreateEventsOn(user: { id: string }): Prisma.GroupWhereInput {
+  return {
+    OR: [
+      { studentAssociation: { admins: { some: { id: user.id } } } },
+      {
+        members: {
+          some: {
+            memberId: user.id,
+            OR: [prismaQueryOnClubBoard(), { canEditArticles: true }, { member: { admin: true } }],
+          },
+        },
+      },
+    ],
+  };
+}

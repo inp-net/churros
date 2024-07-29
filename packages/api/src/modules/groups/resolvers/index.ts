@@ -17,5 +17,6 @@ export * from './query.group-members-csv.js';
 export * from './query.group.js';
 export * from './query.groups.js';
 export * from './query.search-groups.js';
+export * from './user.can-create-events-on.js';
 export * from './user.can-create-posts-on.js';
 export * from './user.groups.js';

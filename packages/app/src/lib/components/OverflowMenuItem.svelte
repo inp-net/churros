@@ -36,6 +36,7 @@
       class="item"
       aria-disabled={disabled}
       class:muted={disabled}
+      {disabled}
       on:click={async () => {
         dispatch('click');
         await do_?.();

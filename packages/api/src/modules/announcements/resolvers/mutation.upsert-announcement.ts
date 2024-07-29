@@ -1,7 +1,7 @@
 import { builder, log, prisma, publish } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { ZodError } from 'zod';
-import { AnnouncementType } from '../index.js';
+import { AnnouncementType, canManageAnnouncements } from '../index.js';
 
 builder.mutationField('upsertAnnouncement', (t) =>
   t.prismaField({
@@ -16,7 +16,7 @@ builder.mutationField('upsertAnnouncement', (t) =>
       warning: t.arg.boolean(),
     },
     authScopes(_, __, { user }) {
-      return Boolean(user?.admin);
+      return canManageAnnouncements(user);
     },
     async resolve(query, _, { id, title, body, startsAt, endsAt, warning }, { user }) {
       const upsertData = {

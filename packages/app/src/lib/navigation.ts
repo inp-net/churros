@@ -1,5 +1,7 @@
+import { browser } from '$app/environment';
 import { pushState } from '$app/navigation';
 import { page } from '$app/stores';
+import { graphql } from '$houdini';
 import { currentPageIsPinned, pinCurrentPage, unpinCurrentPage } from '$lib/pins';
 import { route } from '$lib/ROUTES';
 import type { Page } from '@sveltejs/kit';
@@ -67,6 +69,30 @@ function navtopPushState(key: NotificationTopStateKeys) {
   } satisfies NotificationTopState);
 }
 
+async function navtopPermissions() {
+  const { me } = await graphql(`
+    query NavigationTopPermissions @cache(policy: CacheOrNetwork) {
+      me {
+        admin
+        studentAssociationAdmin
+        canCreatePostsOn {
+          id
+        }
+        canCreateGroupsOn {
+          id
+        }
+        canCreateEventsOn {
+          id
+        }
+        canManageAnnouncements
+      }
+    }
+  `)
+    .fetch()
+    .then((r) => r.data ?? { me: null });
+  return me;
+}
+
 const commonActions = {
   pin: async (page: Page) => {
     const pinned = await currentPageIsPinned(page);
@@ -115,30 +141,46 @@ const quickActionAdd = {
   filledIcon: IconAddFilled,
   // mobileOnly: true,
   overflow: [
-    {
-      icon: IconPost,
-      label: 'Post',
-      href: route('/posts/create'),
+    async () => {
+      const me = browser ? await navtopPermissions() : null;
+      return {
+        icon: IconPost,
+        label: 'Post',
+        href: route('/posts/create'),
+        disabled: !me?.admin && !me?.canCreatePostsOn.length,
+      };
     },
-    {
-      icon: IconEvent,
-      label: 'Évènement',
-      href: route('/events/create'),
+    async () => {
+      const me = browser ? await navtopPermissions() : null;
+      return {
+        icon: IconEvent,
+        label: 'Évènement',
+        href: route('/events/create'),
+        disabled: !me?.admin && !me?.canCreateEventsOn.length,
+      };
     },
     {
       icon: IconForm,
       label: 'Formulaire',
       href: route('/forms/create'),
     },
-    {
-      icon: IconGroup,
-      label: 'Groupe',
-      do: () => alert('TODO'),
+    async () => {
+      const me = browser ? await navtopPermissions() : null;
+      return {
+        icon: IconGroup,
+        label: 'Groupe',
+        do: () => alert('TODO'),
+        disabled: !me?.admin && !me?.canCreateGroupsOn.length,
+      };
     },
-    {
-      icon: IconAnnouncement,
-      label: 'Annonce',
-      href: route('/announcements/create'),
+    async () => {
+      const me = browser ? await navtopPermissions() : null;
+      return {
+        icon: IconAnnouncement,
+        label: 'Annonce',
+        href: route('/announcements/create'),
+        disabled: !me?.canManageAnnouncements,
+      };
     },
   ],
 } satisfies NavigationQuickAction;
@@ -159,10 +201,14 @@ const rootPagesActions = [
     label: 'Developers',
     href: route('GET /developers'),
   },
-  {
-    icon: IconShield,
-    label: 'Zone admins',
-    do: () => alert('TODO'),
+  async () => {
+    const me = browser ? await navtopPermissions() : null;
+    return {
+      icon: IconShield,
+      label: 'Zone admins',
+      href: '/backrooms',
+      hidden: !me?.admin && !me?.studentAssociationAdmin,
+    };
   },
 ];
 
