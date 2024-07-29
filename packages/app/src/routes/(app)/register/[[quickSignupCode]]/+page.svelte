@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
@@ -99,7 +100,13 @@
 
 <h1>Inscription</h1>
 
-{#if result === undefined}
+{#if env.PUBLIC_DEACTIVATE_SIGNUPS === 'true'}
+  <p>
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html env.PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE ||
+      'Les inscriptions sont désactivées pour le moment.'}
+  </p>
+{:else if result === undefined}
   <form title="S'inscrire" on:submit|preventDefault={register}>
     <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
       <strong>{(formErrors?._errors ?? []).join(' ')} </strong>

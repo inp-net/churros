@@ -1,8 +1,9 @@
 import { builder, findSchoolUser, fromYearTier, log, makeGlobalID, prisma, sendMail } from '#lib';
-
+import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
 import { fullName } from '../utils/names.js';
+
 /** Registers a new user. */
 builder.mutationField('startRegistration', (t) =>
   t.field({
@@ -26,7 +27,18 @@ builder.mutationField('startRegistration', (t) =>
           "Code d'inscription rapide, pour s'inscrire sans mail étudiant et sans validation manuelle. Voir QuickSignupType.",
       }),
     },
-    resolve: async (_, { email, quickSignupCode }) => register(email, quickSignupCode ?? undefined),
+    async resolve(_, { email, quickSignupCode }, { user }) {
+      if (
+        !user?.admin &&
+        !user?.adminOfStudentAssociations.length &&
+        process.env.PUBLIC_DEACTIVATE_SIGNUPS === 'true'
+      ) {
+        throw new GraphQLError(
+          process.env.PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE || 'Les inscriptions sont désactivées.',
+        );
+      }
+      return register(email, quickSignupCode ?? undefined);
+    },
   }),
 );
 

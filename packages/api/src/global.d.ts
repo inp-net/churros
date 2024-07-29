@@ -80,5 +80,9 @@ declare namespace NodeJS {
     /** Mailman secrets */
     MAILMAN_API_URL: string;
     MAILMAN_API_TOKEN: string;
+    /** Set to "true" to deactivate signups */
+    PUBLIC_DEACTIVATE_SIGNUPS: string;
+    /**  Custom message to show when users try to hit the /register page */
+    PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE: string;
   }
 }
