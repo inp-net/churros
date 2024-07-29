@@ -1,4 +1,5 @@
 import { builder, log, prisma, publish } from '#lib';
+import { canManageAnnouncements } from '#modules/announcements';
 
 builder.mutationField('deleteAnnouncement', (t) =>
   t.field({
@@ -7,7 +8,7 @@ builder.mutationField('deleteAnnouncement', (t) =>
       id: t.arg.id(),
     },
     authScopes(_, {}, { user }) {
-      return Boolean(user?.admin);
+      return canManageAnnouncements(user);
     },
     async resolve(_, { id }, { user }) {
       await prisma.announcement.delete({
