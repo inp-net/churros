@@ -12,7 +12,7 @@ builder.mutationField('completeRegistration', (t) =>
     type: builder.unionType('CompleteSignupResult', {
       types: [UserCandidateType, UserType],
       resolveType: (value) =>
-        Object.hasOwn(value, 'usingQuickSignup') ? UserCandidateType : UserType,
+        Object.hasOwn(value, 'quickSignupId') ? UserCandidateType : UserType,
     }),
     errors: { types: [ZodError] },
     args: {

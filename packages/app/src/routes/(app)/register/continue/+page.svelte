@@ -66,7 +66,11 @@
 
   let result: boolean | undefined;
   let loading = false;
-  $: isStudent = Boolean($PageSignupContinue.data?.userCandidate?.majorId);
+  $: isStudentInitial = $PageSignupContinue.data?.userCandidate?.majorId;
+  let isStudent: boolean;
+  $: if (typeof isStudentInitial === 'boolean' && !(typeof isStudent === 'boolean'))
+    isStudent = isStudentInitial;
+
   let formErrors: ZodFormattedError<typeof args> | undefined;
   const register = async () => {
     if (loading) return;
@@ -90,6 +94,9 @@
           saveSessionToken(document, login.data.login.data);
           location.href = '/welcome/';
         }
+      } else {
+        window.scrollTo(0, 0);
+        candidate.needsManualValidation = true;
       }
     } catch (error: unknown) {
       formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
