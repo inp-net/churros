@@ -64,7 +64,14 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
     }),
     uid: t.exposeString('uid'),
     suggestedUid: t.string({
-      resolve: createUid,
+      async resolve(user) {
+        if (!user.firstName || !user.lastName) return '';
+        try {
+          return createUid(user);
+        } catch {
+          return '';
+        }
+      },
     }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar, nullable: true }),
     graduationYear: t.int({
