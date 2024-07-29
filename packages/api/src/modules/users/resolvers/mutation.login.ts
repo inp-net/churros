@@ -190,14 +190,17 @@ export async function login(
     }
   }
 
-  await log(
-    'login',
-    'fail',
-    {
-      uidOrEmail,
-      err: 'no hash matches given password',
-    },
-    user.id,
-  );
+  // Ce if est temporaire, la télé du local fait tj une requête avec l'ancien mdp et bah le local est fermé quoi mdr
+  if (uidOrEmail !== 'n7tv') {
+    await log(
+      'login',
+      'fail',
+      {
+        uidOrEmail,
+        err: 'no hash matches given password',
+      },
+      user.id,
+    );
+  }
   throw new Error('Identifiants invalides.');
 }
