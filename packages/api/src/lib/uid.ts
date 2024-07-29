@@ -25,6 +25,7 @@ export async function uidIsFree(uid: string): Promise<boolean> {
   if (await prisma.studentAssociation.findUnique({ where: { uid } })) return false;
   if (await prisma.major.findUnique({ where: { uid } })) return false;
   if (await prisma.group.findUnique({ where: { uid } })) return false;
+  if (await prisma.userCandidate.findFirst({ where: { uid } })) return false;
   if (await prisma.user.findUnique({ where: { uid } })) return false;
   return true;
 }
