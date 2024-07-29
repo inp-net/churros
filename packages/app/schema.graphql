@@ -4566,7 +4566,7 @@ type Service implements Node {
   url: String!
 }
 
-type ShopItem {
+type ShopItem implements Node {
   createdAt: DateTime!
   description: String!
   descriptionHtml: String!
@@ -4574,6 +4574,11 @@ type ShopItem {
   group: Group!
   id: ID!
   itemOptions: [ShopItemOption!]!
+
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
   lydiaAccount: LydiaAccount
   max: Int!
   name: String!
