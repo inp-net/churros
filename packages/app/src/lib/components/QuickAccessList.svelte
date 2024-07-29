@@ -6,10 +6,14 @@
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
   import { allLoaded } from '$lib/loading';
   import { pinDisplay } from '$lib/pins';
-  import { getContext } from 'svelte';
-  import { fly } from 'svelte/transition';
+  import { createEventDispatcher, getContext } from 'svelte';
+  import { fly, scale } from 'svelte/transition';
   import IconRemoveFilled from '~icons/msl/do-not-disturb-on';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
+  import IconBookmark from '~icons/msl/bookmark-outline';
+  import IconDots from '~icons/msl/more-vert';
+
+  const dispatch = createEventDispatcher<{ finishEditing: undefined }>();
 
   const mobile = getContext<boolean>('mobile');
 
@@ -36,38 +40,78 @@
 
   export let editing = false;
 
-  $: if (editing && $data?.pins.length === 0) 
-    editing = false;
-  
+  $: if (!mobile && editing && $data?.pins.length === 0) editing = false;
 
   let openMobileDrawer = false;
 </script>
 
 {#if mobile && !editing}
-  <ModalDrawer bind:open={openMobileDrawer}>
-    <svelte:self editing></svelte:self>
-  </ModalDrawer>
-
   <h2>
     Accès rapide
-    <ButtonInk on:click={() => {}}
-      >{#if editing}Terminé{:else}Modifier{/if}</ButtonInk
-    >
+    <ModalDrawer bind:open={openMobileDrawer}>
+      <ButtonInk slot="trigger" on:click={() => {}}>Modifier</ButtonInk>
+      <div class="modal-content">
+        <svelte:self
+          editing
+          {pins}
+          on:finishEditing={() => {
+            openMobileDrawer = false;
+          }}
+        ></svelte:self>
+      </div>
+    </ModalDrawer>
   </h2>
+
+  <ul class="nobullet cards">
+    {#each $data?.pins.filter(allLoaded) ?? [] as { path, id } (id)}
+      <li class="card" transition:scale={{ duration: 200 }}>
+        <a href={path}>
+          {#await pinDisplay(path)}
+            <LoadingText>{path}</LoadingText>
+          {:then data}
+            {#if data}
+              {@const { title, icon } = data}
+              <div class="icon">
+                {#if typeof icon === 'string'}
+                  <img src={icon} aria-hidden alt="" />
+                {:else}
+                  <svelte:component this={icon}></svelte:component>
+                {/if}
+              </div>
+              <span class="label">{title}</span>
+            {:else}
+              <span class="label">{path}</span>
+            {/if}
+          {:catch}
+            <span class="label">{path}</span>
+          {/await}
+        </a>
+      </li>
+    {:else}
+      <li class="muted">
+        <p>
+          Aucune page épinglée à l'accès rapide. Utilise <kbd>
+            <IconDots></IconDots> > <IconBookmark></IconBookmark>
+          </kbd> Accès rapide pour en ajouter.
+        </p>
+      </li>
+    {/each}
+  </ul>
 {:else}
   <h2>
     Accès rapide
     <ButtonInk
       on:click={() => {
         editing = !editing;
+        dispatch('finishEditing');
       }}
       >{#if editing}Terminé{:else}Modifier{/if}</ButtonInk
     >
   </h2>
 
-  <ul class="nobullet" class:editing>
+  <ul class="nobullet items" class:editing>
     {#each $data?.pins.filter(allLoaded) ?? [] as { path, id } (id)}
-      <li transition:fly={{ x: -50, duration: 200 }}>
+      <li class="item" transition:fly={{ x: -50, duration: 200 }}>
         <div class="remove-button">
           <ButtonGhost
             on:click={async () => {
@@ -109,6 +153,14 @@
           {/await}
         </a>
       </li>
+    {:else}
+      <li class="muted">
+        <p>
+          Aucune page épinglée à l'accès rapide. Utilise <kbd>
+            <IconDots></IconDots> > <IconBookmark></IconBookmark> Accès rapide
+          </kbd> pour en ajouter.
+        </p>
+      </li>
     {/each}
   </ul>
 {/if}
@@ -122,20 +174,60 @@
     margin-bottom: 1rem;
   }
 
-  li {
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .card {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    width: 6rem;
+    height: 6rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border-radius: var(--radius-block);
+  }
+
+  .card a {
+    overflow: hidden;
+  }
+
+  .card .label {
+    font-size: 0.8em;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+  }
+
+  .card .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    height: 3rem;
+  }
+
+  .item {
     display: flex;
     gap: 0.5em;
     align-items: center;
   }
 
-  li a {
+  .item a {
     display: flex;
     flex: 1;
     gap: 0.5em;
     align-items: center;
   }
 
-  li a .icon {
+  .item a .icon {
     display: flex;
     align-items: center;
   }
@@ -152,7 +244,7 @@
     font-size: 1.2em;
   }
 
-  ul {
+  .items {
     transition: all 200ms ease;
   }
 
@@ -160,11 +252,22 @@
     transition: opacity 150ms ease;
   }
 
-  ul:not(.editing) {
+  .items:not(.editing) {
     translate: -2em;
   }
 
-  ul:not(.editing) .remove-button {
+  .items:not(.editing) .remove-button {
     opacity: 0;
+  }
+
+  kbd {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1ch;
+  }
+  .modal-content {
+    padding: 0.5rem 1rem;
   }
 </style>

@@ -141,6 +141,7 @@
     justify-content: space-between;
     width: 90px;
     padding: 1rem;
+    height: 100%;
   }
 
   a.current {
