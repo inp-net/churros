@@ -41,19 +41,18 @@
   });
 
   let scrolled = false;
-  $: if (browser)
-    {setupScrollPositionRestorer(
-      () =>
-        document.querySelector(
-          // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
-          mobile || window.matchMedia('(max-width: 900px)').matches
-            ? '#scrollable-area'
-            : '[data-vaul-drawer-wrapper]',
-        ),
-      (isScrolled) => {
-        scrolled = isScrolled;
-      },
-    );}
+  setupScrollPositionRestorer(
+    () =>
+      document.querySelector(
+        // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
+        mobile || window.matchMedia('(max-width: 900px)').matches
+          ? '#scrollable-area'
+          : '[data-vaul-drawer-wrapper]',
+      ),
+    (isScrolled) => {
+      scrolled = isScrolled;
+    },
+  );
 
   const now = new Date();
 
