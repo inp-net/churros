@@ -4,6 +4,7 @@
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { me } from '$lib/session';
+  import { loginRedirection } from '$lib/navigation';
 
   let error: App.Error | null;
   let status: number;
@@ -33,9 +34,7 @@
     <h1>Erreur 403</h1>
     <p>Accès interdit.</p>
     {#if !$me}
-      <ButtonSecondary href="/login?{new URLSearchParams({ to: $page.url.pathname })}"
-        >Se connecter</ButtonSecondary
-      >
+      <ButtonSecondary href={loginRedirection()}>Se connecter</ButtonSecondary>
     {/if}
   {:else if status === 404}
     <img src="/404.svg" alt="404" />
@@ -51,9 +50,7 @@
         }}>Recharger</ButtonSecondary
       >
       {#if !$me}
-        <ButtonSecondary href="/login?{new URLSearchParams({ to: $page.url.pathname })}"
-          >Se connecter</ButtonSecondary
-        >
+        <ButtonSecondary href={loginRedirection({ explain: false })}>Se connecter</ButtonSecondary>
       {/if}
     </div>
   {:else}

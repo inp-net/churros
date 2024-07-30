@@ -4,6 +4,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import { route } from '$lib/ROUTES';
   import { zeus } from '$lib/zeus';
 
   let newPassword = '';
@@ -37,7 +38,7 @@
     }
 
     serverError = '';
-    await goto('/login');
+    await goto(route('/login'));
   }
 </script>
 

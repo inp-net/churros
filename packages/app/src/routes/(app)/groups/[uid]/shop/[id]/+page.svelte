@@ -16,6 +16,7 @@
   import { onDestroy, onMount } from 'svelte';
   import IconEdit from '~icons/mdi/pencil';
   import type { PageData } from './$types';
+  import { refroute } from '$lib/navigation';
 
   export let data: PageData;
 
@@ -42,7 +43,7 @@
   }
 
   async function payBy(method: PaymentMethod | undefined) {
-    if ($me?.uid === undefined) await goto('/login');
+    if ($me?.uid === undefined) await goto(refroute('/login') + '&why=unauthorized');
     choosingPaymentMethodLoading = method ?? PaymentMethod.Other;
     const { upsertShopPayment } = await $zeus.mutate({
       upsertShopPayment: [

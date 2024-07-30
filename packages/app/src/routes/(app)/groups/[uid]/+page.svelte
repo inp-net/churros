@@ -1,7 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import Badge from '$lib/components/Badge.svelte';
@@ -15,10 +14,13 @@
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputToggle from '$lib/components/InputToggle.svelte';
   import Modal from '$lib/components/Modal.svelte';
+  import ShopItem from '$lib/components/ShopItem.svelte';
   import TreeGroups from '$lib/components/TreeGroups.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { groupLogoSrc } from '$lib/logos';
+  import { loginRedirection, refroute } from '$lib/navigation';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
+  import { route } from '$lib/ROUTES';
   import { me } from '$lib/session.js';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import { isDark } from '$lib/theme';
@@ -33,7 +35,9 @@
   import IconJoinGroup from '~icons/mdi/account-plus';
   import IconCheck from '~icons/mdi/check';
   import IconDiscord from '~icons/mdi/discord';
+  import IconDownload from '~icons/mdi/download-outline';
   import IconWebsite from '~icons/mdi/earth';
+  import IconEye from '~icons/mdi/eye';
   import IconFacebook from '~icons/mdi/facebook-box';
   import IconGear from '~icons/mdi/gear-outline';
   import IconGithub from '~icons/mdi/github';
@@ -41,14 +45,10 @@
   import IconInstagram from '~icons/mdi/instagram';
   import IconLinkedin from '~icons/mdi/linkedin';
   import IconAdd from '~icons/mdi/plus';
+  import IconStore from '~icons/mdi/store';
   import IconTwitter from '~icons/mdi/twitter';
   import IconAnilist from '~icons/simple-icons/anilist';
-  import IconEye from '~icons/mdi/eye';
-  import IconDownload from '~icons/mdi/download-outline';
-  import IconStore from '~icons/mdi/store';
   import type { PageData } from './$types';
-  import ShopItem from '$lib/components/ShopItem.svelte';
-  import { route } from '$lib/ROUTES';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -111,7 +111,7 @@
   $: canEditDetails = Boolean(group?.canEditDetails || data.canEditGroup);
 
   const joinGroup = async (uid: string) => {
-    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    if (!$me) return goto(loginRedirection());
     try {
       await $zeus.mutate({
         selfJoinGroup: [{ uid }, { groupId: true }],
@@ -123,7 +123,7 @@
   };
 
   const quitGroup = async () => {
-    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    if (!$me) return goto(loginRedirection());
     try {
       confirmingGroupQuit = false;
       await $zeus.mutate({
@@ -136,7 +136,7 @@
   };
 
   const updateRoom = async () => {
-    if (!$me) return goto(`/login?${new URLSearchParams({ to: $page.url.pathname }).toString()}`);
+    if (!$me) return goto(loginRedirection());
     try {
       data.group.roomIsOpen = !data.group.roomIsOpen;
       await $zeus.mutate({
@@ -301,8 +301,7 @@
           Il faut être un élève pour voir les membres du groupe{:else}
           Connectez-vous pour voir les membres du groupe <ButtonSecondary
             insideProse
-            href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-            >Se connecter</ButtonSecondary
+            href={refroute('/login')}>Se connecter</ButtonSecondary
           >{/if}
       </Alert>
     {/if}

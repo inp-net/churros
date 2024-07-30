@@ -341,3 +341,11 @@ export const topnavConfigs: Partial<
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
+
+/**
+ * Like refroute("/login"), but also adds a &why=unauthorized query param to explain why the user is being redirected to the login page.
+ * @param explain {boolean} - Adds &why=unauthorized to the query string.
+ */
+export function loginRedirection({ explain = true } = {}) {
+  return refroute('/login') + (explain ? '?why=unauthorized' : '');
+}

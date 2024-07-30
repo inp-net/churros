@@ -18,7 +18,7 @@
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { allLoaded } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
-  import { scanningEventsRouteID } from '$lib/navigation';
+  import { refroute, scanningEventsRouteID } from '$lib/navigation';
   import { setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
   import { setContext } from 'svelte';
@@ -176,8 +176,8 @@
         <h2>Connexion</h2>
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
         <section class="actions">
-          <ButtonSecondary href="/login">Connexion</ButtonSecondary>
-          <ButtonSecondary href="/register">Inscription</ButtonSecondary>
+          <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
+          <ButtonSecondary href={refroute('/register')}>Inscription</ButtonSecondary>
         </section>
       </section>
     {/if}

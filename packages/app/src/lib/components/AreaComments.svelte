@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { zeus } from '$lib/zeus';
   import CardComment from '$lib/components/CardComment.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
+  import { refroute } from '$lib/navigation';
   import { me } from '$lib/session';
+  import { zeus } from '$lib/zeus';
   import Alert from './Alert.svelte';
-  import { page } from '$app/stores';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let comments: {
     edges: Array<{
@@ -124,10 +124,7 @@
   </ul>
 {:else}
   <Alert theme="warning">
-    <ButtonSecondary
-      href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-      insideProse>Connectez-vous</ButtonSecondary
-    > pour commenter.
+    <ButtonSecondary href={refroute('/login')} insideProse>Connectez-vous</ButtonSecondary> pour commenter.
   </Alert>
 {/if}
 
