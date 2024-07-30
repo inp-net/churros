@@ -5,17 +5,18 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
   import { allLoaded } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
   import { pinDisplay } from '$lib/pins';
-  import { createEventDispatcher, getContext } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import { fly, scale } from 'svelte/transition';
+  import IconBookmark from '~icons/msl/bookmark-outline';
   import IconRemoveFilled from '~icons/msl/do-not-disturb-on';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
-  import IconBookmark from '~icons/msl/bookmark-outline';
   import IconDots from '~icons/msl/more-vert';
 
   const dispatch = createEventDispatcher<{ finishEditing: undefined }>();
 
-  const mobile = getContext<boolean>('mobile');
+  const mobile = isMobile();
 
   export let pins: QuickAccessList | null;
   $: data = fragment(
@@ -182,15 +183,15 @@
 
   .card {
     display: flex;
-    justify-content: center;
     flex-direction: column;
     align-items: center;
-    padding: 0.5rem;
+    justify-content: center;
     width: 6rem;
     height: 6rem;
+    padding: 0.5rem;
     overflow: hidden;
-    box-shadow: var(--shadow);
     border-radius: var(--radius-block);
+    box-shadow: var(--shadow);
   }
 
   .card a {
@@ -198,20 +199,20 @@
   }
 
   .card .label {
-    font-size: 0.8em;
-    text-wrap: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
     display: block;
     width: 100%;
+    overflow: hidden;
+    font-size: 0.8em;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
   }
 
   .card .icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     height: 3rem;
+    font-size: 2rem;
   }
 
   .item {
@@ -263,10 +264,11 @@
   kbd {
     display: inline-flex;
     flex-wrap: wrap;
+    gap: 1ch;
     align-items: center;
     justify-content: center;
-    gap: 1ch;
   }
+
   .modal-content {
     padding: 0.5rem 1rem;
   }

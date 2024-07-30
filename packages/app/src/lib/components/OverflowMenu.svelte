@@ -3,7 +3,6 @@
   import type { Page } from '@sveltejs/kit';
   import { DropdownMenu } from 'bits-ui';
   import type { SvelteComponent } from 'svelte';
-  import { getContext } from 'svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
   import { Drawer } from 'vaul-svelte';
   import IconDots from '~icons/msl/more-vert';
@@ -26,13 +25,15 @@
 </script>
 
 <script lang="ts" generics="IconType extends SvelteComponent<SvelteHTMLElements['svg']>">
+  import { isMobile } from '$lib/mobile';
+
   import OverflowMenuItem from '$lib/components/OverflowMenuItem.svelte';
   import { cubicOut } from 'svelte/easing';
   import type { TransitionConfig } from 'svelte/transition';
 
   // eslint-disable-next-line no-undef
   export let actions: OverflowMenuAction<IconType>[];
-  const mobile = getContext<boolean>('mobile');
+  const mobile = isMobile();
 
   type FlyAndScaleParams = {
     y?: number;

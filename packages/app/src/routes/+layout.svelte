@@ -6,16 +6,17 @@
   import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
   import Toast from '$lib/components/Toast.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
+  import { setupIsMobile } from '$lib/mobile';
   import { theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
-  import { onMount, setContext } from 'svelte';
+  import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
 
-  setContext('mobile', data.mobile);
+  setupIsMobile(data.mobile);
 
   onMount(() => {
     // if (!$me && !localStorage.getItem('isReallyLoggedout')) {
@@ -143,7 +144,7 @@
   }
 
   [data-vaul-drawer-wrapper] {
-    min-height: 100%;
+    position: relative;
     background-color: var(--bg);
   }
 </style>

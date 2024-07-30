@@ -7,12 +7,12 @@
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
   import { infinitescroll } from '$lib/scroll';
   import { notNull } from '$lib/typing';
-  import { getContext } from 'svelte';
   import type { PageData } from './$houdini';
 
-  let mobile = getContext<boolean>('mobile');
+  const mobile = isMobile();
 
   export let data: PageData;
   $: ({ PageHomeFeed, Birthdays, MyGroups, AppLayout } = data);
