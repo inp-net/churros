@@ -45,6 +45,12 @@
       "command": "yarn pre:dev"
     },
     {
+      "label": "After branch switch",
+      "type": "shell",
+      "dependsOn": ["Install dependencies", "Reset database", "Pre-dev", "Develop"],
+      "dependsOrder": "sequence"
+    },
+    {
       "label": "Develop",
       "dependsOn": ["Develop API", "Develop App"],
       "dependsOrder": "parallel",
