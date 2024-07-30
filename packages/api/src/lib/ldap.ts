@@ -25,6 +25,7 @@ function connectLdap(): ldap.Client {
     ldapClient = ldap.createClient({
       url: LDAP_URL,
     });
+    console.info(`Created LDAP client to ${LDAP_URL}`);
   }
 
   return ldapClient;

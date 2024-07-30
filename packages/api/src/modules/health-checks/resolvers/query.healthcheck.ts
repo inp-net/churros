@@ -40,31 +40,25 @@ builder.queryField('healthcheck', (t) =>
             .catch(() => false),
         },
         mail: {
-          smtp: await new Promise<boolean>((resolve) => {
-            try {
-              createTransport(process.env.SMTP_URL).verify();
-              resolve(true);
-            } catch (error) {
-              console.error(error);
-              resolve(false);
-            }
-          }),
+          smtp: await createTransport(process.env.SMTP_URL)
+            .verify()
+            .then(() => true)
+            .catch(() => false),
         },
         ldap: {
-          internal:
-            process.env['NODE_ENV'] === 'development'
-              ? true
-              : await new Promise<boolean>((resolve) => {
-                  try {
-                    const c = connectLdap();
-                    c.bind(process.env.LDAP_BASE_DN, process.env.LDAP_BIND_PASSWORD, (err) => {
-                      if (err) resolve(false);
-                      resolve(true);
-                    });
-                  } catch {
-                    resolve(true);
-                  }
-                }),
+          internal: await new Promise<boolean>((resolve) => {
+            try {
+              const c = connectLdap();
+              c.on('error', () => resolve(false));
+              c.bind(process.env.LDAP_BASE_DN, process.env.LDAP_BIND_PASSWORD, (err) => {
+                if (err) resolve(false);
+                resolve(true);
+              });
+              setTimeout(() => resolve(false), 1000);
+            } catch {
+              resolve(true);
+            }
+          }),
           school: (
             await Promise.all(
               Object.values(schoolLdapSettings.servers).map(
@@ -72,6 +66,7 @@ builder.queryField('healthcheck', (t) =>
                   new Promise((resolve) => {
                     try {
                       const c = ldap.createClient({ url: server.url });
+                      c.on('error', () => resolve(false));
                       c.bind('', '', (err) => {
                         if (err) resolve(false);
                         resolve(true);
