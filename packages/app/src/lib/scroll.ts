@@ -94,9 +94,14 @@ export const infinitescroll = (
 };
 
 export function setupScrollPositionRestorer(
-  scrollableArea: HTMLElement,
+  scrollableArea: HTMLElement | null | (() => HTMLElement | null),
   onScroll: (scrolled: boolean) => void,
 ) {
+  const scrollableElement = () => {
+    const element = scrollableArea instanceof Function ? scrollableArea() : scrollableArea;
+    console.info(`[scrollrestorer] Using scrollable element`, element);
+    return element ?? document.documentElement;
+  };
   /**
    * Stores scrollTop of scrollableArea per URL
    */
@@ -104,20 +109,30 @@ export function setupScrollPositionRestorer(
   if (browser) syncToLocalStorage(scrollPositions, 'scroll_positions');
 
   beforeNavigate(() => {
+    const scrollpos = {
+      [get(page).url.pathname]: scrollableElement().scrollTop,
+    };
+    console.info(`[scrollrestorer] Saving scroll position`, scrollpos);
     scrollPositions.set({
       ...get(scrollPositions),
-      [get(page).url.pathname]: scrollableArea.scrollTop,
+      ...scrollpos,
     });
   });
 
   afterNavigate(async () => {
-    scrollableArea.scrollTo(0, get(scrollPositions)[get(page).url.pathname] ?? 0);
+    const scrollpos = get(scrollPositions)[get(page).url.pathname];
+    console.info(
+      `[scrollrestorer] Restoring scroll position for ${get(page).url.pathname}: ${scrollpos}`,
+    );
+    scrollableElement().scrollTo(0, scrollpos ?? 0);
   });
 
   onMount(() => {
-    const scrollableArea = document.querySelector('#scrollable-area');
-    scrollableArea!.addEventListener('scroll', () => {
-      onScroll(scrollableArea!.scrollTop >= 3);
+    // For performance reasons, we don't re-query the scrollable element on every scroll event
+    // It souhldn't change mid-scroll anyway, that would be weird
+    const scrollable = scrollableElement();
+    scrollable.addEventListener('scroll', () => {
+      onScroll(scrollable.scrollTop >= 3);
     });
   });
 }

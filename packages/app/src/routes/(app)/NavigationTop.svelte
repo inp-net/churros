@@ -6,8 +6,9 @@
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
   import OverflowMenu from '$lib/components/OverflowMenu.svelte';
+  import { isMobile } from '$lib/mobile';
   import { topnavConfigs } from '$lib/navigation';
-  import { getContext, SvelteComponent } from 'svelte';
+  import { SvelteComponent } from 'svelte';
   import IconBack from '~icons/msl/arrow-back';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import type { LayoutRouteId } from '../$types';
@@ -32,6 +33,8 @@
 
 <script lang="ts">
   export let scrolled = false;
+  export let transparent = false;
+
   let { back, title, quickAction, actions } = { actions: [] } as NavigationContext;
 
   $: topnavConfig = $page.route.id
@@ -50,14 +53,14 @@
   $: backHref = $page.url.searchParams.get('from') ?? back;
 
   let reportIssueDialogElement: HTMLDialogElement;
-  const mobile = getContext<boolean>('mobile');
+  const mobile = isMobile();
 </script>
 
 {#if mobile}
   <ModalReportIssue bind:element={reportIssueDialogElement} />
 {/if}
 
-<nav class:scrolled>
+<nav class:scrolled class:transparent>
   <div class="left">
     {#if title}
       {#if backHref}
@@ -111,6 +114,10 @@
     justify-content: space-between;
     padding: 0.25em 0.75em;
     font-size: 1.5em;
+  }
+
+  nav:not(.transparent) {
+    background: var(--bg);
   }
 
   .actions,

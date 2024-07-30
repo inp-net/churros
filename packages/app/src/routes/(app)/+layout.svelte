@@ -17,19 +17,19 @@
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { allLoaded } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
   import { scanningEventsRouteID } from '$lib/navigation';
   import { setupScrollPositionRestorer } from '$lib/scroll';
-  import { currentTabMobile } from '$lib/tabs';
   import { isDark } from '$lib/theme';
-  import { onMount, setContext } from 'svelte';
+  import { setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import type { Snapshot } from './$types';
   import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
 
+  const mobile = isMobile();
   export let data: PageData;
   $: ({ AppLayout } = data);
 
@@ -38,22 +38,22 @@
     if (!to) return;
     if (to.route.id === scanningEventsRouteID)
       await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
-    
   });
-
-  export const snapshot: Snapshot<number> = {
-    capture: () => document.body.scrollTop,
-    restore(y) {
-      console.log('restoring scroll position', y);
-      window.scrollTo(0, y);
-    },
-  };
 
   let scrolled = false;
   $: if (browser)
-    setupScrollPositionRestorer(document.body, (isScrolled) => {
-      scrolled = isScrolled;
-    });
+    {setupScrollPositionRestorer(
+      () =>
+        document.querySelector(
+          // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
+          mobile || window.matchMedia('(max-width: 900px)').matches
+            ? '#scrollable-area'
+            : '[data-vaul-drawer-wrapper]',
+        ),
+      (isScrolled) => {
+        scrolled = isScrolled;
+      },
+    );}
 
   const now = new Date();
 
@@ -120,14 +120,14 @@
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
 
-<div class="layout">
-  <div class="left">
+<div class="layout" class:mobile>
+  <header class="left">
     <NavigationSide user={$AppLayout.data?.me ?? null} />
-  </div>
+  </header>
 
   <div class="mobile-area">
-    <div class="nav-top" class:transparent={scanningTickets}>
-      <NavigationTop {scrolled}></NavigationTop>
+    <header class="nav-top" class:transparent={scanningTickets}>
+      <NavigationTop transparent={scanningTickets} {scrolled}></NavigationTop>
       <div class="cap">
         <div class="corner-left-wrapper corner-wrapper">
           <div class="corner-left"></div>
@@ -137,7 +137,7 @@
           <div class="corner-right"></div>
         </div>
       </div>
-    </div>
+    </header>
 
     <div id="scrollable-area" class="contents-and-announcements">
       <section class="announcements fullsize">
@@ -165,11 +165,11 @@
       </main>
     </div>
     <div class="nav-bottom">
-      <NavigationBottom current={currentTabMobile($page.url)} />
+      <NavigationBottom transparent={scanningTickets} />
     </div>
   </div>
 
-  <div class="right">
+  <aside class="right">
     {#if $AppLayout.data?.me}
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
@@ -206,11 +206,40 @@
         />
       </a>
     </footer>
-  </div>
+  </aside>
 </div>
 
 <style lang="scss">
   @use 'sass:math';
+
+  /**
+
+  Layout:
+
+  +---------------------------------------------+
+  |  sidebar  |      topbar         |   aside   |
+  |  sidebar  |      cap            |   aside   |
+  |  sidebar  | scrollable area     |   aside   |
+  |  sidebar  |      bottombar      |   aside   |
+  +---------------------------------------------+
+
+  cap + topbar = nav-top
+  nav-top + scrollable area + bottombar : mobile-area
+  aside : contains stuff like login form, quick access, footer
+          TODO: API kinda like navtop, so allow pages to contribute content here.
+  
+
+  - On desktop:
+
+  - The body (technically, a wrapper div called with [data-vaul-drawer-wrapper]) is the scrollable area. This allows using the scroll wheel anywhere on the page. In order to have that rounded border on top of the scrollable content while keeping the scroll on the body, we need to have the border-radius'd part as a separate element that doesn't move (has position: sticky): that's "cap".
+  - The scrollable-area has padding so that the content doesn't go under the cap's rounded corners on scroll
+
+  - On mobile:
+
+  - sidebar and aside as well as cap are all hidden
+  - the mobile-area is a flex element, nav top is not sticky but static, and the element with the scrollbar is scrollable-area: this is so that scaling down the background when opening a drawer does not fuck up the nav bars (if they're position: fixed, they fly out of the element when the [data-vaul-drawer-wrapper] is scaled down). UX-wise this is fine as the mobile-area takes the entire screen width on mobile.
+  - the scrollable-area kisses the screen's borders: this is important to have full-width content like posts cards.
+  */
 
   .layout {
     display: grid;
@@ -221,69 +250,75 @@
     --scrollable-area-border-color: var(--danger-disabled-border);
   }
 
-  .mobile-area {
+  .layout .left {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    align-self: start;
+  }
+
+  .layout .right {
+    position: sticky;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-self: start;
+    max-width: 300px;
+    padding-top: 100px;
+  }
+
+  .layout .mobile-area {
     grid-column: 2;
   }
 
-  .mobile-area .nav-bottom {
+  #scrollable-area {
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+  }
+
+  .layout .nav-bottom {
     display: none;
   }
 
-  .nav-top:not(.transparent) {
-    background: var(--bg);
-  }
-
   .cap {
-    height: 30px;
-    justify-content: space-between;
     display: flex;
+    justify-content: space-between;
+    height: 30px;
   }
 
   .cap .middle {
     flex-grow: 1;
+    background: transparent;
     border-top: 1px solid var(--scrollable-area-border-color);
   }
 
   .cap .corner-wrapper {
-    background: var(--bg);
-    height: 30px;
-    width: 30px;
     position: relative;
+    width: 30px;
+    height: 30px;
+    background: var(--bg);
   }
 
   .cap .corner-left,
   .cap .corner-right {
     position: absolute;
     inset: 0;
+
     // z-index: 11;
   }
 
   .cap .corner-left {
-    border-left: solid 1px var(--scrollable-area-border-color);
     border-top: solid 1px var(--scrollable-area-border-color);
+    border-left: solid 1px var(--scrollable-area-border-color);
     border-top-left-radius: 30px;
   }
 
   .cap .corner-right {
-    border-right: solid 1px var(--scrollable-area-border-color);
     border-top: solid 1px var(--scrollable-area-border-color);
+    border-right: solid 1px var(--scrollable-area-border-color);
     border-top-right-radius: 30px;
-  }
-
-  .layout .left {
-    position: fixed;
-    align-self: start;
-    top: 0;
-    left: 0;
-    bottom: 0;
-  }
-
-  .layout .right {
-    position: sticky;
-    align-self: start;
-    top: 0;
-    bottom: 0;
-    right: 0;
   }
 
   .nav-top {
@@ -293,34 +328,37 @@
   }
 
   @media (max-width: 900px) {
+    .cap {
+      display: none;
+    }
+
     .layout .left {
       display: none;
     }
+
     .layout .right {
       display: none;
     }
+
     .mobile-area .nav-top,
     .mobile-area .nav-bottom {
+      position: static;
       display: block;
     }
 
+    .mobile-area {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+    }
+
+    .layout {
+      display: flex;
+    }
+
     #scrollable-area {
-      margin-top: 60px;
-    }
-
-    .nav-top {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-    }
-
-    .nav-bottom {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
+      padding: 1rem 0;
+      overflow: auto;
     }
   }
 
@@ -328,17 +366,6 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-  }
-
-  .layout .right {
-    max-width: 300px;
-    padding-top: 100px;
-  }
-
-  .login .actions {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 0.5em;
   }
 
   footer {
@@ -365,23 +392,19 @@
     opacity: 1;
   }
 
-  .mobile-area {
-    display: grid;
-    grid-template-rows: 60px auto;
-  }
-
-  #scrollable-area {
+  .login .actions {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
   }
 
   @media (min-width: 900px) {
     #scrollable-area {
-      padding: 1rem;
-      border-radius: 20px 20px 0 0;
       height: 100%;
-      border-left: solid 1px var(--scrollable-area-border-color);
+      padding: 30px;
       border-right: solid 1px var(--scrollable-area-border-color);
+      border-left: solid 1px var(--scrollable-area-border-color);
+      border-radius: 20px 20px 0 0;
     }
   }
 

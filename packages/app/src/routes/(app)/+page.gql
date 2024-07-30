@@ -1,4 +1,4 @@
-query PageHomeFeed {
+query PageHomeFeed @cache(policy: CacheOrNetwork) {
   homepage(first: 5) @paginate @loading {
     pageInfo {
       hasNextPage

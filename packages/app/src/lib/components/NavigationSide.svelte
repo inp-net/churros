@@ -1,13 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { type NavigationSide, fragment } from '$houdini';
-  import type { LayoutRouteId } from '$houdini/types/src/routes/(app)/$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
   import ChurrosLogo from '$lib/components/LogoChurros.svelte';
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import { allLoaded } from '$lib/loading';
   import { route } from '$lib/ROUTES';
-  import { tooltip } from '$lib/tooltip';
   import { graphql } from 'graphql';
   import IconAccountFilled from '~icons/msl/account-circle';
   import IconAccount from '~icons/msl/account-circle-outline';
@@ -22,8 +21,6 @@
   import IconSettings from '~icons/msl/settings-outline';
   import IconServicesFilled from '~icons/msl/view-comfy-alt';
   import IconServices from '~icons/msl/view-comfy-alt-outline';
-
-  $: isCurrent = (route: LayoutRouteId) => $page.route.id === route;
 
   export let user: NavigationSide | null;
   $: data = fragment(
@@ -52,69 +49,53 @@
     </a>
   </div>
   <div class="middle">
-    <a
+    <ButtonNavigation
       href="/"
-      class:current={isCurrent('/(app)')}
-      use:tooltip={{ content: 'Accueil', placement: 'left' }}
-    >
-      {#if isCurrent('/(app)')}
-        <IconHomeFilled />
-      {:else}
-        <IconHome />
-      {/if}
-    </a>
-    <a
-      href={route('/search')}
-      class:current={isCurrent('/(app)/search/[[q]]')}
-      use:tooltip={{ content: 'Explorer', placement: 'left' }}
-    >
-      <IconSearch></IconSearch>
-    </a>
-    <a
+      routeID="/(app)"
+      label="Accueil"
+      icon={IconHome}
+      iconFilled={IconHomeFilled}
+    />
+
+    <ButtonNavigation
+      href="/search"
+      routeID="/(app)/search/[[q]]"
+      label="Explorer"
+      icon={IconSearch}
+    />
+
+    <ButtonNavigation
       href={route('/events')}
-      class:current={isCurrent('/(app)/events/[[week=date]]')}
-      use:tooltip={{ content: 'Événements', placement: 'left' }}
-    >
-      {#if isCurrent('/(app)/events/[[week=date]]')}
-        <IconEventsFilled />
-      {:else}
-        <IconEvents />
-      {/if}
-    </a>
-    <a
+      routeID="/(app)/events/[[week=date]]"
+      label="Événements"
+      icon={IconEvents}
+      iconFilled={IconEventsFilled}
+    />
+
+    <ButtonNavigation
       href={route('/services')}
-      class:current={isCurrent('/(app)/services')}
-      use:tooltip={{ content: 'Services', placement: 'left' }}
-    >
-      {#if isCurrent('/(app)/services')}
-        <IconServicesFilled />
-      {:else}
-        <IconServices />
-      {/if}
-    </a>
+      routeID="/(app)/services"
+      label="Services"
+      icon={IconServices}
+      iconFilled={IconServicesFilled}
+    />
+
     {#if $data && allLoaded($data)}
-      <a
+      <ButtonNavigation
         href={route('/users/[uid]', $data?.uid)}
-        class:current={isCurrent('/(app)/users/[uid]')}
-        use:tooltip={{ content: 'Mon profil', placement: 'left' }}
-      >
-        {#if isCurrent('/(app)/users/[uid]')}
-          <IconAccountFilled />
-        {:else}
-          <IconAccount />
-        {/if}
-      </a>
-      <a
+        routeID="/(app)/users/[uid]"
+        label="Mon profil"
+        icon={IconAccount}
+        iconFilled={IconAccountFilled}
+      />
+
+      <ButtonNavigation
         href={route('/users/[uid]/edit', $data?.uid)}
-        class:current={isCurrent('/(app)/users/[uid]/edit')}
-        use:tooltip={{ content: 'Paramètres', placement: 'left' }}
-      >
-        {#if isCurrent('/(app)/users/[uid]/edit')}
-          <IconSettingsFilled />
-        {:else}
-          <IconSettings />
-        {/if}
-      </a>
+        routeID="/(app)/users/[uid]/edit"
+        label="Paramètres"
+        icon={IconSettings}
+        iconFilled={IconSettingsFilled}
+      />
     {/if}
   </div>
 
@@ -140,12 +121,8 @@
     align-items: center;
     justify-content: space-between;
     width: 90px;
-    padding: 1rem;
     height: 100%;
-  }
-
-  a.current {
-    color: var(--primary-link);
+    padding: 1rem;
   }
 
   nav .top {
@@ -163,5 +140,9 @@
     flex-direction: column;
     gap: 0.5em;
     font-size: 1.75em;
+  }
+
+  nav .middle {
+    gap: 1em;
   }
 </style>
