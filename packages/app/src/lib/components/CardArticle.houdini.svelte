@@ -6,21 +6,22 @@
     type CardArticle,
     type CardArticle$data,
   } from '$houdini';
+  import { route } from '$lib/ROUTES';
   import { formatEventDates } from '$lib/dates';
   import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
+  import { addReferrer, refroute } from '$lib/navigation';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import { intlFormatDistance, isFuture, subMinutes } from 'date-fns';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
-  import IconInfo from '~icons/mdi/information-outline';
+  import IconHourglassEmpty from '~icons/msl/hourglass-empty';
   import BadgeVisibility from './BadgeVisibility.svelte';
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LoadingText from './LoadingText.svelte';
-  import { route } from '$lib/ROUTES';
-  import { addReferrer } from '$lib/navigation';
 
   const ToggleLike = graphql(`
     mutation CardArticle_ToggleLike($articleId: ID!) {
@@ -148,11 +149,6 @@
 </script>
 
 <div class="post-outer" class:future={notPublishedYet}>
-  {#if notPublishedYet}
-    <div class="unpublished warning typo-details">
-      <IconInfo></IconInfo> Ce post n'est pas encore publié
-    </div>
-  {/if}
   <a href={addReferrer(href)} class="post-link">
     <article class="post">
       <a href={addReferrer(authorHref)} class="group-link">
@@ -181,7 +177,13 @@
           {#if !hideGroup || author}
             <span class="separator">·</span>
           {/if}
-          <span class="date">
+          <span
+            class="date"
+            use:tooltip={notPublishedYet ? "Ce post n'est pas encore publié" : undefined}
+          >
+            {#if notPublishedYet}
+              <IconHourglassEmpty></IconHourglassEmpty>
+            {/if}
             {#if loaded(publishedAt)}
               {intlFormatDistance(publishedAt, new Date())}
             {:else}
@@ -198,7 +200,7 @@
         </p>
         {#if event && allLoaded(event)}
           <a
-            href={route('/events/[id]', event.localID)}
+            href={refroute('/events/[id]', event.localID)}
             class="event"
             style:background-image="url({event.pictureURL})"
           >
@@ -266,7 +268,7 @@
   }
 
   a:hover article {
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .post-link {
@@ -276,7 +278,7 @@
   }
 
   .post-outer.future {
-    color: var(--muted-text);
+    color: var(--muted);
   }
 
   .content {
@@ -308,7 +310,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   header {
@@ -321,11 +323,16 @@
 
   header a:hover,
   header a:focus-visible {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   header .group {
     font-weight: bold;
+  }
+
+  header .date {
+    display: flex;
+    align-items: center;
   }
 
   .visibility {

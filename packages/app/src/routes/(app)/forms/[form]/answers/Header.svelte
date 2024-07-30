@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { route } from '$lib/ROUTES';
+  import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import { zeus } from '$lib/zeus';
@@ -105,7 +105,7 @@
     {/if}
   </ButtonInk>
   {#if linkedEvent}
-    <ButtonInk icon={IconOpenInNewTab} newTab href={route('/events/[id]', linkedEvent.localID)}
+    <ButtonInk icon={IconOpenInNewTab} newTab href={refroute('/events/[id]', linkedEvent.localID)}
       >Évènement lié</ButtonInk
     >
   {/if}

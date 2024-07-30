@@ -147,7 +147,6 @@
   h3 {
     margin: 1rem 0 0.5rem;
     line-height: 0.7;
-    color: var(--link);
   }
 
   h3::after {
@@ -155,7 +154,7 @@
     width: 100%;
     height: 0.2em;
     content: '';
-    background: var(--link);
+    background: currentColor;
     border-radius: var(--radius-block);
   }
 

@@ -54,7 +54,7 @@
   }
 
   li.active {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   li.active::after {
@@ -62,7 +62,7 @@
     width: calc(100% + 2rem);
     height: calc(2 * var(--border-block));
     content: '';
-    background-color: var(--primary-link);
+    background-color: var(--primary);
     border-top-left-radius: var(--radius-block);
     border-top-right-radius: var(--radius-block);
     transform: translateX(-1rem);

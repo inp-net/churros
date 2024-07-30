@@ -102,7 +102,7 @@
     justify-content: start;
     padding-left: 0;
     list-style: none;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -149,7 +149,7 @@
 
   .new {
     display: flex;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 </style>

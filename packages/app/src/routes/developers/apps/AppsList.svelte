@@ -49,8 +49,8 @@
 
   li a:hover,
   li a:focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
+    color: var(--primary);
+    background: var(--primary-bg);
   }
 
   .name {

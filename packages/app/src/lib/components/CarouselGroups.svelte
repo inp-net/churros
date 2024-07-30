@@ -172,7 +172,7 @@
     background-color: var(--bg);
     border: none;
     border-radius: 50%;
-    box-shadow: var(--primary-shadow);
+    box-shadow: var(--shadow);
     transform: translateY(-50%);
   }
 

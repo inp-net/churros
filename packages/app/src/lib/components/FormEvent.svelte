@@ -916,7 +916,7 @@
 
   .ticket-group {
     padding: 1em;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import { groupLogoSrc } from '$lib/logos';
+  import { refroute } from '$lib/navigation';
+  import { me } from '$lib/session';
   import { isDark } from '$lib/theme';
   import { LogoSourceType } from '$lib/zeus';
-
+  import type { SvelteComponent } from 'svelte';
   import IconAdd from '~icons/mdi/add';
   import IconBookshelf from '~icons/mdi/bookshelf';
   import IconBugCheck from '~icons/mdi/bug-check';
@@ -25,10 +27,6 @@
   import IconTerminal from '~icons/mdi/terminal';
   import IconWebsite from '~icons/mdi/web';
   import LogoFrappe from './LogoFrappe.svelte';
-
-  import { me } from '$lib/session';
-  import type { SvelteComponent } from 'svelte';
-  import { route } from '$lib/ROUTES';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -75,7 +73,7 @@
   {#if ($me?.admin ?? false) && service.localID}
     <a
       class="edit-icon"
-      href={route('/services/[id]/edit', service.localID)}
+      href={refroute('/services/[id]/edit', service.localID)}
       on:mouseover={() => (hover = true)}
       on:focus={() => (hover = true)}
       on:mouseleave={() => (hover = false)}
@@ -121,7 +119,7 @@
     width: var(--size);
     height: var(--size);
     padding: 0.5rem;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -139,9 +137,9 @@
 
   .card-service:hover,
   .card-service:focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
-    border-color: var(--hover-border);
+    color: var(--primary);
+    background: var(--primary-bg);
+    border-color: var(--primary);
 
     .edit-icon {
       display: inherit;

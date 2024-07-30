@@ -121,7 +121,7 @@
     align-items: center;
     justify-content: space-between;
     width: 90px;
-    height: 100%;
+    height: 100dvh;
     padding: 1rem;
   }
 

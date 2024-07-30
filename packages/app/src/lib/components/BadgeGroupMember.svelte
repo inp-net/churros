@@ -36,13 +36,13 @@
     align-items: center;
     padding: 0.25em 0.75em;
     overflow: hidden;
-    color: var(--primary-text);
-    background: var(--primary-bg);
+    color: var(--bg);
+    background: var(--primary);
     border-radius: 100000px;
+    outline: 0 solid var(--primary-bg);
 
     &:hover {
-      color: var(--primary-hover-text);
-      background: var(--primary-hover-bg);
+      outline: 2px solid var(--primary-bg);
     }
   }
 

@@ -244,7 +244,7 @@
     gap: 2rem;
     width: 100dvw;
 
-    --scrollable-area-border-color: var(--danger-disabled-border);
+    --scrollable-area-border-color: var(--bg3);
   }
 
   .layout .left {
@@ -401,7 +401,6 @@
       padding: 30px;
       border-right: solid 1px var(--scrollable-area-border-color);
       border-left: solid 1px var(--scrollable-area-border-color);
-      border-radius: 20px 20px 0 0;
     }
   }
 
@@ -462,6 +461,6 @@
     --bg: #000;
     --text: #25bf22;
     --border: #25bf22;
-    --primary-link: #54fe54;
+    --primary: #54fe54;
   }
 </style>

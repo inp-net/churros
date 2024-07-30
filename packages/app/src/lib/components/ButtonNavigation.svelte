@@ -33,7 +33,7 @@
 
 <style>
   .current {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   .button-navigation {

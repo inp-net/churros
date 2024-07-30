@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { route } from '$lib/ROUTES';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import CalendarDay from '$lib/components/CalendarDay.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
@@ -7,8 +8,9 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { allLoaded, loaded, loading, mapLoading, onceAllLoaded, onceLoaded } from '$lib/loading';
+  import { allLoaded, loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
+  import { refroute } from '$lib/navigation';
   import { infinitescroll } from '$lib/scroll';
   import { isDark } from '$lib/theme';
   import { notNull } from '$lib/typing';
@@ -19,7 +21,6 @@
   import IconForward from '~icons/mdi/chevron-right';
   import type { PageData } from './$houdini';
   import { _weekArg as weekArg } from './+page';
-  import { route } from '$lib/ROUTES';
 
   export let data: PageData;
   $: ({ PageEventsList } = data);
@@ -113,7 +114,7 @@
                         alt={loading(shotgun.group.name, '')}
                       />
                       {#if allLoaded(shotgun)}
-                        <a href={route('/events/[id]', shotgun.localID)}>{shotgun.title}</a>
+                        <a href={refroute('/events/[id]', shotgun.localID)}>{shotgun.title}</a>
                       {:else}
                         <LoadingText>Lorem ipsum</LoadingText>
                       {/if}
@@ -214,7 +215,7 @@
     width: 100%;
     padding: 1rem;
     overflow: hidden;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 

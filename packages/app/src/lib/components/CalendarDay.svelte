@@ -45,7 +45,7 @@
     width: 4rem;
     height: 4rem;
     color: var(--text);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
 
     > * {
@@ -54,9 +54,9 @@
   }
 
   .calendar-day.today {
-    border-color: var(--primary-border);
+    border-color: var(--primary);
 
-    --text: var(--primary-border);
+    --text: var(--primary);
   }
 
   .day-name {

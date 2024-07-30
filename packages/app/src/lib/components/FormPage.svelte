@@ -278,7 +278,7 @@
                     await RemoveFile.mutate({ id: $data.id, filename: file });
                   }}
                 >
-                  <IconDelete --text="var(--danger-link)"></IconDelete>
+                  <IconDelete --text="var(--danger)"></IconDelete>
                 </ButtonGhost>
                 <ButtonGhost
                   track="insert-file-into-page"

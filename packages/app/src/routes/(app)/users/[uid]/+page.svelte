@@ -1,37 +1,37 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { env } from '$env/dynamic/public';
-  import cookie from 'cookie';
-  import IconGear from '~icons/mdi/gear-outline';
-  import IconAdmin from '~icons/mdi/security';
-  import IconCode from '~icons/mdi/code-braces';
-  import IconLogout from '~icons/mdi/logout-variant';
-  import IconWebsite from '~icons/mdi/earth';
+  import AreaContribute from '$lib/components/AreaContribute.svelte';
+  import Badge from '$lib/components/Badge.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
+  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
+  import TreePersons from '$lib/components/TreePersons.svelte';
   import { dateFormatter } from '$lib/dates.js';
+  import { refroute } from '$lib/navigation';
   import { me } from '$lib/session.js';
-  import type { PageData } from './$houdini';
-  import IconFacebook from '~icons/mdi/facebook-box';
+  import { tooltip } from '$lib/tooltip';
+  import cookie from 'cookie';
   import type { SvelteComponent } from 'svelte';
-  import IconInstagram from '~icons/mdi/instagram';
-  import IconTwitter from '~icons/mdi/twitter';
-  import IconMatrix from '~icons/mdi/matrix';
-  import IconLinkedin from '~icons/mdi/linkedin';
+  import IconCode from '~icons/mdi/code-braces';
   import IconDiscord from '~icons/mdi/discord';
-  import IconSnapchat from '~icons/mdi/snapchat';
-  import IconAnilist from '~icons/simple-icons/anilist';
+  import IconWebsite from '~icons/mdi/earth';
+  import IconFacebook from '~icons/mdi/facebook-box';
+  import IconGear from '~icons/mdi/gear-outline';
   import IconGithub from '~icons/mdi/github';
   import IconHackernews from '~icons/mdi/hackernews';
+  import IconInstagram from '~icons/mdi/instagram';
+  import IconLinkedin from '~icons/mdi/linkedin';
+  import IconLogout from '~icons/mdi/logout-variant';
+  import IconMatrix from '~icons/mdi/matrix';
   import IconBot from '~icons/mdi/robot-outline';
-  import TreePersons from '$lib/components/TreePersons.svelte';
-  import Badge from '$lib/components/Badge.svelte';
-  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-  import CardArticle from '$lib/components/CardArticle.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { goto } from '$app/navigation';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { tooltip } from '$lib/tooltip';
-  import AreaContribute from '$lib/components/AreaContribute.svelte';
-  import { route } from '$lib/ROUTES';
+  import IconAdmin from '~icons/mdi/security';
+  import IconSnapchat from '~icons/mdi/snapchat';
+  import IconTwitter from '~icons/mdi/twitter';
+  import IconAnilist from '~icons/simple-icons/anilist';
+  import type { PageData } from './$houdini';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
@@ -302,7 +302,7 @@
     <ul class="nobullet">
       {#each data.user.articles.edges.map(({ node }) => node) as article}
         <li>
-          <CardArticle href={route('/posts/[id]', article.localID)} {...article} />
+          <CardArticle href={refroute('/posts/[id]', article.localID)} {...article} />
         </li>
       {:else}
         <li>Aucun post</li>
@@ -383,7 +383,7 @@
     height: calc(var(--size) / 3);
     font-size: 1.25rem;
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: 50%;
   }
 

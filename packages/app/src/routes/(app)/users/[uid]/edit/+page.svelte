@@ -533,7 +533,7 @@
   }
 
   .sessions li:nth-child(even) {
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .sessions .active-indicator {

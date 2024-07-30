@@ -55,11 +55,11 @@
   }
 
   input:checked + .slider {
-    background-color: var(--primary-ring);
+    background-color: var(--primary-bg);
   }
 
   input:checked + .slider::before {
-    background-color: var(--primary-bg);
+    background-color: var(--primary);
 
     /* transform: translate(100%, -25%); */
     transform: translate(calc(2.3em - 1.5em), -25%);

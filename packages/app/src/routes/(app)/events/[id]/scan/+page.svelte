@@ -521,7 +521,7 @@
   }
 
   // .bounding-box {
-  //   border: calc(var(--border-block) * 2) solid var(--success-border);
+  //   border: calc(var(--border-block) * 2) solid var(--success);
   //   border-radius: var(--radius-block);
   // }
 
@@ -567,7 +567,7 @@
   #reader :global(#reader__dashboard select) {
     padding: 0.25rem 0.5rem;
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: 100000px;
   }
 

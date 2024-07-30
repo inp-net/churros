@@ -63,7 +63,7 @@
     padding: 0.5rem;
     font-weight: bold;
 
-    --bg: var(--primary-text);
+    --bg: var(--primary);
   }
 
   .progress-steps-line::before {
@@ -91,9 +91,9 @@
     justify-content: center;
     width: 1.25rem;
     height: 1.25rem;
-    color: var(--primary-text);
+    color: var(--primary);
     background: var(--bg);
-    border: var(--border-block) solid var(--primary-border);
+    border: var(--border-block) solid var(--primary);
     border-radius: 50%;
     transition: border 0.125s ease;
   }
@@ -108,7 +108,7 @@
   }
 
   .progress-step.done .dot {
-    background: var(--primary-border);
+    background: var(--primary);
   }
 
   .progress-step.current .button-inner .text {
@@ -116,9 +116,9 @@
   }
 
   .progress-step.current .dot {
-    background: var(--primary-border);
+    background: var(--primary);
     border: calc(var(--border-block) * 2) solid var(--muted-bg);
-    outline: var(--border-block) solid var(--primary-border);
+    outline: var(--border-block) solid var(--primary);
     outline-offset: calc(-1 * var(--border-block));
   }
 </style>

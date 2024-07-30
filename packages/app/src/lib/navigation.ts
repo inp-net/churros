@@ -52,6 +52,12 @@ export function addReferrer(
   return u.toString();
 }
 
+/**
+ * Just like route(...), but tacks on a ?from query param to the current pathname
+ */
+// @ts-expect-error can't be bothered to type that shit
+export const refroute: typeof route = (...args) => addReferrer(route(...args));
+
 export type NavigationTopActionEvent =
   `NAVTOP_${'COPY_ID' | 'DOWNLOAD_BOOKINGS_EXCEL' | 'PIN_PAGE'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {

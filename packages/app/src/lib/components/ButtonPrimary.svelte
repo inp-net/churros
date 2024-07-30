@@ -21,7 +21,7 @@
   {id}
   class:loading
   {href}
-  class="button-primary typo-big-button primary"
+  class="button-primary primary"
   class:smaller
   disabled={disabled || loading || undefined}
   on:click
@@ -48,10 +48,10 @@
     align-items: center;
     justify-content: center;
     padding: 0.25rem 0.75rem;
-    color: var(--text);
+    color: var(--original-bg);
     cursor: pointer;
-    background-color: var(--bg);
-    border: none;
+    background-color: var(--primary);
+    border: var(--border-block) solid var(--primary);
     border-radius: 5px;
 
     &.loading .content {
@@ -67,8 +67,7 @@
 
   .button-primary:hover:not([disabled]),
   .button-primary:focus-visible:not([disabled]) {
-    color: var(--hover-text);
-    background: var(--hover-bg);
+    background: color-mix(in srgb, var(--primary) 70%, var(--fg));
   }
 
   .button-primary .loading {

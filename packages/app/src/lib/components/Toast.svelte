@@ -106,7 +106,7 @@
     overflow: hidden;
     color: var(--text);
     background-color: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -114,10 +114,6 @@
     display: flex;
     align-items: center;
     margin-left: auto;
-  }
-
-  .icon {
-    color: var(--link);
   }
 
   .content {
@@ -148,7 +144,7 @@
     bottom: 0;
     left: 0;
     height: 0.25rem;
-    background-color: var(--link);
+    background-color: currentColor;
     transition: width 50ms linear;
   }
 </style>
