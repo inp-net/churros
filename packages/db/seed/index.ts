@@ -1323,7 +1323,7 @@ async function randomPage() {
       body: faker.lorem.paragraphs(3),
       path: Array.from({ length: faker.number.int({ min: 0, max: 5 }) })
         .map(() => slug(faker.lorem.word()))
-        .join('/'),
+        .join('/') + '/' + faker.string.hexadecimal({length: 8}),
       title: faker.lorem.sentence(),
       createdAt: faker.date.past(),
       ...(linkToGroup
