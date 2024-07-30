@@ -18,7 +18,10 @@
 
   /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
   const redirect = async () => {
-    let url = new URL($page.url.searchParams.get('to') ?? '/', $page.url);
+    let url = new URL(
+      $page.url.searchParams.get('to') ?? $page.url.searchParams.get('from') ?? '/',
+      $page.url,
+    );
     if (url.origin !== $page.url.origin || url.pathname.startsWith('/login'))
       url = new URL('/', $page.url);
     const searchParams = new URLSearchParams(
@@ -82,7 +85,7 @@
 <h1>Connexion</h1>
 
 <form title="Se connecter" on:submit|preventDefault={login}>
-  {#if $page.url.searchParams.has('to')}
+  {#if $page.url.searchParams.get('why') === 'unauthorized'}
     <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 

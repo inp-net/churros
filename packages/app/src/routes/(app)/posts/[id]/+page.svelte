@@ -21,7 +21,6 @@
   import IconGear from '~icons/mdi/gear-outline';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
-  import IconInfo from '~icons/mdi/information-outline';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -80,9 +79,7 @@
       <LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText>
     </h1>
     {#if !publishedYet({ publishedAt })}
-      <Alert theme="warning">
-        <IconInfo></IconInfo> Ce post n'est pas encore publié
-      </Alert>
+      <Alert theme="primary">Ce post n'est pas encore publié</Alert>
     {/if}
     <div class="content">
       <div class="description" data-user-html>
@@ -323,10 +320,6 @@
     flex-wrap: wrap;
     gap: 0.5em;
     margin-top: 0.5rem;
-  }
-
-  .unpublished {
-    margin-left: calc(4rem - 1em - 0.5ch);
   }
 
   .like-icon.filled {

@@ -16,6 +16,7 @@
   import LogoChurros from './LogoChurros.svelte';
   import ModalReportIssue from './ModalReportIssue.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
+  import { refroute } from '$lib/navigation';
 
   export let scrolled = false;
   let deviceWidth = browser ? window.innerWidth : 500;
@@ -113,13 +114,8 @@
           {/if}
         </ButtonGhost>
       {:else}
-        <ButtonSecondary href="/register/">Inscription</ButtonSecondary>
-        <ButtonSecondary
-          href="/login/?{new URLSearchParams({
-            to: $page.url.pathname,
-            ...Object.fromEntries($page.url.searchParams.entries()),
-          }).toString()}">Connexion</ButtonSecondary
-        >
+        <ButtonSecondary href={refroute('/register')}>Inscription</ButtonSecondary>
+        <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
       {/if}
     {/if}
   </div>

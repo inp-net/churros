@@ -94,7 +94,10 @@ export const redirectToLogin = (
 ) => {
   if (searchParams instanceof URLSearchParams)
     searchParams = Object.fromEntries(searchParams.entries());
-  redirect(307, `/login?${new URLSearchParams({ to, ...searchParams }).toString()}`);
+  redirect(
+    307,
+    `/login?${new URLSearchParams({ from: to, why: 'unauthorized', ...searchParams }).toString()}`,
+  );
 };
 
 export const me = derived(page, ($page) => $page.data.me);

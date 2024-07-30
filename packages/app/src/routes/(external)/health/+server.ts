@@ -28,6 +28,7 @@ function PromiseWithTimeout<T>(
 }
 
 function vibeCheckDatWebsocket() {
+  // TODO check websockets with a dedicated query
   return PromiseWithTimeout(4000, (resolve) => {
     let ok = false;
     _suscribeWithToken(undefined, WebSocket)(
