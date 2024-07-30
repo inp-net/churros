@@ -1,3 +1,5 @@
+import { log } from '#lib';
+import { GraphQLError } from 'graphql';
 import Handlebars from 'handlebars';
 import { htmlToText } from 'html-to-text';
 import mjml2html from 'mjml';
@@ -15,7 +17,11 @@ import {
 } from '../mail-templates/props.js';
 
 const compiledTemplates = await precompileTemplates();
-const mailer = createTransport(process.env.SMTP_URL || 'smtp://localhost');
+
+let mailer: ReturnType<typeof initializeMailer>;
+function initializeMailer() {
+  return createTransport(process.env.SMTP_URL || 'smtp://localhost');
+}
 
 /**
  * Maps attachments to their CIDs
@@ -60,17 +66,51 @@ export async function sendMail<Template extends MailTemplate>(
   const content = template.html({ to, ...data, env: process.env });
   const subject = subjectOverride || template.subject({ to, ...data });
 
-  await mailer.sendMail({
-    to,
-    from,
-    subject,
-    html: content,
-    text: htmlToText(content),
-    attachments: Object.entries(attachments).map(([cid, data]) => ({
-      cid,
-      ...data,
-    })),
-  });
+  try {
+    if (!mailer) mailer = initializeMailer();
+  } catch (error) {
+    await log('mails', 'initialize/fail', {
+      message: `couldn't initialize mailer, while trying to send mail to ${to}`,
+      templateName,
+      to,
+      data,
+      from,
+      subject,
+      error: error?.toString() ?? '(unknown)',
+    });
+    throw new GraphQLError("Service d'envoi de mails injoignable");
+  }
+
+  try {
+    await mailer.sendMail({
+      to,
+      from,
+      subject,
+      html: content,
+      text: htmlToText(content),
+      attachments: Object.entries(attachments).map(([cid, data]) => ({
+        cid,
+        ...data,
+      })),
+    });
+  } catch (error) {
+    await log(
+      'mails',
+      'send/fail',
+      {
+        templateName,
+        to,
+        data,
+        from,
+        subject,
+        message: "couldn't send mail",
+        error: error?.toString() ?? '(unknown)',
+        mailer: { meta: mailer.meta, options: mailer.options },
+      },
+      to.toString(),
+    );
+    throw new GraphQLError("Impossible d'envoyer le mail");
+  }
 }
 
 type PrecompiledTemplate = {

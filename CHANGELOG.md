@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- L'API ne crash plus quand la connexion au serveur SMTP échoue. Il y aura plutôt une erreur GraphQL (et un log de créé) quand une opération tente d'envoyer un mail.
+
 ## [1.68.5] - 2024-07-29
 
 ### Technique
