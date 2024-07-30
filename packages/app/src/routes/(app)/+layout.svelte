@@ -43,12 +43,10 @@
   let scrolled = false;
   setupScrollPositionRestorer(
     () =>
-      document.querySelector(
-        // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
-        mobile || window.matchMedia('(max-width: 900px)').matches
-          ? '#scrollable-area'
-          : '[data-vaul-drawer-wrapper]',
-      ),
+      // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
+      mobile || window.matchMedia('(max-width: 900px)').matches
+        ? document.querySelector('#scrollable-area')
+        : document.documentElement,
     (isScrolled) => {
       scrolled = isScrolled;
     },
@@ -230,7 +228,7 @@
 
   - On desktop:
 
-  - The body (technically, a wrapper div called with [data-vaul-drawer-wrapper]) is the scrollable area. This allows using the scroll wheel anywhere on the page. In order to have that rounded border on top of the scrollable content while keeping the scroll on the body, we need to have the border-radius'd part as a separate element that doesn't move (has position: sticky): that's "cap".
+  - The root element is the scrollable area. This allows using the scroll wheel anywhere on the page. In order to have that rounded border on top of the scrollable content while keeping the scroll on the body, we need to have the border-radius'd part as a separate element that doesn't move (has position: sticky): that's "cap" (no 🧢 fr fr).
   - The scrollable-area has padding so that the content doesn't go under the cap's rounded corners on scroll
 
   - On mobile:
