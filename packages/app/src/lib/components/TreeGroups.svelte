@@ -93,7 +93,7 @@
 
   .highlight {
     font-weight: bold;
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   .school {

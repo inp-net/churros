@@ -72,11 +72,6 @@
     opacity: 0;
   }
 
-  .button-ghost.danger,
-  .button-ghost.success {
-    color: var(--link);
-  }
-
   .button-ghost {
     --bg: transparent;
 
@@ -99,7 +94,7 @@
     background: var(--bg);
     border: var(--border-inline) solid transparent;
     border-radius: var(--radius-inline);
-    outline: 0 solid var(--ring);
+    outline: 0 solid var(--fg);
 
     &.disabled {
       cursor: not-allowed;
@@ -110,24 +105,15 @@
       cursor: pointer;
 
       &:focus-visible {
-        outline-width: 0.25rem;
+        outline-width: 1px;
+      }
+
+      &:hover {
+        color: var(--shy);
       }
 
       &:hover,
       &:focus-visible {
-        --text: var(--hover-text);
-
-        &.danger,
-        &.success {
-          --text: var(--hover-text);
-
-          background: var(--bg);
-        }
-
-        &:not(.dark-shadow) {
-          background: var(--hover-bg);
-        }
-
         &.dark-shadow {
           background: rgba($color: #fff, $alpha: 50%);
         }

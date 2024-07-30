@@ -149,18 +149,18 @@
     height: var(--size);
     content: '';
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: 50%;
     transition: all 0.25s ease;
   }
 
   label[aria-current='true']::before {
     background: var(--primary-bg);
-    border-color: var(--primary-border);
+    border-color: var(--primary);
   }
 
   label:not([aria-current='true']):focus-within::before {
-    box-shadow: 0 0 0 0.25em var(--primary-border);
+    box-shadow: 0 0 0 0.25em var(--primary);
   }
 
   label {

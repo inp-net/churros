@@ -248,7 +248,7 @@
     overflow: hidden;
     cursor: pointer;
     border-radius: var(--radius-block);
-    box-shadow: var(--primary-shadow);
+    box-shadow: var(--shadow);
 
     --alpha: 0.5;
   }

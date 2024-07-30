@@ -89,7 +89,7 @@
   a:hover,
   a:focus-visible {
     article {
-      background-color: var(--hover-bg);
+      background-color: var(--primary-bg);
       border-color: var(--border);
     }
   }

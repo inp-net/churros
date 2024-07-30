@@ -24,7 +24,7 @@
   }
 
   .card.dashed-border {
-    border: var(--border-block) dashed var(--border);
+    border: var(--border-block) dashed;
     box-shadow: none;
   }
 

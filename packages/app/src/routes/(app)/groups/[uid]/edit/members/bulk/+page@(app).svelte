@@ -228,6 +228,5 @@
   .results li .message {
     margin-top: -0.25rem;
     font-size: 0.75rem;
-    color: var(--link);
   }
 </style>

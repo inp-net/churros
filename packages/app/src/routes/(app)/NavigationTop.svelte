@@ -133,6 +133,6 @@
   }
 
   .bug-report {
-    color: var(--danger-link);
+    color: var(--danger);
   }
 </style>

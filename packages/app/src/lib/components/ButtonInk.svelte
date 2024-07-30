@@ -52,7 +52,7 @@
     padding: 0.25em 0.5em;
     font-size: 1rem;
     font-weight: bold;
-    color: var(--link);
+    color: var(--primary);
     cursor: pointer;
     background: transparent;
     border: none;
@@ -74,6 +74,6 @@
 
   .button-ink:hover,
   .button-ink:focus-visible {
-    background: var(--primary-ring);
+    background: var(--primary-bg);
   }
 </style>

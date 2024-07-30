@@ -77,7 +77,7 @@
   }
 
   tr:hover td {
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   @media only screen and (max-width: 400px) {

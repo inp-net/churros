@@ -73,7 +73,7 @@
     grid-template-columns: min-content 1fr max-content;
     align-items: center;
     padding: 0.25rem 0.5rem;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -86,7 +86,7 @@
   .input-container :global(.autocomplete .autocomplete-list) {
     color: var(--text);
     background-color: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-top: none;
     border-radius: var(--radius-block);
     border-top-left-radius: 0;

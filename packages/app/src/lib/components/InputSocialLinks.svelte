@@ -188,7 +188,7 @@
     padding-left: 0;
     overflow: hidden;
     list-style: none;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 

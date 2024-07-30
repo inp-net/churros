@@ -69,15 +69,15 @@
     padding: 0.5rem 0.6667rem;
     color: var(--text);
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
   textarea:hover,
   textarea:focus-within {
     color: var(--text);
-    background: var(--hover-bg);
-    border-color: var(--hover-border);
+    background: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .count {

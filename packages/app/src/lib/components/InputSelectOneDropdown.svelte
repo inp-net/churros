@@ -106,7 +106,7 @@
     justify-content: space-between;
     color: var(--text);
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 </style>

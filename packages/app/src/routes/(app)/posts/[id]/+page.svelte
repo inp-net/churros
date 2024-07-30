@@ -1,6 +1,7 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import { PendingValue, graphql } from '$houdini';
+  import Alert from '$lib/components/Alert.svelte';
   import AreaComments from '$lib/components/AreaComments.houdini.svelte';
   import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
@@ -79,9 +80,9 @@
       <LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText>
     </h1>
     {#if !publishedYet({ publishedAt })}
-      <div class="unpublished warning typo-details">
+      <Alert theme="warning">
         <IconInfo></IconInfo> Ce post n'est pas encore publié
-      </div>
+      </Alert>
     {/if}
     <div class="content">
       <div class="description" data-user-html>
@@ -256,7 +257,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   section.author {
@@ -270,7 +271,7 @@
 
   section.author a:hover,
   section.author a:focus-visible {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   section.author .group {

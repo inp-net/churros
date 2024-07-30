@@ -446,7 +446,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   section.author :global(.input-visibility) {

@@ -11,6 +11,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import { dateTimeFormatter, formatDateTime } from '$lib/dates';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { refroute } from '$lib/navigation';
   import { me } from '$lib/session';
   import { subscribe } from '$lib/subscriptions';
   import { toasts } from '$lib/toasts';
@@ -20,7 +21,6 @@
   import IconCancel from '~icons/mdi/cancel';
   import IconDownload from '~icons/mdi/download-outline';
   import type { PageData } from './$types';
-  import { route } from '$lib/ROUTES';
 
   let confirmingCancellation = false;
   let paymentLoading = false;
@@ -260,7 +260,7 @@
       <dd>{DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}</dd>
       <dt>Évènement</dt>
       <dd>
-        <a href={route('/events/[id]', ticket.event.localID)}>{ticket.event.title}</a>
+        <a href={refroute('/events/[id]', ticket.event.localID)}>{ticket.event.title}</a>
         {#if ticket.event.startsAt}({dateTimeFormatter.format(
             new Date(ticket.event.startsAt),
           )}){/if}
@@ -366,10 +366,10 @@
     font-size: 2rem;
     font-weight: bold;
     line-height: 1;
-    color: var(--danger-link);
+    color: var(--danger);
     text-align: center;
     text-transform: uppercase;
-    border: var(--border-block) solid var(--danger-border);
+    border: var(--border-block) solid var(--danger);
   }
 
   .registration-code {

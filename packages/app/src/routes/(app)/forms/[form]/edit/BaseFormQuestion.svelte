@@ -175,7 +175,7 @@
   }
 
   .question-type-choice.selected {
-    color: var(--primary-text);
+    color: var(--primary);
     background-color: var(--primary-bg);
     border-radius: var(--radius-block);
   }

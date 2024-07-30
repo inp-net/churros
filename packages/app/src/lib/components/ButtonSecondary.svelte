@@ -70,23 +70,23 @@
     align-items: center;
     height: fit-content;
     padding: 0.25rem 0.75rem;
-    color: var(--text);
     cursor: pointer;
     background: transparent;
-    border: solid 1px var(--text);
+    border: solid var(--border-block);
     border-radius: 5px;
     transition: all 200ms ease;
   }
 
   .button-secondary.highlighted {
-    color: var(--primary-bg);
-    background-color: #9ce0ff;
-    border-color: var(--primary-bg);
+    color: var(--primary);
+    background-color: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .button-secondary:disabled,
   .button-secondary[disabled] {
     cursor: not-allowed;
+    --color: var(--shy)
   }
 
   .button-secondary:disabled:not(.muted) {
@@ -104,8 +104,8 @@
 
   .button-secondary:not(:disabled):hover,
   .button-secondary:not(:disabled):focus-visible {
-    color: var(--bg);
-    background: var(--text);
+    color: var(--original-bg);
+    background: var(--color, var(--fg));
   }
 
   .icon {

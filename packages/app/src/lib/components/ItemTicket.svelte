@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { groupLogoSrc } from '$lib/logos';
+  import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
+  import { isDark } from '$lib/theme';
+  import { tooltip } from '$lib/tooltip';
   import {
     differenceInMinutes,
     differenceInSeconds,
@@ -8,14 +13,10 @@
     isFuture,
     isPast,
   } from 'date-fns';
-  import ButtonSecondary from './ButtonSecondary.svelte';
   import fr from 'date-fns/locale/fr/index.js';
-  import IconChevronRight from '~icons/mdi/chevron-right';
   import { onDestroy, onMount } from 'svelte';
-  import { tooltip } from '$lib/tooltip';
-  import { isDark } from '$lib/theme';
-  import { groupLogoSrc } from '$lib/logos';
-  import { route } from '$lib/ROUTES';
+  import IconChevronRight from '~icons/mdi/chevron-right';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let group: undefined | null | { name: string } = undefined;
   export let descriptionHtml: string;
@@ -143,7 +144,7 @@
             trackData={{ event: route('/events/[id]', event.localID), ticket: uid }}
             help={placesLeft === 0 ? 'Plus de places :/' : ''}
             disabled={placesLeft === 0}
-            href={route('/events/[id]/book/[ticket]', { id: event.localID, ticket: uid })}
+            href={refroute('/events/[id]/book/[ticket]', { id: event.localID, ticket: uid })}
           >
             Réserver
             <strong>
@@ -225,7 +226,7 @@
       }
 
       &.soon {
-        color: var(--danger-link);
+        color: var(--danger);
       }
 
       &.very-soon {
@@ -258,7 +259,7 @@
     }
 
     25% {
-      color: var(--danger-link);
+      color: var(--danger);
     }
 
     75% {

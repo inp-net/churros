@@ -95,10 +95,10 @@
   }
 
   .hint.warning {
-    color: var(--warning-link);
+    color: var(--warning);
   }
 
   .hint.success {
-    color: var(--success-link);
+    color: var(--success);
   }
 </style>

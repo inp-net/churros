@@ -94,20 +94,17 @@
         style="color:red"><IconIssue /></ButtonGhost
       >
       {#if $data || userIsLoading}
-        <ButtonGhost href="/notifications/" help="Notifications" style="color:var(--nav-text)">
+        <ButtonGhost href="/notifications/" help="Notifications">
           {#if $page.url.pathname === '/notifications/'}
             <IconNotifFilled />
           {:else}
             <IconNotif />{/if}</ButtonGhost
         >
-        <ButtonGhost href="/search/" help="Rechercher" style="color:var(--nav-text)"
-          ><IconSearch /></ButtonGhost
-        >
+        <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
         <ButtonGhost
           loading={!$data || ($data && !loaded($data.uid)) || !loaded($data.pictureURL)}
           href={onceLoaded($data?.uid, (uid) => `/users/${uid}`, '')}
           help="Mon profil"
-          style="color:var(--nav-text)"
         >
           {#if $data?.pictureURL}
             <img class="profilepic" src={loading($data.pictureURL, '')} alt="Moi" />

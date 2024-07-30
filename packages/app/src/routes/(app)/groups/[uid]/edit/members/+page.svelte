@@ -437,7 +437,7 @@
   .members .edit.open {
     max-height: 30rem;
     padding: 1rem;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
   }
 
   .members .checkboxes {
@@ -453,7 +453,7 @@
   }
 
   .not-contributor {
-    color: var(--danger-link);
+    color: var(--danger);
   }
 
   .search {

@@ -87,8 +87,8 @@
       gap: 1.5rem;
       align-items: center;
       justify-content: center;
-      color: var(--primary-text);
-      background: var(--primary-bg);
+      color: var(--bg);
+      background: var(--primary);
 
       .spinner {
         font-size: 2rem;
@@ -114,10 +114,6 @@
         position: absolute;
         bottom: 4rem;
 
-        --bg: transparent;
-        --border: var(--primary-text);
-        --text: var(--primary-text);
-
         text-align: center;
 
         button {
@@ -129,10 +125,9 @@
           align-items: center;
           height: fit-content;
           padding: 0.25rem 0.75rem;
-          color: var(--text);
+          color: var(--bg);
           cursor: pointer;
-          background: var(--bg);
-          border: var(--border-block) solid var(--border);
+          border: var(--border-block) solid var(--bg);
           border-radius: 1000px;
           transition: all 200ms ease;
         }

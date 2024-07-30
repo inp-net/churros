@@ -111,15 +111,15 @@
   }
 
   .billet.noimg:not(.floating) {
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
   }
 
   .billet.noimg:hover,
   .billet.noimg:focus-visible {
-    --text: var(--hover-text);
+    --text: var(--primary);
 
-    background-color: var(--hover-bg);
-    border-color: var(--hover-border);
+    background-color: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .billet:not(.noimg):hover,

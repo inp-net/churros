@@ -195,7 +195,7 @@
     flex-direction: column;
     color: var(--text);
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -213,17 +213,17 @@
   .wrapper:focus-within,
   .wrapper:focus-within input {
     color: var(--text);
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .wrapper:hover,
   .wrapper:hover input {
-    border-color: var(--hover-border);
+    border-color: var(--primary);
   }
 
   .wrapper:focus-within,
   .wrapper:focus-within input {
-    border-color: var(--primary-border);
+    border-color: var(--primary);
   }
 
   .wrapper > div {

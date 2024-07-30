@@ -169,7 +169,7 @@
   }
 
   a:hover article {
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .post-link {
@@ -207,7 +207,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   header {
@@ -220,7 +220,7 @@
 
   header a:hover,
   header a:focus-visible {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   header .group {

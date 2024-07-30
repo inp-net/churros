@@ -60,13 +60,13 @@
     display: inline-block;
     text-align: center;
     border-radius: var(--radius-block);
-    outline: 0 solid var(--ring);
+    outline: 0 solid var(--fg);
     transition: all 80ms ease-in;
 
     &.dropzone {
       width: 100%;
       padding: 1rem;
-      border: var(--border-block) dashed var(--border);
+      border: var(--border-block) dashed;
     }
 
     &:focus-within,
@@ -74,11 +74,11 @@
     &.dragging {
       cursor: pointer;
       background-color: var(--muted-bg);
-      border-color: var(--hover-border);
+      border-color: var(--primary);
       border-style: solid;
 
       .hint {
-        color: var(--hover-text);
+        color: var(--primary);
       }
     }
 

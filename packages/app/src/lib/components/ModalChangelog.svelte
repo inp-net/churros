@@ -215,7 +215,6 @@
   h2 {
     margin: 2rem 0 1rem;
     line-height: 0.7;
-    color: var(--link);
   }
 
   h2::after {
@@ -223,7 +222,7 @@
     width: 100%;
     height: 0.2em;
     content: '';
-    background: var(--link);
+    background: currentColor;
     border-radius: var(--radius-block);
   }
 

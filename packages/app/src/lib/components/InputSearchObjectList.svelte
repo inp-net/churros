@@ -58,7 +58,7 @@
     grid-template-columns: 1fr;
     align-items: center;
     padding: 0.25rem 0.5rem;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -80,7 +80,7 @@
     position: absolute;
     z-index: 100;
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 

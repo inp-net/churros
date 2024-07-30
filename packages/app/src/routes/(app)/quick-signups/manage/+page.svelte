@@ -78,7 +78,7 @@
   }
 
   tr.highlighted {
-    color: var(--primary-text);
+    color: var(--primary);
     background-color: var(--primary-bg);
   }
 

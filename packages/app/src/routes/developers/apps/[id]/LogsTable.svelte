@@ -286,12 +286,12 @@
 
   tr.danger {
     font-weight: bold;
-    color: var(--danger-text);
+    color: var(--danger);
     background: var(--danger-bg);
 
     &:hover,
     &:focus-visible {
-      color: var(--danger-link);
+      color: var(--danger);
       background: var(--danger-bg);
     }
   }
@@ -326,8 +326,8 @@
 
   tr:not(.different-day-separator):hover,
   tr:not(.different-day-separator):focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
+    color: var(--primary);
+    background: var(--primary-bg);
   }
 
   .different-day-separator td {
@@ -359,7 +359,7 @@
   .pulsing-red-dot {
     width: 1em;
     height: 1em;
-    background: var(--danger-link);
+    background: var(--danger);
     border-radius: 50%;
     animation: pulse 2s infinite;
   }

@@ -32,7 +32,7 @@
 {:else}
   <svg
     height="100%"
-    viewBox="0 0 {wordmark ? '3283' : '1400'} 861"
+    viewBox="0 0 {wordmark ? '3283' : '900'} 900"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >

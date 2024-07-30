@@ -153,7 +153,7 @@
     padding: 1rem;
     margin-top: 2rem;
     text-align: center;
-    border: var(--border-block) dashed var(--border);
+    border: var(--border-block) dashed;
     border-radius: var(--radius-block);
 
     p {

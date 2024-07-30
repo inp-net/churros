@@ -75,12 +75,12 @@
     }
 
     &:hover {
-      color: var(--hover-text);
+      color: var(--primary);
       cursor: pointer;
-      background: var(--hover-bg);
+      background: var(--primary-bg);
 
       &.empty {
-        border-color: var(--hover-border);
+        border-color: var(--primary);
       }
     }
   }

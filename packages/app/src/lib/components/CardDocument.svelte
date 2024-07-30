@@ -50,7 +50,7 @@
   a:hover,
   a:focus-visible {
     article {
-      background-color: var(--hover-bg);
+      background-color: var(--primary-bg);
       border-color: var(--border);
     }
   }
@@ -71,7 +71,7 @@
     flex-wrap: wrap;
     gap: 0.25em;
     align-items: center;
-    color: var(--link);
+    color: var(--success);
   }
 
   .has-solution :global(svg) {

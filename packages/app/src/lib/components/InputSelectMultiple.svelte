@@ -45,15 +45,15 @@
     padding: 0.25rem 1rem;
     cursor: pointer;
     background-color: transparent;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: 10000px;
     transition: all 0.25s ease;
   }
 
   label[aria-checked='true'] {
-    color: var(--primary-text);
+    color: var(--primary);
     background-color: var(--primary-bg);
-    border-color: var(--primary-border);
+    border-color: var(--primary);
   }
 
   .icon {

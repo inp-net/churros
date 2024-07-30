@@ -155,7 +155,7 @@
   }
 
   .person.highlighted {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   .person.highlighted .name {

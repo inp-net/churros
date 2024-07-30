@@ -65,7 +65,7 @@
   }
 
   .container:hover {
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .info {
