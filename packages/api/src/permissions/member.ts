@@ -41,6 +41,17 @@ export function userIsMemberOf(user: Context['user'], groupUid: string): boolean
   return Boolean(user?.groups.some(({ group: { uid } }) => uid === groupUid));
 }
 
+export function userIsPartOfStudentAssociation(
+  user: Context['user'],
+  studentAssociationId: string,
+) {
+  return Boolean(
+    user?.major?.schools.some((s) =>
+      s.studentAssociations.some((sa) => sa.id === studentAssociationId),
+    ),
+  );
+}
+
 export function userIsDeveloperOf(user: Context['user'], groupUid: string): boolean {
   return Boolean(
     user?.groups.some(({ group: { uid }, isDeveloper }) => groupUid === uid && isDeveloper),

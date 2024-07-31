@@ -110,10 +110,10 @@ dialog,
   --logo-shadows-stroke: var(--fg);
 }
 
-:root.dark,
-:root.dark::backdrop,
-dialog.dark,
-dialog.dark::backdrop {
+:root[data-theme-variant='dark'],
+:root[data-theme-variant='dark']::backdrop,
+dialog[data-theme-variant='dark'],
+dialog[data-theme-variant='dark']::backdrop {
   /* Surfaces */
   --bg: #000;
   --bg2: #1a1a1a;

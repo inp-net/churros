@@ -1406,4 +1406,26 @@ await prisma.user.update({
   }
 })
 
+await prisma.theme.create({
+  data: {
+    name: "💖 UwU 💖",
+    author: {
+      connect: {
+        uid: randomChoice(groups.map(g => g.uid))
+      }
+    },
+    visibility: Visibility.Public,
+    startsAt: new Date(),
+    endsAt: new Date(new Date().setDate(new Date().getDate() + 7)),
+    values: {
+      createMany: {
+        data: [
+          { variable: "ColorPrimary", value: "DeepPink" },
+          { variable: "ColorPrimaryBackground", value: "LightPink" }
+        ]
+      }
+    }
+  }
+})
+
 exit(0);

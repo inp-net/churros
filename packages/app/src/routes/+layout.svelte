@@ -16,6 +16,23 @@
   export let data: LayoutData;
   $: ({ RootLayout } = data);
 
+  $: if ($RootLayout.data?.autodeployedTheme) {
+    const newTheme = $RootLayout.data.autodeployedTheme;
+    const oldTheme = structuredClone($theme);
+    if (oldTheme.id !== newTheme.localID)
+      {toasts.info(
+        'Nouveau thème appliqué!',
+        `Rends-toi dans tes réglages pour changer si il ne te plaît pas`,
+        {
+          lifetime: 10_000,
+          labels: {
+            close: 'Ok!',
+          },
+        },
+      );}
+    $theme.id = newTheme.localID;
+  }
+
   setupIsMobile(data.mobile);
 
   onMount(() => {
@@ -56,18 +73,15 @@
   });
 
   onMount(() => {
-    let currentTheme = $theme;
     theme.subscribe(($theme) => {
-      if (currentTheme) document.documentElement.classList.remove(currentTheme);
-      const selectedTheme =
-        $theme === 'system'
+      const selectedVariant =
+        $theme.variant === 'auto'
           ? window.matchMedia('(prefers-color-scheme: dark)').matches
             ? 'dark'
             : 'light'
-          : $theme;
-      document.documentElement.classList.add(selectedTheme);
-
-      currentTheme = $theme;
+          : $theme.variant;
+      document.documentElement.dataset.theme = $theme.id;
+      document.documentElement.dataset.themeVariant = selectedVariant;
     });
 
     if (browser && window.location.hostname === 'staging-churros.inpt.fr') {
