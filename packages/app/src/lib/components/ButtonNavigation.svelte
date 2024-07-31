@@ -3,6 +3,8 @@
   import type { LayoutRouteId } from '../../routes/(app)/$types';
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
+  import { scrollableContainer } from '$lib/scroll';
+  import { isMobile } from '$lib/mobile';
 
   const dispatch = createEventDispatcher<{ click: undefined }>();
 
@@ -13,6 +15,9 @@
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let iconFilled: typeof SvelteComponent<any> | undefined = icon;
+  export let tooltipsOn: 'left' | 'right' | 'top' | 'bottom' | undefined = undefined;
+
+  const mobile = isMobile();
 
   $: isCurrent = (route: LayoutRouteId) => route && $page.route.id === route;
 </script>
@@ -23,10 +28,10 @@
   class="button-navigation"
   role={isCurrent(routeID) ? 'button' : 'link'}
   class:current={isCurrent(routeID)}
-  use:tooltip={label ? { content: label, placement: 'left' } : undefined}
+  use:tooltip={label ? { content: label, placement: tooltipsOn } : undefined}
   on:click={isCurrent(routeID)
     ? () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollableContainer(mobile).scrollTo({ top: 0, behavior: 'smooth' });
         dispatch('click');
       }
     : undefined}

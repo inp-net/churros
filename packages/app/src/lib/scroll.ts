@@ -136,3 +136,10 @@ export function setupScrollPositionRestorer(
     });
   });
 }
+
+export function scrollableContainer(mobile: boolean) {
+  // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
+  return mobile || window.matchMedia('(max-width: 900px)').matches
+    ? (document.querySelector('#scrollable-area') as HTMLElement)
+    : (document.documentElement as HTMLElement);
+}

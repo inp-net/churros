@@ -19,7 +19,7 @@
   import { allLoaded } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { refroute, scanningEventsRouteID } from '$lib/navigation';
-  import { setupScrollPositionRestorer } from '$lib/scroll';
+  import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
   import { setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
@@ -42,11 +42,7 @@
 
   let scrolled = false;
   setupScrollPositionRestorer(
-    () =>
-      // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
-      mobile || window.matchMedia('(max-width: 900px)').matches
-        ? document.querySelector('#scrollable-area')
-        : document.documentElement,
+    () => scrollableContainer(mobile),
     (isScrolled) => {
       scrolled = isScrolled;
     },
@@ -346,6 +342,7 @@
     .mobile-area {
       display: flex;
       flex-direction: column;
+      width: 100dvw;
       height: 100dvh;
     }
 
@@ -354,6 +351,8 @@
     }
 
     #scrollable-area {
+      flex: 1;
+      width: 100dvw;
       padding: 1rem 0;
       overflow: auto;
     }
