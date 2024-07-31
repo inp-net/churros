@@ -1321,9 +1321,12 @@ async function randomPage() {
   const page = await prisma.page.create({
     data: {
       body: faker.lorem.paragraphs(3),
-      path: Array.from({ length: faker.number.int({ min: 0, max: 5 }) })
-        .map(() => slug(faker.lorem.word()))
-        .join('/') + '/' + faker.string.hexadecimal({length: 8}),
+      path:
+        Array.from({ length: faker.number.int({ min: 0, max: 5 }) })
+          .map(() => slug(faker.lorem.word()))
+          .join('/') +
+        '/' +
+        faker.string.hexadecimal({ length: 8 }),
       title: faker.lorem.sentence(),
       createdAt: faker.date.past(),
       ...(linkToGroup
@@ -1372,5 +1375,12 @@ await Promise.all(
     }
   }),
 );
+
+await prisma.blockedUid.createMany({
+  data: [
+    { uid: 'admin' },
+    { uid: 'root' },
+  ],
+});
 
 exit(0);

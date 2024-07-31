@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Ajout d'une table en base de données pour bannir certains UIDs (ils sont marqués comme indisponibles)
+
 ## [1.68.6] - 2024-07-30
 
 ### Technique

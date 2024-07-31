@@ -1198,3 +1198,8 @@ model Page {
   @@unique([groupId, path])
   @@index([search], type: Gin)
 }
+
+// UIDs that should never be considered free
+model BlockedUid {
+  uid String @id
+}
