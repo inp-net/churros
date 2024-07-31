@@ -91,9 +91,9 @@
     {:else}
       <li class="muted">
         <p>
-          Aucune page épinglée à l'accès rapide. Utilise <kbd>
-            <IconDots></IconDots> > <IconBookmark></IconBookmark>
-          </kbd> Accès rapide pour en ajouter.
+          Aucune page épinglée à l'accès rapide. Utilise
+          <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
+          ajouter.
         </p>
       </li>
     {/each}
@@ -110,7 +110,11 @@
     >
   </h2>
 
-  <ul class="nobullet items" class:editing>
+  <ul
+    class="nobullet items"
+    class:editing
+    class:empty={($data?.pins.filter(allLoaded)?.length ?? 0) === 0}
+  >
     {#each $data?.pins.filter(allLoaded) ?? [] as { path, id } (id)}
       <li class="item" transition:fly={{ x: -50, duration: 200 }}>
         <div class="remove-button">
@@ -157,9 +161,9 @@
     {:else}
       <li class="muted">
         <p>
-          Aucune page épinglée à l'accès rapide. Utilise <kbd>
-            <IconDots></IconDots> > <IconBookmark></IconBookmark> Accès rapide
-          </kbd> pour en ajouter.
+          Aucune page épinglée à l'accès rapide. Utilise
+          <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
+          ajouter.
         </p>
       </li>
     {/each}
@@ -253,20 +257,12 @@
     transition: opacity 150ms ease;
   }
 
-  .items:not(.editing) {
+  .items:not(.editing, .empty) {
     translate: -2em;
   }
 
   .items:not(.editing) .remove-button {
     opacity: 0;
-  }
-
-  kbd {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 1ch;
-    align-items: center;
-    justify-content: center;
   }
 
   .modal-content {

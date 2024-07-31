@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { type NavigationSide, fragment } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
@@ -37,6 +38,17 @@
     `),
   );
 
+  let animatingChurrosLogo = false;
+
+  beforeNavigate(() => {
+    animatingChurrosLogo = true;
+  });
+  afterNavigate(() => {
+    setTimeout(() => {
+      animatingChurrosLogo = false;
+    }, 1000);
+  });
+
   let reportIssueDialogElement: HTMLDialogElement;
 </script>
 
@@ -44,9 +56,18 @@
 
 <nav>
   <div class="top">
-    <a href="/">
-      <ChurrosLogo />
-    </a>
+    <ButtonNavigation
+      href="/"
+      routeID="/(app)"
+      on:click={() => {
+        animatingChurrosLogo = true;
+        setTimeout(() => {
+          animatingChurrosLogo = false;
+        }, 1000);
+      }}
+    >
+      <ChurrosLogo hollow drawing={animatingChurrosLogo} />
+    </ButtonNavigation>
   </div>
   <div class="middle">
     <ButtonNavigation
