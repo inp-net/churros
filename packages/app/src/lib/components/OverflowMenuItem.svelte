@@ -14,9 +14,7 @@
     _refresh: boolean,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<ActionData<any>> {
-    if (typeof action === 'function') 
-      return action($page);
-    
+    if (typeof action === 'function') return action($page);
 
     return action;
   }

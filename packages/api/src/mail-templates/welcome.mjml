@@ -16,9 +16,7 @@
 
     <mj-section>
       <mj-column>
-        <mj-button href="{{url}}">
-          Ça se passe ici
-        </mj-button>
+        <mj-button href="{{url}}"> Ça se passe ici </mj-button>
       </mj-column>
     </mj-section>
 

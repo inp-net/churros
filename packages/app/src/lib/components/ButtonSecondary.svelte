@@ -86,7 +86,8 @@
   .button-secondary:disabled,
   .button-secondary[disabled] {
     cursor: not-allowed;
-    --color: var(--shy)
+
+    --color: var(--shy);
   }
 
   .button-secondary:disabled:not(.muted) {

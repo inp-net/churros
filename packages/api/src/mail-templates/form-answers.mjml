@@ -15,9 +15,7 @@
           <p>Réponses du {{ answersDate }}</p>
           <ul>
             {{#each answers}}
-              <li>
-                <strong>{{ this.questionTitle }}</strong>: {{ this.answer }}
-              </li>
+            <li><strong>{{ this.questionTitle }}</strong>: {{ this.answer }}</li>
             {{/each}}
           </ul>
         </mj-text>
@@ -26,9 +24,7 @@
 
     <mj-section>
       <mj-column>
-        <mj-button href="{{linkToAnswers}}">
-          Modifier mes réponses
-        </mj-button>
+        <mj-button href="{{linkToAnswers}}"> Modifier mes réponses </mj-button>
       </mj-column>
     </mj-section>
 
