@@ -1,3 +1,9 @@
+-- CreateEnum
+CREATE TYPE "ThemeVariant" AS ENUM ('Light', 'Dark');
+
+-- CreateEnum
+CREATE TYPE "ThemeVariable" AS ENUM ('ColorBackground', 'ColorBackground2', 'ColorBackground3', 'ColorBackground4', 'ColorShy', 'ColorMuted', 'ColorForeground', 'ColorPrimary', 'ColorSuccess', 'ColorDanger', 'ColorWarning', 'ColorPrimaryBackground', 'ColorSuccessBackground', 'ColorDangerBackground', 'ColorWarningBackground', 'ImageLogoNavbarTop', 'ImageLogoNavbarSide', 'ImageBackgroundNavbarBottom', 'ImageBackgroundNavbarTop', 'PatternBackground');
+
 -- AlterTable
 ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
 
@@ -157,8 +163,61 @@ CREATE TABLE "Pin" (
     CONSTRAINT "Pin_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Theme" (
+    "id" TEXT NOT NULL DEFAULT nanoid('theme:'),
+    "name" VARCHAR(255) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "visibility" "Visibility" NOT NULL DEFAULT 'Private',
+    "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endsAt" TIMESTAMP(3) NOT NULL,
+    "authorId" TEXT,
+    "autodeploy" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Theme_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ThemeValue" (
+    "id" TEXT NOT NULL DEFAULT nanoid('themeval:'),
+    "variable" "ThemeVariable" NOT NULL,
+    "value" VARCHAR(500) NOT NULL,
+    "themeId" TEXT NOT NULL,
+    "variant" "ThemeVariant" NOT NULL DEFAULT 'Light',
+
+    CONSTRAINT "ThemeValue_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_ThemeToUser" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Pin_userId_path_key" ON "Pin"("userId", "path");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "ThemeValue_themeId_variant_variable_key" ON "ThemeValue"("themeId", "variant", "variable");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_ThemeToUser_AB_unique" ON "_ThemeToUser"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ThemeToUser_B_index" ON "_ThemeToUser"("B");
+
 -- AddForeignKey
 ALTER TABLE "Pin" ADD CONSTRAINT "Pin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Theme" ADD CONSTRAINT "Theme_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ThemeValue" ADD CONSTRAINT "ThemeValue_themeId_fkey" FOREIGN KEY ("themeId") REFERENCES "Theme"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ThemeToUser" ADD CONSTRAINT "_ThemeToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Theme"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ThemeToUser" ADD CONSTRAINT "_ThemeToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

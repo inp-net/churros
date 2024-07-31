@@ -1221,6 +1221,8 @@ model Page {
 // UIDs that should never be considered free
 model BlockedUid {
   uid String @id
+}
+
 model Theme {
   id         String       @id @default(dbgenerated("nanoid('theme:')"))
   name       String       @db.VarChar(255)
