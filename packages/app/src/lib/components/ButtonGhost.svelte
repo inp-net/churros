@@ -48,6 +48,7 @@
   {href}
   use:tooltip={help}
   class="button-ghost {$$restProps.class}"
+  class:has-hover-content={$$slots.hovering}
   on:click
   on:mousedown
   class:skeleton-effect-wave={loading}
@@ -108,15 +109,15 @@
         outline-width: 1px;
       }
 
-      &:hover {
-        color: var(--shy);
-      }
-
       &:hover,
       &:focus-visible {
         &.dark-shadow {
           background: rgba($color: #fff, $alpha: 50%);
         }
+      }
+
+      &:hover:not(.has-hover-content) {
+        color: var(--shy);
       }
     }
   }
