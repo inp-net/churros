@@ -51,7 +51,7 @@
     "format": "prettier . --write --ignore-unknown",
     "lint": "eslint . --cache=true & stylelint '**/*.{css,scss,svelte}' &",
     "lintfix": "eslint --fix --cache=true . & stylelint --fix '**/*.{css,scss,svelte}' &",
-    "migration": "docker compose up -d && yarn prisma migrate dev --name",
+    "migration": "bash -c 'docker compose up -d && yarn prisma migrate dev --name $0 && yarn @api build:typenames'",
     "postinstall": "husky install",
     "prisma": "yarn workspace @churros/db run prisma",
     "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",

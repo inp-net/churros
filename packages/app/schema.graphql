@@ -1130,6 +1130,11 @@ type Group implements Node & Pictured {
   boardMembers: [GroupMember!]!
 
   """
+  Si l'utilisateur·ice connecté·e peut créer des thèmes au nom de ce groupe
+  """
+  canCreateThemes: Boolean!
+
+  """
   Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe
   """
   canEditDetails: Boolean!
@@ -1472,6 +1477,14 @@ type Mutation {
     """
     redirectUri: String!
   ): MutationAuthorizeResult!
+
+  """
+  Bloquer un thème pour empêcher qu'il soit automatiquement déployé à l'utilisateur·ice connecté·e
+  """
+  blockTheme(
+    """ID du thème"""
+    id: LocalID!
+  ): Theme!
   cancelPendingContribution(optionId: ID!): Boolean!
   cancelRegistration(id: ID!): MutationCancelRegistrationResult!
   checkIfRegistrationIsPaid(id: ID!): Boolean!
@@ -1709,6 +1722,30 @@ type Mutation {
     """ID de l'utilisateur·ice"""
     userId: ID!
   ): Form!
+
+  """Changer la valeur d'une variable d'un thème"""
+  setThemeValue(
+    """ID du thème"""
+    theme: LocalID!
+
+    """Valeur à utiliser. Doit être une valeur CSS valide"""
+    value: String!
+    variable: ThemeVariable!
+
+    """Variante du thème"""
+    variant: ThemeVariant!
+  ): Theme!
+
+  """
+  Changer la visibilité d'un thème. Voir `Theme.canSetVisibility` pour déterminer si l'utilisateur·ice connecté·e peut changer la visibilité d'un thème à une certaine valeur
+  """
+  setThemeVisibility(
+    """ID du thème"""
+    theme: LocalID!
+
+    """Visibilité à utiliser"""
+    visibility: Visibility!
+  ): Theme!
   startRegistration(
     email: String!
 
@@ -1869,6 +1906,9 @@ type Mutation {
   upsertShopItem(description: String!, endsAt: DateTime, groupUid: String!, id: ID, lydiaAccounId: String, max: Int!, name: String!, paymentMethods: [PaymentMethod!]!, price: Float!, startsAt: DateTime, stock: Int!, visibility: Visibility!): MutationUpsertShopItemResult!
   upsertShopOptions(itemOptions: [ShopItemOptionInput!]!, shopItemId: String!): Boolean!
   upsertShopPayment(answers: [String!]!, id: ID, paymentMethod: String, phone: String, quantity: Int!, shopItemId: String!, userUid: String!): MutationUpsertShopPaymentResult!
+
+  """Créer ou modifier un thème"""
+  upsertTheme(autodeploy: Boolean!, endsAt: DateTime!, group: UID!, id: LocalID, name: String!, startsAt: DateTime!): MutationUpsertThemeResult!
   upsertTicketGroup(capacity: Int!, eventId: ID!, id: ID, name: String!, tickets: [ID!]!): TicketGroup!
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
   validateEmail(token: String!): MutationValidateEmailResult!
@@ -2182,6 +2222,12 @@ type MutationUpsertShopPaymentSuccess {
   data: ShopPayment!
 }
 
+union MutationUpsertThemeResult = Error | MutationUpsertThemeSuccess | ZodError
+
+type MutationUpsertThemeSuccess {
+  data: Theme!
+}
+
 union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess
 
 type MutationUsePasswordResetSuccess {
@@ -2445,6 +2491,11 @@ type Query {
   Récupérer l'ID d'un article à partir de son groupe et de son slug. Pensé pour les redirections d'URLs anciennes.
   """
   articleID(group: UID!, slug: String!): LocalID @deprecated(reason: "Utilisez `article` à la place")
+
+  """
+  Récupérer le thème qui est actuellement choisi pour un déploiement automatique: le thème de l'utilisateur·ice doit être changé à celui-ci, si iel n'a pas explicitement demandé à ne pas utiliser ce thème
+  """
+  autodeployedTheme: Theme
   barWeek(slug: String!): BarWeek!
   barWeekNow(now: DateTime!): BarWeek
   barWeeks: [BarWeek!]!
@@ -2616,6 +2667,12 @@ type Query {
   studentAssociations(canContributeOnly: Boolean): [StudentAssociation!]!
   subject(forApprentices: Boolean!, slug: String!, yearTier: Int!): Subject!
   subjects: [Subject!]!
+  themes(
+    """
+    Récupérer tous les thèmes auquel ont a accès, même ceux qui sont passés
+    """
+    all: Boolean
+  ): [Theme!]!
   thirdPartyApp(
     """The third party app's client_id. The 'app:' id prefix is optional."""
     id: ID!
@@ -3720,6 +3777,124 @@ type TeachingUnit {
   name: String!
   shortName: String!
   subjects: [Subject!]!
+}
+
+type Theme implements Node {
+  author: Group
+
+  """
+  Si l'utilisateur·ice connecté·e peut changer la visibilité du thème à une certaine valeur
+  """
+  canChangeVisibility(to: Visibility!): Boolean!
+
+  """
+  Si l'utilisateur·ice connecté·e peut éditer (modifier ou supprimer) le thème
+  """
+  canEdit: Boolean!
+  createdAt: DateTime!
+  endsAt: DateTime!
+  id: ID!
+
+  """L'identifiant local de la ressource (sans préfixe)"""
+  localID: LocalID!
+  name: String!
+  startsAt: DateTime!
+  updatedAt: DateTime!
+  values(
+    """Ne récupérer que les valeurs d'une variante du thème"""
+    variant: ThemeVariant
+  ): [ThemeValue!]!
+  visibility: Visibility!
+}
+
+"""Définit la valeur d'une variable du thème"""
+type ThemeValue implements Node {
+  id: ID!
+
+  """L'identifiant local de la ressource (sans préfixe)"""
+  localID: LocalID!
+  theme: Theme!
+  value: String!
+  variable: ThemeVariable!
+  variant: ThemeVariant!
+}
+
+"""Les différentes variables qu'un thème peut définir"""
+enum ThemeVariable {
+  """Couleur de fond"""
+  ColorBackground
+
+  """Couleur de fond moins intense"""
+  ColorBackground2
+
+  """Couleur de fond moins intense que ColorBackground2"""
+  ColorBackground3
+
+  """Couleur de fond moins intense que ColorBackground3"""
+  ColorBackground4
+
+  """Couleur des erreurs ou choses dangereuses (souvent rouge)"""
+  ColorDanger
+
+  """Couleur de fond pour ColorDanger"""
+  ColorDangerBackground
+
+  """Couleur d'avant plan"""
+  ColorForeground
+
+  """Couleur d'avant plan moins intense"""
+  ColorMuted
+
+  """Couleur principale"""
+  ColorPrimary
+
+  """Couleur de fond pour ColorPrimary"""
+  ColorPrimaryBackground
+
+  """Couleur d'avant plan moins intense que ColorMuted"""
+  ColorShy
+
+  """Couleur des éléments de succès (souvent vert)"""
+  ColorSuccess
+
+  """Couleur de fond pour ColorSuccess"""
+  ColorSuccessBackground
+
+  """Couleurs des avertissements"""
+  ColorWarning
+
+  """Couleur de fond pour ColorWarning"""
+  ColorWarningBackground
+
+  """Image à utiliser en fond de la barre de navigation en bas (sur mobile)"""
+  ImageBackgroundNavbarBottom
+
+  """
+  Image à utiliser en fond de la barre de navigation en haut (s'affiche seulement sur mobile)
+  """
+  ImageBackgroundNavbarTop
+
+  """
+  Image à utiliser à la place du logo dans la barre de navigation sur le côté (sur ordinateur)
+  """
+  ImageLogoNavbarSide
+
+  """
+  Image à utiliser à la place du logo dans la barre de navigation en haut
+  """
+  ImageLogoNavbarTop
+
+  """Motif à répéter en fond de l'application"""
+  PatternBackground
+}
+
+"""Différentes variantes pour un même thème"""
+enum ThemeVariant {
+  """Variante sombre"""
+  Dark
+
+  """Variante claire"""
+  Light
 }
 
 """A third-party OAuth2 client"""

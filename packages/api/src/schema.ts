@@ -29,6 +29,7 @@ import '#modules/schools';
 import '#modules/services';
 import '#modules/shop';
 import '#modules/student-associations';
+import '#modules/themes';
 import '#modules/ticketing';
 import '#modules/users';
 

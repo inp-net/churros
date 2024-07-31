@@ -244,12 +244,11 @@
         <InputSelectOne
           label="Thème"
           options={{
-            system: 'Suivre le système',
+            auto: 'Suivre le système',
             dark: 'Sombre',
             light: 'Clair',
-            hacker: 'h4ck3r',
           }}
-          bind:value={$theme}
+          bind:value={$theme.variant}
         />
       {/if}
       <h2>Parrainages</h2>

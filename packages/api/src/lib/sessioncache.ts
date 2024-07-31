@@ -1,12 +1,12 @@
-import type {
-  Event,
-  EventManager,
-  Group,
-  GroupMember,
-  Major,
-  School,
-  StudentAssociation,
-  User,
+import {
+  type Event,
+  type EventManager,
+  type Group,
+  type GroupMember,
+  type Major,
+  type School,
+  type StudentAssociation,
+  type User,
 } from '@churros/db/prisma';
 import { hoursToSeconds } from 'date-fns';
 import { Redis } from 'ioredis';
@@ -24,7 +24,9 @@ export function userSessionsKey(uid: User['uid']): string {
 
 export type CachedSession = User & { fullName: string; yearTier: number } & {
   groups: Array<GroupMember & { group: Group }>;
-  major: null | (Major & { schools: School[] });
+  major:
+    | null
+    | (Major & { schools: Array<School & { studentAssociations: StudentAssociation[] }> });
   managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
   adminOfStudentAssociations: StudentAssociation[];
   canEditGroups: StudentAssociation[];

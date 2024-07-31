@@ -1,6 +1,7 @@
 /* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
 export const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
+  pin: 'Pin',
   godparentreq: 'GodparentRequest',
   candidate: 'UserCandidate',
   passreset: 'PasswordReset',
@@ -49,6 +50,8 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   question: 'Question',
   answer: 'Answer',
   page: 'Page',
+  theme: 'Theme',
+  themeval: 'ThemeValue',
 } as const;
 /* end @generated from schema */
 

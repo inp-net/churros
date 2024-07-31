@@ -2,4 +2,9 @@ query RootLayout($loggedIn: LoggedIn!) {
   me @include(if: $loggedIn) {
     ...AnalyticsTrackerUser
   }
+
+  autodeployedTheme {
+    localID
+    name
+  }
 }

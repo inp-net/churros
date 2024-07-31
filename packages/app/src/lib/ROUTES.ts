@@ -299,6 +299,7 @@ const SERVERS = {
   'GET /help/prefilled-links': `/help/prefilled-links`,
   'GET /logout': `/logout`,
   'GET /me': `/me`,
+  'GET /themes.css': `/themes.css`,
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
   'GET /identity': `/identity`,
@@ -566,6 +567,7 @@ export type KIT_ROUTES = {
     'GET /help/prefilled-links': never;
     'GET /logout': never;
     'GET /me': never;
+    'GET /themes.css': never;
     'GET /connect/google': never;
     'GET /health': never;
     'GET /identity': never;

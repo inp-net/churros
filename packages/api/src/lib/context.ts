@@ -31,7 +31,7 @@ export const getUserFromThirdPartyToken = async (token: string) => {
           include: {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
-            major: { include: { schools: true } },
+            major: { include: { schools: { include: { studentAssociations: true } } } },
             adminOfStudentAssociations: true,
             canEditGroups: true,
           },
@@ -72,13 +72,11 @@ const getUser = async (token: string) => {
     .findFirstOrThrow({
       where: { type: CredentialType.Token, value: token },
       include: {
-        // `user` must be at least as populated as what `sessionUserQuery`
-        // queries for the cache to work
         user: {
           include: {
             groups: { include: { group: true } },
             managedEvents: { include: { event: { include: { group: true } } } },
-            major: { include: { schools: true } },
+            major: { include: { schools: { include: { studentAssociations: true } } } },
             adminOfStudentAssociations: true,
             canEditGroups: true,
           },

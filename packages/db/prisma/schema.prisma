@@ -53,6 +53,8 @@ model User {
   enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
   latestVersionSeenInChangelog String                @default("0.0.0")
   bot                          Boolean               @default(false)
+  // Prevent these themes from being auto-deployed to the user
+  blockedThemes                Theme[]
 
   // Permissions
   admin              Boolean              @default(false)
@@ -479,6 +481,7 @@ model Group {
   groupId                String?
   ticketGroupId          String?
   joinedByBookingTickets Ticket[]       @relation("autojoin")
+  themes                 Theme[]
 
   // For ldap
   ldapGidNumber Int @unique @default(autoincrement())
@@ -1218,4 +1221,59 @@ model Page {
 // UIDs that should never be considered free
 model BlockedUid {
   uid String @id
+model Theme {
+  id         String       @id @default(dbgenerated("nanoid('theme:')"))
+  name       String       @db.VarChar(255)
+  values     ThemeValue[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  visibility Visibility   @default(Private)
+  startsAt   DateTime     @default(now())
+  endsAt     DateTime
+  author     Group?       @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  authorId   String?
+
+  // Auto-change people's theme to this one when it's visible to them
+  autodeploy Boolean @default(false)
+  blockedBy  User[]
+}
+
+enum ThemeVariant {
+  Light
+  Dark
+  // Might add more stuff, like "High contrast light, high contrast dark", etc
+}
+
+enum ThemeVariable {
+  ColorBackground
+  ColorBackground2
+  ColorBackground3
+  ColorBackground4
+  ColorShy
+  ColorMuted
+  ColorForeground
+  ColorPrimary
+  ColorSuccess
+  ColorDanger
+  ColorWarning
+  ColorPrimaryBackground
+  ColorSuccessBackground
+  ColorDangerBackground
+  ColorWarningBackground
+  ImageLogoNavbarTop
+  ImageLogoNavbarSide
+  ImageBackgroundNavbarBottom
+  ImageBackgroundNavbarTop
+  PatternBackground
+}
+
+model ThemeValue {
+  id       String        @id @default(dbgenerated("nanoid('themeval:')"))
+  variable ThemeVariable
+  value    String        @db.VarChar(500)
+  theme    Theme         @relation(fields: [themeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  themeId  String
+  variant  ThemeVariant  @default(Light)
+
+  @@unique([themeId, variant, variable])
 }
