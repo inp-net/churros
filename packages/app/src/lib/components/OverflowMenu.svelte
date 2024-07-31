@@ -158,7 +158,7 @@
     position: fixed;
     inset: 0;
     z-index: 999;
-    background-color: rgb(0 0 0 / 50%);
+    background-color: var(--backdrop);
   }
 
   :global([data-vaul-drawer]) {
@@ -186,5 +186,12 @@
     background-color: var(--muted);
     border-radius: 9999px;
     translate: -50%;
+  }
+
+  :global([data-dialog-trigger]) {
+    flex-shrink: 0;
+    width: max-content;
+    padding: 0.25em;
+    font-size: 1em;
   }
 </style>

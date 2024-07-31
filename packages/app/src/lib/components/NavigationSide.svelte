@@ -74,6 +74,7 @@
       href="/"
       routeID="/(app)"
       label="Accueil"
+      tooltipsOn="left"
       icon={IconHome}
       iconFilled={IconHomeFilled}
     />
@@ -82,6 +83,7 @@
       href="/search"
       routeID="/(app)/search/[[q]]"
       label="Explorer"
+      tooltipsOn="left"
       icon={IconSearch}
     />
 
@@ -89,6 +91,7 @@
       href={route('/events')}
       routeID="/(app)/events/[[week=date]]"
       label="Événements"
+      tooltipsOn="left"
       icon={IconEvents}
       iconFilled={IconEventsFilled}
     />
@@ -97,6 +100,7 @@
       href={route('/services')}
       routeID="/(app)/services"
       label="Services"
+      tooltipsOn="left"
       icon={IconServices}
       iconFilled={IconServicesFilled}
     />
@@ -106,6 +110,7 @@
         href={route('/users/[uid]', $data?.uid)}
         routeID="/(app)/users/[uid]"
         label="Mon profil"
+        tooltipsOn="left"
         icon={IconAccount}
         iconFilled={IconAccountFilled}
       />
@@ -114,6 +119,7 @@
         href={route('/users/[uid]/edit', $data?.uid)}
         routeID="/(app)/users/[uid]/edit"
         label="Paramètres"
+        tooltipsOn="left"
         icon={IconSettings}
         iconFilled={IconSettingsFilled}
       />

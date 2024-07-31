@@ -94,7 +94,7 @@
           </svelte:fragment>
         </OverflowMenu>
       {:else}
-        <ButtonGhost>
+        <ButtonGhost href={quickAction.href}>
           <svelte:component this={quickAction.icon}></svelte:component>
           <svelte:fragment slot="hovering">
             <svelte:component this={quickAction.filledIcon ?? quickAction.icon}></svelte:component>
