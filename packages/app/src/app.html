@@ -47,6 +47,12 @@
       });
       setTimeout(() => {
         document.querySelector('#loading-overlay .troubleshoot').style.opacity = 1;
+        fetch('/health')
+          .then((res) => res.json())
+          .then((json) => {
+            document.querySelector('#loading-overlay .troubleshoot .technical p').textContent =
+              JSON.stringify(json);
+          });
       }, 5000);
     </script>
     <div id="loading-overlay" class="visible">
@@ -91,19 +97,26 @@
           >
           · <a href="mailto:contact@net7.dev">Contacter net7</a>
         </p>
+        <details class="technical">
+          <summary>Détails techniques</summary>
+          <p></p>
+        </details>
       </div>
     </div>
     <script>
       window.addEventListener('load', () => {
         document.getElementById('loading-overlay').classList.remove('visible');
-        document.body.classList.remove('loading');
+        setTimeout(() => {
+          document.getElementById('loading-overlay').remove();
+          document.body.classList.remove('loading');
+        }, 1000);
       });
     </script>
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 
   <style>
-    :root {
+    #loading-overlay {
       --font-main: 'Space Grotesk', sans-serif;
       --primary: #0a5bc5;
       --logo-stroke-width: 60px;
@@ -177,19 +190,24 @@
       color: white;
     }
 
-    .troubleshoot .report {
+    #loading-overlay .troubleshoot .technical,
+    #loading-overlay .troubleshoot .report {
+      font-size: 0.8rem;
+    }
+
+    #loading-overlay .troubleshoot .report {
       margin-top: 2rem;
     }
 
-    .loop path.face.drawing {
+    #loading-overlay .loop path.face.drawing {
       animation: draw 1.2s infinite linear;
     }
 
-    path:not(.face) {
+    #loading-overlay path:not(.face) {
       opacity: 30%;
     }
 
-    path.hole {
+    #loading-overlay path.hole {
       animation: pulse 800ms infinite ease alternate;
     }
 
@@ -208,14 +226,14 @@
       }
     }
 
-    path.face-masker {
+    #loading-overlay path.face-masker {
       stroke: var(--fg);
       stroke-width: var(--logo-stroke-width);
       transition: all 500ms ease;
     }
 
     #loading-overlay:not(.visible) {
-      display: none;
+      opacity: 0;
     }
   </style>
 </html>
