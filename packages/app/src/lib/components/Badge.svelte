@@ -45,11 +45,11 @@
   .badge {
     display: inline-flex;
     gap: 0.25rem;
-    padding: 0 0.25em;
     align-items: center;
     justify-content: center;
-    height: 1.2rem;
     min-width: 1.2rem;
+    height: 1.2rem;
+    padding: 0 0.25em;
     font-weight: normal;
     color: var(--original-bg);
     background: var(--color);
@@ -71,11 +71,11 @@
   }
 
   .inline {
-    padding: 0 0.25em;
-    height: 1em;
-    min-width: 1em;
-    outline: calc(.25em + 0.5px) solid var(--color);
-    outline-offset: -0.5px;
     gap: 0.25em;
+    min-width: 1em;
+    height: 1em;
+    padding: 0 0.25em;
+    outline: calc(0.25em + 0.5px) solid var(--color);
+    outline-offset: -0.5px;
   }
 </style>

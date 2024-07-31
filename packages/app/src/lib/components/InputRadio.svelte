@@ -9,10 +9,10 @@
 </script>
 
 {#each Object.entries(optionsWithDisplay) as [value, label] (value)}
-<label class="input-radio" aria-current={value === group}>
-  <input type="radio" {value} bind:group={group} />
-  {label}
-</label>
+  <label class="input-radio" aria-current={value === group}>
+    <input type="radio" {value} bind:group />
+    {label}
+  </label>
 {/each}
 
 <style>
@@ -46,7 +46,7 @@
     border: 0.15rem solid var(--text);
   }
 
-  label[aria-current="true"]::after {
+  label[aria-current='true']::after {
     border: 0.9rem solid var(--text);
   }
 </style>
