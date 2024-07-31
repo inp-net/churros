@@ -147,6 +147,7 @@
   }
 
   :global([data-menu-content]) {
+    z-index: 100;
     padding: 0.5em 0;
     background-color: var(--bg);
     border-radius: var(--radius-block);
