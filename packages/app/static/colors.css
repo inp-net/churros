@@ -34,7 +34,7 @@
   border-color: var(--color);
 }
 
-.muted, 
+.muted,
 .muted a {
   --bg: var(--bg);
   --color: var(--muted);
@@ -42,7 +42,6 @@
   color: var(--color);
   border-color: var(--color);
 }
-
 
 :root,
 dialog,
@@ -81,7 +80,9 @@ dialog,
   --radius-block: 0.5rem;
   --skeleton-ui-bg: var(--bg2);
   --backdrop: rgb(0 0 0 / 30%);
-  --original-bg: var(--bg); /* May be useful to .warning/.success/.danger/.primary util classes, since they overwrite --bg */
+  --original-bg: var(
+    --bg
+  ); /* May be useful to .warning/.success/.danger/.primary util classes, since they overwrite --bg */
 
   /* Legacy */
 
