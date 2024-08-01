@@ -1,10 +1,10 @@
 strict digraph ImportGraph {
+    "announcements" -> "users";
     "comments" -> "notifications";
     "comments" -> "reactions";
     "curriculum" -> "documents";
     "documents" -> "comments";
     "documents" -> "reactions";
-    "events" -> "links";
     "events" -> "logs";
     "events" -> "notifications";
     "events" -> "payments";
@@ -14,14 +14,15 @@ strict digraph ImportGraph {
     "forms" -> "groups";
     "forms" -> "users";
     "gitlab" -> "users";
-    "groups" -> "links";
     "groups" -> "mails";
     "groups" -> "users";
+    "links" -> "events";
+    "links" -> "posts";
     "oauth" -> "users";
     "pages" -> "groups";
     "pages" -> "student-associations";
+    "payments" -> "groups";
     "posts" -> "comments";
-    "posts" -> "links";
     "posts" -> "notifications";
     "posts" -> "reactions";
     "schools" -> "curriculum";
@@ -29,9 +30,10 @@ strict digraph ImportGraph {
     "shop" -> "payments";
     "student-associations" -> "groups";
     "student-associations" -> "payments";
+    "student-associations" -> "users";
+    "themes" -> "groups";
     "ticketing" -> "events";
     "ticketing" -> "payments";
     "ticketing" -> "users";
-    "users" -> "links";
     "users" -> "notifications";
 }

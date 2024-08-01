@@ -88,6 +88,14 @@ export interface PothosTypes {
       Input: number;
       Output: number;
     };
+    Capacity: {
+      Input: number | null;
+      Output: number | 'Unlimited';
+    };
+    URL: {
+      Input: URL;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;

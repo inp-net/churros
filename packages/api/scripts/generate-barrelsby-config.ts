@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { glob } from 'glob';
+import path from 'node:path';
 
 const main = () => {
   const currentDirectory = process.cwd();
@@ -88,7 +89,7 @@ ${existsSync(`${modulePath}/types`) ? `export * from './types/index.js';\n` : ''
         continue;
       }
 
-      if (!readdirSync(fullPath).length) {
+      if (!readdirSync(fullPath).filter((p) => ['.js', '.ts'].includes(path.extname(p))).length) {
         continue;
       }
 

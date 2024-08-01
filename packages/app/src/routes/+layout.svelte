@@ -19,8 +19,8 @@
   $: if ($RootLayout.data?.autodeployedTheme) {
     const newTheme = $RootLayout.data.autodeployedTheme;
     const oldTheme = structuredClone($theme);
-    if (oldTheme.id !== newTheme.localID)
-      {toasts.info(
+    if (oldTheme.id !== newTheme.localID) {
+      toasts.info(
         'Nouveau thème appliqué!',
         `Rends-toi dans tes réglages pour changer si il ne te plaît pas`,
         {
@@ -29,7 +29,8 @@
             close: 'Ok!',
           },
         },
-      );}
+      );
+    }
     $theme.id = newTheme.localID;
   }
 

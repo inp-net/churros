@@ -26,7 +26,11 @@ api.use(
 
 export async function startApiServer() {
   // Register other routes on the API
-  import('./graphql.js');
+  try {
+    import('./graphql.js');
+  } catch (error) {
+    console.error('Failed to initialize GraphQL server', error);
+  }
   import('./gdpr.js');
   import('./log.js');
   import('./oauth.js');

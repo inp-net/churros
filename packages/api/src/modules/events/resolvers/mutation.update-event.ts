@@ -5,6 +5,7 @@ import { DateRangeInput, LocalID } from '#modules/global';
 import { EventFrequency } from '@churros/db/prisma';
 import omit from 'lodash.omit';
 import { MarkdownScalar } from '../../global/types/markdown.js';
+import { CapacityScalar } from '../types/capacity.js';
 
 builder.mutationField('updateEvent', (t) =>
   t.prismaField({
@@ -33,6 +34,15 @@ builder.mutationField('updateEvent', (t) =>
         description: 'Afficher le nombre de places restantes sur les billets',
         defaultValue: true,
       }),
+      globalCapacity: t.arg({
+        type: CapacityScalar,
+        required: false,
+        description: "Capacité globale de l'évènement",
+      }),
+      contactMail: t.arg.string({
+        required: false,
+        description: "E-mail de contact de l'orga de l'évènement",
+      }),
     },
     async authScopes(_, args, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
@@ -48,7 +58,9 @@ builder.mutationField('updateEvent', (t) =>
         ...query,
         where: { id },
         data: {
-          ...nullToUndefined(omit(args, 'dates', 'id')),
+          ...nullToUndefined(omit(args, 'dates', 'id', 'globalCapacity')),
+          globalCapacity:
+            args.globalCapacity === 'Unlimited' ? null : args.globalCapacity ?? undefined,
           startsAt: args.dates?.start ?? undefined,
           endsAt: args.dates?.end ?? undefined,
         },

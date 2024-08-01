@@ -15,10 +15,14 @@ export const EventType = builder.prismaNode('Event', {
     PicturedInterface,
     //@ts-expect-error dunno why it complainnns
     ReactableInterface,
+    // builder.interfaceRef('HasLinks'),
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
+    // TODO store contactDetails in db instead, that is any link
+    // allow mailto: and tel: links
+    // and derive contactMail, contactPhone and contactURL from that
     contactMail: t.exposeString('contactMail'),
     beneficiary: t.relation('beneficiary', { nullable: true }),
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
@@ -39,19 +43,20 @@ export const EventType = builder.prismaNode('Event', {
       description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
     }),
     title: t.exposeString('title'),
-    startsAt: t.expose('startsAt', { type: DateTimeScalar }),
+    startsAt: t.expose('startsAt', { type: DateTimeScalar, nullable: true }),
     frequency: t.expose('frequency', { type: EventFrequencyType }),
     recurringUntil: t.expose('recurringUntil', { type: DateTimeScalar, nullable: true }),
-    endsAt: t.expose('endsAt', { type: DateTimeScalar }),
+    endsAt: t.expose('endsAt', { type: DateTimeScalar, nullable: true }),
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
-    bannedUsers: t.relation('bannedUsers'),
+    banned: t.relation('bannedUsers'),
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles', {
       query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),
     }),
-    group: t.relation('group'),
+    group: t.relation('group', { deprecationReason: 'Use `organizer` instead.' }),
+    organizer: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
     author: t.relation('author', { nullable: true }),

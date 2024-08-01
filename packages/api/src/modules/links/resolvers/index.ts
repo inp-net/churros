@@ -3,3 +3,4 @@
  */
 
 export * from './link.computed-value.js';
+export * from './mutation.set-links.js';
