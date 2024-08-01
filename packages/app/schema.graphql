@@ -525,6 +525,20 @@ type BarWeek implements Node {
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
+"""
+Une page épinglée pour en faire un accès rapide pour un·e utilisateur·rice
+"""
+type Bookmark implements Node {
+  id: ID!
+
+  """L'identifiant local de la ressource (sans préfixe)"""
+  localID: LocalID!
+
+  """Chemin de la page"""
+  path: String!
+  user: User!
+}
+
 scalar BooleanMap
 
 type BuildInfo {
@@ -626,6 +640,15 @@ enum CredentialType {
 
 type DatabaseHealthCheck {
   prisma: Boolean!
+}
+
+"""Un intervalle valide de dates"""
+input DateRangeInput {
+  """Date de fin de l'intervalle"""
+  end: DateTime!
+
+  """Date de début de l'intervalle"""
+  start: DateTime!
 }
 
 """
@@ -1281,6 +1304,8 @@ enum GroupType {
   StudentAssociationSection
 }
 
+scalar HTML
+
 """Results of a health self-check"""
 type HealthCheck {
   database: DatabaseHealthCheck!
@@ -1414,6 +1439,9 @@ input ManagerOfEventInput {
   userUid: String!
 }
 
+"""Du texte au format Markdown. (https://commonmark.org/help/)"""
+scalar Markdown
+
 type Minor implements Node {
   id: ID!
 
@@ -1485,6 +1513,14 @@ type Mutation {
     """ID du thème"""
     id: LocalID!
   ): Theme!
+
+  """
+  Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
+  """
+  bookmark(
+    """Chemin de la page à épingler"""
+    path: String!
+  ): Bookmark!
   cancelPendingContribution(optionId: ID!): Boolean!
   cancelRegistration(id: ID!): MutationCancelRegistrationResult!
   checkIfRegistrationIsPaid(id: ID!): Boolean!
@@ -1504,6 +1540,18 @@ type Mutation {
     """UID du compte bot"""
     uid: String!
   ): User!
+
+  """Créer un nouvel évènement"""
+  createEvent(
+    """
+    Dates de l'évènement. Si non précisé, l'évènement est créé sans dates, ce qui l'empêche d'avoir une visibilité autre que `Private` ou `Unlisted`.
+    """
+    dates: DateRangeInput
+
+    """Groupe organisateur principal"""
+    group: UID!
+    title: ShortString!
+  ): Event!
   createGitlabIssue(description: String!, isBug: Boolean!, title: String!): Int!
 
   """
@@ -1549,7 +1597,7 @@ type Mutation {
   deleteDocument(id: ID!): Boolean!
   deleteDocumentFile(documentId: ID!, filename: String!): Boolean!
   deleteEvent(id: ID!): Boolean!
-  deleteEventManager(eventId: ID!, user: String!): Boolean!
+  deleteEventManager(eventId: ID!, user: String!): Boolean! @deprecated(reason: "Use 'removeEventManager' instead")
   deleteEventPicture(id: ID!): Boolean!
   deleteGodchild(godchildUid: String!, parentUid: String!): Boolean!
 
@@ -1634,14 +1682,6 @@ type Mutation {
   """
   paidRegistration(beneficiary: String, paymentMethod: PaymentMethod, phone: String, regId: ID!): MutationPaidRegistrationResult!
   paidShopPayment(paymentMethod: PaymentMethod, phone: String, shopPaymentId: ID!): MutationPaidShopPaymentResult!
-
-  """
-  Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
-  """
-  pin(
-    """Chemin de la page à épingler"""
-    path: String!
-  ): Pin!
   refuseRegistration(email: String!, reason: String!): Boolean!
 
   """
@@ -1759,11 +1799,33 @@ type Mutation {
   toggleReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID): Reactable!
 
   """Enlève une page de l'accès rapide"""
-  unpin(
+  unbookmark(
     """Chemin de la page à désépingler"""
     path: String!
-  ): Pin
+  ): Bookmark
   updateArticlePicture(file: File!, id: ID!): String!
+
+  """Mettre à jour les informations de base d'un évènement"""
+  updateEvent(
+    """Dates de l'évènement"""
+    dates: DateRangeInput!
+    description: Markdown!
+
+    """
+    Nombre de places max. sur l'évènement entier. Ne pas le préciser désactive la limite.
+    """
+    globalCapacity: PositiveInt
+
+    """Lieu de l'évènement"""
+    location: String!
+    recurrence: EventFrequency! = Once
+
+    """Afficher le nombre de places restantes sur les billets"""
+    showPlacesLeft: Boolean! = true
+
+    """Titre de l'évènement"""
+    title: String!
+  ): Event!
   updateEventPicture(file: File!, id: ID!): String!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
   updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
@@ -1862,7 +1924,7 @@ type Mutation {
     tickets: [TicketInput!]!
     title: String!
     visibility: Visibility!
-  ): MutationUpsertEventResult!
+  ): MutationUpsertEventResult! @deprecated(reason: "Use 'createEvent' or 'updateEvent' instead")
 
   """
   Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.
@@ -1875,7 +1937,7 @@ type Mutation {
   upsertGroup(input: UpsertGroupInput!, uid: UID): MutationUpsertGroupResult!
   upsertGroupMember(canEditArticles: Boolean!, canEditMembers: Boolean!, canScanEvents: Boolean!, groupId: ID!, isDeveloper: Boolean!, memberId: ID!, president: Boolean!, secretary: Boolean!, title: String!, treasurer: Boolean!, vicePresident: Boolean!): GroupMember!
   upsertLydiaAccount(groupUid: String!, id: ID, name: String!, privateToken: String!, vendorToken: String!): LydiaAccount!
-  upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]!
+  upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]! @deprecated(reason: "Use 'upsertEventManager' and 'removeEventManager' instead")
   upsertNotificationSubscription(endpoint: String!, expiresAt: DateTime, keys: NotificationSubscriptionKeysInput!, name: String!): NotificationSubscription!
 
   """Crée ou met à jour une page."""
@@ -2422,22 +2484,8 @@ interface Pictured {
   ): String!
 }
 
-"""
-Une page épinglée pour en faire un accès rapide pour un·e utilisateur·rice
-"""
-type Pin implements Node {
-  id: ID!
-
-  """L'identifiant local de la ressource (sans préfixe)"""
-  localID: LocalID!
-
-  """Chemin de la page"""
-  path: String!
-
-  """Type de la page"""
-  type: String!
-  user: User!
-}
+"""Entier positif"""
+scalar PositiveInt
 
 type ProfitsBreakdown {
   byPaymentMethod: ProfitsBreakdownByPaymentMethod!
@@ -2500,6 +2548,12 @@ type Query {
   barWeekNow(now: DateTime!): BarWeek
   barWeeks: [BarWeek!]!
   birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
+
+  """Si la page donnée est épinglée par l'utilisateur·ice connecté·e"""
+  bookmarked(
+    """Chemin de la page"""
+    path: String!
+  ): Boolean!
 
   """Retourne des informations sur le build actuel de l'API"""
   buildInfo: BuildInfo!
@@ -2622,12 +2676,6 @@ type Query {
   Récupère toutes les pages existantes. Réservé aux administrateur·ice.s.
   """
   pages(after: String, before: String, first: Int, last: Int): QueryPagesConnection!
-
-  """Si la page donnée est épinglée par l'utilisateur·ice connecté·e"""
-  pinned(
-    """Chemin de la page"""
-    path: String!
-  ): Boolean!
   quickSignups(after: String, before: String, first: Int, last: Int): QueryQuickSignupsConnection!
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
@@ -3619,6 +3667,9 @@ type ShopPayment {
   user: User!
 }
 
+"""Du texte de 200 caractères maximum"""
+scalar ShortString
+
 enum SortDirection {
   Ascending
   Descending
@@ -4119,6 +4170,9 @@ type User implements Node & Pictured {
   booking(beneficiary: String, event: ID!): Registration!
   bookings(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int): UserBookingsConnection!
 
+  """Les accès rapides de l'utilisateur·rice"""
+  bookmarks: [Bookmark!]!
+
   """
   Vrai si cet utilisateur est un bot (i.e. ne représente pas une personne physique)
   """
@@ -4196,9 +4250,6 @@ type User implements Node & Pictured {
     """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
   ): String!
-
-  """Les accès rapides de l'utilisateur·rice"""
-  pins: [Pin!]!
   schoolUid: String
 
   """

@@ -1,9 +1,9 @@
 import { builder, prisma, UnauthorizedError } from '#lib';
-import { PinType } from '../types/pin.js';
+import { BookmarkType } from '../index.js';
 
-builder.mutationField('pin', (t) =>
+builder.mutationField('bookmark', (t) =>
   t.prismaField({
-    type: PinType,
+    type: BookmarkType,
     description:
       'Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.',
     args: {
@@ -12,7 +12,7 @@ builder.mutationField('pin', (t) =>
     authScopes: { loggedIn: true },
     async resolve(query, _, { path }, { user }) {
       if (!user) throw new UnauthorizedError();
-      return prisma.pin.upsert({
+      return prisma.bookmark.upsert({
         ...query,
         where: {
           userId_path: {
