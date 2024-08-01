@@ -138,37 +138,38 @@ export async function pinDisplay(path: string) {
 }
 
 export async function pinCurrentPage(page: Page) {
-  const PinPage = graphql(`
-    mutation PinPage($path: String!) {
-      pin(path: $path) {
-        ...List_Pins_insert @allLists
+  const BookmarkPage = graphql(`
+    mutation BookmarkPage($path: String!) {
+      bookmark(path: $path) {
+        ...List_Bookmarks_insert @allLists
       }
     }
   `);
-  await PinPage.mutate({ path: page.url.pathname });
+  await BookmarkPage.mutate({ path: page.url.pathname });
 }
 
 export async function unpinCurrentPage(page: Page) {
-  const UnpinPage = graphql(`
+  const UnbookmarkPage = graphql(`
     mutation UnpinPage($path: String!) {
-      unpin(path: $path) {
-        ...List_Pins_remove @allLists
+      unbookmark(path: $path) {
+        ...List_Bookmarks_remove @allLists
       }
     }
   `);
-  await UnpinPage.mutate({ path: page.url.pathname });
+  await UnbookmarkPage.mutate({ path: page.url.pathname });
 }
 
 export async function currentPageIsPinned(page: Page) {
   if (!browser) return false;
+  // We do't use `pinned` since Houdini wouldn't know how to update the cache store that way
   const { data } = await graphql(`
     query CurrentPageIsPinned @cache(policy: CacheOrNetwork) {
       me {
-        pins {
+        bookmarks {
           path
         }
       }
     }
   `).fetch();
-  return Boolean(data?.me?.pins.find((pin) => pin.path === page.url.pathname));
+  return Boolean(data?.me?.bookmarks.find((b) => b.path === page.url.pathname));
 }

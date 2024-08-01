@@ -93,7 +93,7 @@ model User {
   completedForms             Form[]                     @relation("completedForms")
   partiallyCompletedForms    Form[]                     @relation("partiallyCompletedForms")
   adminOfStudentAssociations StudentAssociation[]       @relation("studentAssociationAdmins")
-  pins                       Pin[]
+  bookmarks                  Bookmark[]
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -106,14 +106,14 @@ model User {
   @@index([search], type: Gin)
 }
 
-/// A pinned resource, used to make quick access to specific pages for a user
-model Pin {
-  id        String   @id @default(dbgenerated("nanoid('pin:')"))
+/// A bookmarked page, used to make personal quick access links
+model Bookmark {
+  id        String   @id @default(dbgenerated("nanoid('bookmark:')"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId    String
-  // The path to the pinned page. Up to the frontend's interpretation
+  // The path to the bookmarked page. Up to the frontend's interpretation
   path      String
 
   @@unique([userId, path])

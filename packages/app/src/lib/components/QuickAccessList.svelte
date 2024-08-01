@@ -23,7 +23,7 @@
     pins,
     graphql(`
       fragment QuickAccessList on User {
-        pins @list(name: "List_Pins") {
+        bookmarks @list(name: "List_Bookmarks") {
           id
           path
         }
@@ -31,17 +31,17 @@
     `),
   );
 
-  const RemovePin = graphql(`
+  const RemoveBookmark = graphql(`
     mutation Unpin($path: String!) {
-      unpin(path: $path) {
-        id @Pin_delete
+      unbookmark(path: $path) {
+        id @Bookmark_delete
       }
     }
   `);
 
   export let editing = false;
 
-  $: if (!mobile && editing && $data?.pins.length === 0) editing = false;
+  $: if (!mobile && editing && $data?.bookmarks.length === 0) editing = false;
 
   let openMobileDrawer = false;
 </script>
@@ -113,14 +113,14 @@
   <ul
     class="nobullet items"
     class:editing
-    class:empty={($data?.pins.filter(allLoaded)?.length ?? 0) === 0}
+    class:empty={($data?.bookmarks.filter(allLoaded)?.length ?? 0) === 0}
   >
-    {#each $data?.pins.filter(allLoaded) ?? [] as { path, id } (id)}
+    {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id } (id)}
       <li class="item" transition:fly={{ x: -50, duration: 200 }}>
         <div class="remove-button">
           <ButtonGhost
             on:click={async () => {
-              await RemovePin.mutate(
+              await RemoveBookmark.mutate(
                 { path },
                 {
                   optimisticResponse: {

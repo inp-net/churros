@@ -3,6 +3,7 @@
  */
 
 export * from './mutation.accept-registration.js';
+export * from './mutation.bookmark.js';
 export * from './mutation.complete-registration.js';
 export * from './mutation.create-bot.js';
 export * from './mutation.create-password-reset.js';
@@ -16,7 +17,6 @@ export * from './mutation.delete-user-picture.js';
 export * from './mutation.delete-user.js';
 export * from './mutation.login.js';
 export * from './mutation.logout.js';
-export * from './mutation.pin.js';
 export * from './mutation.refuse-registration.js';
 export * from './mutation.register-google-credential.js';
 export * from './mutation.rename-session.js';
@@ -24,7 +24,7 @@ export * from './mutation.request-email-change.js';
 export * from './mutation.reset-password.js';
 export * from './mutation.start-registration.js';
 export * from './mutation.sync-user-ldap.js';
-export * from './mutation.unpin.js';
+export * from './mutation.unbookmark.js';
 export * from './mutation.update-notification-settings.js';
 export * from './mutation.update-user-candidate.js';
 export * from './mutation.update-user-permissions.js';
@@ -35,11 +35,11 @@ export * from './mutation.use-password-reset.js';
 export * from './mutation.validate-email.js';
 export * from './query.all-users.js';
 export * from './query.birthdays.js';
+export * from './query.bookmarked.js';
 export * from './query.exists-in-school-ldap.js';
 export * from './query.godparent-request.js';
 export * from './query.godparent-requests.js';
 export * from './query.me.js';
-export * from './query.pinned.js';
 export * from './query.quick-signups.js';
 export * from './query.search-users.js';
 export * from './query.user-by-email.js';

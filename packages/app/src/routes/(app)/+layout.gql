@@ -18,7 +18,7 @@ query AppLayout($version: String!, $pagePath: String!, $loggedIn: LoggedIn!) {
     }
   }
 
-  currentPageIsPinned: pinned(path: $pagePath)
+  currentPageIsPinned: bookmarked(path: $pagePath)
 
   combinedChangelog(sort: Descending, to: $version) {
     ...ModalChangelog

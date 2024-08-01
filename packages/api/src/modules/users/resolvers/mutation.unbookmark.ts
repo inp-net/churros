@@ -1,10 +1,10 @@
 import { builder, prisma, UnauthorizedError } from '#lib';
 import { PrismaClientKnownRequestError } from '@churros/db/prisma/runtime/library';
-import { PinType } from '../types/pin.js';
+import { BookmarkType } from '../types/index.js';
 
-builder.mutationField('unpin', (t) =>
+builder.mutationField('unbookmark', (t) =>
   t.prismaField({
-    type: PinType,
+    type: BookmarkType,
     nullable: true,
     description: "Enlève une page de l'accès rapide",
     args: {
@@ -13,7 +13,7 @@ builder.mutationField('unpin', (t) =>
     authScopes: { loggedIn: true },
     async resolve(query, _, { path }, { user }) {
       if (!user) throw new UnauthorizedError();
-      return prisma.pin
+      return prisma.bookmark
         .delete({
           ...query,
           where: {

@@ -5,7 +5,7 @@
 /* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
 export const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
-  pin: 'Pin',
+  bookmark: 'Bookmark',
   godparentreq: 'GodparentRequest',
   candidate: 'UserCandidate',
   passreset: 'PasswordReset',

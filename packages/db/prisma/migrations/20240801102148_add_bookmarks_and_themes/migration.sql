@@ -153,14 +153,14 @@ ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
 
 -- CreateTable
-CREATE TABLE "Pin" (
-    "id" TEXT NOT NULL DEFAULT nanoid('pin:'),
+CREATE TABLE "Bookmark" (
+    "id" TEXT NOT NULL DEFAULT nanoid('bookmark:'),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
     "path" TEXT NOT NULL,
 
-    CONSTRAINT "Pin_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Bookmark_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -196,7 +196,7 @@ CREATE TABLE "_ThemeToUser" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Pin_userId_path_key" ON "Pin"("userId", "path");
+CREATE UNIQUE INDEX "Bookmark_userId_path_key" ON "Bookmark"("userId", "path");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ThemeValue_themeId_variant_variable_key" ON "ThemeValue"("themeId", "variant", "variable");
@@ -208,7 +208,7 @@ CREATE UNIQUE INDEX "_ThemeToUser_AB_unique" ON "_ThemeToUser"("A", "B");
 CREATE INDEX "_ThemeToUser_B_index" ON "_ThemeToUser"("B");
 
 -- AddForeignKey
-ALTER TABLE "Pin" ADD CONSTRAINT "Pin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Bookmark" ADD CONSTRAINT "Bookmark_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Theme" ADD CONSTRAINT "Theme_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
