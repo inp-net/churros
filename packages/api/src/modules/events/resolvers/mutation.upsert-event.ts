@@ -13,7 +13,7 @@ import {
   TicketGroupInput,
   TicketInput,
   canCreateEvent,
-  canEdit,
+  canEditEvent,
   createTicketUid,
   createUid,
   scheduleShotgunNotifications,
@@ -22,6 +22,7 @@ import {
 // TODO move to ticketing the parts about creating tickets...
 builder.mutationField('upsertEvent', (t) =>
   t.prismaField({
+    deprecationReason: "Use 'createEvent' or 'updateEvent' instead",
     type: EventType,
     errors: {},
     validate: ({ startsAt, endsAt }) => isBefore(startsAt, endsAt),
@@ -65,7 +66,7 @@ builder.mutationField('upsertEvent', (t) =>
         where: { id },
         include: { managers: true, group: { select: { studentAssociationId: true } } },
       });
-      return canEdit(event, user);
+      return canEditEvent(event, user);
     },
     async resolve(
       query,

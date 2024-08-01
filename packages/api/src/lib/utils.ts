@@ -14,3 +14,9 @@ export const objectValuesFlat = (obj: any): any[] => {
   }
   return result;
 };
+
+export function nullToUndefined<T extends Record<string, unknown>>(obj: T) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [key, value === null ? undefined : value]),
+  );
+}

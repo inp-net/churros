@@ -87,6 +87,7 @@
     "set-interval-async": "^3.0.3",
     "sharp": "^0.33.3",
     "slug": "^9.0.0",
+    "string-length": "^6.0.0",
     "typescript": "^5.4.3",
     "ua-parser-js": "^1.0.38",
     "unified": "^11.0.4",
@@ -166,7 +167,8 @@
     "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --png",
     "migration": "yarn run -T migration",
     "watch-barrels": "nodemon --exec 'yarn barrelize' --watch src/modules -e ts --ignore 'src/modules/**/index.ts'",
-    "test": "echo Logging in… && http post :4000/graphql query='mutation { login(email: \"versairea\", password: \"a\") { ...on MutationLoginSuccess { data { token } } } }' | jq -r .data.login.data.token | xargs -I@ hurl --parallel --test --variable token=@ --variable host=http://localhost:4000 --glob src/modules/*/tests/*.hurl"
+    "test:hurl": "echo Logging in… && http post :4000/graphql query='mutation { login(email: \"versairea\", password: \"a\") { ...on MutationLoginSuccess { data { token } } } }' | jq -r .data.login.data.token | xargs -I@ hurl --parallel --test --variable token=@ --variable host=http://localhost:4000 --glob src/modules/*/tests/*.hurl",
+    "test": "run-s \"test:*\""
   },
   "type": "module",
   "volta": {

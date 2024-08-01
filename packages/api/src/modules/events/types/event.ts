@@ -6,7 +6,7 @@ import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/rea
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
 import { EventFrequencyType, eventCapacity } from '../index.js';
-import { canEdit, canEditManagers, canSeeEventLogs } from '../utils/index.js';
+import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
@@ -140,7 +140,7 @@ export const EventType = builder.prismaNode('Event', {
     }),
     canEdit: t.boolean({
       description: "L'utilisateur·ice connecté·e peut modifier cet évènement",
-      resolve: (event, _, { user }) => canEdit(event, user),
+      resolve: (event, _, { user }) => canEditEvent(event, user),
     }),
     canEditManagers: t.boolean({
       description:
