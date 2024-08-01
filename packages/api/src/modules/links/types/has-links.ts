@@ -1,5 +1,6 @@
 import { builder, splitID } from '#lib';
 import { EventType } from '#modules/events';
+import { ArticleType } from '#modules/posts';
 
 // interface _HasLinks {
 //   links: Array<typeof LinkType.$inferType>;
@@ -12,11 +13,14 @@ import { EventType } from '#modules/events';
 // });
 
 export const HasLinks = builder.unionType('HasLinks', {
-  types: [EventType],
+  types: [EventType, ArticleType],
   resolveType({ id }) {
     switch (splitID(id)[0]) {
       case 'Event': {
         return EventType;
+      }
+      case 'Article': {
+        return ArticleType;
       }
       default: {
         throw new Error(
