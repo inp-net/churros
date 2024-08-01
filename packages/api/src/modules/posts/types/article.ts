@@ -4,6 +4,7 @@ import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/glob
 import { ReactableInterface } from '#modules/reactions';
 import { canEditArticle } from '../utils/permissions.js';
 
+// TODO rename to Post
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
   interfaces: [
@@ -12,6 +13,9 @@ export const ArticleType = builder.prismaNode('Article', {
     PicturedInterface,
     // @ts-expect-error dunno why it complainnns
     ReactableInterface,
+    // FIXME: Gives a "not implemented" error
+    // so HasLinks is an enum for now
+    // builder.interfaceRef('HasLinks'),
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),

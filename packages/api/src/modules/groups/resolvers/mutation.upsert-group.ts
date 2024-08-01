@@ -1,6 +1,5 @@
 import { builder, freeUidValidator, log, prisma, purgeUserSessions } from '#lib';
 import { UIDScalar } from '#modules/global';
-import { LinkInput } from '#modules/links';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
@@ -46,7 +45,6 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
     email: t.string({ validate: { email: true }, required: false }),
     mailingList: t.string({ validate: { email: true }, required: false }),
     longDescription: t.string(),
-    links: t.field({ type: [LinkInput] }),
     selfJoinable: t.boolean(),
     related: t.field({ type: ['String'] }),
   }),
@@ -132,7 +130,6 @@ builder.mutationField('upsertGroup', (t) =>
           email,
           mailingList,
           longDescription,
-          links,
           related,
         },
       },
@@ -225,7 +222,6 @@ builder.mutationField('upsertGroup', (t) =>
         create: {
           ...data,
           color: color ?? '',
-          links: { create: links },
           uid: newUid!,
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
@@ -236,10 +232,6 @@ builder.mutationField('upsertGroup', (t) =>
         },
         update: {
           ...data,
-          links: {
-            deleteMany: {},
-            createMany: { data: links },
-          },
           related: {
             set: related.map((uid) => ({ uid })),
           },

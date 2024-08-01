@@ -1,6 +1,5 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { DateTimeScalar, UIDScalar, VisibilityEnum } from '#modules/global';
-import { LinkInput } from '#modules/links';
 import { Visibility } from '@churros/db/prisma';
 import { differenceInDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
@@ -19,7 +18,6 @@ builder.mutationField('upsertArticle', (t) =>
       title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
       publishedAt: t.arg({ type: DateTimeScalar, required: false }),
-      links: t.arg({ type: [LinkInput], defaultValue: [] }),
       event: t.arg.id({ required: false }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
@@ -57,7 +55,7 @@ builder.mutationField('upsertArticle', (t) =>
     async resolve(
       query,
       _,
-      { id, event: eventId, visibility, group: groupUid, title, body, publishedAt, links },
+      { id, event: eventId, visibility, group: groupUid, title, body, publishedAt },
       { user },
     ) {
       eventId = eventId ? ensureGlobalId(eventId, 'Event') : null;
@@ -92,12 +90,10 @@ builder.mutationField('upsertArticle', (t) =>
         create: {
           ...data,
           slug: await createUid({ title, groupId: group.id }),
-          links: { create: links },
           event: eventId ? { connect: { id: eventId } } : undefined,
         },
         update: {
           ...data,
-          links: { deleteMany: {}, createMany: { data: links } },
           event: eventId ? { connect: { id: eventId } } : { disconnect: true },
         },
       });

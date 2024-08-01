@@ -1,6 +1,5 @@
 import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
-import { LinkInput } from '#modules/links';
 import { userIsAdminOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { phone as parsePhoneNumber } from 'phone';
@@ -25,7 +24,6 @@ builder.mutationField('updateUser', (t) =>
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 10_000 } }),
-      links: t.arg({ type: [LinkInput] }),
       cededImageRightsToTVn7: t.arg.boolean(),
       apprentice: t.arg.boolean(),
       godparentUid: t.arg.string({
@@ -61,7 +59,6 @@ builder.mutationField('updateUser', (t) =>
         graduationYear,
         nickname,
         description,
-        links,
         address,
         phone,
         birthday,
@@ -185,7 +182,6 @@ builder.mutationField('updateUser', (t) =>
           lastName: userIsAdmin ? lastName : targetUser.lastName,
           cededImageRightsToTVn7,
           apprentice,
-          links: { deleteMany: {}, createMany: { data: links } },
           otherEmails: { set: otherEmails.filter(Boolean) },
           godparent:
             godparentUid === ''

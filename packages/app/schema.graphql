@@ -549,6 +549,9 @@ type BuildInfo {
   version: String!
 }
 
+"""Un entier positif ou 'Unlimited' pour une capacité sans limite"""
+scalar Capacity
+
 """A release in the changelog"""
 type ChangelogRelease {
   """The changes of the release, grouped by category"""
@@ -744,7 +747,7 @@ type Event implements Node & Pictured & Reactable {
   articles: [Article!]!
   author: User
   authorId: ID
-  bannedUsers: [User!]!
+  banned: [User!]!
   beneficiary: LydiaAccount
   bookings(after: String, before: String, first: Int, last: Int): EventBookingsConnection!
   bookingsCounts: RegistrationsCounts!
@@ -780,12 +783,12 @@ type Event implements Node & Pictured & Reactable {
   description: String!
   descriptionHtml: String!
   descriptionPreview: String!
-  endsAt: DateTime!
+  endsAt: DateTime
 
   """Formulaires associés à l'événement"""
   forms: [Form!]!
   frequency: EventFrequency!
-  group: Group!
+  group: Group! @deprecated(reason: "Use `organizer` instead.")
   groupId: ID!
   id: ID!
 
@@ -808,6 +811,7 @@ type Event implements Node & Pictured & Reactable {
   myBookings: EventMyBookingsResult!
   myReactions: BooleanMap!
   mySoonestShotgunOpensAt: DateTime
+  organizer: Group!
   pictureFile: String!
 
   """Le nom du fichier de l'image, en thème sombre"""
@@ -831,7 +835,7 @@ type Event implements Node & Pictured & Reactable {
 
   """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
-  startsAt: DateTime!
+  startsAt: DateTime
   ticket(slug: String!): Ticket
   ticketGroups: [TicketGroup!]!
   tickets: [Ticket!]!
@@ -1306,6 +1310,8 @@ enum GroupType {
 
 scalar HTML
 
+union HasLinks = Event
+
 """Results of a health self-check"""
 type HealthCheck {
   database: DatabaseHealthCheck!
@@ -1361,7 +1367,9 @@ type LdapHealthCheck {
   school: Boolean!
 }
 
-"""A single external link"""
+"""
+Un lien avec un texte à afficher. Pour changer les liens d'une ressource, voir la mutation `setLinks` (valable pour tout les types implémentant `HasLinks`)
+"""
 type Link implements Node {
   computedValue: String!
   createdAt: DateTime!
@@ -1369,13 +1377,16 @@ type Link implements Node {
 
   """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
-  name: String!
-  value: String!
+  name: String! @deprecated(reason: "Use `text` instead.")
+  text: String!
+  url: URL!
+  value: String! @deprecated(reason: "Use `url` instead.")
 }
 
 input LinkInput {
-  name: String!
-  value: String!
+  """Texte à afficher pour le lien"""
+  text: String!
+  url: URL!
 }
 
 """
@@ -1507,6 +1518,11 @@ type Mutation {
   ): MutationAuthorizeResult!
 
   """
+  Bannir un·e utilisateur·rice d'un événement. Iel ne pourra plus prendre de place (que ce soit pour iel ou pour une autre personne, dans le cas des billets à parrainages)
+  """
+  banFromEvent(id: LocalID!, user: UID!): Event!
+
+  """
   Bloquer un thème pour empêcher qu'il soit automatiquement déployé à l'utilisateur·ice connecté·e
   """
   blockTheme(
@@ -1523,6 +1539,9 @@ type Mutation {
   ): Bookmark!
   cancelPendingContribution(optionId: ID!): Boolean!
   cancelRegistration(id: ID!): MutationCancelRegistrationResult!
+
+  """Changer le groupe organisateur (principal) de l'événement"""
+  changeEventOrganizer(group: UID!, id: LocalID!): Event!
   checkIfRegistrationIsPaid(id: ID!): Boolean!
   claimPromotionCode(code: String!): Boolean!
   completeRegistration(address: String!, apprentice: Boolean!, birthday: DateTime, cededImageRightsToTVn7: Boolean!, firstName: String!, graduationYear: Int!, lastName: String!, majorId: ID, password: String!, passwordConfirmation: String!, phone: String!, token: String!, uid: UID!): MutationCompleteRegistrationResult!
@@ -1598,7 +1617,7 @@ type Mutation {
   deleteDocumentFile(documentId: ID!, filename: String!): Boolean!
   deleteEvent(id: ID!): Boolean!
   deleteEventManager(eventId: ID!, user: String!): Boolean! @deprecated(reason: "Use 'removeEventManager' instead")
-  deleteEventPicture(id: ID!): Boolean!
+  deleteEventPicture(id: ID!): Event!
   deleteGodchild(godchildUid: String!, parentUid: String!): Boolean!
 
   """
@@ -1749,6 +1768,14 @@ type Mutation {
   ): Boolean!
   setDocumentFileIsSolution(documentId: ID!, filename: String!, isSolution: Boolean!): Boolean!
 
+  """Changer les groupes co-organisateurs d'un événement"""
+  setEventCoOrganizers(coOrganizers: [UID!]!, id: LocalID!): Event!
+
+  """
+  Changer la visibilité d'un événement. Un évènement dont les dates ne sont pas encore déclarées ne peut pas avoir une visiblité autre que Unlisted ou Private.
+  """
+  setEventVisibility(id: LocalID!, visibility: Visibility!): Event!
+
   """
   Coche ou décoche la case à cocher à côté des réponses à un formulaire pour un·e utilisateur·ice.
   """
@@ -1762,6 +1789,13 @@ type Mutation {
     """ID de l'utilisateur·ice"""
     userId: ID!
   ): Form!
+
+  """Définir les liens d'une ressource implémentant `HasLinks`"""
+  setLinks(
+    """ID complet de la ressource (AVEC le préfixe)"""
+    id: ID!
+    links: [LinkInput!]!
+  ): HasLinks!
 
   """Changer la valeur d'une variable d'un thème"""
   setThemeValue(
@@ -1798,6 +1832,11 @@ type Mutation {
   testNotification(subscriptionEndpoint: String!): Boolean!
   toggleReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID): Reactable!
 
+  """
+  Débannir un·e utilisateur·rice d'un événement. Si l'utilisateur·ice n'était pas banni·e, cette mutation n'aura aucun effet (mais ne fait pas d'erreur).
+  """
+  unbanFromEvent(id: LocalID!, user: UID!): Event!
+
   """Enlève une page de l'accès rapide"""
   unbookmark(
     """Chemin de la page à désépingler"""
@@ -1807,10 +1846,16 @@ type Mutation {
 
   """Mettre à jour les informations de base d'un évènement"""
   updateEvent(
+    """E-mail de contact de l'orga de l'évènement"""
+    contactMail: String
+
     """Dates de l'évènement"""
     dates: DateRangeInput
     description: Markdown
     frequency: EventFrequency = Once
+
+    """Capacité globale de l'évènement"""
+    globalCapacity: Capacity
     id: LocalID!
 
     """Lieu de l'évènement"""
@@ -1822,7 +1867,7 @@ type Mutation {
     """Titre de l'évènement"""
     title: String
   ): Event!
-  updateEventPicture(file: File!, id: ID!): String!
+  updateEventPicture(file: File!, id: ID!): Event!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
   updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
   updateNotificationSettings(enabledChannels: [NotificationChannel!]!, uid: String!): [NotificationChannel!]!
@@ -1855,7 +1900,6 @@ type Mutation {
     godparentUid: String
     graduationYear: Int
     lastName: String!
-    links: [LinkInput!]!
     majorId: ID
     minorId: ID
     nickname: String!
@@ -1888,39 +1932,10 @@ type Mutation {
   upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
 
   """Crée ou met à jour un post"""
-  upsertArticle(body: String!, event: ID, group: UID!, id: ID, links: [LinkInput!]! = [], publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult!
+  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult!
   upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(description: String!, id: ID, schoolYear: Int!, subject: ID!, title: String!, type: DocumentType!): MutationUpsertDocumentResult!
-  upsertEvent(
-    """List of user uids"""
-    bannedUsers: [String!]!
-
-    """List of group uids"""
-    coOrganizers: [String!]!
-    contactMail: String!
-    description: String!
-    endsAt: DateTime!
-    frequency: EventFrequency!
-    groupUid: String!
-    id: String
-
-    """Include l'évènement dans l'affichage du mode kiosque"""
-    includeInKiosk: Boolean
-    links: [LinkInput!]!
-    location: String!
-    lydiaAccountId: String
-    managers: [ManagerOfEventInput!]!
-    recurringUntil: DateTime
-
-    """Affiche le nombre de places restantes dans l'évènement"""
-    showPlacesLeft: Boolean
-    startsAt: DateTime!
-    ticketGroups: [TicketGroupInput!]!
-    tickets: [TicketInput!]!
-    title: String!
-    visibility: Visibility!
-  ): MutationUpsertEventResult! @deprecated(reason: "Use 'createEvent' or 'updateEvent' instead")
 
   """
   Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.
@@ -2145,12 +2160,6 @@ union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess
 
 type MutationUpsertDocumentSuccess {
   data: Document!
-}
-
-union MutationUpsertEventResult = Error | MutationUpsertEventSuccess
-
-type MutationUpsertEventSuccess {
-  data: Event!
 }
 
 input MutationUpsertFormInput {
@@ -4089,39 +4098,19 @@ input TicketGroupInput {
   name: String!
 }
 
-input TicketInput {
-  allowedPaymentMethods: [PaymentMethod!]!
-  autojoinGroups: [String!]!
-  capacity: Int!
-  closesAt: DateTime
-  description: String!
-  godsonLimit: Int!
-  groupName: String
-  id: ID
-  links: [LinkInput!]!
-  name: String!
-  onlyManagersCanProvide: Boolean!
-  openToAlumni: Boolean
-  openToApprentices: Boolean
-  openToContributors: Boolean
-  openToExternal: Boolean
-  openToGroups: [String!]!
-  openToMajors: [String!]!
-  openToPromotions: [Int!]!
-  openToSchools: [String!]!
-  opensAt: DateTime
-  price: Float!
-}
-
 """A field whose value matches /^[\w-]{3,255}$/."""
 scalar UID
+
+"""
+Une adresse internet (URL). Si le protocole n'est pas spécifié, https:// sera ajouté (par exemple, net7.dev est valide en entrée et est interprété comme https://net7.dev). Les éventuels espaces autours de l'URL sont ignorés. Les protocoles autorisés sont: http:, https:
+"""
+scalar URL
 
 input UpsertGroupInput {
   address: String!
   color: String
   description: String!
   email: String
-  links: [LinkInput!]!
   longDescription: String!
   mailingList: String
   name: String!
