@@ -1,5 +1,5 @@
 import { builder, type Context } from '#lib';
-import { canEdit, EventType } from '#modules/events';
+import { canEditEvent, EventType } from '#modules/events';
 import { canScanBookings } from '#modules/ticketing/utils';
 import type { Event, EventManager, Group } from '@churros/db/prisma';
 
@@ -10,7 +10,7 @@ export function canSeeBookings(
   },
   user: Context['user'],
 ) {
-  return canScanBookings(event, user) || canEdit(event, user);
+  return canScanBookings(event, user) || canEditEvent(event, user);
 }
 
 builder.prismaObjectField(EventType, 'canSeeBookings', (t) =>

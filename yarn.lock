@@ -428,6 +428,7 @@ __metadata:
     set-interval-async: "npm:^3.0.3"
     sharp: "npm:^0.33.3"
     slug: "npm:^9.0.0"
+    string-length: "npm:^6.0.0"
     ts-tqdm: "npm:^0.8.6"
     tsx: "npm:^4.7.1"
     typescript: "npm:^5.4.3"
@@ -15652,6 +15653,15 @@ __metadata:
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
   checksum: 10c0/75c02a83759ad1722e040b86823909d9a2fc75d15dd71ec4b537c3560746e33b5f5a07f7332d1e3f88319909f82190843aa2f0a0d8c8d591ec08e93d5b8dec82
+  languageName: node
+  linkType: hard
+
+"string-length@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "string-length@npm:6.0.0"
+  dependencies:
+    strip-ansi: "npm:^7.1.0"
+  checksum: 10c0/11c050827774c19583c6c3be62810dd1cc621df8696416754c2cfa62d8de1bc903893571981e7ec45875076a214216109517fa8cd729f9e7249583f546f9b360
   languageName: node
   linkType: hard
 

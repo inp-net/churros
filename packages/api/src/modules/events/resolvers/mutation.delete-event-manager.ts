@@ -4,6 +4,7 @@ import { userIsAdminOf } from '#permissions';
 builder.mutationField('deleteEventManager', (t) =>
   t.field({
     type: 'Boolean',
+    deprecationReason: "Use 'removeEventManager' instead",
     args: { user: t.arg.string(), eventId: t.arg.id() },
     async authScopes(_, { eventId, user }, { user: currentUser }) {
       const event = await prisma.event.findUnique({

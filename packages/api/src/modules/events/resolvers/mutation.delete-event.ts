@@ -1,6 +1,7 @@
 import { builder, log, objectValuesFlat, prisma } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
+// TODO soft delete instead
 builder.mutationField('deleteEvent', (t) =>
   t.field({
     type: 'Boolean',

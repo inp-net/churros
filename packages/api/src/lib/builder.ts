@@ -68,6 +68,26 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    Markdown: {
+      Input: string;
+      Output: string;
+    };
+    HTML: {
+      Input: never;
+      Output: string;
+    };
+    ShortString: {
+      Input: string;
+      Output: string;
+    };
+    PositiveInt: {
+      Input: number;
+      Output: number;
+    };
+    PositiveFloat: {
+      Input: number;
+      Output: number;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;

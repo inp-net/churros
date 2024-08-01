@@ -1808,23 +1808,19 @@ type Mutation {
   """Mettre à jour les informations de base d'un évènement"""
   updateEvent(
     """Dates de l'évènement"""
-    dates: DateRangeInput!
-    description: Markdown!
-
-    """
-    Nombre de places max. sur l'évènement entier. Ne pas le préciser désactive la limite.
-    """
-    globalCapacity: PositiveInt
+    dates: DateRangeInput
+    description: Markdown
+    frequency: EventFrequency = Once
+    id: LocalID!
 
     """Lieu de l'évènement"""
-    location: String!
-    recurrence: EventFrequency! = Once
+    location: String
 
     """Afficher le nombre de places restantes sur les billets"""
-    showPlacesLeft: Boolean! = true
+    showPlacesLeft: Boolean = true
 
     """Titre de l'évènement"""
-    title: String!
+    title: String
   ): Event!
   updateEventPicture(file: File!, id: ID!): String!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
