@@ -562,13 +562,11 @@ model Event {
   description    String         @db.Text
   slug           String         @db.VarChar(255)
   title          String         @db.VarChar(255)
-  // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
-  startsAt       DateTime? 
-  endsAt         DateTime?
-  globalCapacity Int            @default(0) // 0 means unlimited
+  startsAt       DateTime
+  endsAt         DateTime
   notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   location       String         @default("") @db.VarChar(255)
-  visibility     Visibility     @default(Private)
+  visibility     Visibility
   frequency      EventFrequency @default(Once)
   recurringUntil DateTime?
   pictureFile    String         @default("") @db.VarChar(255)
@@ -640,7 +638,7 @@ model Ticket {
   opensAt               DateTime?
   closesAt              DateTime?
   price                 Float // in EUR
-  capacity              Int // 0 means unlimited
+  capacity              Int             @default(0) // 0 means unlimited
   registrations         Registration[]
   links                 Link[]
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
@@ -656,14 +654,12 @@ model Ticket {
   openToGroups       Group[]  @relation("openTo")
   godsonLimit        Int      @default(0) // 0 means unlimited
   autojoinGroups     Group[]  @relation("autojoin")
-  // Filtrex (https://github.com/joewalnes/filtrex/) expression. Variables available to the expression are defined by the API.
-  customCondition    String
 
   onlyManagersCanProvide Boolean @default(false)
 
   event               Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   group               TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  subjectToPromotions Promotion[] // TODO rename to special offers
+  subjectToPromotions Promotion[]
 
   @@unique([eventId, slug])
 }
@@ -986,7 +982,6 @@ model PromotionCode {
   promotionId String
 }
 
-// TODO rename to special offers
 model Promotion {
   id         String          @id @default(dbgenerated("nanoid('promo:')"))
   createdAt  DateTime        @default(now())
