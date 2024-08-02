@@ -1,6 +1,13 @@
 import type { EventFrequency$options } from '$houdini';
 import { EventFrequency } from '$lib/zeus';
-import { format, isMonday, isToday, previousMonday } from 'date-fns';
+import {
+  differenceInDays,
+  format,
+  formatRelative,
+  isMonday,
+  isToday,
+  previousMonday,
+} from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 
 function safeFormatting<T>(func: (arg: T) => string): (arg: T) => string {
@@ -60,6 +67,23 @@ export const formatDatetimeLocal = (date: Date | string) => {
   )}:${pad(date.getMinutes())}`;
 };
 
+/**
+ * Formats a date with relative format if it's less than 3 days around today, else format it with the date
+ * @param date the date to format
+ */
+export function formatDateRelativeSmart(date: Date | string) {
+  if (typeof date === 'string') date = new Date(Date.parse(date));
+  const now = new Date();
+
+  if (Math.abs(differenceInDays(now, date)) < 3) {
+    return formatRelativeNoTime(date, now, {
+      weekStartsOn: 1,
+    });
+  }
+
+  return formatDate(date);
+}
+
 export function schoolYearStart(): Date {
   const now = new Date();
   const thisYearSeptemberFirst = new Date(now.getFullYear(), 8, 1);
@@ -109,10 +133,11 @@ export function formatEventDates({
   recurringUntil,
 }: {
   frequency: EventFrequency | EventFrequency$options;
-  startsAt: Date;
-  endsAt: Date;
+  startsAt: Date | null;
+  endsAt: Date | null;
   recurringUntil?: Date | undefined | null;
 }): string {
+  if (!startsAt || !endsAt) return `(Dates non définies)`;
   try {
     switch (frequency) {
       case EventFrequency.Once: {
@@ -193,4 +218,29 @@ export function sortedByDate<
     if (!b[dateKey]) return -1;
     return new Date(a[dateKey] as Date).valueOf() - new Date(b[dateKey] as Date).valueOf();
   });
+}
+
+// https://github.com/date-fns/date-fns/issues/1218#issuecomment-599182307
+export function formatRelativeNoTime(
+  date: Date,
+  baseDate: Date,
+  options: { weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 },
+): string {
+  // https://date-fns.org/docs/I18n-Contribution-Guide#formatrelative
+  // https://github.com/date-fns/date-fns/blob/master/src/locale/fr/_lib/formatRelative/index.js
+  // https://github.com/date-fns/date-fns/issues/1218
+  // https://stackoverflow.com/questions/47244216/how-to-customize-date-fnss-formatrelative
+  const formatRelativeLocale = {
+    lastWeek: "eeee 'dernier'",
+    yesterday: "'Hier'",
+    today: "'Aujourd''hui'",
+    tomorrow: "'Demain'",
+    nextWeek: "eeee 'prochain'",
+    other: 'P',
+  };
+  const locale = {
+    ...fr,
+    formatRelative: (token: keyof typeof formatRelativeLocale) => formatRelativeLocale[token],
+  };
+  return formatRelative(date, baseDate, { ...options, locale });
 }

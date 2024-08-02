@@ -2,10 +2,10 @@ import { builder, prisma } from '#lib';
 import { EventType } from '#modules/events';
 import { TicketType } from '#modules/ticketing/types';
 import {
-  userCanSeeTicket,
-  userCanSeeTicketPrismaIncludes,
-  userCanSeeTicketPrismaIncludesForUser,
-} from '#permissions';
+  canSeeTicket,
+  canSeeTicketPrismaIncludes,
+  canSeeTicketPrismaIncludesForUser,
+} from '#modules/ticketing/utils';
 
 builder.prismaObjectField(EventType, 'ticket', (t) =>
   t.prismaField({
@@ -19,16 +19,16 @@ builder.prismaObjectField(EventType, 'ticket', (t) =>
         where: {
           eventId_slug: { slug, eventId: event.id },
         },
-        include: userCanSeeTicketPrismaIncludes,
+        include: canSeeTicketPrismaIncludes,
       });
       if (!ticket) return true;
       const userWithContributesTo = user
         ? await prisma.user.findUnique({
             where: { id: user.id },
-            include: userCanSeeTicketPrismaIncludesForUser,
+            include: canSeeTicketPrismaIncludesForUser,
           })
         : undefined;
-      return userCanSeeTicket(ticket, userWithContributesTo);
+      return canSeeTicket(ticket, userWithContributesTo);
     },
     async resolve(query, event, { slug }) {
       return prisma.ticket.findFirst({

@@ -1,17 +1,11 @@
 import { builder, log, prisma, publish, sendMail } from '#lib';
-
 import { PaymentMethodEnum } from '#modules/payments';
-import {
-  getUserWithContributesTo,
-  userCanAccessEvent,
-  userCanManageEvent,
-  userCanSeeTicket,
-} from '#permissions';
+import { getUserWithContributesTo, userCanAccessEvent, userCanManageEvent } from '#permissions';
 import { PrismaClientKnownRequestError } from '@churros/db/prisma/runtime/library';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import * as qrcode from 'qrcode';
-import { RegistrationType, placesLeft } from '../index.js';
+import { RegistrationType, canSeeTicket, placesLeft } from '../index.js';
 // TODO rename to book.ts
 
 builder.mutationField('upsertRegistration', (t) =>
@@ -106,7 +100,7 @@ builder.mutationField('upsertRegistration', (t) =>
         }
 
         // Check that the user can see the event
-        if (!userCanSeeTicket(ticket, userWithContributesTo)) {
+        if (!canSeeTicket(ticket, userWithContributesTo)) {
           await logDenial("user can't see the ticket", { ticket, userWithContributesTo });
           return false;
         }

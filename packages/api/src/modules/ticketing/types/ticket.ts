@@ -1,6 +1,7 @@
 import { builder, prisma, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
+import { shotgunIsOpen } from '#modules/ticketing/utils';
 import { PaymentMethod } from '@churros/db/prisma';
 
 export const TicketType = builder.prismaNode('Ticket', {
@@ -28,13 +29,17 @@ export const TicketType = builder.prismaNode('Ticket', {
     descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
     opensAt: t.expose('opensAt', { type: DateTimeScalar, nullable: true }),
     closesAt: t.expose('closesAt', { type: DateTimeScalar, nullable: true }),
+    open: t.boolean({
+      description: 'Si le shotgun du billet est ouvert',
+      resolve: shotgunIsOpen,
+    }),
     basePrice: t.exposeFloat('price'),
     price: t.float({
       async resolve({ price, id }, _, { user }) {
         return actualPrice({ price, id }, user);
       },
     }),
-    capacity: t.exposeInt('capacity'),
+    capacity: t.exposeInt('capacity', { nullable: true }),
     registrations: t.relation('registrations', {
       authScopes: { loggedIn: true },
       query(_, { user }) {

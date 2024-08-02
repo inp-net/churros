@@ -7,18 +7,18 @@
   type Result = $$Generic;
   type Input = $$Generic;
 
-  export let result: QueryResult<Result, Input>;
+  export let result: QueryResult<Result, Input> | null;
 
-  $: resultDataNonNull = result.data as Result;
+  $: resultDataNonNull = result!.data as Result;
 </script>
 
-{#if result.data && !result.fetching}
+{#if result && result.data && !result.fetching}
   <slot data={resultDataNonNull}></slot>
-{:else if result.errors}
+{:else if result?.errors}
   <h2>Oops!</h2>
   <p>Une erreur est survenue.</p>
   <ul>
-    {#each result.errors as { message }}
+    {#each result?.errors as { message }}
       <li>{message}</li>
     {/each}
   </ul>

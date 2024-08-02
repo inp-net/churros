@@ -116,6 +116,31 @@ const config = {
         return x;
       },
     },
+    Markdown: {
+      type: 'string',
+    },
+    HTML: {
+      type: 'string',
+    },
+    ShortString: {
+      type: 'string',
+    },
+    PositiveInt: {
+      type: 'number',
+    },
+    PositiveFloat: {
+      type: 'number',
+    },
+    Capacity: {
+      type: 'number | null',
+      marshal: (x) => (x === null ? 'Unlimited' : x),
+      unmarshal: (x) => (x === 'Unlimited' ? null : x),
+    },
+    URL: {
+      type: 'string | URL',
+      marshal: (x) => x.toString(),
+      unmarshal: (x) => new URL(x),
+    },
   },
   features: {
     runtimeScalars: {

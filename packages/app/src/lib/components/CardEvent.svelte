@@ -1,347 +1,386 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { EventFrequency, fragment, graphql, type CardEvent } from '$houdini';
+  import { fragment, graphql, PendingValue, type CardEvent } from '$houdini';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import { formatDateTime, formatEventDates, formatRecurrence } from '$lib/dates';
-  import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
-  import { formatDuration, formatRelative, intervalToDuration, isFuture, isPast } from 'date-fns';
-  import fr from 'date-fns/locale/fr/index.js';
-  import { onDestroy, onMount } from 'svelte';
-  import IconWhen from '~icons/mdi/calendar-outline';
-  import ChevronUp from '~icons/mdi/chevron-up';
-  import IconDots from '~icons/mdi/dots-horizontal';
-  import IconGear from '~icons/mdi/gear-outline';
-  import IconLocation from '~icons/mdi/location-outline';
+  import { formatEventDates } from '$lib/dates';
+  import { sentenceJoin } from '$lib/i18n';
+  import {
+    allLoaded,
+    loading,
+    mapAllLoading,
+    mapLoading,
+    onceAllLoaded,
+    onceLoaded,
+    type MaybeLoading,
+  } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
+  import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
+  import { format, formatDistance, isWithinInterval } from 'date-fns';
+  import { onMount } from 'svelte';
+  import IconDates from '~icons/msl/calendar-today-outline';
+  import IconAdvance from '~icons/msl/chevron-right';
+  import IconLocation from '~icons/msl/location-on-outline';
+  import IconLockOpen from '~icons/msl/lock-open-outline';
+  import IconLock from '~icons/msl/lock-outline';
+  import IconTime from '~icons/msl/schedule-outline';
+  import AvatarGroup from './AvatarGroup.houdini.svelte';
+  import ButtonGhost from './ButtonGhost.svelte';
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
 
-  export let collapsible = false;
-  export let href: string;
-  export let expandedEventId: string | undefined = undefined;
-  $: collapsed = collapsible && expandedEventId !== $data?.id;
+  /**
+   * Whether this component should announce a shotgun instead of the event itself
+   */
+  export let shotgun = false;
+  export let loggedIn: MaybeLoading<boolean>;
 
-  export let event: CardEvent;
+  const mobile = isMobile();
+
+  export let event: CardEvent | null;
   $: data = fragment(
     event,
     graphql(`
       fragment CardEvent on Event @loading {
-        id
+        localID
         pictureURL
         title
         descriptionPreview
+        organizer {
+          name
+          uid
+          ...AvatarGroup
+        }
+        coOrganizers {
+          name
+          uid
+        }
         startsAt
         endsAt
         location
-        capacity
         placesLeft
         frequency
         recurringUntil
+        canEdit
         tickets {
-          uid
-          name
-          price
+          localID
           opensAt
           closesAt
-          placesLeft
-          capacity
+          name
         }
-        canEdit
       }
     `),
   );
 
-  let shotgunsStart: Date | null;
-  let shotgunsEnd: Date | null;
+  $: ticket = $data?.tickets?.at(0);
 
-  $: ({ tickets } = $data);
+  $: subtitle = $data
+    ? shotgun && ticket
+      ? mapLoading($data.title, (t) => `Shotgun pour ${t}`)
+      : onceAllLoaded(
+          [$data.organizer.name, ...$data.coOrganizers.map((c) => c.name)],
+          (organizer, ...coOrganizers) =>
+            coOrganizers.length > 3
+              ? `${organizer} avec ${coOrganizers.length} autres`
+              : coOrganizers.length > 0
+                ? `${organizer} avec ${sentenceJoin(coOrganizers)}`
+                : `${organizer} présente`,
+          PendingValue,
+        )
+    : PendingValue;
 
-  function updateShotgunDates(tickets: (typeof $data)['tickets']) {
-    if (!allLoaded(tickets)) return;
-    if (tickets[0]) shotgunsStart = tickets[0].opensAt;
-
-    for (const ticket of tickets) {
-      if (ticket.opensAt && (!shotgunsStart || ticket.opensAt < shotgunsStart))
-        shotgunsStart = ticket.opensAt;
-    }
-
-    if (tickets[0]) shotgunsEnd = tickets[0].closesAt;
-
-    for (const ticket of tickets) {
-      if (ticket.closesAt && (!shotgunsEnd || ticket.closesAt > shotgunsEnd))
-        shotgunsEnd = ticket.closesAt;
-    }
-  }
-
-  $: updateShotgunDates(tickets);
-
-  // Est-ce que le shotgun est en cours ? Mis à jour toutes les secondes
-  $: shotgunning =
-    (!shotgunsEnd && !shotgunsStart) ||
-    (shotgunsEnd &&
-      shotgunsStart &&
-      isFuture(new Date(shotgunsEnd)) &&
-      isPast(new Date(shotgunsStart)));
-
-  // Date actuelle mise à jour toutes les secondes
-  $: now = new Date();
-
-  let interval: ReturnType<typeof setInterval>;
-
-  const updateTime = () => {
-    now = new Date();
-    shotgunning =
-      (!shotgunsEnd && !shotgunsStart) ||
-      (shotgunsEnd &&
-        shotgunsStart &&
-        isFuture(new Date(shotgunsEnd)) &&
-        isPast(new Date(shotgunsStart)));
-  };
-
+  let now = new Date();
   onMount(() => {
-    updateTime(); // Appel initial pour afficher le compte à rebours dès le rendu du composant
-    interval = setInterval(updateTime, 1000); // Mettre à jour toutes les secondes
+    setInterval(() => {
+      now = new Date();
+    }, 500);
   });
 
-  onDestroy(() => {
-    clearInterval(interval); // Nettoyer l'intervalle lorsque le composant est détruit
-  });
-
-  async function gotoEventIfNotLink(e: MouseEvent | KeyboardEvent) {
-    if (!(e.target instanceof HTMLElement)) return;
-    if (e.target.closest('a, button')) return;
-
-    if (e instanceof MouseEvent || (e instanceof KeyboardEvent && e.key === 'Enter'))
-      await goto(href);
-  }
+  $: ticketIsOpen =
+    ticket &&
+    mapAllLoading(
+      [ticket.opensAt, ticket.closesAt],
+      (start, end) => start && end && isWithinInterval(now, { start, end }),
+    );
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<article
-  data-href={href}
-  class:collapsed
-  class="event"
-  on:click={gotoEventIfNotLink}
-  on:keypress={gotoEventIfNotLink}
->
-  <section
-    class:has-picture={Boolean($data.pictureURL)}
-    class="title"
-    style:color={loaded($data.pictureURL) && $data.pictureURL ? 'white' : 'var(--text)'}
-    style:background-image={onceLoaded(
-      $data.pictureURL,
-      (url) =>
-        url
-          ? `linear-gradient(rgb(0 0 0 / var(--alpha)), rgb(0 0 0 / var(--alpha))), url('${url}') `
-          : undefined,
-      undefined,
-    )}
-  >
-    <a class="title-link" {href}
-      ><h2 class="title-text">
-        <LoadingText value={$data.title}>Lorem ipsum dolor</LoadingText>
-      </h2></a
-    >
-    {#if collapsible}
-      <button
-        class="expand-collapse chevron-up {collapsed ? 'collapsed' : ''}"
-        on:click={() => {
-          if (!loaded($data.id)) return;
-          expandedEventId = collapsed ? $data.id : '';
-        }}><ChevronUp /></button
-      >
-    {/if}
-  </section>
-  <section class="content {collapsed ? 'collapsed' : ''}">
-    <section class="desc">
-      <LoadingText value={$data.descriptionPreview} lines={2}></LoadingText>
-      <ButtonInk insideProse {href} icon={IconDots}>Voir plus</ButtonInk>
-    </section>
-    <section class="schedule">
-      <h4 class="typo-field-label">Évènement</h4>
-      <p>
-        <IconWhen />
-        {#if !loaded($data.startsAt) || !loaded($data.endsAt) || !loaded($data.frequency) || !loaded($data.recurringUntil)}
-          <LoadingText>Dans 3 jours</LoadingText>
-        {:else if $data.frequency === EventFrequency.Once}
-          {formatEventDates($data)}
-        {:else}
-          {formatRecurrence($data.frequency, $data.startsAt, $data.endsAt)}
-        {/if}
-      </p>
-      {#if $data.location}
-        <p>
-          <IconLocation />
-          <LoadingText value={$data.location}>Lorem ipsum dolor sit amet</LoadingText>
-        </p>
+<article class="event" class:mobile class:has-image={Boolean(loading($data?.pictureURL, ''))}>
+  {#if $data && loading($data?.pictureURL, '')}
+    <img src={loading($data.pictureURL, '')} class="background" alt="" />
+  {/if}
+  <header>
+    <div class="organizer" class:shotgun-open={ticketIsOpen}>
+      {#if shotgun}
+        <div class="locked-overlay">
+          {#if ticketIsOpen}
+            <IconLockOpen />
+          {:else}
+            <IconLock />
+          {/if}
+        </div>
       {/if}
-    </section>
-
-    <!-- Je vois pas pourquoi il y en aurait pas mais dans la db c'est possible -->
-    <!-- uwun: si ya pas de billets :p -->
-    {#if shotgunsStart && loaded($data.placesLeft) && loaded($data.capacity)}
-      <section class="shotgun">
-        <h4 class="typo-field-label">Shotgun</h4>
-        {#if shotgunning && $data.placesLeft !== null && $data.placesLeft !== null}
-          <p>
-            {#if $data.placesLeft + $data.capacity === Number.POSITIVE_INFINITY}
-              Places illimitées
-            {:else}
-              <!-- <strong>
-                <span style={placesLeft < 0.1 * capacity ? 'color: var(--error)' : ''}>
-                  {placesLeft}
-                </span>/ {capacity}
-              </strong> places restantes -->
-            {/if}
-          </p>
-          <div class="places">
-            {#each tickets as { uid, name, price }}
-              <div class="link">
-                <ButtonSecondary
-                  tabindex={collapsed ? -1 : undefined}
-                  href={onceLoaded(uid, (uid) => `${href}/book/${uid}`, '')}
-                >
-                  <strong>
-                    <LoadingText value={name}>Billet</LoadingText>
-                    <span class="ticket-price">
-                      <LoadingText value={price}>10</LoadingText> €
-                    </span>
-                  </strong>
-                </ButtonSecondary>
-              </div>
-            {/each}
-          </div>
+      <AvatarGroup group={$data?.organizer ?? null} />
+    </div>
+    <div class="text">
+      <div class="subtitle">
+        <LoadingText value={subtitle}>Lorem dolor sit ipsum</LoadingText>
+      </div>
+      <div class="title">
+        {#if shotgun && ticket}
+          <LoadingText
+            value={onceAllLoaded(
+              [ticket.opensAt, ticket.closesAt],
+              (start, end) =>
+                !start || !end
+                  ? 'Sans shotgun'
+                  : ticketIsOpen
+                    ? `Jusqu'à ${format(end, 'HH:mm')}`
+                    : `À ${format(start, 'HH:mm')}`,
+              PendingValue,
+            )}>Jusqu'à 66:60</LoadingText
+          >
         {:else}
-          <p>
-            <!-- Si > 6j : affichage de la date, si inferieur à 6j : affichage en relatif, si inférieur à 15 minutes, affichage du décompte-->
-            {Math.abs(shotgunsStart.getTime() - now.getTime()) > 6 * 24 * 3600 * 1000
-              ? formatDateTime(shotgunsStart)
-              : Math.abs(shotgunsStart.getTime() - now.getTime()) > 15 * 60 * 1000
-                ? formatRelative(shotgunsStart, now, {
-                    locale: fr,
-                    weekStartsOn: 1,
-                  }).replace('prochain ', '')
-                : (shotgunsStart.getTime() - now.getTime() > 0 ? 'dans ' : 'il y a ') +
-                  formatDuration(
-                    intervalToDuration({
-                      start: now,
-                      end: new Date(shotgunsStart.getTime()),
-                    }),
-                    {
-                      locale: fr,
-                    },
-                  )}
-          </p>
+          <LoadingText value={$data?.title}>Lorem ipsum dolor sit amet</LoadingText>
         {/if}
-      </section>
+      </div>
+    </div>
+  </header>
+  <section class="caracteristics">
+    {#if shotgun && ticket && $data}
+      <div class="date">
+        <IconDates></IconDates>
+        <LoadingText value={allLoaded($data) ? formatEventDates($data) : PendingValue}
+          >Lundi 1 septembre, 00h—00h</LoadingText
+        >
+      </div>
+    {:else if $data}
+      <div class="time">
+        <IconTime></IconTime>
+        <LoadingText
+          value={mapAllLoading([$data.startsAt, $data.endsAt], (start, end) => {
+            if (!start || !end) return '(pas de dates définies)';
+            return `de ${format(start, 'HH:mm')} à ${format(end, 'HH:mm')}`;
+          })}>de --:-- à --:--</LoadingText
+        >
+      </div>
     {/if}
-
-    {#if loading($data.canEdit, false)}
-      <div class="button-admin">
-        <ButtonSecondary href={href + '/edit/'}><IconGear /></ButtonSecondary>
+    {#if $data?.location}
+      <div class="location">
+        <IconLocation />
+        <LoadingText value={$data.location}>1 Rue Skibidi, 31000 Yapville</LoadingText>
       </div>
     {/if}
   </section>
+  <div class="description-preview">
+    <LoadingText value={$data?.descriptionPreview ?? PendingValue} lines={2}></LoadingText>
+    <ButtonInk
+      insideProse
+      href={onceLoaded($data?.localID, (id) => (id ? route('/events/[id]', id) : ''), '')}
+      >Voir plus</ButtonInk
+    >
+  </div>
+  {#if ticket && (ticketIsOpen || shotgun)}
+    <section class="tickets">
+      <div class="ticket">
+        <div class="text">
+          <div class="title">
+            <LoadingText value={ticket.name}>Place</LoadingText>
+          </div>
+          <div class="subtitle">
+            <LoadingText
+              value={mapAllLoading([ticket.opensAt, ticket.closesAt], (start, end) =>
+                ticketIsOpen
+                  ? `${formatDistance(end, now)} pour shotgun`
+                  : `Vente ${formatDistance(start, now, { addSuffix: true })}`,
+              )}>?</LoadingText
+            >
+          </div>
+        </div>
+        <div class="actions">
+          <ButtonSecondary
+            href={$data
+              ? onceAllLoaded(
+                  [$data.localID, ticket.localID],
+                  (id, ticket) => route('/events/[id]/book/[ticket]', { id, ticket }),
+                  '',
+                )
+              : ''}>Obtenir</ButtonSecondary
+          >
+        </div>
+      </div>
+      {#if $data && $data?.tickets.length > 1}
+        {@const plural = $data.tickets.length - 1 > 1 ? 's' : ''}
+        <div class="other-tickets">
+          <p>+ {$data.tickets.length - 1} autre{plural} ticket{plural}</p>
+          <ButtonGhost><IconAdvance></IconAdvance></ButtonGhost>
+        </div>
+      {/if}
+    </section>
+  {:else if !loading(loggedIn, true) && shotgun}
+    <section class="tickets please-login">
+      <div class="ticket">
+        <div class="text">
+          <div class="title">Tu n'es pas connecté·e</div>
+          <div class="subtitle">Connectes-toi pour shotgun ;)</div>
+        </div>
+        <div class="actions">
+          <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
+        </div>
+      </div>
+    </section>
+  {/if}
 </article>
 
 <style>
-  .event {
-    overflow: hidden;
-    cursor: pointer;
-    border-radius: var(--radius-block);
-    box-shadow: var(--shadow);
-
-    --alpha: 0.5;
+  article {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem 1rem;
   }
 
-  .title {
+  article:not(.mobile) {
+    padding: 2rem;
+    border-radius: 20px;
+  }
+
+  article.has-image {
+    overflow: hidden;
+    color: white;
+    background-color: black;
+  }
+
+  article .background {
+    --blur: 30px;
+
+    position: absolute;
+    inset: calc(-1 * var(--blur));
+    width: calc(100% + 2 * var(--blur));
+    height: calc(100% + 2 * var(--blur));
+    overflow: hidden;
+    object-fit: cover;
+    object-position: center;
+    filter: blur(var(--blur)) brightness(0.7);
+  }
+
+  article > *:not(.background) {
+    position: relative;
+  }
+
+  header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  header .organizer {
+    --avatar-size: 3rem;
+
+    position: relative;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+  }
+
+  header .organizer .locked-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-
-    /* ça sert à ce que la hauteur ne varie pas selon si c'est collapsible ou pas */
-    min-height: 5rem;
-    background-position: center;
-    background-size: cover;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    background: rgba(0 0 0 / 50%);
+    border-radius: 10000px;
   }
 
-  .collapsed .title {
-    height: 100%;
+  header .organizer.shotgun-open .locked-overlay {
+    animation: pulse-shadow 500ms ease infinite alternate;
   }
 
-  .title-link {
-    padding-left: 1em;
-    overflow: hidden;
+  @keyframes pulse-shadow {
+    from {
+      box-shadow: 0 0 0 0 var(--primary);
+    }
+
+    to {
+      box-shadow: 0 0 20px 0.25rem var(--primary);
+    }
   }
 
-  .title-text {
-    line-height: 1.1;
+  header .text {
+    display: flex;
+    flex-direction: column;
   }
 
-  .title:not(.has-picture) {
-    padding: 0.75rem 1rem;
+  header .subtitle {
+    font-size: 0.8rem;
   }
 
-  .title.has-picture {
-    padding: 1rem;
+  header .title {
+    margin-top: -0.2rem;
+    font-size: 1.5rem;
+    line-height: 1;
   }
 
-  .content {
-    position: relative;
-    margin: 1em;
-    overflow: hidden;
-    transition: margin 0.5s cubic-bezier(0, 1, 0, 1);
-  }
-
-  .content.collapsed {
-    max-height: 0;
-    margin: 0 1em;
-  }
-
-  .schedule,
-  .shotgun {
-    margin-top: 1rem;
-  }
-
-  .ticket-price {
-    color: var(--muted);
-  }
-
-  .places {
+  section.caracteristics {
     display: flex;
     flex-flow: row wrap;
+    gap: 0.25rem 1.5rem;
+  }
+
+  section.caracteristics > div {
+    display: flex;
+    gap: 0.5rem;
     align-items: center;
-    justify-content: start;
   }
 
-  .places .link {
-    margin: 0.5em 0.5em 0 0;
+  .description-preview {
+    margin-top: 0.5rem;
   }
 
-  .chevron-up {
-    flex-shrink: 0;
-    padding: 0;
-    margin: 0;
-    font-size: 2rem;
-    line-height: inherit;
-    color: inherit;
-    text-align: inherit;
-    text-decoration: none;
-    appearance: none;
-    cursor: pointer;
-    background: none;
-
-    /* Reset button properties */
-    border: none;
-    transition: transform 0.1s ease-in-out;
+  article.has-image .description-preview {
+    --primary: white;
   }
 
-  .chevron-up.collapsed {
-    transform: rotate(180deg);
+  .tickets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .button-admin {
-    position: absolute;
-    right: 0;
-    bottom: 0;
+  .ticket {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--bg2);
+    border: var(--border-block) solid transparent;
+    border-radius: 10px;
+  }
+
+  article.has-image .ticket {
+    background-color: transparent;
+    border-color: white;
+  }
+
+  .tickets.please-login .ticket {
+    color: var(--warning);
+    background-color: var(--warning-bg);
+  }
+
+  .ticket .text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ticket .title {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .ticket .subtitle {
+    font-size: 0.8em;
   }
 </style>
