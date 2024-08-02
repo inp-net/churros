@@ -13,4 +13,3 @@ export * from './manager.js';
 export * from './member.js';
 export * from './school.js';
 export * from './send.js';
-export * from './tickets.js';

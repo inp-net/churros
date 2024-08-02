@@ -13,7 +13,7 @@ function simulatingLoadingState(): boolean {
   return dev && SIMULATE_LOADING_STATE;
 }
 
-export type MaybeLoading<T> = T | typeof PendingValue;
+export type MaybeLoading<T> = T | null | undefined | typeof PendingValue;
 
 /**
  * Provide a fallback value if the value is PendingValue
@@ -23,7 +23,7 @@ export type MaybeLoading<T> = T | typeof PendingValue;
  */
 export function loading<T>(value: MaybeLoading<T>, fallback: T): T {
   if (simulatingLoadingState()) return fallback;
-  return value === PendingValue ? fallback : value;
+  return value === PendingValue || value === null || value === undefined ? fallback : value;
 }
 
 type AllLoaded<T> = T extends object
@@ -72,6 +72,13 @@ export function mapLoading<T, O>(
 ): MaybeLoading<O> {
   if (loaded(value)) return mapping(value);
   return PendingValue;
+}
+
+export function mapAllLoading<T extends unknown[], O>(
+  values: { [K in keyof T]: MaybeLoading<T[K]> },
+  mapping: (...values: T) => O,
+): MaybeLoading<O> {
+  return onceAllLoaded(values, mapping, PendingValue);
 }
 
 export const LOREM_IPSUM = `Lorem ipsum dolor sit amet. A impedit beatae sed nostrum voluptatem

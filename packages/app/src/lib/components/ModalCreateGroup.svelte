@@ -22,7 +22,6 @@
           address: ""
           color: null
           description: ""
-          links: []
           longDescription: ""
           related: []
           website: ""

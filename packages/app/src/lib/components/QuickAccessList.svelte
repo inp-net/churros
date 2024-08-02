@@ -64,7 +64,7 @@
   </h2>
 
   <ul class="nobullet cards">
-    {#each $data?.pins.filter(allLoaded) ?? [] as { path, id } (id)}
+    {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id } (id)}
       <li class="card" transition:scale={{ duration: 200 }}>
         <a href={path}>
           {#await pinDisplay(path)}
@@ -124,7 +124,7 @@
                 { path },
                 {
                   optimisticResponse: {
-                    unpin: { id },
+                    unbookmark: { id },
                   },
                 },
               );

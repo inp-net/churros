@@ -1,11 +1,11 @@
 <!-- Credits: https://github.com/nolimits4web/skeleton-elements -->
 <script lang="ts">
   import { PendingValue } from '$houdini';
-  import { LOREM_IPSUM, loaded } from '$lib/loading';
+  import { LOREM_IPSUM, loaded, type MaybeLoading } from '$lib/loading';
 
   export let tag: 'code' | 'span' | 'p' | `h${1 | 2 | 3 | 4 | 5 | 6}` = 'span';
   export let lines: number | undefined = undefined;
-  export let value: string | number | typeof PendingValue = PendingValue;
+  export let value: MaybeLoading<string | number> = PendingValue;
 </script>
 
 {#if !loaded(value)}

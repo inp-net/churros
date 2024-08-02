@@ -153,9 +153,9 @@
           {/each}
         {/if}
       </section>
-      <main>
+      <div class="page-content">
         <slot />
-      </main>
+      </div>
     </div>
     <div class="nav-bottom">
       <NavigationBottom transparent={scanningTickets} />
@@ -358,7 +358,7 @@
     }
   }
 
-  main {
+  .page-content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;

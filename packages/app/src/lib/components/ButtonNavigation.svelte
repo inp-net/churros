@@ -15,7 +15,7 @@
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let iconFilled: typeof SvelteComponent<any> | undefined = icon;
-  export let tooltipsOn: 'left' | 'right' | 'top' | 'bottom' | undefined = undefined;
+  export let tooltipsOn: 'left' | 'right' | 'top' | 'bottom' = 'top';
 
   const mobile = isMobile();
 

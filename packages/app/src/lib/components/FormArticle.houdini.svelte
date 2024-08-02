@@ -197,6 +197,9 @@
         $links: [LinkInput!]!
         $visibility: Visibility!
       ) {
+        setLinks(id: $id, links: $links) {
+          __typename
+        }
         upsertArticle(
           id: $id
           event: $eventId
@@ -204,7 +207,6 @@
           title: $title
           body: $body
           publishedAt: $publishedAt
-          links: $links
           visibility: $visibility
         ) {
           ... on Error {
