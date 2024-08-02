@@ -6,7 +6,7 @@
     "@types/node": "^20.12.2",
     "c8": "^9.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.5.4"
   },
   "exports": {
     "types": "./index.ts",

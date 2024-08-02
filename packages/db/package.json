@@ -21,7 +21,7 @@
     "@prisma/client": "^5.15.1",
     "graphql": "^16.8.1",
     "npm-run-all2": "^6.2.0",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.4"
   },
   "prisma": {
     "seed": "tsx ./seed/index.ts"

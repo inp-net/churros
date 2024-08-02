@@ -82,7 +82,7 @@
     "sveltekit-search-params": "^2.1.2",
     "tslib": "^2.6.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.3",
+    "typescript": "^5.5.4",
     "unplugin-icons": "^0.18.5",
     "vite": "5.2.13",
     "vite-plugin-kit-routes": "^0.6.2",
