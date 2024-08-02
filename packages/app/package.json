@@ -67,6 +67,7 @@
     "git-root-path": "^1.0.0",
     "graphql-zeus": "^5.3.3",
     "houdini-svelte": "^1.2.47",
+    "prettier": "^3.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanitize.css": "^13.0.0",
