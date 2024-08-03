@@ -107,6 +107,7 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    margin-bottom: 1rem;
     font-size: 1.2em;
 
     --avatar-size: 2rem;

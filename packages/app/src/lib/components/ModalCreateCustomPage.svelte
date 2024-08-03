@@ -4,7 +4,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import Modal from '$lib/components/Modal.svelte';
+  import Modal from '$lib/components/ModalDialog.svelte';
   import { toasts } from '$lib/toasts';
   import slugify from 'slugify';
   import IconReset from '~icons/mdi/refresh';

@@ -121,7 +121,19 @@ export const builder = new SchemaBuilder<PothosTypes>({
   defaultInputFieldRequiredness: true,
   defaultFieldNullability: false,
   withInput: {},
-  errors: { defaultTypes: [Error] },
+  errors: {
+    defaultTypes: [Error],
+    // Does not work
+    // defaultResultOptions: {
+    //   fields: (t) => ({
+    //     caveats: t.stringList({
+    //       description:
+    //         "Messages d'avertissements. L'opération a été effectuée mais pas avec l'effet attendu (par exemple, une mutation de suppression qui a finalement changé la visibilité à privé car la suppression est interdite)",
+    //       resolve: (_, __, { caveats }) => caveats,
+    //     }),
+    //   }),
+    // },
+  },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuth: {
     unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),

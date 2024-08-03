@@ -1,0 +1,6 @@
+query PageEventEditVisibility($id: LocalID!) @loading {
+  event(id: $id) {
+    visibility
+    includeInKiosk
+  }
+}

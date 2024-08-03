@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
   import InputText from './InputText.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';

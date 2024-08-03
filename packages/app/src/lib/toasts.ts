@@ -120,11 +120,12 @@ export const toasts = {
    * @param param3
    */
   mutation<MutationName extends string, SuccessData>(
-    result: MutationResult<MutationName, SuccessData>,
+    result: undefined | MutationResult<MutationName, SuccessData>,
     mutationName: NoInfer<MutationName>,
     successMessage: string | ((data: SuccessData) => string),
     errorMessage: string,
   ): result is SucceededMutationResult<MutationName, SuccessData> {
+    if (result === undefined) return false;
     if (mutationSucceeded(mutationName, result)) {
       toasts.success(
         typeof successMessage === 'function'

@@ -96,6 +96,12 @@ const PAGES = {
   '/events/[id]': (id: string | number, params?: {}) => {
     return `/events/${id}`;
   },
+  '/events/[id]/edit': (id: string | number, params?: {}) => {
+    return `/events/${id}/edit`;
+  },
+  '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
+    return `/events/${id}/edit/visibility`;
+  },
   '/forms': `/forms`,
   '/forms/[form]/answer': (form: string | number, params?: { section?: string | number }) => {
     return `/forms/${form}/answer${params?.section ? `/${params?.section}` : ''}`;
@@ -279,12 +285,12 @@ const SERVERS = {
   'GET /events.old/week/[monday]': (monday: string | number, params?: {}) => {
     return `/events.old/week/${monday}`;
   },
-  'GET /events/[group]/[slug]/[...path]': (params: {
-    group: string | number;
+  'GET /events/[id]/[slug]/[...path]': (params: {
+    id: string | number;
     slug: string | number;
     path: (string | number)[];
   }) => {
-    return `/events/${params.group}/${params.slug}/${params.path?.join('/')}`;
+    return `/events/${params.id}/${params.slug}/${params.path?.join('/')}`;
   },
   'GET /forms/[form]/answers.[extension]': (params: {
     form: string | number;
@@ -488,6 +494,8 @@ export type KIT_ROUTES = {
     '/events.old/create': never;
     '/events': 'week';
     '/events/[id]': 'id';
+    '/events/[id]/edit': 'id';
+    '/events/[id]/edit/visibility': 'id';
     '/forms': never;
     '/forms/[form]/answer': 'form' | 'section';
     '/forms/[form]/answered': 'form';
@@ -560,7 +568,7 @@ export type KIT_ROUTES = {
     'GET /bookings.old/[pseudoID].pdf': 'pseudoID';
     'GET /events.old/planning': never;
     'GET /events.old/week/[monday]': 'monday';
-    'GET /events/[group]/[slug]/[...path]': 'group' | 'slug' | 'path';
+    'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
     'GET /frappe': never;
     'GET /groups/[uid].pdf': 'uid';

@@ -13,7 +13,7 @@
   import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputToggle from '$lib/components/InputToggle.svelte';
-  import Modal from '$lib/components/Modal.svelte';
+  import Modal from '$lib/components/ModalDialog.svelte';
   import ShopItem from '$lib/components/ShopItem.svelte';
   import TreeGroups from '$lib/components/TreeGroups.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';

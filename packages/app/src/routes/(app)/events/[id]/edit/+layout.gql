@@ -1,0 +1,24 @@
+query LayoutEventEdit($id: LocalID!) {
+  event(id: $id) {
+    id
+    assertCanEdit(else: "Tu n'a pas les permissions nécéssaires pour modifier cet événement.")
+    organizer {
+      uid
+      name
+      ...AvatarGroup
+    }
+    includeInKiosk
+    title
+    startsAt
+    endsAt
+    ...TextEventDates
+    location
+    visibility
+    coOrganizers {
+      uid
+      name
+      ...AvatarGroup
+    }
+    frequency
+  }
+}

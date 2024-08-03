@@ -1,3 +1,4 @@
+import type { Visibility$options } from '$houdini';
 import {
   DocumentType,
   IssueState,
@@ -68,7 +69,7 @@ export const DISPLAY_VISIBILITIES: Record<Visibility, string> = {
   Private: 'Privé',
 };
 
-export const HELP_VISIBILITY: Record<Visibility, string> = {
+export const HELP_VISIBILITY: Record<Visibility$options, string> = {
   Public: 'Visible par tous (même sans être connecté)',
   GroupRestricted: 'Visible par les membres du groupe',
   SchoolRestricted: "Visible par les étudiant·e·s de cette l'école",

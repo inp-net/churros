@@ -3,12 +3,14 @@ import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID, VisibilityEnum } from '#modules/global';
 import { Visibility } from '@churros/db/prisma';
+import { ZodError } from 'zod';
 
 const ALLOWED_DATELESS_VISIBILITIES = [Visibility.Private, Visibility.Unlisted] as Visibility[];
 
 builder.mutationField('setEventVisibility', (t) =>
   t.prismaField({
     type: EventType,
+    errors: { types: [Error, ZodError] },
     description:
       "Changer la visibilité d'un événement. Un évènement dont les dates ne sont pas encore déclarées ne peut pas avoir une visiblité autre que Unlisted ou Private.",
     args: {

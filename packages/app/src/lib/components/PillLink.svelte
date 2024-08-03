@@ -27,7 +27,7 @@
   $: data = fragment(
     link,
     graphql(`
-      fragment PillLink on Link {
+      fragment PillLink on Link @loading {
         url
         text
       }
@@ -35,7 +35,7 @@
   );
 </script>
 
-<a href={onceLoaded($data?.url, (u) => u.toString(), '')}>
+<a href={onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}>
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
     {#if socialLogo}
       <svelte:component this={socialLogo}></svelte:component>
@@ -46,7 +46,7 @@
   <LoadingText
     value={socialSite
       ? mapAllLoading([socialSite, $data?.url], (s, u) => s?.username || u?.hostname)
-      : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u.hostname)}
+      : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u?.hostname)}
     >Chargement…</LoadingText
   >
 </a>
@@ -69,10 +69,9 @@
     align-items: center;
     justify-content: center;
     margin-right: 0.5ch;
-    font-size: 1.2em;
   }
 
-  .icon.is-logo {
+  /* .icon.is-logo {
     font-size: 0.8em;
-  }
+  } */
 </style>

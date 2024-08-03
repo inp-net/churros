@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
 
   export let element: HTMLDialogElement;
 </script>

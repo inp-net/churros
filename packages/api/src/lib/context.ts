@@ -119,6 +119,10 @@ const getUser = async (token: string) => {
 
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
 
+function emptyContext() {
+  return { caveats: [] as string[], user: undefined, token: undefined };
+}
+
 /** The request context, made available in all resolvers. */
 export const context = async ({ request, ...rest }: YogaInitialContext) => {
   const headers =
@@ -146,22 +150,23 @@ export const context = async ({ request, ...rest }: YogaInitialContext) => {
       throw new GraphQLError('Invalid client credentials');
 
     return {
+      ...emptyContext(),
       token: `churros_clientcredentials_${encodedValue}`,
       client,
     };
   }
 
   const token = getToken(headers);
-  if (!token) return {};
+  if (!token) return emptyContext();
 
   try {
     const user = await (isThirdPartyToken(token) ? getUserFromThirdPartyToken : getUser)(token);
-    return { token, user };
+    return { ...emptyContext(), token, user };
   } catch (error) {
     console.error(
       `Could not get user from token ${JSON.stringify(token)}: ${error?.toString() ?? 'undefined'}`,
     );
-    return {};
+    return emptyContext();
   }
 };
 

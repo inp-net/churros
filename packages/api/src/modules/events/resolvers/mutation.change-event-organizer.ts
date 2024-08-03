@@ -2,10 +2,12 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { EventType } from '#modules/events/types';
 import { canCreateEvents, canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID, UIDScalar } from '#modules/global';
+import { ZodError } from 'zod';
 
 builder.mutationField('changeEventOrganizer', (t) =>
   t.prismaField({
     type: EventType,
+    errors: { types: [Error, ZodError] },
     description: "Changer le groupe organisateur (principal) de l'événement",
     args: {
       id: t.arg({ type: LocalID }),
