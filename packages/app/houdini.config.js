@@ -137,9 +137,9 @@ const config = {
       unmarshal: (x) => (x === 'Unlimited' ? null : x),
     },
     URL: {
-      type: 'string | URL',
+      type: 'URL | null',
       marshal: (x) => x.toString(),
-      unmarshal: (x) => new URL(x),
+      unmarshal: (x) => (URL.canParse(x) ? new URL(x) : null),
     },
   },
   features: {

@@ -1,6 +1,5 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
-import { URLScalar } from '../../global/types/url.js';
 
 export const LinkType = builder.prismaNode('Link', {
   id: { field: 'id' },
@@ -9,8 +8,8 @@ export const LinkType = builder.prismaNode('Link', {
   fields: (t) => ({
     name: t.exposeString('name', { deprecationReason: 'Use `text` instead.' }),
     text: t.exposeString('name'),
-    value: t.exposeString('value', { deprecationReason: 'Use `url` instead.' }),
-    url: t.expose('value', { type: URLScalar }),
+    value: t.exposeString('value', { deprecationReason: 'Use `rawURL` instead.' }),
+    rawURL: t.exposeString('value'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
   }),
 });

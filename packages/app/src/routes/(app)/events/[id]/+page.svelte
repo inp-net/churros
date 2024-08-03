@@ -1,6 +1,4 @@
 <script lang="ts">
-  import HTMLContent from './HTMLContent.svelte';
-
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
@@ -8,6 +6,7 @@
   import CardTicket from '$lib/components/CardTicket.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import PillLink from '$lib/components/PillLink.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
   import { sentenceJoin } from '$lib/i18n';
   import { mapAllLoading } from '$lib/loading';
@@ -15,6 +14,7 @@
   import IconDate from '~icons/msl/calendar-today-outline';
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
+  import HTMLContent from './HTMLContent.svelte';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
@@ -57,6 +57,13 @@
         {/if}
       </section>
     </header>
+    {#if event.links.length > 0}
+      <ul class="links nobullet">
+        {#each event.links as link}
+          <PillLink social {link} />
+        {/each}
+      </ul>
+    {/if}
     <HTMLContent tag="main" html={event.descriptionHtml}></HTMLContent>
     <section class="tickets">
       {#each event.tickets as ticket}
@@ -70,6 +77,7 @@
         {/if}
       {/each}
     </section>
+
     <section class="actions">
       <ButtonLike resource={event} />
       <ButtonShare resource={event} />
@@ -133,6 +141,13 @@
   header .metadata > div {
     display: flex;
     gap: 0.5rem;
+    align-items: center;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
     align-items: center;
   }
 
