@@ -1,0 +1,78 @@
+<script lang="ts">
+  import { fragment, graphql, type PillLink } from '$houdini';
+  import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import { mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
+  import { socials } from '$lib/social.generated';
+
+  function socialSiteFromURL(url: URL) {
+    for (const site of Object.values(socials)) {
+      const match = site.regex.exec(url.href);
+      if (match) {
+        return {
+          username: match.groups?.username,
+          ...site,
+        };
+      }
+    }
+  }
+
+  /** Whether to use social media icons and text (the Link's text is used as a fallback)*/
+  export let social = false;
+
+  $: socialSite = social && $data ? mapLoading($data.url, socialSiteFromURL) : undefined;
+  $: socialLogo = onceLoaded(socialSite, (s) => s?.icon, undefined);
+
+  export let link: PillLink | null;
+  $: data = fragment(
+    link,
+    graphql(`
+      fragment PillLink on Link {
+        url
+        text
+      }
+    `),
+  );
+</script>
+
+<a href={onceLoaded($data?.url, (u) => u.toString(), '')}>
+  <div class="icon" class:is-logo={Boolean(socialLogo)}>
+    {#if socialLogo}
+      <svelte:component this={socialLogo}></svelte:component>
+    {:else}
+      <IconLinkVariant></IconLinkVariant>
+    {/if}
+  </div>
+  <LoadingText
+    value={socialSite
+      ? mapAllLoading([socialSite, $data?.url], (s, u) => s?.username || u?.hostname)
+      : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u.hostname)}
+    >Chargement…</LoadingText
+  >
+</a>
+
+<style>
+  a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25em 0.75em;
+    background: var(--bg2);
+    border-radius: 1000px;
+  }
+
+  a:hover {
+    background-color: var(--bg3);
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5ch;
+    font-size: 1.2em;
+  }
+
+  .icon.is-logo {
+    font-size: 0.8em;
+  }
+</style>

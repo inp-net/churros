@@ -20,5 +20,8 @@ query PageEventDetail($id: LocalID!) {
     }
     ...ButtonLike
     ...ButtonShare
+    links {
+      ...PillLink
+    }
   }
 }

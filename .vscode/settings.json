@@ -9,7 +9,7 @@
   "sql-formatter.dialect": "pl/sql",
   "sql-formatter.uppercase": true,
   "iconify.delimiters": ["/"],
-  "iconify.includes": ["material-symbols-light", "mdi"],
+  "iconify.includes": ["material-symbols-light", "mdi", "logos"],
   "iconify.customCollectionIdsMap": {
     "msl": "material-symbols-light"
   }
