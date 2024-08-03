@@ -55,6 +55,9 @@ export const ID_PREFIXES_TO_TYPENAMES = {
 } as const;
 /* end @generated from schema */
 
+export type IDPrefix = keyof typeof ID_PREFIXES_TO_TYPENAMES;
+export type Typename = (typeof ID_PREFIXES_TO_TYPENAMES)[IDPrefix];
+
 export const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
   Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([prefix, typename]) => [typename, prefix]),
 ) as Record<
@@ -80,4 +83,10 @@ export function ensureIdPrefix(
 ): string {
   if (hasIdPrefix(typename, id)) return id;
   return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${id}`;
+}
+
+export function typenameOfId(id: string): Typename | undefined {
+  const prefix = id.split(':')[0];
+  if (!Object.keys(ID_PREFIXES_TO_TYPENAMES).includes(prefix)) return undefined;
+  return ID_PREFIXES_TO_TYPENAMES[prefix as IDPrefix];
 }

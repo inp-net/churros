@@ -60,6 +60,7 @@
     "./src/modules/posts/utils",
     "./src/modules/reactions/resolvers",
     "./src/modules/reactions/types",
+    "./src/modules/reactions/utils",
     "./src/modules/schools/resolvers",
     "./src/modules/schools/types",
     "./src/modules/services/resolvers",

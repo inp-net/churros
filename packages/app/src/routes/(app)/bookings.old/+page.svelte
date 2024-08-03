@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import CardTicket from '$lib/components/CardTicket.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { closestMonday } from '$lib/dates';
@@ -28,7 +27,7 @@
     <ul class="nobullet">
       {#each $PageBookings.data.me.bookings.nodes.filter(notNull) as booking (booking.id)}
         <li>
-          <CardTicket href="/bookings/{booking.code}/" {booking} />
+          <!-- <CardTicket href="/bookings/{booking.code}/" {booking} /> -->
         </li>
       {/each}
     </ul>

@@ -1,5 +1,5 @@
-query AppLayout($version: String!, $pagePath: String!, $loggedIn: LoggedIn!) {
-  me @include(if: $loggedIn) @loading {
+query AppLayout($version: String!, $pagePath: String!) {
+  me @loading {
     ...NavigationSide
     ...NavigationTop
     ...QuickAccessList

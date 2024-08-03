@@ -53,20 +53,20 @@
   class="toast {theme}"
   id="toast-{id}"
 >
-  <div class="icon">
-    {#if type === 'success'}
-      <IconCheck></IconCheck>
-    {:else if type === 'warning'}
-      <IconWarning></IconWarning>
-    {:else if type === 'error'}
-      <IconError></IconError>
-    {:else if type === 'info'}
-      <IconInfo></IconInfo>
-    {:else if type === 'debug'}
-      <IconDebug />
-    {/if}
-  </div>
   <div class="content">
+    <div class="icon">
+      {#if type === 'success'}
+        <IconCheck></IconCheck>
+      {:else if type === 'warning'}
+        <IconWarning></IconWarning>
+      {:else if type === 'error'}
+        <IconError></IconError>
+      {:else if type === 'info'}
+        <IconInfo></IconInfo>
+      {:else if type === 'debug'}
+        <IconDebug />
+      {/if}
+    </div>
     {#if title}
       <strong>{title}</strong>
     {/if}
@@ -104,10 +104,14 @@
     align-items: center;
     padding: 0.5rem 0.75rem;
     overflow: hidden;
-    color: var(--text);
     background-color: var(--bg);
-    border: var(--border-block) solid;
     border-radius: var(--radius-block);
+  }
+
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .action {
@@ -144,7 +148,7 @@
     bottom: 0;
     left: 0;
     height: 0.25rem;
-    background-color: currentColor;
+    background-color: currentcolor;
     transition: width 50ms linear;
   }
 </style>

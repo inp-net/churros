@@ -1,158 +1,131 @@
 <script lang="ts">
-  import Qrcode from '~icons/mdi/qrcode';
-  import IconCancelled from '~icons/mdi/cancel';
-  import CashClock from '~icons/mdi/cash-clock';
-  import { env } from '$env/dynamic/public';
-  import { fragment, graphql, type CardTicket } from '$houdini';
+  import { fragment, graphql, type CardTicket, type CardTicketPlaces } from '$houdini';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import { mapAllLoading, mapLoading, onceAllLoaded, allLoaded } from '$lib/loading';
+  import { route } from '$lib/ROUTES';
+  import { formatDistance, isWithinInterval } from 'date-fns';
+  import { onMount } from 'svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
-  export let href: string;
-  export let floating = false;
-
-  export let booking: CardTicket;
-  $: data = fragment(
-    booking,
+  export let places: CardTicketPlaces | null;
+  $: dataPlaces = fragment(
+    places,
     graphql(`
-      fragment CardTicket on Registration {
-        id
-        code
-        beneficiary
-        authorIsBeneficiary
-        paid
-        cancelled
-        opposed
-        author {
-          fullName
-        }
-        authorEmail
-        beneficiaryUser {
-          fullName
-        }
-        ticket {
-          name
-          event {
-            pictureFile
-            title
-          }
+      fragment CardTicketPlaces on Ticket @loading {
+        placesLeft
+        capacity
+      }
+    `),
+  );
+
+  export let ticket: CardTicket | null;
+  $: data = fragment(
+    ticket,
+    graphql(`
+      fragment CardTicket on Ticket @loading {
+        localID
+        opensAt
+        closesAt
+        name
+        price
+        event {
+          localID
         }
       }
     `),
   );
 
-  $: ({
-    ticket,
-    author,
-    authorEmail,
-    beneficiary,
-    beneficiaryUser,
-    cancelled,
-    paid,
-    authorIsBeneficiary,
-  } = $data);
+  let now = new Date();
+  onMount(() => {
+    setInterval(() => {
+      now = new Date();
+    }, 500);
+  });
+
+  $: ticketIsOpen =
+    $data &&
+    mapAllLoading(
+      [$data.opensAt, $data.closesAt],
+      (start, end) => start && end && isWithinInterval(now, { start, end }),
+    );
 </script>
 
-<a
-  class="billet"
-  class:floating
-  {href}
-  class:danger={cancelled}
-  class:noimg={!ticket.event.pictureFile}
-  style:background-image={ticket.event.pictureFile
-    ? `linear-gradient(rgba(0, 0, 0, var(--alpha)), rgba(0,0,0,var(--alpha))), url('${env.PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
-    : undefined}
-  style:--text={ticket.event.pictureFile ? 'white' : 'var(--text)'}
->
-  <div class="overlay-text">
-    {#if !authorIsBeneficiary}
-      <div class="beneficiary">
-        {#if beneficiary}
-          Pour {beneficiaryUser?.fullName ?? beneficiary}
+<div class="ticket">
+  <div class="text">
+    <div class="title">
+      <LoadingText value={$data?.name}>Place</LoadingText>
+    </div>
+    <div class="subtitle">
+      <LoadingText
+        value={mapAllLoading([$data?.opensAt, $data?.closesAt], (start, end) =>
+          ticketIsOpen && start && end
+            ? `${formatDistance(end, now)} pour shotgun`
+            : `Vente ${formatDistance(start, now, { addSuffix: true })}`,
+        )}>?</LoadingText
+      >
+    </div>
+  </div>
+  <div class="actions">
+    <ButtonSecondary
+      href={$data
+        ? onceAllLoaded(
+            [$data.event.localID, $data.localID],
+            (id, ticket) => route('/events/[id]/book/[ticket]', { id, ticket }),
+            '',
+          )
+        : ''}
+      >Obtenir <span class="price"
+        ><LoadingText value={mapLoading($data?.price, (p) => `${p}€`)}>...</LoadingText></span
+      >
+    </ButtonSecondary>
+    {#if $dataPlaces}
+      <div class="places">
+        {#if !allLoaded($dataPlaces)}
+          <LoadingText>... places / ...</LoadingText>
+        {:else if $dataPlaces.placesLeft}
+          {$dataPlaces.placesLeft} places / {$dataPlaces.capacity}
         {:else}
-          Par {author?.fullName ?? authorEmail}
+          {$dataPlaces.capacity} places au total
         {/if}
       </div>
     {/if}
-    <div class="title">{ticket.event.title}</div>
-    <div class="ticket-name">
-      {#if cancelled}
-        <em>Place annulée</em>
-      {:else}
-        {ticket.name}
-      {/if}
-    </div>
   </div>
-  <div class="qrcode" class:paid>
-    {#if cancelled}
-      <IconCancelled />
-    {:else if paid}
-      <Qrcode />
-    {:else}
-      <CashClock />
-    {/if}
-  </div>
-</a>
+</div>
 
-<style lang="scss">
-  .billet {
+<style>
+  .ticket {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem;
-    background-color: var(--bg);
-    background-size: cover;
-    border-radius: var(--radius-block);
-    transition: all 0.5s ease;
-
-    --alpha: 0.5;
+    padding: 1rem;
+    color: var(--color);
+    background-color: var(--background, var(--bg2));
+    border: var(--border-block) solid var(--color, transparent);
+    border-radius: 10px;
   }
 
-  .billet.floating {
-    box-shadow: var(--shadow-big);
+  /* .ticket .price {
+    color: var(--color, var(--shy));
+  } */
+
+  .ticket .text {
+    display: flex;
+    flex-direction: column;
   }
 
-  .billet.noimg:not(.floating) {
-    border: var(--border-block) solid;
-  }
-
-  .billet.noimg:hover,
-  .billet.noimg:focus-visible {
-    --text: var(--primary);
-
-    background-color: var(--primary-bg);
-    border-color: var(--primary);
-  }
-
-  .billet:not(.noimg):hover,
-  .billet:not(.noimg):focus-visible {
-    --alpha: 0.6;
-  }
-
-  .overlay-text {
-    box-sizing: border-box;
-    color: var(--text);
-    text-align: left;
-  }
-
-  .qrcode {
-    right: 0;
-    box-sizing: border-box;
-    flex-shrink: 0;
-    font-size: 2rem;
-    color: var(--text);
-    text-align: right;
-  }
-
-  .beneficiary {
-    font-size: 0.8rem;
-  }
-
-  .title {
+  .ticket .title {
     font-size: 1.2rem;
-    font-weight: bold;
-    line-height: 1.1;
+    line-height: 1;
   }
 
-  .ticket-name {
-    font-size: 1rem;
+  .ticket .subtitle {
+    font-size: 0.8em;
+  }
+
+  .ticket .places {
+    margin-top: 0.25em;
+    font-size: 0.8rem;
+    text-align: right;
   }
 </style>

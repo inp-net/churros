@@ -9,9 +9,7 @@ export const URLScalar = builder.scalarType('URL', {
     return new URL(value).toString();
   },
   parseValue: (value) => {
-    if (typeof value !== 'string') 
-      throw new GraphQLError('URL invalide');
-    
+    if (typeof value !== 'string') throw new GraphQLError('URL invalide');
 
     let maybeURL = value.trim();
 
@@ -26,9 +24,7 @@ export const URLScalar = builder.scalarType('URL', {
     }
 
     maybeURL = `https://${maybeURL}`;
-    if (!URL.canParse(maybeURL)) 
-      throw new GraphQLError('URL invalide');
-    
+    if (!URL.canParse(maybeURL)) throw new GraphQLError('URL invalide');
 
     return new URL(maybeURL);
   },

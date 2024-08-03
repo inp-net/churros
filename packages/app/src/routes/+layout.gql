@@ -1,5 +1,6 @@
-query RootLayout($loggedIn: LoggedIn!) {
-  me @include(if: $loggedIn) {
+query RootLayout {
+  loggedIn
+  me {
     ...AnalyticsTrackerUser
   }
 

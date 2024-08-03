@@ -1,10 +1,11 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
-import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import { DateTimeScalar, HTMLScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
 import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
+import { ShareableInterface } from '../../global/types/shareable.js';
 import { EventFrequencyType, eventCapacity } from '../index.js';
 import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
 
@@ -16,6 +17,8 @@ export const EventType = builder.prismaNode('Event', {
     //@ts-expect-error dunno why it complainnns
     ReactableInterface,
     // builder.interfaceRef('HasLinks'),
+    //@ts-expect-error dunno why it complainnns
+    ShareableInterface,
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
@@ -27,7 +30,10 @@ export const EventType = builder.prismaNode('Event', {
     beneficiary: t.relation('beneficiary', { nullable: true }),
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
     description: t.exposeString('description'),
-    descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
+    descriptionHtml: t.field({
+      type: HTMLScalar,
+      resolve: async ({ description }) => toHtml(description),
+    }),
     descriptionPreview: t.string({
       resolve: async ({ description }) =>
         (
@@ -67,7 +73,19 @@ export const EventType = builder.prismaNode('Event', {
     showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
       description: 'Vrai si le nombre de places restantes doit être affiché',
     }),
-
+    shares: t.int({
+      async resolve({ id }) {
+        const {
+          _count: { sharedBy },
+        } = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          select: {
+            _count: { select: { sharedBy: true } },
+          },
+        });
+        return sharedBy;
+      },
+    }),
     reacted: t.boolean({
       args: { emoji: t.arg.string() },
       async resolve({ id }, { emoji }, { user }) {

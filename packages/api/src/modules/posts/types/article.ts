@@ -1,6 +1,11 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { CommentableInterface } from '#modules/comments';
-import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import {
+  DateTimeScalar,
+  PicturedInterface,
+  ShareableInterface,
+  VisibilityEnum,
+} from '#modules/global';
 import { ReactableInterface } from '#modules/reactions';
 import { canEditArticle } from '../utils/permissions.js';
 
@@ -16,6 +21,8 @@ export const ArticleType = builder.prismaNode('Article', {
     // FIXME: Gives a "not implemented" error
     // so HasLinks is an enum for now
     // builder.interfaceRef('HasLinks'),
+    // @ts-expect-error dunno why it complainnns
+    ShareableInterface,
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
@@ -107,6 +114,19 @@ export const ArticleType = builder.prismaNode('Article', {
           (counts, { emoji }) => ({ ...counts, [emoji]: (counts[emoji] ?? 0) + 1 }),
           {},
         );
+      },
+    }),
+    shares: t.int({
+      async resolve({ id }) {
+        const {
+          _count: { sharedBy },
+        } = await prisma.article.findUniqueOrThrow({
+          where: { id },
+          select: {
+            _count: { select: { sharedBy: true } },
+          },
+        });
+        return sharedBy;
       },
     }),
     event: t.relation('event', { nullable: true }),

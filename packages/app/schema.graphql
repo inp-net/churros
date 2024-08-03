@@ -691,7 +691,7 @@ enum ApiUsageQueryType {
 """
 An article is a post in a group
 """
-type Article implements Commentable & Node & Pictured & Reactable {
+type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
   body: String!
@@ -738,6 +738,7 @@ type Article implements Commentable & Node & Pictured & Reactable {
   reacted(emoji: String!): Boolean!
   reactionCounts: Counts!
   reactions(emoji: String!): Int!
+  shares: Int!
 
   """
   Un nom lisible sans espaces, adaptés pour des URLs.
@@ -1049,7 +1050,7 @@ type EvenSearchResult {
 """
 An event is a date, time and place, as well as an optional ticket
 """
-type Event implements Node & Pictured & Reactable {
+type Event implements Node & Pictured & Reactable & Shareable {
   articles: [Article!]!
   author: User
   authorId: ID
@@ -1091,7 +1092,7 @@ type Event implements Node & Pictured & Reactable {
   coOrganizers: [Group!]!
   contactMail: String!
   description: String!
-  descriptionHtml: String!
+  descriptionHtml: HTML!
   descriptionPreview: String!
   endsAt: DateTime
 
@@ -1126,7 +1127,7 @@ type Event implements Node & Pictured & Reactable {
   """
   Réservations faites par et/ou pour l'utilisateur.ice connecté.e
   """
-  myBookings: EventMyBookingsResult!
+  myBookings: [Registration!]!
   myReactions: BooleanMap!
   mySoonestShotgunOpensAt: DateTime
     @deprecated(
@@ -1156,6 +1157,7 @@ type Event implements Node & Pictured & Reactable {
   reactions(emoji: String!): Int!
   recurringUntil: DateTime
   searchBookings(q: String!): [RegistrationSearchResult!]!
+  shares: Int!
 
   """
   Vrai si le nombre de places restantes doit être affiché
@@ -1227,12 +1229,6 @@ enum EventManagerPowerLevel {
   EditPermissions
   ReadOnly
   ScanTickets
-}
-
-union EventMyBookingsResult = Error | EventMyBookingsSuccess
-
-type EventMyBookingsSuccess {
-  data: [Registration!]!
 }
 
 type EventsByDay {
@@ -2295,6 +2291,14 @@ type Mutation {
     phone: String
     shopPaymentId: ID!
   ): MutationPaidShopPaymentResult!
+  react(
+    emoji: String!
+
+    """
+    La ressource à laquelle réagir. ID global, avec préfixe.
+    """
+    target: ID!
+  ): Reactable!
   refuseRegistration(email: String!, reason: String!): Boolean!
 
   """
@@ -2484,6 +2488,16 @@ type Mutation {
   ): Reactable!
 
   """
+  Marque une ressource comme partagée par l'utilisateur·ice connecté·e
+  """
+  trackShare(
+    """
+    ID (global) de la ressource
+    """
+    resource: ID!
+  ): Boolean!
+
+  """
   Débannir un·e utilisateur·rice d'un événement. Si l'utilisateur·ice n'était pas banni·e, cette mutation n'aura aucun effet (mais ne fait pas d'erreur).
   """
   unbanFromEvent(id: LocalID!, user: UID!): Event!
@@ -2497,6 +2511,14 @@ type Mutation {
     """
     path: String!
   ): Bookmark
+  unreact(
+    emoji: String!
+
+    """
+    La ressource à laquelle enlever la réaction. ID global, avec préfixe.
+    """
+    target: ID!
+  ): Reactable!
   updateArticlePicture(file: File!, id: ID!): String!
 
   """
@@ -2739,7 +2761,7 @@ type Mutation {
     emoji: String!
     eventId: ID
     id: ID
-  ): Int!
+  ): Int! @deprecated(reason: "Use 'react' instead")
   upsertRegistration(
     authorEmail: String
     beneficiary: String
@@ -3555,7 +3577,7 @@ type Query {
   """
   - **Rate limit:** 6000/minute
   """
-  me: User!
+  me: User
   minor(id: ID!): Minor!
   minors(after: String, before: String, first: Int, last: Int): QueryMinorsConnection!
   myApps: [ThirdPartyApp!]!
@@ -4787,6 +4809,18 @@ type Service implements Node {
   school: School
   studentAssociation: StudentAssociation
   url: String!
+}
+
+"""
+Ressource dont le nombre de partages est compté
+"""
+interface Shareable {
+  id: ID!
+
+  """
+  Nombre de partages
+  """
+  shares: Int!
 }
 
 type ShopItem implements Node {

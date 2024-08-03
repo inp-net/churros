@@ -73,8 +73,8 @@ export interface PothosTypes {
       Output: string;
     };
     HTML: {
-      Input: never;
-      Output: string;
+      Input: string;
+      Output: never;
     };
     ShortString: {
       Input: string;
