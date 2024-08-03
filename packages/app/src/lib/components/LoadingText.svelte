@@ -13,7 +13,8 @@
     this={tag === 'code' ? 'span' : tag}
     {...$$restProps}
     class="skeleton-text skeleton-effect-wave"
-    ><slot>{LOREM_IPSUM.split('\n').slice(0, lines).join('\n')}</slot></svelte:element
+    ><slot>{lines ? LOREM_IPSUM.split('\n').slice(0, lines).join('\n') : 'Chargement…'}</slot
+    ></svelte:element
   >
 {:else}
   <slot name="loaded" {value}>

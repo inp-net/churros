@@ -27,7 +27,7 @@
     if (url.origin !== $page.url.origin || url.pathname.startsWith('/login'))
       url = new URL('/', $page.url);
     const searchParams = new URLSearchParams(
-      [...$page.url.searchParams.entries()].filter(([k]) => k !== 'to'),
+      [...$page.url.searchParams.entries()].filter(([k]) => k !== 'to' && k !== 'from'),
     );
     return goto(new URL(`${url.toString()}?${searchParams.toString()}`), { invalidateAll: true });
   };

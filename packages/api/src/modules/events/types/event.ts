@@ -5,6 +5,7 @@ import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
 import { EventFrequencyType, eventCapacity } from '../index.js';
 import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
@@ -164,6 +165,19 @@ export const EventType = builder.prismaNode('Event', {
     canEdit: t.boolean({
       description: "L'utilisateur·ice connecté·e peut modifier cet évènement",
       resolve: (event, _, { user }) => canEditEvent(event, user),
+    }),
+    assertCanEdit: t.boolean({
+      description:
+        "L'utilisateur·ice connecté·e peut modifier cet événement, sinon lève une erreur avec le message donné en argument",
+      args: {
+        else: t.arg.string(),
+      },
+      resolve: (event, { else: errorMessage }, { user }) => {
+        if (!canEditEvent(event, user)) 
+          throw new GraphQLError(errorMessage);
+        
+        return true;
+      },
     }),
     canEditManagers: t.boolean({
       description:

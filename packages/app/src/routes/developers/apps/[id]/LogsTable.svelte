@@ -2,7 +2,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-  import Modal from '$lib/components/Modal.svelte';
+  import Modal from '$lib/components/ModalDialog.svelte';
   import { formatDateTime, formatDate } from '$lib/dates';
   import { tooltip } from '$lib/tooltip';
   import { zeus } from '$lib/zeus';

@@ -12,6 +12,7 @@
   import IconBack from '~icons/msl/arrow-back';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import type { LayoutRouteId } from '../$types';
+  import { afterNavigate } from '$app/navigation';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type NavigationQuickAction = Omit<ActionData<any>, 'label'> & {
@@ -40,6 +41,11 @@
   $: topnavConfig = $page.route.id
     ? topnavConfigs[$page.route.id as NonNullable<LayoutRouteId>]
     : undefined;
+
+  afterNavigate(({ to }) => {
+    if (!to?.route.id) return;
+    topnavConfig = topnavConfigs[to.route.id as LayoutRouteId];
+  });
 
   $: if (topnavConfig) {
     ({
@@ -72,7 +78,7 @@
           <IconBack></IconBack>
         </ButtonGhost>
       {/if}
-      <span>{title}</span>
+      <div class="title">{title}</div>
     {:else}
       <a class="left logo" href="/">
         <LogoChurros wordmark></LogoChurros>
@@ -123,8 +129,21 @@
   .actions,
   .left {
     display: flex;
+    flex-wrap: nowrap;
     gap: 0.25em;
     align-items: center;
+    overflow: hidden;
+  }
+
+  .actions {
+    flex-shrink: 0;
+  }
+
+  .title {
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .logo {

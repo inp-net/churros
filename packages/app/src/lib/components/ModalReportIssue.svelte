@@ -15,7 +15,7 @@
   import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
 
   let title = '';
   let description = '';

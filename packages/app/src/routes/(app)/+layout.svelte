@@ -113,7 +113,7 @@
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
 
-<div class="layout" class:mobile>
+<div class="layout" id="layout" data-route={$page.route.id} class:mobile>
   <header class="left">
     <NavigationSide user={$AppLayout.data?.me ?? null} />
   </header>
@@ -236,9 +236,11 @@
 
   .layout {
     display: grid;
-    grid-template-columns: 1fr minmax(300px, 700px) 1fr;
+    grid-template-columns: 1fr minmax(300px, var(--scrollable-content-width, 700px)) 1fr;
     gap: 2rem;
     width: 100dvw;
+
+    // TODO animate --scrollable-content-width changes
 
     --scrollable-area-border-color: var(--bg3);
 
@@ -271,7 +273,7 @@
   #scrollable-area {
     display: flex;
     flex-direction: column;
-    max-width: 700px;
+    max-width: var(--scrollable-content-width, 700px);
   }
 
   .layout .nav-bottom {

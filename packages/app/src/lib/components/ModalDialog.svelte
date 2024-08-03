@@ -49,7 +49,10 @@
   dialog {
     position: fixed;
     z-index: 1000;
-    min-width: calc(min(100%, 500px));
+
+    /* min-width: calc(min(100%, 500px)); */
+    width: 66vw;
+    height: 50vh;
     padding: 1.5rem;
     color: var(--text);
     background: var(--bg);

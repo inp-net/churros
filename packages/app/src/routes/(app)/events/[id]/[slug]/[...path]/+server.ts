@@ -12,9 +12,13 @@ graphql(`
 `);
 
 export async function GET(event) {
-  const { data } = await load_PageRedirectEventOldURL({ event, variables: event.params }).then(
-    (stores) => get(stores.PageRedirectEventOldURL),
-  );
+  const { data } = await load_PageRedirectEventOldURL({
+    event,
+    variables: {
+      group: event.locals.group,
+      slug: event.params.slug,
+    },
+  }).then((stores) => get(stores.PageRedirectEventOldURL));
   if (data?.event.localID)
     redirect(301, route('/events/[id]', data.event.localID) + '/' + event.params.path);
   error(404, { message: 'Événement non trouvé' });

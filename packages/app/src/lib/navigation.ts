@@ -322,6 +322,22 @@ export const topnavConfigs: Partial<
       commonActions.copyID,
     ],
   }),
+  '/(app)/events/[id]/edit': ({ params: { id } }) => ({
+    title: 'Modifier l’évènement',
+    back: route('/events/[id]', id),
+    actions: [
+      {
+        ...commonActions.delete,
+        do() {
+          navtopPushState('NAVTOP_DELETING');
+        },
+      },
+    ],
+  }),
+  '/(app)/events/[id]/edit/visibility': ({ params: { id } }) => ({
+    title: 'Visibilité',
+    back: route('/events/[id]/edit', id),
+  }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
     quickAction: {

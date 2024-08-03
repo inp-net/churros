@@ -131,13 +131,15 @@ export function formatEventDates({
   startsAt,
   endsAt,
   recurringUntil,
+  defaultText = '(Dates non définies)',
 }: {
   frequency: EventFrequency | EventFrequency$options;
   startsAt: Date | null;
   endsAt: Date | null;
   recurringUntil?: Date | undefined | null;
+  defaultText?: string;
 }): string {
-  if (!startsAt || !endsAt) return `(Dates non définies)`;
+  if (!startsAt || !endsAt) return defaultText;
   try {
     switch (frequency) {
       case EventFrequency.Once: {

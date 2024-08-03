@@ -32,7 +32,7 @@
   import { createEventDispatcher } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LogoChurros from './LogoChurros.svelte';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
   import { track } from '$lib/analytics';
 
   const dispatch = createEventDispatcher();
@@ -222,7 +222,7 @@
     width: 100%;
     height: 0.2em;
     content: '';
-    background: currentColor;
+    background: currentcolor;
     border-radius: var(--radius-block);
   }
 

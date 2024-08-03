@@ -4,12 +4,14 @@ import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils'
 import { DateRangeInput, LocalID } from '#modules/global';
 import { EventFrequency } from '@churros/db/prisma';
 import omit from 'lodash.omit';
+import { ZodError } from 'zod';
 import { MarkdownScalar } from '../../global/types/markdown.js';
 import { CapacityScalar } from '../types/capacity.js';
 
 builder.mutationField('updateEvent', (t) =>
   t.prismaField({
     type: EventType,
+    errors: { types: [Error, ZodError] },
     description: "Mettre à jour les informations de base d'un évènement",
     args: {
       id: t.arg({ type: LocalID }),
@@ -42,6 +44,10 @@ builder.mutationField('updateEvent', (t) =>
       contactMail: t.arg.string({
         required: false,
         description: "E-mail de contact de l'orga de l'évènement",
+      }),
+      includeInKioske: t.arg.boolean({
+        required: false,
+        description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
       }),
     },
     async authScopes(_, args, { user }) {

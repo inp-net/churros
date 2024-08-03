@@ -35,7 +35,7 @@
   import InputText from './InputText.svelte';
   import InputVisibility from './InputVisibility.houdini.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
 
   export let afterGoTo: (article: { group: { uid: string }; localID: string }) => string = (
     article,

@@ -1,3 +1,5 @@
+type NavigationTopState = import('$lib/navigation').NotificationTopState;
+
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type SessionUserType = import('$lib/session.js').SessionUser;
@@ -20,6 +22,8 @@ declare namespace App {
   interface Session {
     token?: string;
   }
+
+  interface PageState extends NavigationTopState {}
 }
 
 declare module 'simple-svelte-autocomplete';

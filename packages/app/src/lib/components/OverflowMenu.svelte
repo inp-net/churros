@@ -1,10 +1,10 @@
 <script lang="ts" context="module">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ModalDrawer from '$lib/components/ModalDrawer.svelte';
   import type { Page } from '@sveltejs/kit';
   import { DropdownMenu } from 'bits-ui';
   import type { SvelteComponent } from 'svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
-  import { Drawer } from 'vaul-svelte';
   import IconDots from '~icons/msl/more-vert';
 
   export type ActionData<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
@@ -90,8 +90,8 @@
 </script>
 
 {#if mobile}
-  <Drawer.Root bind:open={drawerOpen} shouldScaleBackground>
-    <Drawer.Trigger>
+  <ModalDrawer bind:open={drawerOpen}>
+    <svelte:fragment slot="trigger">
       {#if drawerOpen}
         <slot name="open">
           <slot>
@@ -101,21 +101,16 @@
       {:else}
         <slot><IconDots></IconDots></slot>
       {/if}
-    </Drawer.Trigger>
-    <Drawer.Portal>
-      <Drawer.Overlay></Drawer.Overlay>
-      <Drawer.Content>
-        {#each actions as action}
-          <OverflowMenuItem
-            on:click={() => {
-              drawerOpen = false;
-            }}
-            {action}
-          />
-        {/each}
-      </Drawer.Content>
-    </Drawer.Portal>
-  </Drawer.Root>
+    </svelte:fragment>
+    {#each actions as action}
+      <OverflowMenuItem
+        on:click={() => {
+          drawerOpen = false;
+        }}
+        {action}
+      />
+    {/each}
+  </ModalDrawer>
 {:else}
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
@@ -152,40 +147,6 @@
     background-color: var(--bg);
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
-  }
-
-  :global([data-vaul-overlay]) {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    background-color: var(--backdrop);
-  }
-
-  :global([data-vaul-drawer]) {
-    --corner-radius: 20px;
-
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    padding: 1em 0;
-
-    /* height: 30%; */
-    background: var(--bg);
-    border-radius: var(--corner-radius) var(--corner-radius) 0 0;
-  }
-
-  :global([data-vaul-drawer])::before {
-    position: absolute;
-    top: 0.5rem;
-    left: 50%;
-    width: 25%;
-    height: 0.25rem;
-    content: '';
-    background-color: var(--muted);
-    border-radius: 9999px;
-    translate: -50%;
   }
 
   :global([data-dialog-trigger]) {

@@ -7,7 +7,7 @@
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import InputUid from '$lib/components/InputUID.svelte';
-  import Modal from '$lib/components/Modal.svelte';
+  import Modal from '$lib/components/ModalDialog.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
 
