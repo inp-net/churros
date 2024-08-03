@@ -27,10 +27,11 @@ builder.mutationField('setEventCoOrganizers', (t) =>
         where: { id },
         select: { group: { select: { uid: true } } },
       });
-      if (coOrganizers.includes(group.uid))
-        {throw new GraphQLError(
+      if (coOrganizers.includes(group.uid)) {
+        throw new GraphQLError(
           `Impossible de définir ${group.uid} comme groupe co-organisateur, car c'est déjà le groupe organisateur principal de l'évènement`,
-        );}
+        );
+      }
 
       await log('events', 'set-co-organizers', { coOrganizers, id }, id, user);
       return prisma.event.update({

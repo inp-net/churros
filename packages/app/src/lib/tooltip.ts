@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import { xss } from '$lib/xss';
 import tippy from 'sveltejs-tippy';
-import xss from 'xss';
 
 function props(parameters: string | [string, number] | object | undefined) {
   let content: string;

@@ -6,6 +6,7 @@ import { log } from '../../../lib/logger.js';
 
 builder.mutationField('upsertReaction', (t) =>
   t.int({
+    deprecationReason: "Use 'react' instead",
     args: {
       id: t.arg.id({ required: false }),
       emoji: t.arg.string({ validate: { maxLength: 2 } }),

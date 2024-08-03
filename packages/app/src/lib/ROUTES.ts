@@ -20,9 +20,9 @@ const PAGES = {
   '/bar-weeks': `/bar-weeks`,
   '/birthdays': `/birthdays`,
   '/boards': `/boards`,
-  '/bookings': `/bookings`,
-  '/bookings/[pseudoID]': (pseudoID: string | number, params?: {}) => {
-    return `/bookings/${pseudoID}`;
+  '/bookings.old': `/bookings.old`,
+  '/bookings.old/[pseudoID]': (pseudoID: string | number, params?: {}) => {
+    return `/bookings.old/${pseudoID}`;
   },
   '/changelog': `/changelog`,
   '/claim-code': `/claim-code`,
@@ -92,6 +92,9 @@ const PAGES = {
   '/events.old/create': `/events.old/create`,
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
     return `/events${params?.week ? `/${params?.week}` : ''}`;
+  },
+  '/events/[id]': (id: string | number, params?: {}) => {
+    return `/events/${id}`;
   },
   '/forms': `/forms`,
   '/forms/[form]/answer': (form: string | number, params?: { section?: string | number }) => {
@@ -269,8 +272,8 @@ const SERVERS = {
   ) => {
     return `/${entity}`;
   },
-  'GET /bookings/[pseudoID].pdf': (pseudoID: string | number, params?: {}) => {
-    return `/bookings/${pseudoID}.pdf`;
+  'GET /bookings.old/[pseudoID].pdf': (pseudoID: string | number, params?: {}) => {
+    return `/bookings.old/${pseudoID}.pdf`;
   },
   'GET /events.old/planning': `/events.old/planning`,
   'GET /events.old/week/[monday]': (monday: string | number, params?: {}) => {
@@ -451,8 +454,8 @@ export type KIT_ROUTES = {
     '/bar-weeks': never;
     '/birthdays': never;
     '/boards': never;
-    '/bookings': never;
-    '/bookings/[pseudoID]': 'pseudoID';
+    '/bookings.old': never;
+    '/bookings.old/[pseudoID]': 'pseudoID';
     '/changelog': never;
     '/claim-code': never;
     '/claim-code/[code]': 'code';
@@ -484,6 +487,7 @@ export type KIT_ROUTES = {
     '/events.old/[id]/write': 'id';
     '/events.old/create': never;
     '/events': 'week';
+    '/events/[id]': 'id';
     '/forms': never;
     '/forms/[form]/answer': 'form' | 'section';
     '/forms/[form]/answered': 'form';
@@ -553,7 +557,7 @@ export type KIT_ROUTES = {
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
-    'GET /bookings/[pseudoID].pdf': 'pseudoID';
+    'GET /bookings.old/[pseudoID].pdf': 'pseudoID';
     'GET /events.old/planning': never;
     'GET /events.old/week/[monday]': 'monday';
     'GET /events/[group]/[slug]/[...path]': 'group' | 'slug' | 'path';

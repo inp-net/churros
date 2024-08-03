@@ -31,7 +31,7 @@
 
   const mobile = isMobile();
   export let data: PageData;
-  $: ({ AppLayout } = data);
+  $: ({ AppLayout, RootLayout } = data);
 
   afterNavigate(async ({ to }) => {
     if (!browser) return;
@@ -167,7 +167,7 @@
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
       </section>
-    {:else}
+    {:else if !$RootLayout.data?.loggedIn}
       <section class="login">
         <h2>Connexion</h2>
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
@@ -241,6 +241,9 @@
     width: 100dvw;
 
     --scrollable-area-border-color: var(--bg3);
+
+    // Waiting on https://drafts.csswg.org/css-env-1/ to use variables in media queries
+    // --width-mobile: 900px;
   }
 
   .layout .left {

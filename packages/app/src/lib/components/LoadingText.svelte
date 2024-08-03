@@ -5,10 +5,10 @@
 
   export let tag: 'code' | 'span' | 'p' | `h${1 | 2 | 3 | 4 | 5 | 6}` = 'span';
   export let lines: number | undefined = undefined;
-  export let value: MaybeLoading<string | number> = PendingValue;
+  export let value: MaybeLoading<string | number> | null | undefined = PendingValue;
 </script>
 
-{#if !loaded(value)}
+{#if !loaded(value) || value === null}
   <svelte:element
     this={tag === 'code' ? 'span' : tag}
     {...$$restProps}
@@ -16,7 +16,9 @@
     ><slot>{LOREM_IPSUM.split('\n').slice(0, lines).join('\n')}</slot></svelte:element
   >
 {:else}
-  <svelte:element this={tag} {...$$restProps}>{value}</svelte:element>
+  <slot name="loaded" {value}>
+    <svelte:element this={tag} {...$$restProps}>{value}</svelte:element>
+  </slot>
 {/if}
 
 <style>

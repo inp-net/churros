@@ -94,6 +94,8 @@ model User {
   partiallyCompletedForms    Form[]                     @relation("partiallyCompletedForms")
   adminOfStudentAssociations StudentAssociation[]       @relation("studentAssociationAdmins")
   bookmarks                  Bookmark[]
+  sharedPosts                Article[]                  @relation("shares")
+  sharedEvents               Event[]                    @relation("shares")
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -537,6 +539,7 @@ model Article {
   event     Event?     @relation(fields: [eventId], references: [id])
   eventId   String?
   reactions Reaction[]
+  sharedBy  User[]     @relation("shares")
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -586,6 +589,7 @@ model Event {
   bannedUsers    User[]         @relation("bannedFromEvents")
   reactions      Reaction[]
   forms          Form[]
+  sharedBy       User[]         @relation("shares")
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))

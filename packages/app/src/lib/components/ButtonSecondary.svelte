@@ -60,7 +60,7 @@
   <slot />
 </svelte:element>
 
-<style>
+<style lang="scss">
   .button-secondary {
     position: relative;
     display: inline-flex;

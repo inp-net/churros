@@ -1,6 +1,5 @@
 <script lang="ts">
   import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
-  import { theme } from '$lib/theme';
   import IconAccount from '~icons/msl/account-circle';
   import IconAccountOutline from '~icons/msl/account-circle-outline';
   import IconCalendar from '~icons/msl/calendar-month';
@@ -13,7 +12,7 @@
   export let transparent = false;
 </script>
 
-<nav class:transparent class={$theme}>
+<nav class:transparent>
   <ButtonNavigation
     href="/"
     routeID="/(app)"
@@ -54,13 +53,6 @@
   />
 </nav>
 
-<svelte:window
-  on:keydown={(e) => {
-    if (!(e instanceof KeyboardEvent)) return;
-    if (e.key === 'Escape') e.preventDefault();
-  }}
-/>
-
 <style>
   nav {
     z-index: 101;
@@ -75,22 +67,6 @@
     background-repeat: repeat-x;
     background-size: auto 100%;
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
-  }
-
-  nav.noel {
-    background-color: var(--bg);
-    background-image: url('/noel-bottombar.png');
-    background-size: cover;
-    border-top: none;
-  }
-
-  nav.gd7t {
-    background-color: transparent;
-    background-image: url('/gd7t-bottom.png');
-    background-position: center;
-    background-size: 100% 100%;
-    backdrop-filter: blur(10px);
-    border-top: none;
   }
 
   nav.transparent {

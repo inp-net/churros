@@ -2,6 +2,9 @@ declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type SessionUserType = import('$lib/session.js').SessionUser;
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  type XSSSafeHTMLString = import('ts-opaque').Opaque<string, 'XSSSafeHTMLString'>;
+
   interface Locals {
     me?: SessionUserType;
     mobile: boolean;

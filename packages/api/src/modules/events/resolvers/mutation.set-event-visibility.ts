@@ -20,12 +20,9 @@ builder.mutationField('setEventVisibility', (t) =>
         where: { id: ensureGlobalId(id, 'Event') },
         include: canEditEventPrismaIncludes,
       });
-      if (
-        (!event.startsAt || !event.endsAt) &&
-        !ALLOWED_DATELESS_VISIBILITIES.includes(visibility)
-      ) 
+      if ((!event.startsAt || !event.endsAt) && !ALLOWED_DATELESS_VISIBILITIES.includes(visibility))
         return false;
-      
+
       return canEditEvent(event, user);
     },
     async resolve(query, _, { id, visibility }, { user }) {

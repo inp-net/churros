@@ -15,7 +15,7 @@
   import { isMobile } from '$lib/mobile';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
-  import { format, formatDistance, isWithinInterval } from 'date-fns';
+  import { format, isWithinInterval } from 'date-fns';
   import { onMount } from 'svelte';
   import IconDates from '~icons/msl/calendar-today-outline';
   import IconAdvance from '~icons/msl/chevron-right';
@@ -27,6 +27,7 @@
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import CardTicket from './CardTicket.svelte';
 
   /**
    * Whether this component should announce a shotgun instead of the event itself
@@ -62,10 +63,9 @@
         recurringUntil
         canEdit
         tickets {
-          localID
+          ...CardTicket
           opensAt
           closesAt
-          name
         }
       }
     `),
@@ -180,33 +180,7 @@
   </div>
   {#if ticket && (ticketIsOpen || shotgun)}
     <section class="tickets">
-      <div class="ticket">
-        <div class="text">
-          <div class="title">
-            <LoadingText value={ticket.name}>Place</LoadingText>
-          </div>
-          <div class="subtitle">
-            <LoadingText
-              value={mapAllLoading([ticket.opensAt, ticket.closesAt], (start, end) =>
-                ticketIsOpen
-                  ? `${formatDistance(end, now)} pour shotgun`
-                  : `Vente ${formatDistance(start, now, { addSuffix: true })}`,
-              )}>?</LoadingText
-            >
-          </div>
-        </div>
-        <div class="actions">
-          <ButtonSecondary
-            href={$data
-              ? onceAllLoaded(
-                  [$data.localID, ticket.localID],
-                  (id, ticket) => route('/events/[id]/book/[ticket]', { id, ticket }),
-                  '',
-                )
-              : ''}>Obtenir</ButtonSecondary
-          >
-        </div>
-      </div>
+      <CardTicket {ticket}></CardTicket>
       {#if $data && $data?.tickets.length > 1}
         {@const plural = $data.tickets.length - 1 > 1 ? 's' : ''}
         <div class="other-tickets">
@@ -237,6 +211,8 @@
     flex-direction: column;
     gap: 1rem;
     padding: 2rem 1rem;
+
+    --glimer: var(--primary);
   }
 
   article:not(.mobile) {
@@ -247,6 +223,9 @@
   article.has-image {
     overflow: hidden;
     color: white;
+
+    --glimmer: var(--primary);
+
     background-color: black;
   }
 
@@ -300,11 +279,11 @@
 
   @keyframes pulse-shadow {
     from {
-      box-shadow: 0 0 0 0 var(--primary);
+      box-shadow: 0 0 0 0 var(--glimmer);
     }
 
     to {
-      box-shadow: 0 0 20px 0.25rem var(--primary);
+      box-shadow: 0 0 20px 0.25rem var(--glimmer);
     }
   }
 
@@ -347,6 +326,16 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  article.has-image .tickets {
+    --background: transparent;
+    --color: white;
+  }
+
+  .tickets.please-login {
+    --color: var(--warning);
+    --background: var(--warning-bg);
   }
 
   .ticket {

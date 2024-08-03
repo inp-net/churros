@@ -120,7 +120,7 @@ const config = {
       type: 'string',
     },
     HTML: {
-      type: 'string',
+      type: 'App.XSSSafeHTMLString',
     },
     ShortString: {
       type: 'string',

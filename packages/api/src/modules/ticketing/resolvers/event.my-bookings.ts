@@ -1,4 +1,4 @@
-import { builder, prisma, UnauthorizedError } from '#lib';
+import { builder, prisma } from '#lib';
 import { EventType } from '#modules/events';
 import { preprocessBeneficiary, RegistrationType } from '#modules/ticketing';
 
@@ -6,10 +6,8 @@ builder.prismaObjectField(EventType, 'myBookings', (t) =>
   t.prismaField({
     type: [RegistrationType],
     description: "Réservations faites par et/ou pour l'utilisateur.ice connecté.e",
-    errors: {},
-    authScopes: { loggedIn: true },
     async resolve(query, { id }, _, { user }) {
-      if (!user) throw new UnauthorizedError();
+      if (!user) return [];
       return prisma.registration.findMany({
         ...query,
         where: {
