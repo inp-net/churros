@@ -5,7 +5,7 @@ import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 import { GroupEnumType, GroupType, membersNeedToPayForTheStudentAssociation } from '../index.js';
-import { canCreateGroup, canEditGroup } from '../utils/permissions.js';
+import { canCreateGroup, canEditGroup } from '../utils/index.js';
 
 /*
  TODO split into:
@@ -31,7 +31,6 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
     }),
     type: t.field({ type: GroupEnumType }),
     parent: t.field({ type: UIDScalar, required: false }),
-    school: t.field({ type: UIDScalar, required: false }),
     studentAssociation: t.field({ type: UIDScalar, required: false }),
     name: t.string({ validate: { maxLength: 255 } }),
     color: t.string({ required: false, validate: { regex: /#[\dA-Fa-f]{6}/ } }),
@@ -245,7 +244,7 @@ builder.mutationField('upsertGroup', (t) =>
               : { connect: { uid: parentUid } },
           studentAssociation: studentAssociationUid
             ? { connect: { uid: studentAssociationUid } }
-            : { disconnect: true },
+            : {},
         },
       });
       if ((await prisma.groupMember.count({ where: { groupId: group.id } })) === 0) {
