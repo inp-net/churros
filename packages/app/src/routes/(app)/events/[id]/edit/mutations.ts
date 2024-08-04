@@ -49,10 +49,10 @@ export const ChangeEventTitle = graphql(`
 `);
 
 export const ChangeEventDates = graphql(`
-  mutation ChangeEventDates($event: LocalID!, $startsAt: DateTime!, $endsAt: DateTime!) {
-    updateEvent(id: $event, dates: { start: $startsAt, end: $endsAt }) {
+  mutation ChangeEventDates($event: LocalID!, $dates: DateRangeInput) {
+    setEventDates(id: $event, dates: $dates) {
       __typename
-      ... on MutationUpdateEventSuccess {
+      ... on MutationSetEventDatesSuccess {
         data {
           startsAt
           endsAt
@@ -100,6 +100,28 @@ export const ChangeEventVisibility = graphql(`
       ... on MutationSetEventVisibilitySuccess {
         data {
           visibility
+          includeInKiosk
+        }
+      }
+      ... on Error {
+        message
+      }
+      ... on ZodError {
+        fieldErrors {
+          message
+          path
+        }
+      }
+    }
+  }
+`);
+
+export const SetEventKioskModeInclusion = graphql(`
+  mutation SetEventKioskModeInclusion($event: LocalID!, $includeInKiosk: Boolean!) {
+    updateEvent(id: $event, includeInKiosk: $includeInKiosk) {
+      __typename
+      ... on MutationUpdateEventSuccess {
+        data {
           includeInKiosk
         }
       }

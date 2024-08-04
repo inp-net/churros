@@ -17,7 +17,6 @@ export const EventType = builder.prismaNode('Event', {
     PicturedInterface,
     //@ts-expect-error dunno why it complainnns
     ReactableInterface,
-    // builder.interfaceRef('HasLinks'),
     //@ts-expect-error dunno why it complainnns
     ShareableInterface,
   ],
@@ -173,9 +172,8 @@ export const EventType = builder.prismaNode('Event', {
         else: t.arg.string(),
       },
       resolve: (event, { else: errorMessage }, { user }) => {
-        if (!canEditEvent(event, user)) 
-          throw new GraphQLError(errorMessage);
-        
+        if (!canEditEvent(event, user)) throw new GraphQLError(errorMessage);
+
         return true;
       },
     }),

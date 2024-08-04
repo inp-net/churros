@@ -6,23 +6,20 @@
 
   const dispatch = createEventDispatcher<{ close: undefined }>();
 
+  /** Signals that the content is quite tall */
+  export let tall = false;
+
   const mobile = isMobile();
 
   /** Close the modal without triggering a close event */
   export const implicitClose = () => {
-    if (mobile) 
-      drawerOpen = false;
-     else 
-      dialogElement?.close();
-    
+    if (mobile) drawerOpen = false;
+    else dialogElement?.close();
   };
 
   export const open = () => {
-    if (mobile) 
-      drawerOpen = true;
-     else 
-      openDialog();
-    
+    if (mobile) drawerOpen = true;
+    else openDialog();
   };
 
   const close = () => {
@@ -37,7 +34,7 @@
 {#if mobile}
   <ModalDrawer bind:open={drawerOpen}><slot {close}></slot></ModalDrawer>
 {:else}
-  <ModalDialog bind:element={dialogElement} bind:open={openDialog}
+  <ModalDialog {tall} bind:element={dialogElement} bind:open={openDialog}
     ><slot {close}></slot></ModalDialog
   >
 {/if}

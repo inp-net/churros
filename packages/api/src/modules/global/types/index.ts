@@ -8,6 +8,7 @@ export * from './errors.js';
 export * from './file.js';
 export * from './html.js';
 export * from './local-id.js';
+export * from './loose-url.js';
 export * from './markdown.js';
 export * from './mixed-search-result.js';
 export * from './pictured.js';

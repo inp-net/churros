@@ -1,7 +1,7 @@
 import { builder, ensureGlobalId, log, nullToUndefined, prisma } from '#lib';
 import { EventFrequencyType, EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
-import { DateRangeInput, LocalID } from '#modules/global';
+import { LocalID } from '#modules/global';
 import { EventFrequency } from '@churros/db/prisma';
 import omit from 'lodash.omit';
 import { ZodError } from 'zod';
@@ -23,7 +23,6 @@ builder.mutationField('updateEvent', (t) =>
           maxLength: 255,
         },
       }),
-      dates: t.arg({ required: false, type: DateRangeInput, description: "Dates de l'évènement" }),
       frequency: t.arg({
         required: false,
         type: EventFrequencyType,
@@ -45,7 +44,7 @@ builder.mutationField('updateEvent', (t) =>
         required: false,
         description: "E-mail de contact de l'orga de l'évènement",
       }),
-      includeInKioske: t.arg.boolean({
+      includeInKiosk: t.arg.boolean({
         required: false,
         description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
       }),
@@ -60,15 +59,14 @@ builder.mutationField('updateEvent', (t) =>
     async resolve(query, _, args, { user }) {
       const id = ensureGlobalId(args.id, 'Event');
       await log('events', 'update', { args }, id, user);
+      const regularArgs = nullToUndefined(omit(args, 'dates', 'id', 'globalCapacity'));
       return prisma.event.update({
         ...query,
         where: { id },
         data: {
-          ...nullToUndefined(omit(args, 'dates', 'id', 'globalCapacity')),
+          ...regularArgs,
           globalCapacity:
             args.globalCapacity === 'Unlimited' ? null : args.globalCapacity ?? undefined,
-          startsAt: args.dates?.start ?? undefined,
-          endsAt: args.dates?.end ?? undefined,
         },
       });
     },

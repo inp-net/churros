@@ -338,6 +338,14 @@ export const topnavConfigs: Partial<
     title: 'Visibilité',
     back: route('/events/[id]/edit', id),
   }),
+  '/(app)/events/[id]/edit/links': ({ params: { id } }) => ({
+    title: 'Liens',
+    back: route('/events/[id]/edit', id),
+  }),
+  '/(app)/events/[id]/edit/description': ({ params: { id } }) => ({
+    title: 'Description',
+    back: route('/events/[id]/edit', id),
+  }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
     quickAction: {

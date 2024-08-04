@@ -12,5 +12,10 @@
   "iconify.includes": ["material-symbols-light", "mdi", "logos"],
   "iconify.customCollectionIdsMap": {
     "msl": "material-symbols-light"
+  },
+  "emmet.syntaxProfiles": {
+    "html": {
+      "compactBooleanAttributes": true
+    }
   }
 }

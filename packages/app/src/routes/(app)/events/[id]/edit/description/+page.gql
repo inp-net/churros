@@ -1,8 +1,7 @@
-query PageEventEditVisibility($id: LocalID!) @loading {
+query PageEventEditDescription($id: LocalID!) {
   event(id: $id) {
     id
     assertCanEdit(else: "Tu n'a pas les droits pour modifier cet événement")
-    visibility
-    includeInKiosk
+    description
   }
 }

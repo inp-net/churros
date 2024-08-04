@@ -23,9 +23,8 @@ export const trimInputsPlugin = (): Plugin => {
       return input.map(trimStrings) as unknown as T;
     } else if (input && typeof input === 'object') {
       const trimmedObject: { [key: string]: unknown } = {};
-      for (const key in Object.keys(input)) 
-        trimmedObject[key] = trimStrings((input as { [key: string]: unknown })[key]);
-      
+      for (const [key, value] of Object.entries(input)) trimmedObject[key] = trimStrings(value);
+
       return trimmedObject as T;
     }
     return input;
@@ -34,9 +33,7 @@ export const trimInputsPlugin = (): Plugin => {
   return {
     onExecute({ args }) {
       // Apply trimming to variables
-      if (args.variableValues) 
-        args.variableValues = trimStrings(args.variableValues);
-      
+      if (args.variableValues) args.variableValues = trimStrings(args.variableValues);
     },
   };
 };
