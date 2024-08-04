@@ -11,5 +11,7 @@
     "moduleResolution": "NodeNext",
     "outDir": "./build",
     "rootDir": ".",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "inlineSourceMap": true
   }
 }
