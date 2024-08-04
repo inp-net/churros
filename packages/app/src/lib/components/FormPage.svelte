@@ -6,7 +6,7 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputFile, { withoutFilename } from '$lib/components/InputFile.svelte';
+  import InputFile, { withoutFilename } from '$lib/components/InputFile.old.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';

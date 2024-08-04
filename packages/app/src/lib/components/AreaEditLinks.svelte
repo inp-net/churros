@@ -209,6 +209,7 @@
             //   },
             // },
           );
+          addingLink = false;
           if (!result) return;
           if (toasts.mutation(result, 'addLinks', '', 'Impossible de rajouter le lien')) {
             newLink = {

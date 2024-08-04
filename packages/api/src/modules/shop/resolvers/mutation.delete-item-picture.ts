@@ -21,7 +21,7 @@ builder.mutationField('deleteItemPicture', (t) =>
         where: { id: pictureId },
         select: { path: true },
       });
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
       if (pictureFile) await unlink(path.join(root, pictureFile.path));
       await prisma.picture.delete({ where: { id: pictureId } });
       await prisma.shopItem.update({

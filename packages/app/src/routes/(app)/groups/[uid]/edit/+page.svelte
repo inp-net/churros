@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import FormGroup from '$lib/components/FormGroup.svelte';
-  import FormPicture from '$lib/components/FormPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.old.svelte';
 
   export let data: PageData;
 

@@ -1,7 +1,7 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma, storageRoot } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
-import { unlinkSync } from 'node:fs';
+import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
 builder.mutationField('deleteDocumentFile', (t) =>
@@ -34,11 +34,8 @@ builder.mutationField('deleteDocumentFile', (t) =>
         include: { subject: true },
       });
       const { subject, slug, solutionPaths, id } = document;
-      const root = new URL(process.env.STORAGE).pathname;
-      const path = join(root, 'documents', subject?.slug ?? 'unknown', slug, filename);
-      try {
-        unlinkSync(path);
-      } catch {}
+      const path = join(storageRoot(), 'documents', subject?.slug ?? 'unknown', slug, filename);
+      unlink(path).catch(console.error);
 
       const isSolution = solutionPaths.includes(filename);
       await prisma.document.update({

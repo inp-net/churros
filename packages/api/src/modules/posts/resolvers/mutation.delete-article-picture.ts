@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, storageRoot } from '#lib';
 
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
@@ -33,7 +33,7 @@ builder.mutationField('deleteArticlePicture', (t) =>
         select: { pictureFile: true },
       });
 
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
 
       if (pictureFile) await unlink(path.join(root, pictureFile));
       await prisma.article.update({ where: { id }, data: { pictureFile: '' } });

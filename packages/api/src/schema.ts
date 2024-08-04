@@ -23,6 +23,7 @@ import '#modules/notifications';
 import '#modules/oauth';
 import '#modules/pages';
 import '#modules/payments';
+import '#modules/pictures';
 import '#modules/posts';
 import '#modules/reactions';
 import '#modules/schools';

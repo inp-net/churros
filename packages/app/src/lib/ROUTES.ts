@@ -102,6 +102,9 @@ const PAGES = {
   '/events/[id]/edit/description': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/description`;
   },
+  '/events/[id]/edit/image': (id: string | number, params?: {}) => {
+    return `/events/${id}/edit/image`;
+  },
   '/events/[id]/edit/links': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/links`;
   },
@@ -502,6 +505,7 @@ export type KIT_ROUTES = {
     '/events/[id]': 'id';
     '/events/[id]/edit': 'id';
     '/events/[id]/edit/description': 'id';
+    '/events/[id]/edit/image': 'id';
     '/events/[id]/edit/links': 'id';
     '/events/[id]/edit/visibility': 'id';
     '/forms': never;

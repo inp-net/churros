@@ -9,7 +9,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
   import FormPassword from '$lib/components/FormPassword.svelte';
-  import FormPicture from '$lib/components/FormPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.old.svelte';
   import FormUser from '$lib/components/FormUser.svelte';
   import Permissions from '$lib/components/FormUserPermissions.svelte';
   import InputPerson from '$lib/components/InputPerson.svelte';

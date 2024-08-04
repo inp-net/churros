@@ -1,5 +1,5 @@
 <script lang="ts">
-  import FileInput from '$lib/components/InputFile.svelte';
+  import FileInput from '$lib/components/InputFile.old.svelte';
   import { toasts } from '$lib/toasts';
   import { $ as Zvar, zeus } from '$lib/zeus';
   import IconAdd from '~icons/mdi/add';

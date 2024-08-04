@@ -19,7 +19,7 @@ builder.mutationField('deleteSchoolPicture', (t) =>
       });
 
       if (!result.pictureFile) throw new GraphQLError('No picture to delete');
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
       if (result.pictureFile) await unlink(path.join(root, result.pictureFile));
       await prisma.school.update({
         where: { id },

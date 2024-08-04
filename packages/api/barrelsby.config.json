@@ -55,6 +55,7 @@
     "./src/modules/payments/resolvers",
     "./src/modules/payments/types",
     "./src/modules/payments/utils",
+    "./src/modules/pictures/resolvers",
     "./src/modules/posts/resolvers",
     "./src/modules/posts/types",
     "./src/modules/posts/utils",

@@ -23,6 +23,8 @@ export const EventType = builder.prismaNode('Event', {
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
+    createdAt: t.expose('createdAt', { type: DateTimeScalar }),
+    updatedAt: t.expose('updatedAt', { type: DateTimeScalar, nullable: true }),
     // TODO store contactDetails in db instead, that is any link
     // allow mailto: and tel: links
     // and derive contactMail, contactPhone and contactURL from that

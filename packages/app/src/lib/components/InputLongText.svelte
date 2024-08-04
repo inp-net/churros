@@ -46,6 +46,8 @@
     bind:this={element}
     bind:value
     on:input
+    on:blur
+    on:focus
     cols="30"
     {rows}
     {maxlength}

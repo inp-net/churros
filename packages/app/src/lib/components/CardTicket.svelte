@@ -7,7 +7,7 @@
   import { onMount } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
 
-  export let places: CardTicketPlaces | null;
+  export let places: CardTicketPlaces | null = null;
   $: dataPlaces = fragment(
     places,
     graphql(`

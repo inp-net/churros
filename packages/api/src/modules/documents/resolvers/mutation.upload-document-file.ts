@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma, storageRoot } from '#lib';
 import { FileScalar } from '#modules/global';
 import { userIsAdminOf } from '#permissions';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -37,7 +37,7 @@ builder.mutationField('uploadDocumentFile', (t) =>
       });
       const { subject } = document;
       const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
       const path = documentFilePath(root, subject, document, solution, file);
       mkdirSync(dirname(path), { recursive: true });
       writeFileSync(path, buffer);

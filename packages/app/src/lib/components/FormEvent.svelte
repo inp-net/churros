@@ -19,7 +19,7 @@
   import ButtonPrimary from './ButtonPrimary.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import FormEventTicket from './FormEventTicket.svelte';
-  import FormPicture from './FormPicture.svelte';
+  import FormPicture from './FormPicture.old.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { default as DateInput, default as InputDate } from './InputDate.svelte';
   import InputGroups from './InputGroups.svelte';

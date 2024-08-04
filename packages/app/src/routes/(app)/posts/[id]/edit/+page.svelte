@@ -1,6 +1,6 @@
 <script lang="ts">
   import FormArticle from '$lib/components/FormArticle.houdini.svelte';
-  import FormPicture from '$lib/components/FormPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.old.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import type { PageData } from './$houdini';
 

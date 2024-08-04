@@ -1,151 +1,149 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
-  import { graphql } from '$houdini';
-  import FileInput from '$lib/components/InputFile.svelte';
+  import { fragment, graphql } from '$houdini';
+  import { loaded, loading } from '$lib/loading';
+  import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
-  import { zeus } from '$lib/zeus';
-  import IconAdd from '~icons/mdi/add';
-  import IconTrash from '~icons/mdi/delete';
-  import IconEdit from '~icons/mdi/pencil';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import { deleteObjectPicture, mutateObjectPicture } from './FormPicture.tsunsafe';
-  import InputField from './InputField.svelte';
+  import IconDelete from '~icons/msl/delete-outline';
+  import ButtonInk from './ButtonInk.svelte';
+  import CardEvent from './CardEvent.svelte';
+  import InputFile from './InputFile.svelte';
 
-  export const LEGENDS = {
-    Group: 'Logo du groupe',
-    User: 'Photo de profil',
-    Article: 'Photo du post',
-    Event: 'Photo de l’événement',
-    School: 'Logo de l’école',
-  };
+  export let resource;
+  $: data = fragment(
+    resource,
+    graphql(`
+      fragment FormPicture on Pictured @loading {
+        __typename
+        pictureAltText
+        lightURL: pictureURL(dark: false, timestamp: true)
+        darkURL: pictureURL(dark: true, timestamp: true)
+        hasSeparateDarkPicture
+        ... on Event {
+          ...CardEvent
+        }
+      }
+    `),
+  );
 
-  graphql(`
-    fragment FormPicture on Pictured {
-      pictureFile
-      pictureFileDark
+  const Update = graphql(`
+    mutation UpdatePicture($resource: ID!, $file: File!, $variant: ThemeVariant!) {
+      setPicture(resource: $resource, file: $file, variant: $variant) {
+        __typename
+        ... on MutationSetPictureSuccess {
+          data {
+            ...FormPicture
+          }
+        }
+        ... on Error {
+          message
+        }
+        ... on ZodError {
+          fieldErrors {
+            path
+            message
+          }
+        }
+      }
     }
   `);
 
-  export let rectangular = false;
-  export let objectName: 'Group' | 'User' | 'Article' | 'Event' | 'School';
-  export let dark = false;
-  export let object: { pictureFile: string; id: string; pictureFileDark?: string } & (
-    | { uid: string }
-    | { slug: string }
-  );
-  export let alt = '';
-
-  $: filepath = dark ? object.pictureFileDark : object.pictureFile;
-  const pictureFilePropertyName: 'pictureFile' | 'pictureFileDark' =
-    objectName === 'Group' && dark ? 'pictureFileDark' : 'pictureFile';
-  $: ({ id } = object);
-  $: uid = 'uid' in object ? object.uid : object.slug;
-  $: alt = alt || uid;
-
-  let files: FileList;
-  let inputElement: HTMLInputElement;
-  let updating = false;
-  const updatePicture = async () => {
-    if (updating) return;
-    try {
-      updating = true;
-      const result = await mutateObjectPicture($zeus, objectName, id, uid, dark, files[0]);
-      /* @ts-enable */
-      toasts.success(`${LEGENDS[objectName]} mis${objectName === 'Group' ? '' : 'e'} à jour`);
-      // Add a timestamp to the URL to force the browser to reload the image
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      filepath = `${result}?v=${Date.now()}`;
-    } finally {
-      // `updating` is set to false when the image loads
+  const Delete = graphql(`
+    mutation DeletePicture($resource: ID!, $variant: ThemeVariant!) {
+      setPicture(resource: $resource, file: null, variant: $variant) {
+        __typename
+        ... on MutationSetPictureSuccess {
+          alreadyDeleted # not used in the UI but could be useful for debugging idk
+          data {
+            ...FormPicture
+          }
+        }
+        ... on Error {
+          message
+        }
+      }
     }
-  };
+  `);
 
-  let deleting = false;
-  const deletePicture = async () => {
-    if (deleting) return;
-    try {
-      deleting = true;
-      const deleted = await deleteObjectPicture($zeus, objectName, id, uid, dark);
-      if (deleted) object[pictureFilePropertyName] = '';
-    } finally {
-      deleting = false;
-    }
-  };
+  async function deletePicture() {
+    const result = await mutate(Delete, { resource: $data.id, variant: 'Light' });
+    if (!result) return;
+    toasts.mutation(result, 'setPicture', 'Image supprimée', "Impossible de supprimer l'image");
+  }
+
+  let openPicker: () => void;
 </script>
 
-<form data-object={objectName.toLowerCase()} on:submit|preventDefault>
-  <InputField label="{LEGENDS[objectName]}{dark ? ' (Thème sombre)' : ''}">
-    <div class="wrapper">
-      {#key filepath}
-        <img
-          class:rectangular
-          style:object-fit={objectName === 'Group' ? 'contain' : 'cover'}
-          on:load={() => {
-            updating = false;
-          }}
-          src="{env.PUBLIC_STORAGE_URL}{filepath}"
-          alt={LEGENDS[objectName]}
-        />
-      {/key}
-      <div class="actions">
-        <FileInput
-          bind:inputElement
-          bind:files
-          on:change={updatePicture}
-          accept="image/jpeg,image/png,image/webp"
-        />
-        <ButtonSecondary
-          loading={updating}
-          on:click={() => {
-            inputElement.click();
-          }}
-          icon={object[pictureFilePropertyName] ? IconEdit : IconAdd}
-          >{#if object[pictureFilePropertyName]}Changer{:else}Ajouter{/if}</ButtonSecondary
-        >
-        {#if object[pictureFilePropertyName]}
-          <ButtonSecondary icon={IconTrash} danger loading={deleting} on:click={deletePicture}
-            >Supprimer</ButtonSecondary
-          >
-        {/if}
-      </div>
-    </div>
-  </InputField>
-</form>
+<InputFile
+  bind:openPicker
+  on:change={async ({ detail: file }) => {
+    const result = await mutate(Update, { resource: $data.id, file, variant: 'Light' });
+    if (!result) return;
+    toasts.mutation(
+      result,
+      'setPicture',
+      'Image mise à jour',
+      "Impossible de mettre à jour l'image",
+    );
+  }}
+>
+  <div class="preview" data-typename={loading($data.__typename, '')}>
+    {#if loading($data.__typename, '') === 'Event'}
+      <CardEvent event={$data} />
+    {:else if loaded($data.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
+      <button class="delete" on:click={deletePicture}><IconDelete></IconDelete></button>
+      <img src={$data.lightURL} alt={$data.pictureAltText} />
+    {/if}
+  </div>
+  <section class="actions">
+    {#if loading($data.__typename, '') === 'Event'}
+      {#if loaded($data.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
+        <ButtonInk on:click={openPicker}>Changer</ButtonInk>
+        <ButtonInk danger on:click={deletePicture}>Supprimer</ButtonInk>
+      {:else}
+        <ButtonInk on:click={openPicker}>Ajouter une image de fond</ButtonInk>
+      {/if}
+    {:else}
+      <ButtonInk on:click={openPicker}>Modifier la photo</ButtonInk>
+    {/if}
+  </section>
+</InputFile>
 
-<style lang="scss">
-  .wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
+<style>
+  .preview {
+    position: relative;
+    background-color: var(--bg4);
   }
 
-  img {
-    --size: 10rem;
-
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: var(--size);
-    height: var(--size);
-    color: var(--muted-text);
-    background: var(--muted-bg);
-
-    // border-radius: var(--border-block);
+  .preview[data-typename='Event'] {
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--bg);
+    border-radius: 20px;
   }
 
-  img.rectangular {
-    width: calc(var(--size) * 1.5);
+  .preview[data-typename='Event'] img {
+    filter: blur(30px) brightness(0.7);
   }
 
-  [data-object='user'] img {
-    border-radius: 50%;
+  .preview[data-typename='User'],
+  .preview[data-typename='Group'] {
+    border-radius: 10000px;
   }
 
   .actions {
     display: flex;
-    flex-flow: column wrap;
-    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .preview[data-typename='Event'] + .actions {
+    justify-content: space-between;
+  }
+
+  .delete {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
   }
 </style>

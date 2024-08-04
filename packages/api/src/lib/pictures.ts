@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { ensureGlobalId, prisma, storageRoot } from '#lib';
 import { GraphQLError } from 'graphql';
 import type { ImageFileExtension } from 'image-type';
 import imageType from 'image-type';
@@ -68,7 +68,7 @@ export function pictureDestinationFile({
   folder,
   extension,
   identifier,
-  root = new URL(process.env.STORAGE).pathname,
+  root = storageRoot(),
 }: {
   folder: string;
   extension: 'png' | 'jpg';
@@ -96,7 +96,7 @@ export async function updatePicture({
   identifier,
   propertyName = 'pictureFile',
   silent = false,
-  root = new URL(process.env.STORAGE).pathname,
+  root = storageRoot(),
 }: {
   resource: 'article' | 'event' | 'user' | 'group' | 'school' | 'student-association' | 'photos';
   folder: string;
@@ -117,7 +117,7 @@ export async function updatePicture({
   switch (resource) {
     case 'article': {
       const result = await prisma.article.findUniqueOrThrow({
-        where: { id: identifier },
+        where: { id: ensureGlobalId(identifier, 'Article') },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
@@ -126,7 +126,7 @@ export async function updatePicture({
 
     case 'event': {
       const result = await prisma.event.findUniqueOrThrow({
-        where: { id: identifier },
+        where: { id: ensureGlobalId(identifier, 'Event') },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
@@ -162,7 +162,7 @@ export async function updatePicture({
 
     case 'school': {
       const result = await prisma.school.findUniqueOrThrow({
-        where: { id: identifier },
+        where: { id: ensureGlobalId(identifier, 'School') },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
@@ -189,7 +189,7 @@ export async function updatePicture({
   switch (resource) {
     case 'article': {
       await prisma.article.update({
-        where: { id: identifier },
+        where: { id: ensureGlobalId(identifier, 'Article') },
         data: { [propertyName]: relative(root, path) },
       });
       break;
@@ -197,7 +197,7 @@ export async function updatePicture({
 
     case 'event': {
       await prisma.event.update({
-        where: { id: identifier },
+        where: { id: ensureGlobalId(identifier, 'Event') },
         data: { [propertyName]: relative(root, path) },
       });
       break;
@@ -229,7 +229,7 @@ export async function updatePicture({
 
     case 'school': {
       await prisma.school.update({
-        where: { id: identifier },
+        where: { id: ensureGlobalId(identifier, 'School') },
         data: { [propertyName]: relative(root, path) },
       });
       break;

@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, storageRoot } from '#lib';
 import { userIsOnBoardOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
@@ -29,7 +29,7 @@ builder.mutationField('deleteShopItem', (t) =>
         throw new GraphQLError('You cannot delete an item where someone has placed an order on');
 
       //Delete all pictures of the item if there are any (let's save some Giga-Octets)
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
       for (const picture of shopItem.pictures) {
         await unlink(path.join(root, picture.path));
         await prisma.picture.delete({ where: { id: picture.id } });
