@@ -1,4 +1,4 @@
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -17,19 +17,15 @@ COPY scripts/ /app/scripts/
 # Remove unused packages
 RUN rm -rf packages/mock-n7-ldap pack
 RUN rm -rf packages/oauth-client
+RUN rm -rf packages/sync
 
 RUN yarn install
 RUN yarn cp-env
 RUN yarn generate-buildinfo
 
-# truc temporaire bien guez pour comprendre pk il manque des vars d'env
-RUN apk add bash
-RUN bash -c printenv
-
 RUN yarn workspaces foreach -Rt --from '{@churros/api,@churros/app}' run build
 
-
-FROM node:20-alpine as base
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
@@ -42,7 +38,7 @@ COPY package.json /app/
 COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
 
 
-FROM base as api
+FROM base AS api
 
 WORKDIR /app
 
@@ -71,7 +67,7 @@ RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
 
 
-FROM base as app
+FROM base AS app
 
 WORKDIR /app
 
@@ -87,3 +83,32 @@ COPY packages/app/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
+
+FROM node:20-alpine AS builder-sync
+
+WORKDIR /app
+COPY .yarn/         /app/.yarn/
+COPY packages/db/   /app/packages/db/
+COPY packages/sync/ /app/packages/sync/
+COPY .yarnrc.yml    /app/
+COPY package.json   /app/
+COPY yarn.lock      /app/
+
+RUN yarn install
+RUN yarn workspace @churros/sync build
+RUN yarn workspaces focus @churros/sync --production
+
+FROM node:20-alpine AS sync
+
+ENV NODE_ENV="production"
+
+COPY --from=builder-sync /app/node_modules/ /app/node_modules/
+COPY --from=builder-sync /app/packages/sync/build/src/ /app/packages/sync/build/src/
+COPY --from=builder /app/packages/db/package.json /app/packages/db/
+COPY --from=builder /app/packages/db/src/ /app/packages/db/src/
+COPY --from=builder-sync /app/packages/sync/package.json /app/
+
+WORKDIR /app
+
+ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
+
