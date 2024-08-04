@@ -141,6 +141,11 @@ const config = {
       marshal: (x) => x.toString(),
       unmarshal: (x) => (URL.canParse(x) ? new URL(x) : null),
     },
+    LooseURL: {
+      type: 'string',
+      marshal: (x) => x,
+      unmarshal: (x) => x,
+    },
   },
   features: {
     runtimeScalars: {

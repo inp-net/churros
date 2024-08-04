@@ -1,8 +1,7 @@
 <script lang="ts">
-  import IconHelp from '~icons/mdi/help';
+  import ButtonInk from './ButtonInk.svelte';
   import InputField from './InputField.svelte';
   import ModalMarkdownHelp from './ModalMarkdownHelp.svelte';
-  import ButtonInk from './ButtonInk.svelte';
 
   export let submitShortcut = false;
   export let value: string;
@@ -16,7 +15,7 @@
 
   let element: HTMLTextAreaElement;
 
-  let markdownHelpDialogElement: HTMLDialogElement;
+  let openMarkdownHelp: () => void;
 
   function handleControlEnter(event: KeyboardEvent) {
     if (submitShortcut && event.ctrlKey && event.key === 'Enter') {
@@ -31,10 +30,17 @@
 </script>
 
 {#if rich && label}
-  <ModalMarkdownHelp bind:element={markdownHelpDialogElement}></ModalMarkdownHelp>
+  <ModalMarkdownHelp bind:open={openMarkdownHelp}></ModalMarkdownHelp>
 {/if}
 
-<InputField {label} {required} hint={hint || (rich ? 'Syntaxe Markdown supportée' : undefined)}>
+<InputField {label} {required} {hint}>
+  <p class="markdown-help" slot="hint">
+    {#if rich && label}
+      Syntaxe Markdown supportée <ButtonInk insideProse on:click={openMarkdownHelp}
+        >en savoir plus</ButtonInk
+      >
+    {/if}
+  </p>
   <textarea
     on:keypress={handleControlEnter}
     bind:this={element}
@@ -47,14 +53,7 @@
     {...$$restProps}
     placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
   />
-  {#if rich && label}
-    <ButtonInk
-      on:click={() => {
-        markdownHelpDialogElement.showModal();
-      }}
-      icon={IconHelp}>Aide sur markdown</ButtonInk
-    >
-  {/if}
+
   {#if maxlength}
     <div class="count">
       {valueLength} / {maxlength}

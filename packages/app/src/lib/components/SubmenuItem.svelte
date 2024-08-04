@@ -20,10 +20,15 @@
    * Send click events when clicking the item, and enable hover/focus states
    */
   export let clickable = false;
+
+  /**
+   * Make the wrapper element a label
+   */
+  export let label = false;
 </script>
 
 <svelte:element
-  this={href ? 'a' : clickable ? 'button' : 'div'}
+  this={href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
   {href}
   on:click
   role="menuitem"
@@ -62,9 +67,11 @@
     justify-content: space-between;
     min-height: 70px; /* XXX: hardcoded from getting the computed height for a simple item */
     padding: 1rem 0.7rem;
+    overflow: hidden;
   }
 
-  :is(button, a):is(:hover, :focus-visible).submenu-item {
+  :is(button, a, label):is(:hover, :focus-visible).submenu-item,
+  label.submenu-item:focus-within {
     cursor: pointer;
     background: var(--bg2);
   }
@@ -73,6 +80,7 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    overflow: hidden;
   }
 
   .icon {
@@ -86,6 +94,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    overflow: hidden;
   }
 
   .title {
@@ -93,9 +102,14 @@
   }
 
   .subtext {
+    width: 100%;
+    overflow: hidden;
     font-size: 0.8rem;
     line-height: 1.1;
     color: var(--shy);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-clamp: 2;
   }
 
   .chevron {

@@ -1,17 +1,21 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
+  import InputDateTime from '$lib/components/InputDateTime.svelte';
+  import InputDateTimeRange from '$lib/components/InputDateTimeRange.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
-  import TextEventDates from '$lib/components/TextEventDates.svelte';
-  import { DISPLAY_EVENT_FREQUENCY, HELP_VISIBILITY } from '$lib/display';
+  import { DISPLAY_EVENT_FREQUENCY, DISPLAY_VISIBILITIES } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';
-  import { loaded, mapAllLoading, mapLoading } from '$lib/loading';
+  import { allLoaded, loaded, loading, mapAllLoading, mapLoading } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
   import { mutate } from '$lib/mutations';
+  import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import IconBannedUsers from '~icons/msl/account-circle-off-outline';
   import IconRecurrence from '~icons/msl/calendar-month-outline';
@@ -26,21 +30,41 @@
   import IconVisibility from '~icons/msl/visibility-outline';
   import type { LayoutData, LayoutRouteId } from './$houdini';
   import ModalDelete from './ModalDelete.svelte';
-  import { ChangeEventLocation, ChangeEventTitle } from './mutations';
-  import { page } from '$app/stores';
+  import { ChangeEventDates, ChangeEventLocation, ChangeEventTitle } from './mutations';
+
+  const mobile = isMobile();
 
   export let data: LayoutData;
 
-  $: leftSplitShownOnMobile = $page.route.id === ('/(app)/events/[id]/edit' as LayoutRouteId);
+  $: leftSplitShownOnMobile =
+    $page.route.id === ('/(app)/events/[id]/edit' as LayoutRouteId) || layoutErrored;
 
   $: ({ LayoutEventEdit } = data);
+
+  let layoutErrored = false;
+
+  let updatedDates:
+    | {
+        start: Date | null;
+        end: Date | null;
+      }
+    | undefined;
+  let resetStartsAtInput: () => void;
+  let resetEndsAtInput: () => void;
+
+  $: if (!updatedDates && $LayoutEventEdit.data?.event && allLoaded($LayoutEventEdit.data.event)) {
+    updatedDates = {
+      start: $LayoutEventEdit.data.event.startsAt,
+      end: $LayoutEventEdit.data.event.endsAt,
+    };
+  }
 </script>
 
 <div class="split">
   <div class="left" class:mobile-shown={leftSplitShownOnMobile}>
-    <MaybeError result={$LayoutEventEdit} let:data={{ event }}>
+    <MaybeError bind:errored={layoutErrored} result={$LayoutEventEdit} let:data={{ event }}>
       <ModalDelete eventId={event.id} />
-      <section class="basic-info">
+      <section class="basic-info" class:mobile>
         <div class="avatar">
           <AvatarGroup group={event.organizer} />
         </div>
@@ -67,7 +91,9 @@
             />
           </div>
           <div class="dates">
-            <IconDates />
+            <div class="icon">
+              <IconDates />
+            </div>
             <div
               class="dates-value"
               class:muted={loaded(event.startsAt) &&
@@ -75,14 +101,57 @@
                 (!event.startsAt || !event.endsAt)}
             >
               {#if loaded(event.startsAt) && loaded(event.endsAt)}
-                <TextEventDates {event} defaultText="Préciser les dates…" />
+                <!-- <TextEventDates {event} defaultText="Préciser les dates…" /> -->
+                <InputDateTimeRange
+                  resourceId={event.id}
+                  start={event.startsAt}
+                  end={event.endsAt}
+                  on:update={async ({ detail: dates }) => {
+                    if (!loaded(event.id)) return;
+                    const result = await ChangeEventDates.mutate({ event: event.id, dates });
+                    if (
+                      !toasts.mutation(
+                        result,
+                        'setEventDates',
+                        '',
+                        'Impossible de changer les dates',
+                      )
+                    ) {
+                      resetStartsAtInput?.();
+                      resetEndsAtInput?.();
+                    }
+                  }}
+                >
+                  <div class="start" slot="start" let:update let:value>
+                    du
+                    <InputDateTime
+                      {value}
+                      on:blur={update}
+                      on:clear={update}
+                      bind:reset={resetStartsAtInput}
+                      label=""
+                    ></InputDateTime>
+                  </div>
+                  <div class="end" slot="end" let:update let:value>
+                    au
+                    <InputDateTime
+                      {value}
+                      on:blur={update}
+                      on:clear={update}
+                      bind:reset={resetEndsAtInput}
+                      label=""
+                    ></InputDateTime>
+                  </div>
+                </InputDateTimeRange>
               {:else}
                 <LoadingText value="Chargement des dates…"></LoadingText>
               {/if}
             </div>
           </div>
           <div class="location">
-            <IconLocation />
+            <div class="icon">
+              <IconLocation />
+            </div>
             <InputTextGhost
               value={event.location}
               placeholder="Ajouter un lieu…"
@@ -102,18 +171,32 @@
       <Submenu>
         <SubmenuItem
           icon={IconVisibility}
-          href="./visibility"
+          href={route('/events/[id]/edit/visibility', loading(event.localID, ''))}
           subtext={mapAllLoading(
             [event.visibility, event.includeInKiosk],
-            (vis, kiosk) =>
-              `${HELP_VISIBILITY[vis]}, ${kiosk ? `inclus dans` : 'exclus du'} mode kioske`,
+            (vis, kiosk) => `${DISPLAY_VISIBILITIES[vis]}${kiosk ? `` : ', exclus du mode kioske'}`,
           )}
         >
           Visibilité
         </SubmenuItem>
-        <SubmenuItem icon={IconLinkVariant} href="./links">Liens</SubmenuItem>
-        <SubmenuItem icon={IconDescription} href="./description">Description</SubmenuItem>
-        <SubmenuItem icon={IconImage} href="./image">Image de fond</SubmenuItem>
+        <SubmenuItem
+          icon={IconLinkVariant}
+          href={route('/events/[id]/edit/links', loading(event.localID, ''))}
+        >
+          Liens
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconDescription}
+          href={route('/events/[id]/edit/description', loading(event.localID, ''))}
+        >
+          Description
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconImage}
+          href={route('/events/[id]/edit/image', loading(event.localID, ''))}
+        >
+          Image de fond
+        </SubmenuItem>
         <SubmenuItem
           icon={IconCoOrgnizers}
           clickable
@@ -132,21 +215,44 @@
             {/each}
           </div>
         </SubmenuItem>
-        <SubmenuItem icon={IconTickets} href="./ticketing">Billetterie</SubmenuItem>
+        <SubmenuItem
+          icon={IconTickets}
+          href={route('/events/[id]/edit/ticketing', loading(event.localID, ''))}
+        >
+          Billetterie
+        </SubmenuItem>
         <SubmenuItem
           icon={IconRecurrence}
           href="./recurrence"
           subtext={mapLoading(event.frequency, (freq) => DISPLAY_EVENT_FREQUENCY[freq])}
-          >Récurrence</SubmenuItem
         >
-        <SubmenuItem icon={IconContact} href="./contact">Contact de l'orga</SubmenuItem>
-        <SubmenuItem icon={IconManagers} href="./managers">Managers</SubmenuItem>
-        <SubmenuItem icon={IconBannedUsers} href="./banned">Banni·e·s</SubmenuItem>
+          Récurrence
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconContact}
+          href={route('/events/[id]/edit/contact', loading(event.localID, ''))}
+        >
+          Contact de l'orga
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconManagers}
+          href={route('/events/[id]/edit/managers', loading(event.localID, ''))}
+        >
+          Managers
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconBannedUsers}
+          href={route('/events/[id]/edit/banned', loading(event.localID, ''))}
+        >
+          Banni·e·s
+        </SubmenuItem>
       </Submenu>
     </MaybeError>
   </div>
   <div class="right" class:mobile-shown={!leftSplitShownOnMobile}>
-    <slot></slot>
+    {#if !layoutErrored}
+      <slot></slot>
+    {/if}
   </div>
 </div>
 
@@ -157,9 +263,12 @@
     }
 
     .split {
+      --gap: 3rem;
+
       position: relative;
       display: grid;
-      grid-template-columns: 1fr 2fr;
+      grid-template-columns: 40% calc(60% - var(--gap));
+      column-gap: var(--gap);
     }
 
     .left {
@@ -171,7 +280,7 @@
   @media (max-width: 1400px) {
     .split {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 100%;
     }
 
     .split > div:not(.mobile-shown) {
@@ -184,6 +293,11 @@
     gap: 1rem;
     padding: 0 1rem;
     margin-bottom: 2rem;
+  }
+
+  .basic-info.mobile {
+    /* Devices with on-screen keyboards need a larger empty area to easily dismiss the keyboard after entering a value */
+    margin-bottom: 5rem;
   }
 
   .avatar {
@@ -204,6 +318,17 @@
   .location {
     display: flex;
     column-gap: 0.5ch;
+  }
+
+  :is(.dates, .location) .icon {
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .dates :is(.start, .end) {
+    display: flex;
+    gap: 0.5rem;
     align-items: center;
   }
 </style>

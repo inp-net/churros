@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { refroute } from '$lib/navigation';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import type { QueryResult } from '$houdini';
-  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-  import Alert from '$lib/components/Alert.svelte';
   import { page } from '$app/stores';
+  import type { QueryResult } from '$houdini';
+  import Alert from '$lib/components/Alert.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import { refroute } from '$lib/navigation';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ success: Result }>();
 
   // generics="..." should be supported by svelte-eslint-plugin since svelte-eslint-parser@0.34.0
   // but it still doesn't work...
@@ -15,12 +18,19 @@
   $: loggedIn = $RootLayout?.data?.loggedIn;
 
   export let result: QueryResult<Result, Input> | null;
+  export let errored = false;
+  $: errored = !result?.data;
 
-  $: resultDataNonNull = result!.data as Result;
+  // $: resultDataNonNull = result!.data as Result;
+  const bang = <T,>(x: T) => x!;
+
+  $: if (result && result.data) 
+    dispatch('success', result.data);
+  
 </script>
 
 {#if result && result.data}
-  <slot data={resultDataNonNull}></slot>
+  <slot data={bang(bang(result).data)}></slot>
 {:else if result?.errors}
   <Alert theme="danger">
     <h2>Oops!</h2>
@@ -39,6 +49,21 @@
       <ButtonSecondary href={refroute('/login')}>Se connecter</ButtonSecondary>
     {/if}
   </Alert>
-{:else}
+{:else if result?.fetching}
   <LoadingSpinner></LoadingSpinner> Chargement…
+{:else if !result}
+  <Alert theme="danger">
+    <h2>Hmm…</h2>
+    <p>
+      Aucune donnée n'a été chargée ici. Ça ne devrait pas arriver, les devs ont fait des conneries!
+    </p>
+    <small>(désOwOlé)</small>
+  </Alert>
+{:else}
+  <Alert theme="danger">
+    <h2>Wtf‽</h2>
+    <p>Une erreur trèèèès bizarre a eu lieu. Voici des infos pour les devs (good luck 🫶)</p>
+    <ButtonSecondary on:click={() => window.location.reload()}>Recharger la page</ButtonSecondary>
+    <pre>{JSON.stringify({ result }, null, 2)}</pre>
+  </Alert>
 {/if}

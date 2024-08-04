@@ -3,3 +3,4 @@
  */
 
 export * from './computed-links.js';
+export * from './permissions.js';

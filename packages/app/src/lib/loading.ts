@@ -1,6 +1,10 @@
 import { dev } from '$app/environment';
 import { PendingValue } from '$houdini';
 
+export { default as LoadingChurros } from '$lib/components/LoadingChurros.svelte';
+export { default as LoadingSpinner } from '$lib/components/LoadingSpinner.svelte';
+export { default as LoadingText } from '$lib/components/LoadingText.svelte';
+
 /**
  * To develop a loading state, set this to true
  * WARNING: NEVER LEAVE THIS TRUE WHEN COMITTING

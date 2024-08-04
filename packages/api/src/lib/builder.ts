@@ -96,6 +96,10 @@ export interface PothosTypes {
       Input: URL;
       Output: string;
     };
+    LooseURL: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;

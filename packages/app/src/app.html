@@ -40,7 +40,6 @@
       document.documentElement.dataset.themeVariant = actualThemeVariant;
 
       let theme = localStorage.getItem('theme');
-      console.log('Setting theme to ', theme);
       document.documentElement.dataset.theme = theme ?? 'default';
 
       document.addEventListener('DOMContentLoaded', () => {

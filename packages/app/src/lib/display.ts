@@ -61,7 +61,7 @@ export const ORDER_VISIBILITIES: Visibility[] = [
   Visibility.Private,
 ];
 
-export const DISPLAY_VISIBILITIES: Record<Visibility, string> = {
+export const DISPLAY_VISIBILITIES: Record<Visibility$options, string> = {
   Public: 'Public',
   GroupRestricted: 'Groupe',
   SchoolRestricted: 'École',

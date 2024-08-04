@@ -15,7 +15,11 @@ export const objectValuesFlat = (obj: any): any[] => {
   return result;
 };
 
-export function nullToUndefined<T extends Record<string, unknown>>(obj: T) {
+type ObjectWithNullsAndUndefineds<T> = { [K in keyof T]: T[K] | undefined | null };
+type ObjectWithUndefineds<T> = { [K in keyof T]: T[K] | undefined };
+
+export function nullToUndefined<T>(obj: ObjectWithNullsAndUndefineds<T>): ObjectWithUndefineds<T> {
+  // @ts-expect-error "could be instantiated with a different subtype of constraint 'ObjectWithMaybeUndefineds<T>'"
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [key, value === null ? undefined : value]),
   );

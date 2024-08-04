@@ -1,23 +1,20 @@
 <script lang="ts">
-  export let value: boolean;
-  export let label: string;
+  import { loaded, type MaybeLoading } from '$lib/loading';
+
+  type Value = $$Generic<MaybeLoading<boolean> | boolean>;
+
+  export let value: Value;
+
+  let _value: boolean;
+  $: if (_value === undefined && loaded(value)) _value = value as boolean;
 </script>
 
-<label class="switch-container">
-  <div class="switch">
-    <input type="checkbox" on:change bind:checked={value} />
-    <span class="slider" />
-  </div>
-  {label}
-</label>
+<div class="switch">
+  <input type="checkbox" on:change bind:checked={_value} />
+  <span class="slider" />
+</div>
 
 <style>
-  .switch-container {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
   /* The switch - the box around the slider */
   .switch {
     position: relative;

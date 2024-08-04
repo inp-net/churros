@@ -1,4 +1,7 @@
 import type { Context } from '#lib';
+import type { Prisma } from '@churros/db/prisma';
+
+export const canEditArticlePrismaIncludes = {} as const satisfies Prisma.ArticleInclude;
 
 export function canEditArticle(
   oldArticle: { authorId: string | null; groupId: string },

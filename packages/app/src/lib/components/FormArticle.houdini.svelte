@@ -194,12 +194,9 @@
         $title: String!
         $body: String!
         $publishedAt: DateTime!
-        $links: [LinkInput!]!
         $visibility: Visibility!
       ) {
-        setLinks(id: $id, links: $links) {
-          __typename
-        }
+        # TODO links
         upsertArticle(
           id: $id
           event: $eventId

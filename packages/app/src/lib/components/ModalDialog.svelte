@@ -4,6 +4,7 @@
   const dispatch = createEventDispatcher();
 
   export let element: HTMLDialogElement;
+  export let tall = false;
   export let opened = false;
   export let maxWidth = 'unset';
   export const open = () => {
@@ -27,6 +28,7 @@
 />
 
 <dialog
+  class:tall
   on:close={(e) => {
     if (element.classList.contains('closing')) return;
 
@@ -60,6 +62,11 @@
     border-radius: var(--radius-block);
   }
 
+  dialog.tall {
+    width: 50vw;
+    height: 80vh;
+  }
+
   dialog:global(.closing) {
     animation: pop-up 0.5s ease reverse;
   }
@@ -77,12 +84,6 @@
     background-color: var(--backdrop);
     backdrop-filter: blur(10px);
     transition: background-color 0.5s ease;
-  }
-
-  @media (max-width: 1000px) {
-    dialog {
-      border-radius: 0;
-    }
   }
 
   @keyframes pop-up {
