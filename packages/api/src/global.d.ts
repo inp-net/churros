@@ -57,10 +57,8 @@ declare namespace NodeJS {
     /** Gitlab API info, for the issue creation form */
     GITLAB_PROJECT_ID: string; // Id of the repo
     GITLAB_SUDO_TOKEN: string; // personnal access token with sudo, read_api and api scopes. Sudo is required to impersonate a user so that we can say that he created it
-    /** Old LDAP URL (used to migrate passwords) */
-    OLD_LDAP_URL: string;
-    OLD_LDAP_CLIENT_CONSULT_DN: string;
-    OLD_LDAP_CLIENT_CONSULT_PASSWORD: string;
+    /** LDAP URL */
+    LDAP_URL: string;
     LDAP_BASE_DN: string;
     LDAP_BIND_DN: string;
     LDAP_BIND_PASSWORD: string;

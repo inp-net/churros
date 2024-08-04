@@ -1,12 +1,6 @@
-import {
-  builder,
-  connectLdap,
-  prisma,
-  publishClient,
-  schoolLdapSettings,
-  subscribeClient,
-} from '#lib';
+import { builder, prisma, publishClient, schoolLdapSettings, subscribeClient } from '#lib';
 
+import { Client } from '@inp-net/ldap7';
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
 import { HealthCheck } from '../index.js';
@@ -47,17 +41,26 @@ builder.queryField('healthcheck', (t) =>
         },
         ldap: {
           internal: await new Promise<boolean>((resolve) => {
-            try {
-              const c = connectLdap();
-              c.on('error', () => resolve(false));
-              c.bind(process.env.LDAP_BASE_DN, process.env.LDAP_BIND_PASSWORD, (err) => {
-                if (err) resolve(false);
-                resolve(true);
-              });
-              setTimeout(() => resolve(false), 1000);
-            } catch {
+            const client = Client.getInstance('pretty');
+            if (client.client && client.client.isConnected) {
               resolve(true);
+              return;
             }
+
+            client.setup(
+              {
+                url: process.env.LDAP_URL,
+              },
+              process.env.LDAP_BIND_DN,
+              process.env.LDAP_BIND_PASSWORD,
+              process.env.LDAP_BASE_DN,
+            );
+
+            client
+              .connect()
+              .then(() => resolve(true))
+              .catch(() => resolve(false));
+            setTimeout(() => resolve(false), 1000);
           }),
           school: (
             await Promise.all(
