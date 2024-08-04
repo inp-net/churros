@@ -33,7 +33,7 @@
     "lodash.throttle": "^4.1.1",
     "mime": "^4.0.3",
     "nanoid": "^5.0.6",
-    "number-flip-animation": "^1.1.1",
+    "number-flip-animation": "patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch",
     "party-js": "^2.2.0",
     "qr-code-generator-lib": "^1.0.1",
     "simple-svelte-autocomplete": "^2.5.2",

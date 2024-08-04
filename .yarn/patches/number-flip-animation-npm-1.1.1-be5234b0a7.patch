@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index 4bfe82e9d0b33757f180a4d4aebb367d533f2ac2..35881a62f6cc0b87800c3ab87c913420dd3c1cf6 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,7 @@
+ {
+   "name": "number-flip-animation",
+   "version": "1.1.1",
++  "type": "module",
+   "description": "Small typescript package for animating the change of a number using a flip/slide animation.",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",

@@ -909,7 +909,7 @@ __metadata:
     lodash.throttle: "npm:^4.1.1"
     mime: "npm:^4.0.3"
     nanoid: "npm:^5.0.6"
-    number-flip-animation: "npm:^1.1.1"
+    number-flip-animation: "patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch"
     party-js: "npm:^2.2.0"
     prettier: "npm:^3.3.3"
     qr-code-generator-lib: "npm:^1.0.1"
@@ -13106,10 +13106,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"number-flip-animation@npm:^1.1.1":
+"number-flip-animation@npm:1.1.1":
   version: 1.1.1
   resolution: "number-flip-animation@npm:1.1.1"
   checksum: 10c0/c1d01ae0e8c1a2e9e72c0aa9c4d2fd4e2f580300a6873e32824028459d7cee2a6f49c333c12299bf0ab019bd3b4499db0bc12b8fcf934bf99b041660030d7fac
+  languageName: node
+  linkType: hard
+
+"number-flip-animation@patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch":
+  version: 1.1.1
+  resolution: "number-flip-animation@patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch::version=1.1.1&hash=183682"
+  checksum: 10c0/f7457ecbcaad6d310e778f688bc2f6366810a0e731c36dbc40e999d0b877b5a5b956572e68604c47dff38e763998b5d8e5045cea1e211aeec8d47634a5e53752
   languageName: node
   linkType: hard
 
