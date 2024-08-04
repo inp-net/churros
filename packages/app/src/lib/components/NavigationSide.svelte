@@ -150,6 +150,7 @@
     width: 90px;
     height: 100dvh;
     padding: 1rem;
+    view-transition-name: navigation-side;
   }
 
   nav .top {

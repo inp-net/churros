@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate } from '$app/navigation';
+  import { afterNavigate, onNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { AppLayoutScanningEventStore, graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
@@ -21,6 +21,7 @@
   import { refroute, scanningEventsRouteID } from '$lib/navigation';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
+  import { setupViewTransition } from '$lib/view-transitions';
   import { setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
@@ -28,6 +29,8 @@
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
+
+  onNavigate(setupViewTransition);
 
   const mobile = isMobile();
   export let data: PageData;
@@ -412,6 +415,7 @@
     display: flex;
     flex-flow: column wrap;
     width: 100%;
+    view-timeline-name: announcements;
   }
 
   .announcement {
@@ -466,5 +470,41 @@
     --text: #25bf22;
     --border: #25bf22;
     --primary: #54fe54;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-from-right {
+    from {
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes slide-to-left {
+    to {
+      transform: scale(1.05);
+    }
+  }
+
+  :root::view-transition-old(root) {
+    animation:
+      90ms ease both fade-out,
+      200ms ease both slide-to-left;
+  }
+
+  :root::view-transition-new(root) {
+    animation:
+      110ms ease both fade-in,
+      200ms ease both slide-from-right;
   }
 </style>
