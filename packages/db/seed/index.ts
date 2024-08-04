@@ -755,6 +755,7 @@ let IntégrationGroup = await prisma.group.create({
     uid: `integration-${new Date().getFullYear()}`,
     color: '#ff0000',
     links: { create: [] },
+    studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
   },
 });
 
@@ -787,6 +788,7 @@ await prisma.group.create({
     parent: { connect: { id: IntégrationGroup.id } },
     familyRoot: { connect: { id: IntégrationGroup.familyId! } },
     links: { create: [] },
+    studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
     // members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
   },
 });
