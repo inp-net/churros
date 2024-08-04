@@ -315,7 +315,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10.2.2"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.0"
-    "@inp-net/ldap7": "npm:^1.0.5"
+    "@inp-net/ldap7": "npm:^1.0.6"
     "@pothos/core": "npm:4.0.2"
     "@pothos/plugin-complexity": "npm:^4.0.2"
     "@pothos/plugin-dataloader": "npm:^4.0.2"
@@ -561,13 +561,14 @@ __metadata:
   resolution: "@churros/sync@workspace:packages/sync"
   dependencies:
     "@churros/db": "workspace:^"
-    "@inp-net/ldap7": "npm:^1.0.5"
+    "@inp-net/ldap7": "npm:^1.0.6"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
     "@tsconfig/strictest": "npm:^2.0.5"
     npm-run-all2: "npm:^6.2.0"
     tslog: "npm:^4.9.3"
     tsx: "npm:^4.16.2"
+    typescript: "npm:^5.5.4"
   languageName: unknown
   linkType: soft
 
@@ -2040,16 +2041,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@inp-net/ldap7@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "@inp-net/ldap7@npm:1.0.5"
+"@inp-net/ldap7@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@inp-net/ldap7@npm:1.0.6"
   dependencies:
     crypto-random-string: "npm:5.0.0"
     latinize: "npm:^2.0.0"
     ldapts: "npm:^7.1.0"
     sha512-crypt-ts: "npm:^0.1.27"
     tslog: "npm:^4.9.3"
-  checksum: 10c0/2ad8be0ed89dd9378a78d287e9d7c2067aaf531eb7b8188b03988afc0a4e4637cc8bcea25340e7c8341f4a85f331de41063bbb852632fbb5ec59f63a4da2ef04
+  checksum: 10c0/8ed0a228e193091f26b153c97e3c89cc7b32f7a7abb8e3d6440745c91f82ade744c26994dc8fc2ccaeab03adb2866b404ad214541f8e37c0c59854d72ebe6087
   languageName: node
   linkType: hard
 
@@ -16666,7 +16667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.0.3, typescript@npm:^5.4.3, typescript@npm:^5.5.2":
+"typescript@npm:^5.0.3, typescript@npm:^5.4.3, typescript@npm:^5.5.2, typescript@npm:^5.5.4":
   version: 5.5.4
   resolution: "typescript@npm:5.5.4"
   bin:
@@ -16676,7 +16677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.0.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.4.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.0.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.4.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>":
   version: 5.5.4
   resolution: "typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"
   bin:

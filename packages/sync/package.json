@@ -2,7 +2,7 @@
   "name": "@churros/sync",
   "dependencies": {
     "@churros/db": "workspace:^",
-    "@inp-net/ldap7": "^1.0.5",
+    "@inp-net/ldap7": "^1.0.6",
     "tslog": "^4.9.3"
   },
   "devDependencies": {
@@ -10,11 +10,13 @@
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
     "npm-run-all2": "^6.2.0",
-    "tsx": "^4.16.2"
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
   },
   "private": true,
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "build": "tsc"
   },
   "type": "module",
   "volta": {
