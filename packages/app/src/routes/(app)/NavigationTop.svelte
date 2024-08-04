@@ -120,6 +120,7 @@
     justify-content: space-between;
     padding: 0.25em 0.75em;
     font-size: 1.5em;
+    view-transition-name: navigation-top;
   }
 
   nav:not(.transparent) {

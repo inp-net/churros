@@ -26,6 +26,17 @@ declare namespace App {
   interface PageState extends NavigationTopState {}
 }
 
+declare interface ViewTransition {
+  updateCallbackDone: Promise<void>;
+  ready: Promise<void>;
+  finished: Promise<void>;
+  skipTransition: () => void;
+}
+
+declare interface Document {
+  startViewTransition(updateCallback: () => Promise<void>): ViewTransition;
+}
+
 declare module 'simple-svelte-autocomplete';
 
 declare module 'ics-service';
