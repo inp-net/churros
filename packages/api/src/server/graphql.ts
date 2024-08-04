@@ -1,5 +1,6 @@
 import { context, customErrorMap, inDevelopment } from '#lib';
 import { Prisma } from '@churros/db/prisma';
+import type { Plugin } from '@envelop/core';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { createFetch } from '@whatwg-node/fetch';
 import { GraphQLError } from 'graphql';
@@ -13,11 +14,39 @@ z.setErrorMap(customErrorMap);
 // Don't commit with a value other than 0 pls, use it for testing only
 const SIMULATED_RESPONSE_DELAY_TIME_MS = 0;
 
+// TODO publish on NPM :p
+export const trimInputsPlugin = (): Plugin => {
+  const trimStrings = <T>(input: T): T => {
+    if (typeof input === 'string') {
+      return input.trim() as T;
+    } else if (Array.isArray(input)) {
+      return input.map(trimStrings) as unknown as T;
+    } else if (input && typeof input === 'object') {
+      const trimmedObject: { [key: string]: unknown } = {};
+      for (const key in Object.keys(input)) 
+        trimmedObject[key] = trimStrings((input as { [key: string]: unknown })[key]);
+      
+      return trimmedObject as T;
+    }
+    return input;
+  };
+
+  return {
+    onExecute({ args }) {
+      // Apply trimming to variables
+      if (args.variableValues) 
+        args.variableValues = trimStrings(args.variableValues);
+      
+    },
+  };
+};
+
 const yoga = createYoga({
   schema,
   // CORS are handled below, disable Yoga's default CORS settings
   cors: false,
   context,
+  plugins: [trimInputsPlugin()],
   graphiql: {
     title: 'Churros API',
     subscriptionsProtocol: 'WS',
