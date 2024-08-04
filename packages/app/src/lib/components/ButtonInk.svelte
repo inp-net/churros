@@ -60,6 +60,10 @@
     box-shadow: none;
   }
 
+  .button-ink.danger {
+    color: var(--danger);
+  }
+
   /* <a> elements don't have disabled={false} -> (no attribute in DOM) treatment, so Svelte just stringifies it to false. We still wanna have disabled link buttons though. */
   .button-ink[disabled]:not([disabled='false']) {
     color: var(--muted-text);

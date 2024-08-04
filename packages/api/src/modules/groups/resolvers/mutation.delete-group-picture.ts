@@ -1,4 +1,4 @@
-import { builder, log, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma, storageRoot } from '#lib';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.js';
@@ -28,7 +28,7 @@ builder.mutationField('deleteGroupPicture', (t) =>
         select: { pictureFile: true },
       });
 
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
 
       if (pictureFile) await unlink(path.join(root, pictureFile));
 

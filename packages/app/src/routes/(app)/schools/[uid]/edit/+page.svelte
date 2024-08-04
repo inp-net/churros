@@ -8,7 +8,7 @@
   import GroupInput from '$lib/components/GroupInput.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
-  import FormPicture from '$lib/components/FormPicture.svelte';
+  import FormPicture from '$lib/components/FormPicture.old.svelte';
 
   export let data: PageData;
   const initialData = structuredClone(data);

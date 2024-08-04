@@ -1,5 +1,6 @@
 import { builder } from '#lib';
 import { GraphQLError } from 'graphql';
+import isValidDomain from 'is-valid-domain';
 import { ALLOWED_URL_PROTOCOLS } from './url.js';
 
 export const LooseURL = builder.scalarType('LooseURL', {
@@ -22,6 +23,7 @@ export const LooseURL = builder.scalarType('LooseURL', {
       return parsed.toString();
     }
 
+    if (!isValidDomain(maybeURL.split('/').at(0) ?? '')) throw new GraphQLError('URL invalide');
     maybeURL = `https://${maybeURL}`;
     if (!URL.canParse(maybeURL)) throw new GraphQLError('URL invalide');
 

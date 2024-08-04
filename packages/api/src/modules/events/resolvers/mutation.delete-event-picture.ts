@@ -1,7 +1,6 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, storageRoot } from '#lib';
 import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
-
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -26,8 +25,7 @@ builder.mutationField('deleteEventPicture', (t) =>
         select: { pictureFile: true },
       });
 
-      const root = new URL(process.env.STORAGE).pathname;
-
+      const root = storageRoot();
       if (pictureFile) await unlink(join(root, pictureFile));
       return prisma.event.update({ ...query, where: { id }, data: { pictureFile: '' } });
     },

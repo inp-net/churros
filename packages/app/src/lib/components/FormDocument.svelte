@@ -5,7 +5,7 @@
   import IconDelete from '~icons/mdi/delete-outline';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import InputFile, { fileListOf } from './InputFile.svelte';
+  import InputFile, { fileListOf } from './InputFile.old.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputSelectOne from './InputSelectOne.svelte';

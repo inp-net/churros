@@ -1,4 +1,4 @@
-import { builder, prisma, publish } from '#lib';
+import { builder, prisma, publish, storageRoot } from '#lib';
 import { FileScalar } from '#modules/global';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -37,7 +37,7 @@ builder.mutationField('answerFileQuestion', (t) =>
         include: { section: { include: { form: true } } },
       });
       const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
       let answer = await prisma.answer.create({
         data: {
           questionId,

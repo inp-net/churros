@@ -5,6 +5,7 @@ import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { createFetch } from '@whatwg-node/fetch';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
+import { isPlainObject } from 'is-plain-object';
 import { ZodError, z } from 'zod';
 import { schema } from '../schema.js';
 import { api } from './express.js';
@@ -21,7 +22,7 @@ export const trimInputsPlugin = (): Plugin => {
       return input.trim() as T;
     } else if (Array.isArray(input)) {
       return input.map(trimStrings) as unknown as T;
-    } else if (input && typeof input === 'object') {
+    } else if (input && isPlainObject(input)) {
       const trimmedObject: { [key: string]: unknown } = {};
       for (const [key, value] of Object.entries(input)) trimmedObject[key] = trimStrings(value);
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { fragment, graphql, PendingValue, type CardEvent } from '$houdini';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { formatEventDates } from '$lib/dates';
@@ -10,7 +11,6 @@
     mapLoading,
     onceAllLoaded,
     onceLoaded,
-    type MaybeLoading,
   } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { refroute } from '$lib/navigation';
@@ -33,7 +33,8 @@
    * Whether this component should announce a shotgun instead of the event itself
    */
   export let shotgun = false;
-  export let loggedIn: MaybeLoading<boolean>;
+  $: ({ RootLayout } = $page.data);
+  $: loggedIn = Boolean($RootLayout?.data?.loggedIn);
 
   const mobile = isMobile();
 
