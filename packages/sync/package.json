@@ -2,7 +2,8 @@
   "name": "@churros/sync",
   "dependencies": {
     "@churros/db": "workspace:^",
-    "@inp-net/ldap7": "^1.0.4"
+    "@inp-net/ldap7": "^1.0.5",
+    "tslog": "^4.9.3"
   },
   "devDependencies": {
     "@tsconfig/esm": "^1.0.5",

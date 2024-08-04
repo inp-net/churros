@@ -315,7 +315,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10.2.2"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.0"
-    "@inp-net/ldap7": "npm:^1.0.4"
+    "@inp-net/ldap7": "npm:^1.0.5"
     "@pothos/core": "npm:4.0.2"
     "@pothos/plugin-complexity": "npm:^4.0.2"
     "@pothos/plugin-dataloader": "npm:^4.0.2"
@@ -561,24 +561,13 @@ __metadata:
   resolution: "@churros/sync@workspace:packages/sync"
   dependencies:
     "@churros/db": "workspace:^"
-    "@inp-net/ldap7": "npm:^1.0.4"
+    "@inp-net/ldap7": "npm:^1.0.5"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
     "@tsconfig/strictest": "npm:^2.0.5"
     npm-run-all2: "npm:^6.2.0"
+    tslog: "npm:^4.9.3"
     tsx: "npm:^4.16.2"
-  languageName: unknown
-  linkType: soft
-
-"@churros/sync_old@workspace:packages/sync_old":
-  version: 0.0.0-use.local
-  resolution: "@churros/sync_old@workspace:packages/sync_old"
-  dependencies:
-    "@churros/db": "workspace:^"
-    "@inp-net/ldap7": "npm:^1.0.4"
-    npm-run-all2: "npm:^6.2.0"
-    tsx: "npm:^4.16.0"
-    typescript: "npm:^5.5.2"
   languageName: unknown
   linkType: soft
 
@@ -2051,15 +2040,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@inp-net/ldap7@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@inp-net/ldap7@npm:1.0.4"
+"@inp-net/ldap7@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@inp-net/ldap7@npm:1.0.5"
   dependencies:
-    crypto-random-string: "npm:3.3.1"
-    ldapts: "npm:^7.0.12"
+    crypto-random-string: "npm:5.0.0"
+    latinize: "npm:^2.0.0"
+    ldapts: "npm:^7.1.0"
     sha512-crypt-ts: "npm:^0.1.27"
-    tslog: "npm:^4.9.2"
-  checksum: 10c0/2ecc446847ff2137c43d496a41a4651cb2898a78635dd5734afa2aeb8bcdc3aebed70b5738b8aa6d6244186020658e1edba5985b01aca397d566d50562853b67
+    tslog: "npm:^4.9.3"
+  checksum: 10c0/2ad8be0ed89dd9378a78d287e9d7c2067aaf531eb7b8188b03988afc0a4e4637cc8bcea25340e7c8341f4a85f331de41063bbb852632fbb5ec59f63a4da2ef04
   languageName: node
   linkType: hard
 
@@ -5997,12 +5987,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-random-string@npm:3.3.1":
-  version: 3.3.1
-  resolution: "crypto-random-string@npm:3.3.1"
+"crypto-random-string@npm:5.0.0":
+  version: 5.0.0
+  resolution: "crypto-random-string@npm:5.0.0"
   dependencies:
-    type-fest: "npm:^0.8.1"
-  checksum: 10c0/f0c8d1fdab9e7c4e94e1c2184e4836833c4eabc81feab6b0d4d324f3956ab6fb20a6d05bda72c312369a89d61335569274144a1475a8e32f708f4d4e9f859278
+    type-fest: "npm:^2.12.2"
+  checksum: 10c0/cac9860697fdf49a22c222c2daa515103c9798474bbe30fca53fbf73d88448bedd200eafaaaf7823ab83b01b9082b840f530d0e146d25f588945a79442e61cd4
   languageName: node
   linkType: hard
 
@@ -10625,6 +10615,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"latinize@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "latinize@npm:2.0.0"
+  checksum: 10c0/58f60f1bd61d3187a652e09cf8ed927074f5b5a4264b65c147b156935393ad649650e54afdce8ff61139aac219217ac12c9d084a4dfcdd1266d9436afcb3b217
+  languageName: node
+  linkType: hard
+
 "lazystream@npm:^1.0.0":
   version: 1.0.1
   resolution: "lazystream@npm:1.0.1"
@@ -10665,7 +10662,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ldapts@npm:^7.0.12":
+"ldapts@npm:^7.1.0":
   version: 7.1.0
   resolution: "ldapts@npm:7.1.0"
   dependencies:
@@ -16562,14 +16559,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslog@npm:^4.9.2":
+"tslog@npm:^4.9.3":
   version: 4.9.3
   resolution: "tslog@npm:4.9.3"
   checksum: 10c0/9db2c02b01be44a97e447061958565ceb8faf33a241cf9c030d5f1ebefff74434b66090985f5a75189a514aae2267999851c281b8cd8dc8cd93dd158b1033319
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.16.0, tsx@npm:^4.16.2, tsx@npm:^4.7.1":
+"tsx@npm:^4.16.2, tsx@npm:^4.7.1":
   version: 4.16.2
   resolution: "tsx@npm:4.16.2"
   dependencies:
@@ -16636,7 +16633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^2.13.0, type-fest@npm:^2.19.0, type-fest@npm:^2.5.1":
+"type-fest@npm:^2.12.2, type-fest@npm:^2.13.0, type-fest@npm:^2.19.0, type-fest@npm:^2.5.1":
   version: 2.19.0
   resolution: "type-fest@npm:2.19.0"
   checksum: 10c0/a5a7ecf2e654251613218c215c7493574594951c08e52ab9881c9df6a6da0aeca7528c213c622bc374b4e0cb5c443aa3ab758da4e3c959783ce884c3194e12cb
