@@ -33,6 +33,7 @@
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.1",
     "dichotomid": "^0.0.3",
+    "envelop-trim-inputs": "^0.0.2",
     "express": "^4.19.2",
     "extract-files": "^13.0.0",
     "glob": "^10.3.12",
