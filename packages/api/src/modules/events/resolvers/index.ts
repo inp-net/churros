@@ -13,6 +13,7 @@ export * from './mutation.delete-event-manager.js';
 export * from './mutation.delete-event-picture.js';
 export * from './mutation.delete-event.js';
 export * from './mutation.kiosk-reload.js';
+export * from './mutation.remove-event-manager.js';
 export * from './mutation.set-event-co-organizers.js';
 export * from './mutation.set-event-dates.js';
 export * from './mutation.set-event-visibility.js';

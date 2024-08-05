@@ -99,6 +99,9 @@ const PAGES = {
   '/events/[id]/edit': (id: string | number, params?: {}) => {
     return `/events/${id}/edit`;
   },
+  '/events/[id]/edit/banned': (id: string | number, params?: {}) => {
+    return `/events/${id}/edit/banned`;
+  },
   '/events/[id]/edit/contact': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/contact`;
   },
@@ -110,6 +113,9 @@ const PAGES = {
   },
   '/events/[id]/edit/links': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/links`;
+  },
+  '/events/[id]/edit/managers': (id: string | number, params?: {}) => {
+    return `/events/${id}/edit/managers`;
   },
   '/events/[id]/edit/recurrence': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/recurrence`;
@@ -510,10 +516,12 @@ export type KIT_ROUTES = {
     '/events': 'week';
     '/events/[id]': 'id';
     '/events/[id]/edit': 'id';
+    '/events/[id]/edit/banned': 'id';
     '/events/[id]/edit/contact': 'id';
     '/events/[id]/edit/description': 'id';
     '/events/[id]/edit/image': 'id';
     '/events/[id]/edit/links': 'id';
+    '/events/[id]/edit/managers': 'id';
     '/events/[id]/edit/recurrence': 'id';
     '/events/[id]/edit/visibility': 'id';
     '/forms': never;

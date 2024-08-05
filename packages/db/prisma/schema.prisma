@@ -559,7 +559,7 @@ enum EventFrequency {
 model Event {
   id             String         @id @default(dbgenerated("nanoid('e:')"))
   createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
   authorId       String?
   groupId        String
   contactMail    String
@@ -609,6 +609,7 @@ enum Visibility {
 
 /// An event manager is a user that can scan tickets, and may be able to manage the event
 model EventManager {
+  id                     String  @id @default(dbgenerated("nanoid('em:')"))
   eventId                String
   userId                 String
   canVerifyRegistrations Boolean @default(true) // Can scan tickets

@@ -86,7 +86,7 @@ builder.mutationField('setPicture', (t) =>
                 data: { pictureFile: '' },
               });
             } else {
-              context.caveats.push("L'image a déjà été supprimée");
+              context.caveats.unshift("L'image a déjà été supprimée");
               return prisma.event.findUniqueOrThrow({
                 ...queryFor('Event'),
                 where: { id: resource },

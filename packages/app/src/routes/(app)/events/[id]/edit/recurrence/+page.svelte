@@ -38,7 +38,6 @@
                 ? addYears(event.endsAt ?? new Date(), 1)
                 : null,
             });
-            if (!result) return;
             toasts.mutation(result, 'updateEvent', '', `Impossible de désactiver la récurrence`);
           }}
           value={event.frequency !== 'Once'}
@@ -57,7 +56,6 @@
                   frequency: detail,
                   recurringUntil: event.recurringUntil,
                 });
-                if (!result) return;
                 toasts.mutation(
                   result,
                   'updateEvent',
@@ -83,7 +81,6 @@
                 frequency: event.frequency,
                 recurringUntil: new Date(currentTarget.value),
               });
-              if (!result) return;
               toasts.mutation(
                 result,
                 'updateEvent',

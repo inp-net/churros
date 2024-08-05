@@ -1,5 +1,5 @@
 query LayoutEventEdit($id: LocalID!) {
-  assertMe {
+  me {
     canCreateEventsOn {
       ...PickGroup @mask_disable
     }

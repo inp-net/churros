@@ -364,6 +364,16 @@ export const topnavConfigs: Partial<
     back: route('/events/[id]/edit', id),
     actions: [],
   }),
+  '/(app)/events/[id]/edit/managers': ({ params: { id } }) => ({
+    title: 'Managers',
+    back: route('/events/[id]/edit', id),
+    actions: [],
+  }),
+  '/(app)/events/[id]/edit/banned': ({ params: { id } }) => ({
+    title: 'Banni·e·s',
+    back: route('/events/[id]/edit', id),
+    actions: [],
+  }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
     quickAction: {

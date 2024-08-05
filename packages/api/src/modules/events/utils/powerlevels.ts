@@ -11,7 +11,7 @@ export function powerlevelToPermissions(level: EventManagerPowerLevel) {
     }
     case EventManagerPowerLevel.ScanTickets: {
       return {
-        canEdit: true,
+        canEdit: false,
         canEditPermissions: false,
         canVerifyRegistrations: true,
       };

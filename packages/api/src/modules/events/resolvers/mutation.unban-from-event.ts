@@ -2,10 +2,12 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID, UIDScalar } from '#modules/global';
+import { ZodError } from 'zod';
 
 builder.mutationField('unbanFromEvent', (t) =>
   t.prismaField({
     type: EventType,
+    errors: { types: [Error, ZodError] },
     description:
       "Débannir un·e utilisateur·rice d'un événement. Si l'utilisateur·ice n'était pas banni·e, cette mutation n'aura aucun effet (mais ne fait pas d'erreur).",
     args: {

@@ -66,7 +66,6 @@
 
   async function deletePicture() {
     const result = await mutate(Delete, { resource: $data.id, variant: 'Light' });
-    if (!result) return;
     toasts.mutation(result, 'setPicture', 'Image supprimée', "Impossible de supprimer l'image");
   }
 
@@ -78,7 +77,6 @@
   accept="image/jpeg,image/png,image/webp"
   on:change={async ({ detail: file }) => {
     const result = await mutate(Update, { resource: $data.id, file, variant: 'Light' });
-    if (!result) return;
     toasts.mutation(
       result,
       'setPicture',

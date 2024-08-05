@@ -37,8 +37,13 @@ export function canEditEvent(
   return !!managementship?.canEdit;
 }
 
+export const canEditManagersPrismaIncludes = {
+  managers: true,
+  group: true,
+} satisfies Prisma.EventInclude;
+
 export function canEditManagers(
-  event: Event & { managers: EventManager[]; group: Group },
+  event: Prisma.EventGetPayload<{ include: typeof canEditManagersPrismaIncludes }>,
   user: Context['user'],
 ) {
   if (userIsAdminOf(user, event.group.studentAssociationId)) return true;
@@ -50,6 +55,7 @@ export function canEditManagers(
   const managementship = event.managers.find((m) => m.userId === user?.id);
   return !!managementship?.canEditPermissions;
 }
+
 export function canCreateEvent(group: Group, user: Context['user']) {
   if (userIsAdminOf(user, group.studentAssociationId)) return true;
 

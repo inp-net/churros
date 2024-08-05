@@ -11,6 +11,7 @@ export { default as AvatarGroup } from './AvatarGroup.svelte';
 export { default as AvatarPerson_houdini } from './AvatarPerson.houdini.svelte';
 export { default as AvatarPerson } from './AvatarPerson.svelte';
 export { default as AvatarSchool } from './AvatarSchool.svelte';
+export { default as AvatarUser } from './AvatarUser.svelte';
 export { default as Badge } from './Badge.svelte';
 export { default as BadgeGroupMember } from './BadgeGroupMember.svelte';
 export { default as BadgePaymentStatus } from './BadgePaymentStatus.svelte';

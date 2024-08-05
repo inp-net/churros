@@ -28,7 +28,6 @@
             event: event.id,
             visibility: detail,
           });
-          if (!result) return;
           toasts.mutation(result, 'setEventVisibility', '', 'Impossible de changer la visibilité');
         }}
       >
@@ -49,7 +48,6 @@
               event: event.id,
               includeInKiosk: currentTarget.checked,
             });
-            if (!result) return;
             toasts.mutation(
               result,
               'updateEvent',
