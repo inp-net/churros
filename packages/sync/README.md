@@ -1,3 +1,3 @@
 # @churros/sync
 
-Syncronize database with other providers, for now only support ldap.
+Syncronize database with other providers, only supports LDAP for now.
