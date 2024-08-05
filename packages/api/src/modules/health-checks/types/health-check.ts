@@ -7,7 +7,7 @@ export type HealthCheck = {
   mail: { smtp: boolean };
 };
 
-export const PothosHealthCheck = builder.objectRef<HealthCheck>('HealthCheck').implement({
+export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').implement({
   description: 'Results of a health self-check',
   fields: (t) => ({
     redis: t.field({

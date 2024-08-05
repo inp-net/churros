@@ -2,6 +2,7 @@
 import { context } from '#lib';
 import { checkHealth } from '#modules/health-checks';
 import cors from 'cors';
+import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
@@ -33,13 +34,14 @@ export async function startApiServer() {
   import('./handover-pdf.js');
   import('./storage.js');
 
-  // Perform an health check and setup interval to run health checks every 5 minutes
+  // Perform a health check and setup interval to run health checks every 5 minutes
   console.info('Performing initial health check...');
   await checkHealth();
   console.info('Setting up health check interval...');
   setIntervalAsync(async () => {
+    console.info('Performing health check...');
     await checkHealth();
-  }, 300); // 5 minutes
+  }, minutesToMilliseconds(5));
 
   const apiServer = api.listen(4000, () => {
     console.info('API ready at http://localhost:4000');
