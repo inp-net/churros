@@ -83,6 +83,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.0",
     "semver": "^7.6.0",
+    "set-interval-async": "^3.0.3",
     "sharp": "^0.33.3",
     "slug": "^9.0.0",
     "typescript": "^5.4.3",

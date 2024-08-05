@@ -1,13 +1,13 @@
 import { builder } from '#lib';
 
-type HealthCheck = {
+export type HealthCheck = {
   redis: { publish: boolean; subscribe: boolean };
   database: { prisma: boolean };
   ldap: { school: boolean; internal: boolean };
   mail: { smtp: boolean };
 };
 
-export const HealthCheck = builder.objectRef<HealthCheck>('HealthCheck').implement({
+export const PothosHealthCheck = builder.objectRef<HealthCheck>('HealthCheck').implement({
   description: 'Results of a health self-check',
   fields: (t) => ({
     redis: t.field({
