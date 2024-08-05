@@ -158,7 +158,7 @@ export const load: PageLoad = async (event) => {
       claimCodeError =
         error instanceof ZeusError
           ? error.errors.map((e) => e.message).join(', ')
-          : error?.toString() ?? 'Une erreur inconnue est survenue';
+          : (error?.toString() ?? 'Une erreur inconnue est survenue');
     }
   }
 

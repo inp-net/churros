@@ -120,7 +120,7 @@
     userIsLoading={$AppLayout.fetching}
     user={$AppLayout.data?.me ?? null}
     event={$page.route.id === scanningEventsRouteID
-      ? $AppLayoutScanningEvent.data?.scanningEvent ?? null
+      ? ($AppLayoutScanningEvent.data?.scanningEvent ?? null)
       : null}
   />
 

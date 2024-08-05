@@ -71,7 +71,7 @@
     outline: calc(2 / 3 * var(--border-block)) solid var(--border);
     outline-offset: calc(-1 * var(--border-block));
 
-    @-moz-document url-prefix() {
+    @document url-prefix() {
       outline-offset: -1px;
     }
   }

@@ -253,7 +253,7 @@
     allowedPaymentMethods: ['Cash', 'Lydia'] as PaymentMethod[],
     capacity: 0,
     price: 0,
-    closesAt: event.tickets.length > 0 ? event.tickets[0].closesAt : event.endsAt ?? new Date(),
+    closesAt: event.tickets.length > 0 ? event.tickets[0].closesAt : (event.endsAt ?? new Date()),
     opensAt:
       event.tickets.length > 0
         ? event.tickets[0].opensAt

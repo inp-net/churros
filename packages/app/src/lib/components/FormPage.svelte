@@ -385,7 +385,7 @@
   li.file {
     display: grid;
     grid-template-columns: auto repeat(2, max-content);
-    gap: 0.5rem 0.5rem;
+    gap: 0.5rem;
     text-align: left;
   }
 </style>
