@@ -4,7 +4,7 @@ import { LinkInput } from '#modules/links';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
-import { GroupEnumType, GroupType, membersNeedToPayForTheStudentAssociation } from '../index.js';
+import { GroupEnumType, GroupType } from '../index.js';
 import { canCreateGroup, canEditGroup } from '../utils/index.js';
 
 /*
@@ -139,8 +139,7 @@ builder.mutationField('upsertGroup', (t) =>
       { user },
     ) {
       if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
-      if (membersNeedToPayForTheStudentAssociation({ type }) && !studentAssociationUid)
-        throw new GraphQLError("Il faut préciser l'AE de rattachement pour un club ou une liste");
+      if (!studentAssociationUid) throw new GraphQLError("Il faut préciser l'AE de rattachement");
 
       // --- First, we update the group's children's familyId according to the new parent of this group. ---
       // We have 2 possible cases for updating the parent: either it is:
