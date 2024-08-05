@@ -104,8 +104,8 @@ ENV NODE_ENV="production"
 
 COPY --from=builder-sync /app/node_modules/ /app/node_modules/
 COPY --from=builder-sync /app/packages/sync/build/src/ /app/packages/sync/build/src/
-COPY --from=builder /app/packages/db/package.json /app/packages/db/
-COPY --from=builder /app/packages/db/src/ /app/packages/db/src/
+COPY --from=builder-sync /app/packages/db/package.json /app/packages/db/
+COPY --from=builder-sync /app/packages/db/src/ /app/packages/db/src/
 COPY --from=builder-sync /app/packages/sync/package.json /app/
 
 WORKDIR /app
