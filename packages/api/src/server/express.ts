@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/prefer-module */
 import { context } from '#lib';
-import { checkHealth } from '#modules/health-checks';
+import { checkHealth } from '#modules/health-checks/utils';
 import cors from 'cors';
 import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
