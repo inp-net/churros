@@ -138,6 +138,33 @@ export const SetEventKioskModeInclusion = graphql(`
   }
 `);
 
+export const ChangeEventRecurrence = graphql(`
+  mutation ChangeEventRecurrence(
+    $event: LocalID!
+    $frequency: EventFrequency!
+    $recurringUntil: DateTime
+  ) {
+    updateEventRecurrence(id: $event, frequency: $frequency, recurringUntil: $recurringUntil) {
+      __typename
+      ... on MutationUpdateEventRecurrenceSuccess {
+        data {
+          frequency
+          recurringUntil
+        }
+      }
+      ... on Error {
+        message
+      }
+      ... on ZodError {
+        fieldErrors {
+          message
+          path
+        }
+      }
+    }
+  }
+`);
+
 export const DeleteEvent = graphql(`
   mutation DeleteEvent($event: LocalID!) {
     deleteEvent(id: $event) {
@@ -152,6 +179,32 @@ export const DeleteEvent = graphql(`
       }
       ... on Error {
         message
+      }
+    }
+  }
+`);
+
+export const ChangeEventCoOrganizers = graphql(`
+  mutation ChangeEventCoOrganizers($event: LocalID!, $coOrganizers: [UID!]!) {
+    setEventCoOrganizers(id: $event, coOrganizers: $coOrganizers) {
+      __typename
+      ... on MutationSetEventCoOrganizersSuccess {
+        data {
+          coOrganizers {
+            uid
+            name
+            ...AvatarGroup
+          }
+        }
+      }
+      ... on Error {
+        message
+      }
+      ... on ZodError {
+        fieldErrors {
+          message
+          path
+        }
       }
     }
   }

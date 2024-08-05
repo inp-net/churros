@@ -1,10 +1,9 @@
-import type { Visibility$options } from '$houdini';
+import type { EventFrequency$options, Visibility$options } from '$houdini';
 import {
   DocumentType,
   IssueState,
   NotificationChannel,
   Visibility,
-  type EventFrequency,
   type GroupType,
   type PaymentMethod,
 } from '$lib/zeus';
@@ -157,7 +156,7 @@ export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent
   PayPal: LogoPaypal,
 };
 
-export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency, string> = {
+export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency$options, string> = {
   Biweekly: 'Une semaine sur deux',
   Monthly: 'Mensuel',
   Weekly: 'Hebdomadaire',

@@ -75,6 +75,7 @@
 
 <InputFile
   bind:openPicker
+  accept="image/jpeg,image/png,image/webp"
   on:change={async ({ detail: file }) => {
     const result = await mutate(Update, { resource: $data.id, file, variant: 'Light' });
     if (!result) return;

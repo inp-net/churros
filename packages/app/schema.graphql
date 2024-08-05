@@ -2470,7 +2470,7 @@ type Mutation {
   """
   Changer les groupes co-organisateurs d'un événement
   """
-  setEventCoOrganizers(coOrganizers: [UID!]!, id: LocalID!): Event!
+  setEventCoOrganizers(coOrganizers: [UID!]!, id: LocalID!): MutationSetEventCoOrganizersResult!
 
   """
   Définir les dates d'un évènement
@@ -2620,7 +2620,6 @@ type Mutation {
     """
     contactMail: String
     description: Markdown
-    frequency: EventFrequency = Once
 
     """
     Capacité globale de l'évènement
@@ -2649,6 +2648,26 @@ type Mutation {
     title: String
   ): MutationUpdateEventResult!
   updateEventPicture(file: File!, id: ID!): Event!
+
+  """
+  Changer les caractéristiques de récurrence d'un évènement
+  """
+  updateEventRecurrence(
+    """
+    Fréquence de récurrence de l'évènement
+    """
+    frequency: EventFrequency! = Once
+
+    """
+    Identifiant de l'évènement
+    """
+    id: LocalID!
+
+    """
+    Date de fin de la récurrence. Si non précisé, ne modifie pas la date. Il faut passer `frequency` à `Once` pour supprimer la date de fin de récurrence
+    """
+    recurringUntil: DateTime
+  ): MutationUpdateEventRecurrenceResult!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
   updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
 
@@ -3100,6 +3119,12 @@ type MutationResetPasswordSuccess {
   data: Boolean!
 }
 
+union MutationSetEventCoOrganizersResult = Error | MutationSetEventCoOrganizersSuccess | ZodError
+
+type MutationSetEventCoOrganizersSuccess {
+  data: Event!
+}
+
 union MutationSetEventDatesResult = Error | MutationSetEventDatesSuccess | ZodError
 
 type MutationSetEventDatesSuccess {
@@ -3126,6 +3151,12 @@ union MutationStartRegistrationResult = Error | MutationStartRegistrationSuccess
 
 type MutationStartRegistrationSuccess {
   data: Boolean!
+}
+
+union MutationUpdateEventRecurrenceResult = Error | MutationUpdateEventRecurrenceSuccess | ZodError
+
+type MutationUpdateEventRecurrenceSuccess {
+  data: Event!
 }
 
 union MutationUpdateEventResult = Error | MutationUpdateEventSuccess | ZodError
@@ -3624,6 +3655,13 @@ type Query {
     @deprecated(reason: "Utilisez `article` à la place")
 
   """
+  Renvoie l'utilisateur·ice connecté·e. Si l'utilisateur·ice n'est pas connecté·e, une erreur est renvoyée. Pour avoir null aulieu d'une erreur, voir `me`.
+
+  - **Rate limit:** 6000/minute
+  """
+  assertMe: User!
+
+  """
   Récupérer le thème qui est actuellement choisi pour un déploiement automatique: le thème de l'utilisateur·ice doit être changé à celui-ci, si iel n'a pas explicitement demandé à ne pas utiliser ce thème
   """
   autodeployedTheme: Theme
@@ -3756,6 +3794,8 @@ type Query {
   majors: [Major!]!
 
   """
+  Renvoie l’utilisateur·ice connecté·e, ou null. Pour une valeur de retour non-nullable, voir `assertMe`.
+
   - **Rate limit:** 6000/minute
   """
   me: User

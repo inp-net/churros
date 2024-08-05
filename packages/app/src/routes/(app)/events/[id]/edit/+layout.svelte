@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { PickGroup } from '$lib/components';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
@@ -10,9 +11,10 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import { formatDate } from '$lib/dates';
   import { DISPLAY_EVENT_FREQUENCY, DISPLAY_VISIBILITIES } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';
-  import { allLoaded, loaded, loading, mapAllLoading, mapLoading } from '$lib/loading';
+  import { allLoaded, loaded, loading, mapAllLoading } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { mutate } from '$lib/mutations';
   import { route } from '$lib/ROUTES';
@@ -30,7 +32,13 @@
   import IconVisibility from '~icons/msl/visibility-outline';
   import type { LayoutData, LayoutRouteId } from './$houdini';
   import ModalDelete from './ModalDelete.svelte';
-  import { ChangeEventDates, ChangeEventLocation, ChangeEventTitle } from './mutations';
+  import {
+    ChangeEventCoOrganizers,
+    ChangeEventDates,
+    ChangeEventLocation,
+    ChangeEventOrganizer,
+    ChangeEventTitle,
+  } from './mutations';
 
   const mobile = isMobile();
 
@@ -62,7 +70,11 @@
 
 <div class="split">
   <div class="left" class:mobile-shown={leftSplitShownOnMobile}>
-    <MaybeError bind:errored={layoutErrored} result={$LayoutEventEdit} let:data={{ event }}>
+    <MaybeError
+      bind:errored={layoutErrored}
+      result={$LayoutEventEdit}
+      let:data={{ event, assertMe, allGroups }}
+    >
       <ModalDelete eventId={event.id} />
       <section class="basic-info" class:mobile>
         <div class="avatar">
@@ -71,12 +83,27 @@
         <div class="inputs">
           <div class="group">
             Par <LoadingText value={event.organizer.name}></LoadingText>
-            <ButtonInk
-              insideProse
-              on:click={() => {
-                alert('todo');
-              }}>Changer</ButtonInk
+            <PickGroup
+              title="Organisateur"
+              value={event.organizer.uid}
+              options={assertMe.canCreateEventsOn}
+              let:open
+              on:finish={async ({ detail: newGroupUid }) => {
+                const result = await mutate(ChangeEventOrganizer, {
+                  event: event.id,
+                  group: newGroupUid,
+                });
+                if (!result) return;
+                toasts.mutation(
+                  result,
+                  'changeEventOrganizer',
+                  `${newGroupUid} est maintenant l'organisateur principal`,
+                  "Impossible de changer l'organisateur",
+                );
+              }}
             >
+              <ButtonInk insideProse on:click={open}>Changer</ButtonInk>
+            </PickGroup>
           </div>
           <div class="title">
             <InputTextGhost
@@ -197,24 +224,47 @@
         >
           Image de fond
         </SubmenuItem>
-        <SubmenuItem
-          icon={IconCoOrgnizers}
-          clickable
-          subtext={mapAllLoading(
-            event.coOrganizers.map((o) => o.name),
-            (...names) => sentenceJoin(names),
+        <PickGroup
+          multiple
+          options={allGroups}
+          value={mapAllLoading(
+            [event.organizer.uid, ...event.coOrganizers.map((o) => o.uid)],
+            (orga, ...x) => x.filter((x) => x !== orga),
           )}
-          on:click={() => {
-            alert('todo');
+          on:finish={async ({ detail }) => {
+            const result = await mutate(ChangeEventCoOrganizers, {
+              event: event.id,
+              coOrganizers: detail,
+            });
+            if (!result) return;
+            toasts.mutation(
+              result,
+              'setEventCoOrganizers',
+              '',
+              'Impossible de changer les co-organisateurs',
+            );
           }}
+          let:open
         >
-          Co-organisateurs
-          <div class="organizers-avatars" slot="right">
-            {#each event.coOrganizers as coOrganizer}
-              <AvatarGroup group={coOrganizer} />
-            {/each}
-          </div>
-        </SubmenuItem>
+          <SubmenuItem
+            icon={IconCoOrgnizers}
+            clickable
+            subtext={mapAllLoading(
+              event.coOrganizers.map((o) => o.name),
+              (...names) => sentenceJoin(names),
+            )}
+            on:click={open}
+            >Co-organisateurs
+            <div class="organizers-avatars" slot="right">
+              {#each event.coOrganizers.slice(0, 4) as coOrganizer}
+                <AvatarGroup group={coOrganizer} />
+              {/each}
+              {#if event.coOrganizers.length > 4}
+                <span>+{event.coOrganizers.length - 4}</span>
+              {/if}
+            </div>
+          </SubmenuItem>
+        </PickGroup>
         <SubmenuItem
           icon={IconTickets}
           href={route('/events/[id]/edit/ticketing', loading(event.localID, ''))}
@@ -224,12 +274,17 @@
         <SubmenuItem
           icon={IconRecurrence}
           href="./recurrence"
-          subtext={mapLoading(event.frequency, (freq) => DISPLAY_EVENT_FREQUENCY[freq])}
+          subtext={mapAllLoading(
+            [event.frequency, event.recurringUntil],
+            (freq, recu) =>
+              `${DISPLAY_EVENT_FREQUENCY[freq]}${recu ? `, jusqu'au ${formatDate(recu)}` : ''}`,
+          )}
         >
           Récurrence
         </SubmenuItem>
         <SubmenuItem
           icon={IconContact}
+          subtext={event.contactMail}
           href={route('/events/[id]/edit/contact', loading(event.localID, ''))}
         >
           Contact de l'orga
@@ -330,5 +385,12 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+  }
+
+  .organizers-avatars {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-right: 0.5em;
   }
 </style>

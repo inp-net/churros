@@ -1,4 +1,12 @@
 query LayoutEventEdit($id: LocalID!) {
+  assertMe {
+    canCreateEventsOn {
+      ...PickGroup @mask_disable
+    }
+  }
+  allGroups: groups {
+    ...PickGroup @mask_disable
+  }
   event(id: $id) {
     id
     localID
@@ -21,5 +29,7 @@ query LayoutEventEdit($id: LocalID!) {
       ...AvatarGroup
     }
     frequency
+    recurringUntil
+    contactMail
   }
 }

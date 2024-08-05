@@ -16,6 +16,7 @@
 <InputField {label} {required}>
   <BaseInputText
     bind:element
+    on:blur
     {placeholder}
     type={time ? 'datetime-local' : 'date'}
     actionIcon={required ? undefined : IconDelete}

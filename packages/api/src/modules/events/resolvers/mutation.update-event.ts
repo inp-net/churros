@@ -1,8 +1,7 @@
 import { builder, ensureGlobalId, log, nullToUndefined, prisma } from '#lib';
-import { EventFrequencyType, EventType } from '#modules/events/types';
+import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID } from '#modules/global';
-import { EventFrequency } from '@churros/db/prisma';
 import omit from 'lodash.omit';
 import { ZodError } from 'zod';
 import { MarkdownScalar } from '../../global/types/markdown.js';
@@ -23,11 +22,7 @@ builder.mutationField('updateEvent', (t) =>
           maxLength: 255,
         },
       }),
-      frequency: t.arg({
-        required: false,
-        type: EventFrequencyType,
-        defaultValue: EventFrequency.Once,
-      }),
+
       location: t.arg.string({ required: false, description: "Lieu de l'évènement" }),
       description: t.arg({ required: false, type: MarkdownScalar }),
       showPlacesLeft: t.arg.boolean({

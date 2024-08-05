@@ -38,6 +38,7 @@
     left: 0;
     z-index: 1000;
     min-height: 100px;
+    max-height: 80dvh;
     padding: 2em 0;
     background: var(--bg);
     border-radius: var(--corner-radius) var(--corner-radius) 0 0;
