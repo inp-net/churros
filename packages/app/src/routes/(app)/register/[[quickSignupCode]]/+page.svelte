@@ -87,14 +87,14 @@
     // domain is not too short
     domain.length > Math.min(...schoolMailDomains.map((d) => d.length)) * 0.5
       ? // domain fuzzily matches a known school domain
-        new Fuse(schoolMailDomains, {
+        (new Fuse(schoolMailDomains, {
           includeScore: true,
           threshold: 0.2,
           ignoreLocation: true,
           ignoreFieldNorm: true,
         })
           .search(domain)
-          .at(0)?.item ?? false
+          .at(0)?.item ?? false)
       : false;
 </script>
 

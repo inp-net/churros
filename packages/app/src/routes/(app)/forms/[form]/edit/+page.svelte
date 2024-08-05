@@ -30,7 +30,7 @@
   $: editingSection =
     $editingSectionId === 'new'
       ? undefined
-      : sections.find((s) => s.localId === $editingSectionId) ?? sections[0];
+      : (sections.find((s) => s.localId === $editingSectionId) ?? sections[0]);
 
   const EMPTY_QUESTION = {
     id: undefined,

@@ -33,6 +33,7 @@ build:
     - if: '$CI_COMMIT_DESCRIPTION =~ /CI: Skip/i'
       when: never
   script:
+    - yarn prisma generate
     - yarn build
 
 pages:

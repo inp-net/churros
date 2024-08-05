@@ -171,7 +171,7 @@
           valueString =
             type === 'date' && value instanceof Date
               ? value?.toISOString()?.split('T')[0]
-              : value?.toString() ?? '';
+              : (value?.toString() ?? '');
         }}
       >
         {#if resettable}

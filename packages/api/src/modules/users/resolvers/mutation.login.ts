@@ -2,6 +2,7 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import type { Prisma } from '@churros/db/prisma';
 import { CredentialType as CredentialPrismaType, NotificationChannel } from '@churros/db/prisma';
+import { hashPassword, upsertLdapUser } from '@inp-net/ldap7/user';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import {
@@ -64,6 +65,9 @@ export async function login(
       major: {
         include: {
           ldapSchool: true,
+          schools: {
+            select: { uid: true },
+          },
         },
       },
       contributions: {
@@ -176,6 +180,29 @@ export async function login(
 
   for (const { value, userId } of credentials) {
     if (await verifyPassword(value, password)) {
+      // update the user's password in the new ldap
+      try {
+        await upsertLdapUser({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          uid: user.uid,
+          email: [user.email, ...user.otherEmails],
+          password: hashPassword(password),
+          school: user.major?.schools.map((school) => school.uid) ?? [],
+        });
+      } catch (error) {
+        await log(
+          'login',
+          'fail',
+          {
+            uidOrEmail,
+            err: 'failed to update user in ldap',
+            ldapErr: error,
+          },
+          uidOrEmail,
+        );
+      }
+
       return prisma.credential.create({
         ...query,
         data: {

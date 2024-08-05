@@ -198,7 +198,7 @@
       <section class="comments">
         <h2>Commentaires</h2>
         <AreaComments
-          user={'me' in $PagePostDetail.data ? $PagePostDetail.data.me ?? null : null}
+          user={'me' in $PagePostDetail.data ? ($PagePostDetail.data.me ?? null) : null}
           comments={$PagePostDetail.data.article}
         ></AreaComments>
       </section>

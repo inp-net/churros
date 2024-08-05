@@ -1,11 +1,4 @@
-import {
-  builder,
-  log,
-  objectValuesFlat,
-  prisma,
-  purgeUserSessions,
-  resetLdapUserPassword,
-} from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 import { hashPassword, verifyPassword } from '#modules/users/utils';
 
 import { userIsAdminOf } from '#permissions';
@@ -79,13 +72,14 @@ builder.mutationField('resetPassword', (t) =>
             },
           });
 
-          if (userEdited.major?.ldapSchool) {
-            try {
-              await resetLdapUserPassword(userEdited, newPassword);
-            } catch (error) {
-              console.error(error);
-            }
-          }
+          // TODO: support for ldap7
+          // if (userEdited.major?.ldapSchool) {
+          //   try {
+          //     await resetLdapUserPassword(userEdited, newPassword);
+          //   } catch (error) {
+          //     console.error(error);
+          //   }
+          // }
 
           await log(
             'password-reset',

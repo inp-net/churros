@@ -24,6 +24,11 @@ builder.prismaObjectField(GroupType, 'shopItems', (t) =>
                   },
                 },
               },
+              studentAssociation: {
+                select: {
+                  schoolId: true,
+                },
+              },
             },
           },
         },

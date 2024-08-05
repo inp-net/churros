@@ -27,6 +27,11 @@ builder.queryField('shopItem', (t) =>
                   },
                 },
               },
+              studentAssociation: {
+                select: {
+                  schoolId: true,
+                },
+              },
             },
           },
         },
@@ -52,7 +57,12 @@ builder.queryField('shopItem', (t) =>
         }
 
         case Visibility.SchoolRestricted: {
-          if (user?.major?.schools.some((school) => item.group.schoolId === school.id)) return item;
+          if (
+            user?.major?.schools.some(
+              (school) => item.group.studentAssociation.schoolId === school.id,
+            )
+          )
+            return item;
           throw new GraphQLError('Not allowed to view item');
         }
         case Visibility.GroupRestricted: {

@@ -2,8 +2,5 @@
   "printWidth": 100,
   "quoteProps": "consistent",
   "singleQuote": true,
-  "plugins": ["prettier-plugin-svelte", "prettier-plugin-organize-imports"],
-  "options": {
-    "editorconfig": true
-  }
+  "plugins": ["prettier-plugin-svelte", "prettier-plugin-organize-imports"]
 }

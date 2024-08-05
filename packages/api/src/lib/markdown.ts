@@ -60,7 +60,7 @@ export const toHtml = async (
       },
       formatHref: {
         mention:
-          options?.linkifyUserMentions ?? true
+          (options?.linkifyUserMentions ?? true)
             ? (username) => `https://churros.inpt.fr/@${username.replace(/^\//, '')}`
             : (u) => u,
       },

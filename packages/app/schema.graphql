@@ -5032,7 +5032,6 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
-  school: UID
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!

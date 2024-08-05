@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, log, prisma, resetLdapUserPassword } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, log, prisma } from '#lib';
 import { hashPassword } from '#modules/users/utils';
 
 import { CredentialType as PrismaCredentialType } from '@churros/db/prisma';
@@ -49,13 +49,15 @@ builder.mutationField('usePasswordReset', (t) =>
           },
         },
       });
-      if (reset.user.major?.ldapSchool) {
-        try {
-          await resetLdapUserPassword(reset.user, newPassword);
-        } catch (error) {
-          console.error(error);
-        }
-      }
+
+      // TODO: support for ldap7
+      // if (reset.user.major?.ldapSchool) {
+      //   try {
+      //     await resetLdapUserPassword(reset.user, newPassword);
+      //   } catch (error) {
+      //     console.error(error);
+      //   }
+      // }
 
       await log(
         'password-reset',

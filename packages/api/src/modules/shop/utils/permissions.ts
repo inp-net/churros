@@ -4,7 +4,7 @@ import { Visibility, type Group, type ShopItem } from '@churros/db/prisma';
 
 export function canAccessShopItem(
   user: Context['user'],
-  item: ShopItem & { group: Group },
+  item: ShopItem & { group: Group & { studentAssociation: { schoolId: string } } },
 ): boolean {
   if (user?.admin) return true;
   if (userIsOnBoardOf(user, item.group.uid)) return true;
@@ -17,7 +17,9 @@ export function canAccessShopItem(
     }
 
     case Visibility.SchoolRestricted: {
-      return Boolean(user?.major?.schools.some((school) => item.group.schoolId === school.id));
+      return Boolean(
+        user?.major?.schools.some((school) => item.group.studentAssociation.schoolId === school.id),
+      );
     }
 
     case Visibility.GroupRestricted: {
@@ -33,7 +35,10 @@ export function canAccessShopItem(
   }
 }
 
-export function canListShopItem(user: Context['user'], item: ShopItem & { group: Group }): boolean {
+export function canListShopItem(
+  user: Context['user'],
+  item: ShopItem & { group: Group & { studentAssociation: { schoolId: string } } },
+): boolean {
   if (userIsOnBoardOf(user, item.group.uid)) return true;
   return item.visibility !== Visibility.Unlisted && canAccessShopItem(user, item);
 }

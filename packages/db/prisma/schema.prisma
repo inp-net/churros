@@ -418,8 +418,7 @@ model Group {
   /// Helper field to get a whole tree without processing all groups
   /// To be set to the group's id itself for root groups.
   familyId             String?
-  schoolId             String?
-  studentAssociationId String?
+  studentAssociationId String
   pictureFile          String    @default("") @db.VarChar(255)
   pictureFileDark      String    @default("") @db.VarChar(255)
   name                 String    @db.VarChar(255)
@@ -452,20 +451,23 @@ model Group {
 
   articles               Article[]
   members                GroupMember[]
-  studentAssociation     StudentAssociation? @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  studentAssociation     StudentAssociation @relation(fields: [studentAssociationId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   events                 Event[]
-  coOrganizedEvents      Event[]             @relation("coOrganizer")
+  coOrganizedEvents      Event[]            @relation("coOrganizer")
   lyiaAccounts           LydiaAccount[]
-  tickets                Ticket[]            @relation("openTo")
+  tickets                Ticket[]           @relation("openTo")
   barWeeks               BarWeek[]
   services               Service[]
   shopItems              ShopItem[]
-  restrictedFormSections FormSection[]       @relation("restrictedTo")
+  restrictedFormSections FormSection[]      @relation("restrictedTo")
 
   notifications          Notification[]
   groupId                String?
   ticketGroupId          String?
   joinedByBookingTickets Ticket[]       @relation("autojoin")
+
+  // For ldap
+  ldapGidNumber Int @unique @default(autoincrement())
 
   // For full-text search
   search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))

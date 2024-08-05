@@ -1,9 +1,12 @@
 /* eslint-disable unicorn/prefer-module */
 import { context } from '#lib';
+import { checkHealth } from '#modules/health-checks/utils';
 import cors from 'cors';
+import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
+import { setIntervalAsync } from 'set-interval-async';
 import { WebSocketServer } from 'ws';
 import { schema } from '../schema.js';
 
@@ -21,7 +24,7 @@ api.use(
   }),
 );
 
-export function startApiServer() {
+export async function startApiServer() {
   // Register other routes on the API
   import('./graphql.js');
   import('./gdpr.js');
@@ -30,6 +33,15 @@ export function startApiServer() {
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');
+
+  // Perform a health check and setup interval to run health checks every 5 minutes
+  console.info('Performing initial health check...');
+  await checkHealth();
+  console.info('Setting up health check interval...');
+  setIntervalAsync(async () => {
+    console.info('Performing health check...');
+    await checkHealth();
+  }, minutesToMilliseconds(5));
 
   const apiServer = api.listen(4000, () => {
     console.info('API ready at http://localhost:4000');

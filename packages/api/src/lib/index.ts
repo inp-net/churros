@@ -14,7 +14,6 @@ export * from './global-id.js';
 export * from './google-wallet.js';
 export * from './google.js';
 export * from './ldap-school.js';
-export * from './ldap.js';
 export * from './logger.js';
 export * from './mail.js';
 export * from './markdown.js';
