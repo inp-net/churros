@@ -31,6 +31,12 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
     }),
     type: t.field({ type: GroupEnumType }),
     parent: t.field({ type: UIDScalar, required: false }),
+    school: t.field({
+      type: UIDScalar,
+      required: false,
+      deprecationReason:
+        "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement",
+    }),
     studentAssociation: t.field({ type: UIDScalar, required: false }),
     name: t.string({ validate: { maxLength: 255 } }),
     color: t.string({ required: false, validate: { regex: /#[\dA-Fa-f]{6}/ } }),
