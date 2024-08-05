@@ -123,7 +123,6 @@
             id: link.id,
             text: detail,
           });
-          if (!result) return;
           toasts.mutation(result, 'updateLink', '', 'Impossible de changer le texte du lien');
         }}
         required
@@ -137,7 +136,6 @@
             id: link.id,
             url: detail,
           });
-          if (!result) return;
           toasts.mutation(result, 'updateLink', '', "Impossible de changer l'adresse du lien");
         }}
         required
@@ -165,7 +163,6 @@
                 },
               },
             );
-            if (!result) return;
             toasts.mutation(result, 'deleteLink', '', 'Impossible de supprimer le lien');
           }}
         >

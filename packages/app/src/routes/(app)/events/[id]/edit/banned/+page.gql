@@ -1,0 +1,11 @@
+query PageEventEditBanned($id: LocalID!) {
+  event(id: $id) {
+    id
+    assertCanEdit(else: "Tu n'a pas les permissions nécéssaires pour modifier cet évènement.")
+    banned {
+      ...AvatarUser
+      fullName
+      uid
+    }
+  }
+}

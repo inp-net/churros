@@ -1,17 +1,19 @@
 <script lang="ts">
+  import { loaded, type MaybeLoading } from '$lib/loading';
+
   import { createEventDispatcher, onMount } from 'svelte';
   import InputField from './InputField.svelte';
   import ChevronUp from '~icons/mdi/chevron-up';
   import ChevronDown from '~icons/mdi/chevron-down';
-  const emit = createEventDispatcher();
+  const emit = createEventDispatcher<{ input: Value }>();
 
-  export let value: string | undefined = undefined;
+  type Value = $$Generic<string>;
+
+  export let value: MaybeLoading<Value> | undefined = undefined;
   export let label: string;
-  export let options:
-    | string[]
-    | Record<string, string>
-    | Map<string, string>
-    | Array<[string, string]>;
+  export let options: MaybeLoading<
+    Value[] | Record<Value, string> | Map<Value, string> | Array<[Value, string]>
+  >;
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -42,7 +44,7 @@
 
   let fieldsetElement: HTMLFieldSetElement;
 
-  $: emit('input', value);
+  $: if (loaded(value)) emit('input', value);
 </script>
 
 <InputField {label} {required} {hint} errors={errorMessage ? [errorMessage] : []}>

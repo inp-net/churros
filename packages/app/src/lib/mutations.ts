@@ -1,5 +1,5 @@
 import type { GraphQLObject, GraphQLVariables, MutationConfig, MutationStore } from '$houdini';
-import { allLoaded, type MaybeLoading } from '$lib/loading';
+import { allLoaded, type DeepMaybeLoading, type MaybeLoading } from '$lib/loading';
 import type { RequestEvent } from '@sveltejs/kit';
 
 /**
@@ -21,11 +21,10 @@ export function mutate<
     metadata?: App.Metadata;
     fetch?: typeof globalThis.fetch;
     event?: RequestEvent;
-  } & MutationConfig<Data, Input, Optimistic>,
+  } & MutationConfig<Data, DeepMaybeLoading<Input>, Optimistic>,
 ) {
-  if (!allLoaded(variables)) 
-    return;
-  
+  if (!allLoaded(variables)) return;
+
   // TODO maybe put toasts.mutation here
   // @ts-expect-error we know that all variables are loaded
   return store.mutate(variables, options);

@@ -12,6 +12,7 @@
   export let smaller = false;
   export let disabled = false;
   export let loading = false;
+  export let danger = false;
   export let help: string | undefined = undefined;
 </script>
 
@@ -23,6 +24,7 @@
   {href}
   class="button-primary primary"
   class:smaller
+  class:danger
   disabled={disabled || loading || undefined}
   on:click
   use:tooltip={help}
@@ -65,9 +67,21 @@
     }
   }
 
+  .button-primary.danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+  }
+
   .button-primary:hover:not([disabled]),
   .button-primary:focus-visible:not([disabled]) {
     background: color-mix(in srgb, var(--primary) 70%, var(--fg));
+    border-color: color-mix(in srgb, var(--primary) 70%, var(--fg));
+  }
+
+  .button-primary.danger:hover:not([disabled]),
+  .button-primary.danger:focus-visible:not([disabled]) {
+    background: color-mix(in srgb, var(--danger) 70%, var(--fg));
+    border-color: color-mix(in srgb, var(--danger) 70%, var(--fg));
   }
 
   .button-primary .loading {

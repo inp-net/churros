@@ -763,7 +763,7 @@
       {/if}
     </section>
     <section class="banned-users">
-      <h2>Bannis</h2>
+      <h2>Banni·e·s</h2>
       <p class="typo-details">
         Pour interdire à des personnes de réserver une place sur cet évènement
       </p>

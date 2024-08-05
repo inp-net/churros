@@ -1252,11 +1252,17 @@ type EventLogsConnectionEdge {
 """
 An event manager is a user that can scan tickets, and may be able to manage the event
 """
-type EventManager {
+type EventManager implements Node {
   canEdit: Boolean!
   canEditPermissions: Boolean!
   canVerifyRegistrations: Boolean!
   event: Event!
+  id: ID!
+
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
   power: EventManagerPowerLevel!
   user: User!
 }
@@ -2097,7 +2103,7 @@ type Mutation {
   """
   Bannir un·e utilisateur·rice d'un événement. Iel ne pourra plus prendre de place (que ce soit pour iel ou pour une autre personne, dans le cas des billets à parrainages)
   """
-  banFromEvent(id: LocalID!, user: UID!): Event!
+  banFromEvent(id: LocalID!, user: UID!): MutationBanFromEventResult!
 
   """
   Bloquer un thème pour empêcher qu'il soit automatiquement déployé à l'utilisateur·ice connecté·e
@@ -2416,6 +2422,11 @@ type Mutation {
   ): MutationRegisterGoogleCredentialResult!
 
   """
+  Enlever un manager d'un événement
+  """
+  removeEventManager(event: LocalID!, user: UID!): MutationRemoveEventManagerResult!
+
+  """
   Supprimer un fichier d'une page.
   """
   removeFileFromPage(filename: String!, page: ID!): MutationRemoveFileFromPageResult!
@@ -2590,7 +2601,7 @@ type Mutation {
   """
   Débannir un·e utilisateur·rice d'un événement. Si l'utilisateur·ice n'était pas banni·e, cette mutation n'aura aucun effet (mais ne fait pas d'erreur).
   """
-  unbanFromEvent(id: LocalID!, user: UID!): Event!
+  unbanFromEvent(id: LocalID!, user: UID!): MutationUnbanFromEventResult!
 
   """
   Enlève une page de l'accès rapide
@@ -2797,6 +2808,11 @@ type Mutation {
     title: String!
     type: DocumentType!
   ): MutationUpsertDocumentResult!
+  upsertEventManager(
+    event: LocalID!
+    powerlevel: EventManagerPowerLevel!
+    user: UID!
+  ): MutationUpsertEventManagerResult!
 
   """
   Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.
@@ -2998,6 +3014,12 @@ type MutationAuthorizeSuccess {
   data: String!
 }
 
+union MutationBanFromEventResult = Error | MutationBanFromEventSuccess | ZodError
+
+type MutationBanFromEventSuccess {
+  data: Event!
+}
+
 union MutationCancelRegistrationResult = Error | MutationCancelRegistrationSuccess
 
 type MutationCancelRegistrationSuccess {
@@ -3101,6 +3123,17 @@ type MutationRegisterGoogleCredentialSuccess {
   data: Boolean!
 }
 
+union MutationRemoveEventManagerResult = Error | MutationRemoveEventManagerSuccess | ZodError
+
+type MutationRemoveEventManagerSuccess {
+  data: EventManager!
+
+  """
+  Contient un message d'explication si jamais le dernier manager a dû changer de permissions afin de conserver au moins un manager avec les permissions de gestion des managers de l'événement
+  """
+  lastManagerPowerlevelChanged: String
+}
+
 union MutationRemoveFileFromPageResult = Error | MutationRemoveFileFromPageSuccess | ZodError
 
 type MutationRemoveFileFromPageSuccess {
@@ -3151,6 +3184,12 @@ union MutationStartRegistrationResult = Error | MutationStartRegistrationSuccess
 
 type MutationStartRegistrationSuccess {
   data: Boolean!
+}
+
+union MutationUnbanFromEventResult = Error | MutationUnbanFromEventSuccess | ZodError
+
+type MutationUnbanFromEventSuccess {
+  data: Event!
 }
 
 union MutationUpdateEventRecurrenceResult = Error | MutationUpdateEventRecurrenceSuccess | ZodError
@@ -3205,6 +3244,12 @@ union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess
 
 type MutationUpsertDocumentSuccess {
   data: Document!
+}
+
+union MutationUpsertEventManagerResult = Error | MutationUpsertEventManagerSuccess | ZodError
+
+type MutationUpsertEventManagerSuccess {
+  data: EventManager!
 }
 
 input MutationUpsertFormInput {
@@ -3713,7 +3758,7 @@ type Query {
   document(slug: String!, subject: ID!): Document!
   documents(after: String, before: String, first: Int, last: Int): QueryDocumentsConnection!
   event(group: UID, id: LocalID, slug: String): Event!
-  eventManager(eventId: ID!, user: String!): EventManager!
+  eventManager(id: LocalID!): EventManager!
   events(
     after: String
     before: String

@@ -30,13 +30,19 @@ export function loading<T>(value: MaybeLoading<T>, fallback: T): T {
   return value === PendingValue || value === null || value === undefined ? fallback : value;
 }
 
-type AllLoaded<T> = T extends object
+export type AllLoaded<T> = T extends object
   ? { [K in keyof T]: AllLoaded<T[K]> }
   : T extends unknown[]
     ? AllLoaded<T[number]>[]
     : T extends typeof PendingValue
       ? never
       : T;
+
+export type DeepMaybeLoading<T> = T extends object
+  ? { [K in keyof T]: DeepMaybeLoading<T[K]> }
+  : T extends unknown[]
+    ? DeepMaybeLoading<T[number]>[]
+    : MaybeLoading<T>;
 
 export function loaded<T>(value: MaybeLoading<T>): value is T {
   if (simulatingLoadingState()) return false;

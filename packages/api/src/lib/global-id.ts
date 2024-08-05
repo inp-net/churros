@@ -25,6 +25,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   g: 'Group',
   a: 'Article',
   e: 'Event',
+  em: 'EventManager',
   tg: 'TicketGroup',
   t: 'Ticket',
   r: 'Registration',

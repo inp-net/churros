@@ -50,6 +50,12 @@ const config = {
     PagesEdge: {
       keys: ['cursor'],
     },
+    EventManager: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'eventManager',
+      },
+    },
   },
   scalars: {
     DateTime: {

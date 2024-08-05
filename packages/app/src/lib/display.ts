@@ -1,4 +1,8 @@
-import type { EventFrequency$options, Visibility$options } from '$houdini';
+import type {
+  EventFrequency$options,
+  EventManagerPowerLevel$options,
+  Visibility$options,
+} from '$houdini';
 import {
   DocumentType,
   IssueState,
@@ -138,12 +142,12 @@ export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
   List: 'Liste',
 };
 
-export const DISPLAY_MANAGER_PERMISSION_LEVELS = {
-  readonly: 'Lecture seule',
-  verifyer: 'Vérification des billets',
-  editor: 'Modification',
-  fullaccess: 'Gestion totale',
-} as const;
+export const DISPLAY_MANAGER_PERMISSION_LEVELS: Record<EventManagerPowerLevel$options, string> = {
+  ReadOnly: 'Lecture seule',
+  ScanTickets: 'Vérification des billets',
+  Edit: 'Modification',
+  EditPermissions: 'Gestion totale',
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent<any>> = {

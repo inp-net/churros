@@ -73,7 +73,7 @@
     <MaybeError
       bind:errored={layoutErrored}
       result={$LayoutEventEdit}
-      let:data={{ event, assertMe, allGroups }}
+      let:data={{ event, me, allGroups }}
     >
       <ModalDelete eventId={event.id} />
       <section class="basic-info" class:mobile>
@@ -86,14 +86,13 @@
             <PickGroup
               title="Organisateur"
               value={event.organizer.uid}
-              options={assertMe.canCreateEventsOn}
+              options={me?.canCreateEventsOn ?? []}
               let:open
               on:finish={async ({ detail: newGroupUid }) => {
                 const result = await mutate(ChangeEventOrganizer, {
                   event: event.id,
                   group: newGroupUid,
                 });
-                if (!result) return;
                 toasts.mutation(
                   result,
                   'changeEventOrganizer',
@@ -236,7 +235,6 @@
               event: event.id,
               coOrganizers: detail,
             });
-            if (!result) return;
             toasts.mutation(
               result,
               'setEventCoOrganizers',
@@ -273,7 +271,7 @@
         </SubmenuItem>
         <SubmenuItem
           icon={IconRecurrence}
-          href="./recurrence"
+          href={route('/events/[id]/edit/recurrence', loading(event.localID, ''))}
           subtext={mapAllLoading(
             [event.frequency, event.recurringUntil],
             (freq, recu) =>
@@ -291,12 +289,14 @@
         </SubmenuItem>
         <SubmenuItem
           icon={IconManagers}
+          subtext="Qui peut voir les résas, scanner des billets, modifier l'évènement…"
           href={route('/events/[id]/edit/managers', loading(event.localID, ''))}
         >
           Managers
         </SubmenuItem>
         <SubmenuItem
           icon={IconBannedUsers}
+          subtext="Empêcher des personnes de prendre des places ou d'en bénéficier"
           href={route('/events/[id]/edit/banned', loading(event.localID, ''))}
         >
           Banni·e·s

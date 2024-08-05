@@ -1,0 +1,223 @@
+<script lang="ts">
+  import { graphql, type EventManagerPowerLevel$options } from '$houdini';
+  import {
+    AvatarUser,
+    ButtonGhost,
+    ButtonPrimary,
+    InputSelectOneDropdown,
+    InputTextGhost,
+    MaybeError,
+  } from '$lib/components';
+  import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
+  import { loading, LoadingText } from '$lib/loading';
+  import { mutate } from '$lib/mutations';
+  import { toasts } from '$lib/toasts';
+  import IconRemove from '~icons/msl/do-not-disturb-on-outline';
+  import type { PageData } from './$houdini';
+
+  export let data: PageData;
+  $: ({ PageEventEditManagers } = data);
+
+  let newManager = {
+    uid: '',
+    power: 'ScanTickets' as EventManagerPowerLevel$options,
+  };
+
+  const UpdateEventManager = graphql(`
+    mutation UpdateEventManager($user: UID!, $event: LocalID!, $power: EventManagerPowerLevel!) {
+      upsertEventManager(user: $user, event: $event, powerlevel: $power) {
+        ... on MutationUpsertEventManagerSuccess {
+          data {
+            power
+          }
+        }
+        ... on Error {
+          message
+        }
+        ... on ZodError {
+          fieldErrors {
+            path
+            message
+          }
+        }
+      }
+    }
+  `);
+
+  const AddEventManager = graphql(`
+    mutation AddEventManager($user: UID!, $event: LocalID!, $power: EventManagerPowerLevel!) {
+      upsertEventManager(user: $user, event: $event, powerlevel: $power) {
+        ... on MutationUpsertEventManagerSuccess {
+          data {
+            id
+            ...List_EventManagers_insert
+          }
+        }
+        ... on Error {
+          message
+        }
+        ... on ZodError {
+          fieldErrors {
+            path
+            message
+          }
+        }
+      }
+    }
+  `);
+
+  const RemoveEventManager = graphql(`
+    mutation RemoveEventManager($user: UID!, $event: LocalID!) {
+      removeEventManager(user: $user, event: $event) {
+        ... on MutationRemoveEventManagerSuccess {
+          data {
+            id @EventManager_delete
+          }
+        }
+        ... on Error {
+          message
+        }
+        ... on ZodError {
+          fieldErrors {
+            path
+            message
+          }
+        }
+      }
+    }
+  `);
+
+  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
+</script>
+
+<MaybeError result={$PageEventEditManagers} let:data={{ event }}>
+  <div class="contents">
+    <ul class="managers nobullet">
+      <li class="new">
+        <form
+          on:submit|preventDefault={async () => {
+            if (!newManager.uid) return;
+            if (event.managers.some((m) => m.user.uid === newManager.uid)) {
+              toasts.error(`${newManager.uid} est déjà manager de l'évènement`);
+              return;
+            }
+            const result = await mutate(AddEventManager, {
+              event: event.id,
+              user: newManager.uid,
+              power: newManager.power,
+            });
+            if (
+              toasts.mutation(
+                result,
+                'upsertEventManager',
+                `${newManager.uid} est maintenant manager`,
+                `Impossible d'ajouter ${newManager.uid} comme manager`,
+              )
+            ) {
+              newManager = {
+                uid: '',
+                power: 'ScanTickets',
+              };
+            }
+          }}
+        >
+          <p class="typo-field-label">Ajouter un manager</p>
+          <div class="inputs">
+            <InputTextGhost
+              placeholder="@ de la personne"
+              required
+              label="Nom d'utilsateur·ice"
+              bind:value={newManager.uid}
+            ></InputTextGhost>
+            <InputSelectOneDropdown
+              bind:value={newManager.power}
+              label=""
+              options={DISPLAY_MANAGER_PERMISSION_LEVELS}
+            ></InputSelectOneDropdown>
+            <ButtonPrimary submits>Ajouter</ButtonPrimary>
+          </div>
+        </form>
+      </li>
+      {#each event.managers as manager}
+        <li>
+          <div class="left">
+            <AvatarUser user={manager.user} />
+            <LoadingText value={manager.user.fullName} />
+          </div>
+          <div class="right">
+            <InputSelectOneDropdown
+              value={manager.power}
+              label=""
+              on:input={async ({ detail }) => {
+                const result = await mutate(UpdateEventManager, {
+                  event: event.id,
+                  user: manager.user.uid,
+                  power: detail,
+                });
+                toasts.mutation(
+                  result,
+                  'upsertEventManager',
+                  '',
+                  `Impossible de mettre à jour ${loading(manager.user.uid, 'cette personne')}`,
+                );
+              }}
+              options={DISPLAY_MANAGER_PERMISSION_LEVELS}
+            ></InputSelectOneDropdown>
+            <ButtonGhost
+              on:click={async () => {
+                const result = await mutate(RemoveEventManager, {
+                  event: event.id,
+                  user: manager.user.uid,
+                });
+                toasts.mutation(
+                  result,
+                  'removeEventManager',
+                  `${loading(manager.user.uid, 'cette personne')} n'est plus manager`,
+                  `Impossible de retirer ${loading(manager.user.uid, 'cette personne')} des managers`,
+                );
+              }}><IconRemove></IconRemove></ButtonGhost
+            >
+          </div>
+        </li>
+      {/each}
+    </ul>
+  </div>
+</MaybeError>
+
+<style>
+  .contents {
+    padding: 0 1rem;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  li.new {
+    margin-bottom: 3rem;
+  }
+
+  li:not(.new),
+  li .left,
+  li .right,
+  li.new .inputs {
+    display: flex;
+    align-items: center;
+  }
+
+  li .left,
+  li .right {
+    column-gap: 1rem;
+  }
+
+  li:not(.new) {
+    justify-content: space-between;
+  }
+
+  li:not(.new),
+  li.new .inputs {
+    column-gap: 2rem;
+  }
+</style>

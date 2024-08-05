@@ -38,7 +38,7 @@ builder.mutationField('deleteEvent', (t) =>
         where: { ticket: { eventId: id } },
       });
       if (associatedBookings > 0) {
-        ctx.caveats.push(
+        ctx.caveats.unshift(
           "Impossible de supprimer un évènement qui possède des réservations. L'évènement a été passé en Privé",
         );
         return prisma.event.update({

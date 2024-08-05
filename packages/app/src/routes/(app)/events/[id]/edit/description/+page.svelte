@@ -47,7 +47,6 @@
             id: event.id,
             description: currentTarget.value,
           });
-          if (!result) return;
           toasts.mutation(result, 'updateEvent', '', 'Impossible de mettre à jour la description');
         }}
       ></InputTextLong>
