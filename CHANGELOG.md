@@ -14,6 +14,9 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Technique
 
 - Ajout d'une table en base de données pour bannir certains UIDs (ils sont marqués comme indisponibles)
+- Champ StudentAssociationId obligatoire pour les groupes.
+- Dépréciation de SchoolId pour les groupes, au profit de StudentAssociationId.
+- @churros/sync : Module de synchronisation des données entre Churros et d'autres services (pour le moment LDAP uniquement).
 
 ## [1.68.6] - 2024-07-30
 
