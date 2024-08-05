@@ -191,11 +191,16 @@ export async function login(
           school: user.major?.schools.map((school) => school.uid) ?? [],
         });
       } catch (error) {
-        await log('login', 'fail', {
+        await log(
+          'login',
+          'fail',
+          {
+            uidOrEmail,
+            err: 'failed to update user in ldap',
+            ldapErr: error,
+          },
           uidOrEmail,
-          err: 'failed to update user in ldap',
-          ldapErr: error,
-        });
+        );
       }
 
       return prisma.credential.create({
