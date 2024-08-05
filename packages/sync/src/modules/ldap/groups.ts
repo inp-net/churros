@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@churros/db/prisma';
+import type { Prisma, PrismaClient } from '@churros/db/prisma';
 import { type LdapGroup, syncLdapGroups } from '@inp-net/ldap7/group';
 
 type Group = {
@@ -39,7 +39,7 @@ const prismaGroupQuery = {
       },
     },
   },
-};
+} satisfies Prisma.GroupFindManyArgs;
 
 const mapGroup = (group: Group): LdapGroup => ({
   name: group.uid,

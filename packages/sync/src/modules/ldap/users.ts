@@ -1,4 +1,4 @@
-import type { PrismaClient, User } from '@churros/db/prisma';
+import type { Prisma, PrismaClient, User } from '@churros/db/prisma';
 import { type LdapUser, syncLdapUsers } from '@inp-net/ldap7/user';
 
 type UserQuery = { major: { schools: { uid: string }[] } | null } & User;
@@ -15,7 +15,7 @@ const prismaUserQuery = {
       },
     },
   },
-};
+} satisfies Prisma.UserFindManyArgs;
 
 const mapUser = (user: UserQuery): LdapUser => ({
   uid: user.uid,
