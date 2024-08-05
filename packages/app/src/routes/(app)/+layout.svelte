@@ -161,7 +161,7 @@
       </div>
     </div>
     <div class="nav-bottom">
-      <NavigationBottom transparent={scanningTickets} />
+      <NavigationBottom me={$AppLayout.data?.me ?? null} transparent={scanningTickets} />
     </div>
   </div>
 

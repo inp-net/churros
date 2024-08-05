@@ -25,6 +25,7 @@
 </script>
 
 <Avatar
+  {...$$restProps}
   {src}
   {href}
   alt={mapLoading($data?.name ?? PendingValue, (n) => `Photo de ${n}`)}

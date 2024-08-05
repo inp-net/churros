@@ -6,11 +6,11 @@
 
   type Value = $$Generic<string>;
   export let value: MaybeLoading<Value> | undefined = undefined;
-  export let options: Value[] | Record<Value, string> = [];
+  export let options: Value[] | Record<Value, string> | Array<[Value, string]> = [];
 
   let optionsWithDisplay: Array<[Value, string]> = [];
   $: optionsWithDisplay = Array.isArray(options)
-    ? options.map((option) => [option, option])
+    ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
     : Object.entries(options).map(([value, label]) => [value as Value, label as string]);
 </script>
 

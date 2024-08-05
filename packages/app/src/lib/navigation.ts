@@ -354,6 +354,16 @@ export const topnavConfigs: Partial<
     back: route('/events/[id]/edit', id),
     actions: [],
   }),
+  '/(app)/events/[id]/edit/recurrence': ({ params: { id } }) => ({
+    title: 'Récurrence',
+    back: route('/events/[id]/edit', id),
+    actions: [],
+  }),
+  '/(app)/events/[id]/edit/contact': ({ params: { id } }) => ({
+    title: "Contact de l'orga",
+    back: route('/events/[id]/edit', id),
+    actions: [],
+  }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
     quickAction: {

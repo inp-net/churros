@@ -3,10 +3,12 @@ import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID, UIDScalar } from '#modules/global';
 import { GraphQLError } from 'graphql';
+import { ZodError } from 'zod';
 
 builder.mutationField('setEventCoOrganizers', (t) =>
   t.prismaField({
     type: EventType,
+    errors: { types: [Error, ZodError] },
     description: "Changer les groupes co-organisateurs d'un événement",
     args: {
       id: t.arg({ type: LocalID }),

@@ -1,0 +1,6 @@
+query PageEventEditContact($id: LocalID!) {
+  event(id: $id) {
+    id
+    contactMail
+  }
+}

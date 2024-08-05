@@ -11,6 +11,9 @@ export const Login = graphql(`
           ...SessionToken @mask_disable
         }
       }
+      ... on AwaitingValidationError {
+        message
+      }
     }
   }
 `);

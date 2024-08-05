@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isDark } from '$lib/theme';
+  import { isDark, theme } from '$lib/theme';
   import { createEventDispatcher, onMount } from 'svelte';
   const dispatch = createEventDispatcher();
 
@@ -9,6 +9,7 @@
   export let maxWidth = 'unset';
   export const open = () => {
     dispatch('open');
+    opened = true;
     element.showModal();
   };
 
@@ -40,7 +41,8 @@
       element.classList.remove('closing');
     }, 200);
   }}
-  class={$isDark ? 'dark' : 'light'}
+  data-theme={$theme.id}
+  data-theme-variant={$isDark ? 'dark' : 'light'}
   bind:this={element}
   style:max-width={maxWidth}
 >
@@ -60,6 +62,10 @@
     background: var(--bg);
     border: none;
     border-radius: var(--radius-block);
+  }
+
+  dialog[data-theme-variant='dark'] {
+    background-color: var(--bg2);
   }
 
   dialog.tall {

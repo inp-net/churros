@@ -1,5 +1,7 @@
 <script lang="ts">
-  import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
+  import { fragment, graphql, type NavigationBottomMe } from '$houdini';
+  import { ButtonNavigation, ButtonSecondary } from '$lib/components';
+  import { route } from '$lib/ROUTES';
   import IconAccount from '~icons/msl/account-circle';
   import IconAccountOutline from '~icons/msl/account-circle-outline';
   import IconCalendar from '~icons/msl/calendar-month';
@@ -10,6 +12,16 @@
   import IconDotsCircle from '~icons/msl/view-comfy-alt';
   import IconDotsCircleOutline from '~icons/msl/view-comfy-alt-outline';
   export let transparent = false;
+
+  export let me: NavigationBottomMe | null;
+  $: data = fragment(
+    me,
+    graphql(`
+      fragment NavigationBottomMe on User {
+        uid
+      }
+    `),
+  );
 </script>
 
 <nav class:transparent>
@@ -44,13 +56,17 @@
     iconFilled={IconDotsCircle}
   />
 
-  <ButtonNavigation
-    href="/me"
-    routeID="/(app)/users/[uid]"
-    label="Moi"
-    icon={IconAccountOutline}
-    iconFilled={IconAccount}
-  />
+  {#if $data}
+    <ButtonNavigation
+      href={route('/users/[uid]', $data.uid)}
+      routeID="/(app)/users/[uid]"
+      label="Moi"
+      icon={IconAccountOutline}
+      iconFilled={IconAccount}
+    />
+  {:else}
+    <ButtonSecondary href={route('/login')}>Connexion</ButtonSecondary>
+  {/if}
 </nav>
 
 <style>

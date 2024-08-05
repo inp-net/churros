@@ -5,7 +5,7 @@
   import IconChevronRight from '~icons/msl/chevron-right';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any>;
+  export let icon: typeof SvelteComponent<any> | null;
 
   export let subtext: MaybeLoading<string> = '';
 
@@ -37,7 +37,9 @@
 >
   <div class="left">
     <div class="icon">
-      <svelte:component this={icon}></svelte:component>
+      {#if icon}
+        <svelte:component this={icon}></svelte:component>
+      {/if}
     </div>
     <div class="text">
       <p class="title">
@@ -95,6 +97,7 @@
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
+    text-align: left;
   }
 
   .title {

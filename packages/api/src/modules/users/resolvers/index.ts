@@ -34,6 +34,7 @@ export * from './mutation.upsert-godparent-request.js';
 export * from './mutation.use-password-reset.js';
 export * from './mutation.validate-email.js';
 export * from './query.all-users.js';
+export * from './query.assert-me.js';
 export * from './query.birthdays.js';
 export * from './query.bookmarked.js';
 export * from './query.exists-in-school-ldap.js';

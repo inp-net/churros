@@ -1,10 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import IconSearch from '~icons/mdi/magnify';
-  import IconClear from '~icons/mdi/close';
+  import IconSearch from '~icons/msl/search';
+  import IconClear from '~icons/msl/close';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
+  export let autofocus = false;
   export let q: string | null;
   const emit = createEventDispatcher<{ search: string | null }>();
   export let placeholder = 'Recherche…';
@@ -22,7 +23,7 @@
     type="text"
     {placeholder}
     bind:value={q}
-    autofocus
+    {autofocus}
   >
     <svelte:fragment slot="before">
       {#if searching}

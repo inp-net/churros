@@ -7,10 +7,11 @@
   import InputText from '$lib/components/InputText.svelte';
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
-
-  import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
-  import { zeus } from '$lib/zeus';
+  import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+  import { me, saveSessionToken } from '$lib/session';
   import { onMount } from 'svelte';
+  import { Login } from './mutations';
+  import { cache } from '$houdini';
 
   let email = '';
   let password = '';
@@ -38,34 +39,33 @@
     try {
       loading = true;
       errorMessages = undefined;
-      const { login } = await $zeus.mutate({
-        login: [
-          { email, password },
-          {
-            '__typename': true,
-            '...on Error': { message: true },
-            '...on AwaitingValidationError': { __typename: true },
-            '...on MutationLoginSuccess': {
-              data: { token: true, expiresAt: true, user: sessionUserQuery() },
-            },
-          },
-        ],
+      const result = await Login.mutate({
+        emailOrUid: email,
+        password,
       });
 
-      if (login.__typename === 'Error') {
-        errorMessages = [login.message];
+      if (mutationSucceeded('login', result)) {
+        cache.reset();
+        saveSessionToken(document, {
+          ...result.data.login.data,
+          expiresAt: result.data.login.data.expiresAt ?? null,
+        });
+        await redirect();
+      }
+
+      if (result.data?.login.__typename === 'Error') {
+        errorMessages = [result.data.login.message];
         return;
       }
 
-      if (login.__typename === 'AwaitingValidationError') {
+      if (result.data?.login.__typename === 'AwaitingValidationError') {
         errorMessages = [
           "Ton compte n'a pas encore été validé par l'équipe d'administration de ton AE. Encore un peu de patience 😉",
         ];
         return;
       }
 
-      saveSessionToken(document, { ...login.data, expiresAt: login.data.expiresAt ?? null });
-      await redirect();
+      errorMessages = mutationErrorMessages('login', result);
     } finally {
       loading = false;
     }

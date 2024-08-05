@@ -18,6 +18,7 @@ export * from './mutation.set-event-dates.js';
 export * from './mutation.set-event-visibility.js';
 export * from './mutation.unban-from-event.js';
 export * from './mutation.update-event-picture.js';
+export * from './mutation.update-event-recurrence.js';
 export * from './mutation.update-event.js';
 export * from './mutation.upsert-event-manager.js';
 export * from './mutation.upsert-managers-of-event.js';

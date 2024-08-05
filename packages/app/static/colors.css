@@ -124,13 +124,13 @@ dialog[data-theme-variant='dark']::backdrop {
   --fg: #fff;
 
   /* Thematic */
-  --danger: #ff3f3f;
+  --danger: #ff4848;
   --primary: #499eff;
   --success: #3fcf68;
   --warning: #f39c2b;
-  --danger-bg: #3b0808;
+  --danger-bg: #1d0909;
   --primary-bg: #03212b;
-  --success-bg: #10471e;
+  --success-bg: #0b2512;
   --warning-bg: #3f2508;
 
   /* Utility */
