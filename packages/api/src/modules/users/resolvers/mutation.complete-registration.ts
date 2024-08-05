@@ -1,4 +1,4 @@
-import { builder, createLdapUser, freeUidValidator, log, prisma, yearTier } from '#lib';
+import { builder, freeUidValidator, log, prisma, yearTier } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { notify } from '#modules/notifications';
 import { NotificationChannel, Prisma, type Major, type UserCandidate } from '@churros/db/prisma';
@@ -139,13 +139,14 @@ builder.mutationField('completeRegistration', (t) =>
         },
       });
 
-      if (user?.major && user.major.ldapSchool) {
-        try {
-          await createLdapUser({ ...user, otherEmails: [] }, password);
-        } catch (error) {
-          console.error(error);
-        }
-      }
+      // TODO: ldap7 support
+      // if (user?.major && user.major.ldapSchool) {
+      //   try {
+      //     await createLdapUser({ ...user, otherEmails: [] }, password);
+      //   } catch (error) {
+      //     console.error(error);
+      //   }
+      // }
 
       return userOrCandidate;
     },

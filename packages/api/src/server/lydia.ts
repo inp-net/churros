@@ -1,4 +1,4 @@
-import { log, markAsContributor, prisma } from '#lib';
+import { log, prisma } from '#lib';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
@@ -123,17 +123,6 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             paid: true,
           },
         });
-
-        try {
-          await markAsContributor(transaction.contribution.user.uid);
-        } catch (error: unknown) {
-          await log(
-            'ldap-sync',
-            'mark as contributor',
-            { err: error },
-            transaction.contribution.user.uid,
-          );
-        }
 
         await log(
           'lydia',

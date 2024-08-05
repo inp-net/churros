@@ -1,4 +1,4 @@
-import { builder, log, markAsContributor, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { userIsAdminOf } from '#permissions';
@@ -195,12 +195,6 @@ builder.mutationField('updateUser', (t) =>
                 : {},
         },
       });
-
-      try {
-        await markAsContributor(userUpdated.uid);
-      } catch (error) {
-        await log('ldap-sync', 'mark as contributor', { err: error }, userUpdated.uid);
-      }
 
       await log(
         'user',
