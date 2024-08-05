@@ -14,7 +14,11 @@ const logger: Logger<ILogObj> = new Logger({
 
 logger.info('Starting sync');
 for (const module of process.env.SYNC_MODULES.split(',')) {
-  const mod: Module = await import(`./modules/${module}/index.js`);
-  await mod.default.sync(prisma, logger);
+  try {
+    const mod: Module = await import(`./modules/${module}/index.js`);
+    await mod.default.sync(prisma, logger);
+  } catch (error) {
+    logger.error(`Failed to sync module ${module}`, error);
+  }
 }
 logger.info('Sync complete');
