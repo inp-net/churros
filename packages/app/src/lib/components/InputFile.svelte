@@ -28,9 +28,7 @@
   class:dragging
   on:drop|preventDefault={({ dataTransfer }) => {
     dragging = false;
-    if (dataTransfer) 
-      files = dataTransfer.files;
-    
+    if (dataTransfer) files = dataTransfer.files;
   }}
   on:dragover|preventDefault={(e) => {
     dragging = true;

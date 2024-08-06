@@ -24,16 +24,14 @@ builder.prismaObjectField(EventType, 'enabledSpecialOffers', (t) =>
       });
       // Gather enabled promotion types for each ticket - we use a set because the order doesn't matter
       const promotions: Array<Set<PromotionType>> = [];
-      for (const ticket of tickets) 
+      for (const ticket of tickets)
         promotions.push(new Set(ticket.subjectToPromotions.map((p) => p.type)));
-      
-      if (promotions.length === 0) 
-        return [];
-      
+
+      if (promotions.length === 0) return [];
+
       // Check if all tickets have the same promotions
-      if (promotions.some((p) => !areSetsEqual(p, promotions[0]!))) 
-        return null;
-      
+      if (promotions.some((p) => !areSetsEqual(p, promotions[0]!))) return null;
+
       return Array.from(promotions[0]!);
     },
   }),

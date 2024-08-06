@@ -37,8 +37,7 @@ export function lastElement<OtherElements, LastElement>(
 export function areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
   // TODO: Move to Node 22 and use Set.prototype.isSupersetOf
   if (a.size !== b.size) return false;
-  for (const item of a) 
-    if (!b.has(item)) return false;
-  
+  for (const item of a) if (!b.has(item)) return false;
+
   return true;
 }

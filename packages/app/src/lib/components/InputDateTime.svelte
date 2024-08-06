@@ -50,9 +50,8 @@
       _valueTime === '' ||
       _valueTime.split(':').length !== 2 ||
       _valueTime.split(':').some((v) => Number.isNaN(Number.parseInt(v)))
-    ) 
+    )
       return null;
-    
 
     const combined = new Date(_valueDate);
     const [hours, minutes] = _valueTime.split(':').map((v) => Number.parseInt(v));

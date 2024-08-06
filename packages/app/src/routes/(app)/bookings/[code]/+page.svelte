@@ -67,9 +67,8 @@
             'Place annulée',
             "Impossible d'annuler la place",
           )
-        ) 
+        )
           await goto(route('/bookings'));
-        
       }}>Oui, je confirme</ButtonPrimary
     >
   </div>
@@ -144,9 +143,8 @@
                 'Pass ajouté à Google Wallet',
                 "Impossible d'ajouter le pass à Google Wallet",
               )
-            ) 
+            )
               window.location.href = result.data.createGoogleWalletPass.data;
-            
           }}
         />
       </section>

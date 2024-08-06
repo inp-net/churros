@@ -31,9 +31,9 @@ builder.mutationField('setEventDates', (t) =>
         where: { id },
         select: { visibility: true },
       });
-      if (!['Private', 'Unlisted'].includes(visibility) && !args.dates) 
+      if (!['Private', 'Unlisted'].includes(visibility) && !args.dates)
         throw new GraphQLError('Seul les évènements privés ou non listés peuvent être sans dates');
-      
+
       await log('events', 'setDates', { args }, id, user);
       return prisma.event.update({
         ...query,

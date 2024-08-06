@@ -42,7 +42,9 @@ export const RegistrationsCountsType = builder
           method: t.arg({ type: PaymentMethodEnum, required: false }),
         },
         resolve: ({ unpaidByPaymentMethod }, { method }) => {
-          return method ? unpaidByPaymentMethod[method] : Object.values(unpaidByPaymentMethod).reduce((sum, count) => sum + count, 0);
+          return method
+            ? unpaidByPaymentMethod[method]
+            : Object.values(unpaidByPaymentMethod).reduce((sum, count) => sum + count, 0);
         },
       }),
       cancelled: t.exposeFloat('cancelled'),

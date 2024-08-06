@@ -92,7 +92,7 @@ builder.mutationField('updateEvent', (t) =>
           data: {
             ...regularArgs,
             globalCapacity:
-              args.globalCapacity === 'Unlimited' ? null : args.globalCapacity ?? undefined,
+              args.globalCapacity === 'Unlimited' ? null : (args.globalCapacity ?? undefined),
           },
         }),
       ]);

@@ -19,16 +19,14 @@
   $: if (loaded(value)) _value = value;
 
   function coerce(stringified: string): Value {
-    if (type === 'date') 
-      return (stringified ? new Date(stringified) : null) as Value;
-    
+    if (type === 'date') return (stringified ? new Date(stringified) : null) as Value;
+
     return stringified as Value;
   }
 
   function stringify(value: Value): string {
-    if (type === 'date') 
-      return value ? (value as Date).toISOString().split('T')[0] : '';
-    
+    if (type === 'date') return value ? (value as Date).toISOString().split('T')[0] : '';
+
     return value as string;
   }
 
