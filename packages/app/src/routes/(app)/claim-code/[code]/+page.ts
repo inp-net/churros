@@ -1,22 +1,18 @@
-import { redirectToLogin } from '$lib/session';
-import { ZeusError, makeMutation } from '$lib/zeus';
+import { graphql } from '$houdini';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, url, params }) => {
-  const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname);
-  try {
-    const { claimPromotionCode } = await makeMutation(
-      {
-        claimPromotionCode: [{ code: params.code }, true],
-      },
-      { fetch, parent },
-    );
+export const load: PageLoad = async ({ fetch, params }) => {
+  const result = await graphql(`
+    mutation ClaimPromotionCode($code: String!) {
+      claimPromotionCode(code: $code)
+    }
+  `).mutate({ code: params.code }, { fetch });
+  if (result.errors) {
     return {
-      result: claimPromotionCode,
+      error: result.errors.map((e) => e.message).join(', '),
     };
-  } catch (error) {
-    if (error instanceof ZeusError) return { error: error.errors.map((e) => e.message).join(', ') };
-    return { error };
   }
+  return {
+    result: Boolean(result.data?.claimPromotionCode),
+  };
 };

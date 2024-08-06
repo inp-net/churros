@@ -4,10 +4,9 @@
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import { loaded } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
-  import type { Visibility } from '$lib/zeus';
   import IndicatorVisibility from './IndicatorVisibility.svelte';
 
-  export let visibility: Visibility | Visibility$options | typeof PendingValue;
+  export let visibility: Visibility$options | typeof PendingValue;
   export let inline = false;
 </script>
 

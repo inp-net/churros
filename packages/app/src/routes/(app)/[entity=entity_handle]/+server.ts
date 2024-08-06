@@ -1,29 +1,23 @@
-import { loadQuery } from '$lib/zeus';
+import { graphql } from '$houdini';
+import { route } from '$lib/ROUTES';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ params, locals, fetch, url }) => {
-  const uid = params.entity!.replace('@', '');
-  let isGroup = false;
-  try {
-    await loadQuery(
-      {
-        group: [{ uid }, { __typename: true }],
-      },
-      {
-        fetch,
-        // eslint-disable-next-line @typescript-eslint/require-await
-        async parent() {
-          return {
-            me: undefined,
-            mobile: locals.mobile,
-            token: undefined,
-          };
-        },
-      },
-    );
-    isGroup = true;
-  } catch {}
+const EntityHandleRedirect = graphql(`
+  query EntityHandleRedirect($uid: String!) @blocking {
+    group(uid: $uid) {
+      uid
+    }
+  }
+`);
 
+export const GET: RequestHandler = async (event) => {
+  const uid = event.params.entity!.replace('@', '');
+  const isGroup = await EntityHandleRedirect.fetch({
+    event,
+    variables: { uid },
+  }).then((d) => d.data?.group.uid);
+
+  const url = new URL(event.request.url);
   url.pathname = `/${isGroup ? 'groups' : 'users'}/${uid}`;
-  throw redirect(302, url.pathname);
+  throw redirect(302, isGroup ? route('/groups/[uid]', uid) : route('/users/[uid]', uid));
 };

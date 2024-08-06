@@ -4,7 +4,6 @@ src/lib/components/AreaComments.houdini.svelte,houdinified
 src/lib/components/AreaComments.svelte,nope
 src/lib/components/AreaContribute.svelte,nope
 src/lib/components/AreaEditLinks.svelte,houdinified
-src/lib/components/AreaPaypalPayRegistration.svelte,nope
 src/lib/components/Avatar.svelte,ok
 src/lib/components/AvatarGroup.houdini.svelte,houdinified
 src/lib/components/AvatarGroup.svelte,ok
@@ -16,9 +15,11 @@ src/lib/components/Badge.svelte,ok
 src/lib/components/BadgeGroupMember.svelte,ok
 src/lib/components/BadgePaymentStatus.svelte,ok
 src/lib/components/BadgeSchool.svelte,ok
-src/lib/components/BadgeVisibility.svelte,nope
+src/lib/components/BadgeVisibility.svelte,houdinified
 src/lib/components/BaseInputText.svelte,ok
+src/lib/components/BookingAuthor.svelte,houdinified
 src/lib/components/BookingBeneficiary.svelte,houdinified
+src/lib/components/BookingPaymentMethod.svelte,houdinified
 src/lib/components/BookingStatus.svelte,houdinified
 src/lib/components/Breadcrumb.svelte,ok
 src/lib/components/Breadcrumbs.svelte,ok
@@ -37,7 +38,6 @@ src/lib/components/ButtonToggleShow.svelte,ok
 src/lib/components/CalendarDay.svelte,ok
 src/lib/components/Card.svelte,ok
 src/lib/components/CardArticle.houdini.svelte,ok
-src/lib/components/CardArticle.svelte,nope
 src/lib/components/CardBooking.svelte,houdinified
 src/lib/components/CardComment.svelte,nope
 src/lib/components/CardDocument.svelte,ok
@@ -62,7 +62,6 @@ src/lib/components/FormGroup.svelte,nope
 src/lib/components/FormNotificationSettings.svelte,nope
 src/lib/components/FormPage.svelte,houdinified
 src/lib/components/FormPassword.svelte,nope
-src/lib/components/FormPicture.old.svelte,nope
 src/lib/components/FormPicture.svelte,houdinified
 src/lib/components/FormPictureItem.svelte,nope
 src/lib/components/FormService.svelte,nope
@@ -81,7 +80,6 @@ src/lib/components/InputEmailList.svelte,ok
 src/lib/components/InputEvent.houdini.svelte,houdinified
 src/lib/components/InputEvent.svelte,nope
 src/lib/components/InputField.svelte,ok
-src/lib/components/InputFile.old.svelte,ok
 src/lib/components/InputFile.svelte,ok
 src/lib/components/InputGroups.houdini.svelte,houdinified
 src/lib/components/InputGroups.svelte,ok
@@ -172,7 +170,7 @@ src/routes/(app)/boards/+page.svelte,ok
 src/routes/(app)/bookings.old/+page.svelte,houdinified
 src/routes/(app)/bookings.old/[pseudoID]/+page.svelte,nope
 src/routes/(app)/bookings/+page.svelte,houdinified
-src/routes/(app)/bookings/[code]/+page.svelte,ok
+src/routes/(app)/bookings/[code]/+page.svelte,houdinified
 src/routes/(app)/changelog/+page.svelte,nope
 src/routes/(app)/claim-code/+page.svelte,ok
 src/routes/(app)/claim-code/[code]/+page.svelte,ok
@@ -345,7 +343,7 @@ src/params/display_year_tier.ts,ok
 src/params/entity_handle.ts,ok
 src/routes/(app)/+layout.ts,houdinified
 src/routes/(app)/+page.ts,houdinified
-src/routes/(app)/[entity=entity_handle]/+server.ts,nope
+src/routes/(app)/[entity=entity_handle]/+server.ts,houdinified
 src/routes/(app)/announcements/+page.ts,nope
 src/routes/(app)/backrooms/services/+page.ts,nope
 src/routes/(app)/bar-weeks/+page.ts,nope
@@ -353,9 +351,12 @@ src/routes/(app)/birthdays/+page.ts,nope
 src/routes/(app)/boards/+page.ts,nope
 src/routes/(app)/bookings.old/[pseudoID].pdf/+server.ts,ok
 src/routes/(app)/bookings.old/[pseudoID]/+page.server.ts,nope
+src/routes/(app)/bookings/[code].pdf/+server.ts,houdinified
+src/routes/(app)/bookings/[code]/+page.ts,houdinified
+src/routes/(app)/bookings/[code]/mutations.ts,houdinified
 src/routes/(app)/changelog/+page.ts,ok
 src/routes/(app)/claim-code/+page.ts,ok
-src/routes/(app)/claim-code/[code]/+page.ts,nope
+src/routes/(app)/claim-code/[code]/+page.ts,houdinified
 src/routes/(app)/credits/+page.ts,nope
 src/routes/(app)/documents/[major]/+page.ts,nope
 src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.ts,nope
