@@ -97,6 +97,8 @@
     back: null,
   });
   setContext('navtop', navtop);
+
+  $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
 </script>
 
 {#if !changelogAcknowledged && $AppLayout.data?.combinedChangelog}
@@ -116,7 +118,9 @@
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
 
-<div class="layout" id="layout" data-route={$page.route.id} class:mobile>
+<svelte:body data-route={$page.route.id} />
+
+<div class="layout" id="layout" class:mobile>
   <header class="left">
     <NavigationSide user={$AppLayout.data?.me ?? null} />
   </header>

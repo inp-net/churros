@@ -4,33 +4,71 @@
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
-  import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
+  import { CardBooking, ModalOrDrawer } from '$lib/components';
   import { sentenceJoin } from '$lib/i18n';
-  import { mapAllLoading } from '$lib/loading';
+  import { mapAllLoading, LoadingText, loading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import IconDate from '~icons/msl/calendar-today-outline';
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
   import HTMLContent from './HTMLContent.svelte';
+  import { route } from '$lib/ROUTES';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
   // HINT: Don't forget to add an entry in $lib/navigation.ts for the top navbar's title and/or action buttons
+
+  const ORGANIZERS_LIMIT = 3;
+
+  let openOrganizersDetailModal: () => void;
 </script>
 
 <MaybeError result={$PageEventDetail} let:data={{ event }}>
+  {@const highlightedBooking = event.highlightedBooking.at(0)}
+  {@const tooManyOrganizers = [event.organizer, ...event.coOrganizers].length > ORGANIZERS_LIMIT}
+  {#if tooManyOrganizers}
+    <ModalOrDrawer removeBottomPadding bind:open={openOrganizersDetailModal}>
+      <h2 slot="header" class="all-organizers">Groupes organisateurs</h2>
+      <ul class="nobullet avatars-details">
+        {#each [event.organizer, ...event.coOrganizers] as group}
+          <li class="avatar">
+            <a href={route('/groups/[uid]', loading(group.uid, ''))}>
+              <AvatarGroup href="" {group} />
+              <LoadingText value={group.name} />
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </ModalOrDrawer>
+  {/if}
   <div class="contents">
+    {#if highlightedBooking}
+      <CardBooking
+        booking={highlightedBooking}
+        hasMoreBookingsCount={event.myBookings.length - 1}
+      />
+    {/if}
     <header>
-      <div class="organizers">
+      <svelte:element
+        this={tooManyOrganizers ? 'button' : 'div'}
+        class="organizers"
+        on:click={openOrganizersDetailModal}
+        role={tooManyOrganizers ? 'button' : undefined}
+      >
         <ul class="nobullet avatars">
-          {#each [event.organizer, ...event.coOrganizers] as group}
+          {#each [event.organizer, ...event.coOrganizers].slice(0, ORGANIZERS_LIMIT) as group}
             <li class="avatar">
-              <AvatarGroup {group} />
+              <AvatarGroup href={tooManyOrganizers ? '' : undefined} {group} />
             </li>
           {/each}
+          {#if tooManyOrganizers}
+            <li class="avatar">
+              +{[event.organizer, ...event.coOrganizers].length - ORGANIZERS_LIMIT}
+            </li>
+          {/if}
         </ul>
         <div class="text">
           <LoadingText
@@ -42,7 +80,7 @@
             Chargement des organisateurs…
           </LoadingText>
         </div>
-      </div>
+      </svelte:element>
       <h2 class="title"><LoadingText value={event.title}>Lorem dolor ipsum</LoadingText></h2>
       <section class="metadata">
         <div class="dates">
@@ -115,7 +153,9 @@
 
   header .organizers .avatars {
     display: flex;
+    gap: 0.5rem;
     align-items: center;
+    margin-right: 0.5em;
   }
 
   header .organizers .avatar {
@@ -126,6 +166,9 @@
   header .organizers .text {
     display: flex;
     align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   header .title {
@@ -157,5 +200,27 @@
     gap: 1em;
     align-items: center;
     font-size: 1.2em;
+  }
+
+  h2.all-organizers {
+    width: 100%;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .avatars-details {
+    display: flex;
+    flex-direction: column;
+
+    --avatar-size: 3rem;
+
+    gap: 1rem;
+    padding: 0 2rem;
+  }
+
+  .avatars-details li a {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 </style>

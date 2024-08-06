@@ -6,7 +6,7 @@
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
   import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import { PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { ICONS_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
   import { PaymentMethod } from '$lib/zeus';
 
@@ -32,7 +32,7 @@
     <h2>{order.shopItem.name}</h2>
     <div class="priceinfo">
       <p>{order.totalPrice} €</p>
-      <svelte:component this={PAYMENT_METHODS_ICONS[order.paymentMethod ?? 'Other']} class="icon" />
+      <svelte:component this={ICONS_PAYMENT_METHODS[order.paymentMethod ?? 'Other']} class="icon" />
       <p><BadgePaymentStatus paid={order.paid} opposed={false} cancelled={false} /></p>
     </div>
   </div>

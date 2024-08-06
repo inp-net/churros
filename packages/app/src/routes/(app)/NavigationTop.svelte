@@ -44,7 +44,7 @@
 
   afterNavigate(({ to }) => {
     if (!to?.route.id) return;
-    topnavConfig = topnavConfigs[to.route.id as LayoutRouteId];
+    topnavConfig = topnavConfigs[to.route.id! as LayoutRouteId];
   });
 
   $: if (topnavConfig) {
@@ -65,6 +65,10 @@
 {#if mobile}
   <ModalReportIssue bind:element={reportIssueDialogElement} />
 {/if}
+
+<svelte:head>
+  <title>{title} · Churros</title>
+</svelte:head>
 
 <nav class:scrolled class:transparent>
   <div class="left">

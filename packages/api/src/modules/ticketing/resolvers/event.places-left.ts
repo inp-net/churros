@@ -1,15 +1,6 @@
-import { builder, prisma, subscriptionName, type Context } from '#lib';
+import { builder, prisma, subscriptionName } from '#lib';
 import { eventCapacity, EventType } from '#modules/events';
-import type { Event, EventManager, Group } from '@churros/db/prisma';
-import { canSeeBookings } from './event.can-see-bookings.js';
-
-export function canSeePlacesLeftCount(
-  event: Event & { managers: EventManager[]; group: Group },
-  user: Context['user'],
-  placesLeft: number,
-) {
-  return placesLeft === 0 || event.showPlacesLeft || canSeeBookings(event, user);
-}
+import { canSeePlacesLeftCount } from '../index.js';
 
 builder.prismaObjectField(EventType, 'placesLeft', (t) =>
   t.int({

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Drawer } from 'vaul-svelte';
   export let open = false;
+  export let removeBottomPadding = false;
 </script>
 
 <Drawer.Root bind:open shouldScaleBackground>
@@ -15,8 +16,15 @@
   </Drawer.Trigger>
   <Drawer.Portal>
     <Drawer.Overlay></Drawer.Overlay>
-    <Drawer.Content>
-      <slot></slot>
+    <Drawer.Content data-remove-bottom-padding={removeBottomPadding}>
+      {#if $$slots.header}
+        <header>
+          <slot name="header"></slot>
+        </header>
+      {/if}
+      <div class="content-scrollable">
+        <slot></slot>
+      </div>
     </Drawer.Content>
   </Drawer.Portal>
 </Drawer.Root>
@@ -37,11 +45,28 @@
     bottom: 0;
     left: 0;
     z-index: 1000;
-    min-height: 100px;
-    max-height: 80dvh;
     padding: 2em 0;
     background: var(--bg);
     border-radius: var(--corner-radius) var(--corner-radius) 0 0;
+  }
+
+  :global([data-vaul-drawer][data-remove-bottom-padding='true']) {
+    padding-bottom: 0;
+  }
+
+  header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+  }
+
+  .content-scrollable {
+    min-height: 100px;
+    max-height: 60dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   :global([data-vaul-drawer])::before {

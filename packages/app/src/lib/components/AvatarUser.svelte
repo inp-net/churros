@@ -16,7 +16,7 @@
   );
 
   export let href: MaybeLoading<string> | undefined = undefined;
-  $: href ??= mapLoading($data?.uid, (uid) => (uid ? route('/groups/[uid]', uid) : PendingValue));
+  $: href ??= mapLoading($data?.uid, (uid) => (uid ? route('/users/[uid]', uid) : PendingValue));
 </script>
 
 <Avatar

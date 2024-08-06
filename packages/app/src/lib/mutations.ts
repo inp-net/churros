@@ -1,4 +1,10 @@
-import type { GraphQLObject, GraphQLVariables, MutationConfig, MutationStore } from '$houdini';
+import {
+  graphql,
+  type GraphQLObject,
+  type GraphQLVariables,
+  type MutationConfig,
+  type MutationStore,
+} from '$houdini';
 import { allLoaded, type DeepMaybeLoading, type MaybeLoading } from '$lib/loading';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -29,3 +35,21 @@ export function mutate<
   // @ts-expect-error we know that all variables are loaded
   return store.mutate(variables, options);
 }
+
+graphql(`
+  fragment MutationErrors on ErrorInterface {
+    __typename
+    ... on Error {
+      message
+    }
+    ... on ZodError {
+      fieldErrors {
+        path
+        message
+      }
+    }
+    ... on NotFoundError {
+      message
+    }
+  }
+`);

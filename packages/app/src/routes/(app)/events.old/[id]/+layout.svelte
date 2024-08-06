@@ -8,7 +8,7 @@
   $: ({ LayoutEventPage } = data);
   $: permissions = $LayoutEventPage.data?.event ?? {
     canScanBookings: false,
-    canSeeBookings: false,
+    canSeeAllBookings: false,
     canEdit: false,
   };
 
@@ -30,7 +30,7 @@
   $: tabsToShow = {
     '': true,
     'edit': permissions.canEdit,
-    'bookings': permissions.canSeeBookings,
+    'bookings': permissions.canSeeAllBookings,
     'scan': permissions.canScanBookings,
   };
 

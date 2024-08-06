@@ -11,7 +11,7 @@
   import { type PaymentMethod, zeus, RegistrationVerificationState } from '$lib/zeus';
   import { type SvelteComponent, onDestroy, onMount } from 'svelte';
   import { Html5QrcodeScanner } from 'html5-qrcode';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import Card from '$lib/components/Card.svelte';
   import InputText from '$lib/components/InputText.svelte';
@@ -296,7 +296,7 @@
             {#if ok}
               <p>
                 Payée via <svelte:component
-                  this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']}
+                  this={ICONS_PAYMENT_METHODS[paymentMethod ?? 'Other']}
                 />
                 {DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}
               </p>

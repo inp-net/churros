@@ -1,6 +1,7 @@
 import type {
   EventFrequency$options,
   EventManagerPowerLevel$options,
+  PaymentMethod$options,
   Visibility$options,
 } from '$houdini';
 import {
@@ -12,22 +13,20 @@ import {
   type PaymentMethod,
 } from '$lib/zeus';
 import type { SvelteComponent } from 'svelte';
+import LogoLydia from '~icons/custom-logos/lydia';
+import LogoPaypal from '~icons/logos/paypal';
 import IconGroupMembers from '~icons/mdi/account-group-outline';
 import IconGodparent from '~icons/mdi/account-multiple-outline';
 import IconAndroidStudio from '~icons/mdi/android-studio';
-import IconBankTransfer from '~icons/mdi/bank';
 import IconNotification from '~icons/mdi/bell-outline';
 import IconCalendarEndOutline from '~icons/mdi/calendar-end-outline';
-import IconPaymentCheck from '~icons/mdi/checkbook';
 import IconComment from '~icons/mdi/comment-outline';
-import IconCreditCard from '~icons/mdi/credit-card-outline';
 import {
   default as IconDotsHorizontal,
   default as IconQuestionMark,
 } from '~icons/mdi/dots-horizontal';
 import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
 import IconHammerWrench from '~icons/mdi/hammer-wrench';
-import IconCash from '~icons/mdi/hand-coin-outline';
 import IconArticle from '~icons/mdi/note-text-outline';
 import IconShotgun from '~icons/mdi/pistol';
 import IconPlayBoxOutline from '~icons/mdi/play-box-outline';
@@ -35,8 +34,10 @@ import IconPermissions from '~icons/mdi/shield-account-outline';
 import IconSigma from '~icons/mdi/sigma';
 import IconStar from '~icons/mdi/star-outline';
 import IconTestTube from '~icons/mdi/test-tube';
-import LogoLydia from '~icons/simple-icons/lydia';
-import LogoPaypal from '~icons/simple-icons/paypal';
+import IconBankTransfer from '~icons/msl/account-balance-outline';
+import IconCash from '~icons/msl/account-balance-wallet-outline';
+import IconPaymentCheck from '~icons/msl/checkbook-outline';
+import IconCreditCard from '~icons/msl/credit-card-outline';
 
 export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod, string> = {
   Cash: 'Espèces',
@@ -144,13 +145,13 @@ export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
 
 export const DISPLAY_MANAGER_PERMISSION_LEVELS: Record<EventManagerPowerLevel$options, string> = {
   ReadOnly: 'Lecture seule',
-  ScanTickets: 'Vérification des billets',
+  ScanTickets: 'Scan des billets',
   Edit: 'Modification',
   EditPermissions: 'Gestion totale',
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const PAYMENT_METHODS_ICONS: Record<PaymentMethod, typeof SvelteComponent<any>> = {
+export const ICONS_PAYMENT_METHODS: Record<PaymentMethod$options, typeof SvelteComponent<any>> = {
   Card: IconCreditCard,
   Cash: IconCash,
   Check: IconPaymentCheck,

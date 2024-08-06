@@ -43,18 +43,18 @@
   `);
 </script>
 
-<ModalOrDrawer tall bind:open bind:implicitClose={close}>
+<ModalOrDrawer removeBottomPadding tall bind:open bind:implicitClose={close}>
+  <svelte:fragment slot="header">
+    <p class="title">{title}</p>
+    <!-- <InputSearchQuery bind:q /> -->
+    <ButtonPrimary
+      on:click={() => {
+        close();
+        dispatch('finish', _value);
+      }}>OK</ButtonPrimary
+    >
+  </svelte:fragment>
   <div class="contents">
-    <header>
-      <p class="title">{title}</p>
-      <!-- <InputSearchQuery bind:q /> -->
-      <ButtonPrimary
-        on:click={() => {
-          close();
-          dispatch('finish', _value);
-        }}>OK</ButtonPrimary
-      >
-    </header>
     <ul class="groups nobullet">
       {#each options.filter(loaded) as option}
         {@const selected = isMultiple(_value)
@@ -108,8 +108,9 @@
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
-    max-height: 70dvh;
-    overflow-y: scroll;
+
+    /* max-height: 70dvh;
+    overflow-y: scroll; */
   }
 
   .option {
@@ -131,13 +132,6 @@
 
   .option.selected {
     color: var(--primary);
-  }
-
-  header {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: space-between;
   }
 
   .title {

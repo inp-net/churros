@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { EventType } from '#modules/events';
-import { RegistrationType, canSeeBookings } from '#modules/ticketing';
+import { RegistrationType, canSeeAllBookings } from '#modules/ticketing';
 
 builder.prismaObjectField(EventType, 'bookings', (t) =>
   t.prismaConnection({
@@ -9,13 +9,8 @@ builder.prismaObjectField(EventType, 'bookings', (t) =>
     async subscribe(subscriptions, { id }) {
       subscriptions.register(id);
     },
-    async authScopes({ id }, _, { user }) {
-      const event = await prisma.event.findFirst({
-        where: { id },
-        include: { managers: true, group: true },
-      });
-      if (!event) return false;
-      return canSeeBookings(event, user);
+    async authScopes(event, _, { user }) {
+      return canSeeAllBookings(event, user);
     },
     async resolve(query, { id }) {
       return prisma.registration.findMany({

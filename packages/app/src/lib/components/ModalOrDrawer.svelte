@@ -9,6 +9,9 @@
   /** Signals that the content is quite tall */
   export let tall = false;
 
+  /** Signals that the drawer (mobile) should not have bottom padding */
+  export let removeBottomPadding = false;
+
   const mobile = isMobile();
 
   /** Close the modal without triggering a close event */
@@ -17,6 +20,7 @@
     else dialogElement?.close();
   };
 
+  /** Open the modal. (usage: `bind:open={a variable name, that you declared}`, then use that variable) */
   export const open = () => {
     if (mobile) drawerOpen = true;
     else openDialog();
@@ -32,9 +36,26 @@
 </script>
 
 {#if mobile}
-  <ModalDrawer bind:open={drawerOpen}><slot {close}></slot></ModalDrawer>
+  <ModalDrawer {removeBottomPadding} bind:open={drawerOpen}>
+    <slot {close}></slot>
+    <slot name="header" slot="header" {close}></slot>
+  </ModalDrawer>
 {:else}
-  <ModalDialog {tall} bind:element={dialogElement} bind:open={openDialog}
-    ><slot {close}></slot></ModalDialog
-  >
+  <ModalDialog {tall} bind:element={dialogElement} bind:open={openDialog}>
+    {#if $$slots.header}
+      <header>
+        <slot name="header"></slot>
+      </header>
+    {/if}
+    <slot {close}></slot>
+  </ModalDialog>
 {/if}
+
+<style>
+  header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>

@@ -22,6 +22,8 @@ strict digraph ImportGraph {
     "pages" -> "groups";
     "pages" -> "student-associations";
     "payments" -> "groups";
+    "pictures" -> "events";
+    "pictures" -> "themes";
     "posts" -> "comments";
     "posts" -> "notifications";
     "posts" -> "reactions";

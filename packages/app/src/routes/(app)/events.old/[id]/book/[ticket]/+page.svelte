@@ -8,7 +8,7 @@
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { dateTimeFormatter, formatDate, formatDateTime } from '$lib/dates';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
   import { EventFrequency, PaymentMethod, zeus } from '$lib/zeus';
   import IconPendingPayment from '~icons/mdi/cash-clock';
@@ -247,7 +247,7 @@
                 track="booking-choose-payment-method"
                 loading={choosingPaymentMethodLoading === method}
                 disabled={Boolean(choosingPaymentMethodLoading)}
-                icon={PAYMENT_METHODS_ICONS[method]}
+                icon={ICONS_PAYMENT_METHODS[method]}
                 on:click={async () => payBy(method)}
               >
                 {DISPLAY_PAYMENT_METHODS[method]}

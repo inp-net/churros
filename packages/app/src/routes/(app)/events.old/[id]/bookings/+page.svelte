@@ -10,7 +10,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import { formatDateTime } from '$lib/dates';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
   import { subscribe } from '$lib/subscriptions';
   import { toasts } from '$lib/toasts';
@@ -504,7 +504,7 @@
               class="centered"
               use:tooltip={paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
             >
-              <svelte:component this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']} />
+              <svelte:component this={ICONS_PAYMENT_METHODS[paymentMethod ?? 'Other']} />
             </td>
             <td>
               {#if ticket.group}

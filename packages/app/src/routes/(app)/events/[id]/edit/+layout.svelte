@@ -66,9 +66,17 @@
       end: $LayoutEventEdit.data.event.endsAt,
     };
   }
+
+  let splitElement: HTMLDivElement;
+  $: if (splitElement) {
+    splitElement.style.setProperty(
+      '--distance-to-top',
+      `${splitElement.getBoundingClientRect().top}px`,
+    );
+  }
 </script>
 
-<div class="split">
+<div class="split" bind:this={splitElement}>
   <div class="left" class:mobile-shown={leftSplitShownOnMobile}>
     <MaybeError
       bind:errored={layoutErrored}
@@ -226,6 +234,7 @@
         <PickGroup
           multiple
           options={allGroups}
+          title="Co-organisateurs"
           value={mapAllLoading(
             [event.organizer.uid, ...event.coOrganizers.map((o) => o.uid)],
             (orga, ...x) => x.filter((x) => x !== orga),
@@ -255,7 +264,7 @@
             >Co-organisateurs
             <div class="organizers-avatars" slot="right">
               {#each event.coOrganizers.slice(0, 4) as coOrganizer}
-                <AvatarGroup group={coOrganizer} />
+                <AvatarGroup href="" group={coOrganizer} />
               {/each}
               {#if event.coOrganizers.length > 4}
                 <span>+{event.coOrganizers.length - 4}</span>
@@ -313,8 +322,13 @@
 
 <style>
   @media (min-width: 1400px) {
-    :global(#layout[data-route^='/(app)/events/[id]/edit']) {
+    :global(body[data-route^='/(app)/events/[id]/edit'] #layout) {
       --scrollable-content-width: calc(clamp(1000px, 100vw - 400px, 1200px));
+    }
+
+    /* XXX: If a page in /(app)/events/[id]/edit resets or changes the layout (with +page@...svelte) this will break scrolling */
+    :global(body[data-route^='/(app)/events/[id]/edit']) {
+      overflow: hidden;
     }
 
     .split {
@@ -327,8 +341,15 @@
     }
 
     .left {
-      position: sticky;
-      top: 0;
+      height: calc(100vh - 1rem - var(--distance-to-top));
+      overflow: hidden auto;
+      scrollbar-width: thin;
+    }
+
+    .right {
+      height: calc(100vh - 1rem - var(--distance-to-top));
+      overflow: hidden auto;
+      scrollbar-width: thin;
     }
   }
 

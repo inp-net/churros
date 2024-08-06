@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
-import { pushState } from '$app/navigation';
+import { goto, pushState } from '$app/navigation';
 import { page } from '$app/stores';
-import { graphql } from '$houdini';
+import { cache, graphql, LogoutStore } from '$houdini';
 import { currentPageIsPinned, pinCurrentPage, unpinCurrentPage } from '$lib/pins';
 import { route } from '$lib/ROUTES';
 import type { Page } from '@sveltejs/kit';
@@ -21,6 +21,7 @@ import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
 import IconForm from '~icons/msl/list-alt-outline';
+import IconLogout from '~icons/msl/logout';
 import IconNotificationSettings from '~icons/msl/notifications-outline';
 import IconPostAdd from '~icons/msl/post-add';
 import IconScanQR from '~icons/msl/qr-code-scanner';
@@ -58,8 +59,7 @@ export function addReferrer(
 // @ts-expect-error can't be bothered to type that shit
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
-export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'DOWNLOAD_BOOKINGS_EXCEL' | 'PIN_PAGE'}`;
+export type NavigationTopActionEvent = `NAVTOP_${'COPY_ID' | 'PIN_PAGE'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
@@ -216,7 +216,16 @@ const rootPagesActions = [
       hidden: !me?.admin && !me?.studentAssociationAdmin,
     };
   },
-];
+  {
+    icon: IconLogout,
+    label: 'Se déconnecter',
+    async do() {
+      new LogoutStore().mutate(null);
+      cache.reset();
+      await goto(route('/'));
+    },
+  },
+] as Array<NavigationContext['actions'][number]>;
 
 export const topnavConfigs: Partial<
   Record<NonNullable<LayoutRouteId>, NavigationContext | ((page: Page) => NavigationContext)>
@@ -306,6 +315,7 @@ export const topnavConfigs: Partial<
       icon: IconScanQR,
       href: route('/events/[id]/scan', id),
     },
+    back: route('/events'),
     actions: [
       { ...commonActions.edit, href: route('/events/[id]/edit', id) },
       {
@@ -322,6 +332,7 @@ export const topnavConfigs: Partial<
       commonActions.copyID,
     ],
   }),
+
   '/(app)/events/[id]/edit': ({ params: { id } }) => ({
     title: 'Modifier l’évènement',
     back: route('/events/[id]', id),
@@ -337,45 +348,86 @@ export const topnavConfigs: Partial<
   '/(app)/events/[id]/edit/visibility': ({ params: { id } }) => ({
     title: 'Visibilité',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/links': ({ params: { id } }) => ({
     title: 'Liens',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/description': ({ params: { id } }) => ({
     title: 'Description',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/image': ({ params: { id } }) => ({
     title: 'Image',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/recurrence': ({ params: { id } }) => ({
     title: 'Récurrence',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/contact': ({ params: { id } }) => ({
     title: "Contact de l'orga",
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/managers': ({ params: { id } }) => ({
     title: 'Managers',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/edit/banned': ({ params: { id } }) => ({
     title: 'Banni·e·s',
     back: route('/events/[id]/edit', id),
-    actions: [],
+    actions: [
+      {
+        ...commonActions.delete,
+        do: () => navtopPushState('NAVTOP_DELETING'),
+      },
+    ],
   }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
+    back: route('/events/[id]', id),
     quickAction: {
       icon: IconScanQR,
       href: route('/events/[id]/scan', id),
@@ -385,7 +437,7 @@ export const topnavConfigs: Partial<
       {
         icon: IconDownload,
         label: 'Excel',
-        do: () => navigationTopActionEventDispatcher('NAVTOP_DOWNLOAD_BOOKINGS_EXCEL'),
+        href: route('GET /events/[id]/bookings.csv', id),
       },
       commonActions.pin,
     ],
