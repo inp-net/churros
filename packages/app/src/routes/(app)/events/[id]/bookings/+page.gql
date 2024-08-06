@@ -1,0 +1,55 @@
+query PageEventAllBookings($id: LocalID!) @loading {
+  event(id: $id) {
+    canSeeAllBookings(
+      assert: "Tu n'a pas les permissions pour voir la liste de réservations. Il faut être manager avec la permission “Scanner les billets”"
+    )
+    bookingsCounts {
+      cancelled
+      paid
+      total
+      unpaidLydias: unpaid(method: Lydia)
+      unpaidAll: unpaid
+      verified
+    }
+    tickets {
+      id
+    }
+    bookings(first: 30) @paginate {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes @loading(count: 30) {
+        id
+        code
+        ...BookingBeneficiary
+        ticket {
+          name
+        }
+        verifiedAt
+        verifiedBy {
+          ...AvatarUser
+          fullName
+        }
+        cancelledAt
+        cancelledBy {
+          ...AvatarUser
+          fullName
+        }
+        opposedAt
+        opposedBy {
+          ...AvatarUser
+          fullName
+        }
+        updatedAt
+        paymentMethod
+        ...BookingStatus
+        authorIsBeneficiary
+        author {
+          ...AvatarUser
+          fullName
+        }
+      }
+    }
+  }
+}

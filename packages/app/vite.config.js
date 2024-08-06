@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import houdini from 'houdini/vite';
 import { fileURLToPath } from 'node:url';
+import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
 import { kitRoutes } from 'vite-plugin-kit-routes';
@@ -11,6 +12,9 @@ export const commonConfig = defineConfig({
       compiler: 'svelte',
       defaultClass: 'icon',
       scale: 1.5,
+      customCollections: {
+        'custom-logos': FileSystemIconLoader('./src/lib/logos'),
+      },
       iconCustomizer(collection, icon, props) {
         if (collection === 'material-symbols-light') {
           props.width = '1.2em';
@@ -46,6 +50,13 @@ export default mergeConfig(
         format_short: true,
         format: 'route(path)',
         post_update_run: 'yarn format-at ./src/lib/ROUTES.ts',
+        PAGES: {
+          '/events/[id]/bookings': {
+            explicit_search_params: {
+              tab: { type: '"unpaid" | "paid" | "verified"', default: '"unpaid"' },
+            },
+          },
+        },
       }),
     ],
     ssr: {

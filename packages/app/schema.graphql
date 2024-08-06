@@ -945,6 +945,21 @@ enum CredentialType {
   Token
 }
 
+"""
+Le dialecte CSV à utiliser
+"""
+enum CsvDialect {
+  """
+  Dialecte CSV pour Excel: séparé par des point-virgules, et toujours guillemeté.
+  """
+  Excel
+
+  """
+  Dialecte CSV standard: séparé par des virgules, avec des guillemets quand nécéssaire seulement. S'ouvre sans soucis dans la plupart des logiciels de tableur, excepté Excel.
+  """
+  Standard
+}
+
 type DatabaseHealthCheck {
   prisma: Boolean!
 }
@@ -1080,9 +1095,15 @@ type Event implements Node & Pictured & Reactable & Shareable {
   bookingsCounts: RegistrationsCounts!
 
   """
-  Renvoie un texte au format CSV contenant un export des réservations de l'évènement.
+  Renvoie un texte à un format demandé contentant un export des réservations de l'évènement.
   """
-  bookingsCsv: EventBookingsCsvResult!
+  bookingsCsv(
+    """
+    Un texe représentant les URLs des pages de réservation individuelles. Dans ce texte, les occurences de '{{code}}' seront remplacées par le code de réservation.
+    """
+    bookingURL: URL!
+    dialect: CsvDialect! = Standard
+  ): EventBookingsCsvResult!
 
   """
   L'utilisateur·ice connecté·e peut modifier cet évènement
@@ -1100,9 +1121,14 @@ type Event implements Node & Pictured & Reactable & Shareable {
   canScanBookings: Boolean!
 
   """
-  L'utilisateur·ice connecté·e peut voir les réservations de cet évènement
+  L'utilisateur·ice connecté·e peut voir la liste des réservations de cet évènement
   """
-  canSeeBookings: Boolean!
+  canSeeAllBookings(
+    """
+    Lève une erreur si l'utilisateur·ice n'a pas les permissions, au lieu de juste renvoyer `false`. La valeur est le message d'erreur à renvoyer
+    """
+    assert: String
+  ): Boolean!
 
   """
   L'utilsateur·ice connecté·e peut voir les logs de cet évènement
@@ -1151,9 +1177,14 @@ type Event implements Node & Pictured & Reactable & Shareable {
   managers: [EventManager!]!
 
   """
-  Réservations faites par et/ou pour l'utilisateur.ice connecté.e
+  Réservations faites par et/ou pour l'utilisateur.ice connecté.e. Triée par bénéficiaire (soi-même d'abord), puis par date de création. Renvoie au maximum 100 réservations.
   """
-  myBookings: [Registration!]!
+  myBookings(
+    """
+    Nombre de réservations à récupérer
+    """
+    count: Int
+  ): [Registration!]!
   myReactions: BooleanMap!
   mySoonestShotgunOpensAt: DateTime
     @deprecated(
@@ -1225,7 +1256,7 @@ type EventBookingsConnectionEdge {
   node: Registration!
 }
 
-union EventBookingsCsvResult = Error | EventBookingsCsvSuccess
+union EventBookingsCsvResult = Error | EventBookingsCsvSuccess | ZodError
 
 type EventBookingsCsvSuccess {
   data: String!
@@ -4944,7 +4975,8 @@ type RegistrationsCounts {
   cancelled: Float!
   paid: Float!
   total: Float!
-  unpaidLydia: Float!
+  unpaid(method: PaymentMethod): Float!
+  unpaidLydia: Float! @deprecated(reason: "Use unpaid(method: Lydia)")
   verified: Float!
 }
 

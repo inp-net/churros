@@ -14,7 +14,7 @@
   $: ({ PageEventsList } = data);
 </script>
 
-<main use:infinitescroll={PageEventsList.loadNextPage}>
+<main use:infinitescroll={() => PageEventsList.loadNextPage()}>
   <MaybeError result={$PageEventsList} let:data>
     {#each data.eventsByDay.edges as { node: { date, happening, shotgunning } }}
       <EventsDayHeader
@@ -25,19 +25,19 @@
       <ul class="nobullet events" class:mobile>
         {#each shotgunning as event}
           <li>
-            <CardEvent loggedIn={data.loggedIn} {event} shotgun />
+            <CardEvent {event} shotgun />
           </li>
         {/each}
         {#each happening as event}
           <li>
-            <CardEvent loggedIn={data.loggedIn} {event} />
+            <CardEvent {event} />
           </li>
         {/each}
       </ul>
     {/each}
     <div class="scroll-end">
       {#if $PageEventsList.pageInfo.hasNextPage}
-        <CardEvent loggedIn={data.loggedIn} event={null} />
+        <CardEvent event={null} />
       {:else}
         <p class="no-more">Plus d'évènements à afficher!</p>
       {/if}

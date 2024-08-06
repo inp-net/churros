@@ -2,7 +2,7 @@
   import { fragment, graphql, PendingValue, type AvatarGroup } from '$houdini';
   import Avatar from '$lib/components/Avatar.svelte';
   import { mapLoading, type MaybeLoading } from '$lib/loading';
-  import { route } from '$lib/ROUTES';
+  import { refroute } from '$lib/navigation';
   import { isDark } from '$lib/theme';
 
   export let group: AvatarGroup | null;
@@ -19,7 +19,9 @@
   );
 
   export let href: MaybeLoading<string> | undefined = undefined;
-  $: href ??= mapLoading($data?.uid, (uid) => (uid ? route('/groups/[uid]', uid) : PendingValue));
+  $: href ??= mapLoading($data?.uid, (uid) =>
+    uid ? refroute('/groups/[uid]', uid) : PendingValue,
+  );
 
   $: src = $isDark ? $data?.pictureURLDark : $data?.pictureURL;
 </script>

@@ -3,7 +3,7 @@
   import { PendingValue } from '$houdini';
   import { LOREM_IPSUM, loaded, type MaybeLoading } from '$lib/loading';
 
-  export let tag: 'code' | 'span' | 'p' | `h${1 | 2 | 3 | 4 | 5 | 6}` = 'span';
+  export let tag: string = 'span';
   export let lines: number | undefined = undefined;
   export let value: MaybeLoading<string | number> | null | undefined = PendingValue;
 </script>
@@ -13,12 +13,12 @@
     this={tag === 'code' ? 'span' : tag}
     {...$$restProps}
     class="skeleton-text skeleton-effect-wave"
-    ><slot>{lines ? LOREM_IPSUM.split('\n').slice(0, lines).join('\n') : 'Chargement…'}</slot
+    ><slot>{lines ? LOREM_IPSUM.split('\n').slice(0, lines).join('\n') : 'Chargement...'}</slot
     ></svelte:element
   >
 {:else}
   <slot name="loaded" {value}>
-    <svelte:element this={tag} {...$$restProps}>{value}</svelte:element>
+    <svelte:element this={tag} data-loaded {...$$restProps}>{value}</svelte:element>
   </slot>
 {/if}
 
@@ -34,5 +34,11 @@
       color: var(--skeleton-ui-bg);
       letter-spacing: -0.03em;
     }
+  }
+
+  [data-loaded] {
+    overflow: inherit;
+    text-overflow: inherit;
+    white-space: inherit;
   }
 </style>

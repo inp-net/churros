@@ -1,6 +1,6 @@
 import { builder, fullTextSearch, prisma } from '#lib';
 import { EventType } from '#modules/events';
-import { canSeeBookings, RegistrationSearchResultType } from '../index.js';
+import { canSeeAllBookings, RegistrationSearchResultType } from '../index.js';
 
 builder.prismaObjectField(EventType, 'searchBookings', (t) =>
   t.field({
@@ -9,7 +9,7 @@ builder.prismaObjectField(EventType, 'searchBookings', (t) =>
       q: t.arg.string(),
     },
     async authScopes(event, _, { user }) {
-      return canSeeBookings(event, user);
+      return canSeeAllBookings(event, user);
     },
     async resolve({ id }, { q }) {
       return fullTextSearch('Registration', q, {

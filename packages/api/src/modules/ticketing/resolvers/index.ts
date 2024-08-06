@@ -6,7 +6,7 @@ export * from './event.bookings-counts.js';
 export * from './event.bookings-csv.js';
 export * from './event.bookings.js';
 export * from './event.can-scan-bookings.js';
-export * from './event.can-see-bookings.js';
+export * from './event.can-see-all-bookings.js';
 export * from './event.my-bookings.js';
 export * from './event.my-soonest-shotgun-opens-at.js';
 export * from './event.places-left.js';

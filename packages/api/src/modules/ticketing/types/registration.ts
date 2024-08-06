@@ -28,7 +28,6 @@ export const RegistrationType = builder.prismaNode('Registration', {
         });
       },
     }),
-
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     verifiedAt: t.expose('verifiedAt', { type: DateTimeScalar, nullable: true }),

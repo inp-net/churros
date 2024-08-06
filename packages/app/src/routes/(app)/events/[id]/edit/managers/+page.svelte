@@ -14,6 +14,7 @@
   import { toasts } from '$lib/toasts';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
   import type { PageData } from './$houdini';
+  import { refroute } from '$lib/navigation';
 
   export let data: PageData;
   $: ({ PageEventEditManagers } = data);
@@ -121,7 +122,6 @@
             }
           }}
         >
-          <p class="typo-field-label">Ajouter un manager</p>
           <div class="inputs">
             <InputTextGhost
               placeholder="@ de la personne"
@@ -142,7 +142,11 @@
         <li>
           <div class="left">
             <AvatarUser user={manager.user} />
-            <LoadingText value={manager.user.fullName} />
+            <LoadingText
+              tag="a"
+              href={refroute('/users/[uid]', loading(manager.user.uid, ''))}
+              value={manager.user.uid}
+            />
           </div>
           <div class="right">
             <InputSelectOneDropdown
@@ -212,6 +216,16 @@
     column-gap: 1rem;
   }
 
+  li .right :global(select) {
+    width: min-content;
+  }
+
+  li .left {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   li:not(.new) {
     justify-content: space-between;
   }
@@ -219,5 +233,11 @@
   li:not(.new),
   li.new .inputs {
     column-gap: 2rem;
+  }
+
+  li.new .inputs {
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    justify-content: center;
   }
 </style>

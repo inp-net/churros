@@ -2,7 +2,8 @@
   import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
 
-  export let tabs: Array<{ name: string; href: string; active?: boolean }> = [];
+  type TabName = $$Generic<string>;
+  export let tabs: Array<{ name: TabName; href: string; active?: boolean }> = [];
   const pagestate = $page.state;
 
   function onTabClick(href: string): undefined | ((event: MouseEvent) => void) {
@@ -23,8 +24,10 @@
         tabindex="0"
         class="tab-link"
         href={href.startsWith('#') ? undefined : href}
-        on:click={onTabClick(href)}>{name}</svelte:element
+        on:click={onTabClick(href)}
       >
+        <slot tab={name} {active}>{name}</slot>
+      </svelte:element>
     </li>
   {/each}
 </ul>

@@ -23,7 +23,9 @@ declare namespace App {
     token?: string;
   }
 
-  interface PageState extends NavigationTopState {}
+  interface PageState extends NavigationTopState {
+    currentTab?: string;
+  }
 }
 
 declare interface ViewTransition {
@@ -83,6 +85,7 @@ declare namespace svelteHTML {
     'on:pressup'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
+    [`on:NAVTOP_${STRING}`]?: (event: CustomEvent<{}>) => Promise<void>;
   }
 }
 

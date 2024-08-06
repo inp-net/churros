@@ -2,12 +2,20 @@ query PageEventDetail($id: LocalID!) {
   event(id: $id) @loading {
     canScanBookings
     canEdit
+    highlightedBooking: myBookings(count: 1) {
+      ...CardBooking
+    }
+    myBookings {
+      id
+    }
     organizer {
       name
+      uid
       ...AvatarGroup
     }
     coOrganizers {
       name
+      uid
       ...AvatarGroup
     }
     title

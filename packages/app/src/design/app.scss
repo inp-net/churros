@@ -151,9 +151,10 @@ body {
   }
 }
 
-ul,
-ol {
-  padding-left: 1em;
+:not([data-user-html]) ul,
+:not([data-user-html]) ol {
+  padding-left: 0;
+  list-style: none;
 }
 
 ul.nobullet {
@@ -181,7 +182,6 @@ hr {
 
 code {
   font-family: var(--font-mono);
-  font-weight: bold;
   color: currentcolor;
 }
 
@@ -235,6 +235,15 @@ button {
 }
 
 @media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+// TODO for now no view transitions on desktop cuz they're borked
+@media (min-width: 900px) {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {

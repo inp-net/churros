@@ -9,7 +9,7 @@
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { me } from '$lib/session';
   import { toasts } from '$lib/toasts';
   import { PaymentMethod, zeus } from '$lib/zeus';
@@ -173,7 +173,7 @@
                 <ButtonSecondary
                   loading={choosingPaymentMethodLoading === method}
                   disabled={Boolean(choosingPaymentMethodLoading)}
-                  icon={PAYMENT_METHODS_ICONS[method]}
+                  icon={ICONS_PAYMENT_METHODS[method]}
                   on:click={async () => payBy(method)}
                 >
                   {DISPLAY_PAYMENT_METHODS[method]}

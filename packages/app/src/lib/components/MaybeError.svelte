@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import type { QueryResult } from '$houdini';
+  import { type QueryResult } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
@@ -24,9 +24,7 @@
   // $: resultDataNonNull = result!.data as Result;
   const bang = <T,>(x: T) => x!;
 
-  $: if (result && result.data) 
-    dispatch('success', result.data);
-  
+  $: if (result && result.data) dispatch('success', result.data);
 </script>
 
 {#if result && result.data}

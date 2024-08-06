@@ -1,9 +1,14 @@
 import type { Context } from '#lib';
 import { userIsAdminOf } from '#permissions';
-import type { Event, EventManager, Group, Prisma } from '@churros/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
+
+export const canScanBookingsPrismaIncludes = {
+  managers: true,
+  group: true,
+} as const satisfies Prisma.EventInclude;
 
 export function canScanBookings(
-  event: Event & { managers: EventManager[]; group: Group },
+  event: Prisma.EventGetPayload<{ include: typeof canScanBookingsPrismaIncludes }>,
   user: Context['user'],
 ) {
   if (userIsAdminOf(user, event.group.studentAssociationId)) return true;
@@ -13,6 +18,15 @@ export function canScanBookings(
 
   const managementship = event.managers.find((m) => m.userId === user?.id);
   return !!managementship?.canVerifyRegistrations;
+}
+
+export const canSeeAllBookingsPrismaIncludes = canScanBookingsPrismaIncludes;
+
+export function canSeeAllBookings(
+  event: Prisma.EventGetPayload<{ include: typeof canSeeAllBookingsPrismaIncludes }>,
+  user: Context['user'],
+) {
+  return canScanBookings(event, user);
 }
 
 export const canSeeTicketPrismaIncludes = {
@@ -132,4 +146,12 @@ export function canSeeTicket(
     return false;
 
   return true;
+}
+
+export function canSeePlacesLeftCount(
+  event: Prisma.EventGetPayload<{ include: typeof canSeeAllBookingsPrismaIncludes }>,
+  user: Context['user'],
+  placesLeft: number,
+) {
+  return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
 }

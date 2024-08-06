@@ -96,6 +96,14 @@ const PAGES = {
   '/events/[id]': (id: string | number, params?: {}) => {
     return `/events/${id}`;
   },
+  '/events/[id]/bookings': (
+    id: string | number,
+    params?: { tab?: 'unpaid' | 'paid' | 'verified' },
+  ) => {
+    params = params ?? {};
+    params.tab = params.tab ?? 'unpaid';
+    return `/events/${id}/bookings${appendSp({ tab: params.tab })}`;
+  },
   '/events/[id]/edit': (id: string | number, params?: {}) => {
     return `/events/${id}/edit`;
   },
@@ -313,6 +321,9 @@ const SERVERS = {
   }) => {
     return `/events/${params.id}/${params.slug}/${params.path?.join('/')}`;
   },
+  'GET /events/[id]/bookings.csv': (id: string | number, params?: {}) => {
+    return `/events/${id}/bookings.csv`;
+  },
   'GET /forms/[form]/answers.[extension]': (params: {
     form: string | number;
     extension: string | number;
@@ -515,6 +526,7 @@ export type KIT_ROUTES = {
     '/events.old/create': never;
     '/events': 'week';
     '/events/[id]': 'id';
+    '/events/[id]/bookings': 'id';
     '/events/[id]/edit': 'id';
     '/events/[id]/edit/banned': 'id';
     '/events/[id]/edit/contact': 'id';
@@ -597,6 +609,7 @@ export type KIT_ROUTES = {
     'GET /events.old/planning': never;
     'GET /events.old/week/[monday]': 'monday';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
+    'GET /events/[id]/bookings.csv': 'id';
     'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
     'GET /frappe': never;
     'GET /groups/[uid].pdf': 'uid';
@@ -627,6 +640,7 @@ export type KIT_ROUTES = {
     document: never;
     ticket: never;
     week: never;
+    tab: never;
     form: never;
     section: never;
     uid: never;

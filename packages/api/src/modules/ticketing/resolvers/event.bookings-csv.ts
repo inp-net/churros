@@ -1,17 +1,53 @@
-import { builder, prisma, yearTier } from '#lib';
+import { builder, localID, prisma, yearTier } from '#lib';
 import { EventType } from '#modules/events';
+import { URLScalar } from '#modules/global';
+import { canSeeAllBookings } from '#modules/ticketing/utils';
 import { fullName } from '#modules/users';
-import { canSeeBookings } from '../index.js';
+import { ZodError } from 'zod';
 
 builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
   t.string({
     description:
-      "Renvoie un texte au format CSV contenant un export des réservations de l'évènement.",
-    errors: {},
-    async authScopes(event, _, { user: me }) {
-      return canSeeBookings(event, me);
+      "Renvoie un texte à un format demandé contentant un export des réservations de l'évènement.",
+    errors: { types: [Error, ZodError] },
+    args: {
+      bookingURL: t.arg({
+        type: URLScalar,
+        description:
+          "Un texe représentant les URLs des pages de réservation individuelles. Dans ce texte, les occurences de '{{code}}' seront remplacées par le code de réservation.",
+      }),
+      dialect: t.arg({
+        defaultValue: 'Standard',
+        type: builder.enumType('CsvDialect', {
+          description: 'Le dialecte CSV à utiliser',
+          values: {
+            Standard: {
+              value: 'Standard',
+              description:
+                "Dialecte CSV standard: séparé par des virgules, avec des guillemets quand nécéssaire seulement. S'ouvre sans soucis dans la plupart des logiciels de tableur, excepté Excel.",
+            },
+            Excel: {
+              value: 'Excel',
+              description:
+                'Dialecte CSV pour Excel: séparé par des point-virgules, et toujours guillemeté.',
+            },
+          },
+        }),
+      }),
     },
-    async resolve({ id }) {
+    async authScopes(event, _, { user: me }) {
+      return canSeeAllBookings(event, me);
+    },
+    async resolve({ id }, { dialect, bookingURL }) {
+      const SEPARATOR = dialect === 'Excel' ? ';' : ',';
+      const quoteValue = (value: string) => {
+        if (dialect === 'Excel' || value.includes(SEPARATOR) || value.includes('"')) 
+          return `"${value.replaceAll('"', '""')}"`;
+        
+        return value;
+      };
+      const csvLine = (values: readonly string[]) =>
+        values.map(quoteValue).join(SEPARATOR) + '\r\n';
       const registrations = await prisma.registration.findMany({
         where: {
           ticket: {
@@ -95,11 +131,11 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           'Filière': benef?.major?.shortName ?? '',
           'Année': benef ? `${yearTier(benef.graduationYear)}A` : '',
           'Promo': benef?.graduationYear.toString() ?? '',
-          'Code de réservation': id.replace(/^r:/, '').toUpperCase(),
-          'Lien vers la place': `${process.env.PUBLIC_FRONTEND_ORIGIN}/bookings/${id.replace(/^r:/, '')}/`,
+          'Code de réservation': localID(id).toUpperCase(),
+          'Lien vers la place': bookingURL.replaceAll('{{code}}', localID(id).toUpperCase()),
         }) satisfies Record<(typeof columns)[number], string>;
 
-      result = columns.join(',') + '\n';
+      result = csvLine(columns);
 
       for (const reg of registrations) {
         const benef = reg.beneficiary
@@ -112,7 +148,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
             })
           : reg.author;
         const data = mapping(reg, benef);
-        result += columns.map((c) => data[c]).join(',') + '\r\n';
+        result += csvLine(columns.map((col) => data[col]));
       }
 
       return result;

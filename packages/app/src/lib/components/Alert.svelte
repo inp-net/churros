@@ -4,7 +4,8 @@
   import IconWarning from '~icons/msl/warning-outline';
   import IconSuccess from '~icons/msl/check';
   import IconInfo from '~icons/msl/info-outline';
-  import type { SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
+  import { isMobile } from '$lib/mobile';
 
   export let closed = false;
   export let inline = false;
@@ -24,10 +25,23 @@
   $: icon ??= DEFAULT_ICONS[theme];
 
   export let theme: 'default' | 'primary' | 'success' | 'danger' | 'warning' = 'default';
+
+  const mobile = isMobile();
+
+  let element: HTMLDivElement;
+
+  onMount(() => {
+    if (!element) return;
+    if (!mobile && !window.matchMedia('(max-width: 900px)')) return;
+    if (element.getBoundingClientRect().left < 1) 
+      element.style.borderRadius = '0';
+    
+  });
 </script>
 
 {#if !closed}
   <div
+    bind:this={element}
     class:fullwidth
     class="alert {theme} {inline ? 'alert-inline' : ''}"
     role="alert"
