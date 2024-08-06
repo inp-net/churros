@@ -1,9 +1,10 @@
 import { builder, splitID } from '#lib';
 import { EventType } from '#modules/events';
 import { ArticleType } from '#modules/posts';
+import { TicketType } from '#modules/ticketing';
 
 export const HasLinks = builder.unionType('HasLinks', {
-  types: [EventType, ArticleType],
+  types: [EventType, ArticleType, TicketType],
   resolveType({ id }) {
     switch (splitID(id)[0]) {
       case 'Event': {
@@ -11,6 +12,9 @@ export const HasLinks = builder.unionType('HasLinks', {
       }
       case 'Article': {
         return ArticleType;
+      }
+      case 'Ticket': {
+        return TicketType;
       }
       default: {
         throw new Error(

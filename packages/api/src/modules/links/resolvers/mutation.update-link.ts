@@ -44,8 +44,8 @@ builder.mutationField('updateLink', (t) =>
         ...query,
         where: { id },
         data: {
-          value: link.url,
-          name: link.text,
+          value: link.url ?? undefined,
+          name: link.text ?? undefined,
         },
       });
     },
