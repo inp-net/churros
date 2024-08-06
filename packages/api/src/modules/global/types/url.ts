@@ -1,7 +1,7 @@
 import { builder } from '#lib';
 import { GraphQLError } from 'graphql';
 
-export const ALLOWED_URL_PROTOCOLS = ['http:', 'https:'];
+export const ALLOWED_URL_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:'];
 
 export const URLScalar = builder.scalarType('URL', {
   description: `Une adresse internet (URL). Les protocoles autorisés sont: ${ALLOWED_URL_PROTOCOLS.join(', ')}`,
