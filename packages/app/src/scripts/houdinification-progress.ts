@@ -44,13 +44,21 @@ function isHoudinified(source: string) {
 const args = process.argv.slice(2);
 
 const results = await Promise.all(
-  args.map(async (filename) => {
-    const contents = await readFile(filename, 'utf8');
-    const houdinified = isHoudinified(contents);
-    const ok = isOK(contents);
-    console.info(houdinified ? YEP : ok ? OK : NOPE, '\t', filename);
-    return { houdinified, ok, filename };
-  }),
+  args
+    .filter((filename) => {
+      if (/\.old\.\w+$/.test(filename)) {
+        console.info(`Skipping old file ${filename}`);
+        return false;
+      }
+      return true;
+    })
+    .map(async (filename) => {
+      const contents = await readFile(filename, 'utf8');
+      const houdinified = isHoudinified(contents);
+      const ok = isOK(contents);
+      console.info(houdinified ? YEP : ok ? OK : NOPE, '\t', filename);
+      return { houdinified, ok, filename };
+    }),
 );
 
 // print percentage of houdinified files over houdinifiable (i.e. houdinified OR not houdinified and not OK) files
