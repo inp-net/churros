@@ -1,11 +1,14 @@
 <script lang="ts">
   import { fragment, graphql, type CardBooking } from '$houdini';
-  import { allLoaded, loading, LoadingText, mapAllLoading } from '$lib/loading';
-  import { BookingStatus, AvatarUser } from '$lib/components';
+  import { BookingStatus } from '$lib/components';
+  import { loading, LoadingText } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { refroute } from '$lib/navigation';
 
   const mobile = isMobile();
+
+  /** The component is being rendering above page content */
+  export let floating = false;
 
   /** If non-zero, shows an additional area where the user can go see all their bookings for the event, and displays this count */
   export let hasMoreBookingsCount = 0;
@@ -18,10 +21,6 @@
         localID
         id
         code
-        beneficiaryUser {
-          ...AvatarUser
-        }
-        beneficiary
         author {
           uid
           ...AvatarUser
@@ -32,12 +31,6 @@
           event {
             pictureURL
             title
-            ...TextEventDates
-            organizer {
-              name
-              uid
-              ...AvatarGroup
-            }
           }
         }
       }
@@ -46,27 +39,29 @@
 </script>
 
 <div class="booking-with-has-more" class:has-more={hasMoreBookingsCount}>
-  <article class="booking" class:mobile class:has-image={Boolean(loading($data?.pictureURL, ''))}>
-    {#if $data && loading($data?.pictureURL, '')}
-      <img src={loading($data.pictureURL, '')} class="background" alt="" />
-    {/if}
-    <p class="name">
-      <LoadingText value={$data.name} />
-    </p>
-    <p class="beneficiary">
-      Pour {#if allLoaded($data.beneficiaryUser) && $data.beneficiaryUser}
-        <AvatarUser user={$data.beneficiaryUser} />
-      {/if}<LoadingText
-        value={mapAllLoading(
-          [$data.beneficiary, $data.beneficiaryUser],
-          (b, u) => b || u?.name || 'moi',
-        )}
-      />
-    </p>
-    <p class="status">
-      <BookingStatus booking={$data} />
-    </p>
-  </article>
+  <a href={refroute('/bookings/[code]', loading($data.code, ''))}>
+    <article
+      class:floating
+      class="booking"
+      class:mobile
+      class:has-image={Boolean(loading($data?.ticket.event.pictureURL, ''))}
+    >
+      {#if $data && loading($data?.ticket.event.pictureURL, '')}
+        <img src={loading($data.ticket.event.pictureURL, '')} class="background" alt="" />
+      {/if}
+      <p class="name">
+        <LoadingText value={$data.ticket.event.title} />
+      </p>
+      {#if $data.ticket.name}
+        <p class="ticket">
+          <LoadingText value={$data.ticket.name} />
+        </p>
+      {/if}
+      <p class="status">
+        <BookingStatus booking={$data} />
+      </p>
+    </article>
+  </a>
   {#if hasMoreBookingsCount > 0}
     <a
       href={refroute('/events/[id]/my-bookings', loading($data.localID, ''))}
@@ -82,23 +77,29 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding: 2rem 1rem;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background-color: var(--bg2);
+  }
 
-    --glimer: var(--primary);
+  article.floating {
+    padding: 0 1rem;
+    padding-bottom: 1rem;
+    background-color: var(--bg);
   }
 
   article:not(.mobile) {
-    padding: 2rem;
     border-radius: 20px;
+  }
+
+  article.floating:not(.mobile) {
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-big);
   }
 
   article.has-image {
     overflow: hidden;
     color: white;
-
-    --glimmer: var(--primary);
-
     background-color: black;
   }
 
@@ -113,6 +114,12 @@
     object-fit: cover;
     object-position: center;
     filter: blur(var(--blur)) brightness(0.7);
+  }
+
+  article > p {
+    display: flex;
+    gap: 0.5ch;
+    align-items: center;
   }
 
   article > *:not(.background) {

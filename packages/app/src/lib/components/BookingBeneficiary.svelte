@@ -28,13 +28,23 @@
   );
 </script>
 
-{#if !allLoaded($data)}
-  <LoadingText />
-{:else if $data.beneficiary}
-  {$data.beneficiary}
-{:else if $data.beneficiaryUser || $data.author}
-  <AvatarUser user={$data.beneficiaryUser ?? $data.author} />
-  {$data.beneficiaryUser?.[nameProperty] ?? $data.author?.[nameProperty]}
-{:else}
-  <span class="muted">Aucun compte lié</span>
-{/if}
+<div class="booking-beneficiary">
+  {#if !allLoaded($data)}
+    <LoadingText />
+  {:else if $data.beneficiary}
+    {$data.beneficiary}
+  {:else if $data.beneficiaryUser || $data.author}
+    <AvatarUser user={$data.beneficiaryUser ?? $data.author} />
+    {$data.beneficiaryUser?.[nameProperty] ?? $data.author?.[nameProperty]}
+  {:else}
+    <span class="muted">Aucun compte lié</span>
+  {/if}
+</div>
+
+<style>
+  .booking-beneficiary {
+    display: flex;
+    gap: 0.5ch;
+    align-items: center;
+  }
+</style>

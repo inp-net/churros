@@ -38,7 +38,12 @@
                 ? addYears(event.endsAt ?? new Date(), 1)
                 : null,
             });
-            toasts.mutation(result, 'updateEvent', '', `Impossible de désactiver la récurrence`);
+            toasts.mutation(
+              result,
+              'updateEventRecurrence',
+              '',
+              `Impossible de désactiver la récurrence`,
+            );
           }}
           value={event.frequency !== 'Once'}
         />
@@ -58,7 +63,7 @@
                 });
                 toasts.mutation(
                   result,
-                  'updateEvent',
+                  'updateEventRecurrence',
                   '',
                   `Impossible de changer la fréquence de répétition`,
                 );
@@ -83,7 +88,7 @@
               });
               toasts.mutation(
                 result,
-                'updateEvent',
+                'updateEventRecurrence',
                 '',
                 `Impossible de changer la date de fin de répétition`,
               );

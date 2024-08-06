@@ -195,8 +195,7 @@
                   event: event.id,
                   location: detail,
                 });
-                if (result)
-                  toasts.mutation(result, 'updateEvent', '', 'Impossible de changer le lieu');
+                toasts.mutation(result, 'updateEvent', '', 'Impossible de changer le lieu');
               }}
             />
           </div>

@@ -2,7 +2,7 @@
   import { fragment, graphql, PendingValue, type AvatarUser } from '$houdini';
   import Avatar from '$lib/components/Avatar.svelte';
   import { mapLoading, type MaybeLoading } from '$lib/loading';
-  import { route } from '$lib/ROUTES';
+  import { refroute } from '$lib/navigation';
 
   export let user: AvatarUser | null;
   $: data = fragment(
@@ -16,7 +16,7 @@
   );
 
   export let href: MaybeLoading<string> | undefined = undefined;
-  $: href ??= mapLoading($data?.uid, (uid) => (uid ? route('/users/[uid]', uid) : PendingValue));
+  $: href ??= mapLoading($data?.uid, (uid) => (uid ? refroute('/users/[uid]', uid) : PendingValue));
 </script>
 
 <Avatar

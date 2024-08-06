@@ -14,7 +14,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       bookingURL: t.arg({
         type: URLScalar,
         description:
-          "Un texe représentant les URLs des pages de réservation individuelles. Dans ce texte, les occurences de '{{code}}' seront remplacées par le code de réservation.",
+          "Un texe représentant les URLs des pages de réservation individuelles. Dans ce texte, les occurences de '[code]' seront remplacées par le code de réservation.",
       }),
       dialect: t.arg({
         defaultValue: 'Standard',
@@ -41,9 +41,9 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
     async resolve({ id }, { dialect, bookingURL }) {
       const SEPARATOR = dialect === 'Excel' ? ';' : ',';
       const quoteValue = (value: string) => {
-        if (dialect === 'Excel' || value.includes(SEPARATOR) || value.includes('"')) 
+        if (dialect === 'Excel' || value.includes(SEPARATOR) || value.includes('"'))
           return `"${value.replaceAll('"', '""')}"`;
-        
+
         return value;
       };
       const csvLine = (values: readonly string[]) =>
@@ -132,7 +132,9 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           'Année': benef ? `${yearTier(benef.graduationYear)}A` : '',
           'Promo': benef?.graduationYear.toString() ?? '',
           'Code de réservation': localID(id).toUpperCase(),
-          'Lien vers la place': bookingURL.replaceAll('{{code}}', localID(id).toUpperCase()),
+          'Lien vers la place': bookingURL
+            .toString()
+            .replaceAll('[code]', localID(id).toUpperCase()),
         }) satisfies Record<(typeof columns)[number], string>;
 
       result = csvLine(columns);

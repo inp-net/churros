@@ -94,7 +94,7 @@ export interface PothosTypes {
     };
     URL: {
       Input: URL;
-      Output: string;
+      Output: URL;
     };
     LooseURL: {
       Input: string;

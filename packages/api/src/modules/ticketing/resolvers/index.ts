@@ -23,6 +23,7 @@ export * from './mutation.paid-registration.js';
 export * from './mutation.upsert-registration.js';
 export * from './mutation.upsert-ticket-group.js';
 export * from './mutation.verify-booking.js';
+export * from './query.booking.js';
 export * from './query.registration-qr-code.js';
 export * from './query.registration.js';
 export * from './query.registrations-of-user.js';

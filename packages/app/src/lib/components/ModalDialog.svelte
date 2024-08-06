@@ -10,11 +10,11 @@
   export const open = () => {
     dispatch('open');
     opened = true;
-    element.showModal();
+    element?.showModal();
   };
 
   onMount(() => {
-    if (opened) element.showModal();
+    if (opened) element?.showModal();
   });
 </script>
 

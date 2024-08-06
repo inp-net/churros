@@ -62,12 +62,20 @@
   const mobile = isMobile();
 </script>
 
+<svelte:window
+  on:NAVTOP_UPDATE_TITLE={({ detail }) => {
+    title = detail;
+  }}
+/>
+
 {#if mobile}
   <ModalReportIssue bind:element={reportIssueDialogElement} />
 {/if}
 
 <svelte:head>
-  <title>{title} · Churros</title>
+  {#if title}
+    <title>{title} · Churros</title>
+  {/if}
 </svelte:head>
 
 <nav class:scrolled class:transparent>

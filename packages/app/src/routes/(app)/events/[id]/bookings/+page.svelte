@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { type PageEventAllBookings$result } from '$houdini';
+  import { graphql, type PageEventAllBookings$result } from '$houdini';
   import {
+    Alert,
     AvatarUser,
     BookingBeneficiary,
     BookingStatus,
@@ -24,9 +26,45 @@
   $: ({ PageEventAllBookings } = data);
 
   const FILTERS = ['unpaid', 'paid', 'verified'] as const;
+  $: activeTab = ($page.url.searchParams.get('tab') ?? 'unpaid') as (typeof FILTERS)[number];
 
   let openBookingDetailModal: () => void;
-  let bookingToShowDetails: PageEventAllBookings$result['event']['bookings']['nodes'][number];
+  let selectedBooking: PageEventAllBookings$result['event']['bookings']['nodes'][number];
+
+  const updates = graphql(`
+    subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
+      event(id: $id) {
+        bookings(first: 10, only: $filter) {
+          nodes {
+            id
+          }
+        }
+      }
+    }
+  `);
+
+  $: updates.listen({
+    id: $page.params.id,
+    filter: $page.url.searchParams.get('tab') as (typeof FILTERS)[number],
+  });
+
+  // Count new bookings by taking the length of the intersection of booking IDs from updates and PageEventAllBookings
+  $: newBookingsCount =
+    $updates.data?.event.bookings.nodes.filter(
+      (fresh) =>
+        !$PageEventAllBookings.data?.event.bookings.nodes.some(
+          (existing) => existing.id === fresh.id,
+        ),
+    ).length ?? 0;
+
+  $: if (browser && loaded($PageEventAllBookings.data?.event.bookingsCounts.total)) {
+    const total = $PageEventAllBookings.data.event.bookingsCounts.total;
+    window.dispatchEvent(
+      new CustomEvent('NAVTOP_UPDATE_TITLE', {
+        detail: `${total} réservation${total > 1 ? 's' : ''}`,
+      }),
+    );
+  }
 </script>
 
 <ModalOrDrawer bind:open={openBookingDetailModal}>
@@ -35,18 +73,86 @@
     <ButtonSecondary
       target="_blank"
       icon={IconOpenTicketPage}
-      href={route('/bookings/[code]', loading(bookingToShowDetails?.code, ''))}
+      href={route('/bookings/[code]', loading(selectedBooking?.code, ''))}
     >
       Voir le billet
     </ButtonSecondary>
   </svelte:fragment>
-  {#if bookingToShowDetails}
+  {#if selectedBooking}
     <dl>
       <dt>Code de réservation</dt>
       <dd>
-        <code>{bookingToShowDetails.code}</code>
-        {#if loaded(bookingToShowDetails.code)}
-          <ButtonCopyToClipboard text={bookingToShowDetails.code}></ButtonCopyToClipboard>
+        <code>{selectedBooking.code}</code>
+        {#if loaded(selectedBooking.code)}
+          <ButtonCopyToClipboard text={selectedBooking.code}></ButtonCopyToClipboard>
+        {/if}
+      </dd>
+      <dt>Place pour</dt>
+      <dd>
+        <BookingBeneficiary booking={selectedBooking} />
+      </dd>
+      <dt>Payée par</dt>
+      <dd>
+        {#if selectedBooking.author}
+          <AvatarUser user={selectedBooking.author}></AvatarUser>
+          <LoadingText value={selectedBooking.author.fullName} />
+        {:else}
+          <span class="external muted">(Personne externe à Churros)</span>
+        {/if}
+      </dd>
+      {#if selectedBooking.verifiedAt || selectedBooking.verifiedBy}
+        <dt>Scannée</dt>
+        <dd>
+          {#if selectedBooking.verifiedAt}
+            <LoadingText value={mapLoading(selectedBooking.verifiedAt, formatDateTimeSmart)}
+            ></LoadingText>
+          {/if}
+          {#if selectedBooking.verifiedBy}
+            Par <AvatarUser user={selectedBooking.verifiedBy}></AvatarUser>
+            <LoadingText value={selectedBooking.verifiedBy.fullName} />
+          {/if}
+        </dd>
+      {/if}
+      {#if selectedBooking.cancelledAt || selectedBooking.cancelledBy}
+        <dt>Annulée</dt>
+        <dd>
+          {#if selectedBooking.cancelledAt}
+            <LoadingText value={mapLoading(selectedBooking.cancelledAt, formatDateTimeSmart)}
+            ></LoadingText>
+          {/if}
+          {#if selectedBooking.cancelledBy}
+            Par <AvatarUser user={selectedBooking.cancelledBy}></AvatarUser>
+            <LoadingText value={selectedBooking.cancelledBy.fullName} />
+          {/if}
+        </dd>
+      {/if}
+      {#if selectedBooking.opposedAt || selectedBooking.opposedBy}
+        <dt>Opposée</dt>
+        <dd>
+          {#if selectedBooking.opposedAt}
+            <LoadingText value={mapLoading(selectedBooking.opposedAt, formatDateTimeSmart)}
+            ></LoadingText>
+          {/if}
+          {#if selectedBooking.opposedBy}
+            Par <AvatarUser user={selectedBooking.opposedBy}></AvatarUser>
+            <LoadingText value={selectedBooking.opposedBy.fullName} />
+          {/if}
+        </dd>
+      {/if}
+      <dt>État</dt>
+      <dd>
+        <BookingStatus booking={selectedBooking} />
+      </dd>
+      <dt>Moyen de paiement</dt>
+      <dd>
+        {#if loaded(selectedBooking.paymentMethod)}
+          <svelte:component this={ICONS_PAYMENT_METHODS[selectedBooking.paymentMethod]}
+          ></svelte:component>
+          <span class="payment-method-name"
+            >{DISPLAY_PAYMENT_METHODS[selectedBooking.paymentMethod]}</span
+          >
+        {:else}
+          <LoadingText>...</LoadingText>
         {/if}
       </dd>
     </dl>
@@ -56,18 +162,27 @@
 <MaybeError result={$PageEventAllBookings} let:data={{ event }}>
   <div class="contents">
     <header>
-      <h1>Réservations</h1>
+      {#if newBookingsCount}
+        <Alert theme="primary">
+          {newBookingsCount} nouvelles réservations <ButtonSecondary
+            on:click={async () => PageEventAllBookings.fetch()}>Charger</ButtonSecondary
+          >
+        </Alert>
+      {/if}
       <NavigationTabs
+        on:click={({ detail }) => {
+          // To change tabs visually before the page has even finished loading
+          activeTab = detail;
+        }}
         tabs={FILTERS.map((name) => ({
           name,
-          active: name === ($page.url.searchParams.get('tab') ?? 'unpaid'),
-          // href: route('/events/[id]/bookings', $page.params.id, {
-          //   tab: name,
-          // }),
-          href: `?tab=${name}`,
+          active: name === activeTab,
+          href: route('/events/[id]/bookings', $page.params.id, {
+            tab: name,
+          }),
         }))}
       >
-        <div class="tab" let:tab let:active class:active>
+        <div slot="tab" class="tab" let:tab let:active class:active>
           <span class="tab-title">
             {#if tab === 'unpaid'}
               Non payées
@@ -79,11 +194,14 @@
           </span>
           <div class="subtitle muted">
             {#if tab === 'unpaid'}
-              <LoadingText value={event.bookingsCounts.unpaidAll}>...</LoadingText> · dont <LoadingText
-                value={event.bookingsCounts.unpaidLydias}>...</LoadingText
-              > Lydias
+              <LoadingText value={event.bookingsCounts.unpaidAll}>...</LoadingText
+              >{#if event.tickets.some((t) => 'Lydia' in t.allowedPaymentMethods)}
+                · dont <LoadingText value={event.bookingsCounts.unpaidLydias}>...</LoadingText> Lydias{/if}
             {:else if tab === 'paid'}
-              <LoadingText value={event.bookingsCounts.paid}>...</LoadingText>
+              <LoadingText value={event.bookingsCounts.paid}>...</LoadingText> · <LoadingText
+                value={mapLoading(event.profitsBreakdown.total, (total) => `${total}€`)}
+                >...</LoadingText
+              >
             {:else if tab === 'verified'}
               <LoadingText value={event.bookingsCounts.verified}>...</LoadingText>
             {/if}
@@ -97,7 +215,7 @@
           <button
             class="booking"
             on:click={() => {
-              bookingToShowDetails = booking;
+              selectedBooking = booking;
               openBookingDetailModal?.();
             }}
           >
@@ -232,5 +350,21 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .tab .subtitle {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.8em;
+  }
+
+  dl {
+    padding: 1rem 2rem;
+  }
+
+  dl dd {
+    display: flex;
+    gap: 0.5ch;
+    align-items: center;
   }
 </style>

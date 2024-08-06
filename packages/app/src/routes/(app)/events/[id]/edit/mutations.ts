@@ -80,15 +80,7 @@ export const ChangeEventLocation = graphql(`
           location
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -152,15 +144,7 @@ export const ChangeEventRecurrence = graphql(`
           recurringUntil
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);

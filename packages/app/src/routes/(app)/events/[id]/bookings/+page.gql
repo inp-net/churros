@@ -1,4 +1,4 @@
-query PageEventAllBookings($id: LocalID!) @loading {
+query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
   event(id: $id) {
     canSeeAllBookings(
       assert: "Tu n'a pas les permissions pour voir la liste de réservations. Il faut être manager avec la permission “Scanner les billets”"
@@ -11,10 +11,14 @@ query PageEventAllBookings($id: LocalID!) @loading {
       unpaidAll: unpaid
       verified
     }
+    profitsBreakdown {
+      total
+    }
     tickets {
       id
+      allowedPaymentMethods
     }
-    bookings(first: 30) @paginate {
+    bookings(first: 30, only: $filter) @paginate {
       pageInfo {
         hasNextPage
         endCursor
