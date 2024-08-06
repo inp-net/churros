@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   import { browser } from '$app/environment';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
-  import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
   import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import { isMobile } from '$lib/mobile';
@@ -12,7 +12,6 @@
   import IconBack from '~icons/msl/arrow-back';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import type { LayoutRouteId } from '../$types';
-  import { afterNavigate } from '$app/navigation';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type NavigationQuickAction = Omit<ActionData<any>, 'label'> & {
@@ -58,7 +57,6 @@
 
   $: backHref = $page.url.searchParams.get('from') ?? back;
 
-  let reportIssueDialogElement: HTMLDialogElement;
   const mobile = isMobile();
 </script>
 
@@ -67,10 +65,6 @@
     title = detail;
   }}
 />
-
-{#if mobile}
-  <ModalReportIssue bind:element={reportIssueDialogElement} />
-{/if}
 
 <svelte:head>
   {#if title}
@@ -98,11 +92,14 @@
     {/if}
   </div>
   <div class="actions">
-    {#if mobile}
-      <button class="bug-report" on:click={() => reportIssueDialogElement.showModal()}>
-        <IconBugReport></IconBugReport>
-      </button>
-    {/if}
+    <button
+      class="bug-report"
+      on:click={() => {
+        window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+      }}
+    >
+      <IconBugReport></IconBugReport>
+    </button>
     {#if quickAction && !(quickAction.mobileOnly && !mobile)}
       {#if quickAction.overflow}
         <OverflowMenu actions={quickAction.overflow}>
@@ -166,5 +163,11 @@
 
   .bug-report {
     color: var(--danger);
+  }
+
+  @media (min-width: 900px) {
+    .bug-report {
+      display: none;
+    }
   }
 </style>

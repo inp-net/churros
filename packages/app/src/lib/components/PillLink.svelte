@@ -1,8 +1,9 @@
 <script lang="ts">
   import { fragment, graphql, type PillLink } from '$houdini';
+  import { umamiAttributes } from '$lib/analytics';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import { mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
+  import { loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
   import { socials } from '$lib/social.generated';
 
   function socialSiteFromURL(url: URL) {
@@ -20,6 +21,8 @@
   /** Whether to use social media icons and text (the Link's text is used as a fallback)*/
   export let social = false;
 
+  export let track: string | undefined = undefined;
+
   $: socialSite = social && $data ? mapLoading($data.url, socialSiteFromURL) : undefined;
   $: socialLogo = onceLoaded(socialSite, (s) => s?.icon, undefined);
 
@@ -29,13 +32,17 @@
     graphql(`
       fragment PillLink on Link @loading {
         url
+        rawURL
         text
       }
     `),
   );
 </script>
 
-<a href={onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}>
+<a
+  href={onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}
+  {...umamiAttributes(track, { url: loading($data?.rawURL, '(not loaded)') })}
+>
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
     {#if socialLogo}
       <svelte:component this={socialLogo}></svelte:component>

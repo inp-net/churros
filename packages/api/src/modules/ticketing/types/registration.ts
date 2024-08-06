@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
+import { builder, localID, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { UserType, fullName } from '#modules/users';
@@ -10,7 +10,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
   fields: (t) => ({
     code: t.string({
       resolve({ id }) {
-        return id.replace(TYPENAMES_TO_ID_PREFIXES.Registration + ':', '');
+        return localID(id).toUpperCase();
       },
     }),
     ticketId: t.exposeID('ticketId'),

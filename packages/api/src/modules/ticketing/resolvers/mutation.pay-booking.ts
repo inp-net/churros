@@ -1,4 +1,4 @@
-import { builder, log, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 
 import {
   PaymentMethodEnum,
@@ -10,24 +10,24 @@ import { userCanAccessEvent, userCanManageEvent } from '#permissions';
 import { PaymentMethod as PaymentMethodPrisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { placesLeft } from '../index.js';
-// TODO rename to pay-booking.ts
 
-builder.mutationField('paidRegistration', (t) =>
+builder.mutationField('payBooking', (t) =>
   t.field({
     description:
       'When paying with Paypal, returns the order id for a capture to finish the payment',
     type: 'String',
     errors: {},
     args: {
-      regId: t.arg.id(),
+      code: t.arg.string({ description: 'Code de réservation' }),
       beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum, required: false }),
       phone: t.arg.string({ required: false }),
     },
-    async authScopes(_, { regId }, { user }) {
-      const creating = !regId;
+    async authScopes(_, { code }, { user }) {
+      const bookingId = ensureGlobalId(code.toLowerCase(), 'Registration');
+      const creating = !bookingId;
       const registration = await prisma.registration.findUnique({
-        where: { id: regId },
+        where: { id: bookingId },
         include: {
           ticket: {
             include: {
@@ -75,9 +75,10 @@ builder.mutationField('paidRegistration', (t) =>
 
       return true;
     },
-    async resolve(_, { regId, beneficiary, paymentMethod, phone }, { user }) {
+    async resolve(_, { code, beneficiary, paymentMethod, phone }, { user }) {
+      const bookingId = ensureGlobalId(code.toLowerCase(), 'Registration');
       const registration = await prisma.registration.findUnique({
-        where: { id: regId },
+        where: { id: bookingId },
         include: { ticket: { include: { event: true } } },
       });
       if (!registration) throw new GraphQLError('Registration not found');
@@ -108,11 +109,11 @@ builder.mutationField('paidRegistration', (t) =>
         'registration',
         'update',
         { registration, paymentMethod, beneficiary },
-        regId,
+        bookingId,
         user,
       );
       await prisma.registration.update({
-        where: { id: regId },
+        where: { id: bookingId },
         data: {
           paymentMethod,
           beneficiary: beneficiary ?? '',

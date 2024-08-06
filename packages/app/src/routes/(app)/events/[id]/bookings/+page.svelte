@@ -6,7 +6,9 @@
     Alert,
     AvatarUser,
     BookingBeneficiary,
+    BookingPaymentMethod,
     BookingStatus,
+    BookingAuthor,
     ButtonCopyToClipboard,
     ButtonSecondary,
     MaybeError,
@@ -14,8 +16,9 @@
   } from '$lib/components';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
-  import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { allLoaded, loaded, loading, LoadingText, mapLoading } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
+  import { isPWA } from '$lib/pwa';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
   import { notNull } from '$lib/typing';
@@ -71,9 +74,9 @@
   <svelte:fragment slot="header">
     <h1 class="modal-detail-title">Détail</h1>
     <ButtonSecondary
-      target="_blank"
+      target={isPWA() ? undefined : '_blank'}
       icon={IconOpenTicketPage}
-      href={route('/bookings/[code]', loading(selectedBooking?.code, ''))}
+      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''))}
     >
       Voir le billet
     </ButtonSecondary>
@@ -93,12 +96,7 @@
       </dd>
       <dt>Payée par</dt>
       <dd>
-        {#if selectedBooking.author}
-          <AvatarUser user={selectedBooking.author}></AvatarUser>
-          <LoadingText value={selectedBooking.author.fullName} />
-        {:else}
-          <span class="external muted">(Personne externe à Churros)</span>
-        {/if}
+        <BookingAuthor booking={selectedBooking} />
       </dd>
       {#if selectedBooking.verifiedAt || selectedBooking.verifiedBy}
         <dt>Scannée</dt>
@@ -145,15 +143,7 @@
       </dd>
       <dt>Moyen de paiement</dt>
       <dd>
-        {#if loaded(selectedBooking.paymentMethod)}
-          <svelte:component this={ICONS_PAYMENT_METHODS[selectedBooking.paymentMethod]}
-          ></svelte:component>
-          <span class="payment-method-name"
-            >{DISPLAY_PAYMENT_METHODS[selectedBooking.paymentMethod]}</span
-          >
-        {:else}
-          <LoadingText>...</LoadingText>
-        {/if}
+        <BookingPaymentMethod booking={selectedBooking} />
       </dd>
     </dl>
   {/if}
@@ -246,15 +236,7 @@
                 </div>
               {:else}
                 <div class="payment">
-                  {#if loaded(booking.paymentMethod)}
-                    <svelte:component this={ICONS_PAYMENT_METHODS[booking.paymentMethod]}
-                    ></svelte:component>
-                    <span class="payment-method-name desktop-only"
-                      >{DISPLAY_PAYMENT_METHODS[booking.paymentMethod]}</span
-                    >
-                  {:else}
-                    <LoadingText>...</LoadingText>
-                  {/if}
+                  <BookingPaymentMethod {booking} />
                 </div>
               {/if}
             </div>
@@ -338,8 +320,7 @@
     color: var(--shy);
   }
 
-  .author,
-  .payment {
+  .author {
     display: flex;
     gap: 0.5em;
     align-items: center;

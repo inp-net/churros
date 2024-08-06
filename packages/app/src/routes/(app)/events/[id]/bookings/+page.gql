@@ -27,6 +27,7 @@ query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
         id
         code
         ...BookingBeneficiary
+        ...BookingAuthor
         ticket {
           name
         }
@@ -46,7 +47,7 @@ query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
           fullName
         }
         updatedAt
-        paymentMethod
+        ...BookingPaymentMethod
         ...BookingStatus
         authorIsBeneficiary
         author {

@@ -2,13 +2,14 @@
   import type { SvelteComponent } from 'svelte';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
+  import type { MaybeLoading } from '$lib/loading';
 
   export let type = 'text';
   export let name: string | undefined = undefined;
   export let hint = '';
   export let hintStyle: 'muted' | 'warning' | 'loading' | 'success' = 'muted';
   export let errors: string[] | undefined = [];
-  export let initial: string | undefined = undefined;
+  export let initial: MaybeLoading<string | undefined> = undefined;
   export let placeholder: string | undefined = undefined;
   export let value: string;
   export let autocomplete: string | undefined = undefined;
