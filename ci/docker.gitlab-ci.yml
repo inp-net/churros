@@ -11,8 +11,10 @@ deploy_api:
   stage: deploy
   needs:
     - build
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
   script:
     - /kaniko/executor
       --skip-unused-stages
@@ -26,8 +28,10 @@ deploy_app:
   stage: deploy
   needs:
     - build
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
   script:
     - /kaniko/executor
       --skip-unused-stages
@@ -41,6 +45,8 @@ deploy_sync:
   stage: deploy
   rules:
     - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
   script:
     - /kaniko/executor
       --skip-unused-stages
