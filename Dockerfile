@@ -42,6 +42,7 @@ FROM base AS api
 
 WORKDIR /app
 
+RUN apk add --no-cache ca-certificates
 
 # Prisma migration
 COPY --from=builder /app/packages/db/prisma/ /app/packages/db/prisma/
@@ -102,6 +103,8 @@ FROM node:20-alpine AS sync
 
 ENV NODE_ENV="production"
 
+RUN apk add --no-cache ca-certificates
+
 COPY --from=builder-sync /app/node_modules/ /app/node_modules/
 COPY --from=builder-sync /app/packages/sync/build/src/ /app/packages/sync/build/src/
 COPY --from=builder-sync /app/packages/db/package.json /app/packages/db/
@@ -112,3 +115,13 @@ WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
+FROM node:20-alpine AS prisma-debug
+
+WORKDIR /app
+COPY packages/db/prisma /app/prisma
+COPY packages/db/package.json /app/package.json
+
+RUN npm install -g corepack
+RUN yarn install
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]
