@@ -20,9 +20,13 @@ const PAGES = {
   '/bar-weeks': `/bar-weeks`,
   '/birthdays': `/birthdays`,
   '/boards': `/boards`,
+  '/bookings': `/bookings`,
   '/bookings.old': `/bookings.old`,
   '/bookings.old/[pseudoID]': (pseudoID: string | number, params?: {}) => {
     return `/bookings.old/${pseudoID}`;
+  },
+  '/bookings/[code]': (code: string | number, params?: {}) => {
+    return `/bookings/${code}`;
   },
   '/changelog': `/changelog`,
   '/claim-code': `/claim-code`,
@@ -310,6 +314,9 @@ const SERVERS = {
   'GET /bookings.old/[pseudoID].pdf': (pseudoID: string | number, params?: {}) => {
     return `/bookings.old/${pseudoID}.pdf`;
   },
+  'GET /bookings/[code].pdf': (code: string | number, params?: {}) => {
+    return `/bookings/${code}.pdf`;
+  },
   'GET /events.old/planning': `/events.old/planning`,
   'GET /events.old/week/[monday]': (monday: string | number, params?: {}) => {
     return `/events.old/week/${monday}`;
@@ -345,6 +352,7 @@ const SERVERS = {
     return `/check-uid/${uid}`;
   },
   'GET /developers': `/developers`,
+  'GET /manifest.json': `/manifest.json`,
   'POST /markdown': `/markdown`,
 };
 
@@ -492,8 +500,10 @@ export type KIT_ROUTES = {
     '/bar-weeks': never;
     '/birthdays': never;
     '/boards': never;
+    '/bookings': never;
     '/bookings.old': never;
     '/bookings.old/[pseudoID]': 'pseudoID';
+    '/bookings/[code]': 'code';
     '/changelog': never;
     '/claim-code': never;
     '/claim-code/[code]': 'code';
@@ -606,6 +616,7 @@ export type KIT_ROUTES = {
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
     'GET /bookings.old/[pseudoID].pdf': 'pseudoID';
+    'GET /bookings/[code].pdf': 'code';
     'GET /events.old/planning': never;
     'GET /events.old/week/[monday]': 'monday';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
@@ -622,6 +633,7 @@ export type KIT_ROUTES = {
     'GET /identity': never;
     'GET /check-uid/[uid]': 'uid';
     'GET /developers': never;
+    'GET /manifest.json': never;
     'POST /markdown': never;
   };
   ACTIONS: {

@@ -799,6 +799,23 @@ type BarWeek implements Node {
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
+enum BookingState {
+  """
+  Payée
+  """
+  Paid
+
+  """
+  Non payée et non scannée
+  """
+  Unpaid
+
+  """
+  Scannée
+  """
+  Verified
+}
+
 """
 Une page épinglée pour en faire un accès rapide pour un·e utilisateur·rice
 """
@@ -1091,7 +1108,17 @@ type Event implements Node & Pictured & Reactable & Shareable {
   authorId: ID
   banned: [User!]!
   beneficiary: LydiaAccount
-  bookings(after: String, before: String, first: Int, last: Int): EventBookingsConnection!
+  bookings(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """
+    Ne montre que les réservations d'un certain statut
+    """
+    only: BookingState!
+  ): EventBookingsConnection!
   bookingsCounts: RegistrationsCounts!
 
   """
@@ -1099,7 +1126,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   bookingsCsv(
     """
-    Un texe représentant les URLs des pages de réservation individuelles. Dans ce texte, les occurences de '{{code}}' seront remplacées par le code de réservation.
+    Un texe représentant les URLs des pages de réservation individuelles. Dans ce texte, les occurences de '[code]' seront remplacées par le code de réservation.
     """
     bookingURL: URL!
     dialect: CsvDialect! = Standard
@@ -1141,6 +1168,11 @@ type Event implements Node & Pictured & Reactable & Shareable {
   description: String!
   descriptionHtml: HTML!
   descriptionPreview: String!
+
+  """
+  Liste des promotions activées pour tout les billets de l'évènement. Si certains billets ont des promotions activées différentes, renvoie `null`. Si l'évènement n'a pas de billets, renvoie `[]`.
+  """
+  enabledSpecialOffers: [PromotionType!]
   endsAt: DateTime
 
   """
@@ -2658,6 +2690,11 @@ type Mutation {
   """
   updateEvent(
     """
+    Liste d'identifiants de promotions applicables à tout les billets de l'évènement
+    """
+    applicableOffers: [PromotionType!]
+
+    """
     E-mail de contact de l'orga de l'évènement
     """
     contactMail: String
@@ -3745,6 +3782,11 @@ type Query {
   barWeekNow(now: DateTime!): BarWeek
   barWeeks: [BarWeek!]!
   birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
+
+  """
+  Récupère une réservation par son code
+  """
+  booking(code: String!): Registration
 
   """
   Si la page donnée est épinglée par l'utilisateur·ice connecté·e

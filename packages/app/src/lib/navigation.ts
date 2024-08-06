@@ -442,6 +442,22 @@ export const topnavConfigs: Partial<
       commonActions.pin,
     ],
   }),
+  '/(app)/bookings/[code]': ({ params: { code } }) => ({
+    title: 'Billet',
+    back: route('/bookings'),
+    actions: [
+      {
+        icon: IconEvent,
+        label: 'Télécharger en .pdf',
+        href: route('GET /bookings/[code].pdf', code),
+      },
+    ],
+  }),
+  '/(app)/bookings': {
+    title: 'Mes billets',
+    back: route('/events'),
+    actions: rootPagesActions,
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';

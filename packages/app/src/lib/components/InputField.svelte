@@ -97,6 +97,10 @@
     color: var(--warning);
   }
 
+  .hint:has(.hint-content:empty) {
+    display: none;
+  }
+
   .hint.success {
     color: var(--success);
   }

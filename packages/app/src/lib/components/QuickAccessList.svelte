@@ -6,6 +6,7 @@
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
   import { allLoaded } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
+  import { addReferrer } from '$lib/navigation';
   import { pinDisplay } from '$lib/pins';
   import { createEventDispatcher } from 'svelte';
   import { fly, scale } from 'svelte/transition';
@@ -66,7 +67,7 @@
   <ul class="nobullet cards">
     {#each $data?.bookmarks ?? [] as { path, id } (id)}
       <li class="card" transition:scale={{ duration: 200 }}>
-        <a href={path}>
+        <a href={addReferrer(path)}>
           {#await pinDisplay(path)}
             <LoadingText>{path}</LoadingText>
           {:then data}
@@ -136,7 +137,7 @@
             </svelte:fragment>
           </ButtonGhost>
         </div>
-        <a href={path}>
+        <a href={addReferrer(path)}>
           {#await pinDisplay(path)}
             <LoadingText>{path}</LoadingText>
           {:then data}

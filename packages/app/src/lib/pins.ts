@@ -90,8 +90,9 @@ export async function pinDisplay(path: string) {
         const event = await new PinDisplayEventStore()
           .fetch({ variables: { eventId: idOrUid } })
           .then((r) => r.data?.event);
+        const title = event?.title ?? 'Évènement';
         return {
-          title: event?.title ?? 'Évènement',
+          title: path.split(/[/?]/g).includes('bookings') ? `${title}: Résas` : title,
           icon: event?.pictureURL || IconEvent,
         };
       }

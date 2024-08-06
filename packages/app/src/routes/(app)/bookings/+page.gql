@@ -1,0 +1,13 @@
+query PageMyBookings @loading {
+  me: assertMe {
+    bookings(forUserOnly: true, first: 10) @loading(count: 5) @paginate {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        ...CardBooking
+      }
+    }
+  }
+}

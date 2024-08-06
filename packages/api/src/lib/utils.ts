@@ -24,3 +24,21 @@ export function nullToUndefined<T>(obj: ObjectWithNullsAndUndefineds<T>): Object
     Object.entries(obj).map(([key, value]) => [key, value === null ? undefined : value]),
   );
 }
+
+/**
+ * Type-safe way to get the last element of a array of type [...T, U], since pattern destructuring is not possible with the spread at the beginning, and methods like .at(-1) are not type-safe (they loose the intricate shape of the array)
+ */
+export function lastElement<OtherElements, LastElement>(
+  value: [...OtherElements[], LastElement],
+): LastElement {
+  return value.at(-1) as LastElement;
+}
+
+export function areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
+  // TODO: Move to Node 22 and use Set.prototype.isSupersetOf
+  if (a.size !== b.size) return false;
+  for (const item of a) 
+    if (!b.has(item)) return false;
+  
+  return true;
+}

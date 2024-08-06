@@ -171,6 +171,8 @@ src/routes/(app)/birthdays/+page.svelte,ok
 src/routes/(app)/boards/+page.svelte,ok
 src/routes/(app)/bookings.old/+page.svelte,houdinified
 src/routes/(app)/bookings.old/[pseudoID]/+page.svelte,nope
+src/routes/(app)/bookings/+page.svelte,houdinified
+src/routes/(app)/bookings/[code]/+page.svelte,ok
 src/routes/(app)/changelog/+page.svelte,nope
 src/routes/(app)/claim-code/+page.svelte,ok
 src/routes/(app)/claim-code/[code]/+page.svelte,ok
@@ -372,6 +374,7 @@ src/routes/(app)/events.old/week/[monday]/+server.ts,ok
 src/routes/(app)/events/[[week=date]]/+page.ts,houdinified
 src/routes/(app)/events/[id]/[slug]/[...path]/+server.ts,houdinified
 src/routes/(app)/events/[id]/bookings.csv/+server.ts,houdinified
+src/routes/(app)/events/[id]/bookings/+page.ts,houdinified
 src/routes/(app)/events/[id]/edit/mutations.ts,houdinified
 src/routes/(app)/forms/+page.server.ts,nope
 src/routes/(app)/forms/+page.ts,nope
@@ -455,6 +458,7 @@ src/routes/developers/+server.ts,ok
 src/routes/developers/apps/+page.ts,nope
 src/routes/developers/apps/[id]/+page.ts,nope
 src/routes/developers/apps/create/+page.server.ts,ok
+src/routes/manifest.json/+server.ts,ok
 src/routes/markdown/+server.ts,houdinified
 src/scripts/barrelize-components.ts,ok
 src/scripts/generate-socials-json.ts,ok

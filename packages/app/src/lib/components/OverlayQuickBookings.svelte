@@ -2,6 +2,8 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { fragment, graphql, type OverlayQuickBookings } from '$houdini';
+  import CardBooking from '$lib/components/CardBooking.svelte';
+  import { allLoaded } from '$lib/loading';
   import { notNull } from '$lib/typing';
   import { addHours, formatDistanceToNow, isFuture, isWithinInterval, subMinutes } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
@@ -11,7 +13,6 @@
   import { slide } from 'svelte/transition';
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
-  import CardTicket from './CardTicket.svelte';
 
   export let now: Date;
 
@@ -22,7 +23,7 @@
     graphql(`
       fragment OverlayQuickBookings on UserBookingsConnection {
         nodes {
-          ...CardTicket
+          ...CardBooking
           code
           id
           cancelled
@@ -38,16 +39,22 @@
     `),
   );
 
-  function shouldShowBooking(hiddens: string[], registration: Registration): boolean {
+  function shouldShowBooking(
+    hiddens: string[],
+    registration: Registration,
+  ): registration is Registration & { ticket: { event: { startsAt: Date; endsAt: Date } } } {
+    if (!allLoaded(registration)) return false;
     try {
-      return (
+      return Boolean(
         !hiddens.includes(registration.id) &&
-        isWithinInterval(now, {
-          start: subMinutes(registration.ticket.event.startsAt, 30),
-          end: addHours(registration.ticket.event.endsAt, 2),
-        }) &&
-        !registration.cancelled &&
-        !registration.opposed
+          registration.ticket.event.startsAt &&
+          registration.ticket.event.endsAt &&
+          isWithinInterval(now, {
+            start: subMinutes(registration.ticket.event.startsAt, 30),
+            end: addHours(registration.ticket.event.endsAt, 2),
+          }) &&
+          !registration.cancelled &&
+          !registration.opposed,
       );
     } catch {
       return false;
@@ -107,7 +114,7 @@
           </ButtonGhost>
         </span>
       </p>
-      <CardTicket floating href="/bookings/{booking.code}" {booking}></CardTicket>
+      <CardBooking floating {booking} />
     </section>
   {/if}
 {/if}

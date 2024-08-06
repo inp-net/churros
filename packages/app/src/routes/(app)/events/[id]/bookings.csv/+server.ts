@@ -21,7 +21,7 @@ export async function GET(event) {
     event,
     variables: {
       id: event.params.id,
-      ticketPageURLTemplate: route('/bookings/[pseudoID]', '{{id}}'),
+      ticketPageURLTemplate: new URL(route('/bookings/[code]', '[code]'), event.url),
     },
   });
   if (operationSucceeded(result, result.data?.event.bookingsCsv)) {
