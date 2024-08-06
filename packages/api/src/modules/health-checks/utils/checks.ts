@@ -30,26 +30,32 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
   ldap: {
     internal: await new Promise<boolean>((resolve) => {
       const client = Client.getInstance('pretty');
-      if (client.client?.isConnected) {
+
+      if (!client.client) {
+        client
+          .setup(
+            {
+              url: process.env.LDAP_URL,
+            },
+            process.env.LDAP_BIND_DN,
+            process.env.LDAP_BIND_PASSWORD,
+            process.env.LDAP_BASE_DN,
+          )
+          .catch(() => resolve(false))
+          .then(() => resolve(true));
+        return;
+      }
+
+      if (client.client.isConnected) {
         resolve(true);
         return;
       }
 
       client
-        .setup(
-          {
-            url: process.env.LDAP_URL,
-          },
-          process.env.LDAP_BIND_DN,
-          process.env.LDAP_BIND_PASSWORD,
-          process.env.LDAP_BASE_DN,
-        )
-        .catch(() => resolve(false));
-
-      client
         .connect()
         .then(() => resolve(true))
         .catch(() => resolve(false));
+
       setTimeout(() => resolve(false), 1000);
     }),
     school: (
