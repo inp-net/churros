@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { ticketCanBeSafelyDeleted } from '#modules/ticketing/utils';
 import { userCanManageEvent } from '#permissions';
 import { GraphQLError } from 'graphql';
 
@@ -31,12 +32,8 @@ builder.mutationField('deleteTicket', (t) =>
       return userCanManageEvent(ticket.event, user, { canEdit: true });
     },
     async resolve(_, { id, force }) {
-      const bookingsCount = await prisma.registration.count({
-        where: { ticketId: id },
-      });
-
       // TODO softdelete
-      if (!force && bookingsCount > 0)
+      if (!force && !(await ticketCanBeSafelyDeleted(id)))
         throw new GraphQLError('Impossible de supprimer un billet avec des réservations');
 
       await prisma.ticket.delete({

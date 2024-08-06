@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { ensureGlobalId, prisma } from '#lib';
 import type { Prisma, Ticket } from '@churros/db/prisma';
 import { compareAsc, isFuture, isWithinInterval } from 'date-fns';
 
@@ -70,4 +70,22 @@ export function ticketsByShotgunSorter(a: Ticket, b: Ticket) {
 
   // Sort by soonest to have closed
   return compareAsc(a.closesAt, b.closesAt);
+}
+
+export async function ticketCanBeSafelyDeleted(ticketId: string) {
+  return prisma.registration
+    .count({
+      where: { ticketId: ensureGlobalId(ticketId, 'Ticket') },
+    })
+    .then((count) => count <= 0);
+}
+
+/**
+ * Return null if the capacity is Unlimited, else return the capacity.
+ */
+export function handleUnlimitedCapacity(cap: 'Unlimited'): null;
+export function handleUnlimitedCapacity(cap: number): number;
+export function handleUnlimitedCapacity(cap: number | 'Unlimited'): number | null;
+export function handleUnlimitedCapacity(cap: 'Unlimited' | number): number | null {
+  return cap === 'Unlimited' ? null : cap;
 }

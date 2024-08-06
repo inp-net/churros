@@ -7,6 +7,7 @@ export const MAXIMUM_LINKS = 10;
 
 export const canEditLinkPrismaIncludes = {
   Event: { include: canEditEventPrismaIncludes },
+  Ticket: { include: { event: { include: canEditEventPrismaIncludes } } },
   Article: { include: canEditArticlePrismaIncludes },
 } as const satisfies Prisma.LinkInclude;
 
@@ -20,5 +21,6 @@ export function canEditLink(
   if (user?.admin) return true;
   if (link.Event) return canEditEvent(link.Event, user);
   if (link.Article) return canEditArticle(link.Article, link.Article, user);
+  if (link.Ticket) return canEditEvent(link.Ticket.event, user);
   return false;
 }
