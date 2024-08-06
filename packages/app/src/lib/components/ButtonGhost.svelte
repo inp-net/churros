@@ -80,6 +80,13 @@
     width: max-content;
     padding: 0.25em;
     font-size: 1em;
+    color: var(--text);
+    word-wrap: break-word;
+    white-space: normal;
+    background: var(--bg);
+    border: var(--border-inline) solid transparent;
+    border-radius: var(--radius-inline);
+    outline: 0 solid var(--fg);
 
     &.tight {
       padding: 0;
@@ -88,14 +95,6 @@
     &:not(.inline) {
       display: flex;
     }
-
-    color: var(--text);
-    word-wrap: break-word;
-    white-space: normal;
-    background: var(--bg);
-    border: var(--border-inline) solid transparent;
-    border-radius: var(--radius-inline);
-    outline: 0 solid var(--fg);
 
     &.disabled {
       cursor: not-allowed;

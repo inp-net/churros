@@ -15,7 +15,7 @@
   import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import Modal from './ModalDialog.svelte';
+  import { ModalOrDrawer } from '$lib/components';
 
   let title = '';
   let description = '';
@@ -25,8 +25,6 @@
   let loading = false;
   let includeCurrentPageURL = true;
   let errored = false;
-
-  export let element: HTMLDialogElement;
 
   $: link = issueNumber ? `https://git.inpt.fr/inp-net/churros/-/issues/${issueNumber}` : '';
   $: innerWidth = undefined;
@@ -77,28 +75,45 @@
     }
 
     loading = false;
-    setTimeout(() => {
-      // time for <Alert> to render. Yes this is ugly hacky code, what yo gonna do bout it?
-      element.scrollTo({
-        top: element.scrollHeight,
-        behavior: 'smooth',
-      });
-    }, 200);
+    closeMainModal?.();
+    openReportResult?.();
   }
+
+  export let open: () => void;
+  let openReportResult: () => void;
+  let closeMainModal: () => void;
 </script>
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-<Modal bind:element>
-  <div class="content">
+<ModalOrDrawer bind:open={openReportResult}>
+  <!-- TODO don't use alerts, use just one big colored icon above text -->
+  {#if link}
+    <Alert theme="success"
+      >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée a bien été soumise{/if}. C'est
+      <a href={link}>l'issue n°{issueNumber}</a>.
+      <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}>Voir</ButtonSecondary>
+    </Alert>
+  {:else if errored}
+    <Alert theme="danger"
+      >Impossible de créer l'issue. <ButtonSecondary
+        insideProse
+        newTab
+        href="https://git.inpt.fr/inp-net/churros/-/issues/new"
+        >Créer l'issue sur le site</ButtonSecondary
+      >
+    </Alert>
+  {/if}
+</ModalOrDrawer>
+
+<ModalOrDrawer bind:open let:close bind:implicitClose={closeMainModal}>
+  <svelte:fragment slot="header">
     <h1>
       {#if issueType === 'bug'}Signaler{:else}Proposer{/if}
-      <ButtonGhost
-        on:click={() => {
-          element.close();
-        }}><IconClose /></ButtonGhost
-      >
     </h1>
+    <ButtonGhost on:click={close}><IconClose /></ButtonGhost>
+  </svelte:fragment>
+  <div class="content">
     <p>
       Après signalement, tu pourras suivre la progression de ton rapport sur la page Tes Rapports
       (accessible depuis <IconMore></IconMore> )
@@ -134,29 +149,9 @@
           <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
         </p>
       </section>
-      <section class="feedback">
-        {#if link}
-          <Alert theme="success"
-            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée a bien été soumise{/if}.
-            C'est <a href={link}>l'issue n°{issueNumber}</a>.
-            <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}
-              >Voir</ButtonSecondary
-            >
-          </Alert>
-        {:else if errored}
-          <Alert theme="danger"
-            >Impossible de créer l'issue. <ButtonSecondary
-              insideProse
-              newTab
-              href="https://git.inpt.fr/inp-net/churros/-/issues/new"
-              >Créer l'issue sur le site</ButtonSecondary
-            >
-          </Alert>
-        {/if}
-      </section>
     </form>
   </div>
-</Modal>
+</ModalOrDrawer>
 
 <style>
   .content {

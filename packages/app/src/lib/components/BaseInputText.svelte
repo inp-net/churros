@@ -3,6 +3,7 @@
   import IconReset from '~icons/mdi/reload';
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
+  import { loaded, type MaybeLoading } from '$lib/loading';
   const emit = createEventDispatcher<{
     action: undefined;
     input: Event & { currentTarget: HTMLInputElement & EventTarget };
@@ -12,7 +13,7 @@
   export let value: string | number | Date | null | undefined;
   export let autocomplete: string | undefined = undefined;
   export let name: string | undefined = undefined;
-  export let initial: string | number | Date | null | undefined = undefined;
+  export let initial: MaybeLoading<string | number | Date | null | undefined> = undefined;
   export let unit = '';
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
@@ -167,6 +168,7 @@
         class="reset"
         use:tooltip={resettable ? `Revenir à ${JSON.stringify(initial)}` : ''}
         on:click|stopPropagation={() => {
+          if (!loaded(initial)) return;
           value = initial;
           valueString =
             type === 'date' && value instanceof Date

@@ -1,14 +1,12 @@
 <script lang="ts">
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { type NavigationSide, fragment } from '$houdini';
+  import { type NavigationSide, fragment, graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
   import ChurrosLogo from '$lib/components/LogoChurros.svelte';
-  import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import { allLoaded } from '$lib/loading';
   import { route } from '$lib/ROUTES';
-  import { graphql } from 'graphql';
   import IconAccountFilled from '~icons/msl/account-circle';
   import IconAccount from '~icons/msl/account-circle-outline';
   import IconBugReport from '~icons/msl/bug-report-outline';
@@ -48,11 +46,7 @@
       animatingChurrosLogo = false;
     }, 1000);
   });
-
-  let reportIssueDialogElement: HTMLDialogElement;
 </script>
-
-<ModalReportIssue bind:element={reportIssueDialogElement} />
 
 <nav>
   <div class="top">
@@ -107,7 +101,7 @@
 
     {#if $data && allLoaded($data)}
       <ButtonNavigation
-        href={route('/users/[uid]', $data?.uid)}
+        href={route('/users/[uid]', $data.uid)}
         routeID="/(app)/users/[uid]"
         label="Mon profil"
         tooltipsOn="left"
@@ -116,7 +110,7 @@
       />
 
       <ButtonNavigation
-        href={route('/users/[uid]/edit', $data?.uid)}
+        href={route('/users/[uid]/edit', $data.uid)}
         routeID="/(app)/users/[uid]/edit"
         label="Paramètres"
         tooltipsOn="left"
@@ -127,7 +121,12 @@
   </div>
 
   <div class="bottom">
-    <ButtonGhost danger on:click={() => reportIssueDialogElement.showModal()}>
+    <ButtonGhost
+      danger
+      on:click={() => {
+        window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+      }}
+    >
       <IconBugReport></IconBugReport>
     </ButtonGhost>
     {#if $page.data.token}

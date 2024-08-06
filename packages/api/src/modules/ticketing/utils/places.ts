@@ -1,6 +1,6 @@
 export const placesLeft = (ticket: {
   name: string;
-  capacity: number;
+  capacity: number | null;
   registrations: Array<{ paid: boolean; opposedAt: Date | null; cancelledAt: Date | null }>;
   group: null | {
     capacity: number;

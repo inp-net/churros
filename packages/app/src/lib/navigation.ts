@@ -59,7 +59,8 @@ export function addReferrer(
 // @ts-expect-error can't be bothered to type that shit
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
-export type NavigationTopActionEvent = `NAVTOP_${'COPY_ID' | 'PIN_PAGE'}`;
+export type NavigationTopActionEvent =
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
@@ -448,7 +449,14 @@ export const topnavConfigs: Partial<
     actions: [
       {
         icon: IconEvent,
-        label: 'Télécharger en .pdf',
+        label: "Aller à l'évènement",
+        do() {
+          navigationTopActionEventDispatcher('NAVTOP_GOTO_EVENT_FROM_BOOKING');
+        },
+      },
+      {
+        icon: IconDownload,
+        label: 'Télécharger en PDF',
         href: route('GET /bookings/[code].pdf', code),
       },
     ],

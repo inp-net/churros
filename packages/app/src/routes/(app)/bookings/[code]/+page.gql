@@ -1,0 +1,36 @@
+query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
+  me {
+    phone
+  }
+  booking(code: $code) {
+    code
+    ...BookingBeneficiary
+    ...BookingAuthor
+    ...BookingPaymentMethod
+
+    paid
+    cancelled
+    opposed
+    paymentMethod
+    createdAt
+    qrCode(url: $qrCodeURLTemplate) {
+      path
+      viewbox
+    }
+    ticket {
+      name
+      price
+      basePrice
+      links {
+        url
+        text
+        rawURL
+        ...PillLink
+      }
+      event {
+        localID
+        ...CardEvent
+      }
+    }
+  }
+}

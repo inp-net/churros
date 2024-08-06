@@ -173,12 +173,11 @@
     column-gap: 1rem;
     align-items: center;
     padding: 1rem;
+    border-radius: var(--radius-block);
 
     &:not(.soon, .very-soon) {
       background: var(--muted-bg);
     }
-
-    border-radius: var(--radius-block);
 
     h3 {
       display: flex;
