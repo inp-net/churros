@@ -94,9 +94,8 @@
                 `${newBanUid} est banni·e`,
                 `Impossible de bannir ${newBanUid}`,
               )
-            ) 
+            )
               newBanUid = '';
-            
           }}
         >
           <div class="inputs">

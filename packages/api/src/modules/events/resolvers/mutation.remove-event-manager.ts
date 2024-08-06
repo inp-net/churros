@@ -61,9 +61,8 @@ builder.mutationField('removeEventManager', (t) =>
         }
       }
 
-      if ((await prisma.eventManager.count({ where: { eventId: id } })) === 1) 
+      if ((await prisma.eventManager.count({ where: { eventId: id } })) === 1)
         throw new GraphQLError('Un événement doit avoir au moins un manager');
-      
 
       return prisma.eventManager.delete({
         ...query,

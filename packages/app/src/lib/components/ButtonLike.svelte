@@ -77,9 +77,7 @@
       if (!loaded($data.id) || !loaded($data.liked)) return;
       const result = await toggle($data.id, !$data.liked);
       if (!result) return;
-      if (result.errors) 
-        toasts.error(result.errors[0].message);
-      
+      if (result.errors) toasts.error(result.errors[0].message);
     }}
   >
     <div class="icon">

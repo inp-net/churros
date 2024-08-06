@@ -36,9 +36,9 @@ builder.mutationField('upsertEventManager', (t) =>
         where: { eventId: id },
         select: { userId: true },
       });
-      if (!managers.some((m) => m.userId === userId) && managers.length >= 50) 
+      if (!managers.some((m) => m.userId === userId) && managers.length >= 50)
         throw new GraphQLError("Impossible d'avoir plus de 50 managers");
-      
+
       return prisma.eventManager.upsert({
         ...query,
         where: {

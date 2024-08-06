@@ -154,7 +154,7 @@
     width: 100%;
     height: 0.2em;
     content: '';
-    background: currentColor;
+    background: currentcolor;
     border-radius: var(--radius-block);
   }
 

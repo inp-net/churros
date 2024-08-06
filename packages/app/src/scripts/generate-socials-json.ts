@@ -42,9 +42,8 @@ function slugName(site: string) {
 }
 
 function iconName(site: string) {
-  if (site === 'inpgit') 
-    return 'gitlab';
-  
+  if (site === 'inpgit') return 'gitlab';
+
   return (
     Object.keys(icons.icons).find((icon) => icon === `${slugName(site)}-icon`) ??
     Object.keys(icons.icons).find((icon) => icon === slugName(site))

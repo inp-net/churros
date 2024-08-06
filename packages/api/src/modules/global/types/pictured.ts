@@ -61,9 +61,9 @@ export const PicturedInterface = builder.interfaceRef<Pictured>('Pictured').impl
 
         const result = new URL(process.env.PUBLIC_STORAGE_URL);
         result.pathname = path.join(result.pathname, filepath);
-        if (timestamp) 
+        if (timestamp)
           result.searchParams.set('t', (updatedAt?.getTime() ?? Date.now()).toString());
-        
+
         return result.toString();
       },
     }),

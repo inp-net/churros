@@ -15,11 +15,8 @@
 
   let implicitClose: () => void;
   let open: () => void;
-  $: if ($page.state.NAVTOP_DELETING) 
-    open();
-   else 
-    implicitClose?.();
-  
+  $: if ($page.state.NAVTOP_DELETING) open();
+  else implicitClose?.();
 
   let deletionResult:
     | {

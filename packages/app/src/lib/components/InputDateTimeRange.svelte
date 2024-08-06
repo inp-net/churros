@@ -49,11 +49,8 @@
       if (!updatedDates) return;
       if (!loaded(end) || !loaded(start)) return;
 
-      if (key === 'start') 
-        updatedDates.start = value ?? null;
-       else 
-        updatedDates.end = value ?? null;
-      
+      if (key === 'start') updatedDates.start = value ?? null;
+      else updatedDates.end = value ?? null;
 
       if (!updatedDates.start && updatedDates.end) return;
       if (updatedDates.start && !updatedDates.end) return;

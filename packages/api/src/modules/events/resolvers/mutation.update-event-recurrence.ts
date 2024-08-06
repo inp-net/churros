@@ -48,7 +48,7 @@ builder.mutationField('updateEventRecurrence', (t) =>
         where: { id: ensureGlobalId(id, 'Event') },
         data: {
           frequency,
-          recurringUntil: frequency === EventFrequency.Once ? null : recurringUntil ?? undefined,
+          recurringUntil: frequency === EventFrequency.Once ? null : (recurringUntil ?? undefined),
         },
       });
     },

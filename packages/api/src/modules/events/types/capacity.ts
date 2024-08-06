@@ -12,9 +12,8 @@ export const CapacityScalar = builder.scalarType('Capacity', {
       if (Math.floor(value) === value && value >= 0) return value;
       throw new GraphQLError('Capacité invalide');
     }
-    if (value === 'Unlimited') {
-      return null;
-    }
+    if (value === 'Unlimited') return null;
+
     throw new GraphQLError('Capacité invalide');
   },
 });
