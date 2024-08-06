@@ -7,6 +7,7 @@ import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
+import { storageRoot } from '../../api/src/lib/storage.js'
 import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
 import {
   CredentialType,
@@ -27,18 +28,15 @@ const prisma = new PrismaClient();
 const faker = fakerFR;
 faker.seed(5);
 
-const storageRoot = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
-  '../../api/storage/',
-);
+const storageRootDirectory = storageRoot()
 
-console.info(`Cleaning storage root ${storageRoot}`);
+console.info(`Cleaning storage root ${storageRootDirectory}`);
 for (const folder of ['events']) {
-  if (!existsSync(path.join(storageRoot, folder))) continue;
+  if (!existsSync(path.join(storageRootDirectory, folder))) continue;
   await Promise.all(
-    readdirSync(path.join(storageRoot, folder))
-      .filter((file) => statSync(path.join(storageRoot, folder, file)).isFile())
-      .map(async (file) => rm(path.join(storageRoot, folder, file))),
+    readdirSync(path.join(storageRootDirectory, folder))
+      .filter((file) => statSync(path.join(storageRootDirectory, folder, file)).isFile())
+      .map(async (file) => rm(path.join(storageRootDirectory, folder, file))),
   );
 }
 
@@ -362,13 +360,13 @@ for (const asso of studentAssociations) {
         folder: 'groups',
         extension: 'png',
         identifier: uid,
-        root: storageRoot,
+        root: storageRootDirectory,
       });
       await (existsSync(destinationPath)
         ? prisma.group.update({
             where: { id },
             data: {
-              pictureFile: path.relative(storageRoot, destinationPath),
+              pictureFile: path.relative(storageRootDirectory, destinationPath),
             },
           })
         : downloadRandomImage(400, 400, uid)
@@ -380,7 +378,7 @@ for (const asso of studentAssociations) {
                 resource: 'group',
                 file,
                 silent: true,
-                root: storageRoot,
+                root: storageRootDirectory,
               }),
             )
             .catch((error) =>
@@ -518,7 +516,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       folder: 'users',
       extension: 'jpg',
       identifier: uid,
-      root: storageRoot,
+      root: storageRootDirectory,
     });
 
     await downloadRandomPeoplePhoto()
@@ -527,7 +525,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
           ? prisma.user.update({
               where: { uid },
               data: {
-                pictureFile: path.relative(storageRoot, destinationPath),
+                pictureFile: path.relative(storageRootDirectory, destinationPath),
               },
             })
           : updatePicture({
@@ -537,7 +535,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
               resource: 'user',
               file,
               silent: true,
-              root: storageRoot,
+              root: storageRootDirectory,
             }),
       )
       .catch((error) =>
@@ -736,7 +734,7 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
               resource: 'group',
               file,
               silent: true,
-              root: storageRoot,
+              root: storageRootDirectory,
             }),
           },
         }),
@@ -1039,7 +1037,7 @@ for (const element of tqdm(selectedClub)) {
               file,
               identifier: id,
               silent: true,
-              root: storageRoot,
+              root: storageRootDirectory,
             }),
           },
         }),
