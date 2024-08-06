@@ -1,4 +1,4 @@
-import { ensureGlobalId, prisma, storageRoot } from '#lib';
+import { ensureGlobalId, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import type { ImageFileExtension } from 'image-type';
 import imageType from 'image-type';
@@ -68,12 +68,12 @@ export function pictureDestinationFile({
   folder,
   extension,
   identifier,
-  root = storageRoot(),
+  root,
 }: {
   folder: string;
   extension: 'png' | 'jpg';
   identifier: string;
-  root?: string;
+  root: string;
 }) {
   return join(root, folder, `${identifier}.${extension}`);
 }
@@ -96,7 +96,7 @@ export async function updatePicture({
   identifier,
   propertyName = 'pictureFile',
   silent = false,
-  root = storageRoot(),
+  root,
 }: {
   resource: 'article' | 'event' | 'user' | 'group' | 'school' | 'student-association' | 'photos';
   folder: string;
@@ -107,6 +107,11 @@ export async function updatePicture({
   silent?: boolean;
   root?: string;
 }): Promise<string> {
+  if (!root) {
+    // Doing this here because @churros/db cannot import from this but needs that function for the seeding script
+    const { storageRoot } = await import('./storage.js');
+    root = storageRoot();
+  }
   const buffer = await file.arrayBuffer().then((array) => Buffer.from(array));
   const type = await imageType(buffer);
   if (!type || !supportedExtensions.includes(type.ext))
