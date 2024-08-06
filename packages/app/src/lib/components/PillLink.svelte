@@ -2,6 +2,8 @@
   import { fragment, graphql, type PillLink } from '$houdini';
   import { umamiAttributes } from '$lib/analytics';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
+  import IconEmail from '~icons/msl/mail-outline';
+  import IconPhone from '~icons/msl/call-outline';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
   import { socials } from '$lib/social.generated';
@@ -37,6 +39,8 @@
       }
     `),
   );
+
+  $: protocol = onceLoaded($data?.url, (u) => u?.protocol, '');
 </script>
 
 <a
@@ -46,6 +50,10 @@
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
     {#if socialLogo}
       <svelte:component this={socialLogo}></svelte:component>
+    {:else if protocol === 'mailto:'}
+      <IconEmail></IconEmail>
+    {:else if protocol === 'tel:'}
+      <IconPhone></IconPhone>
     {:else}
       <IconLinkVariant></IconLinkVariant>
     {/if}
@@ -53,7 +61,7 @@
   <LoadingText
     value={socialSite
       ? mapAllLoading([socialSite, $data?.url], (s, u) => s?.username || u?.hostname)
-      : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u?.hostname)}
+      : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u?.hostname || u?.pathname)}
     >Chargement…</LoadingText
   >
 </a>

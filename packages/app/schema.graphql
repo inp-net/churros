@@ -5882,7 +5882,7 @@ A field whose value matches /^[\w-]{3,255}$/.
 scalar UID
 
 """
-Une adresse internet (URL). Les protocoles autorisés sont: http:, https:
+Une adresse internet (URL). Les protocoles autorisés sont: http:, https:, mailto:, tel:
 """
 scalar URL
 
