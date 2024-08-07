@@ -14,8 +14,6 @@
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
 
-  console.log('initializgin layout')
-
   export let data: LayoutData;
   $: ({ RootLayout } = data);
 
@@ -38,10 +36,8 @@
   }
 
   setupIsMobile(data.mobile);
-  console.log('layout initialization in progress');
 
   onMount(() => {
-    console.log('layout mounted');
     // if (!$me && !localStorage.getItem('isReallyLoggedout')) {
     //   localStorage.setItem('isReallyLoggedout', 'true');
     //   window.location.reload();
