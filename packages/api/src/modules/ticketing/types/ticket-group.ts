@@ -1,4 +1,10 @@
-import { builder } from '#lib';
+import { builder, prisma } from '#lib';
+import {
+  canSeeTicket,
+  canSeeTicketPrismaIncludes,
+  canSeeTicketPrismaIncludesForUser,
+  TicketType,
+} from '#modules/ticketing';
 
 export const TicketGroupType = builder.prismaNode('TicketGroup', {
   id: { field: 'id' },
@@ -7,6 +13,41 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
     eventId: t.exposeID('eventId'),
     event: t.relation('event'),
     capacity: t.exposeInt('capacity'),
-    tickets: t.relation('tickets'),
+    tickets: t.prismaField({
+      type: [TicketType],
+      resolve: async (_query, { id }, _, { user }) => {
+        const userAdditionalData = user
+          ? prisma.user.findUniqueOrThrow({
+              where: { id: user.id },
+              include: canSeeTicketPrismaIncludesForUser,
+            })
+          : null;
+
+        return (
+          prisma.ticketGroup
+            .findUniqueOrThrow({
+              where: { id },
+            })
+            // .tickets({ ...query({ include: canSeeTicketPrismaIncludes }) }) waiting on Pothos update so that it supports query include object merging
+            .tickets({ include: canSeeTicketPrismaIncludes })
+            .then((tickets) => tickets.filter((ticket) => canSeeTicket(ticket, userAdditionalData)))
+        );
+      },
+    }),
+    ticketsCount: t.int({
+      resolve: async ({ id }) => {
+        const tickets = await prisma.ticketGroup.findUniqueOrThrow({
+          where: { id },
+          select: {
+            _count: {
+              select: {
+                tickets: true,
+              },
+            },
+          },
+        });
+        return tickets._count.tickets;
+      },
+    }),
   }),
 });

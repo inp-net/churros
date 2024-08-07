@@ -8,30 +8,19 @@ builder.prismaObjectField(EventType, 'placesLeft', (t) =>
     subscribe: (subs, { id }) => {
       subs.register(subscriptionName(id));
     },
-    async resolve(event, _, { user }) {
-      const { id } = event;
-
+    async resolve({ id }, _, { user }) {
       const registrations = await prisma.registration.findMany({
         where: { ticket: { event: { id } } },
       });
 
-      const tickets = await prisma.ticket.findMany({
-        where: { event: { id } },
-        include: {
-          group: true,
-        },
-      });
-      const ticketGroups = await prisma.ticketGroup.findMany({
-        where: { event: { id } },
-        include: {
-          tickets: true,
-        },
+      const event = await prisma.event.findUniqueOrThrow({
+        where: { id },
+        include: eventCapacity.prismaIncludes,
       });
 
       let placesLeft = Math.max(
         0,
-        eventCapacity(tickets, ticketGroups) -
-          registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
+        eventCapacity(event) - registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
       );
 
       if (placesLeft === Number.POSITIVE_INFINITY) placesLeft = -1;

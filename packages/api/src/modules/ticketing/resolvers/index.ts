@@ -14,6 +14,8 @@ export * from './event.places-left.js';
 export * from './event.search-bookings.js';
 export * from './event.ticket.js';
 export * from './event.tickets.js';
+export * from './event.update-ticket-constraints.js';
+export * from './mutation.book-event.js';
 export * from './mutation.cancel-booking.js';
 export * from './mutation.check-if-registration-is-paid.js';
 export * from './mutation.create-google-wallet-pass.js';

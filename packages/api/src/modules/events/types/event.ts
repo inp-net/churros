@@ -7,7 +7,7 @@ import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
-import { EventFrequencyType, eventCapacity } from '../index.js';
+import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
 import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
@@ -62,6 +62,9 @@ export const EventType = builder.prismaNode('Event', {
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles', {
       query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),
+    }),
+    globalCapacity: t.expose('globalCapacity', {
+      type: CapacityScalar,
     }),
     group: t.relation('group', { deprecationReason: 'Use `organizer` instead.' }),
     organizer: t.relation('group'),
@@ -147,20 +150,11 @@ export const EventType = builder.prismaNode('Event', {
     }),
     capacity: t.int({
       async resolve({ id }) {
-        const tickets = await prisma.ticket.findMany({
-          where: { event: { id } },
-          include: {
-            group: true,
-          },
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          include: eventCapacity.prismaIncludes,
         });
-        const ticketGroups = await prisma.ticketGroup.findMany({
-          where: { event: { id } },
-          include: {
-            tickets: true,
-          },
-        });
-
-        return eventCapacity(tickets, ticketGroups);
+        return eventCapacity(event);
       },
     }),
     canEdit: t.boolean({

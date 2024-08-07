@@ -29,4 +29,23 @@
       "import { builder } from '#lib';",
     ],
   },
+  "Auth check function": {
+    "scope": "typescript",
+    "prefix": "authcheck",
+    "body": [
+      "export function can$1(user: Context['user'] & Prisma.UserGetPayload<{ include: typeof can$1.userPrismaIncludes }>, $2: Prisma.$3GetPayload<{ include: typeof can$1.prismaIncludes }>): [boolean, string] {",
+      "\t$0",
+      "",
+      "\treturn [true, ''];",
+      "}",
+      "",
+      "can$1.prismaIncludes = {",
+      "\t$4",
+      "} as const satisfies Prisma.$3Include",
+      "",
+      "can$1.userPrismaIncludes = {",
+      "\t$5",
+      "} as const satisfies Prisma.UserInclude",
+    ],
+  },
 }
