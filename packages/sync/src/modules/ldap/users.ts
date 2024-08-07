@@ -15,6 +15,9 @@ const prismaUserQuery = {
       },
     },
   },
+  where: {
+    bot: false,
+  },
 } satisfies Prisma.UserFindManyArgs;
 
 const mapUser = (user: UserQuery): LdapUser => ({
