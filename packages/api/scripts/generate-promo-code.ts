@@ -52,14 +52,9 @@ if (!promotion) {
 let event: undefined | (Event & { group: Group });
 
 if (groupAndEvent) {
-  const [groupUid, eventSlug] = groupAndEvent ? groupAndEvent.split('/') : [];
-  if (!groupUid || !eventSlug) {
-    console.error('Invalid group/event UID/slug');
-    usage();
-  }
-  const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
+  const [eventId] = groupAndEvent;
   event = await prisma.event.findUniqueOrThrow({
-    where: { groupId_slug: { groupId: group.id, slug: eventSlug } },
+    where: { id: `e:${eventId}` },
     include: { group: true },
   });
   const tickets = await prisma.ticket.findMany({ where: { event: { id: event.id } } });

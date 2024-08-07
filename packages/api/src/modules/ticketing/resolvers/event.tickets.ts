@@ -13,7 +13,7 @@ builder.prismaObjectField(EventType, 'tickets', (t) =>
     type: [TicketType],
     async resolve(query, { id }, _, { user }) {
       const allTickets = await getTicketsWithConstraints(id, query);
-      const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
+      const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : null;
       return allTickets
         .filter((ticket) => canSeeTicket(ticket, userWithContributesTo))
         .toSorted(ticketsByShotgunSorter);

@@ -10,7 +10,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-  import InputToggle from '$lib/components/InputToggle.svelte';
+  import InputToggle from '$lib/components/InputToggleWithLabel.svelte';
   import Modal from '$lib/components/ModalDialog.svelte';
   import ShopItem from '$lib/components/ShopItem.svelte';
   import TreeGroups from '$lib/components/TreeGroups.svelte';
@@ -18,7 +18,6 @@
   import { groupLogoSrc } from '$lib/logos';
   import { loginRedirection, refroute } from '$lib/navigation';
   import { isOnClubBoard, roleEmojis } from '$lib/permissions';
-  import { route } from '$lib/ROUTES';
   import { me } from '$lib/session.js';
   import { byMemberGroupTitleImportance } from '$lib/sorting';
   import { isDark } from '$lib/theme';

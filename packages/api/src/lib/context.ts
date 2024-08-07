@@ -120,7 +120,7 @@ const getUser = async (token: string) => {
 export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
 
 function emptyContext() {
-  return { caveats: [] as string[], user: undefined, token: undefined };
+  return { caveats: [] as string[], user: undefined, token: undefined, client: undefined };
 }
 
 /** The request context, made available in all resolvers. */

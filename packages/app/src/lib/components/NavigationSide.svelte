@@ -108,7 +108,7 @@
         icon={IconAccount}
         iconFilled={IconAccountFilled}
       />
-
+<!-- 
       <ButtonNavigation
         href={route('/users/[uid]/edit', $data.uid)}
         routeID="/(app)/users/[uid]/edit"
@@ -116,7 +116,7 @@
         tooltipsOn="left"
         icon={IconSettings}
         iconFilled={IconSettingsFilled}
-      />
+      /> -->
     {/if}
   </div>
 

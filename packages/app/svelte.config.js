@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import preprocess from 'svelte-preprocess';
 
 // @generated buildinfo
-const CURRENT_COMMIT = 'dev';
-const CURRENT_VERSION = 'dev';
+const CURRENT_COMMIT = '19450b779c397a5bebf4b6b2c660af7c3358c813';
+const CURRENT_VERSION = '1.69.0';
 // end generated buildinfo
 
 const here = dirname(new URL(import.meta.url).pathname);

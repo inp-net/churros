@@ -1,14 +1,8 @@
-import { graphql, load_AppLayout, loadAll, type AppLayout$input } from '$houdini';
+import { load_AppLayout, loadAll, type AppLayout$input } from '$houdini';
 import { CURRENT_VERSION } from '$lib/buildinfo';
 export const ssr = false;
 
-graphql(`
-  query AppLayoutScanningEvent($id: LocalID!) {
-    scanningEvent: event(id: $id) @loading(cascade: true) {
-      ...NavigationTopCurrentEvent
-    }
-  }
-`);
+
 
 export async function load(event) {
   const result = await loadAll(

@@ -25,6 +25,11 @@ api.get('/print-booking/:pseudoID', async (req, res) => {
 
   if (!registration) return res.status(404).send('Not found');
 
+  if (!registration.ticket.event.startsAt || !registration.ticket.event.endsAt) {
+    return res.status(400).send("Cet évènement n'a pas de date de début ou de fin");
+  }
+
+  // @ts-expect-error typescript i'm coming for you lil guy
   const pdf = generatePDF(registration);
 
   const filestem = `${registration.ticket.event.group.name} ${registration.ticket.event.title} - ${registration.ticket.name}`;
@@ -38,7 +43,10 @@ api.get('/print-booking/:pseudoID', async (req, res) => {
 });
 
 export function generatePDF(
-  registration: Registration & { ticket: Ticket & { event: Event }; author: null | User },
+  registration: Registration & {
+    ticket: Ticket & { event: Event & { startsAt: Date; endsAt: Date } };
+    author: null | User;
+  },
 ) {
   // playground requires you to assign document definition to a variable called dd
   const DISPLAY_PAYMENT_METHODS = {

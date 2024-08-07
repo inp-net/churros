@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ChangeEventRecurrence$input } from '$houdini';
   import InputDate from '$lib/components/InputDate.svelte';
   import InputRadio from '$lib/components/InputRadios.svelte';
   import InputToggle from '$lib/components/InputToggle.svelte';
@@ -6,19 +7,23 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
-  import { loaded, loading } from '$lib/loading';
-  import { mutate } from '$lib/mutations';
+  import { allLoaded, loaded, loading, type DeepMaybeLoading } from '$lib/loading';
   import { toasts } from '$lib/toasts';
+  import { addYears } from 'date-fns';
   import IconFrequency from '~icons/msl/auto-awesome-motion-outline';
   import IconCalendar from '~icons/msl/calendar-today-outline';
   import IconRecurring from '~icons/msl/refresh';
   import { ChangeEventRecurrence } from '../mutations';
   import type { PageData } from './$houdini';
-  import { addYears } from 'date-fns';
   export let data: PageData;
 
   $: ({ PageEventEditRecurrence } = data);
-  // HINT: Don't forget to add an entry in $lib/navigation.ts for the top navbar's title and/or action buttons
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function mutate(args: DeepMaybeLoading<Record<string, any>>) {
+    if (!allLoaded(args)) return;
+    return await ChangeEventRecurrence.mutate(args as ChangeEventRecurrence$input);
+  }
 </script>
 
 <MaybeError result={$PageEventEditRecurrence} let:data={{ event }}>
@@ -31,7 +36,7 @@
           on:change={async ({ currentTarget }) => {
             if (!loaded(event.endsAt)) return;
             if (!(currentTarget instanceof HTMLInputElement)) return;
-            const result = await mutate(ChangeEventRecurrence, {
+            const result = await mutate({
               event: event.id,
               frequency: currentTarget.checked ? 'Weekly' : 'Once',
               recurringUntil: currentTarget.checked
@@ -56,7 +61,7 @@
               value={event.frequency}
               options={Object.entries(DISPLAY_EVENT_FREQUENCY).filter(([freq]) => freq !== 'Once')}
               on:change={async ({ detail }) => {
-                const result = await mutate(ChangeEventRecurrence, {
+                const result = await mutate({
                   event: event.id,
                   frequency: detail,
                   recurringUntil: event.recurringUntil,
@@ -81,7 +86,7 @@
             slot="right"
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
-              const result = await mutate(ChangeEventRecurrence, {
+              const result = await mutate({
                 event: event.id,
                 frequency: event.frequency,
                 recurringUntil: new Date(currentTarget.value),
@@ -94,7 +99,7 @@
               );
             }}
             label=""
-            value={event.recurringUntil}
+            value={loading(event.recurringUntil, null)}
           />
         </SubmenuItem>
       {/if}

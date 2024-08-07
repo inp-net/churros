@@ -21,10 +21,6 @@ const PAGES = {
   '/birthdays': `/birthdays`,
   '/boards': `/boards`,
   '/bookings': `/bookings`,
-  '/bookings.old': `/bookings.old`,
-  '/bookings.old/[pseudoID]': (pseudoID: string | number, params?: {}) => {
-    return `/bookings.old/${pseudoID}`;
-  },
   '/bookings/[code]': (code: string | number, params?: {}) => {
     return `/bookings/${code}`;
   },
@@ -75,25 +71,6 @@ const PAGES = {
     return `/documents/${params.major}/${params.yearTier}/${params.subject}/create`;
   },
   '/documents/create': `/documents/create`,
-  '/events.old/[id]': (id: string | number, params?: {}) => {
-    return `/events.old/${id}`;
-  },
-  '/events.old/[id]/book/[ticket]': (params: { id: string | number; ticket: string | number }) => {
-    return `/events.old/${params.id}/book/${params.ticket}`;
-  },
-  '/events.old/[id]/bookings': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/bookings`;
-  },
-  '/events.old/[id]/edit': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/edit`;
-  },
-  '/events.old/[id]/scan': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/scan`;
-  },
-  '/events.old/[id]/write': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/write`;
-  },
-  '/events.old/create': `/events.old/create`,
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
     return `/events${params?.week ? `/${params?.week}` : ''}`;
   },
@@ -150,23 +127,6 @@ const PAGES = {
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
   },
-  '/forms': `/forms`,
-  '/forms/[form]/answer': (form: string | number, params?: { section?: string | number }) => {
-    return `/forms/${form}/answer${params?.section ? `/${params?.section}` : ''}`;
-  },
-  '/forms/[form]/answered': (form: string | number, params?: {}) => {
-    return `/forms/${form}/answered`;
-  },
-  '/forms/[form]/answers': (form: string | number, params?: {}) => {
-    return `/forms/${form}/answers`;
-  },
-  '/forms/[form]/answers/analytics': (form: string | number, params?: {}) => {
-    return `/forms/${form}/answers/analytics`;
-  },
-  '/forms/[form]/edit': (form: string | number, params?: {}) => {
-    return `/forms/${form}/edit`;
-  },
-  '/forms/create': `/forms/create`,
   '/groups': `/groups`,
   '/groups/[uid]': (uid: string | number, params?: {}) => {
     return `/groups/${uid}`;
@@ -198,30 +158,6 @@ const PAGES = {
   '/groups/[uid]/members': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/members`;
   },
-  '/groups/[uid]/shop': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop`;
-  },
-  '/groups/[uid]/shop/[id]': (params: { uid: string | number; id: string | number }) => {
-    return `/groups/${params.uid}/shop/${params.id}`;
-  },
-  '/groups/[uid]/shop/[id]/edit': (params: { uid: string | number; id: string | number }) => {
-    return `/groups/${params.uid}/shop/${params.id}/edit`;
-  },
-  '/groups/[uid]/shop/create': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop/create`;
-  },
-  '/groups/[uid]/shop/orders': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop/orders`;
-  },
-  '/groups/[uid]/shop/sales': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop/sales`;
-  },
-  '/groups/[uid]/shop/sales/[itemUid]': (params: {
-    uid: string | number;
-    itemUid: string | number;
-  }) => {
-    return `/groups/${params.uid}/shop/sales/${params.itemUid}`;
-  },
   '/groups/[uid]/subgroups/create': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/subgroups/create`;
   },
@@ -233,20 +169,6 @@ const PAGES = {
   },
   '/logs': `/logs`,
   '/notifications': `/notifications`,
-  '/posts/create': (params?: { group?: string | number }) => {
-    return `/posts${params?.group ? `/${params?.group}` : ''}/create`;
-  },
-  '/posts/[id]': (id: string | number, params?: {}) => {
-    return `/posts/${id}`;
-  },
-  '/posts/[id]/edit': (id: string | number, params?: {}) => {
-    return `/posts/${id}/edit`;
-  },
-  '/quick-signups/create': `/quick-signups/create`,
-  '/quick-signups/manage': `/quick-signups/manage`,
-  '/quick-signups/qr/[code]': (code: string | number, params?: {}) => {
-    return `/quick-signups/qr/${code}`;
-  },
   '/register': (params?: { quickSignupCode?: string | number }) => {
     return `/register${params?.quickSignupCode ? `/${params?.quickSignupCode}` : ''}`;
   },
@@ -296,16 +218,12 @@ const PAGES = {
   '/users/[uid]': (uid: string | number, params?: {}) => {
     return `/users/${uid}`;
   },
-  '/users/[uid]/edit': (uid: string | number, params?: {}) => {
-    return `/users/${uid}/edit`;
-  },
   '/validate-email/[token]': (token: string | number, params?: {}) => {
     return `/validate-email/${token}`;
   },
   '/welcome': `/welcome`,
   '/authorize': `/authorize`,
   '/connect/google/callback': `/connect/google/callback`,
-  '/kiosk': `/kiosk`,
   '/_component/[...componentName]': (componentName: (string | number)[], params?: {}) => {
     return `/_component/${componentName?.join('/')}`;
   },
@@ -326,15 +244,8 @@ const SERVERS = {
   ) => {
     return `/${entity}`;
   },
-  'GET /bookings.old/[pseudoID].pdf': (pseudoID: string | number, params?: {}) => {
-    return `/bookings.old/${pseudoID}.pdf`;
-  },
   'GET /bookings/[code].pdf': (code: string | number, params?: {}) => {
     return `/bookings/${code}.pdf`;
-  },
-  'GET /events.old/planning': `/events.old/planning`,
-  'GET /events.old/week/[monday]': (monday: string | number, params?: {}) => {
-    return `/events.old/week/${monday}`;
   },
   'GET /events/[id]/[slug]/[...path]': (params: {
     id: string | number;
@@ -345,12 +256,6 @@ const SERVERS = {
   },
   'GET /events/[id]/bookings.csv': (id: string | number, params?: {}) => {
     return `/events/${id}/bookings.csv`;
-  },
-  'GET /forms/[form]/answers.[extension]': (params: {
-    form: string | number;
-    extension: string | number;
-  }) => {
-    return `/forms/${params.form}/answers.${params.extension}`;
   },
   'GET /frappe': `/frappe`,
   'GET /groups/[uid].pdf': (uid: string | number, params?: {}) => {
@@ -374,18 +279,7 @@ const SERVERS = {
 /**
  * ACTIONS
  */
-const ACTIONS = {
-  'upsertForm /forms': `/forms?/upsertForm`,
-  'postAnswers /forms/[form]/answer': (
-    form: string | number,
-    params?: { section?: string | number },
-  ) => {
-    return `/forms/${form}/answer${params?.section ? `/${params?.section}` : ''}?/postAnswers`;
-  },
-  'upsertSection /forms/[form]/edit': (form: string | number, params?: {}) => {
-    return `/forms/${form}/edit?/upsertSection`;
-  },
-};
+const ACTIONS = {};
 
 /**
  * LINKS
@@ -508,8 +402,6 @@ export type KIT_ROUTES = {
     '/birthdays': never;
     '/boards': never;
     '/bookings': never;
-    '/bookings.old': never;
-    '/bookings.old/[pseudoID]': 'pseudoID';
     '/bookings/[code]': 'code';
     '/changelog': never;
     '/claim-code': never;
@@ -534,13 +426,6 @@ export type KIT_ROUTES = {
       | 'yearTier'
       | 'subject';
     '/documents/create': never;
-    '/events.old/[id]': 'id';
-    '/events.old/[id]/book/[ticket]': 'id' | 'ticket';
-    '/events.old/[id]/bookings': 'id';
-    '/events.old/[id]/edit': 'id';
-    '/events.old/[id]/scan': 'id';
-    '/events.old/[id]/write': 'id';
-    '/events.old/create': never;
     '/events': 'week';
     '/events/[id]': 'id';
     '/events/[id]/bookings': 'id';
@@ -556,13 +441,6 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
-    '/forms': never;
-    '/forms/[form]/answer': 'form' | 'section';
-    '/forms/[form]/answered': 'form';
-    '/forms/[form]/answers': 'form';
-    '/forms/[form]/answers/analytics': 'form';
-    '/forms/[form]/edit': 'form';
-    '/forms/create': never;
     '/groups': never;
     '/groups/[uid]': 'uid';
     '/groups/[uid]/[...page]': 'uid' | 'page';
@@ -573,13 +451,6 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/pages': 'uid';
     '/groups/[uid]/edit/pages/[...page]': 'uid' | 'page';
     '/groups/[uid]/members': 'uid';
-    '/groups/[uid]/shop': 'uid';
-    '/groups/[uid]/shop/[id]': 'uid' | 'id';
-    '/groups/[uid]/shop/[id]/edit': 'uid' | 'id';
-    '/groups/[uid]/shop/create': 'uid';
-    '/groups/[uid]/shop/orders': 'uid';
-    '/groups/[uid]/shop/sales': 'uid';
-    '/groups/[uid]/shop/sales/[itemUid]': 'uid' | 'itemUid';
     '/groups/[uid]/subgroups/create': 'uid';
     '/help': never;
     '/login': never;
@@ -587,12 +458,6 @@ export type KIT_ROUTES = {
     '/login/reset/[token]': 'token';
     '/logs': never;
     '/notifications': never;
-    '/posts/create': 'group';
-    '/posts/[id]': 'id';
-    '/posts/[id]/edit': 'id';
-    '/quick-signups/create': never;
-    '/quick-signups/manage': never;
-    '/quick-signups/qr/[code]': 'code';
     '/register': 'quickSignupCode';
     '/register/continue': never;
     '/reports': never;
@@ -612,12 +477,10 @@ export type KIT_ROUTES = {
     '/student-associations/[uid]/edit/pages': 'uid';
     '/student-associations/[uid]/edit/pages/[...page]': 'uid' | 'page';
     '/users/[uid]': 'uid';
-    '/users/[uid]/edit': 'uid';
     '/validate-email/[token]': 'token';
     '/welcome': never;
     '/authorize': never;
     '/connect/google/callback': never;
-    '/kiosk': never;
     '/_component/[...componentName]': 'componentName';
     '/developers/apps': never;
     '/developers/apps/[id]': 'id';
@@ -625,13 +488,9 @@ export type KIT_ROUTES = {
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
-    'GET /bookings.old/[pseudoID].pdf': 'pseudoID';
     'GET /bookings/[code].pdf': 'code';
-    'GET /events.old/planning': never;
-    'GET /events.old/week/[monday]': 'monday';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /events/[id]/bookings.csv': 'id';
-    'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
     'GET /frappe': never;
     'GET /groups/[uid].pdf': 'uid';
     'GET /help/prefilled-links': never;
@@ -646,39 +505,28 @@ export type KIT_ROUTES = {
     'GET /manifest.json': never;
     'POST /markdown': never;
   };
-  ACTIONS: {
-    'upsertForm /forms': never;
-    'postAnswers /forms/[form]/answer': 'form' | 'section';
-    'upsertSection /forms/[form]/edit': 'form';
-  };
+  ACTIONS: Record<string, never>;
   LINKS: Record<string, never>;
   Params: {
     id: never;
-    pseudoID: never;
     code: never;
     major: never;
     yearTier: never;
     subject: never;
     document: never;
-    ticket: never;
     week: never;
     tab: never;
-    form: never;
-    section: never;
+    ticket: never;
     uid: never;
     page: never;
-    itemUid: never;
     token: never;
-    group: never;
     quickSignupCode: never;
     number: never;
     q: never;
     email: never;
     componentName: never;
     entity: never;
-    monday: never;
     slug: never;
     path: never;
-    extension: never;
   };
 };

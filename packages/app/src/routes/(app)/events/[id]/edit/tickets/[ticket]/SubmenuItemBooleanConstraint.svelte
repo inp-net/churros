@@ -28,7 +28,7 @@
   export let errorMessage: string;
   export let mutation: MutationStore<
     {
-      updateTicketConstraints: { data?: any };
+      updateTicketConstraints: { data?: any } | { ' $fragments': { MutationErrors: {} } };
     },
     {
       ticket: string;

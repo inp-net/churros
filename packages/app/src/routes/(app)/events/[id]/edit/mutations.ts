@@ -193,3 +193,26 @@ export const ChangeEventCoOrganizers = graphql(`
     }
   }
 `);
+
+export const ChangeEventContactDetails = graphql(`
+  mutation ChangeEventContactDetails($event: LocalID!, $contactMail: String!) {
+    updateEvent(id: $event, contactMail: $contactMail) {
+      __typename
+      ... on MutationUpdateEventSuccess {
+        data {
+          id
+          contactMail
+        }
+      }
+      ... on Error {
+        message
+      }
+      ... on ZodError {
+        fieldErrors {
+          path
+          message
+        }
+      }
+    }
+  }
+`);

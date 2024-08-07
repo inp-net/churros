@@ -1,12 +1,12 @@
 import { areSetsEqual, builder, prisma } from '#lib';
-import { EventType } from '../index.js';
-// TODO move all permission functions to src/permissions/(module).ts
+import { EventType } from '#modules/events';
 import { canSeeAllBookings } from '#modules/ticketing/utils';
 import type { PromotionType } from '@churros/db/prisma';
+import { PromotionTypeEnum } from '#modules/payments';
 
 builder.prismaObjectField(EventType, 'enabledSpecialOffers', (t) =>
   t.field({
-    type: ['PromotionType'],
+    type: [PromotionTypeEnum],
     nullable: true,
     description:
       "Liste des promotions activées pour tout les billets de l'évènement. Si certains billets ont des promotions activées différentes, renvoie `null`. Si l'évènement n'a pas de billets, renvoie `[]`.",

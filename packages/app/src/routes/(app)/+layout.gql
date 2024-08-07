@@ -1,7 +1,6 @@
 query AppLayout($version: String!, $pagePath: String!) {
   me @loading {
     ...NavigationSide
-    ...NavigationTop
     ...NavigationBottomMe
     ...QuickAccessList
     major {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconCheck from '~icons/mdi/check';
   import { type Visibility, zeus } from '$lib/zeus';
-  import InputPickObjects from './InputPickObjects.svelte';
+  import InputPickObjects from '../../../src/lib/components/InputPickObjects.svelte';
   import type { Visibility$options } from '$houdini';
 
   type Event = {

@@ -1,5 +1,6 @@
 import { builder, log, prisma } from '#lib';
 import { ReactableInterface } from '#modules/reactions/types';
+import { GraphQLError } from 'graphql';
 
 builder.mutationField('toggleReaction', (t) =>
   t.field({
@@ -32,16 +33,6 @@ builder.mutationField('toggleReaction', (t) =>
         commentId || documentId || articleId || eventId || '<nothing>',
         user,
       );
-      const count = await prisma.reaction.count({
-        where: {
-          emoji,
-          documentId,
-          articleId,
-          commentId,
-          eventId,
-        },
-      });
-
       const reaction = await prisma.reaction.findFirst({
         where: {
           emoji,
@@ -69,36 +60,55 @@ builder.mutationField('toggleReaction', (t) =>
             authorId: user!.id,
           },
         });
-        return {
-          id: articleId || commentId || documentId || eventId || '',
-          reacted: false,
-          reactions: count - 1,
-          ...(reaction.article ?? reaction.comment ?? reaction.document ?? reaction.event),
-        };
-      }
+        if (documentId) {
+          return prisma.document.findUniqueOrThrow({
+            where: { id: documentId },
+            include: { reactions: true },
+          });
+        }
+        if (articleId) {
+          return prisma.article.findUniqueOrThrow({
+            where: { id: articleId },
+            include: { reactions: true },
+          });
+        }
+        if (commentId) {
+          return prisma.comment.findUniqueOrThrow({
+            where: { id: commentId },
+            include: { reactions: true },
+          });
+        }
+        if (eventId) {
+          return prisma.event.findUniqueOrThrow({
+            where: { id: eventId },
+            include: { reactions: true },
+          });
+        }
 
-      const { article, comment, document, event } = await prisma.reaction.create({
-        data: {
-          emoji,
-          document: documentId ? { connect: { id: documentId } } : undefined,
-          article: articleId ? { connect: { id: articleId } } : undefined,
-          comment: commentId ? { connect: { id: commentId } } : undefined,
-          event: eventId ? { connect: { id: eventId } } : undefined,
-          author: { connect: { id: user!.id } },
-        },
-        include: {
-          article: true,
-          comment: true,
-          document: true,
-          event: true,
-        },
-      });
-      return {
-        id: articleId || commentId || documentId || eventId || '',
-        reacted: true,
-        reactions: count + 1,
-        ...(article ?? comment ?? document ?? event),
-      };
+        throw new GraphQLError("Pas de réaction créée, l'objet sur lequel réagir n'existe pas.");
+      } else {
+        const { article, comment, document, event } = await prisma.reaction.create({
+          data: {
+            emoji,
+            document: documentId ? { connect: { id: documentId } } : undefined,
+            article: articleId ? { connect: { id: articleId } } : undefined,
+            comment: commentId ? { connect: { id: commentId } } : undefined,
+            event: eventId ? { connect: { id: eventId } } : undefined,
+            author: { connect: { id: user!.id } },
+          },
+          include: {
+            article: { include: { reactions: true } },
+            comment: { include: { reactions: true } },
+            document: { include: { reactions: true } },
+            event: { include: { reactions: true } },
+          },
+        });
+        const result = article ?? comment ?? document ?? event;
+        if (!result) {
+          throw new GraphQLError("Pas de réaction créée, l'objet sur lequel réagir n'existe pas.");
+        }
+        return result;
+      }
     },
   }),
 );

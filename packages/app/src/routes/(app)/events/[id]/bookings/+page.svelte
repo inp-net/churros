@@ -24,11 +24,11 @@
   import { notNull } from '$lib/typing';
   import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
+  import { FILTERS, tabToFilter } from './utils';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
 
-  const FILTERS = ['unpaid', 'paid', 'verified'] as const;
   $: activeTab = ($page.url.searchParams.get('tab') ?? 'unpaid') as (typeof FILTERS)[number];
 
   let openBookingDetailModal: () => void;
@@ -48,7 +48,7 @@
 
   $: updates.listen({
     id: $page.params.id,
-    filter: $page.url.searchParams.get('tab') as (typeof FILTERS)[number],
+    filter: tabToFilter.get($page.url.searchParams.get('tab') ?? 'unpaid') ?? 'Unpaid',
   });
 
   // Count new bookings by taking the length of the intersection of booking IDs from updates and PageEventAllBookings

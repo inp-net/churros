@@ -6,17 +6,17 @@
   import { toasts } from '$lib/toasts';
   import { zeusVisibility, zeusPaymentMethod } from '$lib/typing';
   import { PaymentMethod, zeus, type Visibility } from '$lib/zeus';
-  import Alert from './Alert.svelte';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import InputDate from './InputDate.svelte';
-  import InputField from './InputField.svelte';
-  import InputLongText from './InputLongText.svelte';
-  import InputLydiaAccounts from './InputLydiaAccounts.svelte';
-  import InputNumber from './InputNumber.svelte';
-  import InputSelectMultiple from './InputSelectMultiple.svelte';
-  import InputSelectOne from './InputSelectOne.svelte';
-  import InputText from './InputText.svelte';
-  import InputToggle from './InputToggle.svelte';
+  import Alert from '../../../src/lib/components/Alert.svelte';
+  import ButtonPrimary from '../../../src/lib/components/ButtonPrimary.svelte';
+  import InputDate from '../../../src/lib/components/InputDate.svelte';
+  import InputField from '../../../src/lib/components/InputField.svelte';
+  import InputLongText from '../../../src/lib/components/InputLongText.svelte';
+  import InputLydiaAccounts from '../../../src/lib/components/InputLydiaAccounts.svelte';
+  import InputNumber from '../../../src/lib/components/InputNumber.svelte';
+  import InputSelectMultiple from '../../../src/lib/components/InputSelectMultiple.svelte';
+  import InputSelectOne from '../../../src/lib/components/InputSelectOne.svelte';
+  import InputText from '../../../src/lib/components/InputText.svelte';
+  import InputToggle from '../../../src/lib/components/InputToggle.svelte';
 
   export let data: {
     id: string;
