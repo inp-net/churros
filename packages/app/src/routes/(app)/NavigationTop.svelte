@@ -122,9 +122,11 @@
           </svelte:fragment>
         </ButtonGhost>
       {:else if 'label' in quickAction}
-        <ButtonPrimary on:click={quickAction.do} href={quickAction.href}
-          >{quickAction.label}</ButtonPrimary
-        >
+        <div class="button-primary">
+          <ButtonPrimary on:click={quickAction.do} href={quickAction.href}
+            >{quickAction.label}</ButtonPrimary
+          >
+        </div>
       {/if}
     {/if}
     {#if actions.length > 0}
@@ -179,5 +181,9 @@
     .bug-report {
       display: none;
     }
+  }
+
+  .button-primary {
+    font-size: 1rem;
   }
 </style>

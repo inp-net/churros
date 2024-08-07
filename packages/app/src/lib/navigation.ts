@@ -12,6 +12,7 @@ import IconPin from '~icons/msl/bookmark-outline';
 import IconPinRemove from '~icons/msl/bookmark-remove';
 import IconAnnouncement from '~icons/msl/campaign-outline';
 import IconXML from '~icons/msl/code';
+import IconTrashFilled from '~icons/msl/delete';
 import IconTrash from '~icons/msl/delete-outline';
 import IconDownload from '~icons/msl/download';
 import IconPen from '~icons/msl/edit-outline';
@@ -115,6 +116,7 @@ const commonActions = {
   delete: {
     label: 'Supprimer',
     icon: IconTrash,
+    filledIcon: IconTrashFilled,
     do() {
       navtopPushState('NAVTOP_DELETING');
     },
@@ -337,94 +339,47 @@ export const topnavConfigs: Partial<
   '/(app)/events/[id]/edit': ({ params: { id } }) => ({
     title: 'Modifier l’évènement',
     back: route('/events/[id]', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do() {
-          navtopPushState('NAVTOP_DELETING');
-        },
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/visibility': ({ params: { id } }) => ({
     title: 'Visibilité',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/links': ({ params: { id } }) => ({
     title: 'Liens',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/description': ({ params: { id } }) => ({
     title: 'Description',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/image': ({ params: { id } }) => ({
     title: 'Image',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/recurrence': ({ params: { id } }) => ({
     title: 'Récurrence',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/contact': ({ params: { id } }) => ({
     title: "Contact de l'orga",
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/managers': ({ params: { id } }) => ({
     title: 'Managers',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/banned': ({ params: { id } }) => ({
     title: 'Banni·e·s',
     back: route('/events/[id]/edit', id),
-    actions: [
-      {
-        ...commonActions.delete,
-        do: () => navtopPushState('NAVTOP_DELETING'),
-      },
-    ],
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/edit/tickets': ({ params: { id } }) => ({
     title: 'Billetterie',
@@ -436,6 +391,11 @@ export const topnavConfigs: Partial<
         navigationTopActionEventDispatcher('NAVTOP_FINISH_EDITING');
       },
     },
+  }),
+  '/(app)/events/[id]/edit/tickets/[ticket]': ({ params }) => ({
+    title: 'Billet',
+    back: route('/events/[id]/edit/tickets', params.id),
+    actions: [commonActions.delete],
   }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',

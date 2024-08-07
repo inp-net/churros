@@ -1,19 +1,23 @@
 <script lang="ts">
   import { Drawer } from 'vaul-svelte';
+  /** Don't render a trigger area */
+  export let notrigger = false;
   export let open = false;
   export let removeBottomPadding = false;
 </script>
 
 <Drawer.Root bind:open shouldScaleBackground>
-  <Drawer.Trigger>
-    {#if open}
-      <slot name="open">
+  {#if !notrigger}
+    <Drawer.Trigger>
+      {#if open}
+        <slot name="open">
+          <slot name="trigger"></slot>
+        </slot>
+      {:else}
         <slot name="trigger"></slot>
-      </slot>
-    {:else}
-      <slot name="trigger"></slot>
-    {/if}
-  </Drawer.Trigger>
+      {/if}
+    </Drawer.Trigger>
+  {/if}
   <Drawer.Portal>
     <Drawer.Overlay></Drawer.Overlay>
     <Drawer.Content data-remove-bottom-padding={removeBottomPadding}>

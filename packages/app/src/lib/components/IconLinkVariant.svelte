@@ -1,4 +1,7 @@
-<!-- Included manually because it's not part of Material Symbols Light, but it's in Pictogrammer's Material Icons Light (see https://pictogrammers.com/library/mdil/icon/link-variant/) -->
+<script>
+  /** Included manually because it's not part of Material Symbols Light, but it's in Pictogrammer's Material Icons Light (see https://pictogrammers.com/library/mdil/icon/link-variant/) */
+</script>
+
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="1.2em"

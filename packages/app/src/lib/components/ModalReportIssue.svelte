@@ -86,7 +86,7 @@
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-<ModalOrDrawer bind:open={openReportResult}>
+<ModalOrDrawer notrigger bind:open={openReportResult}>
   <!-- TODO don't use alerts, use just one big colored icon above text -->
   {#if link}
     <Alert theme="success"
@@ -106,12 +106,12 @@
   {/if}
 </ModalOrDrawer>
 
-<ModalOrDrawer bind:open let:close bind:implicitClose={closeMainModal}>
+<ModalOrDrawer notrigger bind:open let:close bind:implicitClose={closeMainModal}>
   <svelte:fragment slot="header">
     <h1>
       {#if issueType === 'bug'}Signaler{:else}Proposer{/if}
     </h1>
-    <ButtonGhost on:click={close}><IconClose /></ButtonGhost>
+    <ButtonGhost on:click={() => close()}><IconClose /></ButtonGhost>
   </svelte:fragment>
   <div class="content">
     <p>

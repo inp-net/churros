@@ -18,8 +18,8 @@
   import IconSearch from '~icons/msl/search';
   import IconSettingsFilled from '~icons/msl/settings';
   import IconSettings from '~icons/msl/settings-outline';
-  import IconServicesFilled from '~icons/msl/view-comfy-alt';
-  import IconServices from '~icons/msl/view-comfy-alt-outline';
+  import IconServicesFilled from '~icons/msl/widgets';
+  import IconServices from '~icons/msl/widgets-outline';
 
   export let user: NavigationSide | null;
   $: data = fragment(

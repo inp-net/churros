@@ -1,0 +1,12 @@
+query PageEditEventTicketLinks($id: LocalID!, $ticket: LocalID!) {
+  event(id: $id) {
+    ticket(id: $ticket) {
+      name
+      links {
+        id
+        rawURL
+        text
+      }
+    }
+  }
+}

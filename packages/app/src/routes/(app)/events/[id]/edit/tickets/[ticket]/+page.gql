@@ -1,0 +1,40 @@
+query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
+  event(id: $id) {
+    startsAt
+    endsAt
+    localID
+    organizer {
+        studentAssociation {
+            name
+        }
+    }
+    ticket(id: $ticket) {
+      id
+      localID
+      canBeSafelyDeleted
+      name
+      opensAt
+      closesAt
+      basePrice
+      capacity
+      group {
+        name
+      }
+      godsonLimit
+      openToContributors
+      openToAlumni
+      openToApprentices
+      openToExternal
+      openToGroups {
+        ...AvatarGroup
+        uid
+      }
+      openToMajors {
+        name
+        uid
+      }
+      openToPromotions
+      onlyManagersCanProvide
+    }
+  }
+}
