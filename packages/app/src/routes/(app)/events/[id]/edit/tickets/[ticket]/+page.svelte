@@ -279,9 +279,28 @@
           </p>
         </header>
         <Submenu>
-          <SubmenuItem label subtext={mapLoading(event.ticket.onlyManagersCanProvide, only => only ? "Uniquement les managers peuvent réserver des places sur ce billet" : "Non")}>
+          <SubmenuItem
+            icon={IconManagersOnly}
+            label
+            subtext={mapLoading(event.ticket.onlyManagersCanProvide, (only) =>
+              only ? 'Uniquement les managers peuvent réserver des places sur ce billet' : 'Non',
+            )}
+          >
             Managers seulement
             <InputToggle
+              value={event.ticket.onlyManagersCanProvide}
+              on:update={async ({ detail }) => {
+                if (!event.ticket) return;
+                toasts.mutation(
+                  await mutate(LimitToManagers, {
+                    ticket: event.ticket.id,
+                    activated: detail,
+                  }),
+                  'updateTicketConstraints',
+                  '',
+                  'Impossible de changer la contrainte sur les managers',
+                );
+              }}
             ></InputToggle>
           </SubmenuItem>
           <SubmenuItemBooleanConstraint
