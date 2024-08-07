@@ -1,6 +1,6 @@
 import { builder, prisma, subscriptionName } from '#lib';
 import { eventCapacity, EventType } from '#modules/events';
-import { canSeePlacesLeftCount } from '../index.js';
+import { canSeeAllBookingsPrismaIncludes, canSeePlacesLeftCount } from '../index.js';
 
 builder.prismaObjectField(EventType, 'placesLeft', (t) =>
   t.int({
@@ -15,7 +15,7 @@ builder.prismaObjectField(EventType, 'placesLeft', (t) =>
 
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
-        include: eventCapacity.prismaIncludes,
+        include: { ...eventCapacity.prismaIncludes, ...canSeeAllBookingsPrismaIncludes },
       });
 
       let placesLeft = Math.max(

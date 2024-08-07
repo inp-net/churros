@@ -1,10 +1,8 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { DateTimeScalar, HTMLScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
 import { LogType } from '#modules/logs';
-import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
-import { PaymentMethod } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
 import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
@@ -197,34 +195,6 @@ export const EventType = builder.prismaNode('Event', {
             target: id,
           },
         }),
-    }),
-    profitsBreakdown: t.field({
-      type: ProfitsBreakdownType,
-      async resolve({ id }) {
-        const tickets = await prisma.ticket.findMany({
-          where: { event: { id } },
-        });
-        const registrations = await prisma.registration.findMany({
-          where: { ticket: { event: { id } } },
-          include: { ticket: true },
-        });
-        const sumUp = (regs: typeof registrations) =>
-          regs.reduce((acc, r) => acc + (r.paid ? r.ticket.price : 0), 0);
-
-        return {
-          total: sumUp(registrations),
-          byPaymentMethod: Object.fromEntries(
-            Object.entries(PaymentMethod).map(([_, value]) => [
-              value,
-              sumUp(registrations.filter((r) => r.paymentMethod === value)),
-            ]),
-          ) as Record<PaymentMethod, number>,
-          byTicket: tickets.map(({ id }) => ({
-            id,
-            amount: sumUp(registrations.filter((r) => r.ticket.id === id)),
-          })),
-        };
-      },
     }),
   }),
 });

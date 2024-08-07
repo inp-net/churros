@@ -12,7 +12,6 @@
   } from '$houdini';
   import { track } from '$lib/analytics';
   import Alert from '$lib/components/Alert.svelte';
-  import InputLinks from '$lib/components/InputLinks.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { HELP_VISIBILITY, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
   import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
@@ -24,18 +23,18 @@
   import { isFuture } from 'date-fns';
   import IconClose from '~icons/mdi/close';
   import IconSend from '~icons/mdi/send-outline';
-  import BadgeVisibility from './BadgeVisibility.svelte';
-  import ButtonBack from './ButtonBack.svelte';
-  import ButtonPrimary from './ButtonPrimary.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import InputGroups from './InputGroups.houdini.svelte';
-  import InputLongText from './InputLongText.svelte';
-  import InputPillDate from './InputPillDate.svelte';
-  import InputPillEvent from './InputPillEvent.svelte';
-  import InputText from './InputText.svelte';
-  import InputVisibility from './InputVisibility.houdini.svelte';
-  import LoadingSpinner from './LoadingSpinner.svelte';
-  import Modal from './ModalDialog.svelte';
+  import BadgeVisibility from '../../../src/lib/components/BadgeVisibility.svelte';
+  import ButtonBack from '../../../src/lib/components/ButtonBack.svelte';
+  import ButtonPrimary from '../../../src/lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '../../../src/lib/components/ButtonSecondary.svelte';
+  import InputGroups from '../../../src/lib/components/InputGroups.houdini.svelte';
+  import InputLongText from '../../../src/lib/components/InputLongText.svelte';
+  import InputPillDate from '../../../src/lib/components/InputPillDate.svelte';
+  import InputPillEvent from '../../../src/lib/components/InputPillEvent.svelte';
+  import InputText from '../../../src/lib/components/InputText.svelte';
+  import InputVisibility from '../../../src/lib/components/InputVisibility.houdini.svelte';
+  import LoadingSpinner from '../../../src/lib/components/LoadingSpinner.svelte';
+  import Modal from '../../../src/lib/components/ModalDialog.svelte';
 
   export let afterGoTo: (article: { group: { uid: string }; localID: string }) => string = (
     article,
@@ -149,7 +148,6 @@
   let input: Omit<UpdateArticle$input, 'group' | 'eventId'> = {
     body: '',
     id: '',
-    links: [],
     publishedAt: new Date(),
     title: '',
     visibility: Visibility.Public,
@@ -363,7 +361,6 @@
       >
     {/if}
   </section>
-  <InputLinks label="Liens" bind:value={input.links} />
   {#if serverError}
     <Alert theme="danger"
       >Impossible de sauvegarder les modifications : <br /><strong>{serverError}</strong></Alert

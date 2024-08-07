@@ -41,3 +41,13 @@ export function areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
 
   return true;
 }
+
+export function notNull<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
+
+export function eventHasDates<T extends { startsAt: Date | null; endsAt: Date | null }>(
+  event: T,
+): event is T & { startsAt: Date; endsAt: Date } {
+  return event.startsAt !== null && event.endsAt !== null;
+}

@@ -30,6 +30,7 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
             })
             // .tickets({ ...query({ include: canSeeTicketPrismaIncludes }) }) waiting on Pothos update so that it supports query include object merging
             .tickets({ include: canSeeTicketPrismaIncludes })
+            // @ts-expect-error this is such fucking bullshit, imma kill sbby
             .then((tickets) => tickets.filter((ticket) => canSeeTicket(ticket, userAdditionalData)))
         );
       },

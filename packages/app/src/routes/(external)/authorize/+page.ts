@@ -34,7 +34,7 @@ export async function load({ parent, url, fetch }) {
 
   const {
     thirdPartyApp,
-    me: { allowedApps },
+    assertMe: { allowedApps },
   } = await loadQuery(
     {
       thirdPartyApp: [
@@ -53,7 +53,7 @@ export async function load({ parent, url, fetch }) {
           },
         },
       ],
-      me: {
+      assertMe: {
         allowedApps: {
           clientId: true,
         },

@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
-  import FormShopItem from '$lib/components/FormShopItem.svelte';
+  import FormShopItem from '../../../../../../../src.old/lib/components/FormShopItem.svelte';
   import BackButton from '$lib/components/ButtonBack.svelte';
 
   export let data: PageData;

@@ -391,10 +391,6 @@
     margin-left: 4rem;
   }
 
-  .unpublished {
-    margin-left: calc(4rem - 1em - 0.5ch);
-  }
-
   .likes .inner {
     display: flex;
     column-gap: 0.5ch;

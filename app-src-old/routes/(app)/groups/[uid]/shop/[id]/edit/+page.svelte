@@ -3,7 +3,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { toasts } from '$lib/toasts';
   import BackButton from '$lib/components/ButtonBack.svelte';
-  import FormShopItem from '$lib/components/FormShopItem.svelte';
+  import FormShopItem from '../../../../../../../../src.old/lib/components/FormShopItem.svelte';
   import FormPictureItem from '$lib/components/FormPictureItem.svelte';
 
   export let data: PageData;

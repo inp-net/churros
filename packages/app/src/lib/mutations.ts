@@ -1,10 +1,5 @@
-import {
-  graphql,
-  type GraphQLObject,
-  type GraphQLVariables,
-  type MutationConfig,
-  type MutationStore,
-} from '$houdini';
+import { graphql, type MutationConfig, type MutationStore } from '$houdini';
+import { type GraphQLObject, type GraphQLVariables } from '$houdini/runtime/lib/types';
 import { allLoaded, type DeepMaybeLoading, type MaybeLoading } from '$lib/loading';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -22,12 +17,12 @@ export function mutate<
   Optimistic extends GraphQLObject,
 >(
   store: MutationStore<Data, Input, Optimistic>,
-  variables: { [key in keyof Input]: MaybeLoading<Input[key]> },
+  variables: { [key in keyof NoInfer<Input>]: MaybeLoading<NoInfer<Input>[key]> },
   options?: {
     metadata?: App.Metadata;
     fetch?: typeof globalThis.fetch;
     event?: RequestEvent;
-  } & MutationConfig<Data, DeepMaybeLoading<Input>, Optimistic>,
+  } & MutationConfig<NoInfer<Data>, DeepMaybeLoading<NoInfer<Input>>, NoInfer<Optimistic>>,
 ) {
   if (!allLoaded(variables)) return;
 
