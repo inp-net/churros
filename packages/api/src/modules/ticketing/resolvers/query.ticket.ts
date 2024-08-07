@@ -5,33 +5,30 @@ import {
   canSeeTicket,
   canSeeTicketPrismaIncludes,
   canSeeTicketPrismaIncludesForUser,
-  TicketGroupType,
-} from '../index.js';
+} from '#modules/ticketing';
+import { TicketType } from '#modules/ticketing/types';
 
-builder.queryField('ticketGroup', (t) =>
+builder.queryField('ticket', (t) =>
   t.prismaField({
-    type: TicketGroupType,
+    type: TicketType,
     args: {
       id: t.arg({ type: LocalID }),
     },
     async authScopes(_, { id }, { user }) {
       // Performance optimization: if the user can edit the event, they can see the ticket. And this query will be almost exclusively used for Houdini List Fragments, which will only be viewed on the admin event page
-      const event = await prisma.ticketGroup
+      const event = await prisma.ticket
         .findUniqueOrThrow({
-          where: { id: ensureGlobalId(id, 'TicketGroup') },
+          where: { id: ensureGlobalId(id, 'Ticket') },
         })
         .event({
           include: canEditEventPrismaIncludes,
         });
       if (canEditEvent(event, user)) return true;
 
-      const tickets = await prisma.ticketGroup
-        .findUniqueOrThrow({
-          where: { id: ensureGlobalId(id, 'TicketGroup') },
-        })
-        .tickets({
-          include: canSeeTicketPrismaIncludes,
-        });
+      const ticket = await prisma.ticket.findUniqueOrThrow({
+        where: { id: ensureGlobalId(id, 'Ticket') },
+        include: canSeeTicketPrismaIncludes,
+      });
 
       const userAdditionalData = user
         ? await prisma.user.findUniqueOrThrow({
@@ -39,15 +36,13 @@ builder.queryField('ticketGroup', (t) =>
             include: canSeeTicketPrismaIncludesForUser,
           })
         : null;
-      return tickets.some((ticket) => canSeeTicket(ticket, userAdditionalData));
+      return canSeeTicket(ticket, userAdditionalData);
     },
     async resolve(query, _, { id }) {
-      return prisma.ticketGroup.findUniqueOrThrow({
+      return prisma.ticket.findUniqueOrThrow({
         ...query,
-        where: { id: ensureGlobalId(id, 'TicketGroup') },
+        where: { id: ensureGlobalId(id, 'Ticket') },
       });
     },
-    resolve: async (query, _, { id }) =>
-      prisma.ticketGroup.findFirstOrThrow({ ...query, where: { id } }),
   }),
 );

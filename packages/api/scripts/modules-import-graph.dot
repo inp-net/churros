@@ -18,6 +18,7 @@ strict digraph ImportGraph {
     "groups" -> "users";
     "links" -> "events";
     "links" -> "posts";
+    "links" -> "ticketing";
     "oauth" -> "users";
     "pages" -> "groups";
     "pages" -> "student-associations";

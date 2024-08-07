@@ -2,10 +2,12 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID } from '#modules/global';
+import { ZodError } from 'zod';
 
 builder.mutationField('setEventBeneficiary', (t) =>
   t.prismaField({
     type: EventType,
+    errors: { types: [Error, ZodError] },
     args: {
       event: t.arg({ type: LocalID }),
       lydiaAccount: t.arg({ type: LocalID }),

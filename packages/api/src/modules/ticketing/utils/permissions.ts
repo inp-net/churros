@@ -1,6 +1,9 @@
 import type { Context } from '#lib';
+import { actualPrice } from '#modules/payments';
+import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
-import type { Prisma } from '@churros/db/prisma';
+import type { Prisma, Registration } from '@churros/db/prisma';
+import { isFuture, isPast } from 'date-fns';
 
 export const canScanBookingsPrismaIncludes = {
   managers: true,
@@ -53,35 +56,8 @@ export const canSeeTicketPrismaIncludesForUser = {
 } as const satisfies Prisma.UserInclude;
 
 export function canSeeTicket(
-  ticket: {
-    event: {
-      title: string;
-      id: string;
-      group: { studentAssociation: null | { id: string } };
-      managers: Array<{ userId: string }>;
-      bannedUsers: Array<{ id: string }>;
-    };
-    onlyManagersCanProvide: boolean;
-    openToGroups: Array<{ uid: string }>;
-    openToSchools: Array<{ uid: string }>;
-    openToPromotions: number[];
-    openToMajors: Array<{ id: string }>;
-    openToContributors: boolean | null;
-    openToApprentices: boolean | null;
-    openToExternal: boolean | null;
-  },
-  user?: {
-    id: string;
-    admin: boolean;
-    groups: Array<{ group: { uid: string } }>;
-    graduationYear: number;
-    major?: { schools: Array<{ uid: string }>; id: string } | null;
-    contributions: Array<{
-      paid: boolean;
-      option: { id: string; paysFor: Array<{ id: string; school: { uid: string } }> };
-    }>;
-    apprentice: boolean;
-  } | null,
+  ticket: Prisma.TicketGetPayload<{ include: typeof canSeeTicketPrismaIncludes }>,
+  user: null | Prisma.UserGetPayload<{ include: typeof canSeeTicketPrismaIncludesForUser }>,
 ): boolean {
   const {
     event,
@@ -155,3 +131,126 @@ export function canSeePlacesLeftCount(
 ) {
   return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
 }
+
+export function canMarkBookingAsPaid(
+  user: Context['user'] &
+    Prisma.UserGetPayload<{ include: typeof canMarkBookingAsPaid.userPrismaIncludes }>,
+  booking: Prisma.RegistrationGetPayload<{ include: typeof canMarkBookingAsPaid.prismaIncludes }>,
+): boolean {
+  if (actualPrice(user, booking.ticket) === 0) return true;
+  if (booking.paid) return true;
+  return canSeeAllBookings(booking.ticket.event, user);
+}
+
+canMarkBookingAsPaid.prismaIncludes = {
+  ticket: {
+    include: {
+      event: {
+        include: canSeeAllBookingsPrismaIncludes,
+      },
+      ...actualPrice.prismaIncludes,
+    },
+  },
+} as const satisfies Prisma.RegistrationInclude;
+
+canMarkBookingAsPaid.userPrismaIncludes = {} as const satisfies Prisma.UserInclude;
+
+export function userIsBookedToEvent(
+  user: Context['user'],
+  event: Prisma.EventGetPayload<{ include: typeof userIsBookedToEvent.prismaIncludes }>,
+  bookings: Registration[],
+) {
+  // TODO figure sth out???
+  if (!user) return false;
+  return event.tickets.some((ticket) => {
+    // TODO check beneficiaries
+    return bookings.some(
+      (booking) => booking.ticketId === ticket.id && booking.authorId === user.id,
+    );
+  });
+}
+
+userIsBookedToEvent.prismaIncludes = {
+  tickets: true,
+} as const satisfies Prisma.EventInclude;
+
+/**
+ * @returns [canBook, why]
+ */
+export function canBookTicket(
+  // user: null | NonNullable<
+  //   Context['user'] & Prisma.UserGetPayload<{ include: typeof canBookTicket.userPrismaIncludes }>
+  // >,
+  user: Context['user'],
+  userAdditionalData: null | Prisma.UserGetPayload<{
+    include: typeof canBookTicket.userPrismaIncludes;
+  }>,
+  beneficiary: string | null | undefined,
+  ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>,
+): [boolean, string] {
+  if (!canSeeTicket(ticket, userAdditionalData))
+    return [false, "Vous n'êtes pas autorisé à voir ce billet"];
+
+  if (ticket.opensAt && isFuture(ticket.opensAt))
+    return [false, "Le shotgun n'est pas encore ouvert"];
+  if (ticket.closesAt && isPast(ticket.closesAt)) return [false, 'Le shotgun est fermé'];
+
+  if (ticket.onlyManagersCanProvide && !canSeeAllBookings(ticket.event, user))
+    return [false, 'Seul un·e manager peut faire une réservation pour ce billet'];
+
+  if (!canSeeAllBookings(ticket.event, user) && user) {
+    const bookingsByUser = ticket.registrations.filter((r) => r.authorId === user.id);
+    if (bookingsByUser.length >= ticket.godsonLimit) 
+      return [false, 'Vous avez atteint la limite de parrainages pour ce billet'];
+    
+  }
+
+  if (placesLeft(ticket) <= 0) return [false, 'Il n’y a plus de places disponibles'];
+
+  // TODO handle userIsBookedToEvent for beneficiaries
+  if (
+    !beneficiary &&
+    userIsBookedToEvent(
+      user,
+      ticket.event,
+      ticket.event.tickets.flatMap((t) => t.registrations),
+    )
+  )
+    return [false, 'Vous avez déjà réservé une place pour cet événement'];
+
+  return [true, ''];
+}
+
+// TODO optimize
+canBookTicket.prismaIncludes = {
+  group: {
+    include: {
+      tickets: {
+        include: {
+          registrations: true,
+        },
+      },
+    },
+  },
+  event: {
+    include: {
+      coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+      group: { include: { studentAssociation: { include: { school: true } } } },
+      managers: { include: { user: true } },
+      bannedUsers: true,
+      tickets: {
+        include: {
+          registrations: true,
+        },
+      },
+    },
+  },
+  openToGroups: true,
+  openToSchools: true,
+  openToMajors: true,
+  registrations: true,
+} as const satisfies Prisma.TicketInclude;
+
+canBookTicket.userPrismaIncludes = {
+  ...canSeeTicketPrismaIncludesForUser,
+} as const satisfies Prisma.UserInclude;
