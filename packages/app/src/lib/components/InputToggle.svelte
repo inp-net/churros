@@ -1,5 +1,8 @@
 <script lang="ts">
   import { loaded, type MaybeLoading } from '$lib/loading';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ update: boolean }>();
 
   type Value = $$Generic<MaybeLoading<boolean> | boolean>;
 
@@ -10,7 +13,14 @@
 </script>
 
 <div class="switch">
-  <input type="checkbox" on:change bind:checked={_value} />
+  <input
+    type="checkbox"
+    on:change={({ currentTarget }) => {
+      if (!(currentTarget instanceof HTMLInputElement)) return;
+      dispatch('update', currentTarget.checked);
+    }}
+    bind:checked={_value}
+  />
   <span class="slider" />
 </div>
 
