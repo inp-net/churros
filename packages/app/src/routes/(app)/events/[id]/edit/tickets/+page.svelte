@@ -10,7 +10,14 @@
     SubmenuItem,
   } from '$lib/components';
   import TextTicketConstraintsSummary from '$lib/components/TextTicketConstraintsSummary.svelte';
-  import { LoadingText, loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
+  import {
+    LoadingText,
+    loaded,
+    loading,
+    mapAllLoading,
+    mapLoading,
+    onceLoaded,
+  } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import { subDays } from 'date-fns';
@@ -18,6 +25,7 @@
   import IconChevronRight from '~icons/msl/chevron-right';
   import IconRemainingPlaces from '~icons/msl/clock-loader-90';
   import IconCapacity from '~icons/msl/file-copy-outline';
+  import IconAdd from '~icons/msl/add';
   import type { PageData } from './$houdini';
   import { ChangeCapacity, CreateTicket, SetEventShowRemainingPlaces } from './mutations';
 
@@ -138,6 +146,32 @@
             <TextTicketConstraintsSummary slot="subtext" {ticket} />
           </SubmenuItem>
         {/each}
+        <SubmenuItem
+          icon={null}
+          clickable
+          on:click={async () => {
+            const result = await mutate(CreateTicket, {
+              event: event.id,
+              shotgun: mapAllLoading([event.startsAt, event.endsAt], (start, end) => ({
+                start: subDays(start, 1),
+                end,
+              })),
+            });
+            if (toasts.mutation(result, 'createTicket', '', 'Impossible de créer le billet')) {
+              await goto(
+                route('/events/[id]/edit/tickets/[ticket]', {
+                  id: result.data.createTicket.data.event.localID,
+                  ticket: result.data.createTicket.data.localID,
+                }),
+              );
+            }
+          }}
+        >
+          Nouveau billet
+          <div class="icon-add" slot="right">
+            <IconAdd />
+          </div>
+        </SubmenuItem>
       </Submenu>
     </section>
   </div>
@@ -148,7 +182,7 @@
     padding: 0 1rem;
   }
 
-  .tickets  {
+  .tickets {
     margin-top: 2rem;
   }
 
@@ -157,5 +191,12 @@
     justify-content: space-between;
     align-items: center;
     --weight-field-label: 900;
+  }
+
+  .icon-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
   }
 </style>
