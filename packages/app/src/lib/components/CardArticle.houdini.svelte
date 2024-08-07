@@ -131,7 +131,7 @@
 
   export let hideGroup = false;
   export let href: string | undefined = undefined;
-  $: href ??= loaded(localID) ? route('/posts/[id]', localID) : undefined;
+  // $: href ??= loaded(localID) ? route('/posts/[id]', localID) : undefined;
 
   $: authorSrc = hideGroup
     ? allLoaded(author) && author
