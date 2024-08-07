@@ -1,0 +1,29 @@
+query PageEditEventTickets($id: LocalID!) @loading {
+  event(id: $id) {
+    id
+    localID
+    showPlacesLeft
+    globalCapacity
+    startsAt
+    endsAt
+    beneficiary {
+      id
+      name
+    }
+    tickets @list(name: "List_EditEvent_Tickets") {
+      localID
+      name
+      basePrice
+      capacity
+      group {
+        name
+      }
+      ...TextTicketConstraintsSummary
+    }
+    ticketGroups @list(name: "List_EditEvent_TicketGroups") {
+      name
+      ticketsCount
+      capacity
+    }
+  }
+}

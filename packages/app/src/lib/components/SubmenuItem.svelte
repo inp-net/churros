@@ -45,9 +45,13 @@
       <p class="title">
         <slot></slot>
       </p>
-      {#if subtext}
+      {#if subtext || $$slots.subtext}
         <p class="subtext">
-          <LoadingText value={subtext} />
+          {#if $$slots.subtext}
+            <slot name="subtext"></slot>
+          {:else}
+            <LoadingText value={subtext} />
+          {/if}
         </p>
       {/if}
     </div>

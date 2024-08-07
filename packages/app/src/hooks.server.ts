@@ -59,7 +59,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
 
   aled('hooks.server.ts: handleFetch', request);
 
-  return fetch(request).catch(() => {
+  return fetch(request).catch((error) => {
+    console.error(error);
     throw new TypeError('Impossible de joindre le serveur.');
   });
 };

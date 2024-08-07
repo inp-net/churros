@@ -13,6 +13,13 @@ declare namespace App {
     token?: string;
   }
 
+  interface Metadata {
+    queryTimestamps: {
+      global: number;
+      network: number;
+    };
+  }
+
   interface PageData {
     me?: SessionUserType;
     mobile: boolean;

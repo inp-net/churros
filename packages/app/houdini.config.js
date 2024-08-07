@@ -56,6 +56,18 @@ const config = {
         queryField: 'eventManager',
       },
     },
+    Ticket: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'ticket',
+      },
+    },
+    TicketGroup: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'ticketGroup',
+      },
+    },
   },
   scalars: {
     DateTime: {

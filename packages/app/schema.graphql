@@ -834,6 +834,26 @@ type Bookmark implements Node {
   user: User!
 }
 
+"""
+Contrainte booléenne, à trois états
+"""
+enum BooleanConstraint {
+  """
+  Ne pas prendre en compte la contrainte
+  """
+  DontCare
+
+  """
+  Obliger la contrainte à ne pas être remplie
+  """
+  Not
+
+  """
+  Obliger la contrainte à être remplie
+  """
+  Only
+}
+
 scalar BooleanMap
 
 type BuildInfo {
@@ -1180,6 +1200,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   forms: [Form!]!
   frequency: EventFrequency!
+  globalCapacity: Capacity!
   group: Group! @deprecated(reason: "Use `organizer` instead.")
   groupId: ID!
 
@@ -1997,7 +2018,7 @@ enum LogoSourceType {
 }
 
 """
-Une adresse internet (URL). Si le protocole n'est pas spécifié, https:// sera ajouté (par exemple, net7.dev est valide en entrée et est interprété comme https://net7.dev). Les éventuels espaces autours de l'URL sont ignorés. Les protocoles autorisés sont: http:, https:
+Une adresse internet (URL). Si le protocole n'est pas spécifié, https:// sera ajouté (par exemple, net7.dev est valide en entrée et est interprété comme https://net7.dev). Les éventuels espaces autours de l'URL sont ignorés. Les protocoles autorisés sont: http:, https:, mailto:, tel:
 """
 scalar LooseURL
 
@@ -2177,6 +2198,22 @@ type Mutation {
     """
     id: LocalID!
   ): Theme!
+
+  """
+  Réserver une place sur un évènement
+  """
+  bookEvent(
+    """
+    Email de la personne effectuant la réservation, requis quand l'utilisateur·ice n'est pas connecté·e: c'est alors le seul moyen qu'on a d'envoyer le billet.
+    """
+    authorEmail: String!
+
+    """
+    Nom du bénéficiaire du billet
+    """
+    beneficiary: String
+    ticket: LocalID!
+  ): MutationBookEventResult!
 
   """
   Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
@@ -2563,7 +2600,7 @@ type Mutation {
     title: String!
   ): Boolean!
   setDocumentFileIsSolution(documentId: ID!, filename: String!, isSolution: Boolean!): Boolean!
-  setEventBeneficiary(event: LocalID!, lydiaAccount: LocalID!): Event!
+  setEventBeneficiary(event: LocalID!, lydiaAccount: LocalID!): MutationSetEventBeneficiaryResult!
 
   """
   Changer les groupes co-organisateurs d'un événement
@@ -2840,6 +2877,13 @@ type Mutation {
     shotgun: DateRangeInput
     ticket: LocalID!
   ): MutationUpdateTicketResult!
+  updateTicketConstraints(
+    """
+    Contraintes pour limiter la réservation du billet. Les différentes contraintes sont appliquées avec un “ET logique”: il faut que chacune des contraintes spécificées soient remplies par la personne voulant réserver.
+    """
+    constraints: TicketConstraintsInput!
+    ticket: LocalID!
+  ): MutationUpdateTicketConstraintsResult!
   updateUser(
     address: String!
     apprentice: Boolean!
@@ -3136,6 +3180,12 @@ type MutationBanFromEventSuccess {
   data: Event!
 }
 
+union MutationBookEventResult = Error | MutationBookEventSuccess | ZodError
+
+type MutationBookEventSuccess {
+  data: Registration!
+}
+
 union MutationCancelBookingResult = Error | MutationCancelBookingSuccess | ZodError
 
 type MutationCancelBookingSuccess {
@@ -3283,6 +3333,12 @@ type MutationResetPasswordSuccess {
   data: Boolean!
 }
 
+union MutationSetEventBeneficiaryResult = Error | MutationSetEventBeneficiarySuccess | ZodError
+
+type MutationSetEventBeneficiarySuccess {
+  data: Event!
+}
+
 union MutationSetEventCoOrganizersResult = Error | MutationSetEventCoOrganizersSuccess | ZodError
 
 type MutationSetEventCoOrganizersSuccess {
@@ -3339,6 +3395,15 @@ union MutationUpdateLinkResult = Error | MutationUpdateLinkSuccess | ZodError
 
 type MutationUpdateLinkSuccess {
   data: Link!
+}
+
+union MutationUpdateTicketConstraintsResult =
+  | Error
+  | MutationUpdateTicketConstraintsSuccess
+  | ZodError
+
+type MutationUpdateTicketConstraintsSuccess {
+  data: Ticket!
 }
 
 union MutationUpdateTicketResult = Error | MutationUpdateTicketSuccess | ZodError
@@ -4085,7 +4150,7 @@ type Query {
     """
     id: ID!
   ): ThirdPartyApp!
-  ticketGroup(id: ID!): TicketGroup!
+  ticketGroup(id: LocalID!): TicketGroup!
 
   """
   Vérifie si un identifiant (un “@” dans l'interface) est disponible
@@ -5854,6 +5919,51 @@ type Ticket implements Node {
 }
 
 """
+Contraintes d'un billet
+"""
+input TicketConstraintsInput {
+  """
+  Ancien·ne·s étudiant·e·s
+  """
+  alumni: BooleanConstraint
+
+  """
+  Apprenti·e·s (FISAs)
+  """
+  apprentices: BooleanConstraint
+
+  """
+  Personnes sans compte Churros ou avec un compte exté (c'est à dire non relié à une école)
+  """
+  external: BooleanConstraint
+
+  """
+  Membres d'au moins un des groupes spécifiés
+  """
+  groupMembers: [UID!]!
+
+  """
+  Étudiant·e·s de certaines filières
+  """
+  majors: [UID!]!
+
+  """
+  Réservable par les gestionnaires de l'évènement seulement
+  """
+  managersOnly: Boolean
+
+  """
+  Étudiant·e·s de certaines promos (année)
+  """
+  promotions: [Int!]!
+
+  """
+  Cotisant·e·s de l'AE du groupe organisateur de l'évènement
+  """
+  studentAssociationContributors: BooleanConstraint
+}
+
+"""
 A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
 """
 type TicketGroup implements Node {
@@ -5868,6 +5978,7 @@ type TicketGroup implements Node {
   localID: LocalID!
   name: String!
   tickets: [Ticket!]!
+  ticketsCount: Int!
 }
 
 input TicketGroupInput {

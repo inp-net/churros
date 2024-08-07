@@ -60,7 +60,7 @@ export function addReferrer(
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
 export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING'}`;
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
@@ -425,6 +425,17 @@ export const topnavConfigs: Partial<
         do: () => navtopPushState('NAVTOP_DELETING'),
       },
     ],
+  }),
+  '/(app)/events/[id]/edit/tickets': ({ params: { id } }) => ({
+    title: 'Billetterie',
+    back: route('/events/[id]/edit', id),
+    actions: [],
+    quickAction: {
+      label: 'OK',
+      do() {
+        navigationTopActionEventDispatcher('NAVTOP_FINISH_EDITING');
+      },
+    },
   }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
