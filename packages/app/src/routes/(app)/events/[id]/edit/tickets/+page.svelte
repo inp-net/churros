@@ -55,6 +55,7 @@
       <SubmenuItem icon={IconCapacity} label subtext="Limite sur l'ensemble des places">
         Capacité totale
         <InputText
+          slot="right"
           clearable
           label=""
           inputmode="decimal"
@@ -62,7 +63,8 @@
           placeholder="Illimité"
           on:blur={async ({ currentTarget }) => {
             if (!(currentTarget instanceof HTMLInputElement)) return;
-            const coerced = currentTarget.value === '' ? null : Number.parseInt(currentTarget.value);
+            const coerced =
+              currentTarget.value === '' ? null : Number.parseInt(currentTarget.value);
             if (coerced !== null && Number.isNaN(coerced)) return;
 
             toasts.mutation(
@@ -96,9 +98,8 @@
               toasts.error("Donne des dates à l'évènement avant de créer des billets");
               return;
             }
-            if (!loaded(event.startsAt) || !loaded(event.endsAt)) 
-              return;
-            
+            if (!loaded(event.startsAt) || !loaded(event.endsAt)) return;
+
             const result = await mutate(CreateTicket, {
               event: event.id,
               shotgun: {
@@ -114,8 +115,8 @@
                 }),
               );
             }
-          }}
-        ></ButtonSecondary>
+          }}>Ajouter</ButtonSecondary
+        >
       </header>
 
       <Submenu>
@@ -145,5 +146,16 @@
 <style>
   .contents {
     padding: 0 1rem;
+  }
+
+  .tickets  {
+    margin-top: 2rem;
+  }
+
+  .tickets header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    --weight-field-label: 900;
   }
 </style>

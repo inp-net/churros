@@ -14,9 +14,7 @@ type Announcement implements Node {
   endsAt: DateTime!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   startsAt: DateTime!
   title: String!
@@ -31,333 +29,215 @@ Une réponse à un formulaire. Les réponses peuvent être de plusieurs types di
 interface Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
   question: Question!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 }
 
-"""
-Réponse de type `Date` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `Date` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerDate implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionScalar!
 
-  """
-  Réponse donnée, brute (sous forme de texte)
-  """
+  """Réponse donnée, brute (sous forme de texte)"""
   rawValue: String
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: DateTime
 }
 
-"""
-Réponse de type `FileUpload` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `FileUpload` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerFileUpload implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionFileUpload!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: String
 }
 
 input AnswerInput {
   """
+  
   Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
+      
   - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
   - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
   - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
   - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+        
   """
   answer: [String!]!
 
-  """
-  ID de la question à laquelle répondre
-  """
+  """ID de la question à laquelle répondre"""
   question: ID!
 }
 
-"""
-Réponse de type `LongText` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `LongText` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerLongText implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionScalar!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: String
 }
 
-"""
-Réponse de type `Number` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `Number` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerNumber implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionScalar!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: Float
 }
 
-"""
-Réponse de type `Scale` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `Scale` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerScale implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Réponse donnée, entre 0 et 1
-  """
+  """Réponse donnée, entre 0 et 1"""
   normalizedValue: Float
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionScale!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: Int
 }
 
@@ -374,221 +254,139 @@ Réponse de type `SelectMultiple` (voir [`QuestionKind`](#QuestionKind))
 type AnswerSelectMultiple implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionSelectMultiple!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: [String!]
 }
 
-"""
-Réponse de type `SelectOne` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `SelectOne` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerSelectOne implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionSelectOne!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: String
 }
 
-"""
-Réponse de type `Text` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `Text` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerText implements Answer {
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionScalar!
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: String
 }
 
-"""
-Réponse de type `Time` (voir [`QuestionKind`](#QuestionKind))
-"""
+"""Réponse de type `Time` (voir [`QuestionKind`](#QuestionKind))"""
 type AnswerTime implements Answer {
   answer: Answer!
   answerString: String!
 
-  """
-  Réservation associée à la réponse
-  """
+  """Réservation associée à la réponse"""
   booking: Registration
   checkboxIsMarked: Boolean
 
-  """
-  Date de création de la réponse
-  """
+  """Date de création de la réponse"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant répondu à la question
-  """
+  """Utilisateur ayant répondu à la question"""
   createdBy: User
 
-  """
-  Formulaire auquel appartient la question
-  """
+  """Formulaire auquel appartient la question"""
   form: Form!
 
-  """
-  Préfixe de l'identifiant: `answer:`
-  """
+  """Préfixe de l'identifiant: `answer:`"""
   id: ID!
 
-  """
-  Question à laquelle la réponse est associée
-  """
+  """Question à laquelle la réponse est associée"""
   question: QuestionScalar!
 
-  """
-  Réponse donnée, brute (sous forme de texte)
-  """
+  """Réponse donnée, brute (sous forme de texte)"""
   rawValue: String
 
-  """
-  Section du formulaire auquel appartient la question
-  """
+  """Section du formulaire auquel appartient la question"""
   section: FormSection!
 
-  """
-  Date de dernière mise à jour de la réponse
-  """
+  """Date de dernière mise à jour de la réponse"""
   updatedAt: DateTime!
 
-  """
-  Réponse donnée
-  """
+  """Réponse donnée"""
   value: DateTime
 }
 
-"""
-Formats d'export des réponses
-"""
+"""Formats d'export des réponses"""
 enum AnswersExportFormats {
   """
   Format CSV (séparateur de colonnes: virgule, séparateur de lignes: saut de ligne)
@@ -607,9 +405,7 @@ Représente toutes les réponses d'un·e utilisateur·ice à un formulaire. Prat
 type AnswersOfUser {
   answers: [Answer!]!
 
-  """
-  Correspond à la date de dernière réponse parmis les réponses
-  """
+  """Correspond à la date de dernière réponse parmis les réponses"""
   date: DateTime!
   user: User!
 }
@@ -618,24 +414,16 @@ type AnswersOfUser {
 Des données temporelles pour construire des graphiques d'atteintes de rate limiting. La résolution temporelle est d'une minute.
 """
 type ApiRateLimitHits {
-  """
-  Le nombre d'erreurs de rate-limiting à cette date
-  """
+  """Le nombre d'erreurs de rate-limiting à cette date"""
   count: Int!
 
-  """
-  La date à laquelle les requêtes ont été faites
-  """
+  """La date à laquelle les requêtes ont été faites"""
   date: DateTime!
 
-  """
-  Le nom de la query ou mutation ou subscription
-  """
+  """Le nom de la query ou mutation ou subscription"""
   queryName: String!
 
-  """
-  Le type de requête effectuée
-  """
+  """Le type de requête effectuée"""
   queryType: String!
   timestamp: Int!
   user: User
@@ -645,41 +433,27 @@ type ApiRateLimitHits {
 Des données temporelles pour construire des graphiques d'utilisation de l'API au cours du temps. La résolution temporelle est d'une minute.
 """
 type ApiUsage {
-  """
-  Le nombre de requêtes faites à cette date
-  """
+  """Le nombre de requêtes faites à cette date"""
   count: Int!
 
-  """
-  La date à laquelle les requêtes ont été faites
-  """
+  """La date à laquelle les requêtes ont été faites"""
   date: DateTime!
 
-  """
-  Le nom de la query ou mutation ou subscription
-  """
+  """Le nom de la query ou mutation ou subscription"""
   queryName: String!
 
-  """
-  Le type de requête effectuée
-  """
+  """Le type de requête effectuée"""
   queryType: ApiUsageQueryType!
   timestamp: Int!
   user: User
 }
 
-"""
-Type de requête effectuée sur l'API
-"""
+"""Type de requête effectuée sur l'API"""
 enum ApiUsageQueryType {
-  """
-  Modification de données, ou autre action diverses
-  """
+  """Modification de données, ou autre action diverses"""
   Mutation
 
-  """
-  Récupération de données
-  """
+  """Récupération de données"""
   Query
 
   """
@@ -688,9 +462,7 @@ enum ApiUsageQueryType {
   Subscription
 }
 
-"""
-An article is a post in a group
-"""
+"""An article is a post in a group"""
 type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
@@ -716,31 +488,21 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   id: ID!
   links: [Link!]!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   myReactions: BooleanMap!
   notifiedAt: DateTime
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
   pictureFile: String!
 
-  """
-  Le nom du fichier de l'image, en thème sombre
-  """
+  """Le nom du fichier de l'image, en thème sombre"""
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -755,9 +517,7 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   reactions(emoji: String!): Int!
   shares: Int!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   title: String!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
@@ -776,9 +536,7 @@ type AwaitingValidationError {
   message: String!
 }
 
-"""
-A bar week is a week during which some groups takeover the bar staff
-"""
+"""A bar week is a week during which some groups takeover the bar staff"""
 type BarWeek implements Node {
   description: String!
   descriptionHtml: String!
@@ -786,33 +544,23 @@ type BarWeek implements Node {
   groups: [Group!]!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   startsAt: DateTime!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
 enum BookingState {
-  """
-  Payée
-  """
+  """Payée"""
   Paid
 
-  """
-  Non payée et non scannée
-  """
+  """Non payée et non scannée"""
   Unpaid
 
-  """
-  Scannée
-  """
+  """Scannée"""
   Verified
 }
 
@@ -822,84 +570,54 @@ Une page épinglée pour en faire un accès rapide pour un·e utilisateur·rice
 type Bookmark implements Node {
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
 
-  """
-  Chemin de la page
-  """
+  """Chemin de la page"""
   path: String!
   user: User!
 }
 
-"""
-Contrainte booléenne, à trois états
-"""
+"""Contrainte booléenne, à trois états"""
 enum BooleanConstraint {
-  """
-  Ne pas prendre en compte la contrainte
-  """
+  """Ne pas prendre en compte la contrainte"""
   DontCare
 
-  """
-  Obliger la contrainte à ne pas être remplie
-  """
+  """Obliger la contrainte à ne pas être remplie"""
   Not
 
-  """
-  Obliger la contrainte à être remplie
-  """
+  """Obliger la contrainte à être remplie"""
   Only
 }
 
 scalar BooleanMap
 
 type BuildInfo {
-  """
-  Le hash du commit utilisé pour build l'API
-  """
+  """Le hash du commit utilisé pour build l'API"""
   commit: String!
 
-  """
-  La version actuelle de l'API (et de l'application)
-  """
+  """La version actuelle de l'API (et de l'application)"""
   version: String!
 }
 
-"""
-Un entier positif ou 'Unlimited' pour une capacité sans limite
-"""
+"""Un entier positif ou 'Unlimited' pour une capacité sans limite"""
 scalar Capacity
 
-"""
-A release in the changelog
-"""
+"""A release in the changelog"""
 type ChangelogRelease {
-  """
-  The changes of the release, grouped by category
-  """
+  """The changes of the release, grouped by category"""
   changes: ReleaseChangesMaps!
 
-  """
-  The date of the release
-  """
+  """The date of the release"""
   date: DateTime
 
-  """
-  A short description of the release
-  """
+  """A short description of the release"""
   description: String!
 
-  """
-  A short description of the release, in HTML. Safe from XSS.
-  """
+  """A short description of the release, in HTML. Safe from XSS."""
   descriptionHtml: String!
 
-  """
-  The version of the release
-  """
+  """The version of the release"""
   version: String!
 }
 
@@ -915,9 +633,7 @@ type Comment implements Node & Reactable {
   inReplyTo: Comment
   inReplyToId: ID
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   reacted(emoji: String!): Boolean!
   reactions(emoji: String!): Int!
@@ -925,15 +641,11 @@ type Comment implements Node & Reactable {
   updatedAt: DateTime!
 }
 
-"""
-Une resource pouvant être commentée par les utilisateur·ice·s
-"""
+"""Une resource pouvant être commentée par les utilisateur·ice·s"""
 interface Commentable {
   comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
 
-  """
-  L’identifiant de la resource commentée
-  """
+  """L’identifiant de la resource commentée"""
   id: ID!
 }
 
@@ -961,9 +673,7 @@ type ContributionOption {
 
 scalar Counts
 
-"""
-A credential is a way to authenticate a user
-"""
+"""A credential is a way to authenticate a user"""
 type Credential {
   active: Boolean!
   createdAt: DateTime!
@@ -982,9 +692,7 @@ enum CredentialType {
   Token
 }
 
-"""
-Le dialecte CSV à utiliser
-"""
+"""Le dialecte CSV à utiliser"""
 enum CsvDialect {
   """
   Dialecte CSV pour Excel: séparé par des point-virgules, et toujours guillemeté.
@@ -1001,18 +709,12 @@ type DatabaseHealthCheck {
   prisma: Boolean!
 }
 
-"""
-Un intervalle valide de dates
-"""
+"""Un intervalle valide de dates"""
 input DateRangeInput {
-  """
-  Date de fin de l'intervalle
-  """
+  """Date de fin de l'intervalle"""
   end: DateTime!
 
-  """
-  Date de début de l'intervalle
-  """
+  """Date de début de l'intervalle"""
   start: DateTime!
 }
 
@@ -1028,9 +730,7 @@ type Document implements Commentable & Node & Reactable {
   descriptionHtml: String!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
 
   """
@@ -1041,14 +741,10 @@ type Document implements Commentable & Node & Reactable {
   reactions(emoji: String!): Int!
   schoolYear: Int!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
 
-  """
-  Liste de chemins vers les fichiers représentant la correction.
-  """
+  """Liste de chemins vers les fichiers représentant la correction."""
   solutionPaths: [String!]!
   subject: Subject
   subjectId: ID
@@ -1079,9 +775,7 @@ enum DocumentType {
   Summary
 }
 
-"""
-A email validation request
-"""
+"""A email validation request"""
 type EmailChange {
   createdAt: DateTime!
   email: String!
@@ -1099,9 +793,7 @@ type Error implements ErrorInterface {
   message: String!
 }
 
-"""
-Basic interface for all error types to implement.
-"""
+"""Basic interface for all error types to implement."""
 interface ErrorInterface {
   message: String!
 }
@@ -1114,9 +806,7 @@ type EvenSearchResult {
   similarity: Float!
 }
 
-"""
-An event is a date, time and place, as well as an optional ticket
-"""
+"""An event is a date, time and place, as well as an optional ticket"""
 type Event implements Node & Pictured & Reactable & Shareable {
   articles: [Article!]!
 
@@ -1134,9 +824,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
     first: Int
     last: Int
 
-    """
-    Ne montre que les réservations d'un certain statut
-    """
+    """Ne montre que les réservations d'un certain statut"""
     only: BookingState!
   ): EventBookingsConnection!
   bookingsCounts: RegistrationsCounts!
@@ -1152,9 +840,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
     dialect: CsvDialect! = Standard
   ): EventBookingsCsvResult!
 
-  """
-  L'utilisateur·ice connecté·e peut modifier cet évènement
-  """
+  """L'utilisateur·ice connecté·e peut modifier cet évènement"""
   canEdit: Boolean!
 
   """
@@ -1177,9 +863,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
     assert: String
   ): Boolean!
 
-  """
-  L'utilsateur·ice connecté·e peut voir les logs de cet évènement
-  """
+  """L'utilsateur·ice connecté·e peut voir les logs de cet évènement"""
   canSeeLogs: Boolean!
   capacity: Int!
   coOrganizers: [Group!]!
@@ -1195,12 +879,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   enabledSpecialOffers: [PromotionType!]
   endsAt: DateTime
 
-  """
-  Formulaires associés à l'événement
-  """
+  """Formulaires associés à l'événement"""
   forms: [Form!]!
   frequency: EventFrequency!
-  globalCapacity: Capacity!
+  globalCapacity: Capacity
   group: Group! @deprecated(reason: "Use `organizer` instead.")
   groupId: ID!
 
@@ -1210,15 +892,11 @@ type Event implements Node & Pictured & Reactable & Shareable {
   hasSeparateDarkPicture: Boolean!
   id: ID!
 
-  """
-  Vrai si l'évènement doit apparaître dans le mode kiosque
-  """
+  """Vrai si l'évènement doit apparaître dans le mode kiosque"""
   includeInKiosk: Boolean!
   links: [Link!]!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   location: String!
 
@@ -1233,36 +911,23 @@ type Event implements Node & Pictured & Reactable & Shareable {
   Réservations faites par et/ou pour l'utilisateur.ice connecté.e. Triée par bénéficiaire (soi-même d'abord), puis par date de création. Renvoie au maximum 100 réservations.
   """
   myBookings(
-    """
-    Nombre de réservations à récupérer
-    """
+    """Nombre de réservations à récupérer"""
     count: Int
   ): [Registration!]!
   myReactions: BooleanMap!
-  mySoonestShotgunOpensAt: DateTime
-    @deprecated(
-      reason: "Use first ticket's opensAt instead. Event.tickets is now sorted such that if the user has access to tickets with soon-to-open or opened shotguns, the earliest one will be first."
-    )
+  mySoonestShotgunOpensAt: DateTime @deprecated(reason: "Use first ticket's opensAt instead. Event.tickets is now sorted such that if the user has access to tickets with soon-to-open or opened shotguns, the earliest one will be first.")
   organizer: Group!
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
   pictureFile: String!
 
-  """
-  Le nom du fichier de l'image, en thème sombre
-  """
+  """Le nom du fichier de l'image, en thème sombre"""
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -1279,17 +944,13 @@ type Event implements Node & Pictured & Reactable & Shareable {
   searchBookings(q: String!): [RegistrationSearchResult!]!
   shares: Int!
 
-  """
-  Vrai si le nombre de places restantes doit être affiché
-  """
+  """Vrai si le nombre de places restantes doit être affiché"""
   showPlacesLeft: Boolean!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   startsAt: DateTime
-  ticket(slug: String!): Ticket
+  ticket(id: LocalID!): Ticket
   ticketGroups: [TicketGroup!]!
   tickets: [Ticket!]!
   title: String!
@@ -1343,9 +1004,7 @@ type EventManager implements Node {
   event: Event!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   power: EventManagerPowerLevel!
   user: User!
@@ -1361,14 +1020,10 @@ enum EventManagerPowerLevel {
 type EventsByDay {
   date: DateTime!
 
-  """
-  Évènements qui ont lieu (commencent) à ce jour
-  """
+  """Évènements qui ont lieu (commencent) à ce jour"""
   happening: [Event!]!
 
-  """
-  Évènements qui ont leur premier shotgun à ce jour
-  """
+  """Évènements qui ont leur premier shotgun à ce jour"""
   shotgunning: [Event!]!
 }
 
@@ -1379,18 +1034,12 @@ type FamilyTree {
 
 scalar File
 
-"""
-Un formulaire
-"""
+"""Un formulaire"""
 type Form implements Node {
-  """
-  Nombre de réponses au formulaire
-  """
+  """Nombre de réponses au formulaire"""
   answerCount: Int!
 
-  """
-  Réponses au formulaire
-  """
+  """Réponses au formulaire"""
   answers(after: String, before: String, first: Int, last: Int): FormAnswersConnection!
 
   """
@@ -1402,35 +1051,23 @@ type Form implements Node {
     first: Int
     last: Int
 
-    """
-    Recherche par utilisateur·ice
-    """
+    """Recherche par utilisateur·ice"""
     q: String
   ): FormAnswersByUserConnection!
 
-  """
-  Export des réponses au formulaires dans un format
-  """
+  """Export des réponses au formulaires dans un format"""
   answersExport(
-    """
-    Format à utiliser
-    """
+    """Format à utiliser"""
     format: AnswersExportFormats! = CSV
   ): String!
 
-  """
-  Indique si l'utilisateur peut répondre au formulaire.
-  """
+  """Indique si l'utilisateur peut répondre au formulaire."""
   canAnswer: Boolean!
 
-  """
-  Indique si l'utilisateur peut éditer le formulaire.
-  """
+  """Indique si l'utilisateur peut éditer le formulaire."""
   canEdit: Boolean!
 
-  """
-  Indique si l'utilisateur·ice peut modifier ses réponses au formulaire.
-  """
+  """Indique si l'utilisateur·ice peut modifier ses réponses au formulaire."""
   canModifyAnswers: Boolean!
 
   """
@@ -1438,9 +1075,7 @@ type Form implements Node {
   """
   canSeeAnswerStats: Boolean!
 
-  """
-  Indique si l'utilisateur peut voir les réponses au formulaire.
-  """
+  """Indique si l'utilisateur peut voir les réponses au formulaire."""
   canSeeAnswers: Boolean!
 
   """
@@ -1449,49 +1084,31 @@ type Form implements Node {
   canSetCheckboxes: Boolean!
   checkboxesAreEnabled: Boolean!
 
-  """
-  Date de fermeture du formulaire.
-  """
+  """Date de fermeture du formulaire."""
   closesAt: DateTime
 
-  """
-  Date de création du formulaire
-  """
+  """Date de création du formulaire"""
   createdAt: DateTime!
 
-  """
-  Utilisateur ayant créé le formulaire
-  """
+  """Utilisateur ayant créé le formulaire"""
   createdBy: User
 
-  """
-  Description en Markdown du formulaire.
-  """
+  """Description en Markdown du formulaire."""
   description: String
 
-  """
-  Description en HTML du formulaire.
-  """
+  """Description en HTML du formulaire."""
   descriptionHtml: String!
 
-  """
-  Événement associé au formulaire
-  """
+  """Événement associé au formulaire"""
   event: Event
 
-  """
-  Groupe auquel le formulaire est associé
-  """
+  """Groupe auquel le formulaire est associé"""
   group: Group
 
-  """
-  Vrai si le formulaire comporte des sections
-  """
+  """Vrai si le formulaire comporte des sections"""
   hasSections: Boolean!
 
-  """
-  Préfixe de l'identifiant: `form:`
-  """
+  """Préfixe de l'identifiant: `form:`"""
   id: ID!
 
   """
@@ -1499,24 +1116,16 @@ type Form implements Node {
   """
   linkedGoogleSheetUrl: String
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
 
-  """
-  Identifiant local du formulaire
-  """
+  """Identifiant local du formulaire"""
   localId: String!
 
-  """
-  Réponses de l'utilisateur·ice connecté·e à ce formulaire
-  """
+  """Réponses de l'utilisateur·ice connecté·e à ce formulaire"""
   myAnswers: [Answer!]!
 
-  """
-  Date d'ouverture du formulaire.
-  """
+  """Date d'ouverture du formulaire."""
   opensAt: DateTime
 
   """
@@ -1524,20 +1133,14 @@ type Form implements Node {
   """
   questions(after: String, before: String, first: Int, last: Int): FormQuestionsConnection!
   searchAnswers(
-    """
-    La recherche
-    """
+    """La recherche"""
     q: String!
     similarityCutoff: Float
   ): [AnswerSearchResult!]!
 
-  """
-  Une section du formulaire.
-  """
+  """Une section du formulaire."""
   section(
-    """
-    Identifiant (local ou global) de la section
-    """
+    """Identifiant (local ou global) de la section"""
     id: String
   ): FormSection!
 
@@ -1547,14 +1150,10 @@ type Form implements Node {
   sections: [FormSection!]!
   title: String!
 
-  """
-  Date de dernière mise à jour du formulaire
-  """
+  """Date de dernière mise à jour du formulaire"""
   updatedAt: DateTime!
 
-  """
-  Visibilité du formulaire
-  """
+  """Visibilité du formulaire"""
   visibility: Visibility!
 }
 
@@ -1603,55 +1202,39 @@ type FormSearchResult {
 Une section d'un formulaire. Les sections sont utiles pour séparer les questions en plusieurs parties, dont certaines peuvent être affichées selon des réponses à des questions précédentes
 """
 type FormSection {
-  """
-  Réponses à cette section
-  """
+  """Réponses à cette section"""
   answers(after: String, before: String, first: Int, last: Int): FormSectionAnswersConnection!
 
-  """
-  Description en Markdown de la section
-  """
+  """Description en Markdown de la section"""
   description: String!
 
-  """
-  Description en HTML de la section
-  """
+  """Description en HTML de la section"""
   descriptionHtml: String!
 
-  """
-  Formulaire auquel appartient la section
-  """
+  """Formulaire auquel appartient la section"""
   form: Form!
   id: ID!
 
-  """
-  Identifiant local de la section du formulaire
-  """
+  """Identifiant local de la section du formulaire"""
   localId: String!
 
   """
-  Section suivante dans le formulaire, si il y en a une. (Sinon, c'est que c'est la dernière section). Dépend du fait que des sections soit cachées à l'utilisateur (voir `restrictedToGroups`), ou que une répond à une question provoque le passaage à une autre section (voir `goToSection`)
+  Section suivante dans le formulaire, si il y en a une. (Sinon, c'est que c'est la dernière section). Dépend du fait que des sections soit cachées à l'utilisateur (voir `restrictedToGroups`), ou que une répond à une question provoque le passaage à une autre section (voir `goToSection`) 
   """
   nextSection: FormSection
 
-  """
-  Ordre de la section dans le formulaire
-  """
+  """Ordre de la section dans le formulaire"""
   order: Int!
 
-  """
-  Questions dans section
-  """
+  """Questions dans section"""
   questions: [Question!]!
 
   """
-  Si non vide, seul·e·s les membres des groupes spécifiés peuvent accéder à cette section.
+  Si non vide, seul·e·s les membres des groupes spécifiés peuvent accéder à cette section. 
   """
   restrictedToGroups: [Group!]!
 
-  """
-  Titre de la section
-  """
+  """Titre de la section"""
   title: String!
 }
 
@@ -1677,15 +1260,11 @@ type GodparentRequest {
   updatedAt: DateTime!
 }
 
-"""
-A group is a collection of users
-"""
+"""A group is a collection of users"""
 type Group implements Node & Pictured {
   address: String!
 
-  """
-  All the ancestors of this group, from the current group to the root.
-  """
+  """All the ancestors of this group, from the current group to the root."""
   ancestors: [Group!]!
   articles: [Article!]!
   boardMembers: [GroupMember!]!
@@ -1705,9 +1284,7 @@ type Group implements Node & Pictured {
   """
   canEditPages: Boolean!
 
-  """
-  L'utilisateur·ice connecté·e peut lister les pages du groupe
-  """
+  """L'utilisateur·ice connecté·e peut lister les pages du groupe"""
   canListPages: Boolean!
   children: [Group!]!
   coOrganizedEvents: [Event!]!
@@ -1722,9 +1299,7 @@ type Group implements Node & Pictured {
   """
   familyId: ID
 
-  """
-  Formulaires associés au groupe
-  """
+  """Formulaires associés au groupe"""
   forms: [Form!]!
   groupId: ID!
 
@@ -1736,25 +1311,19 @@ type Group implements Node & Pictured {
   ldapUid: String!
   links: [Link!]!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   longDescription: String!
   longDescriptionHtml: String!
 
-  """
-  Comptes Lydia du groupe
-  """
+  """Comptes Lydia du groupe"""
   lydiaAccounts: [LydiaAccount!]!
   mailingList: String!
   members: [GroupMember!]!
   name: String!
   ownEvents: [Event!]!
 
-  """
-  La page associée au groupe
-  """
+  """La page associée au groupe"""
   page(
     """
     Le chemin de la page. Ce n'est pas le chemin complet, mais celui qui est local au groupe. Voir `Page` pour plus d'informations.
@@ -1762,31 +1331,21 @@ type Group implements Node & Pictured {
     path: String!
   ): Page
 
-  """
-  Les pages associées au groupe
-  """
+  """Les pages associées au groupe"""
   pages(after: String, before: String, first: Int, last: Int): PagesConnection!
 
-  """
-  Parent group, from which this group inherits its permissions
-  """
+  """Parent group, from which this group inherits its permissions"""
   parent: Group
   parentId: ID
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
   pictureFile: String!
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -1796,27 +1355,21 @@ type Group implements Node & Pictured {
   ): String!
   president: GroupMember
 
-  """
-  Related clubs
-  """
+  """Related clubs"""
   related: [Group!]!
   roomIsOpen: Boolean!
 
-  """
-  Family root, only created for performance reasons
-  """
+  """Family root, only created for performance reasons"""
   root: Group
   secretaries: [GroupMember!]!
   selfJoinable: Boolean!
   services: [Service!]!
 
-  """
-  Article de la boutique du groupe
-  """
+  """Article de la boutique du groupe"""
   shopItem(id: LocalID!): ShopItem
   shopItems(after: String, before: String, first: Int, last: Int): GroupShopItemsConnection!
   shopOrders: [ShopPayment!]!
-  studentAssociation: StudentAssociation
+  studentAssociation: StudentAssociation!
   treasurers: [GroupMember!]!
   type: GroupType!
   uid: String!
@@ -1835,9 +1388,7 @@ type GroupEventsConnectionEdge {
   node: Event!
 }
 
-"""
-The intermediate model between users and groups
-"""
+"""The intermediate model between users and groups"""
 type GroupMember {
   canEditArticles: Boolean!
   canEditMembers: Boolean!
@@ -1887,9 +1438,7 @@ scalar HTML
 
 union HasLinks = Article | Event | Ticket
 
-"""
-Results of a health self-check
-"""
+"""Results of a health self-check"""
 type HealthCheck {
   database: DatabaseHealthCheck!
   ldap: LdapHealthCheck!
@@ -1897,43 +1446,31 @@ type HealthCheck {
   redis: RedisHealthCheck!
 }
 
-"""
-A Gitlab issue
-"""
+"""A Gitlab issue"""
 type Issue {
   body: String!
   bodyHtml: String!
   comments: [IssueComment!]!
   deployedIn: String!
 
-  """
-  Expressed from 0 to 1
-  """
+  """Expressed from 0 to 1"""
   difficulty: Float
   duplicatedFrom: Int
 
-  """
-  Expressed from 0 to 1
-  """
+  """Expressed from 0 to 1"""
   importance: Float
   number: Int!
   state: IssueState!
 
-  """
-  The date at which the issue was submitted
-  """
+  """The date at which the issue was submitted"""
   submittedAt: DateTime!
   title: String!
   url: String!
 }
 
-"""
-A Gitlab issue comment
-"""
+"""A Gitlab issue comment"""
 type IssueComment {
-  """
-  The date at which the comment was added
-  """
+  """The date at which the comment was added"""
   addedAt: DateTime!
   authorAvatarUrl: String!
   authorGitlabUrl: String!
@@ -1949,14 +1486,10 @@ enum IssueState {
 }
 
 type LdapHealthCheck {
-  """
-  Whether the LDAP internal client is ready
-  """
+  """Whether the LDAP internal client is ready"""
   internal: Boolean!
 
-  """
-  Whether the LDAP school client is ready
-  """
+  """Whether the LDAP school client is ready"""
   school: Boolean!
 }
 
@@ -1968,9 +1501,7 @@ type Link implements Node {
   createdAt: DateTime!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   name: String! @deprecated(reason: "Use `text` instead.")
   rawURL: String!
@@ -1980,9 +1511,7 @@ type Link implements Node {
 }
 
 input LinkInput {
-  """
-  Texte à afficher pour le lien
-  """
+  """Texte à afficher pour le lien"""
   text: String!
   url: LooseURL!
 }
@@ -1992,18 +1521,14 @@ Un identifiant, dont le préfixe (par exemple, `a:` dans `a:627dgfd87ccc`) est o
 """
 scalar LocalID
 
-"""
-A log entry is a log of an action that happened on the website
-"""
+"""A log entry is a log of an action that happened on the website"""
 type LogEntry implements Node {
   action: String!
   area: String!
   happenedAt: DateTime!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   message: String!
   target: String
@@ -2022,9 +1547,7 @@ Une adresse internet (URL). Si le protocole n'est pas spécifié, https:// sera 
 """
 scalar LooseURL
 
-"""
-A Lydia account
-"""
+"""A Lydia account"""
 type LydiaAccount {
   events: [Event!]!
   group: Group
@@ -2036,15 +1559,11 @@ type LydiaAccount {
 }
 
 type MailHealthCheck {
-  """
-  Whether the SMTP client is ready
-  """
+  """Whether the SMTP client is ready"""
   smtp: Boolean!
 }
 
-"""
-A school syllabus
-"""
+"""A school syllabus"""
 type Major {
   id: ID!
   ldapSchool: School
@@ -2063,25 +1582,19 @@ input ManagerOfEventInput {
   userUid: String!
 }
 
-"""
-Du texte au format Markdown. (https://commonmark.org/help/)
-"""
+"""Du texte au format Markdown. (https://commonmark.org/help/)"""
 scalar Markdown
 
 type Minor implements Node {
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   majors: [Major!]!
   name: String!
   shortName: String!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   subjects: [Subject!]!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
@@ -2095,18 +1608,12 @@ type Minor implements Node {
 type Mutation {
   acceptRegistration(email: String!): MutationAcceptRegistrationResult!
 
-  """
-  Marks the user as having seen the given version's changelog.
-  """
+  """Marks the user as having seen the given version's changelog."""
   acknowledgeChangelog(version: String! = "dev"): Boolean!
 
-  """
-  Activate a third-party app. Only admins can do this.
-  """
+  """Activate a third-party app. Only admins can do this."""
   activateApp(
-    """
-    The app's ID
-    """
+    """The app's ID"""
     id: ID!
   ): Boolean!
 
@@ -2116,66 +1623,54 @@ type Mutation {
   addFileToPage(file: File!, page: ID!): MutationAddFileToPageResult!
   addGroupMember(groupUid: String!, title: String!, uid: String!): MutationAddGroupMemberResult!
 
-  """
-  Ajouter des liens à une ressource implémentant `HasLinks`
-  """
+  """Ajouter des liens à une ressource implémentant `HasLinks`"""
   addLinks(
-    """
-    ID complet de la ressource (AVEC le préfixe)
-    """
+    """ID complet de la ressource (AVEC le préfixe)"""
     id: ID!
     links: [LinkInput!]!
   ): MutationAddLinksResult!
 
-  """
-  Répondre à une question de type `FileUpload` en uploadant un fichier
-  """
+  """Répondre à une question de type `FileUpload` en uploadant un fichier"""
   answerFileQuestion(
-    """
-    Fichier à uploader
-    """
+    """Fichier à uploader"""
     answer: File!
 
-    """
-    ID de la question à laquelle répondre
-    """
+    """ID de la question à laquelle répondre"""
     question: ID!
   ): AnswerFileUpload!
   answerFormSection(
     answers: [AnswerInput!]!
 
-    """
-    ID de la section du formulaire
-    """
+    """ID de la section du formulaire"""
     section: ID!
   ): MutationAnswerFormSectionResult!
 
   """
-  Authorize a third-party client to access the user's data.
-  Returns an access code.
-
+  
+  Authorize a third-party client to access the user's data. 
+  Returns an access code. 
+  
   Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
-
+  
   Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
-
+  
   - `<clientId>`: The client ID of the app. See registerApp to get this.
   - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
   - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
-
+  
   Use that code to get an access token with /token:
-
+  
   Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
-
+  
   - `grant_type`: `authorization_code`
   - `code`: The code returned by this endpoint
   - `client_id`: The client ID of the app
   - `client_secret`: The client secret of the app
   - `redirect_uri`: The redirect URI used in this request
+        
   """
   authorize(
-    """
-    The client ID of the app. See registerApp to get this.
-    """
+    """The client ID of the app. See registerApp to get this."""
     clientId: String!
 
     """
@@ -2193,24 +1688,18 @@ type Mutation {
   Bloquer un thème pour empêcher qu'il soit automatiquement déployé à l'utilisateur·ice connecté·e
   """
   blockTheme(
-    """
-    ID du thème
-    """
+    """ID du thème"""
     id: LocalID!
   ): Theme!
 
-  """
-  Réserver une place sur un évènement
-  """
+  """Réserver une place sur un évènement"""
   bookEvent(
     """
     Email de la personne effectuant la réservation, requis quand l'utilisateur·ice n'est pas connecté·e: c'est alors le seul moyen qu'on a d'envoyer le billet.
     """
     authorEmail: String!
 
-    """
-    Nom du bénéficiaire du billet
-    """
+    """Nom du bénéficiaire du billet"""
     beneficiary: String
     ticket: LocalID!
   ): MutationBookEventResult!
@@ -2219,75 +1708,43 @@ type Mutation {
   Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
   """
   bookmark(
-    """
-    Chemin de la page à épingler
-    """
+    """Chemin de la page à épingler"""
     path: String!
   ): Bookmark!
   cancelBooking(
-    """
-    Code de réservation
-    """
+    """Code de réservation"""
     code: String!
   ): MutationCancelBookingResult!
   cancelPendingContribution(optionId: ID!): Boolean!
 
-  """
-  Changer le groupe organisateur (principal) de l'événement
-  """
+  """Changer le groupe organisateur (principal) de l'événement"""
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
   checkIfRegistrationIsPaid(id: ID!): Boolean!
   claimPromotionCode(code: String!): Boolean!
-  completeRegistration(
-    address: String!
-    apprentice: Boolean!
-    birthday: DateTime
-    cededImageRightsToTVn7: Boolean!
-    firstName: String!
-    graduationYear: Int!
-    lastName: String!
-    majorId: ID
-    password: String!
-    passwordConfirmation: String!
-    phone: String!
-    token: String!
-    uid: UID!
-  ): MutationCompleteRegistrationResult!
+  completeRegistration(address: String!, apprentice: Boolean!, birthday: DateTime, cededImageRightsToTVn7: Boolean!, firstName: String!, graduationYear: Int!, lastName: String!, majorId: ID, password: String!, passwordConfirmation: String!, phone: String!, token: String!, uid: UID!): MutationCompleteRegistrationResult!
   contribute(optionId: ID!, phone: String!): MutationContributeResult!
   createBot(
-    """
-    UID de la filière
-    """
+    """UID de la filière"""
     major: String
 
-    """
-    Nom du compte bot
-    """
+    """Nom du compte bot"""
     name: String!
 
-    """
-    Mot de passe du compte bot
-    """
+    """Mot de passe du compte bot"""
     password: String!
 
-    """
-    UID du compte bot
-    """
+    """UID du compte bot"""
     uid: String!
   ): User!
 
-  """
-  Créer un nouvel évènement
-  """
+  """Créer un nouvel évènement"""
   createEvent(
     """
     Dates de l'évènement. Si non précisé, l'évènement est créé sans dates, ce qui l'empêche d'avoir une visibilité autre que `Private` ou `Unlisted`.
     """
     dates: DateRangeInput
 
-    """
-    Groupe organisateur principal
-    """
+    """Groupe organisateur principal"""
     group: UID!
     title: ShortString!
   ): Event!
@@ -2297,9 +1754,7 @@ type Mutation {
   Créer un pass Google Wallet pour une réservation donnée. Renvoie l'URL a utiliser pour ajouter le pass à Google Wallet.
   """
   createGoogleWalletPass(
-    """
-    Code de la réservation
-    """
+    """Code de la réservation"""
     code: String!
   ): MutationCreateGoogleWalletPassResult!
 
@@ -2307,9 +1762,7 @@ type Mutation {
   Crée une feuille Google Sheets (si elle n'existe pas déjà) qui contiendra les réponses au formulaire (et sera mise à jour automatiquement). Renvoie l'URL de la feuille Google Sheets.
   """
   createLinkedGoogleSheet(
-    """
-    L'identifiant du formulaire
-    """
+    """L'identifiant du formulaire"""
     form: ID!
   ): String!
 
@@ -2318,42 +1771,28 @@ type Mutation {
   """
   createPasswordReset(email: String!): MutationCreatePasswordResetResult!
 
-  """
-  Créer un lien d'inscription rapide
-  """
+  """Créer un lien d'inscription rapide"""
   createQuickSignup(
-    """
-    UID de l'école
-    """
+    """UID de l'école"""
     school: String!
 
-    """
-    Date de validité du lien
-    """
+    """Date de validité du lien"""
     validUntil: DateTime!
   ): QuickSignup!
 
-  """
-  Créer un nouveau billet sur un évènement existant
-  """
+  """Créer un nouveau billet sur un évènement existant"""
   createTicket(
     event: LocalID!
 
-    """
-    Groupe de billet dans lequel mettre ce billet
-    """
+    """Groupe de billet dans lequel mettre ce billet"""
     group: LocalID
     name: String
     shotgun: DateRangeInput!
   ): MutationCreateTicketResult!
 
-  """
-  Deactivate a third-party app. Only admins can do this.
-  """
+  """Deactivate a third-party app. Only admins can do this."""
   deactivateApp(
-    """
-    The app's ID
-    """
+    """The app's ID"""
     id: ID!
   ): Boolean!
   deleteAnnouncement(id: ID!): Boolean!
@@ -2364,8 +1803,7 @@ type Mutation {
   deleteDocument(id: ID!): Boolean!
   deleteDocumentFile(documentId: ID!, filename: String!): Boolean!
   deleteEvent(id: LocalID!): MutationDeleteEventResult!
-  deleteEventManager(eventId: ID!, user: String!): Boolean!
-    @deprecated(reason: "Use 'removeEventManager' instead")
+  deleteEventManager(eventId: ID!, user: String!): Boolean! @deprecated(reason: "Use 'removeEventManager' instead")
   deleteEventPicture(id: ID!): Event!
   deleteGodchild(godchildUid: String!, parentUid: String!): Boolean!
 
@@ -2378,9 +1816,7 @@ type Mutation {
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
   deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
 
-  """
-  Supprimer un lien existant
-  """
+  """Supprimer un lien existant"""
   deleteLink(id: LocalID!): MutationDeleteLinkResult!
   deleteNotificationSubscription(endpoint: String!): Boolean!
 
@@ -2388,42 +1824,26 @@ type Mutation {
   Supprime une page existante. On peut renseigner l'identifiant de la page ou son chemin ainsi que son groupe ou AE d'appartenance.
   """
   deletePage(
-    """
-    L'UID du groupe auquel la page appartient
-    """
+    """L'UID du groupe auquel la page appartient"""
     group: String
 
-    """
-    L'identifiant de la page à supprimer
-    """
+    """L'identifiant de la page à supprimer"""
     id: ID
 
-    """
-    Le chemin de la page à supprimer
-    """
+    """Le chemin de la page à supprimer"""
     path: String
 
-    """
-    L'UID de l'AE à laquelle la page appartient
-    """
+    """L'UID de l'AE à laquelle la page appartient"""
     studentAssociation: String
   ): MutationDeletePageResult!
   deleteQuickSignup(code: String!): QuickSignup!
-  deleteReaction(
-    articleId: ID
-    commentId: ID
-    documentId: ID
-    emoji: String!
-    eventId: ID
-  ): Boolean!
+  deleteReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID): Boolean!
   deleteRegistration(id: ID!): Boolean!
   deleteSchoolPicture(id: String!): String!
   deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
   deleteShopOption(optionIds: [String!]!): Boolean!
   deleteTicket(
-    """
-    Supprimer le billet même s'il existe des réservations
-    """
+    """Supprimer le billet même s'il existe des réservations"""
     force: Boolean! = false
     id: ID!
   ): Boolean!
@@ -2431,16 +1851,12 @@ type Mutation {
   deleteToken(id: ID!): Boolean!
   deleteUserPicture(uid: String!): Boolean!
 
-  """
-  Update a third-party app's details
-  """
+  """Update a third-party app's details"""
   editApp(
     allowedRedirectUris: [String!]
     description: String
 
-    """
-    The app's ID
-    """
+    """The app's ID"""
     id: ID!
     name: String
     ownerGroupUid: String
@@ -2454,32 +1870,22 @@ type Mutation {
     studentAssociation: String!
   ): Boolean!
 
-  """
-  Logs a user in and returns a session token.
-  """
+  """Logs a user in and returns a session token."""
   login(clientId: String, email: String!, password: String!): MutationLoginResult!
 
-  """
-  Logs a user out and invalidates the session token.
-  """
+  """Logs a user out and invalidates the session token."""
   logout: Boolean!
 
   """
   Envoie une copie des réponses de l'utilisateur·ice connecté·e à ce formulaire par email. Renvoie l'adresse mail à laquelle les réponses ont été envoyées.
   """
   mailFormAnswers(
-    """
-    ID du formulaire
-    """
+    """ID du formulaire"""
     formId: ID!
   ): MutationMailFormAnswersResult!
   mergeDocuments(from: [ID!]!, into: ID!): Document!
   opposeRegistration(id: ID!): MutationOpposeRegistrationResult!
-  paidShopPayment(
-    paymentMethod: PaymentMethod
-    phone: String
-    shopPaymentId: ID!
-  ): MutationPaidShopPaymentResult!
+  paidShopPayment(paymentMethod: PaymentMethod, phone: String, shopPaymentId: ID!): MutationPaidShopPaymentResult!
 
   """
   When paying with Paypal, returns the order id for a capture to finish the payment
@@ -2487,9 +1893,7 @@ type Mutation {
   payBooking(
     beneficiary: String
 
-    """
-    Code de réservation
-    """
+    """Code de réservation"""
     code: String!
     paymentMethod: PaymentMethod
     phone: String
@@ -2497,9 +1901,7 @@ type Mutation {
   react(
     emoji: String!
 
-    """
-    La ressource à laquelle réagir. ID global, avec préfixe.
-    """
+    """La ressource à laquelle réagir. ID global, avec préfixe."""
     target: ID!
   ): Reactable!
   refuseRegistration(email: String!, reason: String!): Boolean!
@@ -2508,24 +1910,16 @@ type Mutation {
   Register a third-party OAuth2 client. Returns the client secret. The client secret cannot be retrieved at any other time. Use refreshAppSecret to rotate your client secret.
   """
   registerApp(
-    """
-    Allowed redirect URIs.
-    """
+    """Allowed redirect URIs."""
     allowedRedirectUris: [String!]!
 
-    """
-    The app's description
-    """
+    """The app's description"""
     description: String!
 
-    """
-    The app's name
-    """
+    """The app's name"""
     name: String!
 
-    """
-    The UID of  the group that made this app
-    """
+    """The UID of  the group that made this app"""
     ownerGroupUid: String!
 
     """
@@ -2534,64 +1928,43 @@ type Mutation {
     website: String!
   ): ThirdPartyAppRegistrationResponse!
 
-  """
-  Enregistrer un token OAuth2 Google pour l'utilisateur connecté.
-  """
+  """Enregistrer un token OAuth2 Google pour l'utilisateur connecté."""
   registerGoogleCredential(
-    """
-    Le code d'authorisation
-    """
+    """Le code d'authorisation"""
     code: String!
   ): MutationRegisterGoogleCredentialResult!
 
-  """
-  Enlever un manager d'un événement
-  """
+  """Enlever un manager d'un événement"""
   removeEventManager(event: LocalID!, user: UID!): MutationRemoveEventManagerResult!
 
-  """
-  Supprimer un fichier d'une page.
-  """
+  """Supprimer un fichier d'une page."""
   removeFileFromPage(filename: String!, page: ID!): MutationRemoveFileFromPageResult!
   renameSession(id: ID!, name: String!): Boolean!
   requestEmailChange(email: String!): MutationRequestEmailChangeResult!
-  resetPassword(
-    disconnectAll: Boolean!
-    newPassword: String!
-    oldPassword: String!
-    uid: String!
-  ): MutationResetPasswordResult!
+  resetPassword(disconnectAll: Boolean!, newPassword: String!, oldPassword: String!, uid: String!): MutationResetPasswordResult!
 
   """
   Révoque l'accès d'une application au compte utilisateur connecté. Renvoie `true` si l'opération a réussi.
   """
   revokeAuthorization(
-    """
-    Identifiant de l'application
-    """
+    """Identifiant de l'application"""
     clientId: String!
   ): Boolean!
 
-  """
-  Rotate a third-party app's secret
-  """
+  """Rotate a third-party app's secret"""
   rotateAppSecret(
-    """
-    The app's ID
-    """
+    """The app's ID"""
     id: ID!
   ): String!
   selfJoinGroup(uid: UID!): GroupMember!
 
   """
   Envoie une notification à l'utilisateur connecté. Limité à une notification par heure. Si l'utilisateur a désactivé les notifications de type “Autres” pour le groupe responsable du [client OAuth](/oauth) faisant la requête, la notification ne lui sera pas envoyée.
-
+  
   - **Rate limit:** 1/heure
   """
   sendNotification(
-    """
-    Corps de la notification.
-    """
+    """Corps de la notification."""
     body: String!
 
     """
@@ -2602,18 +1975,12 @@ type Mutation {
   setDocumentFileIsSolution(documentId: ID!, filename: String!, isSolution: Boolean!): Boolean!
   setEventBeneficiary(event: LocalID!, lydiaAccount: LocalID!): MutationSetEventBeneficiaryResult!
 
-  """
-  Changer les groupes co-organisateurs d'un événement
-  """
+  """Changer les groupes co-organisateurs d'un événement"""
   setEventCoOrganizers(coOrganizers: [UID!]!, id: LocalID!): MutationSetEventCoOrganizersResult!
 
-  """
-  Définir les dates d'un évènement
-  """
+  """Définir les dates d'un évènement"""
   setEventDates(
-    """
-    Dates de l'évènement. Null pour supprimer les dates
-    """
+    """Dates de l'évènement. Null pour supprimer les dates"""
     dates: DateRangeInput
     id: LocalID!
   ): MutationSetEventDatesResult!
@@ -2627,30 +1994,20 @@ type Mutation {
   Coche ou décoche la case à cocher à côté des réponses à un formulaire pour un·e utilisateur·ice.
   """
   setFormAnswersCheckbox(
-    """
-    Vrai pour cocher la case, faux pour la décocher
-    """
+    """Vrai pour cocher la case, faux pour la décocher"""
     checked: Boolean!
 
-    """
-    L'ID du formulaire
-    """
+    """L'ID du formulaire"""
     form: String!
 
-    """
-    ID de l'utilisateur·ice
-    """
+    """ID de l'utilisateur·ice"""
     userId: ID!
   ): Form!
   setPicture(
-    """
-    Le fichier de l'image. Si null, l'image sera supprimée.
-    """
+    """Le fichier de l'image. Si null, l'image sera supprimée."""
     file: File
 
-    """
-    Identifiant global de la resource sur laquelle on veut changer l'image
-    """
+    """Identifiant global de la resource sur laquelle on veut changer l'image"""
     resource: ID!
 
     """
@@ -2659,24 +2016,16 @@ type Mutation {
     variant: ThemeVariant! = Light
   ): MutationSetPictureResult!
 
-  """
-  Changer la valeur d'une variable d'un thème
-  """
+  """Changer la valeur d'une variable d'un thème"""
   setThemeValue(
-    """
-    ID du thème
-    """
+    """ID du thème"""
     theme: LocalID!
 
-    """
-    Valeur à utiliser. Doit être une valeur CSS valide
-    """
+    """Valeur à utiliser. Doit être une valeur CSS valide"""
     value: String!
     variable: ThemeVariable!
 
-    """
-    Variante du thème
-    """
+    """Variante du thème"""
     variant: ThemeVariant!
   ): Theme!
 
@@ -2684,14 +2033,10 @@ type Mutation {
   Changer la visibilité d'un thème. Voir `Theme.canSetVisibility` pour déterminer si l'utilisateur·ice connecté·e peut changer la visibilité d'un thème à une certaine valeur
   """
   setThemeVisibility(
-    """
-    ID du thème
-    """
+    """ID du thème"""
     theme: LocalID!
 
-    """
-    Visibilité à utiliser
-    """
+    """Visibilité à utiliser"""
     visibility: Visibility!
   ): Theme!
   startRegistration(
@@ -2704,21 +2049,11 @@ type Mutation {
   ): MutationStartRegistrationResult!
   syncUserLdap(uid: String!): Boolean!
   testNotification(subscriptionEndpoint: String!): Boolean!
-  toggleReaction(
-    articleId: ID
-    commentId: ID
-    documentId: ID
-    emoji: String!
-    eventId: ID
-  ): Reactable!
+  toggleReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID): Reactable!
 
-  """
-  Marque une ressource comme partagée par l'utilisateur·ice connecté·e
-  """
+  """Marque une ressource comme partagée par l'utilisateur·ice connecté·e"""
   trackShare(
-    """
-    ID (global) de la ressource
-    """
+    """ID (global) de la ressource"""
     resource: ID!
   ): Boolean!
 
@@ -2727,80 +2062,54 @@ type Mutation {
   """
   unbanFromEvent(id: LocalID!, user: UID!): MutationUnbanFromEventResult!
 
-  """
-  Enlève une page de l'accès rapide
-  """
+  """Enlève une page de l'accès rapide"""
   unbookmark(
-    """
-    Chemin de la page à désépingler
-    """
+    """Chemin de la page à désépingler"""
     path: String!
   ): Bookmark
   unreact(
     emoji: String!
 
-    """
-    La ressource à laquelle enlever la réaction. ID global, avec préfixe.
-    """
+    """La ressource à laquelle enlever la réaction. ID global, avec préfixe."""
     target: ID!
   ): Reactable!
   updateArticlePicture(file: File!, id: ID!): String!
 
-  """
-  Mettre à jour les informations de base d'un évènement
-  """
+  """Mettre à jour les informations de base d'un évènement"""
   updateEvent(
     """
     Liste d'identifiants de promotions applicables à tout les billets de l'évènement
     """
     applicableOffers: [PromotionType!]
 
-    """
-    E-mail de contact de l'orga de l'évènement
-    """
+    """E-mail de contact de l'orga de l'évènement"""
     contactMail: String
     description: Markdown
 
-    """
-    Capacité globale de l'évènement
-    """
+    """Capacité globale de l'évènement"""
     globalCapacity: Capacity
     id: LocalID!
 
-    """
-    Vrai si l'évènement doit apparaître dans le mode kiosque
-    """
+    """Vrai si l'évènement doit apparaître dans le mode kiosque"""
     includeInKiosk: Boolean
 
-    """
-    Lieu de l'évènement
-    """
+    """Lieu de l'évènement"""
     location: String
 
-    """
-    Afficher le nombre de places restantes sur les billets
-    """
+    """Afficher le nombre de places restantes sur les billets"""
     showPlacesLeft: Boolean = true
 
-    """
-    Titre de l'évènement
-    """
+    """Titre de l'évènement"""
     title: String
   ): MutationUpdateEventResult!
   updateEventPicture(file: File!, id: ID!): Event!
 
-  """
-  Changer les caractéristiques de récurrence d'un évènement
-  """
+  """Changer les caractéristiques de récurrence d'un évènement"""
   updateEventRecurrence(
-    """
-    Fréquence de récurrence de l'évènement
-    """
+    """Fréquence de récurrence de l'évènement"""
     frequency: EventFrequency! = Once
 
-    """
-    Identifiant de l'évènement
-    """
+    """Identifiant de l'évènement"""
     id: LocalID!
 
     """
@@ -2811,56 +2120,32 @@ type Mutation {
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
   updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
 
-  """
-  Mettre à jour un lien existant
-  """
+  """Mettre à jour un lien existant"""
   updateLink(
     id: LocalID!
 
-    """
-    Texte à afficher pour le lien
-    """
+    """Texte à afficher pour le lien"""
     text: String
     url: LooseURL
   ): MutationUpdateLinkResult!
-  updateNotificationSettings(
-    enabledChannels: [NotificationChannel!]!
-    uid: String!
-  ): [NotificationChannel!]!
+  updateNotificationSettings(enabledChannels: [NotificationChannel!]!, uid: String!): [NotificationChannel!]!
 
-  """
-  Changer si la salle d'un groupe est fermée ou ouvert
-  """
+  """Changer si la salle d'un groupe est fermée ou ouvert"""
   updateRoomOpenState(
-    """
-    L'uid du groupe
-    """
+    """L'uid du groupe"""
     groupUid: String!
 
-    """
-    Vrai si on veut indiquer que le local est maintenant ouvert
-    """
+    """Vrai si on veut indiquer que le local est maintenant ouvert """
     openRoom: Boolean!
   ): Boolean!
-  updateSchool(
-    address: String
-    aliasMailDomains: [String!]!
-    description: String
-    name: String!
-    studentMailDomain: String!
-    uid: String!
-  ): School!
+  updateSchool(address: String, aliasMailDomains: [String!]!, description: String, name: String!, studentMailDomain: String!, uid: String!): School!
   updateSchoolPicture(file: File!, id: String!): String!
   updateStudentAssociationPicture(file: File!, uid: String!): String!
   updateSubjectsExamDates: Boolean!
 
-  """
-  Mettre à jour un billet
-  """
+  """Mettre à jour un billet"""
   updateTicket(
-    """
-    Promotions applicables au billet
-    """
+    """Promotions applicables au billet"""
     applicableOffers: [PromotionType!]
     capacity: Capacity
 
@@ -2870,9 +2155,7 @@ type Mutation {
     godsonLimit: Int
     name: String
 
-    """
-    Prix en euros du billet
-    """
+    """Prix en euros du billet"""
     price: Float
     shotgun: DateRangeInput
     ticket: LocalID!
@@ -2923,113 +2206,41 @@ type Mutation {
     """
     register: Boolean!
 
-    """
-    Le @ souhaité
-    """
+    """Le @ souhaité"""
     uid: UID!
   ): MutationUpdateUserCandidateResult!
   updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
   updateUserPicture(file: File!, uid: String!): String!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
-  upsertAnnouncement(
-    body: String!
-    endsAt: DateTime!
-    id: ID
-    startsAt: DateTime!
-    title: String!
-    warning: Boolean!
-  ): MutationUpsertAnnouncementResult!
+  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
 
-  """
-  Crée ou met à jour un post
-  """
-  upsertArticle(
-    body: String!
-    event: ID
-    group: UID!
-    id: ID
-    publishedAt: DateTime
-    title: String!
-    visibility: Visibility!
-  ): MutationUpsertArticleResult!
-  upsertBarWeek(
-    description: String!
-    endsAt: DateTime!
-    groupsUids: [String!]!
-    id: ID
-    startsAt: DateTime!
-  ): MutationUpsertBarWeekResult!
+  """Crée ou met à jour un post"""
+  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult!
+  upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
-  upsertDocument(
-    description: String!
-    id: ID
-    schoolYear: Int!
-    subject: ID!
-    title: String!
-    type: DocumentType!
-  ): MutationUpsertDocumentResult!
-  upsertEventManager(
-    event: LocalID!
-    powerlevel: EventManagerPowerLevel!
-    user: UID!
-  ): MutationUpsertEventManagerResult!
+  upsertDocument(description: String!, id: ID, schoolYear: Int!, subject: ID!, title: String!, type: DocumentType!): MutationUpsertDocumentResult!
+  upsertEventManager(event: LocalID!, powerlevel: EventManagerPowerLevel!, user: UID!): MutationUpsertEventManagerResult!
 
   """
   Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.
   """
   upsertForm(input: MutationUpsertFormInput!): Form!
 
-  """
-  Crée ou met à jour une section de formulaire.
-  """
+  """Crée ou met à jour une section de formulaire."""
   upsertFormSection(input: MutationUpsertFormSectionInput!): FormSection!
-  upsertGodparentRequest(
-    godchildUid: String!
-    godparentUid: String!
-    id: ID
-  ): MutationUpsertGodparentRequestResult!
+  upsertGodparentRequest(godchildUid: String!, godparentUid: String!, id: ID): MutationUpsertGodparentRequestResult!
   upsertGroup(input: UpsertGroupInput!, uid: UID): MutationUpsertGroupResult!
-  upsertGroupMember(
-    canEditArticles: Boolean!
-    canEditMembers: Boolean!
-    canScanEvents: Boolean!
-    groupId: ID!
-    isDeveloper: Boolean!
-    memberId: ID!
-    president: Boolean!
-    secretary: Boolean!
-    title: String!
-    treasurer: Boolean!
-    vicePresident: Boolean!
-  ): GroupMember!
-  upsertLydiaAccount(
-    groupUid: String!
-    id: ID
-    name: String!
-    privateToken: String!
-    vendorToken: String!
-  ): LydiaAccount!
-  upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]!
-    @deprecated(reason: "Use 'upsertEventManager' and 'removeEventManager' instead")
-  upsertNotificationSubscription(
-    endpoint: String!
-    expiresAt: DateTime
-    keys: NotificationSubscriptionKeysInput!
-    name: String!
-  ): NotificationSubscription!
+  upsertGroupMember(canEditArticles: Boolean!, canEditMembers: Boolean!, canScanEvents: Boolean!, groupId: ID!, isDeveloper: Boolean!, memberId: ID!, president: Boolean!, secretary: Boolean!, title: String!, treasurer: Boolean!, vicePresident: Boolean!): GroupMember!
+  upsertLydiaAccount(groupUid: String!, id: ID, name: String!, privateToken: String!, vendorToken: String!): LydiaAccount!
+  upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]! @deprecated(reason: "Use 'upsertEventManager' and 'removeEventManager' instead")
+  upsertNotificationSubscription(endpoint: String!, expiresAt: DateTime, keys: NotificationSubscriptionKeysInput!, name: String!): NotificationSubscription!
 
-  """
-  Crée ou met à jour une page.
-  """
+  """Crée ou met à jour une page."""
   upsertPage(
-    """
-    Le corps de la page. Supporte le markdown
-    """
+    """Le corps de la page. Supporte le markdown"""
     body: String!
 
-    """
-    L'UID du groupe auquel la page appartient
-    """
+    """L'UID du groupe auquel la page appartient"""
     group: String
 
     """
@@ -3037,103 +2248,32 @@ type Mutation {
     """
     path: String!
 
-    """
-    L'UID de l'AE à laquelle la page appartient
-    """
+    """L'UID de l'AE à laquelle la page appartient"""
     studentAssociation: String
 
-    """
-    Le titre de la page
-    """
+    """Le titre de la page"""
     title: String!
   ): MutationUpsertPageResult!
 
-  """
-  Crée ou met à jour une question.
-  """
+  """Crée ou met à jour une question."""
   upsertQuestion(input: MutationUpsertQuestionInput!): Question!
-  upsertReaction(
-    articleId: ID
-    commentId: ID
-    documentId: ID
-    emoji: String!
-    eventId: ID
-    id: ID
-  ): Int! @deprecated(reason: "Use 'react' instead")
-  upsertRegistration(
-    authorEmail: String
-    beneficiary: String
-    id: ID
-    paid: Boolean!
-    paymentMethod: PaymentMethod
-    ticketId: ID!
-  ): MutationUpsertRegistrationResult!
-  upsertService(
-    description: String!
-    groupUid: String
-    id: ID
-    importance: Int = 0
-    logo: String!
-    logoSourceType: LogoSourceType!
-    name: String!
-    schoolUid: String
-    studentAssociationUid: String
-    url: String!
-  ): MutationUpsertServiceResult!
-  upsertShopItem(
-    description: String!
-    endsAt: DateTime
-    groupUid: String!
-    id: ID
-    lydiaAccounId: String
-    max: Int!
-    name: String!
-    paymentMethods: [PaymentMethod!]!
-    price: Float!
-    startsAt: DateTime
-    stock: Int!
-    visibility: Visibility!
-  ): MutationUpsertShopItemResult!
+  upsertReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID, id: ID): Int! @deprecated(reason: "Use 'react' instead")
+  upsertRegistration(authorEmail: String, beneficiary: String, id: ID, paid: Boolean!, paymentMethod: PaymentMethod, ticketId: ID!): MutationUpsertRegistrationResult!
+  upsertService(description: String!, groupUid: String, id: ID, importance: Int = 0, logo: String!, logoSourceType: LogoSourceType!, name: String!, schoolUid: String, studentAssociationUid: String, url: String!): MutationUpsertServiceResult!
+  upsertShopItem(description: String!, endsAt: DateTime, groupUid: String!, id: ID, lydiaAccounId: String, max: Int!, name: String!, paymentMethods: [PaymentMethod!]!, price: Float!, startsAt: DateTime, stock: Int!, visibility: Visibility!): MutationUpsertShopItemResult!
   upsertShopOptions(itemOptions: [ShopItemOptionInput!]!, shopItemId: String!): Boolean!
-  upsertShopPayment(
-    answers: [String!]!
-    id: ID
-    paymentMethod: String
-    phone: String
-    quantity: Int!
-    shopItemId: String!
-    userUid: String!
-  ): MutationUpsertShopPaymentResult!
+  upsertShopPayment(answers: [String!]!, id: ID, paymentMethod: String, phone: String, quantity: Int!, shopItemId: String!, userUid: String!): MutationUpsertShopPaymentResult!
 
-  """
-  Créer ou modifier un thème
-  """
-  upsertTheme(
-    autodeploy: Boolean!
-    endsAt: DateTime!
-    group: UID!
-    id: LocalID
-    name: String!
-    startsAt: DateTime!
-  ): MutationUpsertThemeResult!
-  upsertTicketGroup(
-    capacity: Int!
-    eventId: ID!
-    id: ID
-    name: String!
-    tickets: [ID!]!
-  ): TicketGroup!
+  """Créer ou modifier un thème"""
+  upsertTheme(autodeploy: Boolean!, endsAt: DateTime!, group: UID!, id: LocalID, name: String!, startsAt: DateTime!): MutationUpsertThemeResult!
+  upsertTicketGroup(capacity: Int!, eventId: ID!, id: ID, name: String!, tickets: [ID!]!): TicketGroup!
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
   validateEmail(token: String!): MutationValidateEmailResult!
   verifyBooking(
-    """
-    Identifiant de l’événement
-    """
+    """Identifiant de l’événement"""
     event: ID!
 
-    """
-    Identifiant de la place ou code de réservation
-    """
+    """Identifiant de la place ou code de réservation"""
     id: ID!
   ): MutationVerifyBookingResult!
 }
@@ -3210,10 +2350,7 @@ type MutationContributeSuccess {
   data: Boolean!
 }
 
-union MutationCreateGoogleWalletPassResult =
-  | Error
-  | MutationCreateGoogleWalletPassSuccess
-  | ZodError
+union MutationCreateGoogleWalletPassResult = Error | MutationCreateGoogleWalletPassSuccess | ZodError
 
 type MutationCreateGoogleWalletPassSuccess {
   data: String!
@@ -3260,9 +2397,7 @@ type MutationDeleteShopItemSuccess {
   data: Boolean!
 }
 
-union MutationFinishPaypalRegistrationPaymentResult =
-  | Error
-  | MutationFinishPaypalRegistrationPaymentSuccess
+union MutationFinishPaypalRegistrationPaymentResult = Error | MutationFinishPaypalRegistrationPaymentSuccess
 
 type MutationFinishPaypalRegistrationPaymentSuccess {
   data: Boolean!
@@ -3397,10 +2532,7 @@ type MutationUpdateLinkSuccess {
   data: Link!
 }
 
-union MutationUpdateTicketConstraintsResult =
-  | Error
-  | MutationUpdateTicketConstraintsSuccess
-  | ZodError
+union MutationUpdateTicketConstraintsResult = Error | MutationUpdateTicketConstraintsSuccess | ZodError
 
 type MutationUpdateTicketConstraintsSuccess {
   data: Ticket!
@@ -3458,14 +2590,10 @@ input MutationUpsertFormInput {
   closesAt: DateTime
   description: String! = ""
 
-  """
-  Identifiant de l'événement à associer au formulaire
-  """
+  """Identifiant de l'événement à associer au formulaire"""
   eventId: ID
 
-  """
-  UID du groupe auquel le formulaire est associé.
-  """
+  """UID du groupe auquel le formulaire est associé."""
   group: String
 
   """
@@ -3521,14 +2649,10 @@ input MutationUpsertQuestionInput {
   """
   allowOptionOther: Boolean! = false
 
-  """
-  Types de fichiers autorisés pour les questions de type `FileUpload`
-  """
+  """Types de fichiers autorisés pour les questions de type `FileUpload`"""
   allowedFiletypes: [String!]
 
-  """
-  Indique si les réponses à la question sont anonymes
-  """
+  """Indique si les réponses à la question sont anonymes"""
   anonymous: Boolean!
 
   """
@@ -3547,9 +2671,7 @@ input MutationUpsertQuestionInput {
   """
   id: ID
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
   options: [QuestionOptionInput!]
 
@@ -3618,22 +2740,16 @@ type MutationVerifyBookingSuccess {
 interface Node {
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
 }
 
-"""
-An error raised when a resource does not exist.
-"""
+"""An error raised when a resource does not exist."""
 type NotFoundError implements ErrorInterface {
   message: String!
 }
 
-"""
-A notification is a push notification that was sent to a user
-"""
+"""A notification is a push notification that was sent to a user"""
 type Notification implements Node {
   actions: [Link!]!
   body: String!
@@ -3645,9 +2761,7 @@ type Notification implements Node {
   id: ID!
   imageFile: String!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   subscription: NotificationSubscription!
   subscriptionId: ID!
@@ -3691,9 +2805,7 @@ type OAuth2Error {
   message: String!
 }
 
-"""
-OAuth2 error codes, see RFC 6749 § 4.1.2.1
-"""
+"""OAuth2 error codes, see RFC 6749 § 4.1.2.1"""
 enum OAuth2ErrorCode {
   access_denied
   invalid_request
@@ -3708,19 +2820,13 @@ enum OAuth2ErrorCode {
 Une page écrite par un·e utilisateur·rice, servant par exemple à présenter les partenariats d'une AE sur une page dédiée.
 """
 type Page {
-  """
-  Contenu de la page. Supporte la syntaxe Markdown.
-  """
+  """Contenu de la page. Supporte la syntaxe Markdown."""
   body: String!
 
-  """
-  Contenu de la page, converti en HTML. Protégé contre les attaques XSS.
-  """
+  """Contenu de la page, converti en HTML. Protégé contre les attaques XSS."""
   bodyHtml: String!
 
-  """
-  L'utilisateur·ice connecté·e peut modifier ou supprimer cette page
-  """
+  """L'utilisateur·ice connecté·e peut modifier ou supprimer cette page"""
   canBeEdited: Boolean!
   createdAt: DateTime!
 
@@ -3729,9 +2835,7 @@ type Page {
   """
   files: [String!]!
 
-  """
-  URLs vers les fichiers inclus sur la page.
-  """
+  """URLs vers les fichiers inclus sur la page."""
   filesURLs: [String!]!
 
   """
@@ -3755,9 +2859,7 @@ type Page {
   """
   studentAssociation: StudentAssociation
 
-  """
-  Titre de la page.
-  """
+  """Titre de la page."""
   title: String!
   updatedAt: DateTime!
 }
@@ -3796,37 +2898,25 @@ type Picture {
   position: Int!
 }
 
-"""
-Une ressource qui possède une image associée
-"""
+"""Une ressource qui possède une image associée"""
 interface Pictured {
   """
   Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
   """
   hasSeparateDarkPicture: Boolean!
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
 
-  """
-  Le nom du fichier de l'image
-  """
+  """Le nom du fichier de l'image"""
   pictureFile: String!
 
-  """
-  Le nom du fichier de l'image, en thème sombre
-  """
+  """Le nom du fichier de l'image, en thème sombre"""
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -3836,9 +2926,7 @@ interface Pictured {
   ): String!
 }
 
-"""
-Entier positif
-"""
+"""Entier positif"""
 scalar PositiveInt
 
 type ProfitsBreakdown {
@@ -3875,20 +2963,14 @@ type QRCode {
 - **Rate limit par défault:** 1200/minute (par utilisateur·ice et par query)
 """
 type Query {
-  """
-  Get all OAuth2 clients. Only admins can do this.
-  """
+  """Get all OAuth2 clients. Only admins can do this."""
   allApps: [ThirdPartyApp!]!
 
-  """
-  Récupère tous les formulaires. Réservé aux admins.
-  """
+  """Récupère tous les formulaires. Réservé aux admins."""
   allForms(after: String, before: String, first: Int, last: Int): QueryAllFormsConnection!
   allUsers(after: String, before: String, first: Int, last: Int): QueryAllUsersConnection!
   announcement(
-    """
-    ID local ou global
-    """
+    """ID local ou global"""
     id: ID!
   ): Announcement!
   announcements(after: String, before: String, first: Int, last: Int): QueryAnnouncementsConnection!
@@ -3898,12 +2980,11 @@ type Query {
   """
   Récupérer l'ID d'un article à partir de son groupe et de son slug. Pensé pour les redirections d'URLs anciennes.
   """
-  articleID(group: UID!, slug: String!): LocalID
-    @deprecated(reason: "Utilisez `article` à la place")
+  articleID(group: UID!, slug: String!): LocalID @deprecated(reason: "Utilisez `article` à la place")
 
   """
   Renvoie l'utilisateur·ice connecté·e. Si l'utilisateur·ice n'est pas connecté·e, une erreur est renvoyée. Pour avoir null aulieu d'une erreur, voir `me`.
-
+  
   - **Rate limit:** 6000/minute
   """
   assertMe: User!
@@ -3917,24 +2998,16 @@ type Query {
   barWeeks: [BarWeek!]!
   birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
 
-  """
-  Récupère une réservation par son code
-  """
+  """Récupère une réservation par son code"""
   booking(code: String!): Registration!
 
-  """
-  Si la page donnée est épinglée par l'utilisateur·ice connecté·e
-  """
+  """Si la page donnée est épinglée par l'utilisateur·ice connecté·e"""
   bookmarked(
-    """
-    Chemin de la page
-    """
+    """Chemin de la page"""
     path: String!
   ): Boolean!
 
-  """
-  Retourne des informations sur le build actuel de l'API
-  """
+  """Retourne des informations sur le build actuel de l'API"""
   buildInfo: BuildInfo!
   changelog(
     """
@@ -3945,8 +3018,8 @@ type Query {
   codeContributors: QueryCodeContributorsResult!
 
   """
-  A changelog for multiple versions.
-  Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**.
+  A changelog for multiple versions. 
+  Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**. 
   This is way more useful for querying a range of versions for a changelog, but not the usual way ranges are defined.
   """
   combinedChangelog(
@@ -4004,15 +3077,11 @@ type Query {
   Récupère un formulaire. On peut utiliser une subscription pour avoir la mise à jour en temps réel des réponses au formulaire.
   """
   form(
-    """
-    Identifiant local (sans le préfixe `form:`) du formulaire
-    """
+    """Identifiant local (sans le préfixe `form:`) du formulaire"""
     localId: String!
   ): Form
 
-  """
-  Récupère les formulaires visibles par l'utilisateur·ice connecté·e.
-  """
+  """Récupère les formulaires visibles par l'utilisateur·ice connecté·e."""
   forms(after: String, before: String, first: Int, last: Int): QueryFormsConnection!
   godparentRequest(id: ID!): GodparentRequest!
   godparentRequests: [GodparentRequest!]!
@@ -4020,34 +3089,27 @@ type Query {
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
   groups(types: [GroupType!]): [Group!]!
 
-  """
-  - **Rate limit:** 5/seconde
-  """
+  """- **Rate limit:** 5/seconde"""
   healthcheck: HealthCheck!
 
-  """
-  Gets the homepage articles, customized if the user is logged in.
-  """
+  """Gets the homepage articles, customized if the user is logged in."""
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
   issue(number: Int!): Issue!
   issuesByUser: [Issue!]!
   kioskReload: Boolean!
 
-  """
-  Vrai si l'utilisateur·ice est connecté·e
-  """
+  """Vrai si l'utilisateur·ice est connecté·e"""
   loggedIn: Boolean!
   logs(after: String, before: String, first: Int, last: Int): QueryLogsConnection!
   lydiaAccount(id: ID!): LydiaAccount!
   lydiaAccounts: [LydiaAccount!]!
-  lydiaAccountsOfGroup(uid: String!): [LydiaAccount!]!
-    @deprecated(reason: "Use group.lydiaAccounts instead")
+  lydiaAccountsOfGroup(uid: String!): [LydiaAccount!]! @deprecated(reason: "Use group.lydiaAccounts instead")
   major(uid: String!): Major!
   majors: [Major!]!
 
   """
   Renvoie l’utilisateur·ice connecté·e, ou null. Pour une valeur de retour non-nullable, voir `assertMe`.
-
+  
   - **Rate limit:** 6000/minute
   """
   me: User
@@ -4057,15 +3119,7 @@ type Query {
   notification(id: ID!): Notification!
   notificationSubscription(endpoint: String!): NotificationSubscription!
   notificationSubscriptions: [NotificationSubscription!]!
-  notifications(
-    after: String
-    before: String
-    channels: [NotificationChannel!] = []
-    first: Int
-    groupUids: [String!] = []
-    last: Int
-    subscriptionEndpoint: ID
-  ): QueryNotificationsConnection!
+  notifications(after: String, before: String, channels: [NotificationChannel!] = [], first: Int, groupUids: [String!] = [], last: Int, subscriptionEndpoint: ID): QueryNotificationsConnection!
 
   """
   Returns how many people will be notified if an article of the given visibility and group is created.
@@ -4085,46 +3139,25 @@ type Query {
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
   registration(id: ID!): QueryRegistrationResult!
-  registrationsOfUser(
-    after: String
-    before: String
-    first: Int
-    forUserOnly: Boolean
-    last: Int
-    userUid: String!
-  ): QueryRegistrationsOfUserConnection!
-    @deprecated(
-      reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`)."
-    )
+  registrationsOfUser(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int, userUid: String!): QueryRegistrationsOfUserConnection! @deprecated(reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`).")
 
   """
   Rendu de markdown en HTML. Demande a être authentifié·e pour éviter tout abus.
   """
   renderMarkdown(
-    """
-    Le markdown à rendre en HTML
-    """
+    """Le markdown à rendre en HTML"""
     markdown: String!
   ): String!
   school(uid: String!): School!
   schoolGroups: [SchoolGroup!]!
   schools: [School!]!
   searchArticles(groupUid: String, q: String!): [ArticleSearchResultType!]!
-  searchDocuments(
-    forApprentices: Boolean!
-    majorUid: String!
-    q: String!
-    yearTier: Int!
-  ): [DocumentSearchResult!]!
+  searchDocuments(forApprentices: Boolean!, majorUid: String!, q: String!, yearTier: Int!): [DocumentSearchResult!]!
   searchEvents(groupUid: String, q: String!): [EvenSearchResult!]!
 
-  """
-  Recherche des formulaires
-  """
+  """Recherche des formulaires"""
   searchForms(
-    """
-    La recherche
-    """
+    """La recherche"""
     q: String!
     similarityCutoff: Float
   ): [FormSearchResult!]!
@@ -4145,28 +3178,19 @@ type Query {
     all: Boolean
   ): [Theme!]!
   thirdPartyApp(
-    """
-    The third party app's client_id. The 'app:' id prefix is optional.
-    """
+    """The third party app's client_id. The 'app:' id prefix is optional."""
     id: ID!
   ): ThirdPartyApp!
   ticketGroup(id: LocalID!): TicketGroup!
 
-  """
-  Vérifie si un identifiant (un “@” dans l'interface) est disponible
-  """
+  """Vérifie si un identifiant (un “@” dans l'interface) est disponible"""
   uidIsAvailable(uid: UID!): Boolean!
   upcomingChangelog: QueryUpcomingChangelogResult!
   user(id: ID, uid: String): User!
   userByEmail(email: String!): User!
   userCandidate(token: String!): UserCandidate!
   userCandidateByEmail(email: String!): UserCandidate!
-  userCandidates(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): QueryUserCandidatesConnection!
+  userCandidates(after: String, before: String, first: Int, last: Int): QueryUserCandidatesConnection!
   userServices: [Service!]!
 }
 
@@ -4376,9 +3400,7 @@ type QueryUserCandidatesConnectionEdge {
   node: UserCandidate!
 }
 
-"""
-Une question dans un formulaire
-"""
+"""Une question dans un formulaire"""
 interface Question {
   """
   Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
@@ -4388,9 +3410,7 @@ interface Question {
     after: String
     before: String
 
-    """
-    Récupérer uniquement les réponses d'un utilisateur, par son uid.
-    """
+    """Récupérer uniquement les réponses d'un utilisateur, par son uid."""
     by: String
     first: Int
     last: Int
@@ -4401,54 +3421,34 @@ interface Question {
   """
   defaultAnswer: Answer
 
-  """
-  Description en Markdown de la question
-  """
+  """Description en Markdown de la question"""
   description: String!
 
-  """
-  Description en HTML de la question
-  """
+  """Description en HTML de la question"""
   descriptionHtml: String!
 
-  """
-  Préfixe d'identifiant: question:
-  """
+  """Préfixe d'identifiant: question:"""
   id: ID!
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
 
-  """
-  La réponse de l'utilisateur·ice connecté·e à cette question
-  """
+  """La réponse de l'utilisateur·ice connecté·e à cette question"""
   myAnswer: Answer
 
-  """
-  Ordre de la question dans la section
-  """
+  """Ordre de la question dans la section"""
   order: Int!
 
-  """
-  Section du formulaire dans laquelle est la question
-  """
+  """Section du formulaire dans laquelle est la question"""
   section: FormSection!
 
-  """
-  Titre de la question
-  """
+  """Titre de la question"""
   title: String!
 
-  """
-  Nombre total de réponses à cette question
-  """
+  """Nombre total de réponses à cette question"""
   totalAnswers: Int!
 
-  """
-  Type de la question
-  """
+  """Type de la question"""
   type: QuestionKind!
 }
 
@@ -4463,9 +3463,7 @@ type QuestionAnswersConnectionEdge {
   node: Answer!
 }
 
-"""
-Question de type `FileUpload`
-"""
+"""Question de type `FileUpload`"""
 type QuestionFileUpload implements Question {
   """
   Types de fichiers autorisés pour les questions de type `File`. Null si la question n'est pas de type `File`.
@@ -4480,9 +3478,7 @@ type QuestionFileUpload implements Question {
     after: String
     before: String
 
-    """
-    Récupérer uniquement les réponses d'un utilisateur, par son uid.
-    """
+    """Récupérer uniquement les réponses d'un utilisateur, par son uid."""
     by: String
     first: Int
     last: Int
@@ -4493,99 +3489,61 @@ type QuestionFileUpload implements Question {
   """
   defaultAnswer: Answer
 
-  """
-  Description en Markdown de la question
-  """
+  """Description en Markdown de la question"""
   description: String!
 
-  """
-  Description en HTML de la question
-  """
+  """Description en HTML de la question"""
   descriptionHtml: String!
 
-  """
-  Préfixe d'identifiant: question:
-  """
+  """Préfixe d'identifiant: question:"""
   id: ID!
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
 
-  """
-  La réponse de l'utilisateur·ice connecté·e à cette question
-  """
+  """La réponse de l'utilisateur·ice connecté·e à cette question"""
   myAnswer: Answer
 
-  """
-  Ordre de la question dans la section
-  """
+  """Ordre de la question dans la section"""
   order: Int!
 
-  """
-  Section du formulaire dans laquelle est la question
-  """
+  """Section du formulaire dans laquelle est la question"""
   section: FormSection!
 
-  """
-  Titre de la question
-  """
+  """Titre de la question"""
   title: String!
 
-  """
-  Nombre total de réponses à cette question
-  """
+  """Nombre total de réponses à cette question"""
   totalAnswers: Int!
 
-  """
-  Type de la question
-  """
+  """Type de la question"""
   type: QuestionKind!
 }
 
-"""
-Le type de question
-"""
+"""Le type de question"""
 enum QuestionKind {
-  """
-  La réponse est une date, sans heure associée.
-  """
+  """La réponse est une date, sans heure associée."""
   Date
 
-  """
-  La réponse est un fichier mis en ligne par l'utilisateur·ice.
-  """
+  """La réponse est un fichier mis en ligne par l'utilisateur·ice."""
   FileUpload
 
-  """
-  La réponse est un texte long.
-  """
+  """La réponse est un texte long."""
   LongText
 
-  """
-  La réponse est un nombre, potentiellement à virgule.
-  """
+  """La réponse est un nombre, potentiellement à virgule."""
   Number
 
-  """
-  La réponse est un nombre entier entre deux bornes
-  """
+  """La réponse est un nombre entier entre deux bornes"""
   Scale
 
-  """
-  La réponse est une ou plusieurs options parmi une liste.
-  """
+  """La réponse est une ou plusieurs options parmi une liste."""
   SelectMultiple
 
-  """
-  La réponse est une des options parmi une liste.
-  """
+  """La réponse est une des options parmi une liste."""
   SelectOne
 
-  """
-  La réponse est un texte court.
-  """
+  """La réponse est un texte court."""
   Text
 
   """
@@ -4594,24 +3552,16 @@ enum QuestionKind {
   Time
 }
 
-"""
-Choix pour les questions de type `SelectOne` ou `SelectMultiple`
-"""
+"""Choix pour les questions de type `SelectOne` ou `SelectMultiple`"""
 input QuestionOptionInput {
-  """
-  ID de la question vers laquelle sauter si ce choix est sélectionné
-  """
+  """ID de la question vers laquelle sauter si ce choix est sélectionné"""
   jump: ID
 
-  """
-  Choix
-  """
+  """Choix"""
   value: String!
 }
 
-"""
-Question de type `Text`, `Number`, `Date`, `Time` ou `LongText`
-"""
+"""Question de type `Text`, `Number`, `Date`, `Time` ou `LongText`"""
 type QuestionScalar implements Question {
   """
   Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
@@ -4621,9 +3571,7 @@ type QuestionScalar implements Question {
     after: String
     before: String
 
-    """
-    Récupérer uniquement les réponses d'un utilisateur, par son uid.
-    """
+    """Récupérer uniquement les réponses d'un utilisateur, par son uid."""
     by: String
     first: Int
     last: Int
@@ -4634,60 +3582,38 @@ type QuestionScalar implements Question {
   """
   defaultAnswer: Answer
 
-  """
-  Description en Markdown de la question
-  """
+  """Description en Markdown de la question"""
   description: String!
 
-  """
-  Description en HTML de la question
-  """
+  """Description en HTML de la question"""
   descriptionHtml: String!
 
-  """
-  Préfixe d'identifiant: question:
-  """
+  """Préfixe d'identifiant: question:"""
   id: ID!
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
 
-  """
-  La réponse de l'utilisateur·ice connecté·e à cette question
-  """
+  """La réponse de l'utilisateur·ice connecté·e à cette question"""
   myAnswer: Answer
 
-  """
-  Ordre de la question dans la section
-  """
+  """Ordre de la question dans la section"""
   order: Int!
 
-  """
-  Section du formulaire dans laquelle est la question
-  """
+  """Section du formulaire dans laquelle est la question"""
   section: FormSection!
 
-  """
-  Titre de la question
-  """
+  """Titre de la question"""
   title: String!
 
-  """
-  Nombre total de réponses à cette question
-  """
+  """Nombre total de réponses à cette question"""
   totalAnswers: Int!
 
-  """
-  Type de la question
-  """
+  """Type de la question"""
   type: QuestionKind!
 }
 
-"""
-Question de type `Scale`
-"""
+"""Question de type `Scale`"""
 type QuestionScale implements Question {
   """
   Indique si la réponse à la question est anonyme. Si oui, les personnes pouvant voir les réponses ne pouront jamais savoir la réponse d'une personne à la question
@@ -4702,9 +3628,7 @@ type QuestionScale implements Question {
     after: String
     before: String
 
-    """
-    Récupérer uniquement les réponses d'un utilisateur, par son uid.
-    """
+    """Récupérer uniquement les réponses d'un utilisateur, par son uid."""
     by: String
     first: Int
     last: Int
@@ -4715,115 +3639,71 @@ type QuestionScale implements Question {
   """
   defaultAnswer: Answer
 
-  """
-  Description en Markdown de la question
-  """
+  """Description en Markdown de la question"""
   description: String!
 
-  """
-  Description en HTML de la question
-  """
+  """Description en HTML de la question"""
   descriptionHtml: String!
 
-  """
-  Préfixe d'identifiant: question:
-  """
+  """Préfixe d'identifiant: question:"""
   id: ID!
 
-  """
-  Liste des labels pour les valeurs possibles
-  """
+  """Liste des labels pour les valeurs possibles"""
   labels: [String!]!
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
 
-  """
-  Valeur maximale
-  """
+  """Valeur maximale"""
   maximum: Int!
 
-  """
-  Label de la valeur maximale
-  """
+  """Label de la valeur maximale"""
   maximumLabel: String!
 
-  """
-  Valeur minimale
-  """
+  """Valeur minimale"""
   minimum: Int!
 
-  """
-  Label de la valeur minimale
-  """
+  """Label de la valeur minimale"""
   minimumLabel: String!
 
-  """
-  La réponse de l'utilisateur·ice connecté·e à cette question
-  """
+  """La réponse de l'utilisateur·ice connecté·e à cette question"""
   myAnswer: Answer
 
-  """
-  Liste des valeurs possibles
-  """
+  """Liste des valeurs possibles"""
   options: [Int!]!
 
-  """
-  Ordre de la question dans la section
-  """
+  """Ordre de la question dans la section"""
   order: Int!
 
-  """
-  Section du formulaire dans laquelle est la question
-  """
+  """Section du formulaire dans laquelle est la question"""
   section: FormSection!
 
-  """
-  Titre de la question
-  """
+  """Titre de la question"""
   title: String!
 
-  """
-  Nombre total de réponses à cette question
-  """
+  """Nombre total de réponses à cette question"""
   totalAnswers: Int!
 
-  """
-  Type de la question
-  """
+  """Type de la question"""
   type: QuestionKind!
 }
 
-"""
-Options supplémentaires pour les questions de type `Scale`
-"""
+"""Options supplémentaires pour les questions de type `Scale`"""
 input QuestionScaleInput {
-  """
-  Valeur maximale
-  """
+  """Valeur maximale"""
   maximum: Int!
 
-  """
-  Label de la valeur maximale
-  """
+  """Label de la valeur maximale"""
   maximumLabel: String
 
-  """
-  Valeur minimale
-  """
+  """Valeur minimale"""
   minimum: Int!
 
-  """
-  Label de la valeur minimale
-  """
+  """Label de la valeur minimale"""
   minimumLabel: String
 }
 
-"""
-Question de type `SelectMultiple`
-"""
+"""Question de type `SelectMultiple`"""
 type QuestionSelectMultiple implements Question {
   """
   Indique si la question de type `SelectOne` ou `SelectMultiple` permet une option "Autre", que l'utilisateur·ice peut remplir sans contrainte.
@@ -4843,9 +3723,7 @@ type QuestionSelectMultiple implements Question {
     after: String
     before: String
 
-    """
-    Récupérer uniquement les réponses d'un utilisateur, par son uid.
-    """
+    """Récupérer uniquement les réponses d'un utilisateur, par son uid."""
     by: String
     first: Int
     last: Int
@@ -4856,29 +3734,19 @@ type QuestionSelectMultiple implements Question {
   """
   defaultAnswer: Answer
 
-  """
-  Description en Markdown de la question
-  """
+  """Description en Markdown de la question"""
   description: String!
 
-  """
-  Description en HTML de la question
-  """
+  """Description en HTML de la question"""
   descriptionHtml: String!
 
-  """
-  Préfixe d'identifiant: question:
-  """
+  """Préfixe d'identifiant: question:"""
   id: ID!
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
 
-  """
-  La réponse de l'utilisateur·ice connecté·e à cette question
-  """
+  """La réponse de l'utilisateur·ice connecté·e à cette question"""
   myAnswer: Answer
 
   """
@@ -4886,35 +3754,23 @@ type QuestionSelectMultiple implements Question {
   """
   options: [String!]!
 
-  """
-  Ordre de la question dans la section
-  """
+  """Ordre de la question dans la section"""
   order: Int!
 
-  """
-  Section du formulaire dans laquelle est la question
-  """
+  """Section du formulaire dans laquelle est la question"""
   section: FormSection!
 
-  """
-  Titre de la question
-  """
+  """Titre de la question"""
   title: String!
 
-  """
-  Nombre total de réponses à cette question
-  """
+  """Nombre total de réponses à cette question"""
   totalAnswers: Int!
 
-  """
-  Type de la question
-  """
+  """Type de la question"""
   type: QuestionKind!
 }
 
-"""
-Question de type `SelectOne`
-"""
+"""Question de type `SelectOne`"""
 type QuestionSelectOne implements Question {
   """
   Indique si la question de type `SelectOne` ou `SelectMultiple` permet une option "Autre", que l'utilisateur·ice peut remplir sans contrainte.
@@ -4934,9 +3790,7 @@ type QuestionSelectOne implements Question {
     after: String
     before: String
 
-    """
-    Récupérer uniquement les réponses d'un utilisateur, par son uid.
-    """
+    """Récupérer uniquement les réponses d'un utilisateur, par son uid."""
     by: String
     first: Int
     last: Int
@@ -4947,14 +3801,10 @@ type QuestionSelectOne implements Question {
   """
   defaultAnswer: Answer
 
-  """
-  Description en Markdown de la question
-  """
+  """Description en Markdown de la question"""
   description: String!
 
-  """
-  Description en HTML de la question
-  """
+  """Description en HTML de la question"""
   descriptionHtml: String!
 
   """
@@ -4962,9 +3812,7 @@ type QuestionSelectOne implements Question {
   """
   groups: [Group]!
 
-  """
-  Préfixe d'identifiant: question:
-  """
+  """Préfixe d'identifiant: question:"""
   id: ID!
 
   """
@@ -4972,14 +3820,10 @@ type QuestionSelectOne implements Question {
   """
   jumps: [FormSection]!
 
-  """
-  Indique si la question est obligatoire
-  """
+  """Indique si la question est obligatoire"""
   mandatory: Boolean!
 
-  """
-  La réponse de l'utilisateur·ice connecté·e à cette question
-  """
+  """La réponse de l'utilisateur·ice connecté·e à cette question"""
   myAnswer: Answer
 
   """
@@ -4987,29 +3831,19 @@ type QuestionSelectOne implements Question {
   """
   options: [String!]!
 
-  """
-  Ordre de la question dans la section
-  """
+  """Ordre de la question dans la section"""
   order: Int!
 
-  """
-  Section du formulaire dans laquelle est la question
-  """
+  """Section du formulaire dans laquelle est la question"""
   section: FormSection!
 
-  """
-  Titre de la question
-  """
+  """Titre de la question"""
   title: String!
 
-  """
-  Nombre total de réponses à cette question
-  """
+  """Nombre total de réponses à cette question"""
   totalAnswers: Int!
 
-  """
-  Type de la question
-  """
+  """Type de la question"""
   type: QuestionKind!
 }
 
@@ -5020,15 +3854,11 @@ type QuickSignup implements Node {
   code: String!
   createdAt: DateTime!
 
-  """
-  Vrai si le lien est expiré
-  """
+  """Vrai si le lien est expiré"""
   expired: Boolean!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   school: School!
   schoolId: ID!
@@ -5040,19 +3870,13 @@ type QuickSignup implements Node {
 Une resource pouvant recevoir des réactions (likes, etc) par les utilisateur·ice·s
 """
 interface Reactable {
-  """
-  L’identifiant de la resource
-  """
+  """L’identifiant de la resource"""
   id: ID!
 
-  """
-  Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
-  """
+  """Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji"""
   reacted(emoji: String!): Boolean!
 
-  """
-  Nombre total de réactions avec cet emoji
-  """
+  """Nombre total de réactions avec cet emoji"""
   reactions(emoji: String!): Int!
 }
 
@@ -5067,28 +3891,20 @@ type Reaction implements Node {
   emoji: String!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   updatedAt: DateTime!
 }
 
 type RedisHealthCheck {
-  """
-  Whether the Redis publisher client is ready
-  """
+  """Whether the Redis publisher client is ready"""
   publish: Boolean!
 
-  """
-  Whether the Redis subscriber client is ready
-  """
+  """Whether the Redis subscriber client is ready"""
   subscribe: Boolean!
 }
 
-"""
-A reservation is a user's registration for a ticket
-"""
+"""A reservation is a user's registration for a ticket"""
 type Registration implements Node {
   author: User
   authorEmail: String!
@@ -5103,9 +3919,7 @@ type Registration implements Node {
   createdAt: DateTime!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   opposed: Boolean!
   opposedAt: DateTime
@@ -5113,9 +3927,7 @@ type Registration implements Node {
   paid: Boolean!
   paymentMethod: PaymentMethod
 
-  """
-  Returns an SVG path of the QR Code for the given registration
-  """
+  """Returns an SVG path of the QR Code for the given registration"""
   qrCode(
     """
     URL à utiliser pour le QR Code. `[code]` sera remplacé par le code de la réservation
@@ -5161,69 +3973,43 @@ type RegistrationsCounts {
   verified: Float!
 }
 
-"""
-A change in the changelog
-"""
+"""A change in the changelog"""
 type ReleaseChange {
-  """
-  The authors of the change
-  """
+  """The authors of the change"""
   authors: [String!]!
   html: String!
 
-  """
-  Issues linked to the change
-  """
+  """Issues linked to the change"""
   issues: [Int!]!
 
-  """
-  Merge requests linked to the change
-  """
+  """Merge requests linked to the change"""
   mergeRequests: [Int!]!
 
-  """
-  People who created the issues (gave the idea, reported the bug, etc.)
-  """
+  """People who created the issues (gave the idea, reported the bug, etc.)"""
   reporters: [String!]!
 
-  """
-  The text of the change
-  """
+  """The text of the change"""
   text: String!
 }
 
-"""
-Changes in the changelog, grouped by category
-"""
+"""Changes in the changelog, grouped by category"""
 type ReleaseChangesMaps {
-  """
-  New features
-  """
+  """New features"""
   added: [ReleaseChange!]!
 
-  """
-  What was fixed
-  """
+  """What was fixed"""
   fixed: [ReleaseChange!]!
 
-  """
-  What was improved
-  """
+  """What was improved"""
   improved: [ReleaseChange!]!
 
-  """
-  Miscalleanous changes
-  """
+  """Miscalleanous changes"""
   other: [ReleaseChange!]!
 
-  """
-  Security changes
-  """
+  """Security changes"""
   security: [ReleaseChange!]!
 
-  """
-  Technical changes
-  """
+  """Technical changes"""
   technical: [ReleaseChange!]!
 }
 
@@ -5241,24 +4027,16 @@ type School implements Pictured {
   majors: [Major!]!
   name: String!
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
   pictureFile: String!
 
-  """
-  Le nom du fichier de l'image, en thème sombre
-  """
+  """Le nom du fichier de l'image, en thème sombre"""
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -5284,18 +4062,14 @@ input SchoolInput {
   name: String!
 }
 
-"""
-A service
-"""
+"""A service"""
 type Service implements Node {
   description: String!
   group: Group
   id: ID!
   importance: Int!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   logo: String!
   logoSourceType: LogoSourceType!
@@ -5305,15 +4079,11 @@ type Service implements Node {
   url: String!
 }
 
-"""
-Ressource dont le nombre de partages est compté
-"""
+"""Ressource dont le nombre de partages est compté"""
 interface Shareable {
   id: ID!
 
-  """
-  Nombre de partages
-  """
+  """Nombre de partages"""
   shares: Int!
 }
 
@@ -5326,9 +4096,7 @@ type ShopItem implements Node {
   id: ID!
   itemOptions: [ShopItemOption!]!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   lydiaAccount: LydiaAccount
   max: Int!
@@ -5338,9 +4106,7 @@ type ShopItem implements Node {
   price: Float!
   shopPayments: [ShopPayment!]!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   startsAt: DateTime
   stock: Int!
@@ -5387,9 +4153,7 @@ type ShopPayment {
   user: User!
 }
 
-"""
-Du texte de 200 caractères maximum
-"""
+"""Du texte de 200 caractères maximum"""
 scalar ShortString
 
 enum SortDirection {
@@ -5397,24 +4161,16 @@ enum SortDirection {
   Descending
 }
 
-"""
-Associe une clé à une valeur de type nombre entier
-"""
+"""Associe une clé à une valeur de type nombre entier"""
 type StringToIntMapping {
-  """
-  Clé de la paire
-  """
+  """Clé de la paire"""
   key: String!
 
-  """
-  Valeur de la paire
-  """
+  """Valeur de la paire"""
   value: Int!
 }
 
-"""
-There is one student association per school
-"""
+"""There is one student association per school"""
 type StudentAssociation implements Pictured {
   """
   Si l'utilsateur·ice courant·e peut créer des groupes rattachés à cette AE
@@ -5431,24 +4187,14 @@ type StudentAssociation implements Pictured {
   """
   canEditPages: Boolean!
 
-  """
-  L'utilisateur·ice connecté·e peut lister les pages de l'AE
-  """
+  """L'utilisateur·ice connecté·e peut lister les pages de l'AE"""
   canListPages: Boolean!
   contributionOptions: [ContributionOption!]!
   createdAt: DateTime!
   description: String!
-  groups(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    types: [GroupType!]
-  ): StudentAssociationGroupsConnection!
+  groups(after: String, before: String, first: Int, last: Int, types: [GroupType!]): StudentAssociationGroupsConnection!
 
-  """
-  Nombre de groupes reliés à cette AE
-  """
+  """Nombre de groupes reliés à cette AE"""
   groupsCount: Int!
 
   """
@@ -5459,9 +4205,7 @@ type StudentAssociation implements Pictured {
   links: [Link!]!
   name: String!
 
-  """
-  La page associée à l'AE
-  """
+  """La page associée à l'AE"""
   page(
     """
     Le chemin de la page. Ce n'est pas le chemin complet, mais celui qui est local à l'AE. Voir `Page` pour plus d'informations.
@@ -5469,29 +4213,19 @@ type StudentAssociation implements Pictured {
     path: String!
   ): Page
 
-  """
-  Les pages associées à l'AE
-  """
+  """Les pages associées à l'AE"""
   pages(after: String, before: String, first: Int, last: Int): PagesConnection!
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
   pictureFile: String!
 
-  """
-  Le nom du fichier de l'image, en thème sombre
-  """
+  """Le nom du fichier de l'image, en thème sombre"""
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -5531,9 +4265,7 @@ type Subject {
   semester: Int
   shortName: String!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   unit: TeachingUnit
@@ -5554,7 +4286,7 @@ type SubjectDocumentsConnectionEdge {
 
 """
 Permet de faire des requêtes de données temps-réel, via des _websockets_.
-L'endpoint pour le temps réel est `ws://localhost:4000/graphql`.
+L'endpoint pour le temps réel est `ws://localhost:4000/graphql`. 
 
 Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-guild.dev/graphql/ws/get-started#use-the-client)
 
@@ -5569,22 +4301,16 @@ type Subscription {
   Récupère un formulaire. On peut utiliser une subscription pour avoir la mise à jour en temps réel des réponses au formulaire.
   """
   form(
-    """
-    Identifiant local (sans le préfixe `form:`) du formulaire
-    """
+    """Identifiant local (sans le préfixe `form:`) du formulaire"""
     localId: String!
   ): Form
 
-  """
-  Gets the homepage articles, customized if the user is logged in.
-  """
+  """Gets the homepage articles, customized if the user is logged in."""
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
   kioskReload: Boolean!
   registration(id: ID!): SubscriptionRegistrationResult!
   thirdPartyApp(
-    """
-    The third party app's client_id. The 'app:' id prefix is optional.
-    """
+    """The third party app's client_id. The 'app:' id prefix is optional."""
     id: ID!
   ): ThirdPartyApp!
 }
@@ -5619,31 +4345,23 @@ type Theme implements Node {
   endsAt: DateTime!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   name: String!
   startsAt: DateTime!
   updatedAt: DateTime!
   values(
-    """
-    Ne récupérer que les valeurs d'une variante du thème
-    """
+    """Ne récupérer que les valeurs d'une variante du thème"""
     variant: ThemeVariant
   ): [ThemeValue!]!
   visibility: Visibility!
 }
 
-"""
-Définit la valeur d'une variable du thème
-"""
+"""Définit la valeur d'une variable du thème"""
 type ThemeValue implements Node {
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   theme: Theme!
   value: String!
@@ -5651,88 +4369,54 @@ type ThemeValue implements Node {
   variant: ThemeVariant!
 }
 
-"""
-Les différentes variables qu'un thème peut définir
-"""
+"""Les différentes variables qu'un thème peut définir"""
 enum ThemeVariable {
-  """
-  Couleur de fond
-  """
+  """Couleur de fond"""
   ColorBackground
 
-  """
-  Couleur de fond moins intense
-  """
+  """Couleur de fond moins intense"""
   ColorBackground2
 
-  """
-  Couleur de fond moins intense que ColorBackground2
-  """
+  """Couleur de fond moins intense que ColorBackground2"""
   ColorBackground3
 
-  """
-  Couleur de fond moins intense que ColorBackground3
-  """
+  """Couleur de fond moins intense que ColorBackground3"""
   ColorBackground4
 
-  """
-  Couleur des erreurs ou choses dangereuses (souvent rouge)
-  """
+  """Couleur des erreurs ou choses dangereuses (souvent rouge)"""
   ColorDanger
 
-  """
-  Couleur de fond pour ColorDanger
-  """
+  """Couleur de fond pour ColorDanger"""
   ColorDangerBackground
 
-  """
-  Couleur d'avant plan
-  """
+  """Couleur d'avant plan"""
   ColorForeground
 
-  """
-  Couleur d'avant plan moins intense
-  """
+  """Couleur d'avant plan moins intense"""
   ColorMuted
 
-  """
-  Couleur principale
-  """
+  """Couleur principale"""
   ColorPrimary
 
-  """
-  Couleur de fond pour ColorPrimary
-  """
+  """Couleur de fond pour ColorPrimary"""
   ColorPrimaryBackground
 
-  """
-  Couleur d'avant plan moins intense que ColorMuted
-  """
+  """Couleur d'avant plan moins intense que ColorMuted"""
   ColorShy
 
-  """
-  Couleur des éléments de succès (souvent vert)
-  """
+  """Couleur des éléments de succès (souvent vert)"""
   ColorSuccess
 
-  """
-  Couleur de fond pour ColorSuccess
-  """
+  """Couleur de fond pour ColorSuccess"""
   ColorSuccessBackground
 
-  """
-  Couleurs des avertissements
-  """
+  """Couleurs des avertissements"""
   ColorWarning
 
-  """
-  Couleur de fond pour ColorWarning
-  """
+  """Couleur de fond pour ColorWarning"""
   ColorWarningBackground
 
-  """
-  Image à utiliser en fond de la barre de navigation en bas (sur mobile)
-  """
+  """Image à utiliser en fond de la barre de navigation en bas (sur mobile)"""
   ImageBackgroundNavbarBottom
 
   """
@@ -5750,30 +4434,20 @@ enum ThemeVariable {
   """
   ImageLogoNavbarTop
 
-  """
-  Motif à répéter en fond de l'application
-  """
+  """Motif à répéter en fond de l'application"""
   PatternBackground
 }
 
-"""
-Différentes variantes pour un même thème
-"""
+"""Différentes variantes pour un même thème"""
 enum ThemeVariant {
-  """
-  Variante sombre
-  """
+  """Variante sombre"""
   Dark
 
-  """
-  Variante claire
-  """
+  """Variante claire"""
   Light
 }
 
-"""
-A third-party OAuth2 client
-"""
+"""A third-party OAuth2 client"""
 type ThirdPartyApp {
   active: Boolean!
   allowedRedirectUris: [String!]!
@@ -5790,12 +4464,7 @@ type ThirdPartyApp {
   logs(after: String, before: String, first: Int, last: Int): ThirdPartyAppLogsConnection!
   name: String!
   owner: Group!
-  rateLimitHits(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): ThirdPartyAppRateLimitHitsConnection!
+  rateLimitHits(after: String, before: String, first: Int, last: Int): ThirdPartyAppRateLimitHitsConnection!
   secretLength: Int!
   updatedAt: DateTime
   users(after: String, before: String, first: Int, last: Int): ThirdPartyAppUsersConnection!
@@ -5872,25 +4541,19 @@ type Ticket implements Node {
   event: Event!
   eventId: ID!
 
-  """
-  Full name, including the ticket group's name if any
-  """
+  """Full name, including the ticket group's name if any"""
   fullName: String!
   godsonLimit: Int!
   group: TicketGroup
   id: ID!
   links: [Link!]!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   name: String!
   onlyManagersCanProvide: Boolean!
 
-  """
-  Si le shotgun du billet est ouvert
-  """
+  """Si le shotgun du billet est ouvert"""
   open: Boolean!
   openToAlumni: Boolean
   openToApprentices: Boolean
@@ -5910,26 +4573,18 @@ type Ticket implements Node {
   registrations: [Registration!]!
   remainingGodsons: Int!
 
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
+  """Un nom lisible sans espaces, adaptés pour des URLs."""
   slug: String!
   ticketGroupId: ID
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
-"""
-Contraintes d'un billet
-"""
+"""Contraintes d'un billet"""
 input TicketConstraintsInput {
-  """
-  Ancien·ne·s étudiant·e·s
-  """
+  """Ancien·ne·s étudiant·e·s"""
   alumni: BooleanConstraint
 
-  """
-  Apprenti·e·s (FISAs)
-  """
+  """Apprenti·e·s (FISAs)"""
   apprentices: BooleanConstraint
 
   """
@@ -5937,29 +4592,19 @@ input TicketConstraintsInput {
   """
   external: BooleanConstraint
 
-  """
-  Membres d'au moins un des groupes spécifiés
-  """
-  groupMembers: [UID!]!
+  """Membres d'au moins un des groupes spécifiés"""
+  groupMembers: [UID!]
 
-  """
-  Étudiant·e·s de certaines filières
-  """
-  majors: [UID!]!
+  """Étudiant·e·s de certaines filières"""
+  majors: [UID!]
 
-  """
-  Réservable par les gestionnaires de l'évènement seulement
-  """
+  """Réservable par les gestionnaires de l'évènement seulement"""
   managersOnly: Boolean
 
-  """
-  Étudiant·e·s de certaines promos (année)
-  """
-  promotions: [Int!]!
+  """Étudiant·e·s de certaines promos (année)"""
+  promotions: [Int!]
 
-  """
-  Cotisant·e·s de l'AE du groupe organisateur de l'évènement
-  """
+  """Cotisant·e·s de l'AE du groupe organisateur de l'évènement"""
   studentAssociationContributors: BooleanConstraint
 }
 
@@ -5972,9 +4617,7 @@ type TicketGroup implements Node {
   eventId: ID!
   id: ID!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   name: String!
   tickets: [Ticket!]!
@@ -5987,9 +4630,7 @@ input TicketGroupInput {
   name: String!
 }
 
-"""
-A field whose value matches /^[\w-]{3,255}$/.
-"""
+"""A field whose value matches /^[\w-]{3,255}$/."""
 scalar UID
 
 """
@@ -6018,9 +4659,7 @@ input UpsertGroupInput {
   website: String!
 }
 
-"""
-Users are the people who use the app
-"""
+"""Users are the people who use the app"""
 type User implements Node & Pictured {
   address: String!
   admin: Boolean!
@@ -6029,42 +4668,26 @@ type User implements Node & Pictured {
   Vrai si cette personne est administratrice de l'association étudiante donnée
   """
   adminOf(
-    """
-    UID de l'association étudiante
-    """
+    """UID de l'association étudiante"""
     studentAssociation: String!
   ): Boolean!
   allowedApps: [ThirdPartyApp!]! @deprecated(reason: "Use `authorizedApps` instead")
 
-  """
-  Formulaires complètement répondus par l'utilisateur
-  """
+  """Formulaires complètement répondus par l'utilisateur"""
   answeredForms(after: String, before: String, first: Int, last: Int): UserAnsweredFormsConnection!
   apprentice: Boolean!
   articles(after: String, before: String, first: Int, last: Int): UserArticlesConnection!
 
-  """
-  Applications tierces autorisées à accéder à ce compte utilisateur
-  """
+  """Applications tierces autorisées à accéder à ce compte utilisateur"""
   authorizedApps: [ThirdPartyApp!]!
   birthday: DateTime
 
-  """
-  Les affiliations de l'utilisateur à des groupes dont iel est au bureau
-  """
+  """Les affiliations de l'utilisateur à des groupes dont iel est au bureau"""
   boardMemberships: [GroupMember!]!
   booking(beneficiary: String, event: ID!): Registration!
-  bookings(
-    after: String
-    before: String
-    first: Int
-    forUserOnly: Boolean
-    last: Int
-  ): UserBookingsConnection!
+  bookings(after: String, before: String, first: Int, forUserOnly: Boolean, last: Int): UserBookingsConnection!
 
-  """
-  Les accès rapides de l'utilisateur·rice
-  """
+  """Les accès rapides de l'utilisateur·rice"""
   bookmarks: [Bookmark!]!
 
   """
@@ -6074,34 +4697,22 @@ type User implements Node & Pictured {
   canAccessDocuments: Boolean!
   canBeEdited: Boolean!
 
-  """
-  Groupes sur lesquels l'utilisateur·ice peut créer des évènements
-  """
+  """Groupes sur lesquels l'utilisateur·ice peut créer des évènements"""
   canCreateEventsOn: [Group!]!
 
-  """
-  AEs sur lesquelles l'utilisateur·ice peut créer des groupes
-  """
+  """AEs sur lesquelles l'utilisateur·ice peut créer des groupes"""
   canCreateGroupsOn: [StudentAssociation!]!
 
-  """
-  Groupes sur lesquels l'utilisateur·ice peut créer des posts
-  """
+  """Groupes sur lesquels l'utilisateur·ice peut créer des posts"""
   canCreatePostsOn: [Group!]!
 
-  """
-  Vrai si cette personne peut éditer le groupe donné
-  """
+  """Vrai si cette personne peut éditer le groupe donné"""
   canEditGroup(
-    """
-    UID du groupe
-    """
+    """UID du groupe"""
     uid: String!
   ): Boolean!
 
-  """
-  Vrai si cette personne peut éditer des groupes
-  """
+  """Vrai si cette personne peut éditer des groupes"""
   canEditGroups: Boolean!
 
   """
@@ -6137,9 +4748,7 @@ type User implements Node & Pictured {
   latestVersionSeenInChangelog: String!
   links: [Link!]!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   major: Major
   majorId: ID
@@ -6149,36 +4758,21 @@ type User implements Node & Pictured {
   otherEmails: [String!]!
   outgoingGodparentRequests: [GodparentRequest!]!
 
-  """
-  Formulaires partiellement répondus par l'utilisateur
-  """
-  partiallyAnsweredForms(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): UserPartiallyAnsweredFormsConnection!
+  """Formulaires partiellement répondus par l'utilisateur"""
+  partiallyAnsweredForms(after: String, before: String, first: Int, last: Int): UserPartiallyAnsweredFormsConnection!
   pendingContributions: [ContributionOption!]!
   phone: String!
 
-  """
-  Texte alternatif de l'image
-  """
+  """Texte alternatif de l'image"""
   pictureAltText: String!
   pictureFile: String!
 
-  """
-  Le nom du fichier de l'image, en thème sombre
-  """
+  """Le nom du fichier de l'image, en thème sombre"""
   pictureFileDark: String!
 
-  """
-  L'URL publique de l'image
-  """
+  """L'URL publique de l'image"""
   pictureURL(
-    """
-    Utiliser l'image en thème sombre
-    """
+    """Utiliser l'image en thème sombre"""
     dark: Boolean! = false
 
     """
@@ -6229,9 +4823,7 @@ type UserBookingsConnectionEdge {
   node: Registration!
 }
 
-"""
-UserCandidates are users in the registration process
-"""
+"""UserCandidates are users in the registration process"""
 type UserCandidate implements Node {
   address: String!
   apprentice: Boolean!
@@ -6240,9 +4832,7 @@ type UserCandidate implements Node {
   createdAt: DateTime
   email: String!
 
-  """
-  Vrai si l'email est une adresse email d'étudiant.
-  """
+  """Vrai si l'email est une adresse email d'étudiant."""
   emailIsSchoolEmail: Boolean!
   emailValidated: Boolean!
   firstName: String!
@@ -6251,9 +4841,7 @@ type UserCandidate implements Node {
   id: ID!
   lastName: String!
 
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
+  """L'identifiant local de la ressource (sans préfixe)"""
   localID: LocalID!
   major: Major
   majorId: ID
@@ -6267,9 +4855,7 @@ type UserCandidate implements Node {
   Vrai si l'utilisateur aura besoin d'une validation manuelle à la fin de l'inscription si iel choisi cette filière. Null si la notion n'a pas encore de sens.
   """
   needsManualValidationForMajor(
-    """
-    L'UID de la filière
-    """
+    """L'UID de la filière"""
     major: String!
   ): Boolean
   phone: String!
@@ -6279,9 +4865,7 @@ type UserCandidate implements Node {
   suggestedUid: String!
   uid: String!
 
-  """
-  Vrai si l'utilisateur a été créé via un lien d'inscription rapide.
-  """
+  """Vrai si l'utilisateur a été créé via un lien d'inscription rapide."""
   usingQuickSignup: Boolean!
 }
 
@@ -6312,17 +4896,13 @@ enum Visibility {
   Unlisted
 }
 
-"""
-A validation error, as a list of field errors.
-"""
+"""A validation error, as a list of field errors."""
 type ZodError implements ErrorInterface {
   fieldErrors: [ZodFieldError!]!
   message: String!
 }
 
-"""
-A validation issue for a field.
-"""
+"""A validation issue for a field."""
 type ZodFieldError {
   message: String!
   path: [String!]!

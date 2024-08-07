@@ -1,8 +1,9 @@
-import type {
-  EventFrequency$options,
-  EventManagerPowerLevel$options,
-  PaymentMethod$options,
-  Visibility$options,
+import {
+  type BooleanConstraint$options,
+  type EventFrequency$options,
+  type EventManagerPowerLevel$options,
+  type PaymentMethod$options,
+  type Visibility$options,
 } from '$houdini';
 import {
   DocumentType,
@@ -247,3 +248,9 @@ export const ORDER_CHANGELOG_CATEGORIES = [
   'other',
   'technical',
 ] as const;
+
+export const DISPLAY_BOOLEAN_CONSTRAINT: Record<BooleanConstraint$options, string> = {
+  DontCare: 'Peu importe',
+  Only: 'Seulement',
+  Not: 'Interdit',
+};

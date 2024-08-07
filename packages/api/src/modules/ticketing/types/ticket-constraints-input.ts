@@ -31,13 +31,16 @@ export const TicketConstraintsInput = builder.inputType('TicketConstraintsInput'
       description: "Réservable par les gestionnaires de l'évènement seulement",
     }),
     majors: t.field({
+      required: false,
       type: [UIDScalar],
       description: 'Étudiant·e·s de certaines filières',
     }),
     promotions: t.intList({
+      required: false,
       description: 'Étudiant·e·s de certaines promos (année)',
     }),
     groupMembers: t.field({
+      required: false,
       type: [UIDScalar],
       description: "Membres d'au moins un des groupes spécifiés",
     }),

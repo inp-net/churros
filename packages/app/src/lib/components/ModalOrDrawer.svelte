@@ -9,6 +9,9 @@
   /** Signals that the content is quite tall */
   export let tall = false;
 
+  /** Don't render a trigger area */
+  export let notrigger = false;
+
   /** Signals that the drawer (mobile) should not have bottom padding */
   export let removeBottomPadding = false;
 
@@ -36,12 +39,12 @@
 </script>
 
 {#if mobile}
-  <ModalDrawer {removeBottomPadding} bind:open={drawerOpen}>
+  <ModalDrawer {notrigger} {removeBottomPadding} bind:open={drawerOpen}>
     <slot {close}></slot>
     <slot name="header" slot="header" {close}></slot>
   </ModalDrawer>
 {:else}
-  <ModalDialog {tall} bind:element={dialogElement} bind:open={openDialog}>
+  <ModalDialog  {tall} bind:element={dialogElement} bind:open={openDialog}>
     {#if $$slots.header}
       <header>
         <slot name="header"></slot>

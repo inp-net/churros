@@ -110,6 +110,7 @@ export { default as InputSubject } from './InputSubject.svelte';
 export { default as InputText } from './InputText.svelte';
 export { default as InputTextGhost } from './InputTextGhost.svelte';
 export { default as InputToggle } from './InputToggle.svelte';
+export { default as InputToggleTriState } from './InputToggleTriState.svelte';
 export { default as InputToggleWithLabel } from './InputToggleWithLabel.svelte';
 export { default as InputUID } from './InputUID.svelte';
 export { default as InputUser } from './InputUser.svelte';

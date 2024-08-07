@@ -64,6 +64,7 @@ export const EventType = builder.prismaNode('Event', {
       query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),
     }),
     globalCapacity: t.expose('globalCapacity', {
+      nullable: true,
       type: CapacityScalar,
     }),
     group: t.relation('group', { deprecationReason: 'Use `organizer` instead.' }),

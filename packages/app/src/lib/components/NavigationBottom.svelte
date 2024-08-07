@@ -9,8 +9,8 @@
   import IconHome from '~icons/msl/home';
   import IconHomeOutline from '~icons/msl/home-outline';
   import IconSearch from '~icons/msl/search';
-  import IconDotsCircle from '~icons/msl/view-comfy-alt';
-  import IconDotsCircleOutline from '~icons/msl/view-comfy-alt-outline';
+  import IconDotsCircle from '~icons/msl/widgets';
+  import IconDotsCircleOutline from '~icons/msl/widgets-outline';
   export let transparent = false;
 
   export let me: NavigationBottomMe | null;

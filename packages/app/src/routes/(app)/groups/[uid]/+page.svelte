@@ -9,8 +9,6 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import CardArticle from '$lib/components/CardArticle.svelte';
-  import CardFeedEvent from '$lib/components/CardFeedEvent.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import InputToggle from '$lib/components/InputToggle.svelte';
   import Modal from '$lib/components/ModalDialog.svelte';
@@ -357,7 +355,7 @@
       {/each}
     </div>
   </section>
-  <section class="posts">
+  <!-- <section class="posts">
     <h2>
       Posts {#if canEditArticles}<ButtonSecondary href="/posts/{group.uid}/create/" icon={IconAdd}
           >Nouveau</ButtonSecondary
@@ -368,10 +366,10 @@
       {#each group.articles.slice(0, 3) as { localID, ...article } (article.id)}
         <CardArticle hideGroup {group} href={route('/posts/[id]', localID)} {...article} />
       {/each}
-    </ul>
-  </section>
+    </ul> 
+  </section> -->
 
-  <section class="events">
+  <!-- <section class="events">
     <h2>
       Évènements {#if canEditEvents}
         <ButtonSecondary href="/events/{group.uid}/create/" icon={IconAdd}>Nouveau</ButtonSecondary>
@@ -388,7 +386,7 @@
         />
       {/each}
     </ul>
-  </section>
+  </section> -->
 
   {#if group.related?.length > 0}
     <section class="related">

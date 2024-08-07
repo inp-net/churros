@@ -137,6 +137,7 @@
               {#if loaded(event.startsAt) && loaded(event.endsAt)}
                 <!-- <TextEventDates {event} defaultText="Préciser les dates…" /> -->
                 <InputDateTimeRange
+                  style="ghost"
                   resourceId={event.id}
                   start={event.startsAt}
                   end={event.endsAt}
@@ -159,6 +160,7 @@
                   <div class="start" slot="start" let:update let:value>
                     du
                     <InputDateTime
+                    style="ghost"
                       {value}
                       on:blur={update}
                       on:clear={update}
@@ -169,6 +171,7 @@
                   <div class="end" slot="end" let:update let:value>
                     au
                     <InputDateTime
+                    style="ghost"
                       {value}
                       on:blur={update}
                       on:clear={update}
@@ -273,7 +276,8 @@
         </PickGroup>
         <SubmenuItem
           icon={IconTickets}
-          href={route('/events/[id]/edit/ticketing', loading(event.localID, ''))}
+          chevron
+          href={route('/events/[id]/edit/tickets', loading(event.localID, ''))}
         >
           Billetterie
         </SubmenuItem>

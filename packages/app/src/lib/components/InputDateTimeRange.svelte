@@ -12,6 +12,7 @@
   export let resourceId: MaybeLoading<string>;
   export let start: StartValue;
   export let end: EndValue;
+  export let style: 'ghost' | 'box';
 
   let updatedDates:
     | {
@@ -63,31 +64,23 @@
   }
 </script>
 
-<div class="dates">
-  <slot name="start" {updateEventDates} update={updateEventDates('start')} value={start}>
-    <InputDateTime
-      bind:reset={resetEndsAtInput}
-      on:blur={updateEventDates('start')}
-      on:clear={updateEventDates('start')}
-      label="Début"
-      value={start}
-    ></InputDateTime>
-  </slot>
-  <slot name="end" {updateEventDates} update={updateEventDates('end')} value={end}>
-    <InputDateTime
-      bind:reset={resetStartsAtInput}
-      on:blur={updateEventDates('end')}
-      on:clear={updateEventDates('end')}
-      label="Fin"
-      value={end}
-    ></InputDateTime>
-  </slot>
-</div>
-
-<style>
-  .dates {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 0.5ch;
-  }
-</style>
+<slot name="start" {updateEventDates} update={updateEventDates('start')} value={start}>
+  <InputDateTime
+    {style}
+    bind:reset={resetEndsAtInput}
+    on:blur={updateEventDates('start')}
+    on:clear={updateEventDates('start')}
+    label="Début"
+    value={start}
+  ></InputDateTime>
+</slot>
+<slot name="end" {updateEventDates} update={updateEventDates('end')} value={end}>
+  <InputDateTime
+    {style}
+    bind:reset={resetStartsAtInput}
+    on:blur={updateEventDates('end')}
+    on:clear={updateEventDates('end')}
+    label="Fin"
+    value={end}
+  ></InputDateTime>
+</slot>

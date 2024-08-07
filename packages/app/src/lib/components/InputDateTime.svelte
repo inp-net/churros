@@ -6,11 +6,14 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import InputField from '$lib/components/InputField.svelte';
+  import { InputText, InputDate } from '$lib/components';
   import IconClear from '~icons/msl/backspace-outline';
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { nanoid } from 'nanoid';
   import { createEventDispatcher } from 'svelte';
   import { format } from 'date-fns';
+
+  export let style: 'ghost' | 'box';
 
   const dispatch = createEventDispatcher<{
     blur: ValueDetail;
@@ -64,38 +67,74 @@
 <InputField {label} {required}>
   <div class="date-time-input">
     <label for="{name}-date">
-      <InputTextGhost
-        on:blur={() => {
-          dispatch('blur', {
-            value: combineParts(_valueDate, _valueTime),
-            datePart: _valueDate,
-            timePart: _valueTime,
-          });
-        }}
-        id="{name}-date"
-        {required}
-        type="date"
-        placeholder="Date"
-        label="Date"
-        bind:value={_valueDate}
-      />
+      {#if style === 'ghost'}
+        <InputTextGhost
+          on:blur={() => {
+            dispatch('blur', {
+              value: combineParts(_valueDate, _valueTime),
+              datePart: _valueDate,
+              timePart: _valueTime,
+            });
+          }}
+          id="{name}-date"
+          {required}
+          type="date"
+          placeholder="Date"
+          label="Date"
+          bind:value={_valueDate}
+        />
+      {:else}
+        <InputDate
+          on:blur={() => {
+            dispatch('blur', {
+              value: combineParts(_valueDate, _valueTime),
+              datePart: _valueDate,
+              timePart: _valueTime,
+            });
+          }}
+          id="{name}-date"
+          {required}
+          type="date"
+          placeholder="Date"
+          label=""
+          bind:value={_valueDate}
+        />
+      {/if}
     </label>
     <label for="{name}-time">
-      <InputTextGhost
-        on:blur={() => {
-          dispatch('blur', {
-            value: combineParts(_valueDate, _valueTime),
-            datePart: _valueDate,
-            timePart: _valueTime,
-          });
-        }}
-        id="{name}-time"
-        {required}
-        placeholder="Heure"
-        label="Heure"
-        type="time"
-        bind:value={_valueTime}
-      ></InputTextGhost>
+      {#if style === 'ghost'}
+        <InputTextGhost
+          on:blur={() => {
+            dispatch('blur', {
+              value: combineParts(_valueDate, _valueTime),
+              datePart: _valueDate,
+              timePart: _valueTime,
+            });
+          }}
+          id="{name}-time"
+          {required}
+          placeholder="Heure"
+          label="Heure"
+          type="time"
+          bind:value={_valueTime}
+        ></InputTextGhost>
+      {:else}
+        <InputText
+          on:blur={() => {
+            dispatch('blur', {
+              value: combineParts(_valueDate, _valueTime),
+              datePart: _valueDate,
+              timePart: _valueTime,
+            });
+          }}
+          id="{name}-time"
+          {required}
+          placeholder="Heure"
+          label=""
+          type="time"
+          bind:value={_valueTime}
+        />
+      {/if}
     </label>
     {#if !required}
       <ButtonGhost
