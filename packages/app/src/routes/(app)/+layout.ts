@@ -11,7 +11,6 @@ graphql(`
 `);
 
 export async function load(event) {
-  console.log('laoding app layout')
   const result = await loadAll(
     load_AppLayout({
       event,
@@ -21,6 +20,5 @@ export async function load(event) {
       } as AppLayout$input, // see https://github.com/HoudiniGraphql/houdini/issues/1308
     }),
   );
-  console.log('laded app laoyout', result)
-  return result
+  return result;
 }

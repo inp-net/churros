@@ -30,8 +30,6 @@
   import type { PageData } from './$houdini';
   import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
 
-  console.log('intiializing layout');
-
   onNavigate(setupViewTransition);
 
   const mobile = isMobile();
@@ -113,7 +111,7 @@
   />
 {/if}
 
-<ModalCreateGroup  studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
+<ModalCreateGroup studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
 ></ModalCreateGroup>
 
 {#if $AppLayout.data?.me?.bookings}
