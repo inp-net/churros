@@ -6,7 +6,7 @@
     "@graphql-tools/utils": "^10.2.2",
     "@graphql-yoga/node": "^3.9.1",
     "@graphql-yoga/redis-event-target": "^3.0.0",
-    "@inp-net/ldap7": "^1.0.7",
+    "@inp-net/ldap7": "^1.0.8",
     "@pothos/core": "4.0.2",
     "@pothos/plugin-complexity": "^4.0.2",
     "@pothos/plugin-dataloader": "^4.0.2",

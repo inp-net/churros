@@ -22,9 +22,7 @@ const mapUser = (user: UserQuery): LdapUser => ({
   firstName: user.firstName,
   lastName: user.lastName,
   email: [user.email, ...user.otherEmails],
-  // picture: user.pictureFile,
   school: user.major?.schools.map((school) => school.uid) ?? [],
-  sshKeys: [],
 });
 
 const sync = async (client: PrismaClient) => {
