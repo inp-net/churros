@@ -42,8 +42,6 @@ FROM base AS api
 
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates
-
 # Prisma migration
 COPY --from=builder /app/packages/db/prisma/ /app/packages/db/prisma/
 COPY --from=builder /app/packages/db/src/ /app/packages/db/src/
@@ -87,6 +85,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 FROM node:20-alpine AS builder-sync
 
+RUN apk add --no-cache patch
+
 WORKDIR /app
 COPY .yarn/         /app/.yarn/
 COPY packages/db/   /app/packages/db/
@@ -96,14 +96,13 @@ COPY package.json   /app/
 COPY yarn.lock      /app/
 
 RUN yarn install
+RUN yarn workspace @churros/db generate
 RUN yarn workspace @churros/sync build
 RUN yarn workspaces focus @churros/sync --production
 
 FROM node:20-alpine AS sync
 
 ENV NODE_ENV="production"
-
-RUN apk add --no-cache ca-certificates
 
 COPY --from=builder-sync /app/node_modules/ /app/node_modules/
 COPY --from=builder-sync /app/packages/sync/build/src/ /app/packages/sync/build/src/
