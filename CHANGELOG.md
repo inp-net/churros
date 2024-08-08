@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Correction d'un bug qui empêchait de pouvoir se choisir un nom d'utilisateur lors d'une inscription
+
 ## [1.69.0] - 2024-08-06
 
 ### Technique
