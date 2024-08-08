@@ -4,7 +4,7 @@
   import { updated } from '$app/stores';
   import AnalyticsTracker from '$lib/components/AnalyticsTracker.svelte';
   import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
-  import { ModalReportIssue } from '$lib/components';
+  // import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
   import Toast from '$lib/components/Toast.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
   import { setupIsMobile } from '$lib/mobile';
@@ -105,12 +105,12 @@
       });
     }
   });
-  let openIssueReport: () => void;
+  // let openIssueReport: () => void;
 </script>
-
+<!-- 
 <svelte:window on:NAVTOP_REPORT_ISSUE={openIssueReport} />
 
-<ModalReportIssue bind:open={openIssueReport} />
+<ModalReportIssue bind:open={openIssueReport} /> -->
 
 <svelte:head>
   <title>Churros</title>

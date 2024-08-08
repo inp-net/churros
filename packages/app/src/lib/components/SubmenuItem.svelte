@@ -77,7 +77,7 @@
   }
 
   :is(button, a, label):is(:hover, :focus-visible).submenu-item,
-  label.submenu-item:focus-within {
+  label.submenu-item:has(:focus-visible) {
     cursor: pointer;
     background: var(--bg2);
   }

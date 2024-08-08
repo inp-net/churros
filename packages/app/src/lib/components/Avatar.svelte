@@ -31,15 +31,19 @@
     height: var(--avatar-size, 1em);
     overflow: hidden;
     border-radius: 100000px;
-    transition: all 200ms ease;
+    transition: all 50ms ease;
+  }
+
+  a.selectable {
+    outline: calc(2 * var(--border-block)) solid transparent;
   }
 
   a.selectable:is(:hover, :focus-visible) {
-    border: calc(2 * var(--border-block)) solid var(--primary);
+    outline: calc(2 * var(--border-block)) solid var(--primary);
   }
 
   a.selected {
-    border: calc(4 * var(--border-block)) solid var(--primary);
+    outline: calc(4 * var(--border-block)) solid var(--primary);
   }
 
   img {
