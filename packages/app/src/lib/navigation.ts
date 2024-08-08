@@ -286,7 +286,7 @@ export const topnavConfigs: Partial<
   }),
   '/(app)/users/[uid]': ({ params: { uid } }) => ({
     actions: [
-      // { ...commonActions.edit, href: route('/users/[uid]/edit', uid) },
+      { ...commonActions.edit, href: route('/users/[uid]/edit', uid) },
       commonActions.pin,
       commonActions.copyID,
     ],
