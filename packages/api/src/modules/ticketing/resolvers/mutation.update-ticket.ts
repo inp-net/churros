@@ -1,9 +1,10 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes, CapacityScalar } from '#modules/events';
 import { DateRangeInput, LocalID } from '#modules/global';
-import { PromotionTypeEnum } from '#modules/payments';
+import { PaymentMethodEnum, PromotionTypeEnum } from '#modules/payments';
 import { TicketType } from '#modules/ticketing/types';
 import { handleUnlimitedCapacity } from '#modules/ticketing/utils';
+import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 
 builder.mutationField('updateTicket', (t) =>
@@ -30,6 +31,11 @@ builder.mutationField('updateTicket', (t) =>
         required: false,
         description: 'Nombre maximum de parrainages par billet (0 pour désactiver les parrainages)',
       }),
+      allowedPaymentMethods: t.arg({
+        required: false,
+        type: [PaymentMethodEnum],
+        description: 'Moyens de paiement acceptés pour ce billet',
+      }),
     },
     async authScopes(_, { ticket: ticketId }, { user }) {
       const event = await prisma.ticket
@@ -45,6 +51,23 @@ builder.mutationField('updateTicket', (t) =>
       const id = ensureGlobalId(args.ticket, 'Ticket');
       await log('ticketing', 'update-ticket', args, id, user);
       const allOffers = await prisma.promotion.findMany();
+
+      if (args.allowedPaymentMethods?.includes('Lydia')) {
+        const { lydiaAccountId } = await prisma.ticket
+          .findUniqueOrThrow({
+            where: { id },
+          })
+          .event({
+            select: {
+              lydiaAccountId: true,
+            },
+          });
+        if (!lydiaAccountId) {
+          throw new GraphQLError(
+            "Impossible d'accepter Lydia comme moyen de paiement: l'événement n'a pas de compte Lydia associé",
+          );
+        }
+      }
 
       return prisma.ticket.update({
         ...query,
@@ -63,6 +86,9 @@ builder.mutationField('updateTicket', (t) =>
               }
             : undefined,
           godsonLimit: args.godsonLimit ?? undefined,
+          allowedPaymentMethods: args.allowedPaymentMethods
+            ? { set: args.allowedPaymentMethods }
+            : undefined,
         },
       });
     },

@@ -196,3 +196,16 @@ export const DeleteTicket = graphql(`
     }
   }
 `);
+
+export const UpdateAllowedPaymentMethods = graphql(`
+  mutation UpdateTicketAllowedPaymentMethods($ticket: LocalID!, $paymentMethod: [PaymentMethod!]!) {
+    updateTicket(ticket: $ticket, allowedPaymentMethods: $paymentMethod) {
+      ... on MutationUpdateTicketSuccess {
+        data {
+          allowedPaymentMethods
+        }
+      }
+      ...MutationErrors
+    }
+  }
+`);

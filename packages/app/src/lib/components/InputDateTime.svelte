@@ -13,7 +13,7 @@
   import { createEventDispatcher } from 'svelte';
   import { format } from 'date-fns';
 
-  export let style: 'ghost' | 'box';
+  export let variant: 'ghost' | 'box';
 
   const dispatch = createEventDispatcher<{
     blur: ValueDetail;
@@ -67,7 +67,7 @@
 <InputField {label} {required}>
   <div class="date-time-input">
     <label for="{name}-date">
-      {#if style === 'ghost'}
+      {#if variant === 'ghost'}
         <InputTextGhost
           on:blur={() => {
             dispatch('blur', {
@@ -102,7 +102,7 @@
       {/if}
     </label>
     <label for="{name}-time">
-      {#if style === 'ghost'}
+      {#if variant === 'ghost'}
         <InputTextGhost
           on:blur={() => {
             dispatch('blur', {

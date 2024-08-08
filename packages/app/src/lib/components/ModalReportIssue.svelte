@@ -106,12 +106,12 @@
   {/if}
 </ModalOrDrawer>
 
-<ModalOrDrawer notrigger bind:open let:close bind:implicitClose={closeMainModal}>
-  <svelte:fragment slot="header">
+<ModalOrDrawer notrigger bind:open bind:implicitClose={closeMainModal}>
+  <svelte:fragment slot="header" let:close>
     <h1>
       {#if issueType === 'bug'}Signaler{:else}Proposer{/if}
     </h1>
-    <ButtonGhost on:click={() => close()}><IconClose /></ButtonGhost>
+    <ButtonGhost on:click={close}><IconClose /></ButtonGhost>
   </svelte:fragment>
   <div class="content">
     <p>

@@ -74,6 +74,7 @@ export { default as HTMLContent } from './HTMLContent.svelte';
 export { default as IconLinkVariant } from './IconLinkVariant.svelte';
 export { default as IndicatorVisibility } from './IndicatorVisibility.svelte';
 export { default as InputCheckbox } from './InputCheckbox.svelte';
+export { default as InputCheckboxes } from './InputCheckboxes.svelte';
 export { default as InputDate } from './InputDate.svelte';
 export { default as InputDateTime } from './InputDateTime.svelte';
 export { default as InputDateTimeRange } from './InputDateTimeRange.svelte';

@@ -265,7 +265,7 @@ model Major {
   ldapSchoolUid String?  @db.VarChar(255)
   pictureFile   String   @default("") @db.VarChar(255)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   schools           School[]        @relation("MajorToSchool")
   ldapSchool        School?         @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)

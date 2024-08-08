@@ -10,7 +10,12 @@ builder.mutationField('setEventBeneficiary', (t) =>
     errors: { types: [Error, ZodError] },
     args: {
       event: t.arg({ type: LocalID }),
-      lydiaAccount: t.arg({ type: LocalID }),
+      lydiaAccount: t.arg({
+        type: LocalID,
+        required: false,
+        description:
+          "Identifiant du compte Lydia. Null pour enlever le bénéficiaire de l'évènement",
+      }),
     },
     async authScopes(_, { event: eventId }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
@@ -28,11 +33,15 @@ builder.mutationField('setEventBeneficiary', (t) =>
         ...query,
         where: { id: ensureGlobalId(args.event, 'Event') },
         data: {
-          beneficiary: {
-            connect: {
-              id: ensureGlobalId(args.lydiaAccount, 'LydiaAccount'),
-            },
-          },
+          beneficiary: args.lydiaAccount
+            ? {
+                connect: {
+                  id: ensureGlobalId(args.lydiaAccount, 'LydiaAccount'),
+                },
+              }
+            : {
+                disconnect: true,
+              },
         },
       });
     },

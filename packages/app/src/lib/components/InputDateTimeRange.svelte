@@ -12,7 +12,7 @@
   export let resourceId: MaybeLoading<string>;
   export let start: StartValue;
   export let end: EndValue;
-  export let style: 'ghost' | 'box';
+  export let variant: 'ghost' | 'box';
 
   let updatedDates:
     | {
@@ -44,20 +44,11 @@
       datePart: Date | null | undefined;
       timePart: string;
     }>) => {
-      console.log({
-        loadedresourceId: loaded(resourceId),
-        timePartOnly: timePart && !datePart,
-        datePartOnly: !timePart && datePart,
-        updatedDates,
-        loadedEnd: loaded(end),
-        loadedStart: loaded(start),
-      })
       if (!loaded(resourceId)) return;
       if (timePart && !datePart) return;
       if (!timePart && datePart) return;
       if (!loaded(end) || !loaded(start)) return;
       if (!updatedDates) return;
-      console.log({value, timePart, datePart})
 
       if (key === 'start') updatedDates.start = value ?? null;
       else updatedDates.end = value ?? null;
@@ -75,7 +66,7 @@
 
 <slot name="start" {updateEventDates} update={updateEventDates('start')} value={start}>
   <InputDateTime
-    {style}
+    {variant}
     bind:reset={resetEndsAtInput}
     on:blur={updateEventDates('start')}
     on:clear={updateEventDates('start')}
@@ -85,7 +76,7 @@
 </slot>
 <slot name="end" {updateEventDates} update={updateEventDates('end')} value={end}>
   <InputDateTime
-    {style}
+    {variant}
     bind:reset={resetStartsAtInput}
     on:blur={updateEventDates('end')}
     on:clear={updateEventDates('end')}

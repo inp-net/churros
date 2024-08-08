@@ -2,7 +2,6 @@ import { builder, prisma, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
 import { shotgunIsOpen } from '#modules/ticketing/utils';
-import { PaymentMethod } from '@churros/db/prisma';
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
@@ -58,23 +57,8 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
     }),
     links: t.relation('links'),
-    allowedPaymentMethods: t.field({
+    allowedPaymentMethods: t.expose('allowedPaymentMethods', {
       type: [PaymentMethodEnum],
-      resolve: async ({ allowedPaymentMethods, eventId }) =>
-        // eslint-disable-next-line unicorn/no-array-reduce
-        allowedPaymentMethods.reduce(
-          async (acc, p) => {
-            if (p === PaymentMethod.Lydia) {
-              const event = await prisma.event.findUniqueOrThrow({ where: { id: eventId } });
-              if (event.lydiaAccountId) return [...(await acc), p];
-
-              return acc;
-            }
-
-            return [...(await acc), p];
-          },
-          Promise.resolve([] as PaymentMethod[]),
-        ),
     }),
     openToPromotions: t.expose('openToPromotions', { type: ['Int'] }),
     openToAlumni: t.exposeBoolean('openToAlumni', { nullable: true }),

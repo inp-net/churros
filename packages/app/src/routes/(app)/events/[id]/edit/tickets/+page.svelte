@@ -1,5 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import PickLydiaAccount from './PickBeneficiary.svelte';
   import { route } from '$lib/ROUTES';
   import {
     ButtonSecondary,
@@ -27,13 +29,39 @@
   import IconCapacity from '~icons/msl/file-copy-outline';
   import IconAdd from '~icons/msl/add';
   import type { PageData } from './$houdini';
-  import { ChangeCapacity, CreateTicket, SetEventShowRemainingPlaces } from './mutations';
+  import {
+    ChangeCapacity,
+    CreateTicket,
+    SetEventShowRemainingPlaces,
+    SetEventBeneficiary,
+    UnsetEventBeneficiary,
+  } from './mutations';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
+
+  let pickLydiaAccount: () => void;
+  $: if ($page.url.hash === '#beneficiary') pickLydiaAccount?.();
 </script>
 
 <MaybeError result={$PageEditEventTickets} let:data={{ event }}>
+  <PickLydiaAccount
+    currentAccount={event.beneficiary?.id ?? null}
+    on:pick={async ({ detail }) => {
+      toasts.mutation(
+        await mutate(detail ? SetEventBeneficiary : UnsetEventBeneficiary, {
+          id: $page.params.id,
+          // @ts-expect-error variable is not used by both mutations, but it's fine
+          beneficiary: detail || null,
+        }),
+        'setEventBeneficiary',
+        '',
+        'Impossible de mettre à jour le compte bénéficiaire',
+      );
+    }}
+    accounts={event.organizer.lydiaAccounts}
+    bind:open={pickLydiaAccount}
+  />
   <div class="contents">
     <Submenu>
       <SubmenuItem
@@ -89,7 +117,8 @@
       </SubmenuItem>
       <SubmenuItem
         clickable
-        on:click={() => alert('TODO')}
+        anchor="#beneficiary"
+        on:click={pickLydiaAccount}
         icon={IconBeneficiary}
         subtext={event.beneficiary?.name ?? 'Aucun'}
       >
@@ -190,8 +219,9 @@
 
   .tickets header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
     --weight-field-label: 900;
   }
 
@@ -201,8 +231,8 @@
 
   .icon-add {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     font-size: 1.2em;
   }
 </style>

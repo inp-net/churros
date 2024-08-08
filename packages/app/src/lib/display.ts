@@ -11,7 +11,6 @@ import {
   NotificationChannel,
   Visibility,
   type GroupType,
-  type PaymentMethod,
 } from '$lib/zeus';
 import type { SvelteComponent } from 'svelte';
 import LogoLydia from '~icons/custom-logos/lydia';
@@ -22,10 +21,6 @@ import IconAndroidStudio from '~icons/mdi/android-studio';
 import IconNotification from '~icons/mdi/bell-outline';
 import IconCalendarEndOutline from '~icons/mdi/calendar-end-outline';
 import IconComment from '~icons/mdi/comment-outline';
-import {
-  default as IconDotsHorizontal,
-  default as IconQuestionMark,
-} from '~icons/mdi/dots-horizontal';
 import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
 import IconHammerWrench from '~icons/mdi/hammer-wrench';
 import IconArticle from '~icons/mdi/note-text-outline';
@@ -39,8 +34,9 @@ import IconBankTransfer from '~icons/msl/account-balance-outline';
 import IconCash from '~icons/msl/account-balance-wallet-outline';
 import IconPaymentCheck from '~icons/msl/checkbook-outline';
 import IconCreditCard from '~icons/msl/credit-card-outline';
+import { default as IconDotsHorizontal, default as IconQuestionMark } from '~icons/msl/more-horiz';
 
-export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod, string> = {
+export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod$options, string> = {
   Cash: 'Espèces',
   Check: 'Chèque',
   Card: 'Carte bancaire',
@@ -49,6 +45,16 @@ export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod, string> = {
   Other: 'Autre',
   PayPal: 'PayPal',
 };
+
+export const ORDER_PAYMENT_METHODS: PaymentMethod$options[] = [
+  'Lydia',
+  'Cash',
+  'Card',
+  'Check',
+  'Transfer',
+  'PayPal',
+  'Other',
+];
 
 export const SHOP_PAYMENT_METHODS = {
   Cash: 'Espèces',
@@ -151,6 +157,7 @@ export const DISPLAY_MANAGER_PERMISSION_LEVELS: Record<EventManagerPowerLevel$op
   EditPermissions: 'Gestion totale',
 };
 
+// TODO remove
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ICONS_PAYMENT_METHODS: Record<PaymentMethod$options, typeof SvelteComponent<any>> = {
   Card: IconCreditCard,
