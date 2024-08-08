@@ -1,6 +1,6 @@
 import { load_AppLayout, loadAll, type AppLayout$input } from '$houdini';
 import { CURRENT_VERSION } from '$lib/buildinfo';
-export const ssr = false;
+export const ssr = true;
 
 
 

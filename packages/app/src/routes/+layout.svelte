@@ -3,8 +3,7 @@
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { updated } from '$app/stores';
   import AnalyticsTracker from '$lib/components/AnalyticsTracker.svelte';
-  import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
-  import { ModalReportIssue } from '$lib/components';
+  import  ModalReportIssue  from '$lib/components/ModalReportIssue.svelte';
   import Toast from '$lib/components/Toast.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
   import { setupIsMobile } from '$lib/mobile';
@@ -38,13 +37,6 @@
   setupIsMobile(data.mobile);
 
   onMount(() => {
-    // if (!$me && !localStorage.getItem('isReallyLoggedout')) {
-    //   localStorage.setItem('isReallyLoggedout', 'true');
-    //   window.location.reload();
-    // } else if ($me) {
-    //   localStorage.removeItem('isReallyLoggedout');
-    // }
-
     debugging.subscribe(($debugging) => {
       document.documentElement.classList.toggle('rainbow-logo', $debugging);
     });
@@ -108,7 +100,7 @@
   let openIssueReport: () => void;
 </script>
 
-<svelte:window on:NAVTOP_REPORT_ISSUE={openIssueReport} />
+<svelte:window on:NAVTOP_REPORT_ISSUE={openIssueReport} /> 
 
 <ModalReportIssue bind:open={openIssueReport} />
 
@@ -131,10 +123,6 @@
         ></Toast>
       {/each}
     </section>
-  {/if}
-
-  {#if $themeDebugger}
-    <ModalThemeVariables />
   {/if}
 
   <slot />
