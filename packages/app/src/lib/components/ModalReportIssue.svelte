@@ -15,7 +15,7 @@
   import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import ModalOrDrawer from './ModalOrDrawer.svelte'
+  import { ModalOrDrawer } from '$lib/components';
 
   let title = '';
   let description = '';

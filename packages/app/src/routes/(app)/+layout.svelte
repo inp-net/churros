@@ -30,8 +30,7 @@
 
   const mobile = isMobile();
   export let data: PageData;
-  // $: ({ AppLayout, RootLayout } = data);
-  $: ({ AppLayout } = data);
+  $: ({ AppLayout, RootLayout } = data);
 
   let scrolled = false;
   setupScrollPositionRestorer(
@@ -164,7 +163,7 @@
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
       </section>
-    {:else}
+    {:else if !$RootLayout.data?.loggedIn}
       <section class="login">
         <h2>Connexion</h2>
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
