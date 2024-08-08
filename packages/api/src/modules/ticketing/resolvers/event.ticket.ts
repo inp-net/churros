@@ -15,10 +15,12 @@ builder.prismaObjectField(EventType, 'ticket', (t) =>
     args: {
       id: t.arg({ type: LocalID }),
     },
-    async authScopes(_, args, { user }) {
+    async authScopes(event, args, { user }) {
       const id = ensureGlobalId(args.id, 'Ticket');
       const ticket = await prisma.ticket.findUnique({
-        where: { id },
+        where: {
+          id,
+        },
         include: canSeeTicketPrismaIncludes,
       });
       if (!ticket) return true;
@@ -27,7 +29,7 @@ builder.prismaObjectField(EventType, 'ticket', (t) =>
             where: { id: user.id },
             include: canSeeTicketPrismaIncludesForUser,
           })
-        : null;
+        : undefined;
       return canSeeTicket(ticket, userWithContributesTo);
     },
     async resolve(query, _, { id }) {

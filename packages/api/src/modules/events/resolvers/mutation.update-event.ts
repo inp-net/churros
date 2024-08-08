@@ -1,7 +1,8 @@
-import { builder, ensureGlobalId, log, nullToUndefined, prisma } from '#lib';
+import { builder, ensureGlobalId, lastElement, log, nullToUndefined, prisma } from '#lib';
 import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID } from '#modules/global';
+import { PromotionTypeEnum } from '#modules/payments';
 import omit from 'lodash.omit';
 import { ZodError } from 'zod';
 import { MarkdownScalar } from '../../global/types/markdown.js';
@@ -43,6 +44,13 @@ builder.mutationField('updateEvent', (t) =>
         required: false,
         description: "Vrai si l'évènement doit apparaître dans le mode kiosque",
       }),
+      applicableOffers: t.arg({
+        required: false,
+        // TODO: rename promotions to special offers everywhere and expose Query.specialOffers, and accept IDs to promotions here
+        type: [PromotionTypeEnum],
+        description:
+          "Liste d'identifiants de promotions applicables à tout les billets de l'évènement",
+      }),
     },
     async authScopes(_, args, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
@@ -57,16 +65,38 @@ builder.mutationField('updateEvent', (t) =>
       const regularArgs = nullToUndefined(
         omit(args, 'dates', 'id', 'globalCapacity', 'applicableOffers'),
       );
-
-      return prisma.event.update({
-        ...query,
-        where: { id },
-        data: {
-          ...regularArgs,
-          globalCapacity:
-            args.globalCapacity === 'Unlimited' ? null : (args.globalCapacity ?? undefined),
-        },
+      const allOffers = await prisma.promotion.findMany({
+        select: { id: true, type: true },
       });
+      const tickets = await prisma.ticket.findMany({
+        where: { eventId: id },
+        select: { id: true },
+      });
+      const results = await prisma.$transaction([
+        ...(args.applicableOffers
+          ? allOffers.map((offer) =>
+              prisma.promotion.update({
+                where: { id: offer.id },
+                data: {
+                  validOn: {
+                    [args.applicableOffers!.includes(offer.type) ? 'connect' : 'disconnect']:
+                      tickets.map((ticket) => ({ id: ticket.id })),
+                  },
+                },
+              }),
+            )
+          : []),
+        prisma.event.update({
+          ...query,
+          where: { id },
+          data: {
+            ...regularArgs,
+            globalCapacity:
+              args.globalCapacity === 'Unlimited' ? null : (args.globalCapacity ?? undefined),
+          },
+        }),
+      ]);
+      return lastElement(results);
     },
   }),
 );

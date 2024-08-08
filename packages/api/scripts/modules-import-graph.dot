@@ -7,6 +7,7 @@ strict digraph ImportGraph {
     "documents" -> "reactions";
     "events" -> "logs";
     "events" -> "notifications";
+    "events" -> "payments";
     "events" -> "reactions";
     "events" -> "users";
     "forms" -> "events";
@@ -21,7 +22,6 @@ strict digraph ImportGraph {
     "oauth" -> "users";
     "pages" -> "groups";
     "pages" -> "student-associations";
-    "payments" -> "events";
     "payments" -> "groups";
     "pictures" -> "events";
     "pictures" -> "themes";

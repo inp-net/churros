@@ -6,6 +6,7 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
   import CarouselGroups from '$lib/components/CarouselGroups.svelte';
   import TreePersons from '$lib/components/TreePersons.svelte';
   import { dateFormatter } from '$lib/dates.js';
@@ -294,6 +295,20 @@
       </div>
     </section>
   {/if}
+
+  <section class="articles">
+    <h2>Posts</h2>
+
+    <ul class="nobullet">
+      {#each data.user.articles.edges.map(({ node }) => node) as article}
+        <li>
+          <CardArticle href={refroute('/posts/[id]', article.localID)} {...article} />
+        </li>
+      {:else}
+        <li>Aucun post</li>
+      {/each}
+    </ul>
+  </section>
 </div>
 
 <style lang="scss">

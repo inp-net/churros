@@ -1,8 +1,8 @@
 import { builder, splitID } from '#lib';
-import type { Reaction } from '@churros/db/prisma';
 
 interface Reactable {
-  reactions: Reaction[];
+  reacted: boolean;
+  reactions: number;
   id: string;
 }
 
@@ -15,21 +15,13 @@ export const ReactableInterface = builder.interfaceRef<Reactable>('Reactable').i
   },
   fields: (t) => ({
     id: t.exposeID('id', { description: 'L’identifiant de la resource' }),
-    reacted: t.boolean({
+    reacted: t.exposeBoolean('reacted', {
       args: { emoji: t.arg.string() },
       description: 'Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji',
-      resolve({ reactions }, { emoji }, { user }) {
-        return reactions.some(
-          (reaction) => reaction.authorId === user?.id && reaction.emoji === emoji,
-        );
-      },
     }),
-    reactions: t.int({
+    reactions: t.exposeInt('reactions', {
       args: { emoji: t.arg.string() },
       description: 'Nombre total de réactions avec cet emoji',
-      resolve({ reactions }, { emoji }) {
-        return reactions.filter((reaction) => reaction.emoji === emoji).length;
-      },
     }),
   }),
 });

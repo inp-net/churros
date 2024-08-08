@@ -70,8 +70,7 @@
       href={$data
         ? onceAllLoaded(
             [$data.event.localID, $data.localID],
-            // (id, ticket) => route('/events/[id]/book/[ticket]', { id, ticket }),
-            (_id, _ticket) => "",
+            (id, ticket) => route('/events/[id]/book/[ticket]', { id, ticket }),
             '',
           )
         : ''}

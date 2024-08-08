@@ -85,7 +85,7 @@ builder.mutationField('upsertRegistration', (t) =>
           return false;
         }
 
-        const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : null;
+        const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
 
         // Check that the ticket is still open
         if (ticket.closesAt && isPast(ticket.closesAt)) {

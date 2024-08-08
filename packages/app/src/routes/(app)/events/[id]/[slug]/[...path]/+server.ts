@@ -15,7 +15,7 @@ export async function GET(event) {
   const { data } = await load_PageRedirectEventOldURL({
     event,
     variables: {
-      group: event.params.id,
+      group: event.locals.group,
       slug: event.params.slug,
     },
   }).then((stores) => get(stores.PageRedirectEventOldURL));

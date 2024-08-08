@@ -36,13 +36,11 @@
   });
 
   let optionsWithDisplay: Array<[string, string]> = [];
-  $: optionsWithDisplay = !loaded(options)
-    ? []
-    : Array.isArray(options)
-      ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
-      : options instanceof Map
-        ? [...options.entries()]
-        : Object.entries(options);
+  $: optionsWithDisplay = Array.isArray(options)
+    ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
+    : options instanceof Map
+      ? [...options.entries()]
+      : Object.entries(options);
 
   let fieldsetElement: HTMLFieldSetElement;
 

@@ -14,7 +14,6 @@
     success: IconCheck,
     warning: IconWarning,
     danger: IconError,
-    info: undefined,
   } as const;
 
   $: icon ??= DEFAULT_ICONS[theme];

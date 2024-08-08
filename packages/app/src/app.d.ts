@@ -1,5 +1,4 @@
-type NavigationTopState = import('$lib/navigation.js').NotificationTopState;
-type NavigationTopActionEvent = import('$lib/navigation.js').NotificationTopActionEvent;
+type NavigationTopState = import('$lib/navigation').NotificationTopState;
 
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -93,17 +92,7 @@ declare namespace svelteHTML {
     'on:pressup'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
-    // [`on:NAVTOP_${string}`]?: (event: CustomEvent<{}>) => Promise<void>;
-    // [`on:${NavigationTopActionEvent}`]?: (event: CustomEvent<{}>) => Promise<void>;
-    'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;
-    // [
-    //   attr: `on:NAVTOP_${'COPY_ID' | 'REPORT_ISSUE' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING'}`
-    // ]: undefined | ((event: CustomEvent<{}>) => Promise<void> | void);
-    'on:NAVTOP_COPY_ID'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_PIN_PAGE'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_FINISH_EDITING'?: (event: CustomEvent<{}>) => Promise<void> | void;
+    [`on:NAVTOP_${STRING}`]?: (event: CustomEvent<{}>) => Promise<void>;
   }
 }
 

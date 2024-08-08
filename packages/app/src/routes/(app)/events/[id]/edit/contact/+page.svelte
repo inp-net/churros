@@ -1,9 +1,7 @@
 <script lang="ts">
+  import { graphql } from '$houdini';
   import { InputText } from '$lib/components';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import { mutate } from '$lib/mutations';
-  import { toasts } from '$lib/toasts';
-  import { ChangeEventContactDetails } from '../mutations';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -14,18 +12,29 @@
 <MaybeError result={$PageEventEditContact} let:data={{ event }}>
   <div class="contents">
     <InputText
-      on:blur={async ({ currentTarget }) => {
-        if (!(currentTarget instanceof HTMLInputElement)) return;
-        const result = await mutate(ChangeEventContactDetails, {
-          event: event.id,
-          contactMail: currentTarget.value,
-        });
-        toasts.mutation(
-          result,
-          'updateEvent',
-          '',
-          "Impossible de mettre à jour l'e-mail de contact",
-        );
+      on:blur={async () => {
+        await graphql(`
+          mutation ChangeEventContactDetails($event: LocalID!, $contactMail: String!) {
+            updateEvent(event: $event, contactMail: $contactMail) {
+              __typename
+              ... on MutationUpdateEventSuccess {
+                data {
+                  id
+                  contactMail
+                }
+              }
+              ... on Error {
+                message
+              }
+              ... on ZodError {
+                fieldErrors {
+                  path
+                  message
+                }
+              }
+            }
+          }
+        `);
       }}
       value={event.contactMail}
       label="Contact de l'orga"

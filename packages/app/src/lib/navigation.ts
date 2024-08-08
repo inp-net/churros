@@ -21,8 +21,11 @@ import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
+import IconForm from '~icons/msl/list-alt-outline';
 import IconLogout from '~icons/msl/logout';
 import IconNotificationSettings from '~icons/msl/notifications-outline';
+import IconPostAdd from '~icons/msl/post-add';
+import IconScanQR from '~icons/msl/qr-code-scanner';
 import IconCog from '~icons/msl/settings-outline';
 import IconShield from '~icons/msl/shield-outline';
 import IconPost from '~icons/msl/text-ad-outline';
@@ -57,21 +60,10 @@ export function addReferrer(
 // @ts-expect-error can't be bothered to type that shit
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
-type WithoutPrefix<Prefix extends string, T> = T extends `${Prefix}${infer P}` ? P : never;
-
-export type NavigationTopActionEvent = WithoutPrefix<
-  'on:',
-  Extract<keyof svelteHTML.HTMLAttributes, `on:NAVTOP_${string}`>
->;
-const navigationTopActionEventDispatcher = <Event extends NavigationTopActionEvent>(
-  eventID: Event,
-  data?: svelteHTML.HTMLAttributes[`on:${Event}`],
-) => {
-  window.dispatchEvent(
-    new CustomEvent(eventID, {
-      detail: data,
-    }),
-  );
+export type NavigationTopActionEvent =
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING'}`;
+const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
+  window.dispatchEvent(new CustomEvent(eventID));
 };
 
 export type NotificationTopStateKeys =
@@ -163,7 +155,7 @@ const quickActionAdd = {
       return {
         icon: IconPost,
         label: 'Post',
-        do: () => alert('TODO'),
+        href: route('/posts/create'),
         disabled: !me?.admin && !me?.canCreatePostsOn.length,
       };
     },
@@ -172,15 +164,15 @@ const quickActionAdd = {
       return {
         icon: IconEvent,
         label: 'Évènement',
-        do: () => alert('TODO'),
+        href: route('/events/create'),
         disabled: !me?.admin && !me?.canCreateEventsOn.length,
       };
     },
-    // {
-    //   icon: IconForm,
-    //   label: 'Formulaire',
-    //   href: route('/forms/create'),
-    // },
+    {
+      icon: IconForm,
+      label: 'Formulaire',
+      href: route('/forms/create'),
+    },
     async () => {
       const me = browser ? await navtopPermissions() : null;
       return {
@@ -267,14 +259,14 @@ export const topnavConfigs: Partial<
       ...rootPagesActions,
     ],
   },
-  // '/(app)/posts/[id]': ({ params: { id } }) => ({
-  //   actions: [
-  //     commonActions.delete,
-  //     { ...commonActions.edit, href: route('/posts/[id]/edit', id) },
-  //     commonActions.pin,
-  //   ],
-  //   title: 'Post',
-  // }),
+  '/(app)/posts/[id]': ({ params: { id } }) => ({
+    actions: [
+      commonActions.delete,
+      { ...commonActions.edit, href: route('/posts/[id]/edit', id) },
+      commonActions.pin,
+    ],
+    title: 'Post',
+  }),
   '/(app)/groups/[uid]': ({ params: { uid } }) => ({
     quickAction: quickActionConfigureNotations,
     actions: [
@@ -322,10 +314,10 @@ export const topnavConfigs: Partial<
   },
   '/(app)/events/[id]': ({ params: { id } }) => ({
     title: 'Évènement',
-    // quickAction: {
-    //   icon: IconScanQR,
-    //   href: route('/events/[id]/scan', id),
-    // },
+    quickAction: {
+      icon: IconScanQR,
+      href: route('/events/[id]/scan', id),
+    },
     back: route('/events'),
     actions: [
       { ...commonActions.edit, href: route('/events/[id]/edit', id) },
@@ -334,11 +326,11 @@ export const topnavConfigs: Partial<
         label: 'Réservations',
         href: route('/events/[id]/bookings', id),
       },
-      // {
-      //   icon: IconPostAdd,
-      //   label: 'Post lié',
-      //   href: route('/events/[id]/write', id),
-      // },
+      {
+        icon: IconPostAdd,
+        label: 'Post lié',
+        href: route('/events/[id]/write', id),
+      },
       commonActions.pin,
       commonActions.copyID,
     ],
@@ -408,10 +400,10 @@ export const topnavConfigs: Partial<
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',
     back: route('/events/[id]', id),
-    // quickAction: {
-    //   icon: IconScanQR,
-    //   href: route('/events/[id]/scan', id),
-    // },
+    quickAction: {
+      icon: IconScanQR,
+      href: route('/events/[id]/scan', id),
+    },
     actions: [
       { ...commonActions.edit, href: route('/events/[id]/edit', id) },
       {
@@ -447,8 +439,7 @@ export const topnavConfigs: Partial<
   },
 };
 
-// export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
-export const scanningEventsRouteID = '/(app)/events/[id]/scan';
+export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
 
 /**
  * Like refroute("/login"), but also adds a &why=unauthorized query param to explain why the user is being redirected to the login page.
