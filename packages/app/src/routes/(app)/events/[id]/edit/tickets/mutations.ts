@@ -28,7 +28,6 @@ export const ChangeCapacity = graphql(`
 
 export const SetEventBeneficiary = graphql(`
   mutation SetEventBeneficiary($id: LocalID!, $beneficiary: LocalID!) {
-    echo(message: $beneficiary)
     setEventBeneficiary(event: $id, lydiaAccount: $beneficiary) {
       ... on MutationSetEventBeneficiarySuccess {
         data {
