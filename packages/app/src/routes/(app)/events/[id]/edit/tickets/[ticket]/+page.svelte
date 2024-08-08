@@ -4,6 +4,7 @@
   import type { PageData } from './$houdini';
   import {
     MaybeError,
+    AvatarGroup_houdini as AvatarGroup,
     Alert,
     ButtonGhost,
     InputToggleTriState,
@@ -37,10 +38,8 @@
   import IconCapacity from '~icons/msl/file-copy-outline';
   import IconTicketGroup from '~icons/msl/inventory-2-outline';
   import IconContributor from '~icons/msl/contact-emergency-outline';
+  import IconWarning from '~icons/msl/warning-outline';
   import IconGodson from '~icons/msl/hub-outline';
-  import IconCheck from '~icons/msl/check';
-  import IconDisallow from '~icons/msl/close';
-  import IconDontCare from '~icons/msl/skip-next-outline';
   import IconPaymentMethod from '~icons/msl/account-balance-wallet-outline';
   import IconAlumni from '~icons/msl/school-outline';
   import IconStudentOf from '~icons/msl/account-tree-outline';
@@ -67,27 +66,14 @@
   } from './mutations';
   import { toasts } from '$lib/toasts';
   import { PendingValue, type BooleanConstraint$options } from '$houdini';
-  import { DISPLAY_BOOLEAN_CONSTRAINT } from '$lib/display';
+  import { DISPLAY_BOOLEAN_CONSTRAINT, DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { schoolYearStart } from '$lib/dates';
+  import { sentenceJoin } from '$lib/i18n';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
   $: ({ PageEventEditTicket } = data);
   // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
-
-  function withBooleanConstraint(label: MaybeLoading<string>, value: MaybeLoading<boolean | null>) {
-    return mapAllLoading(
-      [label, value],
-      (l, v) =>
-        `${l} ${DISPLAY_BOOLEAN_CONSTRAINT[
-          v === true ? 'Only' : v === false ? 'Not' : 'DontCare'
-        ]?.toLowerCase()}`,
-    );
-  }
-  function cycleBooleanConstraint(current: boolean | null): BooleanConstraint$options {
-    if (current === true) return 'DontCare';
-    if (current === null) return 'Not';
-    return 'Only';
-  }
 
   let openGodsonHelp: () => void;
 </script>
@@ -244,7 +230,9 @@
           </p>
         </ModalOrDrawer>
         <SubmenuItem icon={IconGodson} label subtext="Limite par personne">
-          Parrainages <ButtonGhost on:click={openGodsonHelp}><IconHelp /></ButtonGhost>
+          <div class="side-by-side">
+            Parrainages <ButtonGhost on:click={openGodsonHelp}><IconHelp /></ButtonGhost>
+          </div>
           <InputText
             slot="right"
             clearable
@@ -269,13 +257,37 @@
             }}
           ></InputText>
         </SubmenuItem>
+        <SubmenuItem
+          icon={IconPaymentMethod}
+          clickable
+          on:click={() => alert('TODO')}
+          subtext={mapLoading(
+            event.ticket.allowedPaymentMethods,
+            (methods) =>
+              sentenceJoin(
+                methods.map((m) => DISPLAY_PAYMENT_METHODS[m]),
+                'or',
+              ) || 'Aucune',
+          )}
+        >
+          Méthodes de paiement autorisées
+          {#if loading(event.ticket.basePrice, 0) > 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
+            <div
+              class="warning no-payment-method"
+              use:tooltip={"Le billet est payant, mais aucune méthode de paiement n'est autorisée!"}
+            >
+              <IconWarning />
+            </div>
+          {/if}
+        </SubmenuItem>
       </Submenu>
       <section class="constraints">
         <header>
           <h2 class="typo-field-label">Contraintes</h2>
           <p class="muted typo-details">
             Pour qu'une personne puisse réserver une place, l'ensemble des contraintes définies
-            ci-dessous doivent être toutes remplies
+            ci-dessous doivent être toutes remplies. <br />
+            
           </p>
         </header>
         <Submenu>
@@ -283,11 +295,12 @@
             icon={IconManagersOnly}
             label
             subtext={mapLoading(event.ticket.onlyManagersCanProvide, (only) =>
-              only ? 'Uniquement les managers peuvent réserver des places sur ce billet' : 'Non',
+              only ? "Personne d'autre ne peut réserver" : 'Non',
             )}
           >
             Managers seulement
             <InputToggle
+              slot="right"
               value={event.ticket.onlyManagersCanProvide}
               on:update={async ({ detail }) => {
                 if (!event.ticket) return;
@@ -303,46 +316,104 @@
               }}
             ></InputToggle>
           </SubmenuItem>
-          <SubmenuItemBooleanConstraint
-            ticketId={event.ticket.id}
-            mutation={LimitToContributors}
-            value={event.ticket.openToContributors}
-            icon={IconContributor}
-            subtext={mapLoading(
-              event.organizer.studentAssociation.name,
-              (name) => `Cotisant·e·s de ${name}`,
-            )}
-          >
-            Cotisant·e·s
-          </SubmenuItemBooleanConstraint>
-          <SubmenuItemBooleanConstraint
-            ticketId={event.ticket.id}
-            mutation={LimitToAlumni}
-            value={event.ticket.openToAlumni}
-            icon={IconAlumni}
-            subtext="Promos inférieures à {schoolYearStart().getFullYear() - 3}"
-          >
-            Ancien·ne·s étudiant·e·s
-          </SubmenuItemBooleanConstraint>
-          <SubmenuItemBooleanConstraint
-            ticketId={event.ticket.id}
-            mutation={LimitToApprentices}
-            value={event.ticket.openToApprentices}
-            icon={IconApprentice}
-            subtext="Apprenti·e·s"
-          >
-            Apprenti·e·s
-          </SubmenuItemBooleanConstraint>
-          <SubmenuItemBooleanConstraint
-            ticketId={event.ticket.id}
-            mutation={LimitToExternal}
-            value={event.ticket.openToExternal}
-            icon={IconExternalUser}
-            subtext="Personnes extérieures à l'école"
-          >
-            Externe·s
-          </SubmenuItemBooleanConstraint>
+          {#if !loading(event.ticket.onlyManagersCanProvide, false)}
+            <SubmenuItemBooleanConstraint
+              ticketId={event.ticket.id}
+              mutation={LimitToContributors}
+              value={event.ticket.openToContributors}
+              icon={IconContributor}
+              subtext={mapLoading(
+                event.organizer.studentAssociation.name,
+                (name) => `Cotisant·e·s de ${name}`,
+              )}
+            >
+              Cotisant·e·s
+            </SubmenuItemBooleanConstraint>
+            <SubmenuItemBooleanConstraint
+              ticketId={event.ticket.id}
+              mutation={LimitToAlumni}
+              value={event.ticket.openToAlumni}
+              icon={IconAlumni}
+              subtext="Promos inférieures à {schoolYearStart().getFullYear() - 3}"
+            >
+              Ancien·ne·s étudiant·e·s
+            </SubmenuItemBooleanConstraint>
+            <SubmenuItemBooleanConstraint
+              ticketId={event.ticket.id}
+              mutation={LimitToApprentices}
+              value={event.ticket.openToApprentices}
+              icon={IconApprentice}
+              subtext="Apprenti·e·s"
+            >
+              Apprenti·e·s
+            </SubmenuItemBooleanConstraint>
+            <SubmenuItemBooleanConstraint
+              ticketId={event.ticket.id}
+              mutation={LimitToExternal}
+              value={event.ticket.openToExternal}
+              icon={IconExternalUser}
+              subtext="Personnes extérieures à l'école"
+            >
+              Externe·s
+            </SubmenuItemBooleanConstraint>
+            <SubmenuItem
+              icon={IconGroupMember}
+              clickable
+              on:click={() => alert('TODO')}
+              subtext={mapAllLoading(
+                event.ticket.openToGroups.map((g) => g.uid),
+                (...uids) => {
+                  if (uids.length === 0) return "Membres d'au moins un des groupes spécifiés";
+                  return `Membres de ${sentenceJoin(uids, 'or')}`;
+                },
+              )}
+            >
+              Membres de groupes
+              <ul class="groups">
+                {#each event.ticket.openToGroups as group}
+                  <li>
+                    <AvatarGroup {group} />
+                  </li>
+                {/each}
+              </ul>
+            </SubmenuItem>
+            <SubmenuItem
+              clickable
+              on:click={() => alert('TODO')}
+              icon={IconStudentOf}
+              subtext={mapAllLoading(
+                event.ticket.openToMajors.map((m) => m.name),
+                (...names) => {
+                  if (names.length === 0) return "Étudiant·e·s d'une des filières spécifiées";
+                  return `Étudiant·e·s de ${sentenceJoin(names, 'or')}`;
+                },
+              )}
+            >
+              Étudiant·e·s de
+            </SubmenuItem>
+            <SubmenuItem
+              clickable
+              on:click={() => alert('TODO')}
+              icon={IconPromotion}
+              subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
+                if (names.length === 0) return "Étudiant·e·s d'une des promotions spécifiées";
+                return `Promos ${sentenceJoin(
+                  names.map((x) => x.toString()),
+                  'or',
+                )}`;
+              })}>Promos</SubmenuItem
+            >
+          {/if}
         </Submenu>
+        {#if loading(event.ticket.onlyManagersCanProvide, false)}
+          <Alert theme="warning">
+            <p>
+              Seul un·e manager peut réserver des places sur ce billet. Ceci est pratique quand les
+              contraintes de réservation sont trop complexes pour être exprimées sur Churros, et
+              sont gérées manuellement par l'orga.
+            </p>
+          </Alert>
+        {/if}
       </section>
     </div>
   {:else}
@@ -370,5 +441,15 @@
     font-weight: normal;
     line-height: 1.1;
     margin-top: 0.5rem;
+  }
+
+  .side-by-side {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+  }
+
+  .no-payment-method {
+    font-size: 1.5em;
   }
 </style>

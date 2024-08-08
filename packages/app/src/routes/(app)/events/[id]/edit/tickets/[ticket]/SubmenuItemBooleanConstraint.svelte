@@ -28,7 +28,7 @@
   export let errorMessage: string;
   export let mutation: MutationStore<
     {
-      updateTicketConstraints: { data?: any };
+      updateTicketConstraints: { data?: any } | { ' $fragments': { MutationErrors: {} } };
     },
     {
       ticket: string;
@@ -58,7 +58,11 @@
   subtext={mapAllLoading([subtext, value], withBooleanConstraint)}
 >
   <slot></slot>
-  <div class="icon" slot="right">
+  <div
+    class="icon"
+    slot="right"
+    style:color="var(--{value === true ? 'success' : value === false ? 'error' : 'warning'})"
+  >
     {#if !loaded(value)}
       <LoadingText>.</LoadingText>
     {:else if value === true}

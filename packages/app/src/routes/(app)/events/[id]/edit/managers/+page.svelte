@@ -93,6 +93,11 @@
 
 <MaybeError result={$PageEventEditManagers} let:data={{ event }}>
   <div class="contents">
+    <p class="explainer">
+      Les managers avec le niveau de permission "Scanner les billets" ou supérieur n'ont pas besoin
+      de respecter les contraintes pour prendre une place sur un billet, et peuvent également
+      prendre une place pour quelqu'un d'autre, peut importe la limite de parrainages définie.
+    </p>
     <ul class="managers nobullet">
       <li class="new">
         <form
