@@ -28,15 +28,14 @@ export const ChangeCapacity = graphql(`
 
 export const SetEventBeneficiary = graphql(`
   mutation SetEventBeneficiary($id: LocalID!, $beneficiary: LocalID!) {
+    echo(message: $beneficiary)
     setEventBeneficiary(event: $id, lydiaAccount: $beneficiary) {
       ... on MutationSetEventBeneficiarySuccess {
         data {
           beneficiary {
             id
             name
-            group {
-              ...AvatarGroup
-            }
+            ...PickBeneficiary
           }
         }
       }
@@ -56,6 +55,23 @@ export const CreateTicket = graphql(`
             localID
           }
           ...List_EditEvent_Tickets_insert
+        }
+      }
+      ...MutationErrors
+    }
+  }
+`);
+
+export const UnsetEventBeneficiary = graphql(`
+  mutation UnsetEventBeneficiary($id: LocalID!) {
+    setEventBeneficiary(event: $id, lydiaAccount: null) {
+      ... on MutationSetEventBeneficiarySuccess {
+        data {
+          beneficiary {
+            id
+            name
+            ...PickBeneficiary
+          }
         }
       }
       ...MutationErrors

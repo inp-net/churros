@@ -12,7 +12,6 @@
   type Value = $$Generic<multiple extends true ? string[] : string | null>;
 
   export let title = 'Groupes';
-  export let open: () => void;
 
   export let value: MaybeLoading<Value>;
   // let q: string;
@@ -34,8 +33,8 @@
   {title}
   on:finish={(e) => dispatch('finish', e.detail)}
   on:pick={(e) => dispatch('pick', e.detail)}
-  bind:open 
   {...$$restProps}
+  let:open
 >
   <div class="option" class:selected slot="option" let:selected let:option>
     <AvatarGroup_houdini {selected} href="" group={option} />

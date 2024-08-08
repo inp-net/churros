@@ -1,14 +1,17 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import type { MaybeLoading } from '$lib/loading';
+  import { type MaybeLoading, LoadingText } from '$lib/loading';
 
   const dispatch = createEventDispatcher<{ change: Value }>();
 
   type Value = $$Generic<string>;
   export let value: MaybeLoading<Value> | undefined = undefined;
-  export let options: Value[] | Record<Value, string> | Array<[Value, string]> = [];
+  export let options:
+    | Value[]
+    | Record<Value, MaybeLoading<string>>
+    | Array<[Value, MaybeLoading<string>]> = [];
 
-  let optionsWithDisplay: Array<[Value, string]> = [];
+  let optionsWithDisplay: Array<[Value, MaybeLoading<string>]> = [];
   $: optionsWithDisplay = Array.isArray(options)
     ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
     : Object.entries(options).map(([value, label]) => [value as Value, label as string]);
@@ -24,7 +27,9 @@
       value={optionValue}
       bind:group={value}
     />
-    <slot name="label" {label} option={optionValue}>{label}</slot>
+    <slot name="label" {label} option={optionValue}>
+      <LoadingText value={label} />
+    </slot>
   </label>
 {/each}
 

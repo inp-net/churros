@@ -1,10 +1,7 @@
 <script lang="ts">
-  import SubmenuItemBooleanConstraint from './SubmenuItemBooleanConstraint.svelte';
-
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import {
-    PickMajor,
-    ButtonSecondary,
     Alert,
     AvatarGroup_houdini as AvatarGroup,
     ButtonGhost,
@@ -16,16 +13,18 @@
     MaybeError,
     ModalOrDrawer,
     PickGroup,
+    PickMajor,
     Submenu,
     SubmenuItem,
   } from '$lib/components';
-  import { schoolYearStart } from '$lib/dates';
+  import InputCheckboxes from '$lib/components/InputCheckboxes.svelte';
+  import { fromYearTier } from '$lib/dates';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';
   import {
-    allLoaded,
     loaded,
     loading,
+    LoadingText,
     mapAllLoading,
     mapLoading,
     onceAllLoaded,
@@ -46,9 +45,8 @@
   import IconExternalUser from '~icons/msl/globe';
   import IconGroupMember from '~icons/msl/group-outline';
   import IconHelp from '~icons/msl/help-outline';
-  import IconClose from '~icons/msl/close';
   import IconGodson from '~icons/msl/hub-outline';
-  import IconTicketGroup from '~icons/msl/inventory-2-outline';
+  // import IconTicketGroup from '~icons/msl/inventory-2-outline';
   import IconShotgunOpen from '~icons/msl/lock-open-outline';
   import IconShotgunClose from '~icons/msl/lock-outline';
   import IconAlumni from '~icons/msl/school-outline';
@@ -71,55 +69,21 @@
     UpdatePrice,
     UpdateShotgunDates,
   } from './mutations';
-  import { browser } from '$app/environment';
+  import SubmenuItemBooleanConstraint from './SubmenuItemBooleanConstraint.svelte';
 
   export let data: PageData;
   $: ({ PageEventEditTicket } = data);
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 
   let openGodsonHelp: () => void;
-  let openPromotionsPicker: () => void;
-  let newPromotionsConstraint: number[] = [];
-  $: promotionsConstraintFromData = $PageEventEditTicket?.data?.event.ticket?.openToPromotions;
-  $: if (allLoaded(promotionsConstraintFromData) && promotionsConstraintFromData)
-    newPromotionsConstraint = promotionsConstraintFromData;
 
   $: ticketName = loading($PageEventEditTicket?.data?.event.ticket?.name, '');
   $: if (ticketName && browser)
-    window.dispatchEvent(
+    {window.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
-    );
+    );}
 </script>
 
 <ModalDelete ticketId={$page.params.ticket} />
-
-<ModalOrDrawer
-  bind:open={openPromotionsPicker}
-  on:close={async () => {
-    toasts.mutation(
-      await mutate(LimitToPromotions, {
-        ticket: $page.params.ticket,
-        promotions: newPromotionsConstraint,
-      }),
-      'updateTicketConstraints',
-      '',
-      'Impossible de changer la contrainte sur les promotions',
-    );
-  }}
->
-  <svelte:fragment slot="header" let:close>
-    <h1>Promos</h1>
-    <section class="side-by-side">
-      <ButtonSecondary
-        on:click={() => {
-          newPromotionsConstraint = [];
-          close();
-        }}>Autoriser tout</ButtonSecondary
-      >
-      <ButtonSecondary on:click={close}>Ok</ButtonSecondary>
-    </section>
-  </svelte:fragment>
-</ModalOrDrawer>
 
 <MaybeError result={$PageEventEditTicket} let:data={{ event, groups, majors }}>
   {#if event.ticket}
@@ -144,7 +108,7 @@
       ></InputText>
       <Submenu>
         <InputDateTimeRange
-          style="box"
+          variant="box"
           resourceId={event.ticket.id}
           start={event.ticket.opensAt}
           end={event.ticket.closesAt}
@@ -176,7 +140,7 @@
             )}
           >
             Début du shotgun
-            <InputDateTime on:clear={update} style="box" {value} label="" on:blur={update} />
+            <InputDateTime on:clear={update} variant="box" {value} label="" on:blur={update} />
           </SubmenuItem>
           <SubmenuItem
             let:value
@@ -192,7 +156,7 @@
             )}
           >
             Fin du shotgun
-            <InputDateTime on:clear={update} style="box" {value} label="" on:blur={update} />
+            <InputDateTime on:clear={update} variant="box" {value} label="" on:blur={update} />
           </SubmenuItem>
         </InputDateTimeRange>
         <SubmenuItem icon={IconPrice} label>
@@ -206,9 +170,9 @@
               if (!(currentTarget instanceof HTMLInputElement)) return;
               if (!event.ticket) return;
               const coerced = currentTarget.value ? Number.parseFloat(currentTarget.value) : 0;
-              if (Number.isNaN(coerced)) {
+              if (Number.isNaN(coerced)) 
                 toasts.error('Le prix doit être un nombre');
-              }
+              
               toasts.mutation(
                 await mutate(UpdatePrice, {
                   ticket: event.ticket.id,
@@ -258,13 +222,13 @@
         >
           Liens, formulaires
         </SubmenuItem>
-        <SubmenuItem
+        <!-- <SubmenuItem
           icon={IconTicketGroup}
           subtext={event.ticket.group?.name ?? 'Aucun groupe'}
           clickable
           on:click={() => alert('TODO')}>Groupe de billet</SubmenuItem
-        >
-        <ModalOrDrawer bind:open={openGodsonHelp}>
+        > -->
+        <ModalOrDrawer bind:open={openGodsonHelp} notrigger>
           <h1 slot="header">Parrainages</h1>
           <p>
             Churros te permet de faire des billets avec parrainages: une personne qui a accès à ce
@@ -302,26 +266,31 @@
         </SubmenuItem>
         <SubmenuItem
           icon={IconPaymentMethod}
-          clickable
-          on:click={() => alert('TODO')}
-          subtext={mapLoading(
-            event.ticket.allowedPaymentMethods,
-            (methods) =>
-              sentenceJoin(
-                methods.map((m) => DISPLAY_PAYMENT_METHODS[m]),
-                'or',
-              ) || 'Aucune',
-          )}
+          chevron
+          href={route('/events/[id]/edit/tickets/[ticket]/payment', {
+            id: $page.params.id,
+            ticket: $page.params.ticket,
+          })}
         >
           Méthodes de paiement autorisées
-          {#if loading(event.ticket.basePrice, 0) > 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
-            <div
-              class="warning no-payment-method"
-              use:tooltip={"Le billet est payant, mais aucune méthode de paiement n'est autorisée!"}
-            >
-              <IconWarning />
-            </div>
-          {/if}
+          <svelte:fragment slot="subtext">
+            <LoadingText
+              value={sentenceJoin(
+                event.ticket.allowedPaymentMethods
+                  .filter(loaded)
+                  .map((m) => DISPLAY_PAYMENT_METHODS[m]),
+                'or',
+              ) || 'Aucune'}
+            />
+            {#if loading(event.ticket.basePrice, 0) > 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
+              <span
+                class="warning no-payment-method"
+                use:tooltip={"Le billet est payant, mais aucune méthode de paiement n'est autorisée!"}
+              >
+                <IconWarning />
+              </span>
+            {/if}
+          </svelte:fragment>
         </SubmenuItem>
       </Submenu>
       <section class="constraints">
@@ -380,7 +349,7 @@
               mutation={LimitToAlumni}
               value={event.ticket.openToAlumni}
               icon={IconAlumni}
-              subtext="Promos inférieures à {schoolYearStart().getFullYear() - 3}"
+              subtext="Anciens élèves"
             >
               Alumnis
             </SubmenuItemBooleanConstraint>
@@ -496,8 +465,6 @@
             </PickMajor>
 
             <SubmenuItem
-              clickable
-              on:click={openPromotionsPicker}
               icon={IconPromotion}
               subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
                 if (names.length === 0) return 'Aucune contrainte';
@@ -505,8 +472,26 @@
                   names.map((x) => x.toString()),
                   'or',
                 )}`;
-              })}>Promos</SubmenuItem
-            >
+              })}
+              >Promos
+              <InputCheckboxes
+                value={mapAllLoading(event.ticket.openToPromotions, (...promos) => promos)}
+                slot="right"
+                options={[0, 1, 2].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
+                on:change={async ({ detail }) => {
+                  if (!event.ticket) return;
+                  toasts.mutation(
+                    await mutate(LimitToPromotions, {
+                      ticket: event.ticket.id,
+                      promotions: detail,
+                    }),
+                    'updateTicketConstraints',
+                    '',
+                    'Impossible de changer la contrainte sur les promotions',
+                  );
+                }}
+              />
+            </SubmenuItem>
           {/if}
         </Submenu>
         {#if loading(event.ticket.onlyManagersCanProvide, false)}
@@ -533,24 +518,27 @@
   }
 
   .constraints {
+    --checkboxes-direction: row;
+
     margin-top: 2rem;
   }
 
   .constraints header {
     --weight-field-label: 900;
+
     margin-bottom: 1rem;
   }
 
   .constraints p.muted {
+    margin-top: 0.5rem;
     font-weight: normal;
     line-height: 1.1;
-    margin-top: 0.5rem;
   }
 
   .side-by-side {
     display: flex;
-    align-items: center;
     gap: 0.5ch;
+    align-items: center;
   }
 
   .no-payment-method {

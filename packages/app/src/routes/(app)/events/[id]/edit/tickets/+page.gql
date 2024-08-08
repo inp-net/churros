@@ -7,6 +7,11 @@ query PageEditEventTickets($id: LocalID!) @loading {
     globalCapacity
     startsAt
     endsAt
+    organizer {
+      lydiaAccounts {
+        ...PickBeneficiary @mask_disable
+      }
+    }
     beneficiary {
       id
       name

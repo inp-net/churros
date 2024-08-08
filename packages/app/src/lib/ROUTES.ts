@@ -147,6 +147,12 @@ const PAGES = {
   }) => {
     return `/events/${params.id}/edit/tickets/${params.ticket}/links`;
   },
+  '/events/[id]/edit/tickets/[ticket]/payment': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params.id}/edit/tickets/${params.ticket}/payment`;
+  },
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
   },
@@ -555,6 +561,7 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets': 'id';
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
     '/forms': never;
     '/forms/[form]/answer': 'form' | 'section';

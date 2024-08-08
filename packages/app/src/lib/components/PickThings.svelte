@@ -25,7 +25,7 @@
 
   $: if (loaded(value)) _value = value;
 
-  export let open: () => void;
+  let open: () => void;
   let close: () => void;
   // let q: string;
   export let options: Array<Option>;
@@ -100,11 +100,11 @@
     row-gap: 2rem;
     padding: 1rem;
   }
-  
+
   .side-by-side {
     display: flex;
-    align-items: center;
     gap: 1ch;
+    align-items: center;
   }
 
   .options {
@@ -120,6 +120,7 @@
 
   .category {
     --weight-field-label: 900;
+
     width: 100%;
   }
 

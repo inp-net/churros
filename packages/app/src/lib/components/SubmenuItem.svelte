@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import type { MaybeLoading } from '$lib/loading';
   import type { SvelteComponent } from 'svelte';
@@ -25,6 +26,11 @@
    * Make the wrapper element a label
    */
   export let label = false;
+
+  /**
+   * If the string specified here is used as the hash in the URL, the item will be highlighted as active.
+   */
+  export let anchor: `#${string}` | undefined = undefined;
 </script>
 
 <svelte:element
@@ -33,6 +39,8 @@
   on:click
   role="menuitem"
   tabindex="-1"
+  id={anchor}
+  class:highlighted={anchor === $page.url.hash}
   class="submenu-item"
 >
   <div class="left">
@@ -76,8 +84,13 @@
     overflow: hidden;
   }
 
-  :is(button, a, label):is(:hover, :focus-visible).submenu-item,
-  label.submenu-item:has(:focus-visible) {
+  .submenu-item.highlighted {
+    color: var(--primary);
+    background: var(--primary-bg);
+  }
+
+  :is(button, a, label):is(:hover, :focus-visible).submenu-item
+  /* label.submenu-item:has(:focus-visible) { */ {
     cursor: pointer;
     background: var(--bg2);
   }
@@ -120,7 +133,7 @@
   }
 
   .right {
-    max-width: 33%;
+    max-width: 40%;
   }
 
   .chevron {

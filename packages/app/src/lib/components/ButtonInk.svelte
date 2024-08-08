@@ -12,6 +12,7 @@
   export let insideProse = false;
   export let submits = false;
   export let danger = false;
+  export let neutral = false;
   export let loading = false;
   export let disabled = false;
   export let newTab = false;
@@ -23,6 +24,7 @@
   type={submits ? 'submit' : 'button'}
   class="button-ink"
   class:danger
+  class:neutral
   class:inside-prose={insideProse}
   href={disabled ? '#' : href}
   {...$$restProps}
@@ -58,6 +60,10 @@
     border: none;
     border-radius: var(--radius-inline);
     box-shadow: none;
+  }
+
+  .button-ink.neutral {
+    color: var(--fg);
   }
 
   .button-ink.danger {

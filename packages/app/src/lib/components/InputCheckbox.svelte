@@ -179,7 +179,7 @@
   }
 
   label:not(.nolabel) {
-    min-width: 120px /* XXX: based on width of input when the label is smaller than "Peu importe" */;
+    min-width: min-content;
   }
 
   .labels {
