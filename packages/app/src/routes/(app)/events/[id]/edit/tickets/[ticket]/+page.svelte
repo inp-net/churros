@@ -1,5 +1,6 @@
 <script lang="ts">
   import SubmenuItemBooleanConstraint from './SubmenuItemBooleanConstraint.svelte';
+
   import type { PageData } from './$houdini';
   import {
     MaybeError,
@@ -73,6 +74,21 @@
   $: ({ PageEventEditTicket } = data);
   // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 
+  function withBooleanConstraint(label: MaybeLoading<string>, value: MaybeLoading<boolean | null>) {
+    return mapAllLoading(
+      [label, value],
+      (l, v) =>
+        `${l} ${DISPLAY_BOOLEAN_CONSTRAINT[
+          v === true ? 'Only' : v === false ? 'Not' : 'DontCare'
+        ]?.toLowerCase()}`,
+    );
+  }
+  function cycleBooleanConstraint(current: boolean | null): BooleanConstraint$options {
+    if (current === true) return 'DontCare';
+    if (current === null) return 'Not';
+    return 'Only';
+  }
+
   let openGodsonHelp: () => void;
 </script>
 
@@ -107,8 +123,8 @@
             if (!detail) return;
             if (!event.ticket) return;
             toasts.mutation(
-              await UpdateShotgunDates.mutate({
-                ticket: loading(event.ticket.id, ''),
+              await mutate(UpdateShotgunDates, {
+                ticket: event.ticket.id,
                 shotgun: detail,
               }),
               'updateTicket',
@@ -290,7 +306,6 @@
           <SubmenuItemBooleanConstraint
             ticketId={event.ticket.id}
             mutation={LimitToContributors}
-            errorMessage="Impossible de changer la contrainte de cotisation"
             value={event.ticket.openToContributors}
             icon={IconContributor}
             subtext={mapLoading(
@@ -303,27 +318,24 @@
           <SubmenuItemBooleanConstraint
             ticketId={event.ticket.id}
             mutation={LimitToAlumni}
-            errorMessage="Impossible de changer la contrainte sur les alumnis"
             value={event.ticket.openToAlumni}
             icon={IconAlumni}
             subtext="Promos inférieures à {schoolYearStart().getFullYear() - 3}"
           >
-            Alumnis
+            Ancien·ne·s étudiant·e·s
           </SubmenuItemBooleanConstraint>
           <SubmenuItemBooleanConstraint
             ticketId={event.ticket.id}
             mutation={LimitToApprentices}
-            errorMessage="Impossible de changer la contrainte sur les apprentis"
             value={event.ticket.openToApprentices}
             icon={IconApprentice}
-            subtext="FISAs"
+            subtext="Apprenti·e·s"
           >
             Apprenti·e·s
           </SubmenuItemBooleanConstraint>
           <SubmenuItemBooleanConstraint
             ticketId={event.ticket.id}
             mutation={LimitToExternal}
-            errorMessage="Impossible de changer la contrainte sur les extés"
             value={event.ticket.openToExternal}
             icon={IconExternalUser}
             subtext="Personnes extérieures à l'école"

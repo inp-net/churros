@@ -47,5 +47,7 @@ builder.queryField('ticketGroup', (t) =>
         where: { id: ensureGlobalId(id, 'TicketGroup') },
       });
     },
+    resolve: async (query, _, { id }) =>
+      prisma.ticketGroup.findFirstOrThrow({ ...query, where: { id } }),
   }),
 );

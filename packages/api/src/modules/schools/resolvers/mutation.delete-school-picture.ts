@@ -1,4 +1,4 @@
-import { builder, prisma, storageRoot } from '#lib';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';

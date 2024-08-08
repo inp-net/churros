@@ -10,17 +10,17 @@
   import IconNotif from '~icons/mdi/bell-outline';
   import IconIssue from '~icons/mdi/chat-alert-outline';
   import IconSearch from '~icons/mdi/search';
-  import ButtonBack from '../../../src/lib/components/ButtonBack.svelte';
-  import ButtonGhost from '../../../src/lib/components/ButtonGhost.svelte';
-  import ButtonSecondary from '../../../src/lib/components/ButtonSecondary.svelte';
-  import LogoChurros from '../../../src/lib/components/LogoChurros.svelte';
-  import ModalReportIssue from '../../../src/lib/components/ModalReportIssue.svelte';
+  import ButtonBack from './ButtonBack.svelte';
+  import ButtonGhost from './ButtonGhost.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import LogoChurros from './LogoChurros.svelte';
+  import ModalReportIssue from './ModalReportIssue.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { refroute } from '$lib/navigation';
 
   export let scrolled = false;
   let deviceWidth = browser ? window.innerWidth : 500;
-  let reportIssue: () => void;
+  let reportIssueDialogElement: HTMLDialogElement;
 
   export let userIsLoading = false;
 
@@ -53,9 +53,9 @@
   }}
 />
 
-<ModalReportIssue bind:open={reportIssue} />
+<ModalReportIssue bind:element={reportIssueDialogElement} />
 
-<nav id="navigation-top" class:scrolled class:transparent={Boolean($currentEvent)} class={$theme.name}>
+<nav id="navigation-top" class:scrolled class:transparent={Boolean($currentEvent)} class={$theme}>
   {#if $currentEvent}
     <div class="current-event">
       <ButtonBack />
@@ -79,7 +79,7 @@
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
         on:click={() => {
-          reportIssue.showModal();
+          reportIssueDialogElement.showModal();
         }}
         style="color:red"><IconIssue /></ButtonGhost
       >
@@ -90,7 +90,7 @@
       <ButtonGhost
         help="Signaler un bug ou proposer une idée"
         on:click={() => {
-          reportIssue.showModal();
+          reportIssueDialogElement.showModal();
         }}
         style="color:red"><IconIssue /></ButtonGhost
       >

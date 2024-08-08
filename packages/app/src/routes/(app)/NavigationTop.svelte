@@ -48,9 +48,8 @@
     : undefined;
 
   afterNavigate(({ to }) => {
-    const routeId = to?.route.id;
-    if (!routeId) return;
-    topnavConfig = topnavConfigs[routeId as NonNullable<LayoutRouteId>];
+    if (!to?.route.id) return;
+    topnavConfig = topnavConfigs[to.route.id! as LayoutRouteId];
   });
 
   $: if (topnavConfig) {

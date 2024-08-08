@@ -1,8 +1,12 @@
+<script lang="ts" context="module">
+  export const AppLayoutScanningEvent = new AppLayoutScanningEventStore();
+</script>
+
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { onNavigate } from '$app/navigation';
+  import { afterNavigate, onNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { graphql } from '$houdini';
+  import { AppLayoutScanningEventStore, graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -14,7 +18,7 @@
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { allLoaded } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
-  import { refroute } from '$lib/navigation';
+  import { refroute, scanningEventsRouteID } from '$lib/navigation';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
   import { setupViewTransition } from '$lib/view-transitions';
@@ -31,6 +35,13 @@
   const mobile = isMobile();
   export let data: PageData;
   $: ({ AppLayout, RootLayout } = data);
+
+  afterNavigate(async ({ to }) => {
+    if (!browser) return;
+    if (!to) return;
+    if (to.route.id === scanningEventsRouteID)
+      await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
+  });
 
   let scrolled = false;
   setupScrollPositionRestorer(

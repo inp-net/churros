@@ -144,7 +144,7 @@
             trackData={{ event: route('/events/[id]', event.localID), ticket: uid }}
             help={placesLeft === 0 ? 'Plus de places :/' : ''}
             disabled={placesLeft === 0}
-            href=""
+            href={refroute('/events/[id]/book/[ticket]', { id: event.localID, ticket: uid })}
           >
             Réserver
             <strong>

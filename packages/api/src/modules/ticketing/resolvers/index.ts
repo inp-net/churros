@@ -32,7 +32,6 @@ export * from './query.booking.js';
 export * from './query.registration.js';
 export * from './query.registrations-of-user.js';
 export * from './query.ticket-group.js';
-export * from './query.ticket.js';
 export * from './ticket.can-be-safely-deleted.js';
 export * from './ticket.places-left.js';
 export * from './user.booking.js';

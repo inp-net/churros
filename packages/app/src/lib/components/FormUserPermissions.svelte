@@ -2,8 +2,8 @@
   import { invalidateAll } from '$app/navigation';
   import { zeus } from '$lib/zeus';
   import type { PageData } from '../../routes/(app)/users/[uid]/edit/$types';
-  import ButtonSecondary from '../../../packages/app/src/lib/components/ButtonSecondary.svelte';
-  import InputSelectMultiple from '../../../packages/app/src/lib/components/InputSelectMultiple.svelte';
+  import ButtonSecondary from './ButtonSecondary.svelte';
+  import InputSelectMultiple from './InputSelectMultiple.svelte';
 
   export let data: PageData;
 

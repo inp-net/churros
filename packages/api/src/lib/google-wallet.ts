@@ -22,7 +22,6 @@ export function makeGoogleWalletObject(
   event: Event & { group: Group },
   registration: Registration & { author: User | null },
 ) {
-  if (!event.startsAt || !event.endsAt) throw new Error('Event must have a start and end date');
   return {
     id: `${GOOGLE_WALLET_CLASS.id}_${localID(registration.id)}`,
     classId: GOOGLE_WALLET_CLASS.id,

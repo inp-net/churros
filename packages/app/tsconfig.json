@@ -12,5 +12,5 @@
     "strict": true,
     "types": ["unplugin-icons/types/svelte"],
     "rootDirs": [".", "./.svelte-kit/types", "./$houdini/types", ".types"]
-  },
+  }
 }

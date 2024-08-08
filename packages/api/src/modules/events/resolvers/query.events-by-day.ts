@@ -1,4 +1,4 @@
-import { builder, eventHasDates, latest, prisma } from '#lib';
+import { builder, latest, prisma } from '#lib';
 import { prismaQueryVisibleEvents } from '#permissions';
 import { Visibility, type Prisma } from '@churros/db/prisma';
 import { queryFromInfo } from '@pothos/plugin-prisma';
@@ -71,22 +71,18 @@ builder.queryField('eventsByDay', (t) =>
 
       // const reversed = last && !first;
       const reversed = false; // TODO reverse pagination
-      let events = await prisma.event
-        .findMany({
-          ...query,
-          include,
-          where: {
-            AND: [
-              constraints,
-              user ? prismaQueryVisibleEvents(user) : { visibility: Visibility.Public },
-            ],
-            startsAt: { not: null },
-            endsAt: { not: null },
-          },
-          orderBy: { startsAt: reversed ? 'desc' : 'asc' },
-          take: 1e3, // safeguard
-        })
-        .then((events) => events.filter(eventHasDates));
+      let events = await prisma.event.findMany({
+        ...query,
+        include,
+        where: {
+          AND: [
+            constraints,
+            user ? prismaQueryVisibleEvents(user) : { visibility: Visibility.Public },
+          ],
+        },
+        orderBy: { startsAt: reversed ? 'desc' : 'asc' },
+        take: 1e3, // safeguard
+      });
 
       // if (reversed) events.reverse();
       events = events.map(findNextRecurringEvent);

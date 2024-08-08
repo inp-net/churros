@@ -63,11 +63,10 @@
     </article>
   </a>
   {#if hasMoreBookingsCount > 0}
-    <!-- <a
+    <a
       href={refroute('/events/[id]/my-bookings', loading($data.localID, ''))}
       class="more-bookings"
-    > -->
-    <a href="#" class="more-bookings">
+    >
       +{hasMoreBookingsCount}
     </a>
   {/if}

@@ -7,7 +7,8 @@ import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
-// import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
+import { storageRoot } from '../../api/src/lib/storage.js'
+import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
 import {
   CredentialType,
   DocumentType,
@@ -27,7 +28,7 @@ const prisma = new PrismaClient();
 const faker = fakerFR;
 faker.seed(5);
 
-const storageRootDirectory = path.join(path.dirname(new URL(import.meta.url).pathname), '..', '..', 'api', 'storage');
+const storageRootDirectory = storageRoot()
 
 console.info(`Cleaning storage root ${storageRootDirectory}`);
 for (const folder of ['events']) {
@@ -355,37 +356,36 @@ for (const asso of studentAssociations) {
     });
 
     if (faker.datatype.boolean(0.8)) {
-      // const destinationPath = pictureDestinationFile({
-      //   folder: 'groups',
-      //   extension: 'png',
-      //   identifier: uid,
-      //   root: storageRootDirectory,
-      // });
-      // await (existsSync(destinationPath)
-      false
+      const destinationPath = pictureDestinationFile({
+        folder: 'groups',
+        extension: 'png',
+        identifier: uid,
+        root: storageRootDirectory,
+      });
+      await (existsSync(destinationPath)
         ? prisma.group.update({
             where: { id },
             data: {
-              // pictureFile: path.relative(storageRootDirectory, destinationPath),
+              pictureFile: path.relative(storageRootDirectory, destinationPath),
             },
           })
         : downloadRandomImage(400, 400, uid)
-            .then((file) => {}
-              // updatePicture({
-              //   extension: 'png',
-              //   folder: 'groups',
-              //   identifier: uid,
-              //   resource: 'group',
-              //   file,
-              //   silent: true,
-              //   root: storageRootDirectory,
-              // }),
+            .then((file) =>
+              updatePicture({
+                extension: 'png',
+                folder: 'groups',
+                identifier: uid,
+                resource: 'group',
+                file,
+                silent: true,
+                root: storageRootDirectory,
+              }),
             )
-            // .catch((error) =>
-            //   console.warn(
-            //     `Could not download random image: ${error}. This is not critical, seeding will continue`,
-            //   )
-            // ));
+            .catch((error) =>
+              console.warn(
+                `Could not download random image: ${error}. This is not critical, seeding will continue`,
+              ),
+            ));
     }
   }
 }
@@ -512,31 +512,31 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
   });
 
   if (faker.datatype.boolean(0.65)) {
-    // const destinationPath = pictureDestinationFile({
-    //   folder: 'users',
-    //   extension: 'jpg',
-    //   identifier: uid,
-    //   root: storageRootDirectory,
-    // });
+    const destinationPath = pictureDestinationFile({
+      folder: 'users',
+      extension: 'jpg',
+      identifier: uid,
+      root: storageRootDirectory,
+    });
 
     await downloadRandomPeoplePhoto()
-      .then(async (file) => {}
-        // existsSync(destinationPath)
-        //   ? prisma.user.update({
-        //       where: { uid },
-        //       data: {
-        //         pictureFile: path.relative(storageRootDirectory, destinationPath),
-        //       },
-        //     })
-        //   : updatePicture({
-        //       extension: 'jpg',
-        //       folder: 'users',
-        //       identifier: uid,
-        //       resource: 'user',
-        //       file,
-        //       silent: true,
-        //       root: storageRootDirectory,
-        //     }),
+      .then(async (file) =>
+        existsSync(destinationPath)
+          ? prisma.user.update({
+              where: { uid },
+              data: {
+                pictureFile: path.relative(storageRootDirectory, destinationPath),
+              },
+            })
+          : updatePicture({
+              extension: 'jpg',
+              folder: 'users',
+              identifier: uid,
+              resource: 'user',
+              file,
+              silent: true,
+              root: storageRootDirectory,
+            }),
       )
       .catch((error) =>
         console.warn(
@@ -727,15 +727,15 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
         prisma.group.update({
           where: { id: groupId },
           data: {
-            // pictureFile: await updatePicture({
-            //   extension: 'png',
-            //   folder: 'groups',
-            //   identifier: uid,
-            //   resource: 'group',
-            //   file,
-            //   silent: true,
-            //   root: storageRootDirectory,
-            // }),
+            pictureFile: await updatePicture({
+              extension: 'png',
+              folder: 'groups',
+              identifier: uid,
+              resource: 'group',
+              file,
+              silent: true,
+              root: storageRootDirectory,
+            }),
           },
         }),
       )
@@ -1030,15 +1030,15 @@ for (const element of tqdm(selectedClub)) {
         prisma.event.update({
           where: { id },
           data: {
-            // pictureFile: await updatePicture({
-            //   extension: 'jpg',
-            //   folder: 'events',
-            //   resource: 'event',
-            //   file,
-            //   identifier: id,
-            //   silent: true,
-            //   root: storageRootDirectory,
-            // }),
+            pictureFile: await updatePicture({
+              extension: 'jpg',
+              folder: 'events',
+              resource: 'event',
+              file,
+              identifier: id,
+              silent: true,
+              root: storageRootDirectory,
+            }),
           },
         }),
       )

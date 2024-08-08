@@ -47,8 +47,7 @@ builder.queryField('eventsInWeek', (t) =>
         ],
       };
 
-      function isRecurrentEventVisible(event: Event): event is Event & { startsAt: Date; endsAt: Date } {
-        if (!event.startsAt || !event.endsAt) return false;
+      function isRecurrentEventVisible(event: Event): boolean {
         // if the event's (original) startsAt is after today's week's start, it is not visible
         if (
           startOfWeek(event.startsAt, { weekStartsOn: 1 }) > startOfWeek(today, { weekStartsOn: 1 })
@@ -59,7 +58,7 @@ builder.queryField('eventsInWeek', (t) =>
         return true;
       }
 
-      function fixRecurrentEventDates(event: Event & { startsAt: Date; endsAt: Date }): Event {
+      function fixRecurrentEventDates(event: Event): Event {
         // eslint-disable-next-line prefer-const
         let { startsAt, endsAt, frequency } = event;
         switch (frequency) {

@@ -8,7 +8,7 @@ function notNull<T>(v: T | null): v is T {
 }
 
 export type EventsByDay = {
-  events: Array<typeof EventType.$inferType & { startsAt: Date; endsAt: Date }>;
+  events: Array<typeof EventType.$inferType>;
   date: Date;
   id: string;
 };

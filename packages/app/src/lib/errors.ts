@@ -38,7 +38,7 @@ type OperationResult<SuccessData> =
 
 export type MutationResult<MutationName extends string, SuccessData> = {
   errors?: Array<{ message: string }> | null;
-  data?: Record<MutationName, OperationResult<SuccessData>> | null | undefined;
+  data?: Record<MutationName, OperationResult<SuccessData>> | null;
 };
 
 export type SucceededMutationResult<MutationName extends string, SuccessData> = {
