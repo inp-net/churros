@@ -119,6 +119,10 @@
     line-clamp: 2;
   }
 
+  .right {
+    max-width: 33%;
+  }
+
   .chevron {
     flex-shrink: 0;
     font-size: 1.5rem;

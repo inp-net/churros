@@ -20,6 +20,7 @@ query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
       group {
         name
       }
+      allowedPaymentMethods 
       godsonLimit
       openToContributors
       openToAlumni
