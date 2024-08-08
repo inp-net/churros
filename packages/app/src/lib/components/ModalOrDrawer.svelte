@@ -47,7 +47,7 @@
   <ModalDialog  {tall} bind:element={dialogElement} bind:open={openDialog}>
     {#if $$slots.header}
       <header>
-        <slot name="header"></slot>
+        <slot {close} name="header"></slot>
       </header>
     {/if}
     <slot {close}></slot>

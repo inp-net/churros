@@ -30,6 +30,6 @@
   {...$$restProps}
   {src}
   {href}
-  alt={mapLoading($data?.name ?? PendingValue, (n) => `Photo de ${n}`)}
+  alt={mapLoading($data?.name ?? PendingValue, (n) => `Logo de ${n}`)}
   help={$data?.name}
 />

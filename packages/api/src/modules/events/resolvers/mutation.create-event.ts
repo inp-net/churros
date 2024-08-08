@@ -4,11 +4,13 @@ import { DateRangeInput, ShortString, UIDScalar } from '#modules/global';
 import { Visibility } from '@churros/db/prisma';
 import slug from 'slug';
 import { EventType } from '../types/event.js';
+import { ZodError } from 'zod';
 
 builder.mutationField('createEvent', (t) =>
   t.prismaField({
     description: 'Créer un nouvel évènement',
     type: EventType,
+    errors: {types:[Error, ZodError]},
     args: {
       group: t.arg({ type: UIDScalar, description: 'Groupe organisateur principal' }),
       title: t.arg({ type: ShortString }),

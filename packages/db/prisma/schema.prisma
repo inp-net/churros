@@ -258,11 +258,14 @@ model Link {
 
 /// A school syllabus
 model Major {
-  id            String  @id @default(dbgenerated("nanoid('major:')"))
-  uid           String  @unique @db.VarChar(255)
-  name          String  @db.VarChar(255)
-  shortName     String  @default("") @db.VarChar(255)
-  ldapSchoolUid String? @db.VarChar(255)
+  id            String   @id @default(dbgenerated("nanoid('major:')"))
+  uid           String   @unique @db.VarChar(255)
+  name          String   @db.VarChar(255)
+  shortName     String   @default("") @db.VarChar(255)
+  ldapSchoolUid String?  @db.VarChar(255)
+  pictureFile   String   @default("") @db.VarChar(255)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt @default(now())
 
   schools           School[]        @relation("MajorToSchool")
   ldapSchool        School?         @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)

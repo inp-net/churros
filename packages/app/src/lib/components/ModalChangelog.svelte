@@ -32,12 +32,12 @@
   import { createEventDispatcher } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LogoChurros from './LogoChurros.svelte';
-  import Modal from './ModalDialog.svelte';
+  import Modal from './ModalOrDrawer.svelte';
   import { track } from '$lib/analytics';
 
   const dispatch = createEventDispatcher();
 
-  export let open: boolean;
+  let open: () => void;
 
   graphql(`
     fragment ModalChangelogChange on ReleaseChange {
@@ -96,6 +96,8 @@
   );
   $: changes = $data && 'data' in $data ? $data.data : [];
 
+  $: if (totalChangesCount(changes) > 0) open?.();
+
   let element: HTMLDialogElement;
 
   function flattenVersions(versions: typeof changes) {
@@ -140,12 +142,7 @@
   }
 </script>
 
-<Modal
-  opened={open && totalChangesCount(changes) > 0}
-  maxWidth="800px"
-  bind:element
-  on:close-by-outside-click={acknowledge}
->
+<Modal notrigger bind:open bind:element on:close-by-outside-click={acknowledge}>
   {@const { first, last } = versionRange(changes)}
   <section class="centered">
     <LogoChurros wordmark />

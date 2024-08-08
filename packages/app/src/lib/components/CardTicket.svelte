@@ -53,7 +53,7 @@
 <div class="ticket">
   <div class="text">
     <div class="title">
-      <LoadingText value={$data?.name}>Place</LoadingText>
+      <LoadingText value={$data?.name || "Place"}>Place</LoadingText>
     </div>
     <div class="subtitle">
       <LoadingText

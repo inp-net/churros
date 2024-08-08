@@ -21,7 +21,7 @@
       }
     | undefined;
 
-  $: if (!updatedDates && start && end && loaded(start) && loaded(end)) {
+  $: if (!updatedDates && loaded(start) && loaded(end)) {
     updatedDates = {
       start: start as Date | null,
       end: end as Date | null,
@@ -44,11 +44,20 @@
       datePart: Date | null | undefined;
       timePart: string;
     }>) => {
+      console.log({
+        loadedresourceId: loaded(resourceId),
+        timePartOnly: timePart && !datePart,
+        datePartOnly: !timePart && datePart,
+        updatedDates,
+        loadedEnd: loaded(end),
+        loadedStart: loaded(start),
+      })
       if (!loaded(resourceId)) return;
       if (timePart && !datePart) return;
       if (!timePart && datePart) return;
-      if (!updatedDates) return;
       if (!loaded(end) || !loaded(start)) return;
+      if (!updatedDates) return;
+      console.log({value, timePart, datePart})
 
       if (key === 'start') updatedDates.start = value ?? null;
       else updatedDates.end = value ?? null;

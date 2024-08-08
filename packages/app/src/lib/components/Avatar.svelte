@@ -30,7 +30,7 @@
     width: var(--avatar-size, 1em);
     height: var(--avatar-size, 1em);
     overflow: hidden;
-    border-radius: 100000px;
+    border-radius: var(--avatar-radius, 10000px);
     transition: all 50ms ease;
   }
 
@@ -38,7 +38,7 @@
     outline: calc(2 * var(--border-block)) solid transparent;
   }
 
-  a.selectable:is(:hover, :focus-visible) {
+  a.selectable:not(.selected):is(:hover, :focus-visible) {
     outline: calc(2 * var(--border-block)) solid var(--primary);
   }
 
