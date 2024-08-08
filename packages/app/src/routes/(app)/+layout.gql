@@ -14,6 +14,10 @@ query AppLayout($version: String!, $pagePath: String!) {
       }
     }
 
+    canCreateEventsOn {
+      ...PickGroup @mask_disable
+    }
+
     bookings(forUserOnly: true, first: 5) @loading(count: 0) {
       ...OverlayQuickBookings
     }

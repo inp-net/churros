@@ -58,9 +58,11 @@ async function getImports(directory: string): Promise<Set<string>> {
             continue;
           }
           const padlength = longestModuleNameLength + 3;
-          console.log(
-            `${path.basename(directory).padEnd(padlength)} imports ${match[1].padEnd(padlength)} in ${path.relative(process.cwd(), filepath)}:${i + 1}`,
-          );
+          if (path.basename(directory) !== match[1]) {
+            console.log(
+              `${path.basename(directory).padEnd(padlength)} imports ${match[1].padEnd(padlength)} in ${path.relative(process.cwd(), filepath)}:${i + 1}`,
+            );
+          }
           importedModules.add(match[1]);
         }
       }

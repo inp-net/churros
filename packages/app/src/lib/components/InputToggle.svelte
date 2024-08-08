@@ -2,7 +2,7 @@
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{ update: boolean }>();
+  const dispatch = createEventDispatcher<{ update: boolean; change: undefined }>();
 
   type Value = $$Generic<MaybeLoading<boolean> | boolean>;
 
@@ -18,6 +18,7 @@
     on:change={({ currentTarget }) => {
       if (!(currentTarget instanceof HTMLInputElement)) return;
       dispatch('update', currentTarget.checked);
+      dispatch('change');
     }}
     bind:checked={_value}
   />

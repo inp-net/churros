@@ -1,16 +1,20 @@
 <script lang="ts">
-  import InputField from '$lib/components/InputField.svelte';
-  import InputToggle from '$lib/components/InputToggle.svelte';
-  import InputRadio from '$lib/components/InputRadios.svelte';
-  import MaybeError from '$lib/components/MaybeError.svelte';
+  import {
+    Alert,
+    InputField,
+    InputRadios,
+    InputToggle,
+    Submenu,
+    SubmenuItem,
+    MaybeError,
+  } from '$lib/components';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
-  import type { PageData } from './$houdini';
+  import { onceAllLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
-  import { ChangeEventVisibility, SetEventKioskModeInclusion } from '../mutations';
   import { toasts } from '$lib/toasts';
-  import Submenu from '$lib/components/Submenu.svelte';
-  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import IconKioskMode from '~icons/msl/tv-outline';
+  import { ChangeEventVisibility, SetEventKioskModeInclusion } from '../mutations';
+  import type { PageData } from './$houdini';
   export let data: PageData;
 
   $: ({ PageEventEditVisibility } = data);
@@ -19,8 +23,14 @@
 
 <MaybeError result={$PageEventEditVisibility} let:data={{ event }}>
   <div class="contents">
+    {#if onceAllLoaded([event.startsAt, event.endsAt], (s, e) => !s || !e, false)}
+      <Alert theme="warning">
+        L'évènement ne peut pas être passé en visiblité autre que Privé ou Non répertorié tant que
+        les dates ne sont pas définies
+      </Alert>
+    {/if}
     <InputField label="Visibilité">
-      <InputRadio
+      <InputRadios
         value={event.visibility}
         options={DISPLAY_VISIBILITIES}
         on:change={async ({ detail }) => {
@@ -35,24 +45,23 @@
           <p class="main">{label}</p>
           <p class="muted">{HELP_VISIBILITY[option]}</p>
         </div>
-      </InputRadio>
+      </InputRadios>
     </InputField>
     <Submenu>
       <SubmenuItem label icon={IconKioskMode} subtext="Pour par exemple afficher sur des télés">
         Inclure dans le mode kioske
         <InputToggle
           slot="right"
-          on:change={async ({ currentTarget }) => {
-            if (!(currentTarget instanceof HTMLInputElement)) return;
+          on:update={async ({ detail }) => {
             const result = await mutate(SetEventKioskModeInclusion, {
               event: event.id,
-              includeInKiosk: currentTarget.checked,
+              includeInKiosk: detail,
             });
             toasts.mutation(
               result,
               'updateEvent',
               '',
-              `Impossible ${currentTarget.checked ? "d'inclure" : "d'exclure"} du mode kiosque`,
+              `Impossible ${detail ? "d'inclure" : "d'exclure"} du mode kiosque`,
             );
           }}
           value={event.includeInKiosk}

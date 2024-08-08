@@ -10,6 +10,8 @@
   type Value = $$Generic<multiple extends true ? string[] : string | null>;
   type Option = $$Generic<{ uid: MaybeLoading<string> }>;
 
+  export let category: undefined | ((option: Option) => { id: string; label: string }) = undefined;
+
   export let title = 'Choisir';
 
   export let value: MaybeLoading<Value>;
@@ -23,29 +25,43 @@
 
   $: if (loaded(value)) _value = value;
 
-  let open: () => void;
+  export let open: () => void;
   let close: () => void;
   // let q: string;
   export let options: Array<Option>;
 </script>
 
-<ModalOrDrawer removeBottomPadding tall bind:open bind:implicitClose={close}>
+<ModalOrDrawer {...$$restProps} removeBottomPadding tall bind:open bind:implicitClose={close}>
   <svelte:fragment slot="header">
     <p class="title">{title}</p>
     <!-- <InputSearchQuery bind:q /> -->
-    <ButtonPrimary
-      on:click={() => {
-        close();
-        dispatch('finish', _value);
-      }}>OK</ButtonPrimary
-    >
+    <div class="side-by-side">
+      <ButtonSecondary
+        on:click={() => {
+          close?.();
+        }}>Annuler</ButtonSecondary
+      >
+      <ButtonPrimary
+        on:click={() => {
+          close();
+          dispatch('finish', _value);
+        }}>OK</ButtonPrimary
+      >
+    </div>
   </svelte:fragment>
   <div class="contents">
-    <ul class="options nobullet">
-      {#each options.filter(loaded) as option}
+    <ul class="options nobullet" class:has-categories={Boolean(category)}>
+      {#each options.filter(loaded).entries() as [i, option]}
+        {@const isNewCategory =
+          category && (i === 0 || category(option).id !== category(options[i - 1]).id)}
         {@const selected = isMultiple(_value)
           ? _value.includes(loading(option.uid, ''))
           : option.uid === _value}
+        {#if isNewCategory && category}
+          <li class="category typo-field-label">
+            {category(option).label}
+          </li>
+        {/if}
         <li>
           <button
             class:selected
@@ -84,15 +100,31 @@
     row-gap: 2rem;
     padding: 1rem;
   }
+  
+  .side-by-side {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+  }
 
   .options {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
+  }
 
-    /* max-height: 70dvh;
-    overflow-y: scroll; */
+  .options.has-categories {
+    justify-content: start;
+  }
+
+  .category {
+    --weight-field-label: 900;
+    width: 100%;
+  }
+
+  .category:not(:first-child) {
+    margin-top: 3rem;
   }
 
   .title {

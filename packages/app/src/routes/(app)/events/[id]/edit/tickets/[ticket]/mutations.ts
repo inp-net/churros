@@ -182,3 +182,17 @@ export const LimitToGroupMembers = graphql(`
     }
   }
 `);
+
+export const DeleteTicket = graphql(`
+  mutation DeleteTicket($ticket: LocalID!) {
+    deleteTicket(id: $ticket) {
+      ... on MutationDeleteTicketSuccess {
+        softDeleted
+        data {
+          onlyManagersCanProvide
+        }
+      }
+      ...MutationErrors
+    }
+  }
+`);

@@ -4,7 +4,8 @@
 
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate, onNavigate } from '$app/navigation';
+  import { route } from '$lib/ROUTES';
+  import { afterNavigate, onNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { AppLayoutScanningEventStore, graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
@@ -14,9 +15,10 @@
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
+  import PickGroup from '$lib/components/PickGroup.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
-  import { allLoaded } from '$lib/loading';
+  import { allLoaded, loading, mapAllLoading } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { refroute, scanningEventsRouteID } from '$lib/navigation';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
@@ -29,6 +31,8 @@
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
+  import { mutate } from '$lib/mutations';
+  import { toasts } from '$lib/toasts';
 
   onNavigate(setupViewTransition);
 
@@ -90,6 +94,22 @@
 
   let newGroupDialog: HTMLDialogElement;
 
+  let openNewEventGroupPicker: () => void;
+  $: if ($page.state.NAVTOP_CREATING_EVENT) openNewEventGroupPicker?.();
+
+  const CreateEvent = graphql(`
+    mutation CreateEvent($group: UID!) {
+      createEvent(group: $group, title: "") {
+        ... on MutationCreateEventSuccess {
+          data {
+            localID
+          }
+        }
+        ...MutationErrors
+      }
+    }
+  `);
+
   const navtop = writable<NavigationContext>({
     actions: [],
     title: null,
@@ -111,8 +131,30 @@
   />
 {/if}
 
-<ModalCreateGroup studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
-></ModalCreateGroup>
+<!-- <ModalCreateGroup studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
+></ModalCreateGroup> -->
+
+{#if $AppLayout.data?.me}
+  <PickGroup
+  notrigger
+    bind:open={openNewEventGroupPicker}
+    value={$AppLayout.data.me.canCreateEventsOn.at(0)?.uid}
+    on:finish={async ({ detail }) => {
+      const result = await mutate(CreateEvent, { group: detail });
+      if (
+        toasts.mutation(
+          result,
+          'createEvent',
+          'Évènement créé',
+          `Impossible de créer un évènement pour ${detail}`,
+        )
+      ) {
+        await goto(route('/events/[id]/edit', result.data.createEvent.data.localID));
+      }
+    }}
+    options={$AppLayout.data.me.canCreateEventsOn}
+  ></PickGroup>
+{/if}
 
 {#if $AppLayout.data?.me?.bookings}
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>

@@ -1563,12 +1563,38 @@ type MailHealthCheck {
   smtp: Boolean!
 }
 
-"""A school syllabus"""
-type Major {
+"""
+Une filière (division de premier niveau du cursus scolaire d'une école). Peut être reliée à plusieurs écoles
+"""
+type Major implements Pictured {
+  """
+  Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
+  """
+  hasSeparateDarkPicture: Boolean!
   id: ID!
   ldapSchool: School
   minors: [Minor!]!
   name: String!
+
+  """Texte alternatif de l'image"""
+  pictureAltText: String!
+
+  """Le nom du fichier de l'image"""
+  pictureFile: String!
+
+  """Le nom du fichier de l'image, en thème sombre"""
+  pictureFileDark: String!
+
+  """L'URL publique de l'image"""
+  pictureURL(
+    """Utiliser l'image en thème sombre"""
+    dark: Boolean! = false
+
+    """
+    Ajouter un timestamp à la fin de l'URL pour forcer le navigateur à recharger l'image. Le timestamp correspond à la date de dernière mise à jour de la ressource (si disponible), ou à l'heure actuelle.
+    """
+    timestamp: Boolean! = true
+  ): String!
   schools: [School!]!
   shortName: String!
   subjects(forApprentices: Boolean, yearTier: Int): [Subject!]!
@@ -1747,7 +1773,7 @@ type Mutation {
     """Groupe organisateur principal"""
     group: UID!
     title: ShortString!
-  ): Event!
+  ): MutationCreateEventResult!
   createGitlabIssue(description: String!, isBug: Boolean!, title: String!): Int!
 
   """
@@ -1845,8 +1871,8 @@ type Mutation {
   deleteTicket(
     """Supprimer le billet même s'il existe des réservations"""
     force: Boolean! = false
-    id: ID!
-  ): Boolean!
+    id: LocalID!
+  ): MutationDeleteTicketResult!
   deleteTicketGroup(id: ID!): Boolean!
   deleteToken(id: ID!): Boolean!
   deleteUserPicture(uid: String!): Boolean!
@@ -2350,6 +2376,12 @@ type MutationContributeSuccess {
   data: Boolean!
 }
 
+union MutationCreateEventResult = Error | MutationCreateEventSuccess | ZodError
+
+type MutationCreateEventSuccess {
+  data: Event!
+}
+
 union MutationCreateGoogleWalletPassResult = Error | MutationCreateGoogleWalletPassSuccess | ZodError
 
 type MutationCreateGoogleWalletPassSuccess {
@@ -2395,6 +2427,17 @@ union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess
 
 type MutationDeleteShopItemSuccess {
   data: Boolean!
+}
+
+union MutationDeleteTicketResult = Error | MutationDeleteTicketSuccess | ZodError
+
+type MutationDeleteTicketSuccess {
+  data: Ticket!
+
+  """
+  Message d'explication si le billet n'a pas pu être supprimé mais qu'une autre action a été effectuée à la place
+  """
+  softDeleted: String!
 }
 
 union MutationFinishPaypalRegistrationPaymentResult = Error | MutationFinishPaypalRegistrationPaymentSuccess

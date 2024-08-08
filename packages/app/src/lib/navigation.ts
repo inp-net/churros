@@ -67,7 +67,7 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
 };
 
 export type NotificationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY'}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'POST' | 'GROUP'}`}`;
 
 export type NotificationTopState = Partial<Record<NotificationTopStateKeys, boolean>>;
 
@@ -164,7 +164,7 @@ const quickActionAdd = {
       return {
         icon: IconEvent,
         label: 'Évènement',
-        href: route('/events/create'),
+        do: () => navtopPushState('NAVTOP_CREATING_EVENT'),
         disabled: !me?.admin && !me?.canCreateEventsOn.length,
       };
     },
@@ -390,12 +390,6 @@ export const topnavConfigs: Partial<{
     title: 'Billetterie',
     back: route('/events/[id]/edit', id),
     actions: [],
-    quickAction: {
-      label: 'OK',
-      do() {
-        navigationTopActionEventDispatcher('NAVTOP_FINISH_EDITING');
-      },
-    },
   }),
   '/(app)/events/[id]/edit/tickets/[ticket]': ({ params }) => ({
     title: 'Billet',

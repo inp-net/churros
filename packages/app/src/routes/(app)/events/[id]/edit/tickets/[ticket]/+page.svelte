@@ -1,59 +1,65 @@
 <script lang="ts">
   import SubmenuItemBooleanConstraint from './SubmenuItemBooleanConstraint.svelte';
 
-  import type { PageData } from './$houdini';
+  import { page } from '$app/stores';
   import {
-    MaybeError,
-    AvatarGroup_houdini as AvatarGroup,
-    Alert,
-    ButtonGhost,
-    InputToggleTriState,
+    PickMajor,
     ButtonSecondary,
+    Alert,
+    AvatarGroup_houdini as AvatarGroup,
+    ButtonGhost,
     IconLinkVariant,
+    InputDateTime,
+    InputDateTimeRange,
+    InputText,
+    InputToggle,
+    MaybeError,
+    ModalOrDrawer,
+    PickGroup,
     Submenu,
     SubmenuItem,
-    InputToggle,
-    InputText,
-    InputDateTimeRange,
-    InputDateTime,
-    PickGroup,
-    ModalOrDrawer,
   } from '$lib/components';
-  import { route } from '$lib/ROUTES';
-  import { refroute } from '$lib/navigation';
-  import { mutate } from '$lib/mutations';
+  import { schoolYearStart } from '$lib/dates';
+  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { sentenceJoin } from '$lib/i18n';
   import {
-    onceLoaded,
-    mapLoading,
-    LoadingText,
+    allLoaded,
+    loaded,
     loading,
     mapAllLoading,
-    type MaybeLoading,
-    loaded,
+    mapLoading,
     onceAllLoaded,
+    onceLoaded,
   } from '$lib/loading';
-  import IconHelp from '~icons/msl/help-outline';
-  import IconShotgunOpen from '~icons/msl/lock-open-outline';
-  import IconShotgunClose from '~icons/msl/lock-outline';
+  import { mutate } from '$lib/mutations';
+  import { route } from '$lib/ROUTES';
+  import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import { formatDistance, isBefore } from 'date-fns';
+  import IconPaymentMethod from '~icons/msl/account-balance-wallet-outline';
+  import IconStudentOf from '~icons/msl/account-tree-outline';
+  import IconPromotion from '~icons/msl/azm-outline';
+  import IconContributor from '~icons/msl/contact-emergency-outline';
+  import IconApprentice from '~icons/msl/enterprise-outline';
   import IconPrice from '~icons/msl/euro';
   import IconCapacity from '~icons/msl/file-copy-outline';
-  import IconTicketGroup from '~icons/msl/inventory-2-outline';
-  import IconContributor from '~icons/msl/contact-emergency-outline';
-  import IconWarning from '~icons/msl/warning-outline';
-  import IconGodson from '~icons/msl/hub-outline';
-  import IconPaymentMethod from '~icons/msl/account-balance-wallet-outline';
-  import IconAlumni from '~icons/msl/school-outline';
-  import IconStudentOf from '~icons/msl/account-tree-outline';
-  import IconGroupMember from '~icons/msl/group-outline';
-  import IconPromotion from '~icons/msl/azm-outline';
-  import IconManagersOnly from '~icons/msl/shield-outline';
   import IconExternalUser from '~icons/msl/globe';
-  import IconApprentice from '~icons/msl/enterprise-outline';
-  import { formatDistance, formatDistanceToNow, isBefore } from 'date-fns';
+  import IconGroupMember from '~icons/msl/group-outline';
+  import IconHelp from '~icons/msl/help-outline';
+  import IconClose from '~icons/msl/close';
+  import IconGodson from '~icons/msl/hub-outline';
+  import IconTicketGroup from '~icons/msl/inventory-2-outline';
+  import IconShotgunOpen from '~icons/msl/lock-open-outline';
+  import IconShotgunClose from '~icons/msl/lock-outline';
+  import IconAlumni from '~icons/msl/school-outline';
+  import IconManagersOnly from '~icons/msl/shield-outline';
+  import IconWarning from '~icons/msl/warning-outline';
+  import type { PageData } from './$houdini';
+  import ModalDelete from './ModalDelete.svelte';
   import {
-    LimitToContributors,
     LimitToAlumni,
     LimitToApprentices,
+    LimitToContributors,
     LimitToExternal,
     LimitToGroupMembers,
     LimitToMajors,
@@ -65,21 +71,57 @@
     UpdatePrice,
     UpdateShotgunDates,
   } from './mutations';
-  import { toasts } from '$lib/toasts';
-  import { PendingValue, type BooleanConstraint$options } from '$houdini';
-  import { DISPLAY_BOOLEAN_CONSTRAINT, DISPLAY_PAYMENT_METHODS } from '$lib/display';
-  import { schoolYearStart } from '$lib/dates';
-  import { sentenceJoin } from '$lib/i18n';
-  import { tooltip } from '$lib/tooltip';
+  import { browser } from '$app/environment';
 
   export let data: PageData;
   $: ({ PageEventEditTicket } = data);
   // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 
   let openGodsonHelp: () => void;
+  let openPromotionsPicker: () => void;
+  let newPromotionsConstraint: number[] = [];
+  $: promotionsConstraintFromData = $PageEventEditTicket?.data?.event.ticket?.openToPromotions;
+  $: if (allLoaded(promotionsConstraintFromData) && promotionsConstraintFromData)
+    newPromotionsConstraint = promotionsConstraintFromData;
+
+  $: ticketName = loading($PageEventEditTicket?.data?.event.ticket?.name, '');
+  $: if (ticketName && browser)
+    window.dispatchEvent(
+      new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
+    );
 </script>
 
-<MaybeError result={$PageEventEditTicket} let:data={{ event, groups }}>
+<ModalDelete ticketId={$page.params.ticket} />
+
+<ModalOrDrawer
+  bind:open={openPromotionsPicker}
+  on:close={async () => {
+    toasts.mutation(
+      await mutate(LimitToPromotions, {
+        ticket: $page.params.ticket,
+        promotions: newPromotionsConstraint,
+      }),
+      'updateTicketConstraints',
+      '',
+      'Impossible de changer la contrainte sur les promotions',
+    );
+  }}
+>
+  <svelte:fragment slot="header" let:close>
+    <h1>Promos</h1>
+    <section class="side-by-side">
+      <ButtonSecondary
+        on:click={() => {
+          newPromotionsConstraint = [];
+          close();
+        }}>Autoriser tout</ButtonSecondary
+      >
+      <ButtonSecondary on:click={close}>Ok</ButtonSecondary>
+    </section>
+  </svelte:fragment>
+</ModalOrDrawer>
+
+<MaybeError result={$PageEventEditTicket} let:data={{ event, groups, majors }}>
   {#if event.ticket}
     <div class="contents">
       <InputText
@@ -416,23 +458,46 @@
                 </ul>
               </SubmenuItem>
             </PickGroup>
-            <SubmenuItem
-              clickable
-              on:click={() => alert('TODO')}
-              icon={IconStudentOf}
-              subtext={mapAllLoading(
-                event.ticket.openToMajors.map((m) => m.name),
-                (...names) => {
-                  if (names.length === 0) return 'Aucune contrainte';
-                  return `Étudiant·e·s de ${sentenceJoin(names, 'or')}`;
-                },
+            <PickMajor
+              multiple
+              let:open
+              options={majors}
+              value={mapAllLoading(
+                event.ticket.openToMajors.map((m) => m.uid),
+                (...uids) => uids,
               )}
+              on:finish={async ({ detail }) => {
+                if (!event.ticket) return;
+                toasts.mutation(
+                  await mutate(LimitToMajors, {
+                    ticket: event.ticket.id,
+                    majors: detail,
+                  }),
+                  'updateTicketConstraints',
+                  '',
+                  'Impossible de changer la contrainte sur les filières',
+                );
+              }}
             >
-              Étudiant·e·s de
-            </SubmenuItem>
+              <SubmenuItem
+                clickable
+                on:click={open}
+                icon={IconStudentOf}
+                subtext={mapAllLoading(
+                  event.ticket.openToMajors.map((m) => m.shortName),
+                  (...names) => {
+                    if (names.length === 0) return 'Aucune contrainte';
+                    return `Étudiant·e·s de ${sentenceJoin(names, 'or')}`;
+                  },
+                )}
+              >
+                Étudiant·e·s de
+              </SubmenuItem>
+            </PickMajor>
+
             <SubmenuItem
               clickable
-              on:click={() => alert('TODO')}
+              on:click={openPromotionsPicker}
               icon={IconPromotion}
               subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
                 if (names.length === 0) return 'Aucune contrainte';

@@ -19,7 +19,7 @@ query PageEditEventTickets($id: LocalID!) @loading {
       group {
         name
       }
-      ...TextTicketConstraintsSummary
+      ...TextTicketSummary
     }
     ticketGroups @list(name: "List_EditEvent_TicketGroups") {
       name

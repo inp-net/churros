@@ -8,8 +8,8 @@
     MaybeError,
     Submenu,
     SubmenuItem,
+    TextTicketSummary,
   } from '$lib/components';
-  import TextTicketConstraintsSummary from '$lib/components/TextTicketConstraintsSummary.svelte';
   import {
     LoadingText,
     loaded,
@@ -142,8 +142,10 @@
                 <IconChevronRight />
               </div>
             {/if}
-            <LoadingText value={ticket.name} />
-            <TextTicketConstraintsSummary slot="subtext" {ticket} />
+            <svelte:element this={ticket.name === '' ? 'em' : 'span'}>
+              <LoadingText value={mapLoading(ticket.name, (name) => name || 'Billet sans nom')} />
+            </svelte:element>
+            <TextTicketSummary slot="subtext" {ticket} />
           </SubmenuItem>
         {/each}
         <SubmenuItem
@@ -191,6 +193,10 @@
     justify-content: space-between;
     align-items: center;
     --weight-field-label: 900;
+  }
+
+  .tickets em {
+    color: var(--muted);
   }
 
   .icon-add {

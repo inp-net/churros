@@ -57,7 +57,6 @@
     /* min-width: calc(min(100%, 500px)); */
     width: 66vw;
     height: 50vh;
-    padding: 1.5rem;
     color: var(--text);
     background: var(--bg);
     border: none;
@@ -78,6 +77,7 @@
   }
 
   dialog[open] {
+    padding: 1.5rem;
     animation: pop-up 0.25s ease;
   }
 
