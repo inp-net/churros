@@ -28,15 +28,12 @@
         >L'évènement a lieu plusieurs fois
         <InputToggle
           slot="right"
-          on:change={async ({ currentTarget }) => {
+          on:update={async ({ detail }) => {
             if (!loaded(event.endsAt)) return;
-            if (!(currentTarget instanceof HTMLInputElement)) return;
             const result = await mutate(ChangeEventRecurrence, {
               event: event.id,
-              frequency: currentTarget.checked ? 'Weekly' : 'Once',
-              recurringUntil: currentTarget.checked
-                ? addYears(event.endsAt ?? new Date(), 1)
-                : null,
+              frequency: detail ? 'Weekly' : 'Once',
+              recurringUntil: detail ? addYears(event.endsAt ?? new Date(), 1) : null,
             });
             toasts.mutation(
               result,
