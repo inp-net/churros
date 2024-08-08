@@ -21,7 +21,6 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function mutate(args: DeepMaybeLoading<Record<string, any>>) {
-    console.log(args)
     if (!allLoaded(args)) return;
     return await ChangeEventRecurrence.mutate(args as ChangeEventRecurrence$input);
   }

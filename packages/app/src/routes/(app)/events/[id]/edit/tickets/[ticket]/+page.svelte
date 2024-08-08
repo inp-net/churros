@@ -4,7 +4,6 @@
   import {
     MaybeError,
     Alert,
-    ButtonPrimary,
     ButtonGhost,
     InputToggleTriState,
     ButtonSecondary,
@@ -220,21 +219,16 @@
           clickable
           on:click={() => alert('TODO')}>Groupe de billet</SubmenuItem
         >
-        <ModalOrDrawer bind:open={openGodsonHelp} let:close>
+        <ModalOrDrawer bind:open={openGodsonHelp}>
           <h1 slot="header">Parrainages</h1>
           <p>
             Churros te permet de faire des billets avec parrainages: une personne qui a accès à ce
             billet pourra en acheter jusqu'à un certain nombre pour d'autres (par exemple, des
             ami·e·s), peut importe si ces autres personnes ont accès au billet ou pas.
           </p>
-          <section class="actions">
-            <ButtonPrimary on:click={close}>Ok!</ButtonPrimary>
-          </section>
         </ModalOrDrawer>
         <SubmenuItem icon={IconGodson} label subtext="Limite par personne">
-          <div class="godsons-title">
-            Parrainages <ButtonGhost on:click={openGodsonHelp}><IconHelp /></ButtonGhost>
-          </div>
+          Parrainages <ButtonGhost on:click={openGodsonHelp}><IconHelp /></ButtonGhost>
           <InputText
             slot="right"
             clearable
@@ -278,7 +272,6 @@
           >
             Managers seulement
             <InputToggle
-              slot="right"
               value={event.ticket.onlyManagersCanProvide}
               on:update={async ({ detail }) => {
                 if (!event.ticket) return;
@@ -365,11 +358,5 @@
     font-weight: normal;
     line-height: 1.1;
     margin-top: 0.5rem;
-  }
-
-  .godsons-title {
-    display: flex;
-    align-items: center;
-    gap: 1ch;
   }
 </style>
