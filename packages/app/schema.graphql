@@ -1609,7 +1609,7 @@ type Mutation {
   acceptRegistration(email: String!): MutationAcceptRegistrationResult!
 
   """Marks the user as having seen the given version's changelog."""
-  acknowledgeChangelog(version: String! = "dev"): Boolean!
+  acknowledgeChangelog(version: String! = "1.69.0"): Boolean!
 
   """Activate a third-party app. Only admins can do this."""
   activateApp(
@@ -3011,7 +3011,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (dev).
+    The version to request a changelog for. Defaults to the current version (1.69.0).
     """
     version: String
   ): ChangelogRelease!
@@ -3030,9 +3030,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
+    The version to end at, **inclusive**. Leave empty to end at the current version (1.69.0).
     """
-    to: String! = "dev"
+    to: String! = "1.69.0"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!

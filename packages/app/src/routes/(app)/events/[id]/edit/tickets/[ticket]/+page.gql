@@ -1,4 +1,7 @@
 query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
+  groups {
+    ...PickGroup @mask_disable
+  }
   event(id: $id) {
     startsAt
     endsAt
@@ -6,6 +9,9 @@ query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
     organizer {
         studentAssociation {
             name
+            school {
+              name
+            }
         }
     }
     ticket(id: $ticket) {
@@ -33,6 +39,9 @@ query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
       openToMajors {
         name
         uid
+        schools {
+          name
+        }
       }
       openToPromotions
       onlyManagersCanProvide

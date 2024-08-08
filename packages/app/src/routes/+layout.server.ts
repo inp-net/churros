@@ -1,5 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 
+export const ssr = false
+
 export const load: LayoutServerLoad = ({ locals }) => {
   console.log('layout load');
   return locals.token

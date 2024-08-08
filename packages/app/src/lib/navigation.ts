@@ -31,7 +31,7 @@ import IconShield from '~icons/msl/shield-outline';
 import IconPost from '~icons/msl/text-ad-outline';
 import IconBookingsList from '~icons/msl/view-list-outline';
 import IconWallet from '~icons/msl/wallet';
-import type { LayoutRouteId } from '../routes/$types';
+import type { LayoutParams, LayoutRouteId } from '../routes/$types';
 import type {
   NavigationContext,
   NavigationQuickAction,
@@ -230,9 +230,14 @@ const rootPagesActions = [
   },
 ] as Array<NavigationContext['actions'][number]>;
 
-export const topnavConfigs: Partial<
-  Record<NonNullable<LayoutRouteId>, NavigationContext | ((page: Page) => NavigationContext)>
-> = {
+export const topnavConfigs: Partial<{
+  [RouteID in NonNullable<LayoutRouteId>]:
+    | NavigationContext
+    | ((
+        // TODO Figure out a way to get PageParams of RouteID? The PageParams exported on  (app)/layout's $type is empty...
+        page: Page<{ [K in keyof LayoutParams]-?: NonNullable<LayoutParams[K]> }, RouteID>,
+      ) => NavigationContext);
+}> = {
   '/(app)': {
     quickAction: quickActionAdd,
     actions: rootPagesActions,
@@ -396,6 +401,11 @@ export const topnavConfigs: Partial<
     title: 'Billet',
     back: route('/events/[id]/edit/tickets', params.id),
     actions: [commonActions.delete],
+  }),
+  '/(app)/events/[id]/edit/tickets/[ticket]/links': ({ params }) => ({
+    title: 'Liens du billet',
+    back: route('/events/[id]/edit/tickets/[ticket]', params),
+    actions: [],
   }),
   '/(app)/events/[id]/bookings': ({ params: { id } }) => ({
     title: 'Réservations',

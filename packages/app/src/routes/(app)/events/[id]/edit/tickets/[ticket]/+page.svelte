@@ -30,6 +30,7 @@
     mapAllLoading,
     type MaybeLoading,
     loaded,
+    onceAllLoaded,
   } from '$lib/loading';
   import IconHelp from '~icons/msl/help-outline';
   import IconShotgunOpen from '~icons/msl/lock-open-outline';
@@ -78,7 +79,7 @@
   let openGodsonHelp: () => void;
 </script>
 
-<MaybeError result={$PageEventEditTicket} let:data={{ event }}>
+<MaybeError result={$PageEventEditTicket} let:data={{ event, groups }}>
   {#if event.ticket}
     <div class="contents">
       <InputText
@@ -287,7 +288,6 @@
           <p class="muted typo-details">
             Pour qu'une personne puisse réserver une place, l'ensemble des contraintes définies
             ci-dessous doivent être toutes remplies. <br />
-            
           </p>
         </header>
         <Submenu>
@@ -318,6 +318,8 @@
           </SubmenuItem>
           {#if !loading(event.ticket.onlyManagersCanProvide, false)}
             <SubmenuItemBooleanConstraint
+              errorMessage="Impossible de changer la contrainte sur les cotisant·e·s"
+              optimisticResponseField="openToContributors"
               ticketId={event.ticket.id}
               mutation={LimitToContributors}
               value={event.ticket.openToContributors}
@@ -330,53 +332,90 @@
               Cotisant·e·s
             </SubmenuItemBooleanConstraint>
             <SubmenuItemBooleanConstraint
+              errorMessage="Impossible de changer la contrainte sur les alumnis"
+              optimisticResponseField="openToAlumni"
               ticketId={event.ticket.id}
               mutation={LimitToAlumni}
               value={event.ticket.openToAlumni}
               icon={IconAlumni}
               subtext="Promos inférieures à {schoolYearStart().getFullYear() - 3}"
             >
-              Ancien·ne·s étudiant·e·s
+              Alumnis
             </SubmenuItemBooleanConstraint>
             <SubmenuItemBooleanConstraint
+              errorMessage="Impossible de changer la contrainte sur les FISAs"
+              optimisticResponseField="openToApprentices"
               ticketId={event.ticket.id}
               mutation={LimitToApprentices}
               value={event.ticket.openToApprentices}
               icon={IconApprentice}
-              subtext="Apprenti·e·s"
+              subtext="FISAs"
             >
               Apprenti·e·s
             </SubmenuItemBooleanConstraint>
             <SubmenuItemBooleanConstraint
+              errorMessage="Impossible de changer la contrainte sur les externes"
+              optimisticResponseField="openToExternal"
               ticketId={event.ticket.id}
               mutation={LimitToExternal}
               value={event.ticket.openToExternal}
               icon={IconExternalUser}
-              subtext="Personnes extérieures à l'école"
-            >
-              Externe·s
-            </SubmenuItemBooleanConstraint>
-            <SubmenuItem
-              icon={IconGroupMember}
-              clickable
-              on:click={() => alert('TODO')}
-              subtext={mapAllLoading(
-                event.ticket.openToGroups.map((g) => g.uid),
-                (...uids) => {
-                  if (uids.length === 0) return "Membres d'au moins un des groupes spécifiés";
-                  return `Membres de ${sentenceJoin(uids, 'or')}`;
-                },
+              subtext={onceAllLoaded(
+                [
+                  event.organizer.studentAssociation.school.name,
+                  ...event.ticket.openToMajors.flatMap((m) => m.schools.map((s) => s.name)),
+                ],
+                (...names) =>
+                  `Personnes extérieures à ${sentenceJoin([...new Set(names).values()], 'and')}`,
+                "Personnes extérieures à l'école",
               )}
             >
-              Membres de groupes
-              <ul class="groups">
-                {#each event.ticket.openToGroups as group}
-                  <li>
-                    <AvatarGroup {group} />
-                  </li>
-                {/each}
-              </ul>
-            </SubmenuItem>
+              Externes
+            </SubmenuItemBooleanConstraint>
+            <PickGroup
+              multiple
+              let:open
+              value={mapAllLoading(
+                event.ticket.openToGroups.map((g) => g.uid),
+                (...uids) => uids,
+              )}
+              options={groups}
+              on:finish={async ({ detail }) => {
+                if (!event.ticket) return;
+                const result = await mutate(LimitToGroupMembers, {
+                  ticket: event.ticket.id,
+                  groupMembers: detail,
+                });
+                toasts.mutation(
+                  result,
+                  'updateTicketConstraints',
+                  '',
+                  'Impossible de changer les groupes autorisés',
+                );
+              }}
+            >
+              <SubmenuItem
+                icon={IconGroupMember}
+                clickable
+                on:click={open}
+                subtext={mapAllLoading(
+                  event.ticket.openToGroups.map((g) => g.uid),
+                  (...uids) => {
+                    if (uids.length === 0) return 'Aucune contrainte';
+                    return `Membres de ${sentenceJoin(uids, 'or')}`;
+                  },
+                )}
+              >
+                Membres d'un des groupes
+                <ul class="groups side-by-side" slot="right">
+                  {#each event.ticket.openToGroups as group}
+                    <li>
+                      <AvatarGroup {group} />
+                    </li>
+                  {/each}
+                </ul>
+              </SubmenuItem>
+            </PickGroup>
             <SubmenuItem
               clickable
               on:click={() => alert('TODO')}
@@ -384,7 +423,7 @@
               subtext={mapAllLoading(
                 event.ticket.openToMajors.map((m) => m.name),
                 (...names) => {
-                  if (names.length === 0) return "Étudiant·e·s d'une des filières spécifiées";
+                  if (names.length === 0) return 'Aucune contrainte';
                   return `Étudiant·e·s de ${sentenceJoin(names, 'or')}`;
                 },
               )}
@@ -396,7 +435,7 @@
               on:click={() => alert('TODO')}
               icon={IconPromotion}
               subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
-                if (names.length === 0) return "Étudiant·e·s d'une des promotions spécifiées";
+                if (names.length === 0) return 'Aucune contrainte';
                 return `Promos ${sentenceJoin(
                   names.map((x) => x.toString()),
                   'or',
