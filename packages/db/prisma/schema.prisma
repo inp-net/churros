@@ -370,7 +370,7 @@ model ThirdPartyApp {
 /// There is one student association per school
 model StudentAssociation {
   id                  String  @id @default(dbgenerated("nanoid('ae:')"))
-  uid                 String? @unique @db.VarChar(255)
+  uid                 String  @unique @db.VarChar(255)
   description         String  @default("") @db.Text
   schoolId            String
   name                String  @unique @db.VarChar(255)

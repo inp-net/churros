@@ -106,11 +106,14 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
   );
 }
 
+function randomImageURL(width: number, height: number, seed: string): string {
+  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
+}
+
 // download a random placeholder image from unsplash with the given width and height
 // return a File object (for use with updatePicture)
 async function downloadRandomImage(width: number, height: number, seed: string): Promise<File> {
-  const url = `https://picsum.photos/seed/${seed}/${width}/${height}`;
-  const response = await fetch(url);
+  const response = await fetch(randomImageURL(width, height, seed));
   const blob = await response.blob();
   return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
 }
@@ -325,6 +328,21 @@ for (const [i, name] of tqdm([
           privateToken: 'b',
         },
       },
+      services: {
+        createMany: {data: Array.from({ length: faker.number.int({ min: 3, max: 5 }) }).map(() => (faker.datatype.boolean(0.6) ? {
+          logo: randomImageURL(400, 400, name),
+          name: faker.company.name(),
+          logoSourceType: LogoSourceType.ExternalLink,
+        } : faker.datatype.boolean(0.5) ? {
+          logo: '',
+          logoSourceType: LogoSourceType.GroupLogo,
+          name: faker.company.name(),
+        } : {
+          logo: '',
+          logoSourceType: LogoSourceType.Icon,
+          name: faker.company.name(),
+        }))}
+      }
     },
   });
 }

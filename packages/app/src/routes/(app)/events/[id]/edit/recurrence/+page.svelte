@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import InputDate from '$lib/components/InputDate.svelte';
   import InputRadio from '$lib/components/InputRadios.svelte';
   import InputToggle from '$lib/components/InputToggle.svelte';
@@ -7,14 +8,14 @@
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { DISPLAY_EVENT_FREQUENCY } from '$lib/display';
   import { loaded, loading } from '$lib/loading';
-  import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
+  import { addYears } from 'date-fns';
   import IconFrequency from '~icons/msl/auto-awesome-motion-outline';
   import IconCalendar from '~icons/msl/calendar-today-outline';
   import IconRecurring from '~icons/msl/refresh';
   import { ChangeEventRecurrence } from '../mutations';
   import type { PageData } from './$houdini';
-  import { addYears } from 'date-fns';
+  import { entries } from '$lib/typing';
   export let data: PageData;
 
   $: ({ PageEventEditRecurrence } = data);
@@ -30,8 +31,8 @@
           slot="right"
           on:update={async ({ detail }) => {
             if (!loaded(event.endsAt)) return;
-            const result = await mutate(ChangeEventRecurrence, {
-              event: event.id,
+            const result = await ChangeEventRecurrence.mutate({
+              event: $page.params.id,
               frequency: detail ? 'Weekly' : 'Once',
               recurringUntil: detail ? addYears(event.endsAt ?? new Date(), 1) : null,
             });
@@ -51,10 +52,11 @@
           <div class="frequency-options" slot="right">
             <InputRadio
               value={event.frequency}
-              options={Object.entries(DISPLAY_EVENT_FREQUENCY).filter(([freq]) => freq !== 'Once')}
+              options={entries(DISPLAY_EVENT_FREQUENCY).filter(([freq]) => freq !== 'Once')}
               on:change={async ({ detail }) => {
-                const result = await mutate(ChangeEventRecurrence, {
-                  event: event.id,
+                if (!loaded(event.recurringUntil)) return;
+                const result = await ChangeEventRecurrence.mutate({
+                  event: $page.params.id,
                   frequency: detail,
                   recurringUntil: event.recurringUntil,
                 });
@@ -78,8 +80,9 @@
             slot="right"
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
-              const result = await mutate(ChangeEventRecurrence, {
-                event: event.id,
+              if (!loaded(event.frequency)) return;
+              const result = await ChangeEventRecurrence.mutate({
+                event: $page.params.id,
                 frequency: event.frequency,
                 recurringUntil: new Date(currentTarget.value),
               });
@@ -91,7 +94,7 @@
               );
             }}
             label=""
-            value={event.recurringUntil}
+            value={loading(event.recurringUntil, null)}
           />
         </SubmenuItem>
       {/if}
