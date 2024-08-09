@@ -19,21 +19,40 @@ import IconGroupMembers from '~icons/mdi/account-group-outline';
 import IconGodparent from '~icons/mdi/account-multiple-outline';
 import IconAndroidStudio from '~icons/mdi/android-studio';
 import IconNotification from '~icons/mdi/bell-outline';
+import IconBookshelf from '~icons/mdi/bookshelf';
+import IconBugCheck from '~icons/mdi/bug-check';
 import IconCalendarEndOutline from '~icons/mdi/calendar-end-outline';
+import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
+import IconCar from '~icons/mdi/car';
+import IconCarrot from '~icons/mdi/carrot';
+import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
 import IconComment from '~icons/mdi/comment-outline';
+import IconCoupon from '~icons/mdi/coupon';
+import IconDomainSwitch from '~icons/mdi/domain-switch';
 import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
+import IconForms from '~icons/mdi/form-select';
+import IconGit from '~icons/mdi/git';
+import IconServices from '~icons/mdi/hammer-screwdriver';
 import IconHammerWrench from '~icons/mdi/hammer-wrench';
+import IconHand from '~icons/mdi/hand-heart';
+import IconHistory from '~icons/mdi/history';
 import IconArticle from '~icons/mdi/note-text-outline';
 import IconShotgun from '~icons/mdi/pistol';
 import IconPlayBoxOutline from '~icons/mdi/play-box-outline';
+import IconLogs from '~icons/mdi/pulse';
 import IconPermissions from '~icons/mdi/shield-account-outline';
 import IconSigma from '~icons/mdi/sigma';
 import IconStar from '~icons/mdi/star-outline';
+import IconDefisInte from '~icons/mdi/sword-cross';
+import IconTerminal from '~icons/mdi/terminal';
 import IconTestTube from '~icons/mdi/test-tube';
+import IconWebsite from '~icons/mdi/web';
 import IconBankTransfer from '~icons/msl/account-balance-outline';
 import IconCash from '~icons/msl/account-balance-wallet-outline';
 import IconPaymentCheck from '~icons/msl/checkbook-outline';
 import IconCreditCard from '~icons/msl/credit-card-outline';
+import LogoFrappe from './components/LogoFrappe.svelte';
+
 import { default as IconDotsHorizontal, default as IconQuestionMark } from '~icons/msl/more-horiz';
 
 export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod$options, string> = {
@@ -261,3 +280,24 @@ export const DISPLAY_BOOLEAN_CONSTRAINT: Record<BooleanConstraint$options, strin
   Only: 'Seulement',
   Not: 'Interdit',
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ICONS_SERVICES: Map<string, typeof SvelteComponent<any>> = new Map([
+  ['car', IconCar],
+  ['defis', IconDefisInte],
+  ['hand', IconHand],
+  ['terminal', IconTerminal],
+  ['website', IconWebsite],
+  ['carrot', IconCarrot],
+  ['logs', IconLogs],
+  ['domainswitch', IconDomainSwitch],
+  ['calendar', IconCalendar],
+  ['git', IconGit],
+  ['book', IconBookshelf],
+  ['frappe', LogoFrappe],
+  ['coupon', IconCoupon],
+  ['status', IconStatus],
+  ['history', IconHistory],
+  ['bug-check', IconBugCheck],
+  ['services', IconServices],
+  ['forms', IconForms],
+]);

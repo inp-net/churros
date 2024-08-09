@@ -6,7 +6,7 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
   interfaces: [PicturedInterface],
   fields: (t) => ({
     id: t.exposeID('id'),
-    uid: t.exposeString('uid', { nullable: true }),
+    uid: t.exposeString('uid'),
     description: t.exposeString('description'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),

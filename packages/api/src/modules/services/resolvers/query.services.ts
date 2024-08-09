@@ -1,24 +1,31 @@
 import { builder, prisma } from '#lib';
-
-import { ServiceType } from '../index.js';
+import { ServiceType, ServiceTypePrismaIncludes } from '../index.js';
 // TODO split into  group.services, student-association.services, school.services and query.all-services for admins
 
 builder.queryField('services', (t) =>
   t.prismaField({
     type: [ServiceType],
     args: {
-      schoolUid: t.arg.string({ required: false }),
-      groupUid: t.arg.string({ required: false }),
-      studentAssociationUid: t.arg.string({ required: false }),
+      mine: t.arg.boolean({
+        description: "Renvoie uniquement les services intéréssant l'utilisateur·ice connecté·e",
+      }),
     },
-    async resolve(query, _, { schoolUid, groupUid, studentAssociationUid }) {
+    async resolve(query, _, { mine }, { user }) {
       const services = await prisma.service.findMany({
         ...query,
-        where: {
-          school: { uid: schoolUid ?? undefined },
-          group: { uid: groupUid ?? undefined },
-          studentAssociation: { uid: studentAssociationUid },
-        },
+        where:
+          mine && user
+            ? {
+                studentAssociation: {
+                  school: {
+                    uid: {
+                      in: user.major?.schools.map((school) => school.uid),
+                    },
+                  },
+                },
+              }
+            : {},
+        include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
       return services;

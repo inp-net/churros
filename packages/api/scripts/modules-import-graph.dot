@@ -29,6 +29,9 @@ strict digraph ImportGraph {
     "posts" -> "notifications";
     "posts" -> "reactions";
     "schools" -> "curriculum";
+    "services" -> "groups";
+    "services" -> "schools";
+    "services" -> "student-associations";
     "shop" -> "groups";
     "shop" -> "payments";
     "student-associations" -> "groups";

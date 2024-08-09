@@ -2,6 +2,7 @@
   import { loading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
 
+  export let notooltip = false;
   export let src: MaybeLoading<string>;
   export let href: MaybeLoading<string>;
   export let help: MaybeLoading<string>;
@@ -16,7 +17,7 @@
   class:selectable
   class:selected
   href={loading(href, '') || undefined}
-  use:tooltip={loading(help, undefined)}
+  use:tooltip={notooltip ? undefined : loading(help, undefined)}
 >
   <img src={loading(src, '')} alt={loading(alt, 'Photo de profil')} />
 </a>
@@ -30,6 +31,7 @@
     width: var(--avatar-size, 1em);
     height: var(--avatar-size, 1em);
     overflow: hidden;
+    border: var(--avatar-border, none);
     border-radius: var(--avatar-radius, 10000px);
     transition: all 50ms ease;
   }

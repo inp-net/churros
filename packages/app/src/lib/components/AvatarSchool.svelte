@@ -1,25 +1,26 @@
 <script lang="ts">
-  export let name: string;
-  export let pictureURL: string;
-  // export let color: string | undefined = undefined;
-  export let href = '#';
+  import { fragment, graphql, type AvatarSchool } from '$houdini';
+  import Avatar from '$lib/components/Avatar.svelte';
+  import { mapLoading } from '$lib/loading';
+  import { route } from '$lib/ROUTES';
+
+  export let notooltip = false;
+  export let school: AvatarSchool;
+  $: data = fragment(
+    school,
+    graphql(`
+      fragment AvatarSchool on School {
+        pictureURL
+        name
+        uid
+      }
+    `),
+  );
 </script>
 
-<a class="avatar-school" {href}>
-  <img src={pictureURL} alt={name} />
-  {name}
-</a>
-
-<style>
-  a {
-    display: inline-flex;
-    gap: 0.5em;
-  }
-
-  img {
-    width: 1.2em;
-    height: 1.2em;
-    object-fit: cover;
-    border-radius: var(--radius-inline);
-  }
-</style>
+<Avatar
+  src={$data.pictureURL}
+  href={mapLoading($data.uid, (uid) => route('/schools/[uid]', uid))}
+  help={notooltip ? '' : $data.name}
+  alt={mapLoading($data.name, (name) => `Logo de ${name}`)}
+/>

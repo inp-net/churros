@@ -3,4 +3,5 @@
  */
 
 export * from './logo-source-type.js';
+export * from './service-owner.js';
 export * from './service.js';

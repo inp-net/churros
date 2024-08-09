@@ -1,28 +1,5 @@
 query PageServices {
-  userServices {
-    name
-    url
-    description
-    logo
-    logoSourceType
-    id
-    localID
-    group {
-      pictureFile
-      pictureFileDark
-    }
-  }
-
-  codeContributors {
-    __typename
-    ... on Error {
-      message
-    }
-
-    ... on QueryCodeContributorsSuccess {
-      data {
-        id
-      }
-    }
+  services(mine: true) {
+    ...CardService
   }
 }
