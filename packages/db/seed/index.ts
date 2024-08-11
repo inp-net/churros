@@ -1,14 +1,13 @@
 import { fakerFR } from '@faker-js/faker';
 import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
-import { existsSync, readdirSync, statSync } from 'node:fs';
-import { rm } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
-import { storageRoot } from '../../api/src/lib/storage.js'
 import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
+import { storageRoot } from '../../api/src/lib/storage.js';
 import {
   CredentialType,
   DocumentType,
@@ -28,17 +27,17 @@ const prisma = new PrismaClient();
 const faker = fakerFR;
 faker.seed(5);
 
-const storageRootDirectory = storageRoot()
+const storageRootDirectory = storageRoot();
 
-console.info(`Cleaning storage root ${storageRootDirectory}`);
-for (const folder of ['events']) {
-  if (!existsSync(path.join(storageRootDirectory, folder))) continue;
-  await Promise.all(
-    readdirSync(path.join(storageRootDirectory, folder))
-      .filter((file) => statSync(path.join(storageRootDirectory, folder, file)).isFile())
-      .map(async (file) => rm(path.join(storageRootDirectory, folder, file))),
-  );
-}
+// console.info(`Cleaning storage root ${storageRootDirectory}`);
+// for (const folder of ['events']) {
+//   if (!existsSync(path.join(storageRootDirectory, folder))) continue;
+//   await Promise.all(
+//     readdirSync(path.join(storageRootDirectory, folder))
+//       .filter((file) => statSync(path.join(storageRootDirectory, folder, file)).isFile())
+//       .map(async (file) => rm(path.join(storageRootDirectory, folder, file))),
+//   );
+// }
 
 async function randomMember(groupId: string) {
   return faker.helpers.arrayElement(
@@ -238,9 +237,18 @@ const mecaniqueDesFluides = await prisma.major.create({
 const sciencesDuNumerique = await prisma.major.create({
   data: {
     shortName: 'SN',
-    uid: 'sn',
+    uid: 'sdn',
     name: 'Sciences du Numérique',
     schools: { connect: { id: schools[0]!.id } },
+  },
+});
+
+const ir = await prisma.major.create({
+  data: {
+    shortName: 'IR',
+    uid: 'irezo',
+    name: 'Informatique & Réseau',
+    discontinued: true,
   },
 });
 
@@ -329,20 +337,28 @@ for (const [i, name] of tqdm([
         },
       },
       services: {
-        createMany: {data: Array.from({ length: faker.number.int({ min: 3, max: 5 }) }).map(() => (faker.datatype.boolean(0.6) ? {
-          logo: randomImageURL(400, 400, name),
-          name: faker.company.name(),
-          logoSourceType: LogoSourceType.ExternalLink,
-        } : faker.datatype.boolean(0.5) ? {
-          logo: '',
-          logoSourceType: LogoSourceType.GroupLogo,
-          name: faker.company.name(),
-        } : {
-          logo: '',
-          logoSourceType: LogoSourceType.Icon,
-          name: faker.company.name(),
-        }))}
-      }
+        createMany: {
+          data: Array.from({ length: faker.number.int({ min: 3, max: 5 }) }).map(() =>
+            faker.datatype.boolean(0.6)
+              ? {
+                  logo: randomImageURL(400, 400, name),
+                  name: faker.company.name(),
+                  logoSourceType: LogoSourceType.ExternalLink,
+                }
+              : faker.datatype.boolean(0.5)
+                ? {
+                    logo: '',
+                    logoSourceType: LogoSourceType.GroupLogo,
+                    name: faker.company.name(),
+                  }
+                : {
+                    logo: '',
+                    logoSourceType: LogoSourceType.Icon,
+                    name: faker.company.name(),
+                  },
+          ),
+        },
+      },
     },
   });
 }
@@ -457,7 +473,17 @@ const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
-  { uid: "exte", firstName: "Jaipa", lastName: "Dékol", minor: {}, major:{} } // Compte exté
+  { uid: 'exte', firstName: 'Jaipa', lastName: 'Dékol', minor: {}, major: {} }, // Compte exté
+  {
+    uid: 'valliet',
+    firstName: 'Theodors',
+    lastName: 'Vieux con',
+    major: {
+      connect: {
+        uid: ir.uid,
+      },
+    },
+  },
 ];
 
 //création d'une liste des réseaux sociaux qu'on peut ref sur son profil churros
@@ -537,30 +563,32 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       root: storageRootDirectory,
     });
 
-    await downloadRandomPeoplePhoto()
-      .then(async (file) =>
-        existsSync(destinationPath)
-          ? prisma.user.update({
-              where: { uid },
-              data: {
-                pictureFile: path.relative(storageRootDirectory, destinationPath),
-              },
-            })
-          : updatePicture({
-              extension: 'jpg',
-              folder: 'users',
-              identifier: uid,
-              resource: 'user',
-              file,
-              silent: true,
-              root: storageRootDirectory,
-            }),
-      )
-      .catch((error) =>
-        console.warn(
-          `Could not download random image: ${error}. This is not critical, seeding will continue`,
-        ),
-      );
+    if (!existsSync(destinationPath)) {
+      await downloadRandomPeoplePhoto()
+        .then(async (file) =>
+          existsSync(destinationPath)
+            ? prisma.user.update({
+                where: { uid },
+                data: {
+                  pictureFile: path.relative(storageRootDirectory, destinationPath),
+                },
+              })
+            : updatePicture({
+                extension: 'jpg',
+                folder: 'users',
+                identifier: uid,
+                resource: 'user',
+                file,
+                silent: true,
+                root: storageRootDirectory,
+              }),
+        )
+        .catch((error) =>
+          console.warn(
+            `Could not download random image: ${error}. This is not critical, seeding will continue`,
+          ),
+        );
+    }
   }
 }
 
@@ -1077,7 +1105,7 @@ const registration = await prisma.registration.create({
     authorId: faker.helpers.arrayElement(users).id,
     paymentMethod: 'Lydia',
     paid: false,
-    beneficiary: 'annie',
+    externalBeneficiary: 'annie',
   },
 });
 
@@ -1096,7 +1124,9 @@ for (const i of tqdm([...range(0, 100)])) {
       authorEmail: i % 4 === 0 ? 'feur@quoi.com' : undefined,
       paymentMethod: i % 2 === 0 ? 'Lydia' : 'Cash',
       paid: true,
-      beneficiary: i % 4 === 0 ? 'whatcoubeh' : faker.helpers.arrayElement(users).uid,
+      ...(i % 4 === 0
+        ? { externalBeneficiary: 'whatcoubeh' }
+        : { internalBeneficiaryId: faker.helpers.arrayElement(users).id }),
     },
   });
 }
@@ -1396,40 +1426,37 @@ await Promise.all(
 );
 
 await prisma.blockedUid.createMany({
-  data: [
-    { uid: 'admin' },
-    { uid: 'root' },
-  ],
+  data: [{ uid: 'admin' }, { uid: 'root' }],
 });
 await prisma.user.update({
-  where: {uid: 'versairea'},
+  where: { uid: 'versairea' },
   data: {
     bookmarks: {
       create: {
-        path: "/users/alamaternitei"
-      }
-    }
-  }
-})
+        path: '/users/alamaternitei',
+      },
+    },
+  },
+});
 
 await prisma.user.update({
-  where: {uid: 'alamaternitei'},
+  where: { uid: 'alamaternitei' },
   data: {
     bookmarks: {
       create: {
-        path: "/users/versairea"
-      }
-    }
-  }
-})
+        path: '/users/versairea',
+      },
+    },
+  },
+});
 
 await prisma.theme.create({
   data: {
-    name: "💖 UwU 💖",
+    name: '💖 UwU 💖',
     author: {
       connect: {
-        uid: randomChoice(groups.map(g => g.uid))
-      }
+        uid: randomChoice(groups.map((g) => g.uid)),
+      },
     },
     visibility: Visibility.Public,
     startsAt: new Date(),
@@ -1437,12 +1464,12 @@ await prisma.theme.create({
     values: {
       createMany: {
         data: [
-          { variable: "ColorPrimary", value: "DeepPink" },
-          { variable: "ColorPrimaryBackground", value: "LightPink" }
-        ]
-      }
-    }
-  }
-})
+          { variable: 'ColorPrimary', value: 'DeepPink' },
+          { variable: 'ColorPrimaryBackground', value: 'LightPink' },
+        ],
+      },
+    },
+  },
+});
 
 exit(0);
