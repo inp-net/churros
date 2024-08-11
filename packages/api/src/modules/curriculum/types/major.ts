@@ -13,5 +13,8 @@ export const MajorType = builder.prismaObject('Major', {
     schools: t.relation('schools', { query: { orderBy: { name: 'asc' } } }),
     ldapSchool: t.relation('ldapSchool', { nullable: true }),
     minors: t.relation('minors', { query: { orderBy: { name: 'asc' } } }),
+    discontinued: t.exposeBoolean('discontinued', {
+      description: "Ancienne filière n'existant plus dans les cursus actuels",
+    }),
   }),
 });

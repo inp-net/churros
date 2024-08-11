@@ -3,7 +3,7 @@
   import { type QueryResult } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import LoadingChurros from '$lib/components/LoadingChurros.svelte';
   import { refroute } from '$lib/navigation';
   import { createEventDispatcher } from 'svelte';
 
@@ -47,8 +47,11 @@
       <ButtonSecondary href={refroute('/login')}>Se connecter</ButtonSecondary>
     {/if}
   </Alert>
-{:else if result?.fetching}
-  <LoadingSpinner></LoadingSpinner> Chargement…
+{:else if result?.fetching || (result && !result.data)}
+  <section class="loading">
+    <LoadingChurros />
+    <p>Chargement...</p>
+  </section>
 {:else if !result}
   <Alert theme="danger">
     <h2>Hmm…</h2>
@@ -65,3 +68,12 @@
     <pre>{JSON.stringify({ result }, null, 2)}</pre>
   </Alert>
 {/if}
+
+<style>
+  .loading {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    text-align: center;
+  }
+</style>

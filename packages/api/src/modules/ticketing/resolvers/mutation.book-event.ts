@@ -1,5 +1,5 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
-import { LocalID } from '#modules/global';
+import { Email, LocalID, UIDScalar } from '#modules/global';
 import { actualPrice } from '#modules/payments';
 import { canBookTicket } from '#modules/ticketing';
 import { RegistrationType } from '#modules/ticketing/types';
@@ -15,13 +15,18 @@ builder.mutationField('bookEvent', (t) =>
       ticket: t.arg({
         type: LocalID,
       }),
-      authorEmail: t.arg.string({
-        description:
-          "Email de la personne effectuant la réservation, requis quand l'utilisateur·ice n'est pas connecté·e: c'est alors le seul moyen qu'on a d'envoyer le billet.",
+      churrosBeneficiary: t.arg({
+        type: UIDScalar,
+        description: 'Identifiant (@) de la personne qui recevra la place',
       }),
       beneficiary: t.arg.string({
-        description: 'Nom du bénéficiaire du billet',
-        required: false,
+        description:
+          "Nom de la personne pour qui on réserve la place. Préférer churrosBeneficiary quand c'est possible",
+      }),
+      authorEmail: t.arg({
+        type: Email,
+        description:
+          'Adresse mail à laquelle envoyer le billet. Nécéssaire quand on est pas connecté.e',
       }),
     },
     async authScopes(_, { ticket: ticketId, beneficiary }, { user }) {

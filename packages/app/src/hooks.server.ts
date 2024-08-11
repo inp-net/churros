@@ -1,4 +1,5 @@
 import { setSession } from '$houdini';
+import { inferIsMobile } from '$lib/mobile';
 import { aled, sessionUserQuery } from '$lib/session';
 import { chain } from '$lib/zeus';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
@@ -26,9 +27,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     } catch {}
   }
 
-  event.locals.mobile = Boolean(
-    event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile'),
-  );
+  event.locals.mobile = Boolean(inferIsMobile(event.request.headers.get('User-Agent') ?? ''));
 
   setSession(event, {
     token: event.locals.token,

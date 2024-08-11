@@ -1,4 +1,5 @@
-import { log, prisma } from '#lib';
+import { localID, log, prisma } from '#lib';
+import { notify } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
@@ -87,7 +88,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
           { verified, transaction, message: 'making booking transaction as paid' },
           transaction_identifier,
         );
-        await prisma.lydiaTransaction.update({
+        const txn = await prisma.lydiaTransaction.update({
           where: {
             id: transaction.id,
           },
@@ -99,7 +100,82 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
               },
             },
           },
+          select: {
+            registration: {
+              select: {
+                id: true,
+                author: true,
+                ticket: {
+                  select: {
+                    id: true,
+                    event: {
+                      select: {
+                        id: true,
+                        group: {
+                          select: {
+                            uid: true,
+                          },
+                        },
+                        title: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            contribution: {
+              select: {
+                user: true,
+                option: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            shopPayment: {
+              select: {
+                user: true,
+                shopItem: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
         });
+        if (txn.registration?.author) {
+          await notify([txn.registration.author], {
+            title: 'Place payée',
+            body: `Ta réservation pour ${txn.registration.ticket.event}`,
+            data: {
+              channel: 'Other',
+              goto: `/events/${localID(txn.registration.ticket.event.id)}/book/${localID(txn.registration.ticket.id)}/confirm`,
+              group: undefined,
+            },
+          });
+        } else if (txn.contribution?.user) {
+          await notify([txn.contribution.user], {
+            title: 'Cotisation payée',
+            body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
+            data: {
+              channel: 'Other',
+              goto: '/',
+              group: undefined,
+            },
+          });
+        } else if (txn.shopPayment?.user) {
+          await notify([txn.shopPayment.user], {
+            title: 'Articles payés',
+            body: `Achat de ${txn.shopPayment.shopItem.name} confirmé`,
+            data: {
+              channel: 'Other',
+              goto: `/`, // TODO
+              group: undefined,
+            },
+          });
+        }
         return res.status(200).send('OK');
       }
     } else if (transaction.contribution) {

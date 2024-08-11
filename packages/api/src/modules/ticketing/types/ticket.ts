@@ -1,13 +1,19 @@
 import { builder, prisma, toHtml } from '#lib';
+import { MajorType } from '#modules/curriculum';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
+import { SchoolType } from '#modules/schools';
 import { shotgunIsOpen } from '#modules/ticketing/utils';
+import type { Prisma } from '@churros/db/prisma';
+
+export const TicketTypePrismaIncludes = {
+  group: true,
+  openToMajors: true,
+} as const satisfies Prisma.TicketInclude;
 
 export const TicketType = builder.prismaNode('Ticket', {
   id: { field: 'id' },
-  include: {
-    group: true,
-  },
+  include: TicketTypePrismaIncludes,
   fields: (t) => ({
     eventId: t.exposeID('eventId'),
     uid: t.exposeString('slug', {
@@ -63,9 +69,64 @@ export const TicketType = builder.prismaNode('Ticket', {
     openToPromotions: t.expose('openToPromotions', { type: ['Int'] }),
     openToAlumni: t.exposeBoolean('openToAlumni', { nullable: true }),
     openToExternal: t.exposeBoolean('openToExternal', { nullable: true }),
-    openToSchools: t.relation('openToSchools'),
+    openToSchools: t.prismaField({
+      type: [SchoolType],
+      description: 'Écoles telles que toutes leur filières sont autorisées sur ce billet',
+      async resolve(query, { openToMajors }) {
+        return prisma.school.findMany({
+          ...query,
+          where: {
+            majors: {
+              every: {
+                OR: [{ id: { in: openToMajors.map((m) => m.id) } }, { discontinued: true }],
+              },
+            },
+          },
+        });
+      },
+    }),
     openToGroups: t.relation('openToGroups'),
-    openToMajors: t.relation('openToMajors'),
+    openToMajors: t.prismaField({
+      type: [MajorType],
+      args: {
+        smart: t.arg.boolean({
+          defaultValue: false,
+          description:
+            "Ne renvoyer que les filières qui ne consistuent pas ensemble la totalité des filières d'une école. Pratique pour l'affichage sur un billet, en combinant avec openToSchools",
+        }),
+      },
+      async resolve(query, { openToMajors, id }, { smart }) {
+        if (!smart) {
+          return prisma.major.findMany({
+            ...query,
+            where: {
+              accessibleTickets: {
+                some: { id },
+              },
+            },
+          });
+        }
+
+        const openToSchools = await prisma.school.findMany({
+          ...query,
+          where: {
+            majors: {
+              every: {
+                OR: [{ id: { in: openToMajors.map((m) => m.id) } }, { discontinued: true }],
+              },
+            },
+          },
+        });
+
+        return prisma.major.findMany({
+          ...query,
+          where: {
+            accessibleTickets: { some: { id } },
+            schools: { none: { id: { in: openToSchools.map((s) => s.id) } } },
+          },
+        });
+      },
+    }),
     openToContributors: t.exposeBoolean('openToContributors', { nullable: true }),
     openToApprentices: t.exposeBoolean('openToApprentices', { nullable: true }),
     godsonLimit: t.exposeInt('godsonLimit'),

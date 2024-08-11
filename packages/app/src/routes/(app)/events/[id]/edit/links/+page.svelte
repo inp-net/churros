@@ -10,6 +10,11 @@
 <MaybeError result={$PageEventEditLinks} let:data={{ event }}>
   <div class="contents">
     <AreaEditLinks resource={event} />
+    {#if event.tickets.length === 0}
+      <section class="explainer">
+        Nomme un lien "Billetterie" pour indiquer une billetterie externe
+      </section>
+    {/if}
   </div>
 </MaybeError>
 

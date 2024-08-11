@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 import { EventType } from '#modules/events';
-import { preprocessBeneficiary, RegistrationType } from '#modules/ticketing';
+import { RegistrationType } from '#modules/ticketing';
 
 builder.prismaObjectField(EventType, 'myBookings', (t) =>
   t.prismaField({
@@ -20,12 +20,15 @@ builder.prismaObjectField(EventType, 'myBookings', (t) =>
           },
           OR: [
             { authorId: user.id },
-            { beneficiary: preprocessBeneficiary(user.uid) },
+            { internalBeneficiaryId: user.id },
             { authorEmail: user.email },
           ],
         },
-        // TODO see https://git.inpt.fr/inp-net/churros/-/issues/1015
-        orderBy: [{ beneficiary: 'desc' }, { createdAt: 'asc' }],
+        orderBy: [
+          { externalBeneficiary: 'desc' },
+          { internalBeneficiaryId: 'desc' },
+          { createdAt: 'asc' },
+        ],
         take: count ?? 100,
       });
     },

@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { graphql, type PickGroup$data } from '$houdini';
   import { AvatarGroup_houdini, LoadingText } from '$lib/components';
   import PickThings from '$lib/components/PickThings.svelte';
   import { type MaybeLoading } from '$lib/loading';
+  import type { NavigationTopStateKeys } from '$lib/navigation';
+  import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher<{ pick: string; finish: Value }>();
+
+  export let statebound: NavigationTopStateKeys | undefined = undefined;
 
   export let multiple = false;
   // eslint-disable-next-line no-undef
@@ -27,6 +30,7 @@
 </script>
 
 <PickThings
+  {statebound}
   {options}
   {value}
   {multiple}

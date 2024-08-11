@@ -14,7 +14,8 @@ builder.mutationField('deleteTicket', (t) =>
       result: {
         fields: (t) => ({
           softDeleted: t.string({
-            resolve: (_, __, { caveats }) => caveats.at(0) ?? '',
+            nullable: true,
+            resolve: (_, __, { caveats }) => caveats.at(0) || null,
             description:
               "Message d'explication si le billet n'a pas pu être supprimé mais qu'une autre action a été effectuée à la place",
           }),
@@ -43,9 +44,9 @@ builder.mutationField('deleteTicket', (t) =>
             onlyManagersCanProvide: true,
           },
         });
-        if (onlyManagersCanProvide) {
+        if (onlyManagersCanProvide) 
           throw new GraphQLError('Il existe des réservations pour ce billet');
-        }
+        
         caveats.unshift(
           'Il existe des réservations pour ce billet. Le billet a été passé en "Managers seulement"',
         );

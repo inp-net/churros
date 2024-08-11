@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -176,7 +181,14 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
+  """
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+  """
   answer: [String!]!
 
   """
@@ -1068,6 +1080,11 @@ enum DocumentType {
 }
 
 """
+Adresse e-mail
+"""
+scalar Email
+
+"""
 A email validation request
 """
 type EmailChange {
@@ -1182,6 +1199,11 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   enabledSpecialOffers: [PromotionType!]
   endsAt: DateTime
+
+  """
+  URL vers une billetterie externe. Null si l'évènement possède un lien à URL valide, non dynamique, nommé "billetterie" et n'a pas de billets
+  """
+  externalTicketing: URL
 
   """
   Formulaires associés à l'événement
@@ -2035,6 +2057,11 @@ Une filière (division de premier niveau du cursus scolaire d'une école). Peut 
 """
 type Major implements Pictured {
   """
+  Ancienne filière n'existant plus dans les cursus actuels
+  """
+  discontinued: Boolean!
+
+  """
   Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
   """
   hasSeparateDarkPicture: Boolean!
@@ -2120,7 +2147,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "1.66.0-rc.0"): Boolean!
+  acknowledgeChangelog(version: String! = "dev"): Boolean!
 
   """
   Activate a third-party app. Only admins can do this.
@@ -2172,7 +2199,28 @@ type Mutation {
     section: ID!
   ): MutationAnswerFormSectionResult!
 
-  "\nAuthorize a third-party client to access the user's data. \nReturns an access code. \n\nUse the frontend's /authorize endpoint instead of this, as it requires already being logged-in.\n\nDo a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:\n\n- `<clientId>`: The client ID of the app. See registerApp to get this.\n- `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`\n- `<state>`: A random string generated from personal information used to prevent CSRF attacks.\n\nUse that code to get an access token with /token:\n\nDo a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:\n\n- `grant_type`: `authorization_code`\n- `code`: The code returned by this endpoint\n- `client_id`: The client ID of the app\n- `client_secret`: The client secret of the app\n- `redirect_uri`: The redirect URI used in this request\n      "
+  """
+  Authorize a third-party client to access the user's data.
+  Returns an access code.
+
+  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
+
+  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
+
+  - `<clientId>`: The client ID of the app. See registerApp to get this.
+  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
+  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
+
+  Use that code to get an access token with /token:
+
+  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
+
+  - `grant_type`: `authorization_code`
+  - `code`: The code returned by this endpoint
+  - `client_id`: The client ID of the app
+  - `client_secret`: The client secret of the app
+  - `redirect_uri`: The redirect URI used in this request
+  """
   authorize(
     """
     The client ID of the app. See registerApp to get this.
@@ -2205,14 +2253,19 @@ type Mutation {
   """
   bookEvent(
     """
-    Email de la personne effectuant la réservation, requis quand l'utilisateur·ice n'est pas connecté·e: c'est alors le seul moyen qu'on a d'envoyer le billet.
+    Adresse mail à laquelle envoyer le billet. Nécéssaire quand on est pas connecté.e
     """
-    authorEmail: String!
+    authorEmail: Email!
 
     """
-    Nom du bénéficiaire du billet
+    Nom de la personne pour qui on réserve la place. Préférer churrosBeneficiary quand c'est possible
     """
-    beneficiary: String
+    beneficiary: String!
+
+    """
+    Identifiant (@) de la personne qui recevra la place
+    """
+    churrosBeneficiary: UID!
     ticket: LocalID!
   ): MutationBookEventResult!
 
@@ -2237,7 +2290,7 @@ type Mutation {
   Changer le groupe organisateur (principal) de l'événement
   """
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
-  checkIfRegistrationIsPaid(id: ID!): Boolean!
+  checkIfBookingIsPaid(code: String!): Boolean!
   claimPromotionCode(code: String!): Boolean!
   completeRegistration(
     address: String!
@@ -3151,7 +3204,7 @@ type Mutation {
   ): MutationVerifyBookingResult!
 }
 
-union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess
+union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess | ZodError
 
 type MutationAcceptRegistrationSuccess {
   data: User!
@@ -3163,7 +3216,7 @@ type MutationAddFileToPageSuccess {
   data: Page!
 }
 
-union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess
+union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess | ZodError
 
 type MutationAddGroupMemberSuccess {
   data: GroupMember!
@@ -3175,13 +3228,13 @@ type MutationAddLinksSuccess {
   data: HasLinks!
 }
 
-union MutationAnswerFormSectionResult = Error | MutationAnswerFormSectionSuccess
+union MutationAnswerFormSectionResult = Error | MutationAnswerFormSectionSuccess | ZodError
 
 type MutationAnswerFormSectionSuccess {
   data: [Answer!]!
 }
 
-union MutationAuthorizeResult = Error | MutationAuthorizeSuccess | OAuth2Error
+union MutationAuthorizeResult = Error | MutationAuthorizeSuccess | OAuth2Error | ZodError
 
 type MutationAuthorizeSuccess {
   data: String!
@@ -3217,7 +3270,7 @@ type MutationCompleteRegistrationSuccess {
   data: CompleteSignupResult!
 }
 
-union MutationContributeResult = Error | MutationContributeSuccess
+union MutationContributeResult = Error | MutationContributeSuccess | ZodError
 
 type MutationContributeSuccess {
   data: Boolean!
@@ -3238,7 +3291,7 @@ type MutationCreateGoogleWalletPassSuccess {
   data: String!
 }
 
-union MutationCreatePasswordResetResult = Error | MutationCreatePasswordResetSuccess
+union MutationCreatePasswordResetResult = Error | MutationCreatePasswordResetSuccess | ZodError
 
 type MutationCreatePasswordResetSuccess {
   data: Boolean!
@@ -3250,7 +3303,7 @@ type MutationCreateTicketSuccess {
   data: Ticket!
 }
 
-union MutationDeleteEventResult = Error | MutationDeleteEventSuccess
+union MutationDeleteEventResult = Error | MutationDeleteEventSuccess | ZodError
 
 type MutationDeleteEventSuccess {
   data: Event!
@@ -3273,7 +3326,7 @@ type MutationDeletePageSuccess {
   data: Page!
 }
 
-union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess
+union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess | ZodError
 
 type MutationDeleteShopItemSuccess {
   data: Boolean!
@@ -3287,48 +3340,52 @@ type MutationDeleteTicketSuccess {
   """
   Message d'explication si le billet n'a pas pu être supprimé mais qu'une autre action a été effectuée à la place
   """
-  softDeleted: String!
+  softDeleted: String
 }
 
 union MutationFinishPaypalRegistrationPaymentResult =
   | Error
   | MutationFinishPaypalRegistrationPaymentSuccess
+  | ZodError
 
 type MutationFinishPaypalRegistrationPaymentSuccess {
   data: Boolean!
 }
 
-union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess
+union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess | ZodError
 
 type MutationLoginSuccess {
   data: Credential!
 }
 
-union MutationMailFormAnswersResult = Error | MutationMailFormAnswersSuccess
+union MutationMailFormAnswersResult = Error | MutationMailFormAnswersSuccess | ZodError
 
 type MutationMailFormAnswersSuccess {
   data: String!
 }
 
-union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSuccess
+union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSuccess | ZodError
 
 type MutationOpposeRegistrationSuccess {
   data: Boolean!
 }
 
-union MutationPaidShopPaymentResult = Error | MutationPaidShopPaymentSuccess
+union MutationPaidShopPaymentResult = Error | MutationPaidShopPaymentSuccess | ZodError
 
 type MutationPaidShopPaymentSuccess {
   data: ShopPayment!
 }
 
-union MutationPayBookingResult = Error | MutationPayBookingSuccess
+union MutationPayBookingResult = Error | MutationPayBookingSuccess | ZodError
 
 type MutationPayBookingSuccess {
   data: String!
 }
 
-union MutationRegisterGoogleCredentialResult = Error | MutationRegisterGoogleCredentialSuccess
+union MutationRegisterGoogleCredentialResult =
+  | Error
+  | MutationRegisterGoogleCredentialSuccess
+  | ZodError
 
 type MutationRegisterGoogleCredentialSuccess {
   data: Boolean!
@@ -3351,13 +3408,13 @@ type MutationRemoveFileFromPageSuccess {
   data: Page!
 }
 
-union MutationRequestEmailChangeResult = Error | MutationRequestEmailChangeSuccess
+union MutationRequestEmailChangeResult = Error | MutationRequestEmailChangeSuccess | ZodError
 
 type MutationRequestEmailChangeSuccess {
   data: Boolean!
 }
 
-union MutationResetPasswordResult = Error | MutationResetPasswordSuccess
+union MutationResetPasswordResult = Error | MutationResetPasswordSuccess | ZodError
 
 type MutationResetPasswordSuccess {
   data: Boolean!
@@ -3433,6 +3490,10 @@ union MutationUpdateTicketConstraintsResult =
   | ZodError
 
 type MutationUpdateTicketConstraintsSuccess {
+  """
+  Les contraintes de billet n'ont pas été enregistrées tel quel mais on été simplifiées. La valeur est un message d'explication.
+  """
+  constraintsWereSimplified: String
   data: Ticket!
 }
 
@@ -3448,7 +3509,7 @@ type MutationUpdateUserCandidateSuccess {
   data: Boolean!
 }
 
-union MutationUpdateUserResult = Error | MutationUpdateUserSuccess
+union MutationUpdateUserResult = Error | MutationUpdateUserSuccess | ZodError
 
 type MutationUpdateUserSuccess {
   data: User!
@@ -3466,13 +3527,13 @@ type MutationUpsertArticleSuccess {
   data: Article!
 }
 
-union MutationUpsertBarWeekResult = Error | MutationUpsertBarWeekSuccess
+union MutationUpsertBarWeekResult = Error | MutationUpsertBarWeekSuccess | ZodError
 
 type MutationUpsertBarWeekSuccess {
   data: BarWeek!
 }
 
-union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess
+union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess | ZodError
 
 type MutationUpsertDocumentSuccess {
   data: Document!
@@ -3527,7 +3588,10 @@ input MutationUpsertFormSectionInput {
   title: String!
 }
 
-union MutationUpsertGodparentRequestResult = Error | MutationUpsertGodparentRequestSuccess
+union MutationUpsertGodparentRequestResult =
+  | Error
+  | MutationUpsertGodparentRequestSuccess
+  | ZodError
 
 type MutationUpsertGodparentRequestSuccess {
   data: GodparentRequest!
@@ -3597,25 +3661,25 @@ input MutationUpsertQuestionInput {
   type: QuestionKind!
 }
 
-union MutationUpsertRegistrationResult = Error | MutationUpsertRegistrationSuccess
+union MutationUpsertRegistrationResult = Error | MutationUpsertRegistrationSuccess | ZodError
 
 type MutationUpsertRegistrationSuccess {
   data: Registration!
 }
 
-union MutationUpsertServiceResult = Error | MutationUpsertServiceSuccess
+union MutationUpsertServiceResult = Error | MutationUpsertServiceSuccess | ZodError
 
 type MutationUpsertServiceSuccess {
   data: Service!
 }
 
-union MutationUpsertShopItemResult = Error | MutationUpsertShopItemSuccess
+union MutationUpsertShopItemResult = Error | MutationUpsertShopItemSuccess | ZodError
 
 type MutationUpsertShopItemSuccess {
   data: ShopItem!
 }
 
-union MutationUpsertShopPaymentResult = Error | MutationUpsertShopPaymentSuccess
+union MutationUpsertShopPaymentResult = Error | MutationUpsertShopPaymentSuccess | ZodError
 
 type MutationUpsertShopPaymentSuccess {
   data: ShopPayment!
@@ -3627,19 +3691,19 @@ type MutationUpsertThemeSuccess {
   data: Theme!
 }
 
-union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess
+union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess | ZodError
 
 type MutationUsePasswordResetSuccess {
   data: Boolean!
 }
 
-union MutationValidateEmailResult = Error | MutationValidateEmailSuccess
+union MutationValidateEmailResult = Error | MutationValidateEmailSuccess | ZodError
 
 type MutationValidateEmailSuccess {
   data: Boolean!
 }
 
-union MutationVerifyBookingResult = Error | MutationVerifyBookingSuccess
+union MutationVerifyBookingResult = Error | MutationVerifyBookingSuccess | ZodError
 
 type MutationVerifyBookingSuccess {
   data: RegistrationVerificationResult!
@@ -3692,6 +3756,7 @@ enum NotificationChannel {
   Comments
   GodparentRequests
   GroupBoard
+  Mandatory
   Other
   Permissions
   Shotguns
@@ -3995,7 +4060,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (1.66.0-rc.0).
+    The version to request a changelog for. Defaults to the current version (dev).
     """
     version: String
   ): ChangelogRelease!
@@ -4014,9 +4079,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (1.66.0-rc.0).
+    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
     """
-    to: String! = "1.66.0-rc.0"
+    to: String! = "dev"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
@@ -4100,7 +4165,12 @@ type Query {
   lydiaAccountsOfGroup(uid: String!): [LydiaAccount!]!
     @deprecated(reason: "Use group.lydiaAccounts instead")
   major(uid: String!): Major!
-  majors: [Major!]!
+  majors(
+    """
+    Inclure les filières anciennes n'existant plus dans les cursus actuels
+    """
+    discontinued: Boolean! = false
+  ): [Major!]!
 
   """
   Renvoie l’utilisateur·ice connecté·e, ou null. Pour une valeur de retour non-nullable, voir `assertMe`.
@@ -4212,6 +4282,7 @@ type Query {
     """
     id: ID!
   ): ThirdPartyApp!
+  ticket(id: LocalID!): Ticket!
   ticketGroup(id: LocalID!): TicketGroup!
 
   """
@@ -4265,13 +4336,13 @@ type QueryAnnouncementsConnectionEdge {
   node: Announcement!
 }
 
-union QueryCodeContributorsResult = Error | QueryCodeContributorsSuccess
+union QueryCodeContributorsResult = Error | QueryCodeContributorsSuccess | ZodError
 
 type QueryCodeContributorsSuccess {
   data: [User!]!
 }
 
-union QueryCombinedChangelogResult = Error | QueryCombinedChangelogSuccess
+union QueryCombinedChangelogResult = Error | QueryCombinedChangelogSuccess | ZodError
 
 type QueryCombinedChangelogSuccess {
   data: [ChangelogRelease!]!
@@ -4321,7 +4392,7 @@ type QueryFormsConnectionEdge {
   node: Form!
 }
 
-union QueryGroupMembersCsvResult = Error | QueryGroupMembersCsvSuccess
+union QueryGroupMembersCsvResult = Error | QueryGroupMembersCsvSuccess | ZodError
 
 type QueryGroupMembersCsvSuccess {
   data: String!
@@ -4404,7 +4475,7 @@ type QueryReactionsConnectionEdge {
   node: Reaction!
 }
 
-union QueryRegistrationResult = Error | QueryRegistrationSuccess
+union QueryRegistrationResult = Error | QueryRegistrationSuccess | ZodError
 
 type QueryRegistrationSuccess {
   data: Registration!
@@ -4421,7 +4492,7 @@ type QueryRegistrationsOfUserConnectionEdge {
   node: Registration!
 }
 
-union QueryUpcomingChangelogResult = Error | QueryUpcomingChangelogSuccess
+union QueryUpcomingChangelogResult = Error | QueryUpcomingChangelogSuccess | ZodError
 
 type QueryUpcomingChangelogSuccess {
   data: ChangelogRelease!
@@ -5156,7 +5227,7 @@ type Registration implements Node {
   authorEmail: String!
   authorId: ID
   authorIsBeneficiary: Boolean!
-  beneficiary: String!
+  beneficiary: String! @deprecated(reason: "Use `externalBeneficiary` instead.")
   beneficiaryUser: User
   cancelled: Boolean!
   cancelledAt: DateTime
@@ -5657,7 +5728,7 @@ type Subscription {
   ): ThirdPartyApp!
 }
 
-union SubscriptionRegistrationResult = Error | SubscriptionRegistrationSuccess
+union SubscriptionRegistrationResult = Error | SubscriptionRegistrationSuccess | ZodError
 
 type SubscriptionRegistrationSuccess {
   data: Registration!
@@ -5965,8 +6036,17 @@ type Ticket implements Node {
   openToContributors: Boolean
   openToExternal: Boolean
   openToGroups: [Group!]!
-  openToMajors: [Major!]!
+  openToMajors(
+    """
+    Ne renvoyer que les filières qui ne consistuent pas ensemble la totalité des filières d'une école. Pratique pour l'affichage sur un billet, en combinant avec openToSchools
+    """
+    smart: Boolean! = false
+  ): [Major!]!
   openToPromotions: [Int!]!
+
+  """
+  Écoles telles que toutes leur filières sont autorisées sur ce billet
+  """
   openToSchools: [School!]!
   opensAt: DateTime
 
@@ -6075,10 +6155,6 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
-  school: UID
-    @deprecated(
-      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
-    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!

@@ -4,6 +4,7 @@
 
 export * from './date-range-input.js';
 export * from './date-time.js';
+export * from './email.js';
 export * from './errors.js';
 export * from './file.js';
 export * from './html.js';

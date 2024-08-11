@@ -9,7 +9,19 @@ import { TicketConstraintsInput } from '../types/ticket-constraints-input.js';
 builder.mutationField('updateTicketConstraints', (t) =>
   t.prismaField({
     type: TicketType,
-    errors: { types: [Error, ZodError] },
+    errors: {
+      types: [Error, ZodError],
+      result: {
+        fields: (t) => ({
+          constraintsWereSimplified: t.string({
+            nullable: true,
+            description:
+              "Les contraintes de billet n'ont pas été enregistrées tel quel mais on été simplifiées. La valeur est un message d'explication.",
+            resolve: (_, __, { caveats }) => caveats.at(0) || null,
+          }),
+        }),
+      },
+    },
     args: {
       ticket: t.arg({ type: LocalID }),
       constraints: t.arg({
@@ -28,11 +40,11 @@ builder.mutationField('updateTicketConstraints', (t) =>
         });
       return canEditEvent(event, user);
     },
-    async resolve(query, _, args, { user }) {
+    async resolve(query, _, args, { user, caveats }) {
       const id = ensureGlobalId(args.ticket, 'Ticket');
       await log('ticketing', 'update-ticket-constraints', args, id, user);
       const { constraints } = args;
-      return prisma.ticket.update({
+      const ticket = await prisma.ticket.update({
         ...query,
         where: { id },
         data: {
@@ -50,14 +62,61 @@ builder.mutationField('updateTicketConstraints', (t) =>
           onlyManagersCanProvide: constraints.managersOnly ?? undefined,
         },
       });
+
+      // Some de-duplication logic here:
+      // If we don't allow external users, and
+      // the openToMajors constraint is exactly all majors of the organizer group's school,
+      // the openToMajors constraint is redundant: the fact that we don't allow external users already restricts to the group's school
+      if (constraints.majors || constraints.external) {
+        const schoolOfEvent = await prisma.ticket
+          .findUniqueOrThrow({
+            where: { id },
+          })
+          .event()
+          .group()
+          .studentAssociation()
+          .school({
+            include: { majors: true },
+          });
+
+        const { openToMajors } = await prisma.ticket.findUniqueOrThrow({
+          where: { id },
+          select: {
+            openToMajors: { select: { id: true, schools: true } },
+          },
+        });
+
+        // All openToMajors' majors are in the event's school, and openToMajors includes all majors of the school
+        if (
+          schoolOfEvent.majors
+            .filter((m) => !m.discontinued)
+            .every((major) => openToMajors.some((m) => m.id === major.id)) &&
+          openToMajors.every((major) =>
+            major.schools.some((school) => school.id === schoolOfEvent.id),
+          )
+        ) {
+          caveats.unshift(
+            `La contrainte sur les filières a été supprimée car redondante: vu que les extés ne sont pas autorisés, il y a déjà limitation à ${schoolOfEvent.name}`,
+          );
+          return prisma.ticket.update({
+            ...query,
+            where: { id },
+            data: {
+              openToMajors: {
+                set: [],
+              },
+            },
+          });
+        }
+      }
+      return ticket;
     },
   }),
 );
 
 function connectByUID(uids: string[] | undefined | null) {
-  if (uids === undefined || uids === null) 
-    return;
-  
+  if (uids === undefined || uids === null) return;
+
   return {
     set: uids.map((uid) => ({ uid })),
   };
@@ -69,9 +128,8 @@ function connectByUID(uids: string[] | undefined | null) {
 function handleBooleanConstraint(
   constraint: typeof BooleanConstraint.$inferType | null | undefined,
 ): boolean | null | undefined {
-  if (constraint === null || constraint === undefined) 
-    return undefined;
-  
+  if (constraint === null || constraint === undefined) return undefined;
+
   return {
     Only: true,
     Not: false,

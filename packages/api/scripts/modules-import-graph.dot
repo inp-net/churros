@@ -38,8 +38,10 @@ strict digraph ImportGraph {
     "student-associations" -> "payments";
     "student-associations" -> "users";
     "themes" -> "groups";
+    "ticketing" -> "curriculum";
     "ticketing" -> "events";
     "ticketing" -> "payments";
+    "ticketing" -> "schools";
     "ticketing" -> "users";
     "users" -> "notifications";
 }

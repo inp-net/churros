@@ -2,6 +2,7 @@ query PageEventDetail($id: LocalID!) {
   event(id: $id) @loading {
     canScanBookings
     canEdit
+    externalTicketing
     highlightedBooking: myBookings(count: 1) {
       ...CardBooking
     }
@@ -24,11 +25,13 @@ query PageEventDetail($id: LocalID!) {
     descriptionHtml
     tickets {
       ...CardTicket
+      ...CardTicketDetails
       ...CardTicketPlaces
     }
     ...ButtonLike
     ...ButtonShare
     links {
+      rawURL
       ...PillLink
     }
   }

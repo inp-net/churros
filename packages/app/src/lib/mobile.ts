@@ -24,3 +24,7 @@ export function isMobile() {
 export function setupIsMobile(mobile: boolean) {
   return setContext(_CONTEXT_KEY_MOBILE, mobile);
 }
+
+export function inferIsMobile(userAgent: string) {
+  return userAgent.toLowerCase().includes('mobile') || userAgent.toLowerCase().includes(' code/1.');
+}

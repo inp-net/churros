@@ -1,0 +1,28 @@
+bookEvent(ticket: ..., authorEmail: ... (nullable, mais erreur si non connecté))
+
+
+sur /book/[ticket]
+
+2. Payer pour qqn d'autre? /boook/.../beneficiary
+    - Compte Churros
+    - Pas de compte Churros
+    -> dans une snapshot
+
+
+sur /bookings/[code]/
+
+1. Choisir methode paimenet /book/.../method
+1.(b) Pour Lydia:
+    - Num de tel
+    - S'en souvenir
+3. Envoyer demande paiement /book/.../confirm
+    - Bouton ouvrir Lydia? -> https://go.lydia.me à l'air de marcher
+
+----
+
+-> Revenir sur la page: /booking/...
+   -> Payé ou scanné ou en opposition ou annulé? -> pas de modal
+   -> !externalBeneficiary && !internalBeneficiary -> etape beneficiary
+   -> !paymentMethod -> etape payment method
+   -> paymentMethod == Lydia && !paid && !lydiaTransaction ?
+    -> etape confirm

@@ -37,7 +37,7 @@
       } else {
         deletionResult = {
           type: 'success',
-          messages: ['Évènement supprimé'],
+          messages: ['Billet supprimé'],
         };
         await goto(route('/events'));
       }

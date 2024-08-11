@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fragment, graphql, type BookingStatus } from '$houdini';
+  import { fragment, graphql, PendingValue, type BookingStatus } from '$houdini';
   import { allLoaded, mapAllLoading, LoadingText } from '$lib/loading';
   import IconPaid from '~icons/msl/check';
   import IconCancelled from '~icons/msl/close';
@@ -47,16 +47,18 @@
   </div>
 
   <LoadingText
-    value={mapAllLoading(
-      [$data?.opposed, $data?.verified, $data?.cancelled, $data?.paid],
-      (opposed, verified, cancelled, paid) => {
-        if (opposed) return 'En opposition';
-        if (verified) return 'Scannée';
-        if (cancelled) return 'Annulée';
-        if (paid) return 'Payée';
-        return 'En attente de paiement';
-      },
-    )}
+    value={$data
+      ? mapAllLoading(
+          [$data.opposed, $data.verified, $data.cancelled, $data.paid],
+          (opposed, verified, cancelled, paid) => {
+            if (opposed) return 'En opposition';
+            if (verified) return 'Scannée';
+            if (cancelled) return 'Annulée';
+            if (paid) return 'Payée';
+            return 'En attente de paiement';
+          },
+        )
+      : PendingValue}
   />
 </div>
 

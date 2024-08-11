@@ -2,7 +2,7 @@ import { builder, localID, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { UserType, fullName } from '#modules/users';
-import { authorIsBeneficiary, preprocessBeneficiary } from '../index.js';
+import { authorIsBeneficiary } from '../index.js';
 // TODO rename to booking
 
 export const RegistrationType = builder.prismaNode('Registration', {
@@ -15,16 +15,21 @@ export const RegistrationType = builder.prismaNode('Registration', {
     }),
     ticketId: t.exposeID('ticketId'),
     authorId: t.exposeID('authorId', { nullable: true }),
-    beneficiary: t.exposeString('beneficiary'),
+    beneficiary: t.string({
+      resolve({ externalBeneficiary }) {
+        return externalBeneficiary ?? '';
+      },
+      deprecationReason: 'Use `externalBeneficiary` instead.',
+    }),
     beneficiaryUser: t.prismaField({
       type: UserType,
       nullable: true,
-      async resolve(query, { beneficiary }) {
+      async resolve(query, { internalBeneficiaryId }) {
         // eslint-disable-next-line unicorn/no-null
-        if (!beneficiary) return null;
+        if (!internalBeneficiaryId) return null;
         return prisma.user.findUnique({
           ...query,
-          where: { uid: preprocessBeneficiary(beneficiary) },
+          where: { id: internalBeneficiaryId },
         });
       },
     }),
@@ -57,13 +62,14 @@ export const RegistrationType = builder.prismaNode('Registration', {
     author: t.relation('author', { nullable: true }),
     authorEmail: t.exposeString('authorEmail'),
     authorIsBeneficiary: t.boolean({
-      async resolve({ authorId, authorEmail, beneficiary }) {
+      async resolve({ authorId, authorEmail, internalBeneficiaryId, externalBeneficiary }) {
         if (!authorId) return true;
         const author = await prisma.user.findUnique({ where: { id: authorId } });
         if (!author) return false;
         return authorIsBeneficiary(
           { ...author, fullName: fullName(author) },
-          beneficiary,
+          externalBeneficiary,
+          internalBeneficiaryId,
           authorEmail,
         );
       },

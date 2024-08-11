@@ -100,7 +100,9 @@ export function prismaQueryVisibleEvents(
                   some: {
                     OR: [
                       {
-                        beneficiary: user?.uid ?? '',
+                        internalBeneficiary: {
+                          uid: user?.uid,
+                        },
                       },
                       {
                         author: { uid: user?.uid ?? '' },

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Avatar from '$lib/components/Avatar.svelte';
-
   import { graphql, type PickMajor$data } from '$houdini';
+  import Avatar from '$lib/components/Avatar.svelte';
+  import AvatarSchool from '$lib/components/AvatarSchool.svelte';
   import { loaded, loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
   import { createEventDispatcher } from 'svelte';
@@ -25,6 +25,7 @@
       pictureURL
       schools {
         uid
+        pictureURL
         name
       }
     }
@@ -33,15 +34,15 @@
   // Sort majors by school, and ensure each major that is in multiple schools appears once per school. Return an array of PickMajor$data
   function groupedBySchool(options: Array<PickMajor$data>): Array<PickMajor$data> {
     const majorsBySchool = [] as Array<PickMajor$data>;
-    const allSchoolsUids = new Set([
-      ...options.flatMap((major) => major.schools.map((school) => school.uid)).filter(loaded),
-    ]);
+    const allSchoolsUids = new Set(
+      options.flatMap((major) => major.schools.map((school) => school.uid)).filter(loaded)
+    );
 
     for (const schoolUid of allSchoolsUids) {
       for (const major of options) {
-        if (major.schools.some((school) => school.uid === schoolUid)) {
+        if (major.schools.some((school) => school.uid === schoolUid)) 
           majorsBySchool.push(major);
-        }
+        
       }
     }
     return majorsBySchool;
@@ -61,6 +62,11 @@
   on:pick={(e) => dispatch('pick', e.detail)}
   let:open
 >
+  <svelte:fragment slot="category" let:category let:firstOption>
+    {@const school = firstOption.schools.find((s) => s.uid === category.id)}
+    <AvatarSchool {school} />
+    {category.label}
+  </svelte:fragment>
   <div
     slot="option"
     let:selected
@@ -90,7 +96,7 @@
 
   .option {
     --avatar-size: 5rem;
-    --avatar-radius: var(--border-radius);
+    --avatar-radius: var(--radius-block);
 
     display: flex;
     flex-direction: column;

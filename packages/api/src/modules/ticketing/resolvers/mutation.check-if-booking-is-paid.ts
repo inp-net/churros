@@ -1,21 +1,19 @@
-import { builder, log, prisma } from '#lib';
+import { builder, ensureGlobalId, log, prisma } from '#lib';
 import {
   LydiaTransactionState,
   checkLydiaTransaction,
   checkPaypalPayment,
 } from '#modules/payments';
 
-// TODO rename to check-if-booking-is-paid.ts
-
-builder.mutationField('checkIfRegistrationIsPaid', (t) =>
+builder.mutationField('checkIfBookingIsPaid', (t) =>
   t.boolean({
     args: {
-      id: t.arg.id(),
+      code: t.arg.string(),
     },
-    async resolve(_, { id }) {
+    async resolve(_, { code }) {
       const registration = await prisma.registration.findFirstOrThrow({
         where: {
-          id: id.toLowerCase(),
+          id: ensureGlobalId(code.toLowerCase(), 'Registration'),
         },
         include: {
           lydiaTransaction: true,

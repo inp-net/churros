@@ -76,6 +76,7 @@ export const LimitToContributors = graphql(`
       constraints: { studentAssociationContributors: $constraint }
     ) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToContributors
         }
@@ -89,6 +90,7 @@ export const LimitToExternal = graphql(`
   mutation ChangeTicketExternalsConstraint($ticket: LocalID!, $constraint: BooleanConstraint!) {
     updateTicketConstraints(ticket: $ticket, constraints: { external: $constraint }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToExternal
         }
@@ -102,6 +104,7 @@ export const LimitToAlumni = graphql(`
   mutation ChangeTicketAlumniConstraint($ticket: LocalID!, $constraint: BooleanConstraint!) {
     updateTicketConstraints(ticket: $ticket, constraints: { alumni: $constraint }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToAlumni
         }
@@ -115,6 +118,7 @@ export const LimitToApprentices = graphql(`
   mutation ChangeTicketApprenticesConstraint($ticket: LocalID!, $constraint: BooleanConstraint!) {
     updateTicketConstraints(ticket: $ticket, constraints: { apprentices: $constraint }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToApprentices
         }
@@ -128,6 +132,7 @@ export const LimitToManagers = graphql(`
   mutation ChangeTicketManagersOnlyConstraint($ticket: LocalID!, $activated: Boolean!) {
     updateTicketConstraints(ticket: $ticket, constraints: { managersOnly: $activated }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           onlyManagersCanProvide
         }
@@ -141,6 +146,7 @@ export const LimitToMajors = graphql(`
   mutation ChangeTicketMajorsConstraint($ticket: LocalID!, $majors: [UID!]!) {
     updateTicketConstraints(ticket: $ticket, constraints: { majors: $majors }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToMajors {
             uid
@@ -157,6 +163,7 @@ export const LimitToPromotions = graphql(`
   mutation ChangeTicketPromotionsConstraint($ticket: LocalID!, $promotions: [Int!]!) {
     updateTicketConstraints(ticket: $ticket, constraints: { promotions: $promotions }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToPromotions
         }
@@ -170,6 +177,7 @@ export const LimitToGroupMembers = graphql(`
   mutation ChangeTicketGroupMembersConstraint($ticket: LocalID!, $groupMembers: [UID!]!) {
     updateTicketConstraints(ticket: $ticket, constraints: { groupMembers: $groupMembers }) {
       ... on MutationUpdateTicketConstraintsSuccess {
+        constraintsWereSimplified
         data {
           openToGroups {
             ...PickGroup

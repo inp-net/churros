@@ -2,6 +2,9 @@ query PageEventEditLinks($id: LocalID!) {
   event(id: $id) {
     id
     assertCanEdit(else: "Tu n'a pas les droits pour modifier cet événement")
+    tickets {
+      __typename
+    }
     ...AreaEditLinks
   }
 }

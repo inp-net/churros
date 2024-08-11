@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
+  // import AreaPaypalPayRegistration from '$lib/components/AreaPaypalPayRegistration.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
@@ -299,8 +299,8 @@
           </section>
         </form>
       {:else if chosenPaymentMethod === PaymentMethod.PayPal}
-        <AreaPaypalPayRegistration bind:paymentLoading {beneficiary} {registrationId}
-        ></AreaPaypalPayRegistration>
+        <!-- <AreaPaypalPayRegistration bind:paymentLoading {beneficiary} {registrationId}
+        ></AreaPaypalPayRegistration> -->
       {/if}
     {/if}
 

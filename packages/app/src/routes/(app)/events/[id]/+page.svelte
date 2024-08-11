@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { CardBooking, ModalOrDrawer } from '$lib/components';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
@@ -7,15 +8,14 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
-  import { CardBooking, ModalOrDrawer } from '$lib/components';
   import { sentenceJoin } from '$lib/i18n';
-  import { mapAllLoading, LoadingText, loading } from '$lib/loading';
+  import { LoadingText, loading, mapAllLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
   import IconDate from '~icons/msl/calendar-today-outline';
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
   import HTMLContent from './HTMLContent.svelte';
-  import { route } from '$lib/ROUTES';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
@@ -97,15 +97,18 @@
     </header>
     {#if event.links.length > 0}
       <ul class="links nobullet">
-        {#each event.links as link}
+        {#each event.links.filter((l) => loading(l.rawURL, null) !== event.externalTicketing?.toString()) as link}
           <PillLink social {link} />
         {/each}
       </ul>
     {/if}
     <HTMLContent tag="main" html={event.descriptionHtml}></HTMLContent>
     <section class="tickets">
+      {#if event.externalTicketing}
+        <CardTicket ticket={null} externalURL={event.externalTicketing} />
+      {/if}
       {#each event.tickets as ticket}
-        <CardTicket {ticket} places={ticket} />
+        <CardTicket {ticket} details={ticket} places={ticket} />
       {:else}
         {#if !$RootLayout.data?.loggedIn}
           <Alert theme="warning">

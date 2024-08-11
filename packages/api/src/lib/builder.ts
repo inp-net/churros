@@ -25,6 +25,7 @@ import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
 import { default as parseUserAgent } from 'ua-parser-js';
+import { ZodError } from 'zod';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
@@ -100,6 +101,10 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    Email: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;
@@ -126,17 +131,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
   defaultFieldNullability: false,
   withInput: {},
   errors: {
-    defaultTypes: [Error],
-    // Does not work
-    // defaultResultOptions: {
-    //   fields: (t) => ({
-    //     caveats: t.stringList({
-    //       description:
-    //         "Messages d'avertissements. L'opération a été effectuée mais pas avec l'effet attendu (par exemple, une mutation de suppression qui a finalement changé la visibilité à privé car la suppression est interdite)",
-    //       resolve: (_, __, { caveats }) => caveats,
-    //     }),
-    //   }),
-    // },
+    defaultTypes: [Error, ZodError],
   },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuth: {

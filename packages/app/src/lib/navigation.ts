@@ -61,20 +61,20 @@ export function addReferrer(
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
 export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING'}`;
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
 
-export type NotificationTopStateKeys =
+export type NavigationTopStateKeys =
   `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'POST' | 'GROUP'}`}`;
 
-export type NotificationTopState = Partial<Record<NotificationTopStateKeys, boolean>>;
+export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
-function navtopPushState(key: NotificationTopStateKeys) {
+function navtopPushState(key: NavigationTopStateKeys) {
   pushState('', {
     [key]: true,
-  } satisfies NotificationTopState);
+  } satisfies NavigationTopState);
 }
 
 async function navtopPermissions() {

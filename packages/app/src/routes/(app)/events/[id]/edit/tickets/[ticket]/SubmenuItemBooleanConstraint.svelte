@@ -28,6 +28,7 @@
     }[v];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any>;
   export let subtext: MaybeLoading<string>;
   export let ticketId: MaybeLoading<string>;
@@ -36,7 +37,9 @@
   export let errorMessage: string;
   export let mutation: MutationStore<
     {
-      updateTicketConstraints: { data?: any } | { ' $fragments': { MutationErrors: {} } };
+      updateTicketConstraints: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      | { data?: any; constraintsWereSimplified?: string | null }
+        | { ' $fragments': { MutationErrors: {} } };
     },
     {
       ticket: string;
@@ -52,7 +55,7 @@
     if (!ticketId) return;
     if (!loaded(value)) return;
     toasts.mutation(
-      // @ts-expect-error can't be bothered to type that right lmao
+      // @ts-expect-error TODO type mutation argument correctly
       await mutate(
         mutation,
         {
@@ -62,7 +65,7 @@
         {
           optimisticResponse: {
             updateTicketConstraints: {
-              __typename: "MutationUpdateTicketConstraintsSuccess",
+              __typename: 'MutationUpdateTicketConstraintsSuccess',
               data: {
                 id: ticketId,
                 [optimisticResponseField]: toTristate(nextValue(value)),
@@ -74,6 +77,9 @@
       'updateTicketConstraints',
       '',
       errorMessage,
+      {
+        constraintsWereSimplified: 'info',
+      },
     );
   }}
   {icon}
@@ -100,8 +106,8 @@
 <style>
   .icon {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     font-size: 1.5rem;
   }
 </style>

@@ -1,4 +1,4 @@
-type NavigationTopState = import('$lib/navigation').NotificationTopState;
+type NavigationTopState = import('$lib/navigation').NavigationTopState;
 
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports

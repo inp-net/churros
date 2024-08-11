@@ -1,6 +1,6 @@
 import { builder, prisma } from '#lib';
 
-import { fullName, UserType } from '#modules/users';
+import { UserType } from '#modules/users';
 import { GraphQLError } from 'graphql';
 import { RegistrationType } from '../index.js';
 
@@ -23,9 +23,11 @@ builder.prismaObjectField(UserType, 'bookings', (t) =>
         ...query,
         where: {
           OR: [
-            { author: { uid: userUid }, ...(forUserOnly ? { beneficiary: '' } : {}) },
-            { beneficiary: userUid },
-            { beneficiary: fullName(user) },
+            {
+              author: { uid: userUid },
+              ...(forUserOnly ? { internalBeneficiary: { uid: userUid } } : {}),
+            },
+            { internalBeneficiary: { uid: userUid } },
             { authorEmail: user.email },
           ],
         },

@@ -30,7 +30,6 @@ model User {
   // email of the user from the school's LDAP
   schoolEmail  String? @db.VarChar(255)
 
-  // Mandatory profile details
   email                        String                @unique @db.VarChar(255)
   otherEmails                  String[]              @db.VarChar(255)
   firstName                    String                @db.VarChar(255)
@@ -53,6 +52,8 @@ model User {
   enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
   latestVersionSeenInChangelog String                @default("0.0.0")
   bot                          Boolean               @default(false)
+  // Not shown on profile, used to autofill Lydia payment request forms
+  lydiaPhone                   String                @default("") @db.VarChar(255)
   // Prevent these themes from being auto-deployed to the user
   blockedThemes                Theme[]
 
@@ -82,6 +83,7 @@ model User {
   verifications              Registration[]             @relation("verifiedBy")
   oppositions                Registration[]             @relation("opposedBy")
   cancellations              Registration[]             @relation("cancelledBy")
+  receivedBookings           Registration[]             @relation("beneficiaryOf")
   documents                  Document[]
   comments                   Comment[]
   bannedFromEvents           Event[]                    @relation("bannedFromEvents")
@@ -266,6 +268,7 @@ model Major {
   pictureFile   String   @default("") @db.VarChar(255)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
+  discontinued  Boolean  @default(false)
 
   schools           School[]        @relation("MajorToSchool")
   ldapSchool        School?         @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)
@@ -369,18 +372,18 @@ model ThirdPartyApp {
 
 /// There is one student association per school
 model StudentAssociation {
-  id                  String  @id @default(dbgenerated("nanoid('ae:')"))
-  uid                 String  @unique @db.VarChar(255)
-  description         String  @default("") @db.Text
+  id                  String @id @default(dbgenerated("nanoid('ae:')"))
+  uid                 String @unique @db.VarChar(255)
+  description         String @default("") @db.Text
   schoolId            String
-  name                String  @unique @db.VarChar(255)
+  name                String @unique @db.VarChar(255)
   links               Link[]
-  pictureFile         String  @default("") @db.VarChar(255)
-  heroBackgroundFile  String  @default("") @db.VarChar(255) /// Used for the student association's homepage
-  allPrezMailingList  String  @default("") @db.VarChar(255)
-  allTrezMailingList  String  @default("") @db.VarChar(255)
-  allBoardMailingList String  @default("") @db.VarChar(255)
-  internalMailDomain  String  @default("") @db.VarChar(255)
+  pictureFile         String @default("") @db.VarChar(255)
+  heroBackgroundFile  String @default("") @db.VarChar(255) /// Used for the student association's homepage
+  allPrezMailingList  String @default("") @db.VarChar(255)
+  allTrezMailingList  String @default("") @db.VarChar(255)
+  allBoardMailingList String @default("") @db.VarChar(255)
+  internalMailDomain  String @default("") @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -675,18 +678,20 @@ model Ticket {
 
 /// A reservation is a user's registration for a ticket
 model Registration {
-  id            String         @id @default(dbgenerated("nanoid('r:')"))
-  ticketId      String
-  beneficiary   String
-  authorId      String?
-  authorEmail   String         @default("")
-  verifiedById  String?
-  opposedById   String?
-  cancelledById String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  paymentMethod PaymentMethod?
-  paid          Boolean        @default(false)
+  id                    String         @id @default(dbgenerated("nanoid('r:')"))
+  ticketId              String
+  externalBeneficiary   String?
+  internalBeneficiary   User?          @relation(fields: [internalBeneficiaryId], references: [id], onUpdate: Cascade, onDelete: SetNull, name: "beneficiaryOf")
+  internalBeneficiaryId String?
+  authorId              String?
+  authorEmail           String         @default("")
+  verifiedById          String?
+  opposedById           String?
+  cancelledById         String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  paymentMethod         PaymentMethod?
+  paid                  Boolean        @default(false)
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
@@ -840,6 +845,7 @@ enum NotificationChannel {
   GroupBoard
   GodparentRequests
   Comments
+  Mandatory
   Other // should't be used too much
 }
 

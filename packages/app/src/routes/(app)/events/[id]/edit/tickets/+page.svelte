@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import PickLydiaAccount from './PickBeneficiary.svelte';
   import { route } from '$lib/ROUTES';
+  import Alert from '$lib/components/Alert.svelte';
   import {
     ButtonSecondary,
     InputText,
@@ -36,6 +37,7 @@
     SetEventBeneficiary,
     UnsetEventBeneficiary,
   } from './mutations';
+  import CardTicket from '$lib/components/CardTicket.svelte';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
@@ -204,6 +206,24 @@
           </div>
         </SubmenuItem>
       </Submenu>
+
+      {#if event.tickets.length === 0}
+        <section class="external-suggestion">
+          <Alert theme="primary">
+            <h2>Billetterie externe à Churros?</h2>
+            <p>
+              Tu peux <a href={route('/events/[id]/edit/links', $page.params.id)}
+                >ajouter un lien à l'évènement</a
+              > nommé "Billetterie" pour que ça apparaisse sur la page de l'évènement comme une place:
+            </p>
+            <CardTicket
+              --background="transparent"
+              ticket={null}
+              externalURL={new URL('https://example.com')}
+            />
+          </Alert>
+        </section>
+      {/if}
     </section>
   </div>
 </MaybeError>
@@ -234,5 +254,13 @@
     align-items: center;
     justify-content: center;
     font-size: 1.2em;
+  }
+
+  .external-suggestion {
+    margin-top: 3rem;
+  }
+
+  .external-suggestion *:not(:last-child) {
+    margin-bottom: 1rem;
   }
 </style>

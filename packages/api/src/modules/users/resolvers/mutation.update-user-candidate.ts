@@ -1,5 +1,6 @@
-import { builder, freeUidValidator, prisma } from '#lib';
+import { builder, freeUidValidator, prisma, schoolYearStart } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
+import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 import { saveUser } from '../index.js';
 
@@ -40,6 +41,14 @@ builder.mutationField('updateUserCandidate', (t) =>
         cededImageRightsToTVn7,
       },
     ) {
+      const major = await prisma.major.findUnique({
+        where: { id: majorId },
+      });
+      if (graduationYear >= schoolYearStart().getFullYear() && major?.old) {
+        throw new GraphQLError(
+          "Cette filière n'existe plus, il n'est pas possible de s'y délarer comme étudiant·e (sauf avec une ancienne promo).",
+        );
+      }
       const candidate = await prisma.userCandidate.update({
         where: { email },
         data: {

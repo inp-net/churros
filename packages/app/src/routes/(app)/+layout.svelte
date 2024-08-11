@@ -4,25 +4,25 @@
 
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { route } from '$lib/ROUTES';
-  import { afterNavigate, onNavigate, goto } from '$app/navigation';
+  import { afterNavigate, goto, onNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { AppLayoutScanningEventStore, graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
-  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
-  import PickGroup from '$lib/components/PickGroup.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
+  import PickGroup from '$lib/components/PickGroup.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
-  import { allLoaded, loading, mapAllLoading } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
+  import { mutate } from '$lib/mutations';
   import { refroute, scanningEventsRouteID } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
   import { setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
@@ -31,8 +31,6 @@
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
   import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
-  import { mutate } from '$lib/mutations';
-  import { toasts } from '$lib/toasts';
 
   onNavigate(setupViewTransition);
 
@@ -81,21 +79,16 @@
   // Select which student association to create groups linked to.
   // We get all the student associations the logged-in user can create groups on,
   // and we get the one which has the most groups existing
-  $: creatingGroupLinkedTo =
-    $AppLayout.data?.me?.major?.schools
-      .filter((s) => allLoaded(s))
-      .flatMap((s) => s.studentAssociations)
-      .filter((ae) => ae.canCreateGroups)
-      .sort((a, b) => a.groupsCount - b.groupsCount)
-      .toReversed()
-      .at(0)?.uid ?? null;
+  // $: creatingGroupLinkedTo =
+  //   $AppLayout.data?.me?.major?.schools
+  //     .filter((s) => allLoaded(s))
+  //     .flatMap((s) => s.studentAssociations)
+  //     .filter((ae) => ae.canCreateGroups)
+  //     .sort((a, b) => a.groupsCount - b.groupsCount)
+  //     .toReversed()
+  //     .at(0)?.uid ?? null;
 
   let changelogAcknowledged = false;
-
-  let newGroupDialog: HTMLDialogElement;
-
-  let openNewEventGroupPicker: () => void;
-  $: if ($page.state.NAVTOP_CREATING_EVENT) openNewEventGroupPicker?.();
 
   const CreateEvent = graphql(`
     mutation CreateEvent($group: UID!) {
@@ -136,8 +129,8 @@
 
 {#if $AppLayout.data?.me}
   <PickGroup
-  notrigger
-    bind:open={openNewEventGroupPicker}
+    statebound="NAVTOP_CREATING_EVENT"
+    notrigger
     value={$AppLayout.data.me.canCreateEventsOn.at(0)?.uid}
     on:finish={async ({ detail }) => {
       const result = await mutate(CreateEvent, { group: detail });
@@ -148,9 +141,9 @@
           'Évènement créé',
           `Impossible de créer un évènement pour ${detail}`,
         )
-      ) {
+      ) 
         await goto(route('/events/[id]/edit', result.data.createEvent.data.localID));
-      }
+      
     }}
     options={$AppLayout.data.me.canCreateEventsOn}
   ></PickGroup>

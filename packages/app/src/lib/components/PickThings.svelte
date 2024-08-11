@@ -1,9 +1,13 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { ButtonPrimary, ButtonSecondary, ModalOrDrawer } from '$lib/components';
   import { loaded, loading, type MaybeLoading } from '$lib/loading';
+  import { type NavigationTopStateKeys } from '$lib/navigation';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher<{ pick: string; finish: Value }>();
+
+  export let statebound: NavigationTopStateKeys | undefined = undefined;
 
   export let multiple = false;
   // eslint-disable-next-line no-undef
@@ -29,6 +33,12 @@
   let close: () => void;
   // let q: string;
   export let options: Array<Option>;
+
+  $: if (statebound)
+    {page.subscribe(({ state }) => {
+      if (state[statebound]) open?.();
+      else close?.();
+    });}
 </script>
 
 <ModalOrDrawer {...$$restProps} removeBottomPadding tall bind:open bind:implicitClose={close}>
@@ -59,7 +69,9 @@
           : option.uid === _value}
         {#if isNewCategory && category}
           <li class="category typo-field-label">
-            {category(option).label}
+            <slot name="category" firstOption={option} category={category(option)}
+              >{category(option).label}</slot
+            >
           </li>
         {/if}
         <li>
@@ -121,6 +133,9 @@
   .category {
     --weight-field-label: 900;
 
+    display: flex;
+    gap: 1ch;
+    align-items: center;
     width: 100%;
   }
 

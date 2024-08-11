@@ -158,7 +158,7 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     uid: 'o',
     color: '#00ffff',
     description: 'École de l’Eau',
-    address: faker.location.streetAddress(), //generation par faker possible ???
+    address: faker.location.streetAddress(),
   },
   {
     name: 'FEU',
@@ -168,6 +168,12 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     address: faker.location.streetAddress(),
     studentMailDomain: 'etu.inp-n7.fr',
     aliasMailDomains: ['etu.toulouse-inp.fr'],
+    majors: {
+      create: {
+        name: 'Filière unique',
+        uid: 'filiere-feu',
+      },
+    },
   },
   {
     name: 'TERRE',
@@ -179,6 +185,12 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
       faker.internet.domainName,
     ),
+    majors: {
+      create: {
+        name: 'Filière unique TERRE',
+        uid: 'filiere-terre',
+      },
+    },
   },
   {
     name: 'AIR',
@@ -190,6 +202,12 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
       faker.internet.domainName,
     ),
+    majors: {
+      create: {
+        name: 'Filière unique AIR',
+        uid: 'filiere-air',
+      },
+    },
   },
 ];
 

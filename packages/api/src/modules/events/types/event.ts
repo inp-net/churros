@@ -1,5 +1,11 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
-import { DateTimeScalar, HTMLScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import {
+  DateTimeScalar,
+  HTMLScalar,
+  PicturedInterface,
+  URLScalar,
+  VisibilityEnum,
+} from '#modules/global';
 import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
@@ -12,7 +18,7 @@ import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.j
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true, group: true, tickets: true },
+  include: { managers: true, group: true, tickets: true, links: true },
   interfaces: [
     PicturedInterface,
     //@ts-expect-error dunno why it complainnns
@@ -71,6 +77,19 @@ export const EventType = builder.prismaNode('Event', {
     organizer: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
+    externalTicketing: t.field({
+      type: URLScalar,
+      nullable: true,
+      description:
+        'URL vers une billetterie externe. Null si l\'évènement possède un lien à URL valide, non dynamique, nommé "billetterie" et n\'a pas de billets',
+      resolve({ links, tickets }) {
+        if (tickets.length > 0) return null;
+        const rawURL = links.find((l) => l.name.toLowerCase() === 'billetterie')?.value;
+        if (!rawURL) return null;
+        if (URL.canParse(rawURL)) return new URL(rawURL);
+        return null;
+      },
+    }),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
     includeInKiosk: t.exposeBoolean('includeInKiosk', {

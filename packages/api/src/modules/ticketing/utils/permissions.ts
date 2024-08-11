@@ -2,7 +2,7 @@ import type { Context } from '#lib';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
-import type { Prisma, Registration } from '@churros/db/prisma';
+import type { Prisma, Registration, User } from '@churros/db/prisma';
 import { isFuture, isPast } from 'date-fns';
 
 export const canScanBookingsPrismaIncludes = {
@@ -156,7 +156,7 @@ canMarkBookingAsPaid.prismaIncludes = {
 canMarkBookingAsPaid.userPrismaIncludes = {} as const satisfies Prisma.UserInclude;
 
 export function userIsBookedToEvent(
-  user: Context['user'],
+  user: User | null,
   event: Prisma.EventGetPayload<{ include: typeof userIsBookedToEvent.prismaIncludes }>,
   bookings: Registration[],
 ) {
@@ -176,6 +176,7 @@ userIsBookedToEvent.prismaIncludes = {
 
 /**
  * @returns [canBook, why]
+ * @param beneficiary - can be a string if it's a beneficiary (free form) or a User if it's a churrosBeneficiary
  */
 export function canBookTicket(
   // user: null | NonNullable<
@@ -185,7 +186,7 @@ export function canBookTicket(
   userAdditionalData: null | Prisma.UserGetPayload<{
     include: typeof canBookTicket.userPrismaIncludes;
   }>,
-  beneficiary: string | null | undefined,
+  beneficiary: string | User | null,
   ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>,
 ): [boolean, string] {
   if (!canSeeTicket(ticket, userAdditionalData))
@@ -200,23 +201,28 @@ export function canBookTicket(
 
   if (!canSeeAllBookings(ticket.event, user) && user) {
     const bookingsByUser = ticket.registrations.filter((r) => r.authorId === user.id);
-    if (bookingsByUser.length >= ticket.godsonLimit) 
+    if (bookingsByUser.length >= ticket.godsonLimit)
       return [false, 'Vous avez atteint la limite de parrainages pour ce billet'];
-    
   }
 
   if (placesLeft(ticket) <= 0) return [false, 'Il n’y a plus de places disponibles'];
 
-  // TODO handle userIsBookedToEvent for beneficiaries
   if (
-    !beneficiary &&
+    // external beneficiaries can't be meaningfully checked for duplicate bookings
+    typeof beneficiary !== 'string' &&
     userIsBookedToEvent(
-      user,
+      beneficiary ?? user ?? null,
       ticket.event,
       ticket.event.tickets.flatMap((t) => t.registrations),
     )
-  )
-    return [false, 'Vous avez déjà réservé une place pour cet événement'];
+  ) {
+    return [
+      false,
+      beneficiary
+        ? "Cette personne est déjà inscrite à l'évènement"
+        : 'Vous avez déjà réservé une place pour cet événement',
+    ];
+  }
 
   return [true, ''];
 }

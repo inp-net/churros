@@ -16,7 +16,7 @@ builder.mutationField('deleteEvent', (t) =>
             nullable: true,
             description:
               "Indique que l'évènement n'a pas été supprimé mais plutôt passé en privé. La valeur est un message expliquant cela, et pourquoi c'est arrivé.",
-            resolve: (_, __, { caveats }) => caveats.at(0) ?? null,
+            resolve: (_, __, { caveats }) => caveats.at(0) || null,
           }),
         }),
       },

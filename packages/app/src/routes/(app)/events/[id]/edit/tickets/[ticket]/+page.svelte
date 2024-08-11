@@ -77,10 +77,11 @@
   let openGodsonHelp: () => void;
 
   $: ticketName = loading($PageEventEditTicket?.data?.event.ticket?.name, '');
-  $: if (ticketName && browser)
-    {window.dispatchEvent(
+  $: if (ticketName && browser) {
+    window.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
-    );}
+    );
+  }
 </script>
 
 <ModalDelete ticketId={$page.params.ticket} />
@@ -115,8 +116,9 @@
           on:update={async ({ detail }) => {
             if (!detail) return;
             if (!event.ticket) return;
+            if (!loaded(event.ticket.id)) return;
             toasts.mutation(
-              await mutate(UpdateShotgunDates, {
+              await UpdateShotgunDates.mutate({
                 ticket: event.ticket.id,
                 shotgun: detail,
               }),
@@ -170,9 +172,8 @@
               if (!(currentTarget instanceof HTMLInputElement)) return;
               if (!event.ticket) return;
               const coerced = currentTarget.value ? Number.parseFloat(currentTarget.value) : 0;
-              if (Number.isNaN(coerced)) 
-                toasts.error('Le prix doit être un nombre');
-              
+              if (Number.isNaN(coerced)) toasts.error('Le prix doit être un nombre');
+
               toasts.mutation(
                 await mutate(UpdatePrice, {
                   ticket: event.ticket.id,
@@ -445,6 +446,9 @@
                   'updateTicketConstraints',
                   '',
                   'Impossible de changer la contrainte sur les filières',
+                  {
+                    constraintsWereSimplified: 'info',
+                  },
                 );
               }}
             >

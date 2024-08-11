@@ -27,7 +27,7 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
 const logger: ClientPlugin = () => ({
   start(ctx, { next }) {
     // add the start time to the context's stuff
-    console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}`);
+    // console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}`);
     ctx.metadata = {
       ...ctx.metadata,
       queryTimestamps: {
@@ -41,9 +41,8 @@ const logger: ClientPlugin = () => ({
   },
   beforeNetwork(ctx, { next }) {
     console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}: Hitting network`);
-    if (ctx.metadata?.queryTimestamps) 
-      ctx.metadata.queryTimestamps.network = Date.now();
-    
+    if (ctx.metadata?.queryTimestamps) ctx.metadata.queryTimestamps.network = Date.now();
+
     next(ctx);
   },
   afterNetwork(ctx, { resolve }) {
@@ -58,9 +57,8 @@ const logger: ClientPlugin = () => ({
     // compute the difference in time between the
     // date we created on `start` and now
     if (ctx.metadata) {
-      const diff = Math.abs(Date.now() - ctx.metadata.queryTimestamps.global);
-      // print the result
-      console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}: took ${diff}ms`);
+      // const diff = Math.abs(Date.now() - ctx.metadata.queryTimestamps.global);
+      // console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}: took ${diff}ms`);
     }
 
     // we're done
