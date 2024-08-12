@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { pushState } from '$app/navigation';
+  import { page } from '$app/stores';
   import { CardBooking, ModalOrDrawer } from '$lib/components';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
-  import ModalBookTicket from './ModalBookTicket.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
@@ -17,6 +18,7 @@
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
   import HTMLContent from './HTMLContent.svelte';
+  import ModalBookTicket from './ModalBookTicket.svelte';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
@@ -29,6 +31,14 @@
   let bookingTicketId: string | undefined = undefined;
 
   let bookTicket: () => void;
+
+  $: if ($page.url.hash.startsWith('#book/')) 
+    bookingTicketId = $page.url.hash.replace('#book/', '');
+  
+
+  $: if (bookingTicketId) 
+    bookTicket?.();
+  
 </script>
 
 <MaybeError result={$PageEventDetail} let:data={{ event, me }}>
@@ -51,8 +61,11 @@
   {/if}
   <ModalBookTicket
     {me}
-    ticket={event.tickets.find((t) => t.localID === bookingTicketId)}
+    ticket={event.tickets.find((t) => t.localID === bookingTicketId) ?? null}
     bind:open={bookTicket}
+    on:close={() => {
+      pushState('#', { bookingTicketId: null });
+    }}
   />
   <div class="contents">
     {#if highlightedBooking}
@@ -243,5 +256,11 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+  }
+
+  .tickets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 </style>

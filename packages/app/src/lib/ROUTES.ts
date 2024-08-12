@@ -25,8 +25,8 @@ const PAGES = {
   '/bookings.old/[pseudoID]': (pseudoID: string | number, params?: {}) => {
     return `/bookings.old/${pseudoID}`;
   },
-  '/bookings/[code]': (code: string | number, params?: { step?: string | number }) => {
-    return `/bookings/${code}${params?.step ? `/${params?.step}` : ''}`;
+  '/bookings/[code]': (code: string | number, params?: {}) => {
+    return `/bookings/${code}`;
   },
   '/changelog': `/changelog`,
   '/claim-code': `/claim-code`,
@@ -516,7 +516,7 @@ export type KIT_ROUTES = {
     '/bookings': never;
     '/bookings.old': never;
     '/bookings.old/[pseudoID]': 'pseudoID';
-    '/bookings/[code]': 'code' | 'step';
+    '/bookings/[code]': 'code';
     '/changelog': never;
     '/claim-code': never;
     '/claim-code/[code]': 'code';
@@ -663,7 +663,6 @@ export type KIT_ROUTES = {
     id: never;
     pseudoID: never;
     code: never;
-    step: never;
     major: never;
     yearTier: never;
     subject: never;

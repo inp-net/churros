@@ -7,6 +7,9 @@ import { authorIsBeneficiary } from '../index.js';
 
 export const RegistrationType = builder.prismaNode('Registration', {
   id: { field: 'id' },
+  include: {
+    lydiaTransaction: true,
+  },
   fields: (t) => ({
     code: t.string({
       resolve({ id }) {
@@ -56,6 +59,23 @@ export const RegistrationType = builder.prismaNode('Registration', {
     cancelled: t.boolean({
       resolve({ cancelledAt, cancelledById }) {
         return Boolean(cancelledAt && cancelledById);
+      },
+    }),
+    pendingPayment: t.boolean({
+      description: "Une demande de paiement a été effectuée mais la place n'est pas encore payée",
+      resolve({ lydiaTransaction, paymentMethod, paid }) {
+        if (paid) return false;
+        if (paymentMethod === 'Lydia') return Boolean(lydiaTransaction);
+        return Boolean(paymentMethod);
+      },
+    }),
+    awaitingPayment: t.boolean({
+      description: "En attente du démarrage du paiement par l'utilisateur.ice",
+      resolve({ paid, cancelledAt, opposedAt, paymentMethod, lydiaTransaction }) {
+        if (paid || cancelledAt || opposedAt) return false;
+        // If we chose a payment method but no Lydia transaction was started yet we're still awaiting payment
+        if (paymentMethod === 'Lydia' && lydiaTransaction) return false;
+        return !paymentMethod;
       },
     }),
     ticket: t.relation('ticket'),

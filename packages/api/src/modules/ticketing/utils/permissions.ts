@@ -263,3 +263,27 @@ canBookTicket.prismaIncludes = {
 canBookTicket.userPrismaIncludes = {
   ...canSeeTicketPrismaIncludesForUser,
 } as const satisfies Prisma.UserInclude;
+
+export function canEditBooking(
+  user: Context['user'],
+  booking: Prisma.RegistrationGetPayload<{ include: typeof canEditBooking.prismaIncludes }>,
+) {
+  // Anyone can pay for a booking that's for an external user or made by someone with no account
+  if (booking.externalBeneficiary || !booking.authorId) return true;
+  if (!user) return false;
+  if (booking.ticket.event.managers.some((m) => m.userId === user.id && m.canVerifyRegistrations))
+    return true;
+  return [booking.authorId, booking.internalBeneficiaryId].includes(user.id);
+}
+
+canEditBooking.prismaIncludes = {
+  ticket: {
+    include: {
+      event: {
+        include: {
+          managers: true,
+        },
+      },
+    },
+  },
+} as const satisfies Prisma.RegistrationInclude;

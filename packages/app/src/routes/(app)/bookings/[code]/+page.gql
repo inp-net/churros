@@ -1,8 +1,10 @@
 query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
   me {
     phone
+    ...ModalCurrentBookingStepMe
   }
   booking(code: $code) {
+    ...ModalCurrentBookingStep
     code
     ...BookingBeneficiary
     ...BookingAuthor
@@ -11,6 +13,7 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
     paid
     cancelled
     opposed
+    awaitingPayment
     paymentMethod
     createdAt
     qrCode(url: $qrCodeURLTemplate) {

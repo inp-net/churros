@@ -73,6 +73,47 @@
 </div>
 
 <style>
+  .booking-with-has-more {
+    display: grid;
+    grid-template-columns: auto max-content;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .more-bookings {
+    --cutout-size: 1rem;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 1rem;
+    margin-left: var(--cutout-size);
+    background: var(--bg2);
+    border-top-right-radius: var(--cutout-size);
+    border-bottom-right-radius: var(--cutout-size);
+  }
+
+  .more-bookings::after,
+  .more-bookings::before {
+    position: absolute;
+    left: calc(-1 * var(--cutout-size));
+    width: var(--cutout-size);
+    height: var(--cutout-size);
+    content: '';
+    background: var(--bg2);
+  }
+
+  .more-bookings::after {
+    bottom: 0;
+    mask: radial-gradient(1rem at 0 0, transparent 98%, black);
+  }
+
+  .more-bookings::before {
+    top: 0;
+    mask: radial-gradient(1rem at 0 1rem, transparent 98%, black);
+  }
+
   article {
     position: relative;
     display: flex;

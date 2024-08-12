@@ -1,4 +1,4 @@
-import { localID, log, prisma } from '#lib';
+import { log, prisma } from '#lib';
 import { notify } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express, { type Request, type Response } from 'express';
@@ -151,7 +151,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             body: `Ta réservation pour ${txn.registration.ticket.event}`,
             data: {
               channel: 'Other',
-              goto: `/events/${localID(txn.registration.ticket.event.id)}/book/${localID(txn.registration.ticket.id)}/confirm`,
+              goto: txn.paidCallback,
               group: undefined,
             },
           });
@@ -161,7 +161,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
             data: {
               channel: 'Other',
-              goto: '/',
+              goto: txn.paidCallback,
               group: undefined,
             },
           });
@@ -171,7 +171,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             body: `Achat de ${txn.shopPayment.shopItem.name} confirmé`,
             data: {
               channel: 'Other',
-              goto: `/`, // TODO
+              goto: txn.paidCallback,
               group: undefined,
             },
           });

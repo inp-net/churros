@@ -1,3 +1,5 @@
+import { fragment, MutationErrorsStore, type MutationErrors } from '$houdini';
+import { get } from 'svelte/store';
 import type { ZodFormattedError } from 'zod';
 
 export const fieldErrorsToFormattedError = <T extends {}>(
@@ -111,14 +113,22 @@ export function operationErrorMessages<T, CaveatsKeys extends CaveatKey, Fragmen
   operationResult: undefined | OperationResult<T, CaveatsKeys, Fragments, Typename>,
 ): string[] {
   if (operationResult) {
-    return operationResult && 'fieldErrors' in operationResult
-      ? operationResult.fieldErrors.map(
-          ({ path, message }) =>
-            `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
-        )
-      : 'message' in operationResult
-        ? [operationResult.message]
-        : [];
+    // @ts-expect-error weird dark magic to get mutation error when it's behind a fragment -- flemme de foutre des @mask_disable partout
+    if ('MutationErrors' in (operationResult[' $fragments']?.values ?? {})) {
+      const operationResultData = get(
+        fragment(operationResult as MutationErrors, new MutationErrorsStore()),
+      );
+      return operationErrorMessages(result, operationResultData);
+    } else {
+      return operationResult && 'fieldErrors' in operationResult
+        ? operationResult.fieldErrors.map(
+            ({ path, message }) =>
+              `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
+          )
+        : 'message' in operationResult
+          ? [operationResult.message]
+          : [];
+    }
   }
   return result.errors ? result.errors.map(({ message }) => message) : ['Erreur inconnue'];
 }

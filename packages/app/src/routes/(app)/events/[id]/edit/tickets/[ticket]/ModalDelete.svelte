@@ -39,7 +39,7 @@
           type: 'success',
           messages: ['Billet supprimé'],
         };
-        await goto(route('/events'));
+        await goto(route('/events/[id]/edit/tickets', $page.params.id));
       }
     } else {
       deletionResult = {

@@ -15,6 +15,7 @@ const { PUBLIC_LYDIA_API_URL } = process.env;
 export async function payEventRegistrationViaLydia(
   phone: string,
   registrationId?: string,
+  paidCallback?: string,
 ): Promise<void> {
   // Get the lydia tokens from the registration
   const registration = await prisma.registration.findUnique({
@@ -65,6 +66,7 @@ export async function payEventRegistrationViaLydia(
       data: {
         registration: { connect: { id: registrationId } },
         phoneNumber: phone,
+        paidCallback,
       },
     });
   }

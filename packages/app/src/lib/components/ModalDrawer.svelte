@@ -1,12 +1,15 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import { Drawer } from 'vaul-svelte';
+  const dispatch = createEventDispatcher<{ close: undefined }>();
+
   /** Don't render a trigger area */
   export let notrigger = false;
   export let open = false;
   export let removeBottomPadding = false;
 </script>
 
-<Drawer.Root bind:open shouldScaleBackground>
+<Drawer.Root bind:open shouldScaleBackground onClose={() => dispatch('close')}>
   {#if !notrigger}
     <Drawer.Trigger>
       {#if open}

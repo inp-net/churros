@@ -14,27 +14,6 @@ export const CancelBooking = graphql(`
   }
 `);
 
-export const PayBooking = graphql(`
-  mutation PayBooking(
-    $code: String!
-    $paymentMethod: PaymentMethod!
-    $phone: String
-    $beneficiary: String
-  ) {
-    payBooking(
-      code: $code
-      paymentMethod: $paymentMethod
-      phone: $phone
-      beneficiary: $beneficiary
-    ) {
-      ... on MutationPayBookingSuccess {
-        data
-      }
-      ...MutationErrors
-    }
-  }
-`);
-
 export const CreateGoogleWalletPass = graphql(`
   mutation CreateGoogleWalletPass($code: String!) {
     createGoogleWalletPass(code: $code) {

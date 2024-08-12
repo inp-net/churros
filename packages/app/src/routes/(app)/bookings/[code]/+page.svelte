@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { type PaymentMethod$options } from '$houdini';
   import {
     BookingAuthor,
     BookingBeneficiary,
@@ -9,7 +8,6 @@
     ButtonPrimary,
     ButtonSecondary,
     CardEvent,
-    InputText,
     LoadingChurros,
     MaybeError,
     ModalOrDrawer,
@@ -25,17 +23,18 @@
   import IconCancel from '~icons/msl/block';
   import IconDownload from '~icons/msl/download';
   import type { PageData } from './$houdini';
-  import { CancelBooking, CreateGoogleWalletPass, PayBooking } from './mutations';
+  import ModalPay, { type Step } from './ModalPay.svelte';
+  import { CancelBooking, CreateGoogleWalletPass } from './mutations';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 
-  let phone = '';
-  let paymentMethod: PaymentMethod$options;
-  const beneficiary = '';
-  let paying = false;
   let openCancellationConfirmation: () => void;
+  let openPaymentModal: (step?: Step) => void;
+
+  $: if (loading($PageBooking.data?.booking.awaitingPayment, false)) 
+    openPaymentModal?.();
+  
 </script>
 
 <svelte:window
@@ -75,55 +74,8 @@
 </ModalOrDrawer>
 
 <MaybeError result={$PageBooking} let:data={{ booking, me }}>
+  <ModalPay {booking} {me} bind:open={openPaymentModal} />
   <div class="contents">
-    {#if !booking.paid && paymentMethod === 'Lydia'}
-      <form
-        class="pay"
-        on:submit|preventDefault={async () => {
-          paying = true;
-          toasts.mutation(
-            await PayBooking.mutate({
-              code: booking.code,
-              phone,
-              paymentMethod,
-              beneficiary,
-            }),
-            'payBooking',
-            'Demande de paiement envoyée',
-            'Impossible de payer',
-          );
-          paying = false;
-        }}
-      >
-        <InputText
-          initial={me?.phone}
-          type="tel"
-          label="Numéro de téléphone"
-          maxlength={255}
-          bind:value={phone}
-        />
-        <section class="submit">
-          <ButtonPrimary
-            track="booking-pay-from-qrcode"
-            trackData={{ by: 'lydia' }}
-            loading={paying}
-            submits
-          >
-            <LoadingText
-              value={mapLoading(
-                booking.ticket.price,
-                (price) =>
-                  `Payer ${Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR',
-                  }).format(price)}`,
-              )}
-            />
-          </ButtonPrimary>
-        </section>
-      </form>
-    {/if}
-
     {#if !onceAllLoaded([booking.cancelled, booking.opposed], (cancelled, opposed) => cancelled || opposed, false)}
       <section class="action-buttons">
         <ButtonSecondary
@@ -203,6 +155,9 @@
         <dt>Méthode de paiement</dt>
         <dd>
           <BookingPaymentMethod {booking} />
+          {#if !loading(booking.paid, false)}
+            <ButtonSecondary on:click={() => openPaymentModal('method')}>Changer</ButtonSecondary>
+          {/if}
         </dd>
         <dt>Évènement</dt>
         <dd>
@@ -234,6 +189,13 @@
 <style>
   dt {
     margin-top: 1rem;
+  }
+
+  dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
   }
 
   section.code {
@@ -322,14 +284,6 @@
     gap: 1rem;
     align-items: center;
     justify-content: center;
-  }
-
-  form.pay {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: end;
-    margin: 0 auto;
   }
 
   .explainer {

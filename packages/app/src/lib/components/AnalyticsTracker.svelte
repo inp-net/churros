@@ -20,11 +20,6 @@
 
 <svelte:head>
   <script
-    defer
-    src="https://stats.ewen.works/js/script.pageview-props.outbound-links.js"
-    data-domain="churros.inpt.fr"
-  ></script>
-  <script
     async
     src="https://stats.inpt.fr/script.js"
     data-website-id="e3bd5b08-b0a3-47ff-a274-1df9ba831c3e"

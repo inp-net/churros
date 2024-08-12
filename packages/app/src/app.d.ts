@@ -1,9 +1,9 @@
 type NavigationTopState = import('$lib/navigation').NavigationTopState;
+type NavigationTopEventsKey = import('$lib/navigation').NavigationTopActionEvent;
 
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type SessionUserType = import('$lib/session.js').SessionUser;
-
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type XSSSafeHTMLString = import('ts-opaque').Opaque<string, 'XSSSafeHTMLString'>;
 
@@ -32,6 +32,7 @@ declare namespace App {
 
   interface PageState extends NavigationTopState {
     currentTab?: string;
+    bookingTicketId?: string | null;
   }
 }
 
@@ -92,7 +93,7 @@ declare namespace svelteHTML {
     'on:pressup'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
-    [`on:NAVTOP_${STRING}`]?: (event: CustomEvent<{}>) => Promise<void>;
+    [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
   }
 }
 

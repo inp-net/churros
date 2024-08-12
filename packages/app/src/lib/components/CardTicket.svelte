@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import {
     fragment,
     graphql,
@@ -15,15 +16,23 @@
     loading,
     mapAllLoading,
     mapLoading,
+    onceAllLoaded,
     onceLoaded,
     type MaybeLoading,
   } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
   import { formatDistance, isWithinInterval } from 'date-fns';
   import { createEventDispatcher, onMount } from 'svelte';
   import IconOpenExternal from '~icons/msl/open-in-new';
   import ButtonSecondary from './ButtonSecondary.svelte';
 
   const dispatch = createEventDispatcher<{ book: string }>();
+
+  /** Returns the unicode infinity symbol if the amount is -1 or Infinity, and the stringified value otherwise */
+  function displayInfinity(amount: number | null): string {
+    if ([Number.POSITIVE_INFINITY, -1, null].includes(amount)) return '∞';
+    return amount!.toString();
+  }
 
   export let externalURL: MaybeLoading<URL | null> | null = null;
 
@@ -135,13 +144,21 @@
   <div class="actions">
     <ButtonSecondary
       newTab={Boolean(loading(externalURL, null))}
-      href={onceLoaded(externalURL, (u) => u?.toString() ?? '', '') || undefined}
-      on:click={loading(externalURL, null)
-        ? undefined
-        : () => {
+      href={onceLoaded(externalURL, (u) => u?.toString() ?? '', '') ||
+      ($data && $page.route.id !== '/(app)/events/[id]')
+        ? onceAllLoaded(
+            [$data?.event.localID, $data?.localID],
+            (event, ticket) => `${refroute('/events/[id]', event)}#book/${ticket}`,
+            '',
+          )
+        : undefined}
+      on:click={!onceLoaded(externalURL, Boolean, null) &&
+      $page.route.id === '/(app)/events/[id]'
+        ? () => {
             if (!$data || !loaded($data.localID)) return;
             dispatch('book', $data.localID);
-          }}
+          }
+        : undefined}
       >Obtenir {#if externalURL}<IconOpenExternal />{/if}{#if $data}<span class="price"
           ><LoadingText value={mapLoading($data?.price, (p) => `${p}€`)}>...</LoadingText></span
         >{/if}
@@ -151,9 +168,11 @@
         {#if !allLoaded($dataPlaces)}
           <LoadingText>... places / ...</LoadingText>
         {:else if $dataPlaces.placesLeft}
-          {$dataPlaces.placesLeft} places / {$dataPlaces.capacity}
+          {displayInfinity($dataPlaces.placesLeft)} places {#if $dataPlaces.capacity}
+            / {$dataPlaces.capacity}{:else}
+            restantes{/if}
         {:else}
-          {$dataPlaces.capacity} places au total
+          {$dataPlaces.capacity === null ? '∞' : $dataPlaces.capacity} places au total
         {/if}
       </div>
     {/if}

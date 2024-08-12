@@ -1,7 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { fragment, graphql, type ModalBookTicket, type ModalBookTicketMe } from '$houdini';
+  import { MaybeError } from '$lib/components';
   import Alert from '$lib/components/Alert.svelte';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
@@ -11,6 +13,9 @@
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ close: undefined }>();
 
   export let me: ModalBookTicketMe | null;
   $: dataMe = fragment(
@@ -38,6 +43,15 @@
     `),
   );
 
+  const BeneficiaryUser = graphql(`
+    query BookTicketBeneficiaryUser($uid: String!) @blocking {
+      user(uid: $uid) {
+        fullName
+        ...AvatarUser
+      }
+    }
+  `);
+
   const CreateBooking = graphql(`
     mutation CreateBooking(
       $ticket: LocalID!
@@ -64,14 +78,26 @@
   async function createBooking(close: () => void) {
     const result = await mutate(CreateBooking, {
       ticket: $data?.localID,
-      churrosBeneficiary: mapLoading(beneficiary, (v) => v || null),
-      beneficiary: mapLoading(authorEmail, (v) => v || null),
-      authorEmail: mapLoading(churrosBeneficiary, (v) => v || null),
+      churrosBeneficiary: mapLoading(churrosBeneficiary, (v) => v || null),
+      beneficiary: mapLoading(beneficiary, (v) => v || null),
+      authorEmail: mapLoading(authorEmail, (v) => v || null),
     });
     if (toasts.mutation(result, 'bookEvent', 'Place réservée', 'Impossible de réserver la place')) {
       close?.();
-      await goto(refroute('/bookings/[code]', result.data.bookEvent.data.localID));
+      await goto(`${refroute('/bookings/[code]', result.data.bookEvent.data.localID)}#finish`);
     }
+  }
+
+  function back() {
+    if (historyStack.length > 1) {
+      historyStack.pop();
+      historyStack = historyStack;
+    }
+  }
+
+  function advance(step: (typeof historyStack)[number]) {
+    historyStack = [...historyStack, step];
+    return step;
   }
 
   export let open: () => void;
@@ -80,12 +106,14 @@
   let beneficiary = '';
   let authorEmail = '';
 
-  let step: 'start' | 'beneficiary-external' | 'beneficiary-internal' | 'confirm' = 'start';
+  $: step = historyStack.at(-1)!;
 
-  // let historyStack: Array<typeof step> = []
+  let historyStack: Array<'start' | 'beneficiary-external' | 'beneficiary-internal' | 'confirm'> = [
+    'start',
+  ];
 </script>
 
-<ModalOrDrawer bind:open let:close>
+<ModalOrDrawer bind:open let:close on:close={() => dispatch('close')}>
   <header slot="header">
     <h2>
       {#if step.startsWith('beneficiary')}
@@ -125,40 +153,119 @@
           disabled={Boolean($data.cannotBookForMe)}
           on:click={async () => {
             if ($dataMe) await createBooking(close);
-            else step = 'confirm';
+            else advance('confirm');
           }}
           >{#if $data.cannotBookForMe}<LoadingText value={$data.cannotBookForMe} />{:else}
-            Réserver pour moi{/if}</ButtonSecondary
+            Pour moi{/if}</ButtonSecondary
         >
         {#if !$data.cannotBookForSomeoneElse}
           <ButtonSecondary
             on:click={() => {
-              step = 'beneficiary-internal';
+              advance('beneficiary-internal');
             }}
           >
-            Réserver pour quelqu'un qui a un compte Churros
+            Pour quelqu'un qui a un compte Churros
           </ButtonSecondary>
           <ButtonSecondary
             on:click={() => {
-              step = 'beneficiary-external';
+              advance('beneficiary-external');
             }}
           >
-            Réserver pour quelqu'un d'autre
+            Pour quelqu'un d'autre
           </ButtonSecondary>
         {/if}
       </div>
     {:else if step === 'beneficiary-external'}
-      <InputText label="Nom de la personne" bind:value={beneficiary} />
+      <form
+        on:submit|preventDefault={() => {
+          churrosBeneficiary = '';
+          advance('confirm');
+        }}
+      >
+        <InputText label="Nom de la personne" bind:value={beneficiary} />
+        <nav>
+          <ButtonSecondary on:click={back}>Retour</ButtonSecondary>
+          <ButtonSecondary submits>Réserver</ButtonSecondary>
+        </nav>
+      </form>
     {:else if step === 'beneficiary-internal'}
-      <InputText label="@ de la personne" bind:value={churrosBeneficiary} />
+      <form
+        on:submit|preventDefault={() => {
+          beneficiary = '';
+          advance('confirm');
+        }}
+      >
+        <InputText label="@ de la personne" bind:value={churrosBeneficiary} />
+        <nav>
+          <ButtonSecondary on:click={back}>Retour</ButtonSecondary>
+          <ButtonSecondary submits>Réserver</ButtonSecondary>
+        </nav>
+      </form>
     {:else if step === 'confirm'}
-      {#if !$dataMe}
-        <InputText required label="Votre adresse e-mail" type="email" bind:value={authorEmail}
-        ></InputText>
-      {/if}
-      <nav>
-        <ButtonSecondary on:click={() => createBooking(close)}>Réserver</ButtonSecondary>
-      </nav>
+      <form on:submit|preventDefault={() => createBooking(close)}>
+        {#if churrosBeneficiary}
+          {#await BeneficiaryUser.fetch({ variables: { uid: churrosBeneficiary } })}
+            <p>
+              Réservation d'une place pour
+              <LoadingChurros />
+            </p>
+          {:then}
+            <MaybeError result={$BeneficiaryUser} let:data={{ user }}>
+              <p>
+                Réservation d'une place pour
+                <span class="user">
+                  <AvatarUser {user} />
+                  <LoadingText value={user.fullName} />
+                </span>
+              </p>
+            </MaybeError>
+          {:catch error}
+            <Alert theme="danger">
+              <p>{error}</p>
+            </Alert>
+          {/await}
+        {:else if beneficiary}
+          <p>Réservation d'une place pour {beneficiary}</p>
+        {/if}
+        {#if !$dataMe}
+          <InputText required label="Votre adresse e-mail" type="email" bind:value={authorEmail}
+          ></InputText>
+        {/if}
+        <nav>
+          <ButtonSecondary on:click={back}>Retour</ButtonSecondary>
+          <ButtonSecondary submits>Confirmer</ButtonSecondary>
+        </nav>
+      </form>
     {/if}
   </div>
 </ModalOrDrawer>
+
+<style>
+  .contents {
+    padding: 2rem 1rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+</style>

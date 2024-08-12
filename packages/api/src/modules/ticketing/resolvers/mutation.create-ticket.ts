@@ -2,6 +2,7 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { DateRangeInput, LocalID } from '#modules/global';
 import { TicketType } from '#modules/ticketing/types';
+import { isWithinInterval } from 'date-fns';
 import { ZodError } from 'zod';
 
 builder.mutationField('createTicket', (t) =>
@@ -42,6 +43,8 @@ builder.mutationField('createTicket', (t) =>
           group: args.group
             ? { connect: { id: ensureGlobalId(args.group, 'TicketGroup') } }
             : undefined,
+          // Prevent creating new tickets that become immediately available to anyone with no limits
+          onlyManagersCanProvide: isWithinInterval(new Date(), args.shotgun),
         },
       });
     },

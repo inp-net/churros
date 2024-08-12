@@ -39,12 +39,22 @@
 </script>
 
 {#if mobile}
-  <ModalDrawer {notrigger} {removeBottomPadding} bind:open={drawerOpen}>
+  <ModalDrawer
+    on:close={() => dispatch('close')}
+    {notrigger}
+    {removeBottomPadding}
+    bind:open={drawerOpen}
+  >
     <slot {close}></slot>
     <slot name="header" slot="header" {close}></slot>
   </ModalDrawer>
 {:else}
-  <ModalDialog  {tall} bind:element={dialogElement} bind:open={openDialog}>
+  <ModalDialog
+    on:close-by-outside-click={() => dispatch('close')}
+    {tall}
+    bind:element={dialogElement}
+    bind:open={openDialog}
+  >
     {#if $$slots.header}
       <header>
         <slot {close} name="header"></slot>

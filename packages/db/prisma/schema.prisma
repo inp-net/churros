@@ -767,6 +767,7 @@ model LydiaTransaction {
   updatedAt                        DateTime      @updatedAt
   contribution                     Contribution? @relation(fields: [studentAssociationContributionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   studentAssociationContributionId String?       @unique
+  paidCallback                     String?
 }
 
 enum PayPalTransactionStatus {

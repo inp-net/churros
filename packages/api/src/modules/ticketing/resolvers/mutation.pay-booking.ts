@@ -1,87 +1,45 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 
 import {
-  PaymentMethodEnum,
   priceWithPromotionsApplied as actualPrice,
   payEventRegistrationViaLydia,
   payEventRegistrationViaPaypal,
+  PaymentMethodEnum,
 } from '#modules/payments';
-import { userCanAccessEvent, userCanManageEvent } from '#permissions';
 import { PaymentMethod as PaymentMethodPrisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
-import { placesLeft } from '../index.js';
+import { canEditBooking, RegistrationType } from '../index.js';
 
 builder.mutationField('payBooking', (t) =>
-  t.field({
-    description:
-      'When paying with Paypal, returns the order id for a capture to finish the payment',
-    type: 'String',
+  t.prismaField({
+    type: RegistrationType,
     errors: {},
     args: {
       code: t.arg.string({ description: 'Code de réservation' }),
-      beneficiary: t.arg.string({ required: false }),
       paymentMethod: t.arg({ type: PaymentMethodEnum, required: false }),
       phone: t.arg.string({ required: false }),
+      paidCallback: t.arg.string({
+        required: false,
+        description:
+          "URL ou chemin où renvoyer l'utilisateur.ice après confirmation du paiement. Sert par exemple pour l'URL de la notification de confirmation de paiement de la part de Lydia.",
+      }),
     },
     async authScopes(_, { code }, { user }) {
-      const bookingId = ensureGlobalId(code.toLowerCase(), 'Registration');
-      const creating = !bookingId;
-      const registration = await prisma.registration.findUnique({
-        where: { id: bookingId },
-        include: {
-          ticket: {
-            include: {
-              event: {
-                include: {
-                  coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
-                  group: { include: { studentAssociation: { include: { school: true } } } },
-                  managers: { include: { user: true } },
-                  tickets: true,
-                },
-              },
-            },
-          },
-        },
+      const booking = await prisma.registration.findUniqueOrThrow({
+        where: { id: ensureGlobalId(code.toLowerCase(), 'Registration') },
+        include: canEditBooking.prismaIncludes,
       });
-      if (!registration) throw new GraphQLError("La réservation associée n'existe pas");
-
-      if (creating) {
-        // Check that the user can access the event
-        if (!(await userCanAccessEvent(registration.ticket.event, user)))
-          throw new GraphQLError("Vous n'avez pas accès à cet événement");
-
-        // Check for tickets that only managers can provide
-        if (
-          registration.ticket.onlyManagersCanProvide &&
-          !userCanManageEvent(registration.ticket.event, user, { canVerifyRegistrations: true })
-        )
-          throw new GraphQLError('Seul un·e manager peut donner cette place');
-
-        // Check that the ticket is still open
-        if (registration.ticket.closesAt && registration.ticket.closesAt.valueOf() < Date.now())
-          throw new GraphQLError("Le shotgun n'est plus ouvert");
-
-        // Check that the ticket is not full
-        const ticketAndRegistrations = await prisma.ticket.findUnique({
-          where: { id: registration.ticket.id },
-          include: {
-            registrations: true,
-            group: { include: { tickets: { include: { registrations: true } } } },
-          },
-        });
-        if (placesLeft(ticketAndRegistrations!) <= 0)
-          throw new GraphQLError("Il n'y a plus de places disponibles");
-      }
-
-      return true;
+      return canEditBooking(user, booking);
     },
-    async resolve(_, { code, beneficiary, paymentMethod, phone }, { user }) {
+    async resolve(query, _, { code, paymentMethod, phone, paidCallback }, { user }) {
       const bookingId = ensureGlobalId(code.toLowerCase(), 'Registration');
       const registration = await prisma.registration.findUnique({
         where: { id: bookingId },
         include: { ticket: { include: { event: true } } },
       });
       if (!registration) throw new GraphQLError('Registration not found');
+
+      if (registration.paid) throw new GraphQLError('Tu as déjà payé cette réservation');
 
       const ticket = await prisma.ticket.findUnique({
         where: { id: registration.ticket.id },
@@ -95,39 +53,36 @@ builder.mutationField('payBooking', (t) =>
       const price = await actualPrice(ticket, user);
 
       // Process payment
-      const paypalOrderId = await pay({
-        from: user?.uid ?? '(unregistered)',
-        to: ticket.event.beneficiary?.id ?? '(unregistered)',
-        amount: price,
-        by: paymentMethod,
-        phone: phone ?? '',
-        emailAddress: user?.email ?? '',
-        registrationId: registration.id,
-      });
+      try {
+        await pay({
+          from: user?.uid ?? '(unregistered)',
+          to: ticket.event.beneficiary?.id ?? '(unregistered)',
+          amount: price,
+          by: paymentMethod,
+          phone: phone ?? '',
+          emailAddress: user?.email ?? '',
+          registrationId: registration.id,
+          paidCallback: paidCallback ?? undefined,
+        });
 
-      await log(
-        'registration',
-        'update',
-        { registration, paymentMethod, beneficiary },
-        bookingId,
-        user,
-      );
-      await prisma.registration.update({
+        await log('registration', 'pay', { registration, paymentMethod }, bookingId, user);
+      } catch (error) {
+        if (error instanceof UnimplementedPaymentMethod) {
+          // pass
+        } else {
+          throw error;
+        }
+      }
+
+      const result = prisma.registration.update({
+        ...query,
         where: { id: bookingId },
-        data: {
-          paymentMethod,
-          beneficiary: beneficiary ?? '',
-        },
+        data: { paymentMethod },
       });
 
       publish(registration.id, 'updated', registration);
 
-      if (paymentMethod === PaymentMethodPrisma.PayPal) {
-        if (!paypalOrderId)
-          throw new GraphQLError("PayPal n'a pas donné d'identifiant de commande");
-        return paypalOrderId!;
-      }
-      return '';
+      return result;
     },
   }),
 );
@@ -140,6 +95,7 @@ async function pay({
   phone,
   emailAddress,
   registrationId,
+  paidCallback,
 }: {
   from: string;
   to: string;
@@ -148,11 +104,12 @@ async function pay({
   phone?: string;
   emailAddress?: string;
   registrationId?: string;
+  paidCallback?: string;
 }): Promise<string | undefined> {
   switch (by) {
     case 'Lydia': {
       if (!phone) throw new GraphQLError('Missing phone number');
-      await payEventRegistrationViaLydia(phone, registrationId);
+      await payEventRegistrationViaLydia(phone, registrationId, paidCallback);
       return;
     }
 
@@ -164,9 +121,13 @@ async function pay({
     default: {
       return new Promise((_resolve, reject) => {
         reject(
-          new GraphQLError(`Attempt to pay ${to} ${amount} from ${from} by ${by}: not implemented`),
+          new UnimplementedPaymentMethod(
+            `Attempt to pay ${to} ${amount} from ${from} by ${by}: not implemented`,
+          ),
         );
       });
     }
   }
 }
+
+class UnimplementedPaymentMethod extends Error {}

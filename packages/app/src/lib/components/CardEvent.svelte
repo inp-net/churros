@@ -18,13 +18,11 @@
   import { format, isWithinInterval } from 'date-fns';
   import { onMount } from 'svelte';
   import IconDates from '~icons/msl/calendar-today-outline';
-  import IconAdvance from '~icons/msl/chevron-right';
   import IconLocation from '~icons/msl/location-on-outline';
   import IconLockOpen from '~icons/msl/lock-open-outline';
   import IconLock from '~icons/msl/lock-outline';
   import IconTime from '~icons/msl/schedule-outline';
   import AvatarGroup from './AvatarGroup.houdini.svelte';
-  import ButtonGhost from './ButtonGhost.svelte';
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import CardTicket from './CardTicket.svelte';
@@ -187,8 +185,12 @@
       {#if $data && $data?.tickets.length > 1}
         {@const plural = $data.tickets.length - 1 > 1 ? 's' : ''}
         <div class="other-tickets">
-          <p>+ {$data.tickets.length - 1} autre{plural} ticket{plural}</p>
-          <ButtonGhost><IconAdvance></IconAdvance></ButtonGhost>
+          <ButtonInk
+            neutral
+            href={onceLoaded($data?.localID, (id) => (id ? route('/events/[id]', id) : ''), '')}
+          >
+            + {$data.tickets.length - 1} autre{plural} ticket{plural}
+          </ButtonInk>
         </div>
       {/if}
     </section>
@@ -374,5 +376,9 @@
 
   .ticket .subtitle {
     font-size: 0.8em;
+  }
+
+  .other-tickets {
+    margin-left: auto;
   }
 </style>
