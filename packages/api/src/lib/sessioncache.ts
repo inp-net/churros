@@ -64,7 +64,12 @@ export async function getCachedSession(token: string): Promise<CachedSession | n
 }
 
 export async function purgeUserSessions(uid: User['uid']) {
-  const keysToDelete = await redisClient().smembers(userSessionsKey(uid));
+  const keysToDelete = await redisClient()
+    .smembers(userSessionsKey(uid))
+    .then((keys) => keys.map(sessionCacheKey));
+
+  console.info(`Purging sessions ${JSON.stringify(keysToDelete)} for user ${uid}`);
+
   return redisClient()
     .multi(keysToDelete.map((key) => ['del', key]))
     .del(userSessionsKey(uid))
