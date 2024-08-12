@@ -3,7 +3,7 @@ import { MajorType } from '#modules/curriculum';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
-import { shotgunIsOpen } from '#modules/ticketing/utils';
+import { canBookTicket, shotgunIsOpen } from '#modules/ticketing/utils';
 import type { Prisma } from '@churros/db/prisma';
 
 export const TicketTypePrismaIncludes = {
@@ -85,6 +85,33 @@ export const TicketType = builder.prismaNode('Ticket', {
         });
       },
     }),
+    cannotBookReason: t.string({
+      nullable: true,
+      description:
+        "Un message d'explication sur pourquoi la personne connectée peut réserver ce billet pour quelqu'un d'autre. Null si la personne peut.",
+      args: {
+        themself: t.arg.boolean({
+          description: 'On souhaite réserver pour soi-même',
+        }),
+      },
+      async resolve({ id }, { themself }, { user }) {
+        const [can, whynot] = canBookTicket(
+          user,
+          user
+            ? await prisma.user.findUniqueOrThrow({
+                where: { id: user.id },
+                include: canBookTicket.userPrismaIncludes,
+              })
+            : null,
+          themself ? null : 'someone else',
+          await prisma.ticket.findUniqueOrThrow({
+            where: { id },
+            include: canBookTicket.prismaIncludes,
+          }),
+        );
+        return can ? null : whynot;
+      },
+    }),
     openToGroups: t.relation('openToGroups'),
     openToMajors: t.prismaField({
       type: [MajorType],
@@ -135,6 +162,8 @@ export const TicketType = builder.prismaNode('Ticket', {
     event: t.relation('event'),
     group: t.relation('group', { nullable: true }),
     remainingGodsons: t.int({
+      nullable: true,
+      description: 'Nombre de parrainages restants. Null pour illimité',
       async resolve({ godsonLimit, eventId }, _, { user }) {
         // No godsons for external users, since godson limits can't be reasonably enforced
         if (!user?.major) return 0;
@@ -144,15 +173,33 @@ export const TicketType = builder.prismaNode('Ticket', {
             managers: true,
           },
         });
-        if (managers.some(({ userId }) => user?.id === userId)) return -1;
-        const registrationsOfUser = await prisma.registration.findMany({
+        if (
+          managers.some(
+            ({ userId, canVerifyRegistrations }) => canVerifyRegistrations && user.id === userId,
+          )
+        )
+          return null;
+        const bookingsForOthers = await prisma.registration.findMany({
           where: {
             ticket: { event: { id: eventId } },
-            author: { uid: user?.uid },
-            beneficiary: { not: '' },
+            author: { uid: user.uid },
+            // for someone else: either...
+            OR: [
+              {
+                // a churros beneficiary: not themself, not null
+                AND: [
+                  { internalBeneficiaryId: { not: user.id } },
+                  { internalBeneficiaryId: { not: null } },
+                ],
+              },
+              {
+                // an external beneficiary. (not null, not empty)
+                AND: [{ externalBeneficiary: { not: null } }, { externalBeneficiary: { not: '' } }],
+              },
+            ],
           },
         });
-        return godsonLimit - registrationsOfUser.length;
+        return godsonLimit - bookingsForOthers.length;
       },
     }),
   }),

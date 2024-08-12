@@ -10,9 +10,16 @@ builder.queryField('booking', (t) =>
     },
     authScopes: () => true,
     async resolve(query, _, { code }, { user }) {
-      const booking = await prisma.registration.findUniqueOrThrow({
+      const booking = await prisma.registration.update({
         ...query,
         where: { id: ensureGlobalId(code.toLowerCase(), 'Registration') },
+        data: user
+          ? {
+              seenBy: {
+                connect: { id: user.id },
+              },
+            }
+          : {},
       });
       await log('bookings', 'access', { code }, booking.id, user);
       return booking;

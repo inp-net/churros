@@ -206,7 +206,7 @@
         </dd>
         <dt>Évènement</dt>
         <dd>
-          <CardEvent event={booking.ticket.event} />
+          <CardEvent showTickets={false} event={booking.ticket.event} />
         </dd>
         <dt>Date de réservation</dt>
         <dd>

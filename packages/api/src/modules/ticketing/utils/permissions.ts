@@ -165,7 +165,10 @@ export function userIsBookedToEvent(
   return event.tickets.some((ticket) => {
     // TODO check beneficiaries
     return bookings.some(
-      (booking) => booking.ticketId === ticket.id && booking.authorId === user.id,
+      (booking) =>
+        !(booking.cancelledAt || booking.cancelledById) &&
+        booking.ticketId === ticket.id &&
+        booking.authorId === user.id,
     );
   });
 }
@@ -186,7 +189,7 @@ export function canBookTicket(
   userAdditionalData: null | Prisma.UserGetPayload<{
     include: typeof canBookTicket.userPrismaIncludes;
   }>,
-  beneficiary: string | User | null,
+  beneficiary: string | User | null | undefined,
   ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>,
 ): [boolean, string] {
   if (!canSeeTicket(ticket, userAdditionalData))

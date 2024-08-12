@@ -22,6 +22,7 @@ export * from './mutation.register-google-credential.js';
 export * from './mutation.rename-session.js';
 export * from './mutation.request-email-change.js';
 export * from './mutation.reset-password.js';
+export * from './mutation.save-lydia-phone-number.js';
 export * from './mutation.start-registration.js';
 export * from './mutation.sync-user-ldap.js';
 export * from './mutation.unbookmark.js';

@@ -423,7 +423,7 @@ export const topnavConfigs: Partial<{
       commonActions.pin,
     ],
   }),
-  '/(app)/bookings/[code]': ({ params: { code } }) => ({
+  '/(app)/bookings/[code]/[[step]]': ({ params: { code } }) => ({
     title: 'Billet',
     back: route('/bookings'),
     actions: [

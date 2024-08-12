@@ -168,6 +168,10 @@ export const UserType = builder.prismaNode('User', {
       authScopes: { $granted: 'me' },
       query: { orderBy: { createdAt: 'desc' } },
     }),
+    lydiaPhone: t.exposeString('lydiaPhone', {
+      nullable: true,
+      authScopes: { $granted: 'me' },
+    }),
     major: t.relation('major', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
     minor: t.relation('minor', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
     managedEvents: t.relation('managedEvents'),

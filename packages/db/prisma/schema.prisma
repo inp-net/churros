@@ -98,6 +98,7 @@ model User {
   bookmarks                  Bookmark[]
   sharedPosts                Article[]                  @relation("shares")
   sharedEvents               Event[]                    @relation("shares")
+  seenBookings               Registration[]             @relation("seenBy")
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -703,6 +704,7 @@ model Registration {
   opposedAt         DateTime?
   cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   cancelledAt       DateTime?
+  seenBy            User[]             @relation(name: "seenBy")
   formAnswer        Answer?
 
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))

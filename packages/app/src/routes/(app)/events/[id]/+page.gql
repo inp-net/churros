@@ -1,5 +1,8 @@
-query PageEventDetail($id: LocalID!) {
-  event(id: $id) @loading {
+query PageEventDetail($id: LocalID!) @loading {
+  me {
+    ...ModalBookTicketMe
+  }
+  event(id: $id) {
     canScanBookings
     canEdit
     externalTicketing
@@ -24,9 +27,11 @@ query PageEventDetail($id: LocalID!) {
     location
     descriptionHtml
     tickets {
+      localID
       ...CardTicket
       ...CardTicketDetails
       ...CardTicketPlaces
+      ...ModalBookTicket
     }
     ...ButtonLike
     ...ButtonShare

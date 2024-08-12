@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -181,14 +176,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -2199,28 +2187,7 @@ type Mutation {
     section: ID!
   ): MutationAnswerFormSectionResult!
 
-  """
-  Authorize a third-party client to access the user's data.
-  Returns an access code.
-
-  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
-
-  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
-
-  - `<clientId>`: The client ID of the app. See registerApp to get this.
-  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
-  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
-
-  Use that code to get an access token with /token:
-
-  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
-
-  - `grant_type`: `authorization_code`
-  - `code`: The code returned by this endpoint
-  - `client_id`: The client ID of the app
-  - `client_secret`: The client secret of the app
-  - `redirect_uri`: The redirect URI used in this request
-  """
+  "\nAuthorize a third-party client to access the user's data. \nReturns an access code. \n\nUse the frontend's /authorize endpoint instead of this, as it requires already being logged-in.\n\nDo a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:\n\n- `<clientId>`: The client ID of the app. See registerApp to get this.\n- `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`\n- `<state>`: A random string generated from personal information used to prevent CSRF attacks.\n\nUse that code to get an access token with /token:\n\nDo a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:\n\n- `grant_type`: `authorization_code`\n- `code`: The code returned by this endpoint\n- `client_id`: The client ID of the app\n- `client_secret`: The client secret of the app\n- `redirect_uri`: The redirect URI used in this request\n      "
   authorize(
     """
     The client ID of the app. See registerApp to get this.
@@ -2255,17 +2222,17 @@ type Mutation {
     """
     Adresse mail à laquelle envoyer le billet. Nécéssaire quand on est pas connecté.e
     """
-    authorEmail: Email!
+    authorEmail: Email
 
     """
     Nom de la personne pour qui on réserve la place. Préférer churrosBeneficiary quand c'est possible
     """
-    beneficiary: String!
+    beneficiary: String
 
     """
     Identifiant (@) de la personne qui recevra la place
     """
-    churrosBeneficiary: UID!
+    churrosBeneficiary: UID
     ticket: LocalID!
   ): MutationBookEventResult!
 
@@ -2635,6 +2602,11 @@ type Mutation {
     """
     id: ID!
   ): String!
+
+  """
+  Sauvegarder le numéro de téléphone pour les paiements Lydia de l'utilisateur.ice
+  """
+  saveLydiaPhoneNumber(phoneNumber: String!): User!
   selfJoinGroup(uid: UID!): GroupMember!
 
   """
@@ -6004,6 +5976,16 @@ type Ticket implements Node {
   Indique si le billet peut être supprimé avec `deleteTicket(force: false)`
   """
   canBeSafelyDeleted: Boolean!
+
+  """
+  Un message d'explication sur pourquoi la personne connectée peut réserver ce billet pour quelqu'un d'autre. Null si la personne peut.
+  """
+  cannotBookReason(
+    """
+    On souhaite réserver pour soi-même
+    """
+    themself: Boolean!
+  ): String
   capacity: Int
   closesAt: DateTime
   description: String!
@@ -6056,7 +6038,11 @@ type Ticket implements Node {
   placesLeft: Int
   price: Float!
   registrations: [Registration!]!
-  remainingGodsons: Int!
+
+  """
+  Nombre de parrainages restants. Null pour illimité
+  """
+  remainingGodsons: Int
 
   """
   Un nom lisible sans espaces, adaptés pour des URLs.
@@ -6155,6 +6141,10 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
+  school: UID
+    @deprecated(
+      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
+    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6289,6 +6279,7 @@ type User implements Node & Pictured {
   L'identifiant local de la ressource (sans préfixe)
   """
   localID: LocalID!
+  lydiaPhone: String
   major: Major
   majorId: ID
   managedEvents: [EventManager!]!

@@ -6,23 +6,24 @@
     type CardTicketDetails,
     type CardTicketPlaces,
   } from '$houdini';
-  import IconOpenExternal from '~icons/msl/open-in-new';
   import { AvatarGroup_houdini, AvatarSchool } from '$lib/components';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import {
     allLoaded,
+    loaded,
     loading,
     mapAllLoading,
     mapLoading,
-    onceAllLoaded,
     onceLoaded,
     type MaybeLoading,
   } from '$lib/loading';
-  import { route } from '$lib/ROUTES';
   import { formatDistance, isWithinInterval } from 'date-fns';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import IconOpenExternal from '~icons/msl/open-in-new';
   import ButtonSecondary from './ButtonSecondary.svelte';
+
+  const dispatch = createEventDispatcher<{ book: string }>();
 
   export let externalURL: MaybeLoading<URL | null> | null = null;
 
@@ -115,9 +116,8 @@
         value={mapAllLoading(
           [$data?.opensAt, $data?.closesAt, externalURL],
           (start, end, external) => {
-            if (external) 
-              return `Billetterie externe sur ${external.host}`;
-            
+            if (external) return `Billetterie externe sur ${external.host}`;
+
             if (!start || !end || !now) return '';
             try {
               return ticketIsOpen
@@ -135,14 +135,13 @@
   <div class="actions">
     <ButtonSecondary
       newTab={Boolean(loading(externalURL, null))}
-      href={onceLoaded(externalURL, (u) => u?.toString() ?? '', '') ||
-        ($data
-          ? onceAllLoaded(
-              [$data.event.localID, $data.localID],
-              (id, ticket) => route('/events/[id]/book/[ticket]', { id, ticket }),
-              '',
-            )
-          : '')}
+      href={onceLoaded(externalURL, (u) => u?.toString() ?? '', '') || undefined}
+      on:click={loading(externalURL, null)
+        ? undefined
+        : () => {
+            if (!$data || !loaded($data.localID)) return;
+            dispatch('book', $data.localID);
+          }}
       >Obtenir {#if externalURL}<IconOpenExternal />{/if}{#if $data}<span class="price"
           ><LoadingText value={mapLoading($data?.price, (p) => `${p}€`)}>...</LoadingText></span
         >{/if}

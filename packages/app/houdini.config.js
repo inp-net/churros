@@ -127,6 +127,9 @@ const config = {
     Markdown: {
       type: 'string',
     },
+    Email: {
+      type: 'string',
+    },
     HTML: {
       type: 'App.XSSSafeHTMLString',
     },

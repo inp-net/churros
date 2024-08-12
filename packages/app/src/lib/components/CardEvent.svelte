@@ -38,6 +38,8 @@
 
   const mobile = isMobile();
 
+  export let showTickets = true;
+
   export let event: CardEvent | null;
   $: data = fragment(
     event,
@@ -179,7 +181,7 @@
       >Voir plus</ButtonInk
     >
   </div>
-  {#if ticket && (ticketIsOpen || shotgun)}
+  {#if showTickets && ticket && (ticketIsOpen || shotgun)}
     <section class="tickets">
       <CardTicket {ticket}></CardTicket>
       {#if $data && $data?.tickets.length > 1}
@@ -190,7 +192,7 @@
         </div>
       {/if}
     </section>
-  {:else if !loading(loggedIn, true) && shotgun}
+  {:else if showTickets && !loading(loggedIn, true) && shotgun}
     <section class="tickets please-login">
       <div class="ticket">
         <div class="text">

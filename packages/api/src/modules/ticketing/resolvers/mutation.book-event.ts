@@ -16,20 +16,29 @@ builder.mutationField('bookEvent', (t) =>
         type: LocalID,
       }),
       churrosBeneficiary: t.arg({
+        required: false,
         type: UIDScalar,
         description: 'Identifiant (@) de la personne qui recevra la place',
       }),
       beneficiary: t.arg.string({
+        required: false,
         description:
           "Nom de la personne pour qui on réserve la place. Préférer churrosBeneficiary quand c'est possible",
       }),
       authorEmail: t.arg({
+        required: false,
         type: Email,
         description:
           'Adresse mail à laquelle envoyer le billet. Nécéssaire quand on est pas connecté.e',
       }),
     },
-    async authScopes(_, { ticket: ticketId, beneficiary }, { user }) {
+    validate: [
+      [
+        ({ beneficiary, churrosBeneficiary }) => !(beneficiary && churrosBeneficiary),
+        { message: 'Il faut choisir entre un bénéficiaire interne et externe' },
+      ],
+    ],
+    async authScopes(_, args, { user }) {
       const userAdditionalData = user
         ? await prisma.user.findUnique({
             where: { id: user.id },
@@ -37,20 +46,23 @@ builder.mutationField('bookEvent', (t) =>
           })
         : null;
       const ticket = await prisma.ticket.findUniqueOrThrow({
-        where: { id: ensureGlobalId(ticketId, 'Ticket') },
+        where: { id: ensureGlobalId(args.ticket, 'Ticket') },
         include: canBookTicket.prismaIncludes,
       });
 
-      const [can, whynot] = canBookTicket(user, userAdditionalData, beneficiary, ticket);
+      const [can, whynot] = canBookTicket(
+        user,
+        userAdditionalData,
+        args.churrosBeneficiary
+          ? await prisma.user.findUniqueOrThrow({
+              where: { uid: args.churrosBeneficiary },
+            })
+          : args.beneficiary,
+        ticket,
+      );
 
       if (!can && whynot) {
-        await log(
-          'ticketing',
-          'book/failed',
-          { why: whynot, ticket: ticketId, beneficiary },
-          ticketId,
-          user,
-        );
+        await log('ticketing', 'book/failed', { why: whynot, ...args }, ticket.id, user);
         throw new GraphQLError(whynot);
       }
 
@@ -76,9 +88,12 @@ builder.mutationField('bookEvent', (t) =>
         data: {
           ticket: { connect: { id } },
           author: user ? { connect: { id: user.id } } : undefined,
-          authorEmail: args.authorEmail,
-          beneficiary: args.beneficiary ?? '',
+          authorEmail: args.authorEmail ?? undefined,
           paid: actualPrice(user, ticket) === 0,
+          internalBeneficiary: args.churrosBeneficiary
+            ? { connect: { uid: args.churrosBeneficiary } }
+            : undefined,
+          externalBeneficiary: args.beneficiary,
         },
       });
     },

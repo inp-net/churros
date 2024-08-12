@@ -27,6 +27,8 @@ builder.prismaObjectField(EventType, 'myBookings', (t) =>
         orderBy: [
           { externalBeneficiary: 'desc' },
           { internalBeneficiaryId: 'desc' },
+          { cancelledAt: 'desc' },
+          { opposedAt: 'desc' },
           { createdAt: 'asc' },
         ],
         take: count ?? 100,

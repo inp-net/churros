@@ -2,6 +2,7 @@
   import { CardBooking, ModalOrDrawer } from '$lib/components';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import ModalBookTicket from './ModalBookTicket.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
@@ -24,9 +25,13 @@
   const ORGANIZERS_LIMIT = 3;
 
   let openOrganizersDetailModal: () => void;
+
+  let bookingTicketId: string | undefined = undefined;
+
+  let bookTicket: () => void;
 </script>
 
-<MaybeError result={$PageEventDetail} let:data={{ event }}>
+<MaybeError result={$PageEventDetail} let:data={{ event, me }}>
   {@const highlightedBooking = event.highlightedBooking.at(0)}
   {@const tooManyOrganizers = [event.organizer, ...event.coOrganizers].length > ORGANIZERS_LIMIT}
   {#if tooManyOrganizers}
@@ -44,6 +49,11 @@
       </ul>
     </ModalOrDrawer>
   {/if}
+  <ModalBookTicket
+    {me}
+    ticket={event.tickets.find((t) => t.localID === bookingTicketId)}
+    bind:open={bookTicket}
+  />
   <div class="contents">
     {#if highlightedBooking}
       <CardBooking
@@ -108,7 +118,15 @@
         <CardTicket ticket={null} externalURL={event.externalTicketing} />
       {/if}
       {#each event.tickets as ticket}
-        <CardTicket {ticket} details={ticket} places={ticket} />
+        <CardTicket
+          on:book={({ detail }) => {
+            bookingTicketId = detail;
+            bookTicket?.();
+          }}
+          {ticket}
+          details={ticket}
+          places={ticket}
+        />
       {:else}
         {#if !$RootLayout.data?.loggedIn}
           <Alert theme="warning">
