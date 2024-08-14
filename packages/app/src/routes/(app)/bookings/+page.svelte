@@ -1,5 +1,6 @@
 <script lang="ts">
   import { CardBooking, MaybeError } from '$lib/components';
+  import { infinitescroll } from '$lib/scroll';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -9,8 +10,8 @@
 
 <MaybeError result={$PageMyBookings} let:data={{ me }}>
   <div class="contents">
-    <ul class="nobullets bookings">
-      {#each me.bookings.nodes as booking}
+    <ul class="nobullets bookings" use:infinitescroll={async () => PageMyBookings.loadNextPage()}>
+      {#each me.bookings.edges as { node: booking }}
         <li class="booking">
           <CardBooking {booking} />
         </li>
@@ -22,5 +23,11 @@
 <style>
   .contents {
     padding: 0 1rem;
+  }
+
+  ul.bookings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 </style>

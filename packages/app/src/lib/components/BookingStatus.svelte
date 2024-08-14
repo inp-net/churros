@@ -24,11 +24,13 @@
 <div
   class="booking-status {$data?.opposed
     ? 'danger'
-    : $data?.cancelled
-      ? 'warning'
-      : $data?.paid
-        ? 'success'
-        : 'warning'}"
+    : $data?.verified
+      ? 'primary'
+      : $data?.cancelled
+        ? 'warning'
+        : $data?.paid
+          ? 'success'
+          : 'warning'}"
 >
   <div class="icon-booking-status">
     {#if !allLoaded($data) || !$data}

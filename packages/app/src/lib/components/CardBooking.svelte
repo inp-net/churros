@@ -5,7 +5,11 @@
   import { isMobile } from '$lib/mobile';
   import { refroute } from '$lib/navigation';
 
-  const mobile = isMobile();
+  function kissingCorners(element: HTMLElement) {
+    if (!element) return isMobile();
+    const { left, right } = element.getBoundingClientRect();
+    return left === 0 && right === 0;
+  }
 
   /** The component is being rendering above page content */
   export let floating = false;
@@ -36,14 +40,20 @@
       }
     `),
   );
+
+  let bookingElement: HTMLElement;
 </script>
 
-<div class="booking-with-has-more" class:has-more={hasMoreBookingsCount}>
+<div
+  class="booking-with-has-more"
+  class:has-more={hasMoreBookingsCount}
+  bind:this={bookingElement}
+  class:kisses-corners={kissingCorners(bookingElement)}
+>
   <a href={refroute('/bookings/[code]', loading($data.code, ''))}>
     <article
       class:floating
       class="booking"
-      class:mobile
       class:has-image={Boolean(loading($data?.ticket.event.pictureURL, ''))}
     >
       {#if $data && loading($data?.ticket.event.pictureURL, '')}
@@ -78,10 +88,16 @@
     grid-template-columns: auto max-content;
     gap: 1rem;
     align-items: center;
+
+    --radius-block: 20px;
+  }
+
+  .booking-with-has-more.kisses-corners {
+    --radius-block: 0;
   }
 
   .more-bookings {
-    --cutout-size: 1rem;
+    --cutout-size: var(--radius-block);
 
     position: relative;
     display: flex;
@@ -130,7 +146,7 @@
   }
 
   article:not(.mobile) {
-    border-radius: 20px;
+    border-radius: var(--radius-block);
   }
 
   article.floating:not(.mobile) {

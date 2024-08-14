@@ -39,7 +39,6 @@
 
 <script lang="ts">
   export let scrolled = false;
-  export let transparent = false;
 
   let { back, title, quickAction, actions } = { actions: [] } as NavigationContext;
 
@@ -78,7 +77,7 @@
   {/if}
 </svelte:head>
 
-<nav class:scrolled class:transparent>
+<nav class:scrolled>
   <div class="left">
     {#if title}
       {#if backHref}
@@ -142,10 +141,7 @@
     padding: 0.25em 0.75em;
     font-size: 1.5em;
     view-transition-name: navigation-top;
-  }
-
-  nav:not(.transparent) {
-    background: var(--bg);
+    background: var(--nav-top-background, var(--bg));
   }
 
   .actions,

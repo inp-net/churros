@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, log, prisma } from '#lib';
+import { builder, ensureGlobalId, log, prisma, subscriptionName } from '#lib';
 import { RegistrationType } from '#modules/ticketing';
 
 builder.queryField('booking', (t) =>
@@ -7,6 +7,12 @@ builder.queryField('booking', (t) =>
     description: 'Récupère une réservation par son code',
     args: {
       code: t.arg.string(),
+    },
+    smartSubscription: true,
+    subscribe(subs, _, { code }) {
+      subs.register(
+        subscriptionName(ensureGlobalId(code.toLowerCase(), 'Registration'), 'updated'),
+      );
     },
     authScopes: () => true,
     async resolve(query, _, { code }, { user }) {

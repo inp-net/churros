@@ -334,13 +334,23 @@ export const topnavConfigs: Partial<{
       {
         icon: IconPostAdd,
         label: 'Post lié',
-        href: route('/events/[id]/write', id),
+        do: () => navtopPushState('NAVTOP_CREATING_POST'),
       },
       commonActions.pin,
       commonActions.copyID,
     ],
   }),
-
+  '/(app)/events/[id]/scan': ({ params: { id } }) => ({
+    title: 'Scanner des billets',
+    back: route('/events/[id]', id),
+    actions: [
+      {
+        icon: IconBookingsList,
+        label: 'Voir les réservations',
+        href: refroute('/events/[id]/bookings', id),
+      },
+    ],
+  }),
   '/(app)/events/[id]/edit': ({ params: { id } }) => ({
     title: 'Modifier l’évènement',
     back: route('/events/[id]', id),
@@ -423,7 +433,7 @@ export const topnavConfigs: Partial<{
       commonActions.pin,
     ],
   }),
-  '/(app)/bookings/[code]/[[step]]': ({ params: { code } }) => ({
+  '/(app)/bookings/[code]': ({ params: { code } }) => ({
     title: 'Billet',
     back: route('/bookings'),
     actions: [

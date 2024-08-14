@@ -13,6 +13,7 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
     paid
     cancelled
     opposed
+    verified
     awaitingPayment
     paymentMethod
     createdAt

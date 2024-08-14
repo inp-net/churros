@@ -1170,7 +1170,12 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   L'utilisateur·ice connecté·e peut scanner les réservations de cet évènement
   """
-  canScanBookings: Boolean!
+  canScanBookings(
+    """
+    Erreur à lever si jamais la permission n'est pas donnée à l'utilisateur.ice connecté.e
+    """
+    assert: String
+  ): Boolean!
 
   """
   L'utilisateur·ice connecté·e peut voir la liste des réservations de cet évènement
@@ -3197,14 +3202,19 @@ type Mutation {
   validateEmail(token: String!): MutationValidateEmailResult!
   verifyBooking(
     """
-    Identifiant de l’événement
+    URL vers la page du billet, permet d'extraire le code de réservation depuis le contenu du QR Code, qui peut alors être une URL vers le billet plutôt qu'un simple code. `[code]` correspond au code de réservation dans cette URL.
     """
-    event: ID!
+    bookingURLTemplate: URL
 
     """
-    Identifiant de la place ou code de réservation
+    Identifiant de l’événement
     """
-    id: ID!
+    event: LocalID!
+
+    """
+    Contenu du QR Code décodé
+    """
+    qrcode: String!
   ): MutationVerifyBookingResult!
 }
 
@@ -5243,6 +5253,7 @@ type Registration implements Node {
   cancelledBy: User
   code: String!
   createdAt: DateTime!
+  externalBeneficiary: String
   id: ID!
 
   """
@@ -5286,6 +5297,7 @@ type RegistrationSearchResult {
 }
 
 type RegistrationVerificationResult {
+  message: String
   registration: Registration
   state: RegistrationVerificationState!
 }
@@ -5716,6 +5728,11 @@ Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-gu
 type Subscription {
   announcementsNow: [Announcement!]!
   article(id: LocalID!): Article!
+
+  """
+  Récupère une réservation par son code
+  """
+  booking(code: String!): Registration!
   event(group: UID, id: LocalID, slug: String): Event!
 
   """

@@ -82,7 +82,9 @@
       ...input,
     });
 
-    paymentError = mutationSucceeded('payBooking', result) ? '' : mutationErrorMessages('payBooking', result).join('\n\n');
+    paymentError = mutationSucceeded('payBooking', result)
+      ? ''
+      : mutationErrorMessages('payBooking', result).join('\n\n');
     paymentInProgress = false;
   }
 
@@ -203,10 +205,10 @@
         </nav>
       </form>
     {:else if step === 'lydia-waiting'}
-      <p>
-        Ta demande de paiement a bien été envoyée à Lydia, mais Churros n'a pas encore reçu de
-        confirmation de paiement
-      </p>
+      <div class="loading">
+        <LoadingChurros />
+        <p>En attente de Lydia...</p>
+      </div>
       <div class="actions">
         <ButtonSecondary icon={IconOpenInNew} href="https://go.lydia.me"
           >Ouvrir Lydia</ButtonSecondary

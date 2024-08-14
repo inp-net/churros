@@ -13,13 +13,17 @@ export class RegistrationVerificationResult {
   state: RegistrationVerificationState;
   // eslint-disable-next-line @typescript-eslint/parameter-properties
   registration?: Registration & { verifiedBy?: User | null };
+  // eslint-disable-next-line @typescript-eslint/parameter-properties
+  message?: string;
 
   constructor(
     state: RegistrationVerificationState,
     registration?: Registration & { verifiedBy?: User | null },
+    message?: string,
   ) {
     this.state = state;
     this.registration = registration;
+    this.message = message;
   }
 }
 
@@ -28,6 +32,7 @@ export const RegistrationVerificationResultType = builder
   .implement({
     fields: (t) => ({
       state: t.expose('state', { type: RegistrationVerificationStateType }),
+      message: t.exposeString('message', { nullable: true }),
       registration: t.expose('registration', { nullable: true, type: RegistrationType }),
     }),
   });

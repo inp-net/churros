@@ -141,9 +141,8 @@
           'Évènement créé',
           `Impossible de créer un évènement pour ${detail}`,
         )
-      ) 
+      )
         await goto(route('/events/[id]/edit', result.data.createEvent.data.localID));
-      
     }}
     options={$AppLayout.data.me.canCreateEventsOn}
   ></PickGroup>
@@ -160,9 +159,9 @@
     <NavigationSide user={$AppLayout.data?.me ?? null} />
   </header>
 
-  <div class="mobile-area">
-    <header class="nav-top" class:transparent={scanningTickets}>
-      <NavigationTop transparent={scanningTickets} {scrolled}></NavigationTop>
+  <div class="mobile-area" class:has-video-overlay={scanningTickets}>
+    <header class="nav-top">
+      <NavigationTop {scrolled}></NavigationTop>
       <div class="cap">
         <div class="corner-left-wrapper corner-wrapper">
           <div class="corner-left"></div>
@@ -200,7 +199,7 @@
       </div>
     </div>
     <div class="nav-bottom">
-      <NavigationBottom me={$AppLayout.data?.me ?? null} transparent={scanningTickets} />
+      <NavigationBottom me={$AppLayout.data?.me ?? null} />
     </div>
   </div>
 

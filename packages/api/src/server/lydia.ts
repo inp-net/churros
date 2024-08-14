@@ -1,4 +1,4 @@
-import { log, prisma } from '#lib';
+import { log, prisma, publish } from '#lib';
 import { notify } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express, { type Request, type Response } from 'express';
@@ -101,6 +101,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             },
           },
           select: {
+            paidCallback: true,
             registration: {
               select: {
                 id: true,
@@ -146,6 +147,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
           },
         });
         if (txn.registration?.author) {
+          publish(txn.registrationId, 'updated', txn);
           await notify([txn.registration.author], {
             title: 'Place payée',
             body: `Ta réservation pour ${txn.registration.ticket.event}`,

@@ -11,7 +11,6 @@
   import IconSearch from '~icons/msl/search';
   import IconDotsCircle from '~icons/msl/widgets';
   import IconDotsCircleOutline from '~icons/msl/widgets-outline';
-  export let transparent = false;
 
   export let me: NavigationBottomMe | null;
   $: data = fragment(
@@ -24,7 +23,7 @@
   );
 </script>
 
-<nav class:transparent>
+<nav>
   <ButtonNavigation
     href="/"
     routeID="/(app)"
@@ -84,13 +83,6 @@
     background-size: auto 100%;
     border-top: var(--border-block) solid rgb(0 0 0 / 5%);
     view-transition-name: navigation-bottom;
-  }
-
-  nav.transparent {
-    color: white;
-    background: transparent;
-
-    --text: white;
   }
 
   @media (min-width: 900px) {

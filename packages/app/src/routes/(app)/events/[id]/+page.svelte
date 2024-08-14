@@ -22,7 +22,6 @@
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
-  // HINT: Don't forget to add an entry in $lib/navigation.ts for the top navbar's title and/or action buttons
 
   const ORGANIZERS_LIMIT = 3;
 
@@ -32,13 +31,10 @@
 
   let bookTicket: () => void;
 
-  $: if ($page.url.hash.startsWith('#book/')) 
+  $: if ($page.url.hash.startsWith('#book/'))
     bookingTicketId = $page.url.hash.replace('#book/', '');
-  
 
-  $: if (bookingTicketId) 
-    bookTicket?.();
-  
+  $: if (bookingTicketId) bookTicket?.();
 </script>
 
 <MaybeError result={$PageEventDetail} let:data={{ event, me }}>

@@ -15,7 +15,15 @@
   } from '$lib/components';
   import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
   import { formatDateTime } from '$lib/dates';
-  import { LoadingText, allLoaded, loaded, loading, mapLoading, onceAllLoaded } from '$lib/loading';
+  import {
+    LoadingText,
+    allLoaded,
+    loaded,
+    loading,
+    mapLoading,
+    onceAllLoaded,
+    onceLoaded,
+  } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
@@ -25,16 +33,45 @@
   import type { PageData } from './$houdini';
   import ModalPay, { type Step } from './ModalPay.svelte';
   import { CancelBooking, CreateGoogleWalletPass } from './mutations';
+  import { graphql } from '$houdini';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
 
+  let initialBookingDataVerified: undefined | boolean;
+  $: if (initialBookingDataVerified === undefined)
+    {initialBookingDataVerified = onceLoaded(
+      $PageBooking.data?.booking.verified,
+      (v) => v ?? undefined,
+      undefined,
+    );}
+
+  const Updates = graphql(`
+    subscription BookingPageUpdates($code: String!) {
+      booking(code: $code) {
+        opposed
+        paid
+        cancelled
+        paymentMethod
+        pendingPayment
+        awaitingPayment
+        verified
+      }
+    }
+  `);
+
+  $: Updates.listen({ code: $page.params.code });
+
+  // Notify when ticket was just scanned
+  $: if (initialBookingDataVerified === false && $Updates.data?.booking.verified) {
+    navigator.vibrate(200);
+    toasts.success('Place scannée ^^');
+  }
+
   let openCancellationConfirmation: () => void;
   let openPaymentModal: (step?: Step) => void;
 
-  $: if (loading($PageBooking.data?.booking.awaitingPayment, false)) 
-    openPaymentModal?.();
-  
+  $: if (loading($PageBooking.data?.booking.awaitingPayment, false)) openPaymentModal?.();
 </script>
 
 <svelte:window
@@ -102,6 +139,14 @@
       </section>
     {/if}
 
+    {#if booking.ticket.links.length > 0}
+      <section class="links">
+        {#each booking.ticket.links as link}
+          <PillLink track="link-from-booking" {link} />
+        {/each}
+      </section>
+    {/if}
+
     <section class="code">
       {#if loading(booking.cancelled, false)}
         <div class="qrcode cancelled">Place<br />annulée</div>
@@ -120,14 +165,6 @@
         </div>
       {/if}
     </section>
-
-    {#if booking.ticket.links.length > 0}
-      <section class="links">
-        {#each booking.ticket.links as link}
-          <PillLink track="link-from-booking" {link} />
-        {/each}
-      </section>
-    {/if}
 
     <section class="info">
       <dl>

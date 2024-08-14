@@ -60,7 +60,11 @@
         ),
     ).length ?? 0;
 
-  $: if (browser && loaded($PageEventAllBookings.data?.event.bookingsCounts.total)) {
+  $: if (
+    browser &&
+    $PageEventAllBookings.data &&
+    loaded($PageEventAllBookings.data.event.bookingsCounts.total)
+  ) {
     const total = $PageEventAllBookings.data.event.bookingsCounts.total;
     window.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', {
@@ -210,8 +214,10 @@
             }}
           >
             <div class="top">
-              <div class="beneficiary">
-                <BookingBeneficiary {booking} />
+              <div class="people">
+                <div class="beneficiary">
+                  <BookingBeneficiary {booking} />
+                </div>
                 <div class="author desktop-only">
                   {#if booking.author && loading(booking.authorIsBeneficiary, false)}
                     Payé par <AvatarUser user={booking.author} />

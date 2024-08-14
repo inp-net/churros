@@ -24,6 +24,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
       },
       deprecationReason: 'Use `externalBeneficiary` instead.',
     }),
+    externalBeneficiary: t.exposeString('externalBeneficiary', { nullable: true }),
     beneficiaryUser: t.prismaField({
       type: UserType,
       nullable: true,

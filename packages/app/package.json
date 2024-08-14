@@ -39,6 +39,7 @@
     "party-js": "^2.2.0",
     "pdfmake": "^0.2.11",
     "qr-code-generator-lib": "^1.0.1",
+    "qr-scanner": "^1.4.2",
     "simple-svelte-autocomplete": "^2.5.2",
     "slugify": "^1.6.6",
     "svelte-gestures": "^4.0.0",

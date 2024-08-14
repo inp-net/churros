@@ -1,0 +1,8 @@
+query PageEventScanBookings($id: LocalID!) @loading {
+  event(id: $id) {
+    canScanBookings(
+      assert: "Tu n'a pas la permission pour scanner des billets sur cet évènement. Assure-toi d'être manager avec le niveau de permission 'Scan de billets' ou plus"
+    )
+    title
+  }
+}
