@@ -121,8 +121,7 @@ sw.addEventListener('fetch', (event) => {
     // `build`/`files` can always be served from the cache
     if (ASSETS.includes(url.pathname)) {
       const response = await cache.match(url.pathname);
-      if (response === undefined) throw new Error('Cache miss in build or files');
-      return response;
+      if (response !== undefined) return response;
     }
 
     // for everything else, try the network first, but
