@@ -2,15 +2,27 @@ import { builder, localID, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { UserType, fullName } from '#modules/users';
-import { authorIsBeneficiary } from '../index.js';
+import { authorIsBeneficiary, canScanBookings, canScanBookingsPrismaIncludes } from '../index.js';
 // TODO rename to booking
 
 export const RegistrationType = builder.prismaNode('Registration', {
   id: { field: 'id' },
   include: {
     lydiaTransaction: true,
+    ticket: true,
   },
   fields: (t) => ({
+    canManage: t.boolean({
+      description:
+        "L'utilisateur.ice connecté.e peut marquer la réservation comme payée, la valider, etc.",
+      async resolve({ ticket: { eventId } }, _, { user }) {
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id: eventId },
+          include: canScanBookingsPrismaIncludes,
+        });
+        return canScanBookings(event, user);
+      },
+    }),
     code: t.string({
       resolve({ id }) {
         return localID(id).toUpperCase();

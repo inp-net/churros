@@ -2532,6 +2532,21 @@ type Mutation {
     """
     formId: ID!
   ): MutationMailFormAnswersResult!
+
+  """
+  Marquer une réservation comme payée
+  """
+  markBookingAsPaid(
+    """
+    Code de la réservation
+    """
+    code: String!
+
+    """
+    Aussi marquer la réservation comme vérifiée (scannée)
+    """
+    verify: Boolean
+  ): MutationMarkBookingAsPaidResult!
   mergeDocuments(from: [ID!]!, into: ID!): Document!
   opposeRegistration(id: ID!): MutationOpposeRegistrationResult!
   paidShopPayment(
@@ -3376,6 +3391,12 @@ union MutationMailFormAnswersResult = Error | MutationMailFormAnswersSuccess | Z
 
 type MutationMailFormAnswersSuccess {
   data: String!
+}
+
+union MutationMarkBookingAsPaidResult = Error | MutationMarkBookingAsPaidSuccess | ZodError
+
+type MutationMarkBookingAsPaidSuccess {
+  data: Registration!
 }
 
 union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSuccess | ZodError
@@ -5248,6 +5269,11 @@ type Registration implements Node {
   awaitingPayment: Boolean!
   beneficiary: String! @deprecated(reason: "Use `externalBeneficiary` instead.")
   beneficiaryUser: User
+
+  """
+  L'utilisateur.ice connecté.e peut marquer la réservation comme payée, la valider, etc.
+  """
+  canManage: Boolean!
   cancelled: Boolean!
   cancelledAt: DateTime
   cancelledBy: User

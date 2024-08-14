@@ -32,19 +32,20 @@
   import IconDownload from '~icons/msl/download';
   import type { PageData } from './$houdini';
   import ModalPay, { type Step } from './ModalPay.svelte';
-  import { CancelBooking, CreateGoogleWalletPass } from './mutations';
+  import { CancelBooking, CreateGoogleWalletPass, MarkBookingAsPaid } from './mutations';
   import { graphql } from '$houdini';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
 
   let initialBookingDataVerified: undefined | boolean;
-  $: if (initialBookingDataVerified === undefined)
-    {initialBookingDataVerified = onceLoaded(
+  $: if (initialBookingDataVerified === undefined) {
+    initialBookingDataVerified = onceLoaded(
       $PageBooking.data?.booking.verified,
       (v) => v ?? undefined,
       undefined,
-    );}
+    );
+  }
 
   const Updates = graphql(`
     subscription BookingPageUpdates($code: String!) {
@@ -115,6 +116,22 @@
   <div class="contents">
     {#if !onceAllLoaded([booking.cancelled, booking.opposed], (cancelled, opposed) => cancelled || opposed, false)}
       <section class="action-buttons">
+        {#if loading(booking.canManage, false) && !loading(booking.paid, false)}
+          <ButtonSecondary
+            on:click={async () => {
+              const result = await mutate(MarkBookingAsPaid, {
+                code: booking.code,
+              });
+              toasts.mutation(
+                result,
+                'markBookingAsPaid',
+                'Place marquée comme payée',
+                'Impossible de marquer la place comme payée',
+              );
+            }}>Marquer comme payée</ButtonSecondary
+          >
+          <!-- TODO: valider, ouvre modal avec <ScanResult> dedans -->
+        {/if}
         <ButtonSecondary
           data-sveltekit-reload
           href={route('GET /bookings/[code].pdf', loading(booking.code, ''))}

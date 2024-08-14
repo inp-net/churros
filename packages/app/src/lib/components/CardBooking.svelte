@@ -86,10 +86,9 @@
   .booking-with-has-more {
     display: grid;
     grid-template-columns: auto max-content;
-    gap: 1rem;
     align-items: center;
 
-    --radius-block: 20px;
+    --radius-block: 16px;
   }
 
   .booking-with-has-more.kisses-corners {

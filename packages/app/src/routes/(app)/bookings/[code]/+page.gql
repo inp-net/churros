@@ -10,6 +10,8 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
     ...BookingAuthor
     ...BookingPaymentMethod
 
+    canManage
+
     paid
     cancelled
     opposed

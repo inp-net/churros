@@ -24,3 +24,18 @@ export const CreateGoogleWalletPass = graphql(`
     }
   }
 `);
+
+export const MarkBookingAsPaid = graphql(`
+  mutation MarkBookingAsPaid($code: String!) {
+    markBookingAsPaid(code: $code) {
+      ... on MutationMarkBookingAsPaidSuccess {
+        data {
+          paid
+          verified
+          verifiedAt
+        }
+      }
+      ...MutationErrors
+    }
+  }
+`);

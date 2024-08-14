@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { refroute } from '$lib/navigation';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql, type BookingScanResult } from '$houdini';
@@ -11,11 +12,14 @@
   import { onDestroy } from 'svelte';
   import type { PageData } from './$houdini';
   import ScanResult from './ScanResult.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputTextGhost from '$lib/components/InputTextGhost.svelte';
 
   export let data: PageData;
   $: ({ PageEventScanBookings } = data);
 
-  $: eventTitle = onceLoaded($PageEventScanBookings.data?.event.title, (t) => t || '', '');
+  $: eventTitle = onceLoaded($PageEventScanBookings?.data?.event.title, (t) => t || '', '');
 
   $: if (browser && eventTitle) {
     window.dispatchEvent(
@@ -27,47 +31,47 @@
 
   const SCAN_COOLDOWN_MS = 800;
   const lastScanTimestamp = 0;
-  let result: BookingScanResult;
   let previousDecodedContents = '';
+  let manualVerificationInput = '';
+  let result: BookingScanResult;
   let videoElement: HTMLVideoElement;
 
-  function onScanResult({ data }: QRScanner.ScanResult) {
-    if (result && differenceInMilliseconds(new Date(), lastScanTimestamp) < SCAN_COOLDOWN_MS) 
-      return;
-    
+  const VerifyBooking = graphql(`
+    mutation VerifyBooking($decodedContent: String!, $urlTemplate: URL!, $event: LocalID!) {
+      verifyBooking(bookingURLTemplate: $urlTemplate, event: $event, qrcode: $decodedContent) {
+        ... on MutationVerifyBookingSuccess {
+          data {
+            registration {
+              code
+            }
+            ...BookingScanResult
+          }
+        }
+        ...MutationErrors
+      }
+    }
+  `);
 
-    if (data === previousDecodedContents) 
+  function onScanResult({ data }: QRScanner.ScanResult) {
+    if (result && differenceInMilliseconds(new Date(), lastScanTimestamp) < SCAN_COOLDOWN_MS)
       return;
-    
+
+    if (data === previousDecodedContents) return;
 
     previousDecodedContents = data;
 
-    graphql(`
-      mutation VerifyBooking($decodedContent: String!, $urlTemplate: URL!, $event: LocalID!) {
-        verifyBooking(bookingURLTemplate: $urlTemplate, event: $event, qrcode: $decodedContent) {
-          ... on MutationVerifyBookingSuccess {
-            data {
-              ...BookingScanResult
-            }
-          }
-          ...MutationErrors
-        }
-      }
-    `)
-      .mutate({
-        decodedContent: data,
-        urlTemplate: new URL(route('/bookings/[code]', '[code]'), $page.url),
-        event: $page.params.id,
-      })
-      .then((response) => {
-        if (toasts.mutation(response, 'verifyBooking', '', 'Impossible de scanner ce QR code')) 
-          result = response.data.verifyBooking.data;
-        
-      });
+    VerifyBooking.mutate({
+      decodedContent: data,
+      urlTemplate: new URL(route('/bookings/[code]', '[code]'), $page.url),
+      event: $page.params.id,
+    }).then((response) => {
+      if (toasts.mutation(response, 'verifyBooking', '', 'Impossible de scanner ce QR code'))
+        result = response.data.verifyBooking.data;
+    });
   }
 
   let scanner: QRScanner | undefined;
-  $: if (videoElement) {
+  $: if (videoElement && !scanner) {
     scanner = new QRScanner(videoElement, onScanResult, {
       highlightScanRegion: true,
       highlightCodeOutline: true,
@@ -84,9 +88,7 @@
     });
   }
 
-  $: if (scanner && browser && videoElement && $PageEventScanBookings.data?.event) 
-    scanner.start();
-  
+  $: if (scanner && browser && videoElement && $PageEventScanBookings.data?.event) scanner.start();
 
   onDestroy(() => {
     scanner?.stop();
@@ -99,9 +101,44 @@
     <video bind:this={videoElement} />
   </div>
 
-  <section class="results">
+  <div class="results">
     <ScanResult {result} />
-  </section>
+    <form
+      class="manual"
+      on:submit|preventDefault={async () => {
+        await VerifyBooking.mutate({
+          decodedContent: manualVerificationInput,
+          event: $page.params.id,
+          urlTemplate: new URL(route('/bookings/[code]', '[code]'), $page.url),
+        }).then((response) => {
+          if (toasts.mutation(response, 'verifyBooking', '', 'Impossible de scanner ce QR code'))
+            result = response.data.verifyBooking.data;
+        });
+      }}
+    >
+      {#if !result}
+        <InputTextGhost
+          label="Vérifier manuellement"
+          placeholder="Code de réservation..."
+          bind:value={manualVerificationInput}
+        />
+        <ButtonPrimary submits>Vérifier</ButtonPrimary>
+      {:else}
+        {#if result.registration}
+          <ButtonSecondary href={refroute('/bookings/[code]', result.registration.code)}
+            >Voir le billet</ButtonSecondary
+          >
+        {/if}
+        <ButtonSecondary
+          on:click={() => {
+            result = undefined;
+            manualVerificationInput = '';
+            previousDecodedContents = '';
+          }}>Fermer</ButtonSecondary
+        >
+      {/if}
+    </form>
+  </div>
 </MaybeError>
 
 <style>
@@ -165,5 +202,13 @@
     background: var(--bg);
     border-radius: var(--radius-block);
     translate: -50% 0;
+  }
+
+  form.manual {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
   }
 </style>

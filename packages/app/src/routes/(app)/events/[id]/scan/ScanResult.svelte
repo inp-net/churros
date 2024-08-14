@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import {
     fragment,
     graphql,
@@ -12,6 +11,7 @@
   import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
+  import { toasts } from '$lib/toasts';
   import type { SvelteComponent } from 'svelte';
   import IconNotPaid from '~icons/msl/account-balance-wallet-outline';
   import IconOtherEvent from '~icons/msl/cancel-presentation-outline';
@@ -30,9 +30,7 @@
     OtherEvent: [50, 50, 50, 50],
   };
 
-  $: if (navigator.vibrate && $data) 
-    navigator.vibrate(VIBRATION_PATTERNS[$data.state]);
-  
+  $: if (navigator.vibrate && $data) navigator.vibrate(VIBRATION_PATTERNS[$data.state]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const STATE_TO_ICON: Record<RegistrationVerificationState$options, typeof SvelteComponent<any>> =
@@ -45,6 +43,54 @@
       OtherEvent: IconOtherEvent,
     };
 
+  graphql(`
+    fragment BookingScanResultBooking on Registration {
+      code
+      beneficiaryUser {
+        uid
+        fullName
+        ...AvatarUser
+      }
+      authorIsBeneficiary
+      externalBeneficiary
+      authorEmail
+      author {
+        uid
+        fullName
+        ...AvatarUser
+      }
+      opposed
+      opposedAt
+      opposedBy {
+        uid
+        fullName
+      }
+      cancelled
+      cancelledAt
+      cancelledBy {
+        uid
+        fullName
+      }
+      paid
+      paymentMethod
+      ticket {
+        name
+        group {
+          name
+        }
+        event {
+          title
+        }
+      }
+      verified
+      verifiedAt
+      verifiedBy {
+        uid
+        fullName
+      }
+    }
+  `);
+
   export let result: BookingScanResult | null;
   $: data = fragment(
     result,
@@ -53,53 +99,22 @@
         state
         message
         registration {
-          code
-          beneficiaryUser {
-            uid
-            fullName
-            ...AvatarUser
-          }
-          authorIsBeneficiary
-          externalBeneficiary
-          authorEmail
-          author {
-            uid
-            fullName
-            ...AvatarUser
-          }
-          opposed
-          opposedAt
-          opposedBy {
-            uid
-            fullName
-          }
-          cancelled
-          cancelledAt
-          cancelledBy {
-            uid
-            fullName
-          }
-          paid
-          paymentMethod
-          ticket {
-            name
-            group {
-              name
-            }
-            event {
-              title
-            }
-          }
-          verified
-          verifiedAt
-          verifiedBy {
-            uid
-            fullName
-          }
+          ...BookingScanResultBooking @mask_disable
         }
       }
     `),
   );
+
+  const MarkAsPaidAndVerify = graphql(`
+    mutation MarkPaidAndVerifyBooking($code: String!) {
+      markBookingAsPaid(code: $code, verify: true) {
+        ... on MutationMarkBookingAsPaidSuccess {
+          ...BookingScanResultBooking @mask_disable
+        }
+        ...MutationErrors
+      }
+    }
+  `);
 </script>
 
 <section class="result">
@@ -184,7 +199,7 @@
           <p><strong>Mauvais évènement</strong></p>
           <p class="typo-details details">
             Cette réservation est pour l'évènement <a
-              href={refroute('/events/[id]', $page.params.id)}
+              href={refroute('/events/[id]', $data.registration.ticket.event.id)}
               >{$data.registration.ticket.event.title}</a
             >
           </p>
@@ -217,30 +232,14 @@
           <ButtonSecondary
             icon={IconCheck}
             on:click={async () => {
-              // const registration = $data?.registration;
-              // if (!registration) return;
-              // await $zeus.mutate({
-              //   upsertRegistration: [
-              //     {
-              //       id: $data?.registration?.id,
-              //       ticketId: registration.ticket.id,
-              //       paid: true,
-              //       beneficiary: $data?.registration?.beneficiary,
-              //       paymentMethod: $data?.registration?.paymentMethod,
-              //     },
-              //     {
-              //       '...on Error': {
-              //         message: true,
-              //       },
-              //       '...on MutationUpsertRegistrationSuccess': {
-              //         data: {
-              //           paid: true,
-              //         },
-              //       },
-              //     },
-              //   ],
-              // });
-              // await check(registration.id);
+              toasts.mutation(
+                await MarkAsPaidAndVerify.mutate({
+                  code: $data.registration.code,
+                }),
+                'markBookingAsPaid',
+                `${$data.registration.code} marquée comme payée`,
+                'Impossible de marquer la réservation comme payée',
+              );
             }}>Payée</ButtonSecondary
           >
         </div>
