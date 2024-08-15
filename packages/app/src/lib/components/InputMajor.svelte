@@ -2,10 +2,11 @@
   import { fragment, graphql, type InputMajor, type InputMajorInitialSchool } from '$houdini';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
-  import PickMajor from '$lib/components/PickMajor.svelte';
-  import LoadingText from '$lib/components/LoadingText.svelte';
-  import IconChevronRight from '~icons/msl/chevron-right';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import PickMajor from '$lib/components/PickMajor.svelte';
+  import { loading } from '$lib/loading';
+  import IconChevronRight from '~icons/msl/chevron-right';
 
   /** Selected major uid */
   export let major: string;
@@ -18,9 +19,20 @@
         name
         pictureURL
         ...AvatarSchool
+        majors {
+          uid
+        }
       }
     `),
   );
+
+  // Preselect major if there's only one
+  $: if (
+    !major &&
+    loading($dataInitialSchool?.majors.at(0)?.uid, null) &&
+    $dataInitialSchool?.majors.length === 1
+  )
+    major = $dataInitialSchool!.majors.at(0)!.uid;
 
   export let options: InputMajor | null;
   $: data = fragment(
@@ -64,8 +76,9 @@
         }}
         value={major}
         options={$data.majors}
+        let:open
       >
-        <ButtonSecondary>
+        <ButtonSecondary on:click={open}>
           {#if major}Changer{:else}Choisir{/if}
         </ButtonSecondary>
       </PickMajor>
@@ -74,3 +87,21 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .input-major,
+  .school,
+  .major {
+    display: flex;
+    gap: 1rem 0.5rem;
+    align-items: center;
+  }
+
+  .school,
+  .major {
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

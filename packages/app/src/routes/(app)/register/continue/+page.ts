@@ -7,7 +7,6 @@ graphql(`
     userCandidate(token: $token) {
       emailValidated
       email
-      address
       birthday
       uid
       suggestedUid
@@ -16,8 +15,6 @@ graphql(`
       lastName
       majorId
       graduationYear
-      phone
-      schoolUid
       cededImageRightsToTVn7
       apprentice
       usingQuickSignup

@@ -1,5 +1,6 @@
 query PageQuickSignup($qrcode: LocalID!) {
   ...InputMajor
+  ...InputStudentEmail
   quickSignup(id: $qrcode) {
     expired
     school {

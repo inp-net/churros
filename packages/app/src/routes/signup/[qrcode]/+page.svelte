@@ -15,7 +15,7 @@
   $: ({ PageQuickSignup } = data);
 
   let major: string;
-  let graduationYear: number;
+  let graduationYear = fromYearTier(1);
   let apprentice: boolean;
   let email: string;
   let firstName: string;
@@ -26,7 +26,7 @@
 
   const _Signup = graphql(`
     mutation SignupViaQRCode(
-      $qrcode: LocalID!
+      $qrcode: String!
       $major: UID!
       $graduationYear: Int!
       $email: Email!
@@ -34,8 +34,26 @@
       $lastName: String!
       $username: UID!
       $password: String!
+      $mailVerificationCallbackURL: URL!
     ) {
-      startSignup(email: $email)
+      startSignup(
+        email: $email
+        firstName: $firstName
+        graduationYear: $graduationYear
+        lastName: $lastName
+        mailVerificationCallbackURL: $mailVerificationCallbackURL
+        major: $major
+        uid: $username
+        quickSignupCode: $qrcode
+        password: $password
+      ) {
+        ... on MutationStartSignupSuccess {
+          data {
+            needsManualValidation
+          }
+        }
+        ...MutationErrors
+      }
     }
   `);
 </script>

@@ -3,7 +3,6 @@
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import InputDate from '$lib/components/InputDate.svelte';
   import InputField from '$lib/components/InputField.svelte';
   import InputNumber from '$lib/components/InputNumber.svelte';
   import InputSearchObject from '$lib/components/InputSearchObject.svelte';
@@ -22,8 +21,6 @@
   $: ({ PageSignupContinue } = data);
 
   let candidate = {
-    address: '',
-    phone: '',
     birthday: null as Date | null,
     graduationYear: new Date().getFullYear() + 3,
     firstName: '',
@@ -222,30 +219,6 @@
         >ce document</a
       >
     </p>
-    <section class="optional-info">
-      <h2>Informations Personnelles</h2>
-      <p class="typo-details muted">
-        Ces infos seront visibles par les autres élèves. Elles sont totalement facultatives.
-      </p>
-      <InputDate
-        label="Date de naissance"
-        errors={formErrors?.birthday?._errors}
-        bind:value={candidate.birthday}
-      />
-      <InputText
-        label="Numéro de téléphone"
-        type="tel"
-        errors={formErrors?.phone?._errors}
-        maxlength={255}
-        bind:value={candidate.phone}
-      />
-      <InputText
-        label="Adresse postale"
-        errors={formErrors?.address?._errors}
-        maxlength={255}
-        bind:value={candidate.address}
-      />
-    </section>
     <section class="submit">
       <ButtonPrimary {loading} submits>S'inscrire</ButtonPrimary>
     </section>

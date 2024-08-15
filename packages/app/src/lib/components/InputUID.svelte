@@ -4,7 +4,7 @@
   import { route } from '$lib/ROUTES';
 
   export let optional = false;
-  export let value: string;
+  export let value = '';
   export let label: string;
   export let hint =
     'Composé de lettres, chiffres, - et _. Choisis-le bien, tu ne pourras pas le modifier par la suite ;)';

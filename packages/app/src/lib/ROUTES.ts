@@ -75,25 +75,6 @@ const PAGES = {
     return `/documents/${params.major}/${params.yearTier}/${params.subject}/create`;
   },
   '/documents/create': `/documents/create`,
-  '/events.old/[id]': (id: string | number, params?: {}) => {
-    return `/events.old/${id}`;
-  },
-  '/events.old/[id]/book/[ticket]': (params: { id: string | number; ticket: string | number }) => {
-    return `/events.old/${params.id}/book/${params.ticket}`;
-  },
-  '/events.old/[id]/bookings': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/bookings`;
-  },
-  '/events.old/[id]/edit': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/edit`;
-  },
-  '/events.old/[id]/scan': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/scan`;
-  },
-  '/events.old/[id]/write': (id: string | number, params?: {}) => {
-    return `/events.old/${id}/write`;
-  },
-  '/events.old/create': `/events.old/create`,
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
     return `/events${params?.week ? `/${params?.week}` : ''}`;
   },
@@ -323,6 +304,9 @@ const PAGES = {
     return `/developers/apps/${id}`;
   },
   '/developers/apps/create': `/developers/apps/create`,
+  '/signup/[qrcode]': (qrcode: string | number, params?: {}) => {
+    return `/signup/${qrcode}`;
+  },
 };
 
 /**
@@ -340,10 +324,6 @@ const SERVERS = {
   },
   'GET /bookings/[code].pdf': (code: string | number, params?: {}) => {
     return `/bookings/${code}.pdf`;
-  },
-  'GET /events.old/planning': `/events.old/planning`,
-  'GET /events.old/week/[monday]': (monday: string | number, params?: {}) => {
-    return `/events.old/week/${monday}`;
   },
   'GET /events/[id]/[slug]/[...path]': (params: {
     id: string | number;
@@ -543,13 +523,6 @@ export type KIT_ROUTES = {
       | 'yearTier'
       | 'subject';
     '/documents/create': never;
-    '/events.old/[id]': 'id';
-    '/events.old/[id]/book/[ticket]': 'id' | 'ticket';
-    '/events.old/[id]/bookings': 'id';
-    '/events.old/[id]/edit': 'id';
-    '/events.old/[id]/scan': 'id';
-    '/events.old/[id]/write': 'id';
-    '/events.old/create': never;
     '/events': 'week';
     '/events/[id]': 'id';
     '/events/[id]/bookings': 'id';
@@ -633,13 +606,12 @@ export type KIT_ROUTES = {
     '/developers/apps': never;
     '/developers/apps/[id]': 'id';
     '/developers/apps/create': never;
+    '/signup/[qrcode]': 'qrcode';
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
     'GET /bookings.old/[pseudoID].pdf': 'pseudoID';
     'GET /bookings/[code].pdf': 'code';
-    'GET /events.old/planning': never;
-    'GET /events.old/week/[monday]': 'monday';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /events/[id]/bookings.csv': 'id';
     'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
@@ -671,9 +643,9 @@ export type KIT_ROUTES = {
     yearTier: never;
     subject: never;
     document: never;
-    ticket: never;
     week: never;
     tab: never;
+    ticket: never;
     form: never;
     section: never;
     uid: never;
@@ -686,8 +658,8 @@ export type KIT_ROUTES = {
     q: never;
     email: never;
     componentName: never;
+    qrcode: never;
     entity: never;
-    monday: never;
     slug: never;
     path: never;
     extension: never;

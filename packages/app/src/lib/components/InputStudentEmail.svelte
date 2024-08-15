@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { fragment, graphql } from '$houdini';
+  import { fragment, graphql, type InputStudentEmail } from '$houdini';
   import { ButtonInk } from '$lib/components';
   import InputText from '$lib/components/InputText.svelte';
+  import { loading } from '$lib/loading';
   import Fuse from 'fuse.js';
 
   export let usingQuickSignupCode = false;
   export let label: string;
   export let value = '';
 
-  export let validationData;
+  export let validationData: InputStudentEmail | null;
   $: data = fragment(
     validationData,
     graphql(`
-      fragment InputStudentEmail on Query {
+      fragment InputStudentEmail on Query @loading {
         schools {
           aliasMailDomains
           studentMailDomain
@@ -21,9 +22,11 @@
     `),
   );
 
-  $: schoolMailDomains = $data.schools
-    .flatMap((s) => [s.studentMailDomain, ...s.aliasMailDomains])
-    .filter(Boolean);
+  $: schoolMailDomains =
+    $data?.schools
+      ?.flatMap((s) => [s.studentMailDomain, ...s.aliasMailDomains])
+      .map((s) => loading(s, ''))
+      .filter(Boolean) ?? [];
 
   $: nonSchoolMailDomains = [
     'gmail.com',
@@ -72,17 +75,10 @@
     : isValidSchoolMail && !usingQuickSignupCode
       ? 'success'
       : 'muted'}
-  hint={suggestedSchoolMailDomain
-    ? `Ça ressemble à une e-mail universitaire en @${suggestedSchoolMailDomain}`
-    : // with a quicksignup code, everything is automatically validated,
-      // we don't want to confuse users who'll look at their friend's screen
-      // and see a green checkmark while they don't have one
-      isValidSchoolMail && !usingQuickSignupCode
-      ? 'Ton inscription sera automatiquement validée'
-      : 'Si tu en as une, et que tu y as accès, utilise ton adresse e-mail universitaire'}
 >
   <span class="apply-suggestion" slot="hint">
     {#if suggestedSchoolMailDomain}
+      Ça ressemble à une e-mail universitaire en @{suggestedSchoolMailDomain}
       <ButtonInk
         insideProse
         on:click={() => {
@@ -90,6 +86,10 @@
         }}
         >Utiliser
       </ButtonInk>
+    {:else if isValidSchoolMail && !usingQuickSignupCode}
+      Ton inscription sera automatiquement validée
+    {:else}
+      Si tu as accès à ton e-mail universitaire, utilise la
     {/if}
   </span>
 </InputText>
