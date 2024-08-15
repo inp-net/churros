@@ -13,6 +13,8 @@
   // eslint-disable-next-line no-undef
   type Value = $$Generic<multiple extends true ? string[] : string | null>;
   export let title = 'Filières';
+
+  /** Intitial value only (no 2-way binding, listen to on:finish instead)*/
   export let value: MaybeLoading<Value>;
 
   export let options: Array<PickMajor$data>;
@@ -35,15 +37,13 @@
   function groupedBySchool(options: Array<PickMajor$data>): Array<PickMajor$data> {
     const majorsBySchool = [] as Array<PickMajor$data>;
     const allSchoolsUids = new Set(
-      options.flatMap((major) => major.schools.map((school) => school.uid)).filter(loaded)
+      options.flatMap((major) => major.schools.map((school) => school.uid)).filter(loaded),
     );
 
     for (const schoolUid of allSchoolsUids) {
-      for (const major of options) {
-        if (major.schools.some((school) => school.uid === schoolUid)) 
-          majorsBySchool.push(major);
-        
-      }
+      for (const major of options) 
+        if (major.schools.some((school) => school.uid === schoolUid)) majorsBySchool.push(major);
+      
     }
     return majorsBySchool;
   }

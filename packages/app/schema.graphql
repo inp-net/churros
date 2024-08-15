@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -181,14 +176,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -2204,28 +2192,7 @@ type Mutation {
     section: ID!
   ): MutationAnswerFormSectionResult!
 
-  """
-  Authorize a third-party client to access the user's data.
-  Returns an access code.
-
-  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
-
-  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
-
-  - `<clientId>`: The client ID of the app. See registerApp to get this.
-  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
-  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
-
-  Use that code to get an access token with /token:
-
-  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
-
-  - `grant_type`: `authorization_code`
-  - `code`: The code returned by this endpoint
-  - `client_id`: The client ID of the app
-  - `client_secret`: The client secret of the app
-  - `redirect_uri`: The redirect URI used in this request
-  """
+  "\nAuthorize a third-party client to access the user's data. \nReturns an access code. \n\nUse the frontend's /authorize endpoint instead of this, as it requires already being logged-in.\n\nDo a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:\n\n- `<clientId>`: The client ID of the app. See registerApp to get this.\n- `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`\n- `<state>`: A random string generated from personal information used to prevent CSRF attacks.\n\nUse that code to get an access token with /token:\n\nDo a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:\n\n- `grant_type`: `authorization_code`\n- `code`: The code returned by this endpoint\n- `client_id`: The client ID of the app\n- `client_secret`: The client secret of the app\n- `redirect_uri`: The redirect URI used in this request\n      "
   authorize(
     """
     The client ID of the app. See registerApp to get this.
@@ -2297,7 +2264,7 @@ type Mutation {
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
   checkIfBookingIsPaid(code: String!): Boolean!
   claimPromotionCode(code: String!): Boolean!
-  completeRegistration(
+  completeSignup(
     address: String!
     apprentice: Boolean!
     birthday: DateTime
@@ -2311,7 +2278,7 @@ type Mutation {
     phone: String!
     token: String!
     uid: UID!
-  ): MutationCompleteRegistrationResult!
+  ): MutationCompleteSignupResult!
   contribute(optionId: ID!, phone: String!): MutationContributeResult!
   createBot(
     """
@@ -2475,7 +2442,6 @@ type Mutation {
     emoji: String!
     eventId: ID
   ): Boolean!
-  deleteRegistration(id: ID!): Boolean!
   deleteSchoolPicture(id: String!): String!
   deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
   deleteShopOption(optionIds: [String!]!): Boolean!
@@ -2779,14 +2745,45 @@ type Mutation {
     """
     visibility: Visibility!
   ): Theme!
-  startRegistration(
-    email: String!
+  startSignup(
+    email: Email!
+
+    """
+    Prénom
+    """
+    firstName: String!
+
+    """
+    Promo de la personne
+    """
+    graduationYear: Int!
+
+    """
+    Nom de famille
+    """
+    lastName: String!
+
+    """
+    Template d'URL à utliser pour le lien de validation d'adresse e-mail envoyé. [token] est remplacé par le token de validation dans l'URL donnée. La page à cette URL doit appeler Mutation.finishSignup.
+    """
+    mailVerificationCallbackURL: URL!
+
+    """
+    Filière à laquelle la personne se déclare étudiant.e
+    """
+    major: UID
+
+    """
+    Mot de passe
+    """
+    password: String!
 
     """
     Code d'inscription rapide, pour s'inscrire sans mail étudiant et sans validation manuelle. Voir QuickSignupType.
     """
     quickSignupCode: String
-  ): MutationStartRegistrationResult!
+    uid: UID!
+  ): MutationStartSignupResult!
   syncUserLdap(uid: String!): Boolean!
   testNotification(subscriptionEndpoint: String!): Boolean!
   toggleReaction(
@@ -3293,9 +3290,9 @@ type MutationChangeEventOrganizerSuccess {
   data: Event!
 }
 
-union MutationCompleteRegistrationResult = Error | MutationCompleteRegistrationSuccess | ZodError
+union MutationCompleteSignupResult = Error | MutationCompleteSignupSuccess | ZodError
 
-type MutationCompleteRegistrationSuccess {
+type MutationCompleteSignupSuccess {
   data: CompleteSignupResult!
 }
 
@@ -3489,10 +3486,10 @@ type MutationSetPictureSuccess {
   data: Pictured!
 }
 
-union MutationStartRegistrationResult = Error | MutationStartRegistrationSuccess | ZodError
+union MutationStartSignupResult = Error | MutationStartSignupSuccess | ZodError
 
-type MutationStartRegistrationSuccess {
-  data: Boolean!
+type MutationStartSignupSuccess {
+  data: UserCandidate!
 }
 
 union MutationUnbanFromEventResult = Error | MutationUnbanFromEventSuccess | ZodError
@@ -4243,6 +4240,16 @@ type Query {
   Récupère toutes les pages existantes. Réservé aux administrateur·ice.s.
   """
   pages(after: String, before: String, first: Int, last: Int): QueryPagesConnection!
+
+  """
+  Récupérer des informations sur un lien d'inscription rapide
+  """
+  quickSignup(
+    """
+    Identifiant de l'inscription rapide. Si null, renvoie null
+    """
+    id: LocalID!
+  ): QuickSignup!
   quickSignups(after: String, before: String, first: Int, last: Int): QueryQuickSignupsConnection!
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
@@ -4305,6 +4312,21 @@ type Query {
   studentAssociations(canContributeOnly: Boolean): [StudentAssociation!]!
   subject(forApprentices: Boolean!, slug: String!, yearTier: Int!): Subject!
   subjects: [Subject!]!
+
+  """
+  Génère un pseudo suggéré à partir des infos rentrées par l'utilisateur.ice en cours d'inscription
+  """
+  suggestedUid(
+    """
+    Prénom
+    """
+    firstName: String!
+
+    """
+    Nom de famille
+    """
+    lastName: String!
+  ): String!
   themes(
     """
     Récupérer tous les thèmes auquel ont a accès, même ceux qui sont passés
@@ -6226,6 +6248,10 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
+  school: UID
+    @deprecated(
+      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
+    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6453,7 +6479,6 @@ type UserBookingsConnectionEdge {
 UserCandidates are users in the registration process
 """
 type UserCandidate implements Node {
-  address: String!
   apprentice: Boolean!
   birthday: DateTime
   cededImageRightsToTVn7: Boolean!
@@ -6492,10 +6517,6 @@ type UserCandidate implements Node {
     """
     major: String!
   ): Boolean
-  phone: String!
-  schoolEmail: String
-  schoolServer: String
-  schoolUid: String
   suggestedUid: String!
   uid: String!
 

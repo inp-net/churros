@@ -2,7 +2,6 @@ import { builder, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { createUid, fullName, isSchoolEmail, needsManualValidation } from '../index.js';
 
-/** Represents a user, mapped on the underlying database object. */
 export const UserCandidateType = builder.prismaNode('UserCandidate', {
   id: { field: 'id' },
   include: {
@@ -78,18 +77,10 @@ export const UserCandidateType = builder.prismaNode('UserCandidate', {
       resolve: ({ graduationYear }) => graduationYear ?? new Date().getFullYear() + 3,
     }),
 
-    // School details
-    schoolServer: t.exposeString('schoolServer', { nullable: true }),
-    schoolUid: t.exposeString('schoolUid', { nullable: true }),
-    schoolEmail: t.exposeString('schoolEmail', { nullable: true }),
-
-    // Profile details
-    address: t.exposeString('address'),
     birthday: t.expose('birthday', {
       type: DateTimeScalar,
       nullable: true,
     }),
-    phone: t.exposeString('phone'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
     usingQuickSignup: t.boolean({

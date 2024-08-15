@@ -1,7 +1,0 @@
-query LayoutEventPage($id: LocalID!) {
-  event(id: $id) {
-    canScanBookings
-    canEdit
-    canSeeAllBookings
-  }
-}

@@ -141,34 +141,28 @@ model GodparentRequest {
 /// UserCandidates are users in the registration process
 model UserCandidate {
   id        String   @id @default(dbgenerated("nanoid('candidate:')"))
-  uid       String   @default("") @db.VarChar(255)
+  token     String   @unique
   createdAt DateTime @default(now())
 
   email          String  @unique @db.VarChar(255)
-  token          String  @unique
   emailValidated Boolean @default(false)
-
-  schoolServer String? @db.VarChar(255)
-  schoolUid    String? @db.VarChar(255)
-  schoolEmail  String? @unique @db.VarChar(255)
-
+  uid            String  @default("") @db.VarChar(255)
   firstName      String  @default("") @db.VarChar(255)
   lastName       String  @default("") @db.VarChar(255)
+
+  // OMG des mdps en clair!!!!111 suffit de finir l'inscription :)
+  password String @default("") @db.VarChar(255)
+
   majorId        String?
   major          Major?  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int?
-  password       String  @default("") @db.VarChar(255)
   apprentice     Boolean @default(false)
 
-  address  String    @default("") @db.VarChar(255)
-  birthday DateTime?
-  phone    String    @default("") @db.VarChar(255)
+  birthday               DateTime?
+  cededImageRightsToTVn7 Boolean   @default(false)
 
-  cededImageRightsToTVn7 Boolean      @default(false)
-  usingQuickSignup       QuickSignup? @relation(fields: [quickSignupId], references: [id])
-  quickSignupId          String?
-
-  @@unique([schoolServer, schoolUid])
+  usingQuickSignup QuickSignup? @relation(fields: [quickSignupId], references: [id])
+  quickSignupId    String?
 }
 
 /// A password reset token

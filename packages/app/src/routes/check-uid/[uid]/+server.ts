@@ -14,6 +14,7 @@ const additionalReservedUsernames = new Set([
   'check-uid',
   'developers',
   'markdown',
+  'signup',
   'announcements',
   'backrooms',
   'bar-weeks',

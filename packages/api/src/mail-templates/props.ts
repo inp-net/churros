@@ -39,7 +39,7 @@ export type MailProps = {
     reason: string;
   };
   'signup-verify-mail': {
-    fullName: string;
+    username: string;
     url: string;
   };
   'verify-mail': {

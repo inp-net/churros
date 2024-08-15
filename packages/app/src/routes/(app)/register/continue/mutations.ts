@@ -16,7 +16,7 @@ export const CompleteSignup = graphql(`
     $cededImageRightsToTVn7: Boolean!
     $apprentice: Boolean!
   ) {
-    completeRegistration(
+    completeSignup(
       address: $address
       apprentice: $apprentice
       birthday: $birthday
@@ -41,7 +41,7 @@ export const CompleteSignup = graphql(`
       ... on Error {
         message
       }
-      ... on MutationCompleteRegistrationSuccess {
+      ... on MutationCompleteSignupSuccess {
         data {
           ... on User {
             uid

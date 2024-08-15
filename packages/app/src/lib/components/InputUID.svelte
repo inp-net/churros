@@ -1,6 +1,7 @@
 <script lang="ts">
   import debounce from 'lodash.debounce';
   import InputText from './InputText.svelte';
+  import { route } from '$lib/ROUTES';
 
   export let optional = false;
   export let value: string;
@@ -16,7 +17,7 @@
     uidIsAvailable = null;
     try {
       ({ available: uidIsAvailable, errors: uidAvailabilityErrors } = await fetch(
-        `/check-uid/${uid}`,
+        route('GET /check-uid/[uid]', uid),
       ).then(async (r) => {
         if (r.status !== 200) throw new Error('Failed to check uid availability');
         return r.json();
@@ -54,10 +55,11 @@
   hint={value && uidIsAvailable === null ? 'Vérification' : uidIsAvailable ? 'Disponible' : hint}
   hintStyle={value && uidIsAvailable === null ? 'loading' : uidIsAvailable ? 'success' : 'muted'}
   {label}
-  pattern="^[\w\-]+$"
+  pattern="^[\w_\-]+$"
   minlength={3}
   maxlength={255}
   required={!optional}
   errors={[...(errors ?? []), ...(uidAvailabilityErrors ?? [])]}
+  {...$$restProps}
   bind:value
 ></InputText>

@@ -5,9 +5,8 @@ import { NotificationChannel, Prisma, type Major, type UserCandidate } from '@ch
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 import { completeRegistration, hashPassword, UserCandidateType, UserType } from '../index.js';
-// TODO rename registration to signup
 
-builder.mutationField('completeRegistration', (t) =>
+builder.mutationField('completeSignup', (t) =>
   t.field({
     type: builder.unionType('CompleteSignupResult', {
       types: [UserCandidateType, UserType],

@@ -4,7 +4,7 @@
 
   const dispatch = createEventDispatcher<{ change: Value }>();
 
-  type Value = $$Generic<string>;
+  type Value = $$Generic<string | number>;
   export let value: MaybeLoading<Value> | undefined = undefined;
   export let options:
     | Value[]
