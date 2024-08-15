@@ -214,7 +214,7 @@
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
         <section class="actions">
           <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
-          <ButtonSecondary href={refroute('/register')}>Inscription</ButtonSecondary>
+          <ButtonSecondary href={refroute('/signup')}>Inscription</ButtonSecondary>
         </section>
       </section>
     {/if}

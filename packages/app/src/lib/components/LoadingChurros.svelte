@@ -3,7 +3,7 @@
 </script>
 
 <div class="spinner">
-  <ChurrosLogo hollow drawing loopDrawingAnimation />
+  <ChurrosLogo drawing loopDrawingAnimation />
 </div>
 
 <style>

@@ -1,85 +1,35 @@
-import { builder, freeUidValidator, log, prisma, yearTier } from '#lib';
-import { DateTimeScalar, UIDScalar } from '#modules/global';
+import { builder, log, prisma, yearTier } from '#lib';
 import { notify } from '#modules/notifications';
-import { NotificationChannel, Prisma, type Major, type UserCandidate } from '@churros/db/prisma';
+import {
+  CredentialType,
+  NotificationChannel,
+  Prisma,
+  type Major,
+  type UserCandidate,
+} from '@churros/db/prisma';
+import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
-import { ZodError } from 'zod';
-import { completeRegistration, hashPassword, UserCandidateType, UserType } from '../index.js';
+import { nanoid } from 'nanoid';
+import { completeRegistration, hashPassword } from '../index.js';
+import { SignupCompletionResultType } from '../types/signup-completion-result.js';
 
 builder.mutationField('completeSignup', (t) =>
   t.field({
-    type: builder.unionType('CompleteSignupResult', {
-      types: [UserCandidateType, UserType],
-      resolveType: (value) =>
-        Object.hasOwn(value, 'quickSignupId') ? UserCandidateType : UserType,
-    }),
-    errors: { types: [ZodError] },
+    type: SignupCompletionResultType,
     args: {
       token: t.arg.string(),
-      firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      uid: t.arg({
-        type: UIDScalar,
-        validate: [freeUidValidator],
-      }),
-      majorId: t.arg.id({ required: false }),
-      graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
-      birthday: t.arg({ type: DateTimeScalar, required: false }),
-      phone: t.arg.string({ validate: { maxLength: 255 } }),
-      address: t.arg.string({ validate: { maxLength: 255 } }),
-      password: t.arg.string({ validate: { minLength: 8, maxLength: 255 } }),
-      passwordConfirmation: t.arg.string({ validate: {} }),
-      cededImageRightsToTVn7: t.arg.boolean(),
-      apprentice: t.arg.boolean(),
     },
-    validate: [
-      ({ password, passwordConfirmation }) => password === passwordConfirmation,
-      { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
-    ],
-    // @ts-expect-error FIXME typescript can't infer that the return type is a union
-    async resolve(
-      _,
-      {
-        token,
-        firstName,
-        lastName,
-        majorId,
-        uid,
-        graduationYear,
-        address,
-        birthday,
-        phone,
-        password,
-        cededImageRightsToTVn7,
-        apprentice,
-      },
-    ) {
-      await log(
-        'signups',
-        'complete',
-        {
-          message: `Complétion de l'inscription de ${firstName} ${lastName} ${yearTier(
-            graduationYear,
-          ).toString()}A ${phone}`,
-        },
-        `token ${token}`,
-      );
+    async resolve(_, { token }, { request }) {
+      const candidate = await prisma.userCandidate.findUniqueOrThrow({
+        where: { token },
+      });
+      await log('signups', 'complete', { candidate, token }, candidate.id);
       const user = await completeRegistration(
         await prisma.userCandidate.update({
           where: { token },
           data: {
             emailValidated: true,
-            uid,
-            address,
-            birthday,
-            firstName,
-            majorId,
-            graduationYear,
-            lastName,
-            phone,
-            password: await hashPassword(password),
-            cededImageRightsToTVn7,
-            apprentice,
+            password: await hashPassword(candidate.password),
           },
           include: {
             major: { include: { schools: true } },
@@ -88,7 +38,7 @@ builder.mutationField('completeSignup', (t) =>
         }),
       ).catch((error) => {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025')
-          throw new GraphQLError("Cette demande d'inscription déjà complétée ou inexistante.");
+          throw new GraphQLError("Cette demande d'inscription est déjà complétée ou inexistante.");
 
         throw error;
       });
@@ -124,20 +74,35 @@ builder.mutationField('completeSignup', (t) =>
         },
       });
 
-      await notify(adminsResponsibleForThisSignup, {
-        title: needsVerification ? `Inscription en attente de validation` : `Nouvelle inscription!`,
-        body:
-          `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
+      // The !candidate.emailValidated conditions prevents sending the notificaiton
+      // on subsequent completeSignup requests for the same user candidate
+      if (needsVerification && !candidate.emailValidated) {
+        await notify(adminsResponsibleForThisSignup, {
+          title: `Inscription en attente de validation`,
+          body: `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
             userOrCandidate.graduationYear ? yearTier(userOrCandidate.graduationYear) : '?'
-          }A ${userOrCandidate.major?.shortName ?? 'sans filière'}) ` +
-          (needsVerification ? `a fait une demande d'inscription` : `s'est inscrit·e!`),
-        data: {
-          channel: NotificationChannel.Other,
-          goto: needsVerification ? `/signups/edit/${userOrCandidate.email}` : `/@${user.uid}`,
-          group: undefined,
-        },
-      });
+          }A ${userOrCandidate.major?.shortName ?? 'sans filière'}) a fait une demande d'inscription`,
+          data: {
+            channel: NotificationChannel.Other,
+            goto: `/signups/edit/${userOrCandidate.email}`,
+            group: undefined,
+          },
+        });
+      }
 
+      const authToken = needsVerification
+        ? null
+        : await prisma.credential.create({
+            data: {
+              type: CredentialType.Token,
+              userId: user.id,
+              value: nanoid(),
+              userAgent: request.headers.get('User-Agent')?.slice(0, 255) ?? '',
+              expiresAt: addDays(new Date(), 1),
+            },
+          });
+
+      // TODO set token on response header
       // TODO: ldap7 support
       // if (user?.major && user.major.ldapSchool) {
       //   try {
@@ -147,7 +112,10 @@ builder.mutationField('completeSignup', (t) =>
       //   }
       // }
 
-      return userOrCandidate;
+      return {
+        needsManualValidation: needsVerification,
+        token: authToken ?? undefined,
+      };
     },
   }),
 );

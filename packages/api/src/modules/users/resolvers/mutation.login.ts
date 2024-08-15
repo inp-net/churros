@@ -146,7 +146,7 @@ export async function login(
             },
           });
 
-          throw new Error("Ton compte n'est pas encore prêt. Réessaie plus tard.");
+          throw new GraphQLError("Ton compte n'est pas encore prêt. Réessaie plus tard.");
         }
       }
     }

@@ -44,5 +44,5 @@
   >
     <slot name="before" slot="before" />
   </BaseInputText>
-  <slot name="hint" slot="hint" />
+  <slot name="hint" slot="hint">{hint}</slot>
 </InputField>

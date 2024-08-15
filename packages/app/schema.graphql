@@ -948,8 +948,6 @@ type CommentsEdge {
   node: Comment!
 }
 
-union CompleteSignupResult = User | UserCandidate
-
 type ContributionOption {
   descriptionHtml: String!
   id: ID!
@@ -2297,21 +2295,7 @@ type Mutation {
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
   checkIfBookingIsPaid(code: String!): Boolean!
   claimPromotionCode(code: String!): Boolean!
-  completeSignup(
-    address: String!
-    apprentice: Boolean!
-    birthday: DateTime
-    cededImageRightsToTVn7: Boolean!
-    firstName: String!
-    graduationYear: Int!
-    lastName: String!
-    majorId: ID
-    password: String!
-    passwordConfirmation: String!
-    phone: String!
-    token: String!
-    uid: UID!
-  ): MutationCompleteSignupResult!
+  completeSignup(token: String!): SignupCompletionResult!
   contribute(optionId: ID!, phone: String!): MutationContributeResult!
   createBot(
     """
@@ -2810,6 +2794,11 @@ type Mutation {
     Mot de passe
     """
     password: String!
+
+    """
+    Confirmation du mot de passe
+    """
+    passwordConfirmation: String!
 
     """
     Code d'inscription rapide, pour s'inscrire sans mail étudiant et sans validation manuelle. Voir QuickSignupType.
@@ -3321,12 +3310,6 @@ union MutationChangeEventOrganizerResult = Error | MutationChangeEventOrganizerS
 
 type MutationChangeEventOrganizerSuccess {
   data: Event!
-}
-
-union MutationCompleteSignupResult = Error | MutationCompleteSignupSuccess | ZodError
-
-type MutationCompleteSignupSuccess {
-  data: CompleteSignupResult!
 }
 
 union MutationContributeResult = Error | MutationContributeSuccess | ZodError
@@ -5637,6 +5620,21 @@ type ShopPayment {
 Du texte de 200 caractères maximum
 """
 scalar ShortString
+
+"""
+Résultat d'une finalisation d'inscription
+"""
+type SignupCompletionResult {
+  """
+  L'inscription n'est pas encore terminée, l'équipe administrative de l'AE doit valider la demade d'inscription
+  """
+  needsManualValidation: Boolean!
+
+  """
+  Token utilisable pour connecter la personne immédiatement suite à l'inscription
+  """
+  token: Credential
+}
 
 enum SortDirection {
   Ascending

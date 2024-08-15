@@ -11,6 +11,7 @@ import { Email, UIDScalar, URLScalar } from '#modules/global';
 import { UserCandidateType } from '#modules/users/types';
 import { Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
+import omit from 'lodash.omit';
 import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
 
@@ -59,18 +60,32 @@ builder.mutationField('startSignup', (t) =>
         description: 'Mot de passe',
         validate: { minLength: 8 },
       }),
+      passwordConfirmation: t.arg.string({
+        description: 'Confirmation du mot de passe',
+      }),
       mailVerificationCallbackURL: t.arg({
         type: URLScalar,
         description:
           "Template d'URL à utliser pour le lien de validation d'adresse e-mail envoyé. [token] est remplacé par le token de validation dans l'URL donnée. La page à cette URL doit appeler Mutation.finishSignup.",
       }),
     },
+    validate: [
+      [
+        ({ password, passwordConfirmation }) => password === passwordConfirmation,
+        { path: ['passwordConfirmation'], message: 'Les mots de passe ne correspondent pas.' },
+      ],
+      [
+        ({ major, quickSignupCode }) => (quickSignupCode ? Boolean(major) : true),
+        { path: ['major'], message: 'Il faut choisir une filière' },
+      ],
+    ],
     async resolve(
       query,
       _,
       { quickSignupCode, mailVerificationCallbackURL, major: majorUid, ...args },
       { user },
     ) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       // TODO maybe hold UID while we process the signup so that no one else can take it while someone else is signing up?
       if (
         !user?.admin &&
@@ -121,8 +136,13 @@ builder.mutationField('startSignup', (t) =>
           ...query,
           data: {
             token: nanoid(),
-            quickSignupId: quickSignup?.id ?? null,
-            ...args,
+            usingQuickSignup: quickSignup
+              ? {
+                  connect: { id: quickSignup.id },
+                }
+              : undefined,
+            major: major ? { connect: { id: major.id } } : undefined,
+            ...omit(args, 'passwordConfirmation'),
           },
         })
         .catch((error) => {

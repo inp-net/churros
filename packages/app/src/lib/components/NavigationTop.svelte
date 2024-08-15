@@ -114,7 +114,7 @@
           {/if}
         </ButtonGhost>
       {:else}
-        <ButtonSecondary href={refroute('/register')}>Inscription</ButtonSecondary>
+        <ButtonSecondary href={refroute('/signup')}>Inscription</ButtonSecondary>
         <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
       {/if}
     {/if}

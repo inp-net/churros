@@ -1,0 +1,3 @@
+allow specifying an picture URL directly for Pictured objects ~importance:low ~difficulty:moderate:
+		use case: photo7 album thumbnails: serving the thumb from photo7.inpt.fr directly 
+		(no need to handle file uploads with multipart request bodies which is a pita, and no need to propagate source image deletion/modifications)

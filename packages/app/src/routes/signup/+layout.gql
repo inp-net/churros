@@ -1,0 +1,5 @@
+query LayoutSignup {
+  me {
+    uid
+  }
+}

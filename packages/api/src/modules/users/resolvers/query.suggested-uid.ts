@@ -1,4 +1,5 @@
 import { builder } from '#lib';
+import { UID_REGEX_PATTERN } from '#modules/global';
 import { createUid } from '#modules/users/utils';
 
 builder.queryField('suggestedUid', (t) =>
@@ -11,7 +12,9 @@ builder.queryField('suggestedUid', (t) =>
     },
     authScopes: () => true,
     async resolve(_, args) {
-      return createUid(args);
+      const uid = await createUid(args);
+      if (!UID_REGEX_PATTERN.test(uid)) return '';
+      return uid;
     },
   }),
 );

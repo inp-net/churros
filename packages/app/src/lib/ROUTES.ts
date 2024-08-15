@@ -237,10 +237,6 @@ const PAGES = {
   '/quick-signups/qr/[code]': (code: string | number, params?: {}) => {
     return `/quick-signups/qr/${code}`;
   },
-  '/register': (params?: { quickSignupCode?: string | number }) => {
-    return `/register${params?.quickSignupCode ? `/${params?.quickSignupCode}` : ''}`;
-  },
-  '/register/continue': `/register/continue`,
   '/reports': `/reports`,
   '/reports/[number]': (number: string | number, params?: {}) => {
     return `/reports/${number}`;
@@ -304,8 +300,12 @@ const PAGES = {
     return `/developers/apps/${id}`;
   },
   '/developers/apps/create': `/developers/apps/create`,
+  '/signup': `/signup`,
   '/signup/[qrcode]': (qrcode: string | number, params?: {}) => {
     return `/signup/${qrcode}`;
+  },
+  '/signup/finish/[token]': (token: string | number, params?: {}) => {
+    return `/signup/finish/${token}`;
   },
 };
 
@@ -577,8 +577,6 @@ export type KIT_ROUTES = {
     '/quick-signups/create': never;
     '/quick-signups/manage': never;
     '/quick-signups/qr/[code]': 'code';
-    '/register': 'quickSignupCode';
-    '/register/continue': never;
     '/reports': never;
     '/reports/[number]': 'number';
     '/schools/[uid]': 'uid';
@@ -606,7 +604,9 @@ export type KIT_ROUTES = {
     '/developers/apps': never;
     '/developers/apps/[id]': 'id';
     '/developers/apps/create': never;
+    '/signup': never;
     '/signup/[qrcode]': 'qrcode';
+    '/signup/finish/[token]': 'token';
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
@@ -653,7 +653,6 @@ export type KIT_ROUTES = {
     itemUid: never;
     token: never;
     group: never;
-    quickSignupCode: never;
     number: never;
     q: never;
     email: never;

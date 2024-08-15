@@ -167,6 +167,7 @@
   .logo {
     max-width: 33vw;
     height: 2rem;
+    overflow: visible;
   }
 
   .bug-report {

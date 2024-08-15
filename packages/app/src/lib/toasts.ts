@@ -139,6 +139,7 @@ export const toasts = {
     caveats:
       | Record<NoInfer<CaveatsKeys>, null | 'info' | 'warning' | 'success' | 'error'>
       | undefined = undefined,
+    options: ToastOptions<{}> | undefined = undefined,
   ): result is SucceededMutationResult<
     MutationName,
     SuccessData,
@@ -167,12 +168,14 @@ export const toasts = {
           typeof successMessage === 'function'
             ? successMessage(result.data[mutationName].data)
             : successMessage,
+          '',
+          options,
         );
       }
       return true;
     }
 
-    toasts.error(errorMessage, mutationErrorMessages(mutationName, result).join('; '));
+    toasts.error(errorMessage, mutationErrorMessages(mutationName, result).join('; '), options);
     return false;
   },
   async remove(id: string) {

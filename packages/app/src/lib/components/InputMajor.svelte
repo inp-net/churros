@@ -11,6 +11,12 @@
   /** Selected major uid */
   export let major: string;
 
+  /** Allow clearing selection */
+  export let clearable = false;
+
+  /** Text on the clear button */
+  export let clearLabel = 'Effacer';
+
   export let initialSchool: InputMajorInitialSchool | null;
   $: dataInitialSchool = fragment(
     initialSchool,
@@ -29,10 +35,11 @@
   // Preselect major if there's only one
   $: if (
     !major &&
-    loading($dataInitialSchool?.majors.at(0)?.uid, null) &&
+    loading($dataInitialSchool?.majors?.at(0)?.uid, null) &&
     $dataInitialSchool?.majors.length === 1
-  )
+  ) 
     major = $dataInitialSchool!.majors.at(0)!.uid;
+  
 
   export let options: InputMajor | null;
   $: data = fragment(
@@ -52,7 +59,7 @@
   $: selected = $data?.majors.find((m) => m.uid === major) ?? null;
 </script>
 
-<div class="input-major">
+<div class="input-major" class:has-school={$dataInitialSchool}>
   {#if $dataInitialSchool}
     <div class="school">
       <AvatarSchool school={$dataInitialSchool} />
@@ -65,7 +72,13 @@
       <AvatarMajor major={selected} />
       <LoadingText value={selected.name} />
     {:else}
-      <p class="muted">Filière...</p>
+      <p class="muted">
+        {#if clearable}
+          Sans filière (externe)
+        {:else}
+          Filière...
+        {/if}
+      </p>
     {/if}
   </div>
   <div class="choose-btn">
@@ -78,8 +91,15 @@
         options={$data.majors}
         let:open
       >
+        {#if clearable && major}
+          <ButtonSecondary
+            on:click={() => {
+              major = '';
+            }}>{clearLabel}</ButtonSecondary
+          >
+        {/if}
         <ButtonSecondary on:click={open}>
-          {#if major}Changer{:else}Choisir{/if}
+          {#if major || clearable}Changer{:else}Choisir{/if}
         </ButtonSecondary>
       </PickMajor>
     {:else}
@@ -97,11 +117,15 @@
     align-items: center;
   }
 
-  .school,
-  .major {
+  .has-school .school,
+  .has-school .major {
     max-width: 40%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .choose-btn {
+    margin-left: auto;
   }
 </style>

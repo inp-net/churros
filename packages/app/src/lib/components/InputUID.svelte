@@ -7,9 +7,10 @@
   export let value = '';
   export let label: string;
   export let hint =
-    'Composé de lettres, chiffres, - et _. Choisis-le bien, tu ne pourras pas le modifier par la suite ;)';
+    'Composé de lettres, chiffres, - et _. Choisis-le bien, tu ne pourras pas changer ;)';
   export let errors: string[] | undefined = undefined;
   let uidAvailabilityErrors: string[] = [];
+
   export let unavailable: boolean = false;
   $: unavailable = uidAvailabilityErrors.length > 0;
 

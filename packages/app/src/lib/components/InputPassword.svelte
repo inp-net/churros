@@ -5,6 +5,7 @@
 
   export let label: string;
   export let value: string;
+  export let hint = '8 caractères minimum';
 
   // TODO: zxcvbn
 
@@ -17,7 +18,7 @@
   type={shown ? 'text' : 'password'}
   bind:value
   minlength={8}
-  hint="8 caractères minimum"
+  {hint}
   actionIcon={shown ? IconHide : IconShow}
   on:action={() => {
     shown = !shown;

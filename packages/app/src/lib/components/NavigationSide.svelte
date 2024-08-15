@@ -60,7 +60,7 @@
         }, 1000);
       }}
     >
-      <ChurrosLogo hollow drawing={animatingChurrosLogo} />
+      <ChurrosLogo drawing={animatingChurrosLogo} />
     </ButtonNavigation>
   </div>
   <div class="middle">

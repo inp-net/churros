@@ -9,11 +9,11 @@
   export let label: string;
   export let value = '';
 
-  export let validationData: InputStudentEmail | null;
+  export let major: InputStudentEmail | null;
   $: data = fragment(
-    validationData,
+    major,
     graphql(`
-      fragment InputStudentEmail on Query @loading {
+      fragment InputStudentEmail on Major @loading {
         schools {
           aliasMailDomains
           studentMailDomain
@@ -22,11 +22,10 @@
     `),
   );
 
-  $: schoolMailDomains =
-    $data?.schools
-      ?.flatMap((s) => [s.studentMailDomain, ...s.aliasMailDomains])
-      .map((s) => loading(s, ''))
-      .filter(Boolean) ?? [];
+  $: schoolMailDomains = ($data?.schools
+    ?.flatMap((s) => [s.studentMailDomain, ...s.aliasMailDomains])
+    .map((s) => loading(s, ''))
+    .filter(Boolean) ?? []) as string[];
 
   $: nonSchoolMailDomains = [
     'gmail.com',
@@ -70,13 +69,9 @@
   {label}
   type="email"
   bind:value
-  hintStyle={suggestedSchoolMailDomain
-    ? 'warning'
-    : isValidSchoolMail && !usingQuickSignupCode
-      ? 'success'
-      : 'muted'}
+  hintStyle={suggestedSchoolMailDomain ? 'warning' : isValidSchoolMail ? 'success' : 'muted'}
 >
-  <span class="apply-suggestion" slot="hint">
+  <svelte:fragment slot="hint">
     {#if suggestedSchoolMailDomain}
       Ça ressemble à une e-mail universitaire en @{suggestedSchoolMailDomain}
       <ButtonInk
@@ -86,10 +81,15 @@
         }}
         >Utiliser
       </ButtonInk>
-    {:else if isValidSchoolMail && !usingQuickSignupCode}
-      Ton inscription sera automatiquement validée
-    {:else}
+    {:else if isValidSchoolMail}
+      {#if usingQuickSignupCode}
+        <!-- All signups are auto validated when using quick signup codes, even w/o student mails. The other sentence would be misleading in that context -->
+        Adresse e-mail universitaire valide
+      {:else}
+        Ton inscription sera automatiquement validée
+      {/if}
+    {:else if major}
       Si tu as accès à ton e-mail universitaire, utilise la
     {/if}
-  </span>
+  </svelte:fragment>
 </InputText>

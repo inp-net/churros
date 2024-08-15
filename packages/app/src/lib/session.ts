@@ -1,6 +1,6 @@
 import { page } from '$app/stores';
 import { graphql, type SessionToken$data } from '$houdini';
-import { redirect } from '@sveltejs/kit';
+import { redirect, type Cookies } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 import { derived } from 'svelte/store';
 import { Selector, type PropsType } from './zeus';
@@ -71,14 +71,16 @@ graphql(`
 
 /** Saves `token` as a cookie. */
 export const saveSessionToken = (
-  document: { cookie: string },
+  document: { cookie: string } | { cookies: Cookies },
   { token, expiresAt }: SessionToken$data,
 ) => {
-  document.cookie = cookie.serialize('token', token, {
+  const options = {
     expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     path: '/',
     sameSite: 'lax',
-  });
+  } as const;
+  if ('cookie' in document) document.cookie = cookie.serialize('token', token, options);
+  else document.cookies.set('token', token, options);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -16,6 +16,7 @@
   import { onMount } from 'svelte';
   import { Login } from './mutations';
   import { cache } from '$houdini';
+  import { route } from '$lib/ROUTES';
 
   let email = '';
   let password = '';
@@ -82,8 +83,6 @@
       await redirect();
     }
   });
-
-  $: linkParams = email ? `?${new URLSearchParams({ email }).toString()}` : '';
 </script>
 
 <h1>Connexion</h1>
@@ -115,8 +114,8 @@
 
   <hr />
   <section class="actions">
-    <ButtonSecondary href="./forgotten/{linkParams}">Mot de passe oublié</ButtonSecondary>
-    <ButtonSecondary href="/register/{linkParams}">Créer un compte</ButtonSecondary>
+    <ButtonSecondary href={route('/login/forgotten')}>Mot de passe oublié</ButtonSecondary>
+    <ButtonSecondary href={route('/signup')}>S'inscrire</ButtonSecondary>
   </section>
 </form>
 
