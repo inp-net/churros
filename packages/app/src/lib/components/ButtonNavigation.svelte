@@ -9,7 +9,8 @@
   const dispatch = createEventDispatcher<{ click: undefined }>();
 
   export let href: string;
-  export let routeID: LayoutRouteId;
+  /** If null, only highlighted when current page is href. */
+  export let routeID: LayoutRouteId | null;
   export let label: string | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
@@ -19,17 +20,18 @@
 
   const mobile = isMobile();
 
-  $: isCurrent = (route: LayoutRouteId) => route && $page.route.id === route;
+  $: isCurrent = (route: LayoutRouteId | null, href: string) =>
+    route ? $page.route.id === route : $page.url.pathname === href;
 </script>
 
 <svelte:element
-  this={isCurrent(routeID) ? 'button' : 'a'}
+  this={isCurrent(routeID, href) ? 'button' : 'a'}
   {href}
   class="button-navigation"
-  role={isCurrent(routeID) ? 'button' : 'link'}
-  class:current={isCurrent(routeID)}
+  role={isCurrent(routeID, href) ? 'button' : 'link'}
+  class:current={isCurrent(routeID, href)}
   use:tooltip={label ? { content: label, placement: tooltipsOn } : undefined}
-  on:click={isCurrent(routeID)
+  on:click={isCurrent(routeID, href)
     ? () => {
         scrollableContainer(mobile).scrollTo({ top: 0, behavior: 'smooth' });
         dispatch('click');
@@ -37,7 +39,7 @@
     : undefined}
 >
   <slot>
-    {#if isCurrent(routeID)}
+    {#if isCurrent(routeID, href)}
       <svelte:component this={iconFilled}></svelte:component>
     {:else if icon}
       <svelte:component this={icon}></svelte:component>

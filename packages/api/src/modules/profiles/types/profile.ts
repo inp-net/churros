@@ -10,6 +10,6 @@ export const ProfileType = builder.unionType('Profile', {
     "Resource possédant un '@' (uid) et pouvant raisonnablement posséder une page de profil, avec nom, photo, bio/description...",
   types: [UserType, GroupType, StudentAssociationType, SchoolType, MajorType],
   async resolveType({ id }) {
-    return splitID(id)[1];
+    return splitID(id)[0];
   },
 });

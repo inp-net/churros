@@ -24,6 +24,7 @@
   export let tabindex = 0;
   export let help = '';
   export let highlighted = false;
+  export let stretches = false;
 </script>
 
 <svelte:element
@@ -36,6 +37,7 @@
   class:danger
   class:highlighted
   class:success
+  class:stretches
   class:circle
   class:inside-prose={insideProse}
   href={disabled ? undefined : href}
@@ -75,6 +77,11 @@
     border: solid var(--border-block);
     border-radius: 5px;
     transition: all 200ms ease;
+  }
+
+  .button-secondary.stretches {
+    flex-grow: 1;
+    justify-content: center;
   }
 
   .button-secondary.highlighted {

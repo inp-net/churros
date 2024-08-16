@@ -13,6 +13,9 @@ const PAGES = {
   '/[uid=uid]': (uid: Parameters<typeof import('../params/uid.ts').match>[0], params?: {}) => {
     return `/${uid}`;
   },
+  '/[uid=uid]/edit': (uid: Parameters<typeof import('../params/uid.ts').match>[0], params?: {}) => {
+    return `/${uid}/edit`;
+  },
   '/announcements': `/announcements`,
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
@@ -24,10 +27,6 @@ const PAGES = {
   '/birthdays': `/birthdays`,
   '/boards': `/boards`,
   '/bookings': `/bookings`,
-  '/bookings.old': `/bookings.old`,
-  '/bookings.old/[pseudoID]': (pseudoID: string | number, params?: {}) => {
-    return `/bookings.old/${pseudoID}`;
-  },
   '/bookings/[code]': (code: string | number, params?: {}) => {
     return `/bookings/${code}`;
   },
@@ -161,9 +160,6 @@ const PAGES = {
   },
   '/forms/create': `/forms/create`,
   '/groups': `/groups`,
-  '/groups/[uid]': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}`;
-  },
   '/groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
     return `/groups/${params.uid}/${params.page?.join('/')}`;
   },
@@ -244,9 +240,6 @@ const PAGES = {
   '/reports/[number]': (number: string | number, params?: {}) => {
     return `/reports/${number}`;
   },
-  '/schools/[uid]': (uid: string | number, params?: {}) => {
-    return `/schools/${uid}`;
-  },
   '/schools/[uid]/edit': (uid: string | number, params?: {}) => {
     return `/schools/${uid}/edit`;
   },
@@ -264,9 +257,6 @@ const PAGES = {
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
   },
-  '/student-associations/[uid]': (uid: string | number, params?: {}) => {
-    return `/student-associations/${uid}`;
-  },
   '/student-associations/[uid]/[...page]': (params: {
     uid: string | number;
     page: (string | number)[];
@@ -281,9 +271,6 @@ const PAGES = {
     page: (string | number)[];
   }) => {
     return `/student-associations/${params.uid}/edit/pages/${params.page?.join('/')}`;
-  },
-  '/users/[uid]': (uid: string | number, params?: {}) => {
-    return `/users/${uid}`;
   },
   '/users/[uid]/edit': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit`;
@@ -322,9 +309,6 @@ const SERVERS = {
   ) => {
     return `/${entity}`;
   },
-  'GET /bookings.old/[pseudoID].pdf': (pseudoID: string | number, params?: {}) => {
-    return `/bookings.old/${pseudoID}.pdf`;
-  },
   'GET /bookings/[code].pdf': (code: string | number, params?: {}) => {
     return `/bookings/${code}.pdf`;
   },
@@ -345,13 +329,25 @@ const SERVERS = {
     return `/forms/${params.form}/answers.${params.extension}`;
   },
   'GET /frappe': `/frappe`,
+  'GET /groups/[uid]': (uid: string | number, params?: {}) => {
+    return `/groups/${uid}`;
+  },
   'GET /groups/[uid].pdf': (uid: string | number, params?: {}) => {
     return `/groups/${uid}.pdf`;
   },
   'GET /help/prefilled-links': `/help/prefilled-links`,
   'GET /logout': `/logout`,
   'GET /me': `/me`,
+  'GET /schools/[uid]': (uid: string | number, params?: {}) => {
+    return `/schools/${uid}`;
+  },
+  'GET /student-associations/[uid]': (uid: string | number, params?: {}) => {
+    return `/student-associations/${uid}`;
+  },
   'GET /themes.css': `/themes.css`,
+  'GET /users/[uid]': (uid: string | number, params?: {}) => {
+    return `/users/${uid}`;
+  },
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
   'GET /identity': `/identity`,
@@ -492,6 +488,7 @@ export type KIT_ROUTES = {
   PAGES: {
     '/': never;
     '/[uid=uid]': 'uid';
+    '/[uid=uid]/edit': 'uid';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
@@ -501,8 +498,6 @@ export type KIT_ROUTES = {
     '/birthdays': never;
     '/boards': never;
     '/bookings': never;
-    '/bookings.old': never;
-    '/bookings.old/[pseudoID]': 'pseudoID';
     '/bookings/[code]': 'code';
     '/changelog': never;
     '/claim-code': never;
@@ -552,7 +547,6 @@ export type KIT_ROUTES = {
     '/forms/[form]/edit': 'form';
     '/forms/create': never;
     '/groups': never;
-    '/groups/[uid]': 'uid';
     '/groups/[uid]/[...page]': 'uid' | 'page';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -583,7 +577,6 @@ export type KIT_ROUTES = {
     '/quick-signups/qr/[code]': 'code';
     '/reports': never;
     '/reports/[number]': 'number';
-    '/schools/[uid]': 'uid';
     '/schools/[uid]/edit': 'uid';
     '/search': 'q';
     '/services': never;
@@ -593,11 +586,9 @@ export type KIT_ROUTES = {
     '/set-password': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
-    '/student-associations/[uid]': 'uid';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';
     '/student-associations/[uid]/edit/pages': 'uid';
     '/student-associations/[uid]/edit/pages/[...page]': 'uid' | 'page';
-    '/users/[uid]': 'uid';
     '/users/[uid]/edit': 'uid';
     '/validate-email/[token]': 'token';
     '/welcome': never;
@@ -614,17 +605,20 @@ export type KIT_ROUTES = {
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
-    'GET /bookings.old/[pseudoID].pdf': 'pseudoID';
     'GET /bookings/[code].pdf': 'code';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /events/[id]/bookings.csv': 'id';
     'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
     'GET /frappe': never;
+    'GET /groups/[uid]': 'uid';
     'GET /groups/[uid].pdf': 'uid';
     'GET /help/prefilled-links': never;
     'GET /logout': never;
     'GET /me': never;
+    'GET /schools/[uid]': 'uid';
+    'GET /student-associations/[uid]': 'uid';
     'GET /themes.css': never;
+    'GET /users/[uid]': 'uid';
     'GET /connect/google': never;
     'GET /health': never;
     'GET /identity': never;
@@ -642,7 +636,6 @@ export type KIT_ROUTES = {
   Params: {
     uid: never;
     id: never;
-    pseudoID: never;
     code: never;
     major: never;
     yearTier: never;

@@ -1,5 +1,5 @@
-import { builder, prisma, toHtml } from '#lib';
-import { HTMLScalar } from '#modules/global';
+import { builder, fromYearTier, prisma, toHtml } from '#lib';
+import { Email, HTMLScalar } from '#modules/global';
 
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PicturedInterface } from '../../global/types/pictured.js';
@@ -23,7 +23,7 @@ export const GroupType = builder.prismaNode('Group', {
     color: t.exposeString('color'),
     address: t.exposeString('address'),
     description: t.exposeString('description'),
-    email: t.exposeString('email'),
+    email: t.field({ type: Email, nullable: true, resolve: ({ email }) => email || null }),
     mailingList: t.exposeString('mailingList'),
     longDescription: t.exposeString('longDescription'),
     longDescriptionHtml: t.field({
@@ -62,6 +62,30 @@ export const GroupType = builder.prismaNode('Group', {
           { member: { firstName: 'asc' } },
           { member: { lastName: 'asc' } },
         ],
+      },
+    }),
+    membersCount: t.int({
+      description: 'Nombre de membres',
+      args: {
+        yearTiers: t.arg.intList({
+          defaultValue: [],
+          description:
+            "Limiter aux membres de certaines promos (pratique par exemple pour avoir le nombre d'actif.ve.s)",
+        }),
+      },
+      async resolve({ id }, { yearTiers }) {
+        return prisma.groupMember.count({
+          where: {
+            groupId: id,
+            ...(yearTiers.length > 0
+              ? {
+                  member: {
+                    graduationYear: { in: yearTiers.map(fromYearTier) },
+                  },
+                }
+              : {}),
+          },
+        });
       },
     }),
     president: t.prismaField({

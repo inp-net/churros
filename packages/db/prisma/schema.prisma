@@ -385,6 +385,8 @@ model StudentAssociation {
 
   school              School               @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   groups              Group[]
+  board               Group?               @relation("studentAssociationBoard", fields: [boardId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  boardId             String?              @unique
   lydiaAccounts       LydiaAccount[]
   contributionOptions ContributionOption[]
   services            Service[]
@@ -493,6 +495,8 @@ model Group {
   search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
   thirdPartyApps ThirdPartyApp[]
   forms          Form[]
+  boardOf        StudentAssociation?     @relation("studentAssociationBoard")
+  boardOfId      String?
 
   @@index([search], type: Gin)
 }

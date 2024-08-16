@@ -25,7 +25,7 @@
 
   export let track: string | undefined = undefined;
 
-  $: socialSite = social && $data ? mapLoading($data.url, socialSiteFromURL) : undefined;
+  $: socialSite = social && $data?.url ? mapLoading($data.url, socialSiteFromURL) : undefined;
   $: socialLogo = onceLoaded(socialSite, (s) => s?.icon, undefined);
 
   export let link: PillLink | null;

@@ -101,8 +101,8 @@
 
     {#if $data && allLoaded($data)}
       <ButtonNavigation
-        href={route('/users/[uid]', $data.uid)}
-        routeID="/(app)/users/[uid]"
+        href={route('/[uid=uid]', $data.uid)}
+        routeID={null}
         label="Mon profil"
         tooltipsOn="left"
         icon={IconAccount}

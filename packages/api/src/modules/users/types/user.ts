@@ -1,5 +1,5 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
-import { DateTimeScalar, HTMLScalar, PicturedInterface } from '#modules/global';
+import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
 import { NotificationChannel } from '@churros/db/prisma';
 import { canBeEdited, fullName } from '../index.js';
 
@@ -26,7 +26,12 @@ export const UserType = builder.prismaNode('User', {
       type: ['String'],
       authScopes: { student: true, $granted: 'me' },
     }),
-    email: t.exposeString('email', { authScopes: { student: true, $granted: 'me' } }),
+    email: t.field({
+      type: Email,
+      nullable: true,
+      authScopes: { student: true, $granted: 'me' },
+      resolve: ({ email }) => email || null,
+    }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
     fullName: t.field({
@@ -53,7 +58,7 @@ export const UserType = builder.prismaNode('User', {
 
     // Profile details
     address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
-    description: t.exposeString('description', { authScopes: { student: true, $granted: 'me' } }),
+    description: t.exposeString('description'),
     descriptionHtml: t.field({
       type: HTMLScalar,
       async resolve({ description }) {
@@ -65,15 +70,12 @@ export const UserType = builder.prismaNode('User', {
       nullable: true,
       authScopes: { student: true, $granted: 'me' },
     }),
-    links: t.relation('links', {
-      authScopes: { student: true, $granted: 'me' },
-    }),
-    nickname: t.exposeString('nickname', { authScopes: { student: true, $granted: 'me' } }),
+    links: t.relation('links'),
+    nickname: t.exposeString('nickname'),
     phone: t.exposeString('phone', { authScopes: { student: true, $granted: 'me' } }),
     pictureFile: t.exposeString('pictureFile'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
-
     admin: t.exposeBoolean('admin'),
     adminOf: t.boolean({
       description: "Vrai si cette personne est administratrice de l'association étudiante donnée",
@@ -173,8 +175,8 @@ export const UserType = builder.prismaNode('User', {
       nullable: true,
       authScopes: { $granted: 'me' },
     }),
-    major: t.relation('major', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
-    minor: t.relation('minor', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
+    major: t.relation('major', { nullable: true }),
+    minor: t.relation('minor', { nullable: true }),
     managedEvents: t.relation('managedEvents'),
     enabledNotificationChannels: t.expose('enabledNotificationChannels', {
       type: [NotificationChannel],

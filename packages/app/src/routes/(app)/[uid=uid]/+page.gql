@@ -1,5 +1,5 @@
-query ProfilePage($uid: UID!) {
-    profile(uid: $uid) {
-        ...ProfileHeader
-    }
+query ProfilePage($uid: UID!) @loading {
+  profile(uid: $uid) {
+    ...ProfileHeader
+  }
 }

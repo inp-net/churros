@@ -48,8 +48,11 @@
     {/if}
   </Alert>
 {:else if result?.fetching || (result && !result.data)}
+  <pre> {JSON.stringify(result, null, 2)} </pre>
   <section class="loading">
-    <LoadingChurros />
+    <div class="spinner">
+      <LoadingChurros />
+    </div>
     <p>Chargement...</p>
   </section>
 {:else if !result}
@@ -72,8 +75,14 @@
 <style>
   .loading {
     display: flex;
+    flex-direction: column;
     gap: 3rem;
+    align-items: center;
     justify-content: center;
     text-align: center;
+  }
+
+  .spinner {
+    font-size: 5rem;
   }
 </style>

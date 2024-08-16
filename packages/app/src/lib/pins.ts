@@ -2,19 +2,19 @@ import { browser } from '$app/environment';
 import {
   graphql,
   PinDisplayEventStore,
-  PinDisplayGroupStore,
   PinDisplayPostStore,
-  PinDisplayStudentAssociationStore,
-  PinDisplayUserStore,
+  PinDisplayProfilePageStore,
 } from '$houdini';
 import { isDark } from '$lib/theme';
 import type { Page } from '@sveltejs/kit';
 import { get } from 'svelte/store';
+import IconMajor from '~icons/msl/account-tree-outline';
 import IconPage from '~icons/msl/bookmark-outline';
 import IconEvent from '~icons/msl/event-outline';
 import IconGroup from '~icons/msl/group-outline';
 import IconStudentAssociation from '~icons/msl/group-work-outline';
 import IconUser from '~icons/msl/person-outline';
+import IconSchool from '~icons/msl/school-outline';
 import IconPost from '~icons/msl/text-ad-outline';
 
 graphql(`
@@ -36,29 +36,32 @@ graphql(`
 `);
 
 graphql(`
-  query PinDisplayGroup($uid: String!) @cache(policy: CacheOrNetwork) {
-    group(uid: $uid) {
-      pictureURL
-      darkPictureURL: pictureURL(dark: true)
-      name
-    }
-  }
-`);
-
-graphql(`
-  query PinDisplayUser($uid: String!) @cache(policy: CacheOrNetwork) {
-    user(uid: $uid) {
-      fullName
-      pictureURL
-    }
-  }
-`);
-
-graphql(`
-  query PinDisplayStudentAssociation($uid: String!) @cache(policy: CacheOrNetwork) {
-    studentAssociation(uid: $uid) {
-      name
-      pictureURL
+  query PinDisplayProfilePage($uid: UID!) @cache(policy: CacheOrNetwork) {
+    profile(uid: $uid) {
+      __typename
+      ... on Group {
+        name
+        pictureURL
+        darkPictureURL: pictureURL(dark: true)
+      }
+      ... on User {
+        pictureURL
+        darkPictureURL: pictureURL(dark: true)
+      }
+      ... on StudentAssociation {
+        pictureURL
+        darkPictureURL: pictureURL(dark: true)
+      }
+      ... on School {
+        name
+        pictureURL
+        darkPictureURL: pictureURL(dark: true)
+      }
+      ... on Major {
+        name: shortName
+        pictureURL
+        darkPictureURL: pictureURL(dark: true)
+      }
     }
   }
 `);
@@ -75,6 +78,31 @@ export async function pinDisplay(path: string) {
     };
   }
   try {
+    if (path.split('/').filter(Boolean).length === 1 && /^[\w-]+$/.test(path.split('/')[1])) {
+      const uid = path.split('/')[1];
+      const fallbackIcons = {
+        User: IconUser,
+        Group: IconGroup,
+        StudentAssociation: IconStudentAssociation,
+        School: IconSchool,
+        Major: IconMajor,
+      } as const;
+
+      const profile = await new PinDisplayProfilePageStore()
+        .fetch({ variables: { uid } })
+        .then((r) => r.data?.profile);
+      if (profile) {
+        return {
+          title: 'name' in profile ? profile.name : uid,
+          icon:
+            ('pictureURL' in profile
+              ? get(isDark)
+                ? profile.darkPictureURL
+                : profile.pictureURL
+              : '') || fallbackIcons[profile.__typename],
+        };
+      }
+    }
     switch (path.split('/')[1]) {
       case 'posts': {
         const article = await new PinDisplayPostStore()
@@ -94,33 +122,6 @@ export async function pinDisplay(path: string) {
         return {
           title: path.split(/[/?]/g).includes('bookings') ? `${title}: Résas` : title,
           icon: event?.pictureURL || IconEvent,
-        };
-      }
-      case 'groups': {
-        const group = await new PinDisplayGroupStore()
-          .fetch({ variables: { uid: idOrUid } })
-          .then((r) => r.data?.group);
-        return {
-          title: group?.name ?? `@${idOrUid}`,
-          icon: (get(isDark) ? group?.darkPictureURL : group?.pictureURL) || IconGroup,
-        };
-      }
-      case 'users': {
-        const user = await new PinDisplayUserStore()
-          .fetch({ variables: { uid: idOrUid } })
-          .then((r) => r.data?.user);
-        return {
-          title: user?.fullName ?? `@${idOrUid}`,
-          icon: user?.pictureURL || IconUser,
-        };
-      }
-      case 'student-associations': {
-        const studentAssociation = await new PinDisplayStudentAssociationStore()
-          .fetch({ variables: { uid: idOrUid } })
-          .then((r) => r.data?.studentAssociation);
-        return {
-          title: studentAssociation?.name ?? `@${idOrUid}`,
-          icon: studentAssociation?.pictureURL || IconStudentAssociation,
         };
       }
       default: {

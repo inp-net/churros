@@ -155,7 +155,7 @@ const createUid = async ({ firstName, lastName }: { firstName: string; lastName:
 const schoolsData: Prisma.SchoolCreateInput[] = [
   {
     name: 'EAU',
-    uid: 'o',
+    uid: 'eau',
     color: '#00ffff',
     description: 'École de l’Eau',
     address: faker.location.streetAddress(),
@@ -177,7 +177,7 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
   },
   {
     name: 'TERRE',
-    uid: '3',
+    uid: 'terre',
     color: '#5e3f13',
     description: 'École de Terre',
     address: faker.location.streetAddress(),
@@ -506,14 +506,13 @@ const usersData: Array<Partial<Prisma.UserCreateInput>> = [
 
 //création d'une liste des réseaux sociaux qu'on peut ref sur son profil churros
 const socialMedia = [
-  'Facebook',
-  'Instagram',
-  'Discord',
-  'Twitter',
-  'Linkedin',
-  'Github',
-  'Hackernews',
-  'Anilist',
+  'facebook.com',
+  'instagram.com',
+  'discord.com',
+  'twitter.com',
+  'linkedin.com/in',
+  'github.com',
+  'anilist.co',
 ];
 
 //ajout d'utilisateur aléatoire par Faker
@@ -530,15 +529,16 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
     where: { id: faker.helpers.arrayElement(minors).id },
   });
 
-  const { uid } = await prisma.user.create({
+  const uid = await createUid(data)
+   await prisma.user.create({
     data: {
-      uid: await createUid(data),
+      uid,
       email: faker.internet.email({ firstName: data.firstName, lastName: data.lastName }),
-      description: faker.lorem.paragraph({ min: 0, max: 50 }),
+      description: faker.lorem.paragraph({ min: 0, max: 5 }),
       links: {
         create: faker.helpers
           .arrayElements(socialMedia, { min: 2, max: 6 })
-          .map((name) => ({ name, value: '#' })),
+          .map((name) => ({ name, value: `https://${name}/${uid}` })),
       },
       contributions:
         faker.number.int({ min: 0, max: 10 }) % 10 === 0 //génération d'une majorité de cotissant
@@ -733,10 +733,11 @@ const clubsData = [
 
 console.info('Creating groups');
 for (const [i, group] of tqdm([...clubsData.entries()])) {
-  const { id: groupId, uid } = await prisma.group.create({
+  const uid = slug(group.name)
+  const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
-      uid: slug(group.name),
+      uid, 
       // ensure 3 list groups
       type:
         i < 3
@@ -751,30 +752,11 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
       email: `${slug(group.name)}@list.example.com`,
       website: `https://${slug(group.name)}.example.com`,
       description: `Club ${group.name} de l'école`,
-      longDescription: `# Caeco ambrosia defendite simplicitas aequore caelestibus auro
-
-      Lorem markdownum accessit desperat lumina; hi sed radice Scylla agger. Et ipsa
-      cum **Tereus**, aequore sedet. [Quem qua](/) qui carmine,
-      ore suus, fixa natus lacrimas.
-
-      Perque dederat bracchia tenui Leucothoe in in sequitur fames non hic. Venitque
-      sua anguem [sed](/) supponere sit, fluctus pedibusque ne apros
-      rotis exauditi mater voluistis carinam habet generosam miserrima. Quoquam
-      ulterius quam; pressit mihi germanae faciemque: in certa cruor solacia est caeli
-      suos auras atra!
-
-      > Explorant est illi inhaesuro doloris sed *inmanis* has recessu, quam interdum
-      > hospes. Et huc postquam subdit incertas: echidnae, o cibique spectat sed
-      > diversa. Placuit omnia; flammas Hoc ventis nobis primordia flammis Mavors
-      > dabat horrida conplecti cremantur. A mundus, metu Anius gestare caelatus,
-      > Alpheos est, lecti et?`,
+      longDescription: faker.lorem.paragraphs({ min: 0, max: 5 }),
       studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
       links: {
         createMany: {
-          data: [
-            { name: 'Facebook', value: '#' },
-            { name: 'Instagram', value: '#' },
-          ],
+          data: faker.helpers.arrayElements(socialMedia, {min: 0, max: 6}).map(domain => ({name: domain, value: `https://${domain}/${uid}`})),
         },
       },
     },

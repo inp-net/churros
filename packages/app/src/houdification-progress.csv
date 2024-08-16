@@ -1,6 +1,9 @@
 routes/(app)/+error.svelte,nope
 routes/(app)/+layout.svelte,houdinified
 routes/(app)/+page.svelte,houdinified
+routes/(app)/[uid=uid]/+page.svelte,houdinified
+routes/(app)/[uid=uid]/edit/+page.svelte,ok
+routes/(app)/[uid=uid]/Header.svelte,houdinified
 routes/(app)/announcements/+page.svelte,nope
 routes/(app)/announcements/[id]/edit/+page.svelte,houdinified
 routes/(app)/announcements/create/+page.svelte,ok
@@ -9,8 +12,6 @@ routes/(app)/backrooms/services/+page.svelte,ok
 routes/(app)/bar-weeks/+page.svelte,nope
 routes/(app)/birthdays/+page.svelte,ok
 routes/(app)/boards/+page.svelte,ok
-routes/(app)/bookings.old/+page.svelte,houdinified
-routes/(app)/bookings.old/[pseudoID]/+page.svelte,nope
 routes/(app)/bookings/+page.svelte,houdinified
 routes/(app)/bookings/[code]/+page.svelte,houdinified
 routes/(app)/bookings/[code]/ModalPay.svelte,ok
@@ -49,7 +50,6 @@ routes/(app)/events/[id]/edit/tickets/[ticket]/payment/+page.svelte,houdinified
 routes/(app)/events/[id]/edit/tickets/[ticket]/SubmenuItemBooleanConstraint.svelte,houdinified
 routes/(app)/events/[id]/edit/tickets/PickBeneficiary.svelte,houdinified
 routes/(app)/events/[id]/edit/visibility/+page.svelte,houdinified
-routes/(app)/events/[id]/HTMLContent.svelte,ok
 routes/(app)/events/[id]/ModalBookTicket.svelte,houdinified
 routes/(app)/events/[id]/scan/+page.svelte,houdinified
 routes/(app)/events/[id]/scan/ScanResult.svelte,ok
@@ -70,7 +70,6 @@ routes/(app)/forms/[form]/edit/FormQuestionScale.svelte,ok
 routes/(app)/forms/create/+page.svelte,ok
 routes/(app)/forms/FormBasicDetails.svelte,nope
 routes/(app)/groups/+page.svelte,nope
-routes/(app)/groups/[uid]/+page.svelte,nope
 routes/(app)/groups/[uid]/[...page]/+page.svelte,houdinified
 routes/(app)/groups/[uid]/edit/+layout.svelte,nope
 routes/(app)/groups/[uid]/edit/+page.svelte,ok
@@ -102,13 +101,8 @@ routes/(app)/quick-signups/create/+page.svelte,nope
 routes/(app)/quick-signups/manage/+page.svelte,nope
 routes/(app)/quick-signups/qr/+layout@.svelte,ok
 routes/(app)/quick-signups/qr/[code]/+page.svelte,ok
-routes/(app)/register/+layout.svelte,ok
-routes/(app)/register/[[quickSignupCode]]/+page.svelte,nope
-routes/(app)/register/continue/+error.svelte,ok
-routes/(app)/register/continue/+page.svelte,houdinified
 routes/(app)/reports/+page.svelte,nope
 routes/(app)/reports/[number]/+page.svelte,nope
-routes/(app)/schools/[uid]/+page.svelte,nope
 routes/(app)/schools/[uid]/edit/+page.svelte,nope
 routes/(app)/search/[[q]]/+page.svelte,ok
 routes/(app)/services/+page.svelte,houdinified
@@ -119,11 +113,9 @@ routes/(app)/set-password/+page.svelte,ok
 routes/(app)/signups/+layout.svelte,ok
 routes/(app)/signups/+page.svelte,nope
 routes/(app)/signups/edit/[email]/+page.svelte,nope
-routes/(app)/student-associations/[uid]/+page.svelte,houdinified
 routes/(app)/student-associations/[uid]/[...page]/+page.svelte,houdinified
 routes/(app)/student-associations/[uid]/edit/pages/+page.svelte,houdinified
 routes/(app)/student-associations/[uid]/edit/pages/[...page]/+page.svelte,houdinified
-routes/(app)/users/[uid]/+page.svelte,nope
 routes/(app)/users/[uid]/edit/+page.svelte,nope
 routes/(app)/validate-email/[token]/+page.svelte,nope
 routes/(app)/welcome/+page.svelte,nope
@@ -142,6 +134,11 @@ routes/developers/apps/AppsList.svelte,ok
 routes/developers/apps/ButtonToggleActiveApp.svelte,nope
 routes/developers/apps/create/+page.svelte,nope
 routes/developers/apps/FormApp.svelte,nope
+routes/signup/+layout.svelte,houdinified
+routes/signup/+page.svelte,houdinified
+routes/signup/[qrcode]/+page.svelte,houdinified
+routes/signup/finish/[token]/+page.svelte,houdinified
+routes/signup/FormSignup.svelte,houdinified
 routes/(app)/+layout.ts,houdinified
 routes/(app)/+page.ts,houdinified
 routes/(app)/[entity=entity_handle]/+server.ts,houdinified
@@ -150,8 +147,6 @@ routes/(app)/backrooms/services/+page.ts,nope
 routes/(app)/bar-weeks/+page.ts,nope
 routes/(app)/birthdays/+page.ts,nope
 routes/(app)/boards/+page.ts,nope
-routes/(app)/bookings.old/[pseudoID].pdf/+server.ts,ok
-routes/(app)/bookings.old/[pseudoID]/+page.server.ts,nope
 routes/(app)/bookings/[code].pdf/+server.ts,houdinified
 routes/(app)/bookings/[code]/+page.server.ts,houdinified
 routes/(app)/bookings/[code]/+page.ts,houdinified
@@ -190,7 +185,7 @@ routes/(app)/frappe/+server.ts,nope
 routes/(app)/groups/+page.ts,nope
 routes/(app)/groups/[uid].pdf/+server.ts,ok
 routes/(app)/groups/[uid]/+layout.ts,nope
-routes/(app)/groups/[uid]/+page.ts,nope
+routes/(app)/groups/[uid]/+server.ts,ok
 routes/(app)/groups/[uid]/[...page]/+page.ts,houdinified
 routes/(app)/groups/[uid]/edit/+layout.ts,nope
 routes/(app)/groups/[uid]/edit/+page.ts,nope
@@ -220,13 +215,9 @@ routes/(app)/posts/[id]/+page.ts,ok
 routes/(app)/quick-signups/create/+page.server.ts,nope
 routes/(app)/quick-signups/manage/+page.ts,nope
 routes/(app)/quick-signups/qr/[code]/+page.server.ts,ok
-routes/(app)/register/+layout.ts,ok
-routes/(app)/register/[[quickSignupCode]]/+page.ts,nope
-routes/(app)/register/continue/+page.ts,houdinified
-routes/(app)/register/continue/mutations.ts,houdinified
 routes/(app)/reports/+page.ts,nope
 routes/(app)/reports/[number]/+page.ts,nope
-routes/(app)/schools/[uid]/+page.ts,nope
+routes/(app)/schools/[uid]/+server.ts,ok
 routes/(app)/schools/[uid]/edit/+page.ts,nope
 routes/(app)/search/[[q]]/+page.ts,nope
 routes/(app)/services/[id]/edit/+page.ts,nope
@@ -234,11 +225,11 @@ routes/(app)/services/create/+page.server.ts,ok
 routes/(app)/signups/+layout.ts,ok
 routes/(app)/signups/+page.ts,nope
 routes/(app)/signups/edit/[email]/+page.ts,nope
-routes/(app)/student-associations/[uid]/+page.ts,ok
+routes/(app)/student-associations/[uid]/+server.ts,ok
 routes/(app)/student-associations/[uid]/[...page]/+page.ts,houdinified
 routes/(app)/student-associations/[uid]/edit/pages/[...page]/+page.ts,houdinified
 routes/(app)/themes.css/+server.ts,houdinified
-routes/(app)/users/[uid]/+page.ts,nope
+routes/(app)/users/[uid]/+server.ts,ok
 routes/(app)/users/[uid]/edit/+page.ts,nope
 routes/(app)/validate-email/[token]/+page.ts,nope
 routes/(app)/welcome/+page.ts,ok
@@ -257,6 +248,7 @@ routes/developers/apps/[id]/+page.ts,nope
 routes/developers/apps/create/+page.server.ts,ok
 routes/manifest.json/+server.ts,ok
 routes/markdown/+server.ts,houdinified
+routes/signup/finish/[token]/+page.server.ts,houdinified
 lib/components/Alert.svelte,ok
 lib/components/AnalyticsTracker.svelte,houdinified
 lib/components/AreaComments.houdini.svelte,houdinified
@@ -350,7 +342,9 @@ lib/components/InputLinks.svelte,ok
 lib/components/InputList.svelte,ok
 lib/components/InputLongText.svelte,ok
 lib/components/InputLydiaAccounts.svelte,ok
+lib/components/InputMajor.svelte,houdinified
 lib/components/InputNumber.svelte,ok
+lib/components/InputPassword.svelte,ok
 lib/components/InputPerson.svelte,nope
 lib/components/InputPickObjects.svelte,ok
 lib/components/InputPillDate.svelte,ok
@@ -367,6 +361,7 @@ lib/components/InputSelectOneDropdown.svelte,ok
 lib/components/InputSelectOneRadios.svelte,ok
 lib/components/InputSocialLinks.svelte,ok
 lib/components/InputStudentAssociations.svelte,nope
+lib/components/InputStudentEmail.svelte,houdinified
 lib/components/InputSubject.svelte,nope
 lib/components/InputText.svelte,ok
 lib/components/InputTextGhost.svelte,ok

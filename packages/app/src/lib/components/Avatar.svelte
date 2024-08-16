@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { loading, type MaybeLoading } from '$lib/loading';
+  import { loaded, loading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
 
   export let notooltip = false;
@@ -18,6 +18,7 @@
   class:selected
   href={loading(href, '') || undefined}
   use:tooltip={notooltip ? undefined : loading(help, undefined)}
+  class:skeleton-effect-wave={!loaded(href)}
 >
   <img src={loading(src, '')} alt={loading(alt, 'Photo de profil')} />
 </a>
@@ -25,7 +26,7 @@
 <style>
   a {
     position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: var(--avatar-size, 1em);
@@ -56,6 +57,6 @@
     text-align: center;
     object-fit: cover;
     object-position: center;
-    background: var(--bg);
+    background: var(--bg2);
   }
 </style>

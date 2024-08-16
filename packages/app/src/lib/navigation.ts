@@ -242,6 +242,15 @@ export const topnavConfigs: Partial<{
     quickAction: quickActionAdd,
     actions: rootPagesActions,
   },
+  '/(app)/[uid=uid]': ({ params: { uid } }) => ({
+    back: route('/'),
+    title: uid,
+    actions: [
+      commonActions.pin,
+      { ...commonActions.edit, href: route('/[uid=uid]/edit', uid) },
+      commonActions.copyID,
+    ],
+  }),
   '/(app)/search/[[q]]': {
     quickAction: quickActionAdd,
     actions: rootPagesActions,

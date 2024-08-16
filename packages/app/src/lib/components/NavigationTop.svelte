@@ -104,7 +104,7 @@
         <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
         <ButtonGhost
           loading={!$data || ($data && !loaded($data.uid)) || !loaded($data.pictureURL)}
-          href={onceLoaded($data?.uid, (uid) => `/users/${uid}`, '')}
+          href={onceLoaded($data?.uid, (uid) => `/${uid}`, '')}
           help="Mon profil"
         >
           {#if $data?.pictureURL}

@@ -14,35 +14,30 @@
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
-  import {
-    loaded,
-    loading,
-    LoadingText,
-    mapAllLoading,
-    mapLoading,
-    onceLoaded,
-  } from '$lib/loading';
+  import { loaded, loading, LoadingText, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
   import IconBotAccount from '~icons/msl/robot-2-outline';
   import IconAdmin from '~icons/msl/shield-outline';
   import IconCheck from '~icons/msl/check';
+  import { DISPLAY_GROUP_TYPES } from '$lib/display';
+  import { tooltip } from '$lib/tooltip';
 
-  export let resource: ProfileHeader | null;
+  export let profile: ProfileHeader | null;
   $: data = fragment(
-    resource,
+    profile,
     graphql(`
       fragment ProfileHeader on Profile @loading {
         __typename
         ... on User {
           name: fullName
-          email
           descriptionHtml
           yearTier
           major {
             name
             uid
             schools {
+              ...AvatarSchool
               name
               uid
             }
@@ -62,12 +57,15 @@
           canEditDetails
           isMember
           email
+          type
           descriptionHtml: longDescriptionHtml
           links {
             ...PillLink
           }
-          type
+          activeMembersCount: membersCount(yearTiers: [1, 2, 3])
+          membersCount
           studentAssociation {
+            ...AvatarStudentAssociation
             name
             uid
           }
@@ -76,25 +74,40 @@
         }
         ... on StudentAssociation {
           name
+          email
           descriptionHtml
+          activeMembersCount: studentsCount(yearTiers: [1, 2, 3])
+          membersCount: studentsCount
           links {
             ...PillLink
           }
           school {
+            ...AvatarSchool
             uid
             name
           }
           contributionOptions {
             id
           }
+          contributing
+          canContribute
+          canEditDetails
           ...AvatarStudentAssociation
         }
         ... on Major {
-          name
+          # name: shortName
           ...AvatarMajor
+          fullName: name
+          schools {
+            ...AvatarSchool
+          }
         }
         ... on School {
           name
+          canEdit
+          description
+          address
+          studentsCount(yearTiers: [1, 2, 3])
           ...AvatarSchool
         }
       }
@@ -133,56 +146,120 @@
 </ModalOrDrawer>
 
 <header>
-  <div class="picture">
-    {#if !$data || !loaded($data.__typename)}
-      <Avatar help="" href="" alt="" src={PendingValue} />
-    {:else if $data.__typename === 'User'}
-      <AvatarUser user={$data} />
-    {:else if $data.__typename === 'Group'}
-      <AvatarGroup group={$data} />
-    {:else if $data.__typename === 'StudentAssociation'}
-      <AvatarStudentAssociation studentAssociation={$data} />
-    {:else if $data.__typename === 'Major'}
-      <AvatarMajor major={$data}></AvatarMajor>
-    {:else if $data.__typename === 'School'}
-      <AvatarSchool school={$data} />
-    {/if}
-  </div>
-  <div class="text">
-    <h2>
-      <LoadingText value={$data?.name} />
-    </h2>
-    <div class="details">
+  <section class="intro">
+    <div class="picture">
       {#if !$data || !loaded($data.__typename)}
-        <LoadingText lines={3} />
+        <Avatar help="" href="" alt="" src={PendingValue} />
       {:else if $data.__typename === 'User'}
-        <div class="line">
-          <span>
-            <LoadingText value={mapLoading($data.yearTier, (y) => `${y}A`)} />
-          </span>
-          <span>
-            <LoadingText value={$data.major?.name ?? 'Exté'} />
-          </span>
-          <span>
-            {#each $data.major?.schools ?? [] as school}
-              <a href={refroute('/[uid=uid]', loading(school.uid, ''))}>
-                <LoadingText value={school.name} />
-              </a>
-            {/each}
-          </span>
-        </div>
-        <div class="badges">
-          {#if loading($data.bot, false)}
-            <Badge icon={IconBotAccount} title="Compte d'automatisation"></Badge>
-          {/if}
-          <!-- TODO differentiate tech admins from AE admins, say which AE they are admins of -->
-          {#if loading($data.admin, false) || loading($data.studentAssociationAdmin, false)}
-            <Badge icon={IconAdmin} title="Administrateur.ice" />
-          {/if}
-        </div>
-      {:else if $data.__typename === 'Group'}{:else if $data.__typename === 'StudentAssociation'}{:else if $data.__typename === 'Major'}{:else if $data.__typename === 'School'}{/if}
+        <AvatarUser user={$data} />
+      {:else if $data.__typename === 'Group'}
+        <AvatarGroup group={$data} />
+      {:else if $data.__typename === 'StudentAssociation'}
+        <AvatarStudentAssociation studentAssociation={$data} />
+      {:else if $data.__typename === 'Major'}
+        <AvatarMajor major={$data}></AvatarMajor>
+      {:else if $data.__typename === 'School'}
+        <AvatarSchool school={$data} />
+      {/if}
     </div>
-  </div>
+    <div class="text">
+      <h2>
+        <LoadingText value={$data?.name} />
+      </h2>
+      <div class="details">
+        {#if !$data || !loaded($data.__typename)}
+          <LoadingText lines={3} />
+        {:else if $data.__typename === 'User'}
+          <div class="line">
+            <span>
+              <LoadingText value={mapLoading($data.yearTier, (y) => `${y}A`)} />
+            </span>
+            <span>
+              <LoadingText value={$data.major?.name ?? 'Exté'} />
+            </span>
+            <span>
+              {#each $data.major?.schools ?? [] as school}
+                <AvatarSchool name {school} />
+              {/each}
+            </span>
+          </div>
+          <div class="badges">
+            {#if loading($data.bot, false)}
+              <Badge icon={IconBotAccount} title="Compte d'automatisation"></Badge>
+            {/if}
+            <!-- TODO differentiate tech admins from AE admins, say which AE they are admins of -->
+            {#if loading($data.admin, false) || loading($data.studentAssociationAdmin, false)}
+              <Badge icon={IconAdmin} title="Administrateur.ice" />
+            {/if}
+          </div>
+        {:else if $data.__typename === 'Group'}
+          <div class="line">
+            <span>
+              <LoadingText value={mapLoading($data.type, (t) => DISPLAY_GROUP_TYPES[t])}>
+                Groupe
+              </LoadingText>
+            </span>
+            <span use:tooltip={'AE de rattachement'}>
+              <AvatarStudentAssociation name studentAssociation={$data.studentAssociation} />
+            </span>
+          </div>
+          <div class="line">
+            <span>
+              <LoadingText value={mapLoading($data.membersCount, (count) => `${count} membres`)} />
+            </span>
+            <span>
+              <LoadingText
+                value={mapLoading($data.activeMembersCount, (count) => `${count} actif.ve.s`)}
+              />
+            </span>
+          </div>
+        {:else if $data.__typename === 'StudentAssociation'}
+          <div class="line">
+            <span>Association d'Élèves</span>
+            <span>
+              <AvatarSchool name school={$data.school} />
+            </span>
+          </div>
+          <div class="line">
+            <span>
+              <LoadingText value={mapLoading($data.membersCount, (count) => `${count} membres`)} />
+            </span>
+            <span>
+              <LoadingText
+                value={mapLoading($data.activeMembersCount, (count) => `${count} actif.ve.s`)}
+              />
+            </span>
+          </div>
+        {:else if $data.__typename === 'Major'}
+          <div class="line">
+            <LoadingText tag="em" value={$data.fullName}></LoadingText>
+          </div>
+          <div class="line">
+            <span>Filière</span>
+            <span>
+              {#each $data.schools as school}
+                <AvatarSchool name {school} />
+              {/each}
+            </span>
+          </div>
+        {:else if $data.__typename === 'School'}
+          <div class="line">
+            <span>École</span>
+            <span>
+              <LoadingText value={$data.address}></LoadingText>
+            </span>
+          </div>
+          <div class="line">
+            <span>
+              <LoadingText
+                value={mapLoading($data.studentsCount, (count) => `${count} étudiant.e.s`)}
+              />
+            </span>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </section>
   {#if $data && 'descriptionHtml' in $data}
     <section class="bio">
       <HTMLContent linesEstimate={3} tag="div" html={$data.descriptionHtml} />
@@ -197,24 +274,21 @@
   {/if}
   <section class="actions">
     {#if !$data || !loaded($data.__typename)}
-      <ButtonSecondary loading>Modifier</ButtonSecondary>
+      <ButtonSecondary stretches loading>Modifier</ButtonSecondary>
     {:else if $data.__typename === 'User'}
       {#if $data.canBeEdited}
-        <ButtonSecondary href={refroute('/users/[uid]/edit', $page.params.uid)}>
+        <ButtonSecondary stretches href={refroute('/users/[uid]/edit', $page.params.uid)}>
           Modifier
-        </ButtonSecondary>
-      {:else}
-        <ButtonSecondary href={onceLoaded($data.email, (e) => `mailto:${e}`, '')}>
-          Contacter
         </ButtonSecondary>
       {/if}
     {:else if $data.__typename === 'Group'}
       {#if $data.canEditDetails}
-        <ButtonSecondary href={refroute('/groups/[uid]/edit', $page.params.uid)}>
+        <ButtonSecondary stretches href={refroute('/groups/[uid]/edit', $page.params.uid)}>
           Modifier
         </ButtonSecondary>
       {:else}
         <ButtonSecondary
+          stretches
           disabled={$data.isMember}
           icon={$data.isMember ? IconCheck : undefined}
           on:click={async () => {
@@ -234,9 +308,98 @@
           {#if $data.isMember}Tu es membre{:else}Rejoindre{/if}
         </ButtonSecondary>
       {/if}
-    {:else if $data.__typename === 'StudentAssociation'}{:else if $data.__typename === 'Major'}{:else if $data.__typename === 'School'}{/if}
+    {:else if $data.__typename === 'StudentAssociation'}
+      {#if $data.contributing}
+        {#if $data.canEditDetails}
+          <ButtonSecondary
+            stretches
+            href={refroute('/student-associations/[uid]/edit', $page.params.uid)}
+            >Modifier</ButtonSecondary
+          >
+        {:else}
+          <ButtonSecondary stretches disabled icon={IconCheck}>Cotisant.e</ButtonSecondary>
+        {/if}
+      {:else if $data.canContribute}
+        <ButtonSecondary stretches href={refroute('/')}>Cotiser 💖</ButtonSecondary>
+      {:else if $data.email}
+        <ButtonSecondary stretches href="mailto:{loading($data.email, '')}"
+          >Contacter</ButtonSecondary
+        >
+      {/if}
+    {:else if $data.__typename === 'Major'}
+      <!-- TODO edit page -->
+    {:else if $data.__typename === 'School'}
+      {#if $data.canEdit}
+        <ButtonSecondary stretches href={refroute('/schools/[uid]/edit', $page.params.uid)}>
+          Modifier
+        </ButtonSecondary>
+      {/if}
+    {/if}
     <ButtonShare let:share>
-      <ButtonSecondary on:click={share} track="profile-share">Partager</ButtonSecondary>
+      <ButtonSecondary stretches on:click={share} track="profile-share">Partager</ButtonSecondary>
     </ButtonShare>
   </section>
 </header>
+
+<style>
+  header {
+    --picture-size: 100px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  @media (min-width: 500px) {
+    header {
+      --picture-size: 150px;
+    }
+  }
+
+  .bio {
+    font-size: 0.9rem;
+  }
+
+  section.intro {
+    display: grid;
+    grid-template-columns: var(--picture-size) auto;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .picture {
+    display: flex;
+    height: var(--picture-size);
+  }
+
+  .picture :global(> *) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    align-items: center;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .details,
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+</style>
