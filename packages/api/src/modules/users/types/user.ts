@@ -1,5 +1,5 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
-import { DateTimeScalar, PicturedInterface } from '#modules/global';
+import { DateTimeScalar, HTMLScalar, PicturedInterface } from '#modules/global';
 import { NotificationChannel } from '@churros/db/prisma';
 import { canBeEdited, fullName } from '../index.js';
 
@@ -54,7 +54,8 @@ export const UserType = builder.prismaNode('User', {
     // Profile details
     address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
     description: t.exposeString('description', { authScopes: { student: true, $granted: 'me' } }),
-    descriptionHtml: t.string({
+    descriptionHtml: t.field({
+      type: HTMLScalar,
       async resolve({ description }) {
         return toHtml(description);
       },

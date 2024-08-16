@@ -1,4 +1,5 @@
 import { builder, prisma, toHtml } from '#lib';
+import { HTMLScalar } from '#modules/global';
 
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PicturedInterface } from '../../global/types/pictured.js';
@@ -25,7 +26,8 @@ export const GroupType = builder.prismaNode('Group', {
     email: t.exposeString('email'),
     mailingList: t.exposeString('mailingList'),
     longDescription: t.exposeString('longDescription'),
-    longDescriptionHtml: t.string({
+    longDescriptionHtml: t.field({
+      type: HTMLScalar,
       resolve: async ({ longDescription }) => toHtml(longDescription),
     }),
     website: t.exposeString('website'),
@@ -43,6 +45,13 @@ export const GroupType = builder.prismaNode('Group', {
     }),
     services: t.relation('services'),
     links: t.relation('links'),
+    isMember: t.boolean({
+      description: "L'utilisateur.ice connecté.e est membre de ce groupe",
+      resolve({ id }, _, { user }) {
+        return Boolean(user?.groups.some((m) => m.groupId === id));
+      },
+    }),
+    // TODO connection
     members: t.relation('members', {
       // marche pas même quand ça devrait
       // authScopes: { student: true },

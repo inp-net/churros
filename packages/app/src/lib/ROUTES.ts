@@ -10,6 +10,9 @@
  */
 const PAGES = {
   '/': `/`,
+  '/[uid=uid]': (uid: Parameters<typeof import('../params/uid.ts').match>[0], params?: {}) => {
+    return `/${uid}`;
+  },
   '/announcements': `/announcements`,
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
@@ -488,6 +491,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 export type KIT_ROUTES = {
   PAGES: {
     '/': never;
+    '/[uid=uid]': 'uid';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
@@ -636,6 +640,7 @@ export type KIT_ROUTES = {
   };
   LINKS: Record<string, never>;
   Params: {
+    uid: never;
     id: never;
     pseudoID: never;
     code: never;
@@ -648,7 +653,6 @@ export type KIT_ROUTES = {
     ticket: never;
     form: never;
     section: never;
-    uid: never;
     page: never;
     itemUid: never;
     token: never;

@@ -8,6 +8,7 @@ import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../in
 builder.mutationField('selfJoinGroup', (t) =>
   t.prismaField({
     type: GroupMemberType,
+    errors: {},
     args: { uid: t.arg({ type: UIDScalar }) },
     authScopes: { student: true },
     async resolve(query, _, { uid }, { user: me }) {

@@ -23,6 +23,7 @@ const yoga = createYoga({
   graphiql: {
     title: 'Churros API',
     subscriptionsProtocol: 'WS',
+    
     defaultQuery: /* GraphQL */ `
       query {
         homepage {

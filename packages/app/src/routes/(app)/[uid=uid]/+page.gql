@@ -1,0 +1,5 @@
+query ProfilePage($uid: UID!) {
+    profile(uid: $uid) {
+        ...ProfileHeader
+    }
+}

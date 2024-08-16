@@ -64,7 +64,9 @@
   }
 </script>
 
-{#if text}
+{#if $$slots.default}
+  <slot {share}></slot>
+{:else if text}
   <ButtonInk track="share" trackData={{ url }} on:click={share} icon={IconShare}
     >{#if canShare}Partager{:else}Copier le lien{/if}</ButtonInk
   >

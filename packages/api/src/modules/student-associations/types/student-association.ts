@@ -1,5 +1,5 @@
-import { builder, prisma } from '#lib';
-import { DateTimeScalar, PicturedInterface } from '#modules/global';
+import { builder, prisma, toHtml } from '#lib';
+import { DateTimeScalar, HTMLScalar, PicturedInterface } from '#modules/global';
 import { GroupEnumType, GroupType, canCreateGroup } from '#modules/groups';
 
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
@@ -8,6 +8,10 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     id: t.exposeID('id'),
     uid: t.exposeString('uid'),
     description: t.exposeString('description'),
+    descriptionHtml: t.field({
+      type: HTMLScalar,
+      resolve: async ({ description }) => toHtml(description),
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     schoolId: t.exposeID('schoolId'),

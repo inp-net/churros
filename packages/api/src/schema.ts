@@ -33,6 +33,7 @@ import '#modules/student-associations';
 import '#modules/themes';
 import '#modules/ticketing';
 import '#modules/users';
+import '#modules/profiles';
 
 export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
 
