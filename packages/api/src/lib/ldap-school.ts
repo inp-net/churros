@@ -71,6 +71,7 @@ export const findSchoolUser = async (
 > => {
   let ldapFilter = '';
   let schoolServer: string | undefined;
+  console.log({ findSchoolUser: searchBy });
   if ('email' in searchBy) {
     const [emailLogin, emailDomain] = searchBy.email.split('@') as [string, string];
 
@@ -78,6 +79,7 @@ export const findSchoolUser = async (
 
     schoolServer = schoolLdapSettings.emailDomains[emailDomain];
     if (!schoolServer || !schoolLdapSettings.servers[schoolServer]) return;
+    console.log({ schoolServer });
     const { filterAttribute, wholeEmail } = schoolLdapSettings.servers[schoolServer]!;
     ldapFilter = `${filterAttribute}=${emailLogin}${wholeEmail ? `@${emailDomain}` : ''}`;
   } else {

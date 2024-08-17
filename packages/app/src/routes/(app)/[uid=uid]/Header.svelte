@@ -95,7 +95,7 @@
           ...AvatarStudentAssociation
         }
         ... on Major {
-          # name: shortName
+          shortName
           ...AvatarMajor
           fullName: name
           schools {
@@ -164,7 +164,13 @@
     </div>
     <div class="text">
       <h2>
-        <LoadingText value={$data?.name} />
+        <LoadingText
+          value={$data
+            ? $data.__typename === 'Major'
+              ? $data.shortName
+              : $data.name
+            : PendingValue}
+        />
       </h2>
       <div class="details">
         {#if !$data || !loaded($data.__typename)}
@@ -348,6 +354,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    view-transition-name: none;
   }
 
   @media (min-width: 500px) {

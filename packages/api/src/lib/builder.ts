@@ -126,7 +126,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
     DirectivePlugin,
     WithInputPlugin,
   ],
-  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
+  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 400 } },
   defaultInputFieldRequiredness: true,
   defaultFieldNullability: false,
   withInput: {},

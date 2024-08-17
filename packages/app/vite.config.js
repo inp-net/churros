@@ -56,6 +56,14 @@ export default mergeConfig(
               tab: { type: '"unpaid" | "paid" | "verified"', default: '"unpaid"' },
             },
           },
+          '/[uid=uid]': {
+            explicit_search_params: {
+              tab: {
+                type: '"infos" | "members" | "family" | "see-also" | "groups" | "services" | "majors" | "subjects" | "boards"',
+                default: '"infos"',
+              },
+            },
+          },
         },
       }),
     ],

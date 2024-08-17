@@ -16,7 +16,6 @@ import IconTrashFilled from '~icons/msl/delete';
 import IconTrash from '~icons/msl/delete-outline';
 import IconDownload from '~icons/msl/download';
 import IconPen from '~icons/msl/edit-outline';
-import IconDonate from '~icons/msl/euro';
 import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
@@ -101,6 +100,19 @@ async function navtopPermissions() {
   return me;
 }
 
+async function profileKind(uid: string) {
+  const { profile } = await graphql(`
+    query NavigationTopProfileType($uid: UID!) @cache(policy: CacheOrNetwork) {
+      profile(uid: $uid) {
+        __typename
+      }
+    }
+  `)
+    .fetch({ variables: { uid } })
+    .then((r) => r.data ?? { profile: { __typename: null } });
+  return profile.__typename;
+}
+
 const commonActions = {
   pin: async (page: Page) => {
     const pinned = await currentPageIsPinned(page);
@@ -138,7 +150,7 @@ const commonActions = {
   },
 } as const;
 
-const quickActionConfigureNotations = {
+const quickActionConfigureNotfications = {
   icon: IconNotificationSettings,
   do() {
     navtopPushState('NAVTOP_NOTIFICATION_SETTINGS');
@@ -245,9 +257,18 @@ export const topnavConfigs: Partial<{
   '/(app)/[uid=uid]': ({ params: { uid } }) => ({
     back: route('/'),
     title: uid,
+    quickAction: quickActionConfigureNotfications,
     actions: [
       commonActions.pin,
-      { ...commonActions.edit, href: route('/[uid=uid]/edit', uid) },
+      async ({ params: { uid } }) => {
+        const typename = await profileKind(uid);
+        return {
+          icon: IconCog,
+          label: 'Gérer',
+          href: route('/[uid=uid]/edit', uid),
+          hidden: typename === 'User',
+        };
+      },
       commonActions.copyID,
     ],
   }),
@@ -280,37 +301,6 @@ export const topnavConfigs: Partial<{
       commonActions.pin,
     ],
     title: 'Post',
-  }),
-  '/(app)/groups/[uid]': ({ params: { uid } }) => ({
-    quickAction: quickActionConfigureNotations,
-    actions: [
-      { ...commonActions.settings, href: route('/groups/[uid]/edit', uid) },
-      commonActions.pin,
-      commonActions.copyID,
-    ],
-    title: uid,
-  }),
-  '/(app)/users/[uid]': ({ params: { uid } }) => ({
-    actions: [
-      { ...commonActions.edit, href: route('/users/[uid]/edit', uid) },
-      commonActions.pin,
-      commonActions.copyID,
-    ],
-    title: uid,
-  }),
-  '/(app)/student-associations/[uid]': ({ params: { uid } }) => ({
-    title: uid,
-    quickAction: quickActionConfigureNotations,
-    actions: [
-      { ...commonActions.settings, do: () => alert('TODO') },
-      {
-        icon: IconDonate,
-        label: 'Cotiser',
-        do: () => alert('TODO'),
-      },
-      commonActions.pin,
-      commonActions.copyID,
-    ],
   }),
   '/(app)/events/[[week=date]]': {
     quickAction: {

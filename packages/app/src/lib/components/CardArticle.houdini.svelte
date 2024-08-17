@@ -141,9 +141,7 @@
 
   $: authorHref =
     allLoaded(author) && allLoaded(group)
-      ? hideGroup && author
-        ? route('/users/[uid]', author.uid)
-        : route('/groups/[uid]', group.uid)
+      ? route('/[uid=uid]', hideGroup && author ? author.uid : group.uid)
       : '';
   $: notPublishedYet = onceLoaded(publishedAt, isFuture, false);
 </script>
@@ -389,10 +387,6 @@
 
   section.likes {
     margin-left: 4rem;
-  }
-
-  .unpublished {
-    margin-left: calc(4rem - 1em - 0.5ch);
   }
 
   .likes .inner {

@@ -10,8 +10,24 @@
  */
 const PAGES = {
   '/': `/`,
-  '/[uid=uid]': (uid: Parameters<typeof import('../params/uid.ts').match>[0], params?: {}) => {
-    return `/${uid}`;
+  '/[uid=uid]': (
+    uid: Parameters<typeof import('../params/uid.ts').match>[0],
+    params?: {
+      tab?:
+        | 'infos'
+        | 'members'
+        | 'family'
+        | 'see-also'
+        | 'groups'
+        | 'services'
+        | 'majors'
+        | 'subjects'
+        | 'boards';
+    },
+  ) => {
+    params = params ?? {};
+    params.tab = params.tab ?? 'infos';
+    return `/${uid}${appendSp({ tab: params.tab })}`;
   },
   '/[uid=uid]/edit': (uid: Parameters<typeof import('../params/uid.ts').match>[0], params?: {}) => {
     return `/${uid}/edit`;
@@ -635,6 +651,7 @@ export type KIT_ROUTES = {
   LINKS: Record<string, never>;
   Params: {
     uid: never;
+    tab: never;
     id: never;
     code: never;
     major: never;
@@ -642,7 +659,6 @@ export type KIT_ROUTES = {
     subject: never;
     document: never;
     week: never;
-    tab: never;
     ticket: never;
     form: never;
     section: never;

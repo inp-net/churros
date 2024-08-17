@@ -28,6 +28,11 @@ strict digraph ImportGraph {
     "posts" -> "comments";
     "posts" -> "notifications";
     "posts" -> "reactions";
+    "profiles" -> "curriculum";
+    "profiles" -> "groups";
+    "profiles" -> "schools";
+    "profiles" -> "student-associations";
+    "profiles" -> "users";
     "schools" -> "curriculum";
     "services" -> "groups";
     "services" -> "schools";

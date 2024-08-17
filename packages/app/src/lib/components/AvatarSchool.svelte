@@ -3,6 +3,7 @@
   import Avatar from '$lib/components/Avatar.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { mapLoading, onceLoaded } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
 
   export let notooltip = false;
@@ -25,10 +26,7 @@
 
 {#if $data}
   {#if name}
-    <a
-      class="avatar-school"
-      href={onceLoaded($data.uid, (uid) => route('/[uid=uid]', uid), '')}
-    >
+    <a class="avatar-school" href={onceLoaded($data.uid, (uid) => refroute('/[uid=uid]', uid), '')}>
       <Avatar
         --avatar-radius="0.25em"
         src={$data.pictureURL}

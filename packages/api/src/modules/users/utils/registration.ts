@@ -9,7 +9,7 @@ import {
   type UserCandidate,
 } from '@churros/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
-import { isSchoolEmailForMajor, resolveSchoolMail } from './school-emails.js';
+import { isSchoolEmailForMajor, resolveSchoolMail, schoolDetails } from './school.js';
 
 export const saveUser = async (
   {
@@ -40,6 +40,7 @@ export const saveUser = async (
     data: {
       uid,
       email: resolvedStudentEmail ?? email,
+      ...(await schoolDetails(email, major)),
       graduationYear: graduationYear!,
       firstName,
       lastName,

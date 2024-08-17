@@ -875,6 +875,7 @@ __metadata:
     "@swc/core": "npm:^1.4.11"
     "@swc/wasm": "npm:^1.4.11"
     "@types/cookie": "npm:^0.6.0"
+    "@types/cytoscape": "npm:^3"
     "@types/html-to-text": "npm:^9.0.4"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/lodash.debounce": "npm:^4.0.9"
@@ -885,6 +886,7 @@ __metadata:
     arborist: "workspace:^0.1.0"
     calendar-link: "npm:^2.6.0"
     cookie: "npm:^0.6.0"
+    cytoscape: "npm:^3.30.2"
     date-fns: "npm:^2.30.0"
     dotenv: "npm:^16.4.5"
     extract-files: "npm:^13.0.0"
@@ -3842,6 +3844,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cytoscape@npm:^3":
+  version: 3.21.6
+  resolution: "@types/cytoscape@npm:3.21.6"
+  checksum: 10c0/d41d7a09600e8ebd6cdc8db64fed5482ab3869b25e23847f08a91df127c4d74ff82b394b978a826a1139163c16daa3cd6f6f23da67718dbccf0ae908557e614f
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.0.0":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -6349,6 +6358,13 @@ __metadata:
   version: 0.0.10
   resolution: "cssfilter@npm:0.0.10"
   checksum: 10c0/478a227a616fb6e9bb338eb95f690df141b86231ec737cbea574484f31a09a51db894b4921afc4987459dae08d584355fd689ff2a7a7c7a74de4bb4c072ce553
+  languageName: node
+  linkType: hard
+
+"cytoscape@npm:^3.30.2":
+  version: 3.30.2
+  resolution: "cytoscape@npm:3.30.2"
+  checksum: 10c0/a8b095969900600b58fff823db73d69ec3f22fc9993c10f0739d8551c1dad881d67e1f7771e33b80f72b40f717861e5fa917846ed304f0a31eb3c8aef8dd433f
   languageName: node
   linkType: hard
 

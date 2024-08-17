@@ -1,5 +1,6 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
 import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
+import { userIsStudent } from '#permissions';
 import { NotificationChannel } from '@churros/db/prisma';
 import { canBeEdited, fullName } from '../index.js';
 
@@ -57,7 +58,12 @@ export const UserType = builder.prismaNode('User', {
     latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
-    address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
+    address: t.string({
+      nullable: true,
+      resolve({ address, id }, _, { user }) {
+        return id === user?.id || userIsStudent(user) ? address : null;
+      },
+    }),
     description: t.exposeString('description'),
     descriptionHtml: t.field({
       type: HTMLScalar,
@@ -65,14 +71,21 @@ export const UserType = builder.prismaNode('User', {
         return toHtml(description);
       },
     }),
-    birthday: t.expose('birthday', {
+    birthday: t.field({
       type: DateTimeScalar,
       nullable: true,
-      authScopes: { student: true, $granted: 'me' },
+      resolve({ birthday, id }, _, { user }) {
+        return id === user?.id || userIsStudent(user) ? birthday : null;
+      },
     }),
     links: t.relation('links'),
     nickname: t.exposeString('nickname'),
-    phone: t.exposeString('phone', { authScopes: { student: true, $granted: 'me' } }),
+    phone: t.string({
+      nullable: true,
+      resolve({ phone, id }, _, { user }) {
+        return id === user?.id || userIsStudent(user) ? phone : null;
+      },
+    }),
     pictureFile: t.exposeString('pictureFile'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),

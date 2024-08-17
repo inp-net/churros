@@ -1725,6 +1725,7 @@ type Group implements Node & Pictured {
   children: [Group!]!
   coOrganizedEvents: [Event!]!
   color: String!
+  createdAt: DateTime!
   description: String!
   email: Email
   events(after: String, before: String, first: Int, last: Int): GroupEventsConnection!
@@ -5830,6 +5831,16 @@ type StudentAssociation implements Pictured {
   schoolId: ID!
 
   """
+  Services proposés par une AE
+  """
+  services(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): StudentAssociationServicesConnection!
+
+  """
   Nombre d'étudiant.e.s rattachés à l'AE (cotisant.e.s ou non). Légalement (selon en particulier les statuts de l'AEn7), compte à la fois les membres et les étudiant.e.s susceptibles d'être membres temporaires durant un évènement organisé par l'AE
   """
   studentsCount(
@@ -5851,6 +5862,17 @@ type StudentAssociationGroupsConnection {
 type StudentAssociationGroupsConnectionEdge {
   cursor: String!
   node: Group!
+}
+
+type StudentAssociationServicesConnection {
+  edges: [StudentAssociationServicesConnectionEdge!]!
+  nodes: [Service!]!
+  pageInfo: PageInfo!
+}
+
+type StudentAssociationServicesConnectionEdge {
+  cursor: String!
+  node: Service!
 }
 
 type Subject {
@@ -6387,7 +6409,7 @@ input UpsertGroupInput {
 Users are the people who use the app
 """
 type User implements Node & Pictured {
-  address: String!
+  address: String
   admin: Boolean!
 
   """
@@ -6474,7 +6496,7 @@ type User implements Node & Pictured {
   """
   canManageAnnouncements: Boolean!
   cededImageRightsToTVn7: Boolean!
-  contributesTo: [StudentAssociation!]!
+  contributesTo: [StudentAssociation!]
   contributesWith: [ContributionOption!]!
   createdAt: DateTime!
   credentials: [Credential!]!
@@ -6525,7 +6547,7 @@ type User implements Node & Pictured {
     last: Int
   ): UserPartiallyAnsweredFormsConnection!
   pendingContributions: [ContributionOption!]!
-  phone: String!
+  phone: String
 
   """
   Texte alternatif de l'image

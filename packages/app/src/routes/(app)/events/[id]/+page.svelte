@@ -17,7 +17,7 @@
   import IconDate from '~icons/msl/calendar-today-outline';
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
-  import HTMLContent from './HTMLContent.svelte';
+  import HTMLContent from '$lib/components/HTMLContent.svelte';
   import ModalBookTicket from './ModalBookTicket.svelte';
   export let data: PageData;
 

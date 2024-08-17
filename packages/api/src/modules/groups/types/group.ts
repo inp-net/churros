@@ -1,5 +1,5 @@
 import { builder, fromYearTier, prisma, toHtml } from '#lib';
-import { Email, HTMLScalar } from '#modules/global';
+import { DateTimeScalar, Email, HTMLScalar } from '#modules/global';
 
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PicturedInterface } from '../../global/types/pictured.js';
@@ -23,6 +23,7 @@ export const GroupType = builder.prismaNode('Group', {
     color: t.exposeString('color'),
     address: t.exposeString('address'),
     description: t.exposeString('description'),
+    createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     email: t.field({ type: Email, nullable: true, resolve: ({ email }) => email || null }),
     mailingList: t.exposeString('mailingList'),
     longDescription: t.exposeString('longDescription'),

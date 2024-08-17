@@ -447,6 +447,8 @@ model Group {
   color                String    @db.VarChar(7)
   selfJoinable         Boolean   @default(false)
   roomIsOpen           Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt @default(now())
 
   address         String @default("") @db.VarChar(255)
   description     String @default("") @db.VarChar(255)

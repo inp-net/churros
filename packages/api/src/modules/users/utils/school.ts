@@ -1,4 +1,31 @@
+import { findSchoolUser, log } from '#lib';
 import type { Major, School } from '@churros/db/prisma';
+
+export async function schoolDetails(
+  email: string,
+  major: null | (Major & { schools: School[] }),
+): Promise<
+  | undefined
+  | {
+      schoolServer: string;
+      schoolUid: string;
+      schoolEmail: string;
+    }
+> {
+  if (!major) return undefined;
+  const schoolEmail = resolveSchoolMail(email, major);
+  if (!schoolEmail) return undefined;
+
+  try {
+    const result = await findSchoolUser({ email: schoolEmail });
+    return result
+      ? { schoolServer: result.schoolServer, schoolUid: result.schoolUid, schoolEmail }
+      : undefined;
+  } catch (error) {
+    await log('school-ldap', 'sync/fail', { error });
+    return undefined;
+  }
+}
 
 /**
  * Resolve a mail into its school mail. Retun null if the given mail is not a valid school email address for the given major.

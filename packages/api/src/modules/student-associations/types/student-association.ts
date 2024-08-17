@@ -172,6 +172,10 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
         });
       },
     }),
+    services: t.relatedConnection('services', {
+      cursor: 'id',
+      description: 'Services proposés par une AE',
+    }),
     canCreateGroups: t.boolean({
       description: "Si l'utilsateur·ice courant·e peut créer des groupes rattachés à cette AE",
       args: {
