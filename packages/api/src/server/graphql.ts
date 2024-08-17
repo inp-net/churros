@@ -90,7 +90,8 @@ api.use('/graphql', async (req, res) => {
   yoga(req, res);
 });
 
-api.get('/', (_req, res) => {
+api.get('/', (req, res) => {
+  const { user } = req;
   res.send(`<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -101,6 +102,7 @@ api.get('/', (_req, res) => {
 </head>
 <body>
   <h1>Churros API</h1>
+  <p>Bienvenue ${user ? user.firstName : ''} sur l'API de Churros.</p>
   <p><strong><a href="${new URL(process.env.PUBLIC_FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>

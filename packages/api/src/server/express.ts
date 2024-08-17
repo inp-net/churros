@@ -6,9 +6,11 @@ import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
+import passport from 'passport';
 import { setIntervalAsync } from 'set-interval-async';
 import { WebSocketServer } from 'ws';
 import { schema } from '../schema.js';
+import session from './auth/session.js';
 
 export const api = express();
 
@@ -22,9 +24,17 @@ api.use(
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
+  // express-session middleware
+  session,
+  // Passport middleware
+  passport.initialize(),
+  passport.session(),
 );
 
 export async function startApiServer() {
+  // load passport strategies
+  if (process.env.PUBLIC_OAUTH_ENABLED) import('./auth/oauth2.js');
+
   // Register other routes on the API
   import('./graphql.js');
   import('./gdpr.js');
