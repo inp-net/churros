@@ -6,7 +6,7 @@ import { fullName } from '../modules/users/index.js';
 export type UserSession = Express.User;
 
 export function userSessionsKey(uid: User['uid']): string {
-  return `userSessions:${uid}`;
+  return `userSession:${uid}`;
 }
 
 async function cacheUserSession(uid: User['uid'], session: UserSession) {

@@ -27,6 +27,5 @@ export * from './redis.js';
 export * from './search.js';
 export * from './uid.js';
 export * from './urls.js';
-export * from './user-names.js';
 export * from './user-session.js';
 export * from './utils.js';

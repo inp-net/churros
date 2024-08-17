@@ -14,6 +14,10 @@ import session from './auth/session.js';
 
 export const api = express();
 
+// default passport strategy
+import('./auth/anonymous.js');
+import('./auth/bearer.js');
+
 api.use(
   // Allow queries from the frontend only
   // cors({ origin: ['http://192.168.*', process.env.FRONTEND_ORIGIN, 'http://app'] }),
@@ -29,6 +33,7 @@ api.use(
   // Passport middleware
   passport.initialize(),
   passport.session(),
+  passport.authenticate(['bearer', 'anonymous'], { session: false }),
 );
 
 export async function startApiServer() {
