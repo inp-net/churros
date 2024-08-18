@@ -1,4 +1,5 @@
 import {
+  type Credential,
   type Event,
   type EventManager,
   type Group,
@@ -121,6 +122,8 @@ declare global {
       managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
       adminOfStudentAssociations: StudentAssociation[];
       canEditGroups: StudentAssociation[];
+      /** The credential (only token) used to authenticate the user. */
+      credential?: Credential['value'];
     }
   }
 }

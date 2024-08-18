@@ -61,14 +61,18 @@ async function getUserSessionFromDatabase(uid: User['uid']): Promise<UserSession
 /**
  * Get the user session for a given user.
  * @param uid
+ * @param credential
  */
-export async function getUserSession(uid: User['uid']): Promise<UserSession> {
+export async function getUserSession(uid: User['uid'], credential?: string): Promise<UserSession> {
   const cached = await getCachedUserSession(uid);
   if (cached) return cached;
 
   const session = await getUserSessionFromDatabase(uid);
   await cacheUserSession(uid, session);
-  return session;
+  return {
+    ...session,
+    credential,
+  };
 }
 
 /**

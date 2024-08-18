@@ -28,9 +28,8 @@ async function getTokenSessionFromDatabase(token: Credential['value']): Promise<
     },
   });
 
-  if (credential.expiresAt !== null && credential.expiresAt < new Date()) 
+  if (credential.expiresAt !== null && credential.expiresAt < new Date())
     await prisma.credential.delete({ where: { id: credential.id } });
-  
 
   await redisClient()
     .multi()
@@ -44,7 +43,7 @@ async function getTokenSessionFromDatabase(token: Credential['value']): Promise<
       console.error(`Failed to cache token session: ${error?.toString()}`);
     });
 
-  return getUserSession(credential.user.uid);
+  return getUserSession(credential.user.uid, token);
 }
 
 export async function getTokenSession(token: Credential['value']): Promise<UserSession | null> {
