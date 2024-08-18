@@ -38,7 +38,10 @@ api.use(
 
 export async function startApiServer() {
   // load passport strategies
-  if (process.env.PUBLIC_OAUTH_ENABLED) import('./auth/oauth2.js');
+  if (process.env.PUBLIC_OAUTH_ENABLED) {
+    import('./auth/oauth2.js');
+    import('./auth/logout.js');
+  }
 
   // Register other routes on the API
   import('./graphql.js');
