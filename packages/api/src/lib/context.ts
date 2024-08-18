@@ -15,4 +15,6 @@ export const context = async ({ req }: ContextOptions) => {
   };
 };
 
-export type Context = YogaInitialContext & Awaited<ReturnType<typeof context>>;
+export type Context = ContextOptions & {
+  user: Express.User;
+};

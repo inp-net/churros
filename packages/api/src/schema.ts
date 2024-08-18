@@ -20,7 +20,6 @@ import '#modules/links';
 import '#modules/logs';
 import '#modules/mails';
 import '#modules/notifications';
-import '#modules/oauth';
 import '#modules/pages';
 import '#modules/payments';
 import '#modules/posts';

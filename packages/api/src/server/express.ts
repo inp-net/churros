@@ -47,7 +47,6 @@ export async function startApiServer() {
   import('./graphql.js');
   import('./gdpr.js');
   import('./log.js');
-  import('./oauth.js');
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');

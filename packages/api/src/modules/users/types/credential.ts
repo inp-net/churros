@@ -15,8 +15,8 @@ export const CredentialType = builder.prismaObject('Credential', {
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     expiresAt: t.expose('expiresAt', { type: DateTimeScalar, nullable: true }),
     active: t.boolean({
-      resolve: ({ type, value }, _, { token }) =>
-        type === PrismaTypes.CredentialType.Token && value === token,
+      resolve: ({ type, value }, _, { user }) =>
+        type === PrismaTypes.CredentialType.Token && value === user?.credential,
     }),
     user: t.relation('user', { grantScopes: ['me'] }),
   }),

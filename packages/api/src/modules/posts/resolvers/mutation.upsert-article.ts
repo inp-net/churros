@@ -30,10 +30,8 @@ builder.mutationField('upsertArticle', (t) =>
         { message: 'Impossible de créer un post publié dans le passé.' },
       ],
     ],
-    async authScopes(_, { id, group: groupUid }, { user, token, client }) {
+    async authScopes(_, { id, group: groupUid }, { user }) {
       const creating = !id;
-      if (token && !user && client) return client.owner.uid === groupUid;
-
       if (!user) return false;
       if (user.canEditGroups) return true;
 

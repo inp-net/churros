@@ -1,8 +1,5 @@
-import { builder, isThirdPartyToken, prisma } from '#lib';
-import {
-  NotificationChannel as NotificationChannelPrisma,
-  ThirdPartyCredentialType,
-} from '@churros/db/prisma';
+import { builder } from '#lib';
+import { NotificationChannel as NotificationChannelPrisma } from '@churros/db/prisma';
 import { notify, type PushNotification } from '../index.js';
 
 builder.mutationField('sendNotification', (t) =>
@@ -18,8 +15,8 @@ builder.mutationField('sendNotification', (t) =>
       body: t.arg.string({ description: 'Corps de la notification.' }),
     },
     authScopes: { loggedIn: true },
-    async resolve(_, { title, body }, { user, token }) {
-      if (!user || !token) return false;
+    async resolve(_, { title, body }, { user }) {
+      if (!user) return false;
 
       const data: PushNotification['data'] = {
         channel: NotificationChannelPrisma.Other,
@@ -27,27 +24,6 @@ builder.mutationField('sendNotification', (t) =>
         group: undefined,
       };
 
-      if (isThirdPartyToken(token)) {
-        const thirdPartyApp = await prisma.thirdPartyApp.findFirstOrThrow({
-          where: {
-            credentials: {
-              some: {
-                value: token,
-                type: ThirdPartyCredentialType.AccessToken,
-              },
-            },
-          },
-          include: {
-            owner: true,
-          },
-        });
-
-        title = `[${thirdPartyApp.name}] ${title}`;
-        const _goto = new URL(thirdPartyApp.website);
-        _goto.searchParams.set('from', 'churros-notification');
-        data.goto = _goto.toString();
-        data.group = thirdPartyApp.owner.uid;
-      }
       await notify([user], {
         title,
         body,

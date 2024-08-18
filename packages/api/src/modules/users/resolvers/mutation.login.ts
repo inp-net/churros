@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, log, prisma } from '#lib';
+import { builder, log, prisma } from '#lib';
 import { notify } from '#modules/notifications';
 import type { Prisma } from '@churros/db/prisma';
 import { CredentialType as CredentialPrismaType, NotificationChannel } from '@churros/db/prisma';
@@ -27,16 +27,8 @@ builder.mutationField('login', (t) =>
       password: t.arg.string(),
       clientId: t.arg.string({ required: false }),
     },
-    async resolve(query, _, { email, password, clientId }, { request }) {
+    async resolve(query, _, { email, password }, { request }) {
       const userAgent = request.headers.get('User-Agent')?.slice(0, 255) ?? '';
-      if (clientId) {
-        await log(
-          'oauth',
-          'login',
-          { clientId, email, userAgent },
-          ensureGlobalId(clientId, 'ThirdPartyApp'),
-        );
-      }
 
       return login(email, password, userAgent, query);
     },
