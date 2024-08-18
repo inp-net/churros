@@ -34,11 +34,12 @@
   // let q: string;
   export let options: Array<Option>;
 
-  $: if (statebound)
-    {page.subscribe(({ state }) => {
+  $: if (statebound) {
+    page.subscribe(({ state }) => {
       if (state[statebound]) open?.();
       else close?.();
-    });}
+    });
+  }
 </script>
 
 <ModalOrDrawer {...$$restProps} removeBottomPadding tall bind:open bind:implicitClose={close}>

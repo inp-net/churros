@@ -31,7 +31,6 @@ export * from './mutation.upsert-ticket-group.js';
 export * from './mutation.verify-booking.js';
 export * from './query.booking.js';
 export * from './query.registration.js';
-export * from './query.registrations-of-user.js';
 export * from './query.ticket-group.js';
 export * from './query.ticket.js';
 export * from './ticket.can-be-safely-deleted.js';

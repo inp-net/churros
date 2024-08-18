@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -181,14 +176,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -750,8 +738,16 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   ): String!
   published: Boolean!
   publishedAt: DateTime!
+
+  """
+  Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
+  """
   reacted(emoji: String!): Boolean!
   reactionCounts: Counts!
+
+  """
+  Nombre total de réactions avec cet emoji
+  """
   reactions(emoji: String!): Int!
   shares: Int!
 
@@ -919,7 +915,15 @@ type Comment implements Node & Reactable {
   L'identifiant local de la ressource (sans préfixe)
   """
   localID: LocalID!
+
+  """
+  Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
+  """
   reacted(emoji: String!): Boolean!
+
+  """
+  Nombre total de réactions avec cet emoji
+  """
   reactions(emoji: String!): Int!
   replies: [Comment!]!
   updatedAt: DateTime!
@@ -1035,7 +1039,15 @@ type Document implements Commentable & Node & Reactable {
   Liste de chemins vers les fichiers représentant le sujet (ou la fiche de révision)
   """
   paperPaths: [String!]!
+
+  """
+  Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
+  """
   reacted(emoji: String!): Boolean!
+
+  """
+  Nombre total de réactions avec cet emoji
+  """
   reactions(emoji: String!): Int!
   schoolYear: Int!
 
@@ -1285,8 +1297,16 @@ type Event implements Node & Pictured & Reactable & Shareable {
   ): String!
   placesLeft: Int
   profitsBreakdown: ProfitsBreakdown!
+
+  """
+  Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
+  """
   reacted(emoji: String!): Boolean!
   reactionCounts: Counts!
+
+  """
+  Nombre total de réactions avec cet emoji
+  """
   reactions(emoji: String!): Int!
   recurringUntil: DateTime
   searchBookings(q: String!): [RegistrationSearchResult!]!
@@ -2171,7 +2191,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "dev"): Boolean!
+  acknowledgeChangelog(version: String! = "1.69.1"): Boolean!
 
   """
   Activate a third-party app. Only admins can do this.
@@ -2223,28 +2243,7 @@ type Mutation {
     section: ID!
   ): MutationAnswerFormSectionResult!
 
-  """
-  Authorize a third-party client to access the user's data.
-  Returns an access code.
-
-  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
-
-  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
-
-  - `<clientId>`: The client ID of the app. See registerApp to get this.
-  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
-  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
-
-  Use that code to get an access token with /token:
-
-  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
-
-  - `grant_type`: `authorization_code`
-  - `code`: The code returned by this endpoint
-  - `client_id`: The client ID of the app
-  - `client_secret`: The client secret of the app
-  - `redirect_uri`: The redirect URI used in this request
-  """
+  "\nAuthorize a third-party client to access the user's data. \nReturns an access code. \n\nUse the frontend's /authorize endpoint instead of this, as it requires already being logged-in.\n\nDo a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:\n\n- `<clientId>`: The client ID of the app. See registerApp to get this.\n- `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`\n- `<state>`: A random string generated from personal information used to prevent CSRF attacks.\n\nUse that code to get an access token with /token:\n\nDo a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:\n\n- `grant_type`: `authorization_code`\n- `code`: The code returned by this endpoint\n- `client_id`: The client ID of the app\n- `client_secret`: The client secret of the app\n- `redirect_uri`: The redirect URI used in this request\n      "
   authorize(
     """
     The client ID of the app. See registerApp to get this.
@@ -3038,7 +3037,6 @@ type Mutation {
     uid: UID!
   ): MutationUpdateUserResult!
   updateUserCandidate(
-    address: String!
     birthday: DateTime
     cededImageRightsToTVn7: Boolean!
     email: String!
@@ -3046,7 +3044,6 @@ type Mutation {
     graduationYear: Int!
     lastName: String!
     majorId: ID!
-    phone: String!
 
     """
     Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte
@@ -3197,7 +3194,7 @@ type Mutation {
     paid: Boolean!
     paymentMethod: PaymentMethod
     ticketId: ID!
-  ): MutationUpsertRegistrationResult!
+  ): MutationUpsertRegistrationResult! @deprecated(reason: "Use bookEvent instead")
   upsertService(
     description: String!
     groupUid: String
@@ -4140,7 +4137,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (dev).
+    The version to request a changelog for. Defaults to the current version (1.69.1).
     """
     version: String
   ): ChangelogRelease!
@@ -4159,9 +4156,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
+    The version to end at, **inclusive**. Leave empty to end at the current version (1.69.1).
     """
-    to: String! = "dev"
+    to: String! = "1.69.1"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
@@ -4303,17 +4300,6 @@ type Query {
   reaction(id: ID!): Reaction!
   reactions(after: String, before: String, first: Int, last: Int): QueryReactionsConnection!
   registration(id: ID!): QueryRegistrationResult!
-  registrationsOfUser(
-    after: String
-    before: String
-    first: Int
-    forUserOnly: Boolean
-    last: Int
-    userUid: String!
-  ): QueryRegistrationsOfUserConnection!
-    @deprecated(
-      reason: "Utilisez plutôt `user(uid: userUid) { bookings }` (champ `bookings` sur le type `User`)."
-    )
 
   """
   Rendu de markdown en HTML. Demande a être authentifié·e pour éviter tout abus.
@@ -4585,17 +4571,6 @@ union QueryRegistrationResult = Error | QueryRegistrationSuccess | ZodError
 
 type QueryRegistrationSuccess {
   data: Registration!
-}
-
-type QueryRegistrationsOfUserConnection {
-  edges: [QueryRegistrationsOfUserConnectionEdge!]!
-  nodes: [Registration!]!
-  pageInfo: PageInfo!
-}
-
-type QueryRegistrationsOfUserConnectionEdge {
-  cursor: String!
-  node: Registration!
 }
 
 union QueryUpcomingChangelogResult = Error | QueryUpcomingChangelogSuccess | ZodError
@@ -6399,6 +6374,10 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
+  school: UID
+    @deprecated(
+      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
+    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6445,7 +6424,13 @@ type User implements Node & Pictured {
   Les affiliations de l'utilisateur à des groupes dont iel est au bureau
   """
   boardMemberships: [GroupMember!]!
-  booking(beneficiary: String, event: ID!): Registration!
+  booking(
+    """
+    Identifiant complet (avec le préfixe) pour un bénéficiaire avec compte Churros, ou texte libre pour un bénéficiaire externe
+    """
+    beneficiary: String
+    event: ID!
+  ): Registration!
   bookings(
     after: String
     before: String

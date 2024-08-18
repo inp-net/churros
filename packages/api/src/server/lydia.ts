@@ -147,13 +147,13 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
           },
         });
         if (txn.registration?.author) {
-          publish(txn.registrationId, 'updated', txn);
+          publish(txn.registration.id, 'updated', txn);
           await notify([txn.registration.author], {
             title: 'Place payée',
             body: `Ta réservation pour ${txn.registration.ticket.event}`,
             data: {
               channel: 'Other',
-              goto: txn.paidCallback,
+              goto: txn.paidCallback ?? '/',
               group: undefined,
             },
           });
@@ -163,7 +163,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
             data: {
               channel: 'Other',
-              goto: txn.paidCallback,
+              goto: txn.paidCallback ?? '/',
               group: undefined,
             },
           });
@@ -173,7 +173,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             body: `Achat de ${txn.shopPayment.shopItem.name} confirmé`,
             data: {
               channel: 'Other',
-              goto: txn.paidCallback,
+              goto: txn.paidCallback ?? '/',
               group: undefined,
             },
           });

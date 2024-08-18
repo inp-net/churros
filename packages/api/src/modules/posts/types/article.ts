@@ -12,11 +12,11 @@ import { canEditArticle } from '../utils/permissions.js';
 // TODO rename to Post
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
+  include: { reactions: true },
   interfaces: [
     // @ts-expect-error dunno why it complainnns
     CommentableInterface,
     PicturedInterface,
-    // @ts-expect-error dunno why it complainnns
     ReactableInterface,
     // FIXME: Gives a "not implemented" error
     // so HasLinks is an enum for now
@@ -60,32 +60,6 @@ export const ArticleType = builder.prismaNode('Article', {
         "Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)",
       resolve: ({ authorId, groupId }, _, { user }) =>
         canEditArticle({ authorId, groupId }, { authorId, groupId }, user),
-    }),
-    reacted: t.boolean({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }, { user }) {
-        if (!user) return false;
-        return Boolean(
-          await prisma.reaction.findFirst({
-            where: {
-              articleId: id,
-              emoji,
-              authorId: user.id,
-            },
-          }),
-        );
-      },
-    }),
-    reactions: t.int({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }) {
-        return prisma.reaction.count({
-          where: {
-            articleId: id,
-            emoji,
-          },
-        });
-      },
     }),
     myReactions: t.field({
       type: 'BooleanMap',

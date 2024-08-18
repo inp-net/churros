@@ -1,5 +1,6 @@
 import { builder } from '#lib';
 import { GroupTypePrismaIncludes } from '#modules/groups';
+import { StudentAssociationPrismaIncludes } from '#modules/student-associations';
 import { GraphQLError } from 'graphql';
 import { LogoSourceTypeEnum, ServiceOwnerType } from '../index.js';
 
@@ -7,7 +8,9 @@ export const ServiceTypePrismaIncludes = {
   group: {
     include: GroupTypePrismaIncludes,
   },
-  studentAssociation: true,
+  studentAssociation: {
+    include: StudentAssociationPrismaIncludes,
+  },
   school: true,
 };
 export const ServiceType = builder.prismaNode('Service', {

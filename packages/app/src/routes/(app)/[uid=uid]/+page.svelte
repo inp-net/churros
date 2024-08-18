@@ -221,7 +221,9 @@
                   label={profile.roomIsOpen ? 'Ouvert' : 'Fermé'}
                   value={profile.roomIsOpen}
                   on:update={async ({ detail }) => {
-                    await (detail ? MarkRoomOpen.mutate({ group: $page.params.uid }) : MarkRoomClosed.mutate({ group: $page.params.uid }));
+                    await (detail
+                      ? MarkRoomOpen.mutate({ group: $page.params.uid })
+                      : MarkRoomClosed.mutate({ group: $page.params.uid }));
                   }}
                 />
               {:else if profile.roomIsOpen}

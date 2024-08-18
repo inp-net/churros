@@ -6,13 +6,16 @@ import {
   canEditDetails,
   userContributesTo,
 } from '#modules/student-associations/utils';
+import type { Prisma } from '@churros/db/prisma';
+
+export const StudentAssociationPrismaIncludes = {
+  contributionOptions: true,
+  board: true,
+} as const satisfies Prisma.StudentAssociationInclude;
 
 export const StudentAssociationType = builder.prismaObject('StudentAssociation', {
   interfaces: [PicturedInterface],
-  include: {
-    contributionOptions: true,
-    board: true,
-  },
+  include: StudentAssociationPrismaIncludes,
   fields: (t) => ({
     id: t.exposeID('id'),
     uid: t.exposeString('uid'),

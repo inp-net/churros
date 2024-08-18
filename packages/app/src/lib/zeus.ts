@@ -118,6 +118,45 @@ export const scalars = ZeusScalars({
     decode: (value: unknown): string => value as string,
     encode: (value: unknown): string => JSON.stringify(value),
   },
+  Markdown: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  Email: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  HTML: {
+    decode: (value: unknown): App.XSSSafeHTMLString => value as App.XSSSafeHTMLString,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  ShortString: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  PositiveInt: {
+    decode: (value: unknown): number => value as number,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  PositiveFloat: {
+    decode: (value: unknown): number => value as number,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  Capacity: {
+    // type: 'number | null',
+    decode: (x: unknown): string => (x === 'Unlimited' ? null : x),
+    encode: (x: unknown): string => (x === null ? 'Unlimited' : x),
+  },
+  URL: {
+    // type: 'URL | null',
+    decode: (x: unknown): URL | null => (URL.canParse(x) ? new URL(x) : null),
+    encode: (x: unknown): string => x.toString(),
+  },
+  LooseURL: {
+    // type: 'string',
+    decode: (x: unknown): number | null => x,
+    encode: (x: unknown): string => x,
+  },
 });
 
 export const zeus = derived(page, ({ data }) => {

@@ -1,8 +1,6 @@
 import { localID, prisma } from '#lib';
-
 import type { PushNotification } from '#modules/notifications';
 import { scheduleNotification } from '#modules/notifications';
-import { fullName } from '#modules/users';
 import {
   NotificationChannel,
   Visibility,
@@ -115,18 +113,7 @@ export async function scheduleShotgunNotifications(
               eventId: id,
             },
             paid: true,
-            OR: [
-              {
-                authorId: user.id,
-                beneficiary: '',
-              },
-              {
-                beneficiary: user.uid,
-              },
-              {
-                beneficiary: fullName(user),
-              },
-            ],
+            OR: [{ authorId: user.id }, { internalBeneficiaryId: user.id }],
           },
         });
         if (registration) return;

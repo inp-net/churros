@@ -37,9 +37,8 @@
     !major &&
     loading($dataInitialSchool?.majors?.at(0)?.uid, null) &&
     $dataInitialSchool?.majors.length === 1
-  ) 
+  )
     major = $dataInitialSchool!.majors.at(0)!.uid;
-  
 
   export let options: InputMajor | null;
   $: data = fragment(

@@ -82,7 +82,8 @@ builder.mutationField('upsertPage', (t) =>
           ...(group
             ? { group: { uid: group } }
             : {
-                studentAssociation: { uid: studentAssociation },
+                // studentAssociation! is safe because of the validator above
+                studentAssociation: { uid: studentAssociation! },
               }),
           path,
         },

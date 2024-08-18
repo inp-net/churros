@@ -44,9 +44,9 @@ builder.mutationField('deleteTicket', (t) =>
             onlyManagersCanProvide: true,
           },
         });
-        if (onlyManagersCanProvide) 
+        if (onlyManagersCanProvide)
           throw new GraphQLError('Il existe des réservations pour ce billet');
-        
+
         caveats.unshift(
           'Il existe des réservations pour ce billet. Le billet a été passé en "Managers seulement"',
         );

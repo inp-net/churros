@@ -2,15 +2,18 @@ import { builder, localID, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { UserType, fullName } from '#modules/users';
+import type { Prisma } from '@churros/db/prisma';
 import { authorIsBeneficiary, canScanBookings, canScanBookingsPrismaIncludes } from '../index.js';
-// TODO rename to booking
 
+export const RegistrationPrismaIncludes = {
+  lydiaTransaction: true,
+  ticket: true,
+} as const satisfies Prisma.RegistrationInclude;
+
+// TODO rename to booking
 export const RegistrationType = builder.prismaNode('Registration', {
   id: { field: 'id' },
-  include: {
-    lydiaTransaction: true,
-    ticket: true,
-  },
+  include: RegistrationPrismaIncludes,
   fields: (t) => ({
     canManage: t.boolean({
       description:

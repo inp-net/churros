@@ -6,11 +6,12 @@ import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import * as qrcode from 'qrcode';
 import { RegistrationType, canSeeTicket, placesLeft } from '../index.js';
-// TODO rename to book.ts
 
+// TODO remove, not used by @churros/app anymore
 builder.mutationField('upsertRegistration', (t) =>
   t.prismaField({
     type: RegistrationType,
+    deprecationReason: 'Use bookEvent instead',
     errors: {},
     args: {
       id: t.arg.id({ required: false }),
@@ -85,7 +86,7 @@ builder.mutationField('upsertRegistration', (t) =>
           return false;
         }
 
-        const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : undefined;
+        const userWithContributesTo = user ? await getUserWithContributesTo(user.id) : null;
 
         // Check that the ticket is still open
         if (ticket.closesAt && isPast(ticket.closesAt)) {
@@ -125,7 +126,8 @@ builder.mutationField('upsertRegistration', (t) =>
         // Check for beneficiary limits
         if (!userCanManageEvent(ticket.event, user, {})) {
           const registrationsByThisAuthor = ticketAndRegistrations!.registrations.filter(
-            ({ author, beneficiary }) => author?.uid === user?.uid && beneficiary !== '',
+            ({ author, externalBeneficiary, internalBeneficiaryId }) =>
+              author?.uid === user?.uid && (externalBeneficiary !== '' || internalBeneficiaryId),
           );
           if (registrationsByThisAuthor.length > ticket.godsonLimit) {
             await logDenial('godson limit reached', {
@@ -192,7 +194,7 @@ builder.mutationField('upsertRegistration', (t) =>
             ticket: { event: { id: event.id } },
             authorId: user?.id ?? undefined,
             authorEmail: authorEmail ?? '',
-            beneficiary: beneficiary ?? '',
+            externalBeneficiary: beneficiary ?? '',
             // eslint-disable-next-line unicorn/no-null
             cancelledAt: null,
           },
@@ -236,7 +238,7 @@ builder.mutationField('upsertRegistration', (t) =>
         update: {
           // eslint-disable-next-line unicorn/no-null
           paymentMethod: paymentMethod ?? null,
-          beneficiary: beneficiary ?? '',
+          externalBeneficiary: beneficiary ?? '',
           paid,
         },
         create: {
@@ -245,7 +247,7 @@ builder.mutationField('upsertRegistration', (t) =>
           authorEmail: authorEmail ?? '',
           // eslint-disable-next-line unicorn/no-null
           paymentMethod: paymentMethod ?? null,
-          beneficiary: beneficiary ?? '',
+          externalBeneficiary: beneficiary ?? '',
           paid: ticket.price === 0,
         },
       });

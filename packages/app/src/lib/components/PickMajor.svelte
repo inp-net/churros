@@ -41,9 +41,8 @@
     );
 
     for (const schoolUid of allSchoolsUids) {
-      for (const major of options) 
+      for (const major of options)
         if (major.schools.some((school) => school.uid === schoolUid)) majorsBySchool.push(major);
-      
     }
     return majorsBySchool;
   }

@@ -21,7 +21,9 @@
       on:change={({ currentTarget }) => {
         if (!loaded(value)) return;
         if (!(currentTarget instanceof HTMLInputElement)) return;
-        value = currentTarget.checked ? [...value, optionValue] : value.filter((v) => v !== optionValue);
+        value = currentTarget.checked
+          ? [...value, optionValue]
+          : value.filter((v) => v !== optionValue);
         dispatch('change', value);
       }}
     />

@@ -15,7 +15,7 @@ builder.mutationField('createGoogleWalletPass', (t) =>
         where: {
           id: ensureGlobalId(code.toLowerCase(), 'Registration'),
         },
-        include: { ticket: { include: { event: { include: { group: true } } } }, author: true },
+        include: makeGoogleWalletObject.prismaIncludes,
       });
       if (!booking) throw new GraphQLError('Réservation introuvable');
 
@@ -27,7 +27,7 @@ builder.mutationField('createGoogleWalletPass', (t) =>
         origins: [],
         typ: 'savetowallet',
         payload: {
-          genericObjects: [makeGoogleWalletObject(booking.ticket.event, booking)],
+          genericObjects: [makeGoogleWalletObject(booking)],
         },
       };
 

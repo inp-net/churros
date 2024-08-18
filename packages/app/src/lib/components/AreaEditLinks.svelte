@@ -94,7 +94,7 @@
             ...AreaEditLinks_Link @mask_disable
           }
         }
-        ...on Ticket {
+        ... on Ticket {
           id
           links @list(name: "AreaEditLinks_TicketLinks") {
             ...AreaEditLinks_Link @mask_disable

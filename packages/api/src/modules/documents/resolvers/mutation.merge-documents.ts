@@ -57,6 +57,7 @@ builder.mutationField('mergeDocuments', (t) =>
         where: { id: { in: from } },
       });
       return prisma.document.update({
+        include: { reactions: true },
         ...query,
         where: { id: target.id },
         data: {

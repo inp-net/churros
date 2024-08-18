@@ -15,9 +15,9 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
     capacity: t.exposeInt('capacity'),
     tickets: t.prismaField({
       type: [TicketType],
-      resolve: async (_query, { id }, _, { user }) => {
+      async resolve(_query, { id }, _, { user }) {
         const userAdditionalData = user
-          ? prisma.user.findUniqueOrThrow({
+          ? await prisma.user.findUniqueOrThrow({
               where: { id: user.id },
               include: canSeeTicketPrismaIncludesForUser,
             })
@@ -28,7 +28,8 @@ export const TicketGroupType = builder.prismaNode('TicketGroup', {
             .findUniqueOrThrow({
               where: { id },
             })
-            // .tickets({ ...query({ include: canSeeTicketPrismaIncludes }) }) waiting on Pothos update so that it supports query include object merging
+            // TODO waiting on Pothos update so that it supports query include object merging
+            // .tickets({ ...query({ include: canSeeTicketPrismaIncludes }) })
             .tickets({ include: canSeeTicketPrismaIncludes })
             .then((tickets) => tickets.filter((ticket) => canSeeTicket(ticket, userAdditionalData)))
         );

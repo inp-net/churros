@@ -25,6 +25,7 @@ import '#modules/pages';
 import '#modules/payments';
 import '#modules/pictures';
 import '#modules/posts';
+import '#modules/profiles';
 import '#modules/reactions';
 import '#modules/schools';
 import '#modules/services';
@@ -33,7 +34,6 @@ import '#modules/student-associations';
 import '#modules/themes';
 import '#modules/ticketing';
 import '#modules/users';
-import '#modules/profiles';
 
 export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
 

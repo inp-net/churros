@@ -125,12 +125,14 @@ export function canSeeTicket(
 }
 
 export function canSeePlacesLeftCount(
-  event: Prisma.EventGetPayload<{ include: typeof canSeeAllBookingsPrismaIncludes }>,
+  event: Prisma.EventGetPayload<{ include: typeof canSeePlacesLeftCount.prismaIncludes }>,
   user: Context['user'],
   placesLeft: number,
 ) {
   return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
 }
+
+canSeePlacesLeftCount.prismaIncludes = canSeeAllBookingsPrismaIncludes;
 
 export function canMarkBookingAsPaid(
   user: Context['user'] &

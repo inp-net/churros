@@ -40,7 +40,6 @@ const additionalReservedUsernames = new Set([
   'notifications',
   'posts',
   'quick-signups',
-  'register',
   'reports',
   'schools',
   'search',

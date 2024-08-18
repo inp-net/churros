@@ -32,9 +32,8 @@ await Promise.all(
     const start = lines.findIndex((line) => line.includes(LINE_MARKER_START));
     const end = lines.findIndex((line) => line.includes(LINE_MARKER_END));
 
-    if (start === -1 || end === -1) 
+    if (start === -1 || end === -1)
       throw new Error(`Could not find start or end markers in ${file}`);
-    
 
     const newLines = [
       ...lines.slice(0, start + 1),

@@ -152,8 +152,7 @@
             '',
           )
         : undefined}
-      on:click={!onceLoaded(externalURL, Boolean, null) &&
-      $page.route.id === '/(app)/events/[id]'
+      on:click={!onceLoaded(externalURL, Boolean, null) && $page.route.id === '/(app)/events/[id]'
         ? () => {
             if (!$data || !loaded($data.localID)) return;
             dispatch('book', $data.localID);

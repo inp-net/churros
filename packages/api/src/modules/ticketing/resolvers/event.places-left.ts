@@ -15,7 +15,7 @@ builder.prismaObjectField(EventType, 'placesLeft', (t) =>
 
       const event = await prisma.event.findUniqueOrThrow({
         where: { id },
-        include: eventCapacity.prismaIncludes,
+        include: { ...canSeePlacesLeftCount.prismaIncludes, ...eventCapacity.prismaIncludes },
       });
 
       let placesLeft = Math.max(

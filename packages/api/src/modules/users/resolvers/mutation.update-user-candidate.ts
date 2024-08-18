@@ -21,8 +21,6 @@ builder.mutationField('updateUserCandidate', (t) =>
       majorId: t.arg.id(),
       graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
       birthday: t.arg({ type: DateTimeScalar, required: false }),
-      phone: t.arg.string({ validate: { maxLength: 255 } }),
-      address: t.arg.string({ validate: { maxLength: 255 } }),
       cededImageRightsToTVn7: t.arg.boolean(),
     },
     async resolve(
@@ -35,16 +33,14 @@ builder.mutationField('updateUserCandidate', (t) =>
         majorId,
         uid,
         graduationYear,
-        address,
         birthday,
-        phone,
         cededImageRightsToTVn7,
       },
     ) {
       const major = await prisma.major.findUnique({
         where: { id: majorId },
       });
-      if (graduationYear >= schoolYearStart().getFullYear() && major?.old) {
+      if (graduationYear >= schoolYearStart().getFullYear() && major?.discontinued) {
         throw new GraphQLError(
           "Cette filière n'existe plus, il n'est pas possible de s'y délarer comme étudiant·e (sauf avec une ancienne promo).",
         );
@@ -52,14 +48,12 @@ builder.mutationField('updateUserCandidate', (t) =>
       const candidate = await prisma.userCandidate.update({
         where: { email },
         data: {
-          address,
           birthday,
           uid,
           firstName,
           majorId,
           graduationYear,
           lastName,
-          phone,
           cededImageRightsToTVn7,
         },
       });

@@ -1,12 +1,13 @@
 import { areSetsEqual, builder, prisma } from '#lib';
 import { EventType } from '../index.js';
 // TODO move all permission functions to src/permissions/(module).ts
+import { PromotionTypeEnum } from '#modules/payments';
 import { canSeeAllBookings } from '#modules/ticketing/utils';
-import type { PromotionType } from '@churros/db/prisma';
+import { PromotionType } from '@churros/db/prisma';
 
 builder.prismaObjectField(EventType, 'enabledSpecialOffers', (t) =>
   t.field({
-    type: ['PromotionType'],
+    type: [PromotionTypeEnum],
     nullable: true,
     description:
       "Liste des promotions activées pour tout les billets de l'évènement. Si certains billets ont des promotions activées différentes, renvoie `null`. Si l'évènement n'a pas de billets, renvoie `[]`.",
@@ -32,7 +33,7 @@ builder.prismaObjectField(EventType, 'enabledSpecialOffers', (t) =>
       // Check if all tickets have the same promotions
       if (promotions.some((p) => !areSetsEqual(p, promotions[0]!))) return null;
 
-      return Array.from(promotions[0]!);
+      return [...promotions[0]!];
     },
   }),
 );

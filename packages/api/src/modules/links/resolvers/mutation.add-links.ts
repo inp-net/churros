@@ -2,7 +2,7 @@ import { builder, ensureGlobalId, log, prisma, splitID } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { LinkInput, MAXIMUM_LINKS } from '#modules/links';
 import { canEditArticle } from '#modules/posts';
-import { queryFromInfo } from '@pothos/plugin-prisma';
+import { TicketTypePrismaIncludes } from '#modules/ticketing';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 import { HasLinks } from '../types/has-links.js';
@@ -54,16 +54,17 @@ builder.mutationField('addLinks', (t) =>
         }
       }
     },
-    async resolve(_, { id, links }, context, info) {
+    async resolve(_, { id, links }, context) {
       const { user } = context;
       const [typeName, __] = splitID(id);
-      const queryFor = <T extends string>(typeName: T) =>
-        queryFromInfo({ context, info, typeName });
+      // TODO figure out why return type is {select: undefined}
+      // const queryFor = <T extends string>(typeName: T) =>
+      //   queryFromInfo({ context, info, typeName });
       switch (typeName) {
         case 'Article': {
           id = ensureGlobalId(id, 'Article');
           await log('posts', 'set-links', { id, links }, id, user);
-          const query = queryFor('Article');
+          // const query = queryFor('Article');
           const {
             _count: { links: linksCount },
           } = await prisma.article.findUniqueOrThrow({
@@ -80,10 +81,11 @@ builder.mutationField('addLinks', (t) =>
             throw new GraphQLError("Impossible d'avoir plus de 10 liens");
 
           return prisma.article.update({
-            ...query,
+            // ...query,
             include: {
-              ...('include' in query ? query.include : undefined),
+              // ...('include' in query ? query.include : undefined),
               links: true,
+              reactions: true,
             },
             where: { id },
             data: {
@@ -101,7 +103,7 @@ builder.mutationField('addLinks', (t) =>
         case 'Ticket': {
           id = ensureGlobalId(id, 'Ticket');
           await log('ticketing', 'set-links', { id, links }, id, user);
-          const query = queryFor('Ticket');
+          // const query = queryFor('Ticket');
           const {
             _count: { links: linksCount },
           } = await prisma.ticket.findUniqueOrThrow({
@@ -118,11 +120,11 @@ builder.mutationField('addLinks', (t) =>
             throw new GraphQLError("Impossible d'avoir plus de 10 liens");
 
           return prisma.ticket.update({
-            ...query,
+            // ...query,
             include: {
-              ...('include' in query ? query.include : undefined),
+              // ...('include' in query ? query.include : undefined),
+              ...TicketTypePrismaIncludes,
               links: true,
-              group: true,
             },
             where: { id },
             data: {
@@ -141,7 +143,7 @@ builder.mutationField('addLinks', (t) =>
         case 'Event': {
           id = ensureGlobalId(id, 'Event');
           await log('event', 'set-links', { id, links }, id, user);
-          const query = queryFor('Event');
+          // const query = queryFor('Event');
           const {
             _count: { links: linksCount },
           } = await prisma.event.findUniqueOrThrow({
@@ -158,13 +160,14 @@ builder.mutationField('addLinks', (t) =>
             throw new GraphQLError("Impossible d'avoir plus de 10 liens");
 
           return prisma.event.update({
-            ...query,
+            // ...query,
             include: {
-              ...('include' in query ? query.include : undefined),
+              // ...('include' in query ? query.include : undefined),
               links: true,
               managers: true,
               group: true,
               tickets: true,
+              reactions: true,
             },
             where: { id },
             data: {

@@ -3,6 +3,7 @@ import { LocalID, URLScalar } from '#modules/global';
 import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import {
+  RegistrationPrismaIncludes,
   RegistrationVerificationResultType,
   RegistrationVerificationState,
   canScanBookings,
@@ -58,8 +59,8 @@ builder.mutationField('verifyBooking', (t) =>
       let registration = await prisma.registration.findUnique({
         where: { id: ensureGlobalId(code, 'Registration') },
         include: {
+          ...RegistrationPrismaIncludes,
           verifiedBy: true,
-          ticket: true,
         },
       });
 
@@ -106,6 +107,7 @@ builder.mutationField('verifyBooking', (t) =>
             verifiedBy: { connect: { id: user.id } },
           },
           include: {
+            ...RegistrationPrismaIncludes,
             verifiedBy: true,
             ticket: {
               include: {

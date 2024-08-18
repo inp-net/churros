@@ -23,9 +23,7 @@
   );
 
   export let href: MaybeLoading<string> | undefined = undefined;
-  $: href ??= mapLoading($data?.uid, (uid) =>
-    uid ? refroute('/[uid=uid]', uid) : PendingValue,
-  );
+  $: href ??= mapLoading($data?.uid, (uid) => (uid ? refroute('/[uid=uid]', uid) : PendingValue));
 
   $: src = $isDark ? $data?.pictureURLDark : $data?.pictureURL;
 </script>

@@ -28,16 +28,28 @@ builder.mutationField('unreact', (t) =>
 
       switch (typename) {
         case 'Document': {
-          return prisma.document.findUniqueOrThrow({ where: { id: target } });
+          return prisma.document.findUniqueOrThrow({
+            where: { id: target },
+            include: { reactions: true },
+          });
         }
         case 'Article': {
-          return prisma.article.findUniqueOrThrow({ where: { id: target } });
+          return prisma.article.findUniqueOrThrow({
+            where: { id: target },
+            include: { reactions: true },
+          });
         }
         case 'Comment': {
-          return prisma.comment.findUniqueOrThrow({ where: { id: target } });
+          return prisma.comment.findUniqueOrThrow({
+            where: { id: target },
+            include: { reactions: true },
+          });
         }
         case 'Event': {
-          return prisma.event.findUniqueOrThrow({ where: { id: target } });
+          return prisma.event.findUniqueOrThrow({
+            where: { id: target },
+            include: { reactions: true },
+          });
         }
         default: {
           throw new GraphQLError(

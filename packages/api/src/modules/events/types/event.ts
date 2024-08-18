@@ -18,10 +18,9 @@ import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.j
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true, group: true, tickets: true, links: true },
+  include: { managers: true, group: true, tickets: true, links: true, reactions: true },
   interfaces: [
     PicturedInterface,
-    //@ts-expect-error dunno why it complainnns
     ReactableInterface,
     //@ts-expect-error dunno why it complainnns
     ShareableInterface,
@@ -109,32 +108,6 @@ export const EventType = builder.prismaNode('Event', {
           },
         });
         return sharedBy;
-      },
-    }),
-    reacted: t.boolean({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }, { user }) {
-        if (!user) return false;
-        return Boolean(
-          await prisma.reaction.findFirst({
-            where: {
-              eventId: id,
-              emoji,
-              authorId: user.id,
-            },
-          }),
-        );
-      },
-    }),
-    reactions: t.int({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }) {
-        return prisma.reaction.count({
-          where: {
-            eventId: id,
-            emoji,
-          },
-        });
       },
     }),
     myReactions: t.field({

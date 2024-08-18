@@ -62,6 +62,12 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
               contributions: { include: { option: { include: { paysFor: true } } } },
             },
           },
+          internalBeneficiary: {
+            include: {
+              major: true,
+              contributions: { include: { option: { include: { paysFor: true } } } },
+            },
+          },
         },
       });
       let result = '';
@@ -98,7 +104,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           ticket,
           paymentMethod,
           id,
-          beneficiary,
+          externalBeneficiary,
         }: (typeof registrations)[number],
         benef:
           | undefined
@@ -113,7 +119,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       ) =>
         ({
           'Date de réservation': createdAt.toISOString(),
-          'Bénéficiaire': (benef ? fullName(benef) : beneficiary) || authorEmail,
+          'Bénéficiaire': (benef ? fullName(benef) : externalBeneficiary) || authorEmail,
           'Achat par': author ? fullName(author) : authorEmail,
           'Payée': humanBoolean(paid),
           'Scannée': humanBoolean(Boolean(verifiedAt) && paid),
@@ -140,16 +146,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       result = csvLine(columns);
 
       for (const reg of registrations) {
-        const benef = reg.beneficiary
-          ? await prisma.user.findUnique({
-              where: { uid: reg.beneficiary },
-              include: {
-                major: true,
-                contributions: { include: { option: { include: { paysFor: true } } } },
-              },
-            })
-          : reg.author;
-        const data = mapping(reg, benef);
+        const data = mapping(reg, reg.internalBeneficiary ?? reg.author);
         result += csvLine(columns.map((col) => data[col]));
       }
 

@@ -16,9 +16,9 @@ static: ./docs
 environment:
   PUBLIC_API_URL: https://churros.app/graphql
   PUBLIC_API_WEBSOCKET_URL: wss://churros.app/graphql
-  CURRENT_COMMIT: dev
-  CURRENT_VERSION: dev
-  CURRENT_COMMIT_SHORT: dev
+  CURRENT_COMMIT: 45c28d0ecbfb8296380c5f0ef1b1b4a9ca846a32
+  CURRENT_VERSION: 1.69.1
+  CURRENT_COMMIT_SHORT: 45c28d0
   PUBLIC_AUTH_TYPE: UserPassword # available: OAuth (PKCE flow), OpenID, UserPassword, Token, None (default)
   PUBLIC_AUTH_HEADER: Bearer # available: Bearer (for all AUTH_TYPEs), Basic (for UserPassword, takes the base64 of the form `username:password`), plain (for all types, just puts the token as is)
   PUBLIC_AUTH_QUERY: |
