@@ -25,6 +25,7 @@ export * from './qrcode.js';
 export * from './ratelimit.js';
 export * from './redis.js';
 export * from './search.js';
+export * from './token-session.js';
 export * from './uid.js';
 export * from './urls.js';
 export * from './user-session.js';
