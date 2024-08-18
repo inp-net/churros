@@ -251,6 +251,14 @@ model Link {
   subjectId            String?
 
   @@unique([name, userId, studentAssociationId, groupId, articleId, eventId, ticketId, notificationId, subjectId])
+  @@unique([userId, value])
+  @@unique([studentAssociationId, value])
+  @@unique([groupId, value])
+  @@unique([articleId, value])
+  @@unique([eventId, value])
+  @@unique([ticketId, value])
+  @@unique([notificationId, value])
+  @@unique([subjectId, value])
 }
 
 /// A school syllabus
@@ -448,7 +456,7 @@ model Group {
   selfJoinable         Boolean   @default(false)
   roomIsOpen           Boolean   @default(false)
   createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt @default(now())
+  updatedAt            DateTime  @default(now()) @updatedAt
 
   address         String @default("") @db.VarChar(255)
   description     String @default("") @db.VarChar(255)

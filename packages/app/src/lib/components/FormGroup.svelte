@@ -135,7 +135,15 @@
     <InputLongText rich label="Description" bind:value={longDescription} />
     <!-- TODO colors ? -->
     <InputText label="Salle" maxlength={255} bind:value={address} />
-    <InputText label="Email" type="email" maxlength={255} bind:value={email} />
+    <InputText
+      label="Email"
+      type="email"
+      maxlength={255}
+      value={email ?? ''}
+      on:input={({ detail }) => {
+        email = detail.currentTarget.value || undefined;
+      }}
+    />
     <InputText label="Mailing list" type="email" maxlength={255} bind:value={mailingList} />
     <InputText label="Site web" type="url" maxlength={255} bind:value={website} />
     <InputSocialLinks label="Réseaux sociaux" bind:value={links} />

@@ -127,9 +127,10 @@
           frequency
         }
         links {
-          computedValue
-          value
-          name
+          computedValue: url
+          url
+          rawURL
+          text
         }
         publishedAt
         pictureFile
@@ -161,7 +162,7 @@
   $: if (!inputLoaded && allLoaded($data) && $data) {
     input = structuredClone({
       ...$data,
-      links: $data.links.map(({ value, name }) => ({ value, name })),
+      links: $data.links.map(({ rawURL, text }) => ({ url: rawURL, text })),
       group: $data.group.uid,
     });
     inputLoaded = true;
@@ -195,8 +196,16 @@
         $body: String!
         $publishedAt: DateTime!
         $visibility: Visibility!
+        $links: [LinkInput!]!
       ) {
-        # TODO links
+        addLinks(id: $id, links: $links, duplicates: Replace) {
+          ...on MutationAddLinksSuccess {
+            data {
+              __typename
+            }
+          }
+          ...MutationErrors
+        }
         upsertArticle(
           id: $id
           event: $eventId
@@ -206,11 +215,10 @@
           publishedAt: $publishedAt
           visibility: $visibility
         ) {
-          ... on Error {
-            message
-          }
+          ...MutationErrors
           ... on MutationUpsertArticleSuccess {
             data {
+              __typename
               localID
               group {
                 uid
@@ -234,8 +242,10 @@
             `Ton post a bien été ${input.id ? 'modifié' : 'créé'}`,
             'Impossible de sauvegarder le post',
           )
-        )
+        ) {
+          // @ts-expect-error TODO fix typing in toasts.mutation
           goto(afterGoTo(result.data.upsertArticle.data));
+        }
       });
   }
 

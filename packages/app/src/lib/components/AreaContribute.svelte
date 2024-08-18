@@ -6,13 +6,12 @@
     type AreaContribute_StudentAssociation,
     type AreaContribute_User,
   } from '$houdini';
-  import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { allLoaded, loaded, onceLoaded } from '$lib/loading';
   import { me } from '$lib/session.js';
-  import { zeus } from '$lib/zeus';
+  import { toasts } from '$lib/toasts';
 
   function formatPrice(amount: number): string {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
@@ -60,31 +59,26 @@
     `),
   );
 
-  let contributeServerError = '';
   let contributeLoading: string | undefined = undefined;
   $: contributePhone = onceLoaded($Me?.phone, (phone) => phone ?? '', '');
 
+  const Contribute = graphql(`
+    mutation Contribute($optionId: ID!, $phone: String!) {
+      contribute(optionId: $optionId, phone: $phone) {
+        ... on MutationContributeSuccess {
+          data
+        }
+        ...MutationErrors
+      }
+    }
+  `);
+
   async function contribute(optionId: string) {
     contributeLoading = optionId;
-    const { contribute } = await $zeus.mutate({
-      contribute: [
-        {
-          optionId,
-          phone: contributePhone,
-        },
-        {
-          '__typename': true,
-          '...on Error': { message: true },
-          '...on MutationContributeSuccess': { data: true },
-        },
-      ],
-    });
+    const result = await Contribute.mutate({ optionId, phone: contributePhone });
 
     contributeLoading = undefined;
-    if (contribute.__typename === 'Error') {
-      contributeServerError = contribute.message;
-    } else {
-      contributeServerError = '';
+    if (toasts.mutation(result, 'contribute', '', 'Impossible de cotiser')) {
       window.location.reload();
     }
   }
@@ -95,15 +89,22 @@
     return $me?.major?.schools.some((school) => option.offeredIn.uid === school.uid);
   }
 
+  const CancelContribution = graphql(`
+    mutation CancelContribution($optionId: ID!) {
+      cancelPendingContribution(optionId: $optionId) {
+        ... on MutationCancelPendingContributionSuccess {
+          data
+        }
+        ...MutationErrors
+      }
+    }
+  `);
+
   async function cancelContribution(optionId: string) {
     contributeLoading = optionId;
-    try {
-      await $zeus.mutate({
-        cancelPendingContribution: [{ optionId }, true],
-      });
-    } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      contributeServerError = `${error}`;
+    const result = await CancelContribution.mutate({ optionId });
+    if (toasts.mutation(result, 'cancelPendingContribution', '', 'Impossible d\'annuler la cotisation')) {
+      window.location.reload();
     }
 
     contributeLoading = undefined;
@@ -146,9 +147,6 @@
           >{/if}
       </li>{/each}
   </ul>
-  {#if contributeServerError}
-    <Alert theme="danger">{contributeServerError}</Alert>
-  {/if}
 </div>
 
 <style lang="scss">

@@ -72,14 +72,15 @@
       </p>
     </article>
   </a>
-  {#if hasMoreBookingsCount > 0}
+  <!-- TODO /events/:id/my-bookings -->
+  <!-- {#if hasMoreBookingsCount > 0}
     <a
       href={refroute('/events/[id]/my-bookings', loading($data.localID, ''))}
       class="more-bookings"
     >
       +{hasMoreBookingsCount}
     </a>
-  {/if}
+  {/if} -->
 </div>
 
 <style>

@@ -22,7 +22,7 @@
   <Avatar
     --avatar-radius="0.25em"
     src={$data.pictureURL}
-    href={mapLoading($data.uid, (uid) => route('/majors/[uid]', uid))}
+    href={mapLoading($data.uid, (uid) => route('/[uid=uid]', uid))}
     help={notooltip ? '' : $data.name}
     alt={mapLoading($data.name, (name) => `Logo de ${name}`)}
   />

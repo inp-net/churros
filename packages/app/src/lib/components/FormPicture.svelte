@@ -34,15 +34,7 @@
             ...FormPicture
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -57,9 +49,7 @@
             ...FormPicture
           }
         }
-        ... on Error {
-          message
-        }
+        ...MutationErrors
       }
     }
   `);

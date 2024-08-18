@@ -79,15 +79,7 @@
   const AddFile = graphql(`
     mutation AddFileToPage($id: ID!, $file: File!) {
       addFileToPage(page: $id, file: $file) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
         ... on MutationAddFileToPageSuccess {
           data {
             ...FormPage

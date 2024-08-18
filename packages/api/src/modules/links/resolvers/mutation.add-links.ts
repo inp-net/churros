@@ -20,6 +20,18 @@ builder.mutationField('addLinks', (t) =>
           maxLength: MAXIMUM_LINKS,
         },
       }),
+      duplicates: t.arg({
+        type: builder.enumType('DuplicateLinksAction', {
+          values: {
+            Skip: { value: 'Skip', description: 'Ne pas ajouter' },
+            Replace: { value: 'Replace', description: "Remplacer l'ancien lien" },
+            Error: { value: 'Error', description: 'Provoquer une erreur' },
+          },
+        }),
+        defaultValue: 'Replace',
+        description:
+          'Que faire pour un lien si la ressource en possède déjà un autre avec la même URL',
+      }),
     },
     async authScopes(_, { id }, { user }) {
       const [typename, __] = splitID(id);
@@ -54,7 +66,7 @@ builder.mutationField('addLinks', (t) =>
         }
       }
     },
-    async resolve(_, { id, links }, context) {
+    async resolve(_, { id, links, duplicates }, context) {
       const { user } = context;
       const [typeName, __] = splitID(id);
       // TODO figure out why return type is {select: undefined}
@@ -90,7 +102,20 @@ builder.mutationField('addLinks', (t) =>
             where: { id },
             data: {
               links: {
+                updateMany:
+                  duplicates === 'Replace'
+                    ? links.map((l) => ({
+                        where: {
+                          value: l.url,
+                        },
+                        data: {
+                          name: l.text,
+                          value: l.url,
+                        },
+                      }))
+                    : [],
                 createMany: {
+                  skipDuplicates: duplicates !== 'Error',
                   data: links.map((l) => ({
                     name: l.text,
                     value: l.url,
@@ -129,7 +154,20 @@ builder.mutationField('addLinks', (t) =>
             where: { id },
             data: {
               links: {
+                updateMany:
+                  duplicates === 'Replace'
+                    ? links.map((l) => ({
+                        where: {
+                          value: l.url,
+                        },
+                        data: {
+                          name: l.text,
+                          value: l.url,
+                        },
+                      }))
+                    : [],
                 createMany: {
+                  skipDuplicates: duplicates !== 'Error',
                   data: links.map((l) => ({
                     name: l.text,
                     value: l.url,
@@ -172,7 +210,20 @@ builder.mutationField('addLinks', (t) =>
             where: { id },
             data: {
               links: {
+                updateMany:
+                  duplicates === 'Replace'
+                    ? links.map((l) => ({
+                        where: {
+                          value: l.url,
+                        },
+                        data: {
+                          name: l.text,
+                          value: l.url,
+                        },
+                      }))
+                    : [],
                 createMany: {
+                  skipDuplicates: duplicates !== 'Error',
                   data: links.map((l) => ({
                     name: l.text,
                     value: l.url,

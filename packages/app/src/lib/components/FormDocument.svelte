@@ -58,6 +58,7 @@
         {
           '__typename': true,
           '...on Error': { message: true },
+          '...on ZodError': { message: true },
           '...on MutationUpsertDocumentSuccess': {
             data: {
               id: true,
@@ -75,7 +76,7 @@
         },
       ],
     });
-    if (upsertDocument.__typename === 'Error') {
+    if (upsertDocument.__typename !== 'MutationUpsertDocumentSuccess') {
       serverError = upsertDocument.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
       return;

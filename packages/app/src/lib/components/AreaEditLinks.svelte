@@ -25,15 +25,7 @@
             ...AreaEditLinks
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            message
-            path
-          }
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -47,9 +39,7 @@
             id @Link_delete
           }
         }
-        ... on Error {
-          message
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -63,15 +53,7 @@
             ...AreaEditLinks_Link
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            message
-            path
-          }
-        }
+       ...MutationErrors
       }
     }
   `);
