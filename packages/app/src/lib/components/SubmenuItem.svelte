@@ -47,6 +47,8 @@
     <div class="icon">
       {#if icon}
         <svelte:component this={icon}></svelte:component>
+      {:else}
+        <slot name="icon" />
       {/if}
     </div>
     <div class="text">

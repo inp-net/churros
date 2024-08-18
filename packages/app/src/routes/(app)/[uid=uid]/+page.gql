@@ -18,6 +18,8 @@ query PageProfile($uid: UID!) @loading {
       phone
       birthday
       email
+      schoolUid
+      schoolEmail
       otherEmails
       contributesTo {
         ...AvatarStudentAssociation
@@ -45,15 +47,20 @@ query PageProfile($uid: UID!) @loading {
 
       # tab: info
       roomIsOpen
+      canSetGroupRoomOpenState
       address
       color
       email
 
       # tab: see also
       familyChildren {
+        uid
+        selfJoinable
+        description
         ...AvatarGroup
       }
       related {
+        description
         ...AvatarGroup
       }
     }

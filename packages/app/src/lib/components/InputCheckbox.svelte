@@ -4,7 +4,7 @@
   import Check from '~icons/mdi/check';
   import Close from '~icons/mdi/close';
 
-  export const dispatch = createEventDispatcher<{ willChange: Event }>();
+  export const dispatch = createEventDispatcher<{ willChange: Event; update: boolean | null }>();
 
   export let ternary = false;
   export let value: boolean | null | undefined;
@@ -32,6 +32,8 @@
 
     previousValue = value;
   };
+
+  $: dispatch('update', value);
 
   let checkboxElement: HTMLInputElement;
 </script>

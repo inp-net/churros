@@ -1722,6 +1722,11 @@ type Group implements Node & Pictured {
   L'utilisateur·ice connecté·e peut lister les pages du groupe
   """
   canListPages: Boolean!
+
+  """
+  L'utilisater.ice connecté.e a le droit de mettre à jour roomIsOpen
+  """
+  canSetGroupRoomOpenState: Boolean!
   children: [Group!]!
   coOrganizedEvents: [Event!]!
   color: String!
@@ -2726,6 +2731,21 @@ type Mutation {
     """
     userId: ID!
   ): Form!
+
+  """
+  Changer si la salle d'un groupe est fermée ou ouverte
+  """
+  setGoupRoomOpenState(
+    """
+    L'uid du groupe
+    """
+    group: UID!
+
+    """
+    Vrai si on veut indiquer que le local est maintenant ouvert
+    """
+    open: Boolean!
+  ): Group!
   setPicture(
     """
     Le fichier de l'image. Si null, l'image sera supprimée.
@@ -2947,21 +2967,6 @@ type Mutation {
     enabledChannels: [NotificationChannel!]!
     uid: String!
   ): [NotificationChannel!]!
-
-  """
-  Changer si la salle d'un groupe est fermée ou ouvert
-  """
-  updateRoomOpenState(
-    """
-    L'uid du groupe
-    """
-    groupUid: String!
-
-    """
-    Vrai si on veut indiquer que le local est maintenant ouvert
-    """
-    openRoom: Boolean!
-  ): Boolean!
   updateSchool(
     address: String
     aliasMailDomains: [String!]!
@@ -6534,7 +6539,7 @@ type User implements Node & Pictured {
   managedEvents: [EventManager!]!
   minor: Minor
   nickname: String!
-  otherEmails: [String!]!
+  otherEmails: [Email!]
   outgoingGodparentRequests: [GodparentRequest!]!
 
   """
@@ -6574,6 +6579,7 @@ type User implements Node & Pictured {
     """
     timestamp: Boolean! = true
   ): String!
+  schoolEmail: Email
   schoolUid: String
 
   """

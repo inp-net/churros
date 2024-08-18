@@ -222,7 +222,7 @@ builder.mutationField('upsertGroup', (t) =>
         create: {
           ...data,
           color: color ?? '',
-          uid: newUid!,
+          uid: newUid ?? '',
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },

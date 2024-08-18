@@ -68,7 +68,6 @@
               description,
               email: email || undefined,
               mailingList: mailingList || undefined,
-              links: links.filter((l) => Boolean(l.value)),
               longDescription,
               website,
               name,

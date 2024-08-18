@@ -367,6 +367,9 @@ const SERVERS = {
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
   'GET /identity': `/identity`,
+  '_RESERVED_USERNAMES /check-uid/[uid]': (uid: string | number, params?: {}) => {
+    return `/check-uid/${uid}`;
+  },
   'GET /check-uid/[uid]': (uid: string | number, params?: {}) => {
     return `/check-uid/${uid}`;
   },
@@ -638,6 +641,7 @@ export type KIT_ROUTES = {
     'GET /connect/google': never;
     'GET /health': never;
     'GET /identity': never;
+    '_RESERVED_USERNAMES /check-uid/[uid]': 'uid';
     'GET /check-uid/[uid]': 'uid';
     'GET /developers': never;
     'GET /manifest.json': never;

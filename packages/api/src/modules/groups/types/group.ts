@@ -4,7 +4,7 @@ import { DateTimeScalar, Email, HTMLScalar } from '#modules/global';
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PicturedInterface } from '../../global/types/pictured.js';
 import { canEditGroup, GroupEnumType } from '../index.js';
-import { requiredPrismaIncludesForPermissions } from '../utils/index.js';
+import { canSetGroupRoomOpenState, requiredPrismaIncludesForPermissions } from '../utils/index.js';
 
 export const GroupTypePrismaIncludes = requiredPrismaIncludesForPermissions;
 
@@ -36,6 +36,10 @@ export const GroupType = builder.prismaNode('Group', {
     pictureFileDark: t.exposeString('pictureFileDark'),
     ldapUid: t.exposeString('ldapUid'),
     roomIsOpen: t.exposeBoolean('roomIsOpen', { authScopes: { student: true } }),
+    canSetGroupRoomOpenState: t.boolean({
+      description: "L'utilisater.ice connecté.e a le droit de mettre à jour roomIsOpen",
+      resolve: (group, _, { user }) => canSetGroupRoomOpenState(user, group),
+    }),
     articles: t.relation('articles', {
       query(_, { user }) {
         return {

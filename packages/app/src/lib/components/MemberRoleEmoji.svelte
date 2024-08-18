@@ -15,18 +15,27 @@
   );
 </script>
 
-<LoadingText
-  value={$data
-    ? mapAllLoading(
-        [$data.president, $data.treasurer, $data.vicePresident, $data.secretary],
-        (prez, trez, vp, secr) => {
-          let result = '';
-          if (prez) result += '👑';
-          if (trez) result += '💰';
-          if (vp) result += '🌟';
-          if (secr) result += '📜';
-          return result;
-        },
-      )
-    : PendingValue}>..</LoadingText
->
+<span class="role-emoji">
+  <LoadingText
+    value={$data
+      ? mapAllLoading(
+          [$data.president, $data.treasurer, $data.vicePresident, $data.secretary],
+          (prez, trez, vp, secr) => {
+            let result = '';
+            if (prez) result += '👑';
+            if (trez) result += '💰';
+            if (vp) result += '🌟';
+            if (secr) result += '📜';
+            return result;
+          },
+        )
+      : PendingValue}>..</LoadingText
+  >
+</span>
+
+<style>
+  .role-emoji {
+    display: inline-flex;
+    width: 1.2em;
+  }
+</style>

@@ -1,5 +1,5 @@
 import type { Context } from '#lib';
-import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
+import { onBoard, userIsAdminOf, userIsGroupEditorOf, userIsMemberOf } from '#permissions';
 import { GroupType, Prisma, type Group, type StudentAssociation } from '@churros/db/prisma';
 
 export const requiredPrismaIncludesForPermissions = {
@@ -184,4 +184,12 @@ export function prismaQueryCanCreateEventsOn(user: { id: string }): Prisma.Group
       },
     ],
   };
+}
+
+export function canSetGroupRoomOpenState(user: Context['user'], group: Group) {
+  return (
+    userIsAdminOf(user, group.studentAssociationId) ||
+    userIsGroupEditorOf(user, group.studentAssociationId) ||
+    userIsMemberOf(user, group.uid)
+  );
 }

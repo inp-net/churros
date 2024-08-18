@@ -10,12 +10,25 @@
 </script>
 
 <script lang="ts">
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { loaded, loading, type MaybeLoading } from '$lib/loading';
   import { toasts } from '$lib/toasts';
   import ButtonGhost from './ButtonGhost.svelte';
-  import IconCopy from '~icons/mdi/content-copy';
-  export let text: string;
+  import IconCopy from '~icons/msl/content-copy-outline';
+  export let text: MaybeLoading<string>;
+  export let label = false;
 </script>
 
-<ButtonGhost help="Copier" on:click={() => copyToClipboard(text)}>
-  <IconCopy></IconCopy>
-</ButtonGhost>
+{#if label}
+  <ButtonSecondary disabled={!loaded(text)} on:click={() => copyToClipboard(loading(text, ''))}
+    >Copier</ButtonSecondary
+  >
+{:else}
+  <ButtonGhost
+    disabled={!loaded(text)}
+    help="Copier"
+    on:click={() => copyToClipboard(loading(text, ''))}
+  >
+    <IconCopy></IconCopy>
+  </ButtonGhost>
+{/if}

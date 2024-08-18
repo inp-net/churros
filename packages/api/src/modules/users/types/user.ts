@@ -23,15 +23,20 @@ export const UserType = builder.prismaNode('User', {
       nullable: true,
       authScopes: { student: true, $granted: 'me' },
     }),
-    otherEmails: t.expose('otherEmails', {
-      type: ['String'],
-      authScopes: { student: true, $granted: 'me' },
+    otherEmails: t.field({
+      type: [Email],
+      nullable: true,
+      resolve: ({ otherEmails }, _, { user }) => (userIsStudent(user) ? otherEmails : null),
     }),
     email: t.field({
       type: Email,
       nullable: true,
-      authScopes: { student: true, $granted: 'me' },
-      resolve: ({ email }) => email || null,
+      resolve: ({ email }, _, { user }) => (userIsStudent(user) ? email || null : null),
+    }),
+    schoolEmail: t.field({
+      type: Email,
+      nullable: true,
+      resolve: ({ schoolEmail }, _, { user }) => (userIsStudent(user) ? schoolEmail || null : null),
     }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
