@@ -44,11 +44,6 @@
     }
   };
 
-  const revokeThirdPartyAppAuthorization = async (clientId: string) => {
-    await $zeus.mutate({ revokeAuthorization: [{ clientId }, true] });
-    data.user.authorizedApps = data.user.authorizedApps.filter((app) => app.clientId !== clientId);
-  };
-
   const renameSession = async (id: string, name: string) => {
     await $zeus.mutate({ renameSession: [{ id, name }, true] });
     const idx = data.me.credentials.findIndex((credential) => credential.id === id);
@@ -423,43 +418,6 @@
           {/each}
         </ul>
       </section>
-      <section class="oauth-sessions sessions">
-        <h2>Applications tierces</h2>
-        {#if data.user.authorizedApps.length > 0}
-          <p class="muted typo-details">
-            Ces applications ont accès à ton compte Churros et peuvent agir en ton nom.
-          </p>
-        {/if}
-        <ul class="nobullet">
-          {#each data.user.authorizedApps as { clientId, name, faviconUrl }}
-            <li>
-              <div class="active-indicator">
-                <img src={faviconUrl} alt={name} />
-              </div>
-              <div class="date-and-ua">
-                <div class="date">
-                  <!-- TODO -->
-                </div>
-                <div class="name">
-                  {name}
-                </div>
-              </div>
-              <div class="actions">
-                <ButtonSecondary
-                  danger
-                  on:click={async () => revokeThirdPartyAppAuthorization(clientId)}
-                >
-                  Révoquer
-                </ButtonSecondary>
-              </div>
-            </li>
-          {:else}
-            <li class="empty muted">
-              Aucune application tierce n'est autorisée à accéder ton compte.
-            </li>
-          {/each}
-        </ul>
-      </section>
     {/if}
   </div>
 </div>
@@ -539,12 +497,6 @@
   .sessions .active-indicator {
     width: 2rem;
     height: 2rem;
-  }
-
-  .sessions .active-indicator img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
   }
 
   .sessions .name {

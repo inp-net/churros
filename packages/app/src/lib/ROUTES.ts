@@ -249,17 +249,11 @@ const PAGES = {
     return `/validate-email/${token}`;
   },
   '/welcome': `/welcome`,
-  '/authorize': `/authorize`,
   '/connect/google/callback': `/connect/google/callback`,
   '/kiosk': `/kiosk`,
   '/_component/[...componentName]': (componentName: (string | number)[], params?: {}) => {
     return `/_component/${componentName?.join('/')}`;
   },
-  '/developers/apps': `/developers/apps`,
-  '/developers/apps/[id]': (id: string | number, params?: {}) => {
-    return `/developers/apps/${id}`;
-  },
-  '/developers/apps/create': `/developers/apps/create`,
 };
 
 /**
@@ -301,11 +295,9 @@ const SERVERS = {
   'GET /me': `/me`,
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
-  'GET /identity': `/identity`,
   'GET /check-uid/[uid]': (uid: string | number, params?: {}) => {
     return `/check-uid/${uid}`;
   },
-  'GET /developers': `/developers`,
   'POST /markdown': `/markdown`,
 };
 
@@ -538,13 +530,9 @@ export type KIT_ROUTES = {
     '/users/[uid]/edit': 'uid';
     '/validate-email/[token]': 'token';
     '/welcome': never;
-    '/authorize': never;
     '/connect/google/callback': never;
     '/kiosk': never;
     '/_component/[...componentName]': 'componentName';
-    '/developers/apps': never;
-    '/developers/apps/[id]': 'id';
-    '/developers/apps/create': never;
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
@@ -560,9 +548,7 @@ export type KIT_ROUTES = {
     'GET /me': never;
     'GET /connect/google': never;
     'GET /health': never;
-    'GET /identity': never;
     'GET /check-uid/[uid]': 'uid';
-    'GET /developers': never;
     'POST /markdown': never;
   };
   ACTIONS: {
