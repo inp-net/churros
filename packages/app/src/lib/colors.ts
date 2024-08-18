@@ -4,6 +4,7 @@ import { Colord, type RgbaColor } from 'colord';
 // https://github.com/omgovich/colord/blob/master/src/plugins/names.ts
 // but localized in french and with possibly more colors to accomodate for List's color names
 
+// From https://fr.wikipedia.org/wiki/Liste_de_noms_de_couleur
 const COLOR_NAME_TO_HEX: Record<string, string> = {
   'Abricot': '#E67E30',
   'Acajou': '#88421D',
@@ -18,7 +19,6 @@ const COLOR_NAME_TO_HEX: Record<string, string> = {
   'Aurore': '#FFCB60',
   'Avocat': '#568203',
   'Azur': '#007FFF',
-  'Basané': '#8B6C42',
   'Beurre': '#F0E36B',
   'Bis': '#766F64',
   'Bisque': '#FFE4C4',
