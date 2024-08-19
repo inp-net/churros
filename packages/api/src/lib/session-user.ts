@@ -1,15 +1,28 @@
 import { prisma, redisClient, yearTier } from '#lib';
 import { fullName } from '#modules/users/utils';
 import { onBoard } from '#permissions';
-import type { Group, StudentAssociation, User } from '@churros/db/prisma';
+import type { Credential, Group, Prisma, StudentAssociation, User } from '@churros/db/prisma';
 
-export type UserSession = Express.User;
+export const SessionUserPrismaIncludes = {
+  groups: { include: { group: true } },
+  managedEvents: { include: { event: { include: { group: true } } } },
+  major: { include: { schools: true } },
+  adminOfStudentAssociations: true,
+  canEditGroups: true,
+} as const satisfies Prisma.UserInclude;
+
+export interface SessionUser
+  extends Prisma.UserGetPayload<{ include: typeof SessionUserPrismaIncludes }> {
+  fullName: string;
+  yearTier: number;
+  credential?: Credential['value'];
+}
 
 export function sessionUserCacheKey(uid: User['uid']): string {
   return `userSession:${uid}`;
 }
 
-async function cacheSessionUser(uid: User['uid'], session: UserSession) {
+async function cacheSessionUser(uid: User['uid'], session: SessionUser) {
   return redisClient()
     .call('JSON.SET', sessionUserCacheKey(uid), '.', JSON.stringify(session))
     .catch((error) => {
@@ -17,7 +30,7 @@ async function cacheSessionUser(uid: User['uid'], session: UserSession) {
     });
 }
 
-async function getCachedSessionUser(uid: User['uid']): Promise<UserSession | null> {
+async function getCachedSessionUser(uid: User['uid']): Promise<SessionUser | null> {
   return redisClient()
     .call('JSON.GET', sessionUserCacheKey(uid), '$')
     .then((json) => (json && typeof json === 'string' ? JSON.parse(json).at(0) : null))
@@ -27,18 +40,12 @@ async function getCachedSessionUser(uid: User['uid']): Promise<UserSession | nul
     });
 }
 
-async function getSessionUserFromDatabase(uid: User['uid']): Promise<UserSession> {
+async function getSessionUserFromDatabase(uid: User['uid']): Promise<SessionUser> {
   // Fetch the user from the database
   const user = await prisma.user
     .findUnique({
       where: { uid },
-      include: {
-        groups: { include: { group: true } },
-        managedEvents: { include: { event: { include: { group: true } } } },
-        major: { include: { schools: true } },
-        adminOfStudentAssociations: true,
-        canEditGroups: true,
-      },
+      include: SessionUserPrismaIncludes,
     })
     .catch(() => {
       console.error('An error occurred while fetching user session from the database');
@@ -63,7 +70,7 @@ async function getSessionUserFromDatabase(uid: User['uid']): Promise<UserSession
  * @param uid
  * @param credential
  */
-export async function getSessionUser(uid: User['uid'], credential?: string): Promise<UserSession> {
+export async function getSessionUser(uid: User['uid'], credential?: string): Promise<SessionUser> {
   const cached = await getCachedSessionUser(uid);
   if (cached) return cached;
 

@@ -1,14 +1,4 @@
-import {
-  type Credential,
-  type Event,
-  type EventManager,
-  type Group,
-  type GroupMember,
-  type Major,
-  type User as PrismaUser,
-  type School,
-  type StudentAssociation,
-} from '@churros/db/prisma';
+import { SessionUser } from '#lib';
 
 declare global {
   namespace NodeJS {
@@ -117,16 +107,6 @@ declare global {
   }
 
   namespace Express {
-    interface User extends PrismaUser {
-      fullName: string;
-      yearTier: number;
-      groups: Array<GroupMember & { group: Group }>;
-      major: null | (Major & { schools: School[] });
-      managedEvents: Array<EventManager & { event: Event & { group: Group } }>;
-      adminOfStudentAssociations: StudentAssociation[];
-      canEditGroups: StudentAssociation[];
-      /** The credential (only token) used to authenticate the user. */
-      credential?: Credential['value'];
-    }
+    interface User extends SessionUser {}
   }
 }

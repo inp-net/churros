@@ -1,4 +1,4 @@
-import { getSessionUser, prisma, redisClient, type UserSession } from '#lib';
+import { getSessionUser, prisma, redisClient, type SessionUser } from '#lib';
 import { CredentialType, type Credential } from '@churros/db/prisma';
 import { isPast } from 'date-fns';
 
@@ -6,7 +6,7 @@ function tokenSessionKey(token: Credential['value']): string {
   return `token:${token}`;
 }
 
-async function getTokenSessionFromCache(token: Credential['value']): Promise<UserSession | null> {
+async function getTokenSessionFromCache(token: Credential['value']): Promise<SessionUser | null> {
   const uid = await redisClient()
     .get(tokenSessionKey(token))
     .catch((error) => {
@@ -18,7 +18,7 @@ async function getTokenSessionFromCache(token: Credential['value']): Promise<Use
   return getSessionUser(uid);
 }
 
-async function getTokenSessionFromDatabase(token: Credential['value']): Promise<UserSession> {
+async function getTokenSessionFromDatabase(token: Credential['value']): Promise<SessionUser> {
   const credential = await prisma.credential.findFirstOrThrow({
     where: { type: CredentialType.Token, value: token },
     include: {
@@ -46,7 +46,7 @@ async function getTokenSessionFromDatabase(token: Credential['value']): Promise<
   return getSessionUser(credential.user.uid, token);
 }
 
-export async function getTokenSession(token: Credential['value']): Promise<UserSession | null> {
+export async function getTokenSession(token: Credential['value']): Promise<SessionUser | null> {
   return (await getTokenSessionFromCache(token)) ?? (await getTokenSessionFromDatabase(token));
 }
 
