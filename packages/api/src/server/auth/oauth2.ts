@@ -5,12 +5,12 @@ import { api } from '../express.js';
 
 const oauth2Strategy = new OAuth2Strategy(
   {
-    authorizationURL: process.env.OAUTH_AUTHORIZE_URL,
-    tokenURL: process.env.OAUTH_TOKEN_URL,
-    clientID: process.env.OAUTH_CLIENT_ID,
+    authorizationURL: process.env.PUBLIC_OAUTH_AUTHORIZE_URL,
+    tokenURL: process.env.PUBLIC_OAUTH_TOKEN_URL,
+    clientID: process.env.PUBLIC_OAUTH_CLIENT_ID,
     clientSecret: process.env.OAUTH_CLIENT_SECRET,
     callbackURL: `/auth/oauth2/callback`,
-    scope: process.env.OAUTH_SCOPES.split(','),
+    scope: process.env.PUBLIC_OAUTH_SCOPES.split(','),
   },
   async function (
     _accessToken: string,
@@ -38,7 +38,7 @@ oauth2Strategy.userProfile = async function (
   done: (error: unknown, profile: unknown) => void,
 ) {
   try {
-    const res = await fetch(process.env.OAUTH_USER_INFO_URL, {
+    const res = await fetch(process.env.PUBLIC_OAUTH_USER_INFO_URL, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

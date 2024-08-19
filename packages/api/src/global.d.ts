@@ -100,16 +100,19 @@ declare global {
       /** Set to "true" to activate oauth2 login */
       PUBLIC_OAUTH_ENABLED: string;
       /** Oauth2 client secrets */
-      OAUTH_CLIENT_ID: string;
-      OAUTH_CLIENT_SECRET: string;
-      OAUTH_AUTHORIZE_URL: string;
-      OAUTH_TOKEN_URL: string;
-      OAUTH_USER_INFO_URL: string;
-      OAUTH_LOGOUT_URL: string;
+      PUBLIC_OAUTH_CLIENT_ID: string;
+      PUBLIC_OAUTH_AUTHORIZE_URL: string;
+      PUBLIC_OAUTH_TOKEN_URL: string;
+      PUBLIC_OAUTH_USER_INFO_URL: string;
+      PUBLIC_OAUTH_LOGOUT_URL: string;
       /** Oauth2 scopes, comma separated */
-      OAUTH_SCOPES: string;
+      PUBLIC_OAUTH_SCOPES: string;
       /** Oauth2 UID key */
       OAUTH_UID_KEY: string;
+      OAUTH_CLIENT_SECRET: string;
+
+      /** express-session secret */
+      SESSION_SECRET: string;
     }
   }
 

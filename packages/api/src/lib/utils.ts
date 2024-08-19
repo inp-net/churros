@@ -14,3 +14,7 @@ export const objectValuesFlat = (obj: any): any[] => {
   }
   return result;
 };
+
+export function daysToSeconds(days: number): number {
+  return days * 24 * 60 * 60;
+}
