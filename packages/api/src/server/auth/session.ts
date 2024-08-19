@@ -1,4 +1,4 @@
-import { getUserSession, redisClient } from '#lib';
+import { getSessionUser, redisClient } from '#lib';
 import { type User } from '@churros/db/prisma';
 import RedisStore from 'connect-redis';
 import session from 'express-session';
@@ -10,7 +10,7 @@ passport.serializeUser<User['uid']>((user, done) => {
 
 passport.deserializeUser<User['uid']>(async (session, done) => {
   try {
-    const user = await getUserSession(session);
+    const user = await getSessionUser(session);
     done(null, user);
   } catch (error) {
     done(error, null);

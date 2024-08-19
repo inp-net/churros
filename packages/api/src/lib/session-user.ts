@@ -1,25 +1,25 @@
 import { prisma, redisClient, yearTier } from '#lib';
+import { fullName } from '#modules/users/utils';
 import { onBoard } from '#permissions';
 import type { Group, StudentAssociation, User } from '@churros/db/prisma';
-import { fullName } from '../modules/users/index.js';
 
 export type UserSession = Express.User;
 
-export function userSessionsKey(uid: User['uid']): string {
+export function sessionUserCacheKey(uid: User['uid']): string {
   return `userSession:${uid}`;
 }
 
-async function cacheUserSession(uid: User['uid'], session: UserSession) {
+async function cacheSessionUser(uid: User['uid'], session: UserSession) {
   return redisClient()
-    .call('JSON.SET', userSessionsKey(uid), '.', JSON.stringify(session))
+    .call('JSON.SET', sessionUserCacheKey(uid), '.', JSON.stringify(session))
     .catch((error) => {
       console.error(`Failed to cache session for ${uid}: ${error?.toString()}`);
     });
 }
 
-async function getCachedUserSession(uid: User['uid']): Promise<UserSession | null> {
+async function getCachedSessionUser(uid: User['uid']): Promise<UserSession | null> {
   return redisClient()
-    .call('JSON.GET', userSessionsKey(uid), '$')
+    .call('JSON.GET', sessionUserCacheKey(uid), '$')
     .then((json) => (json && typeof json === 'string' ? JSON.parse(json).at(0) : null))
     .catch((error) => {
       console.error(`Failed to get cached user session for ${uid}: ${error?.toString()}`);
@@ -27,7 +27,7 @@ async function getCachedUserSession(uid: User['uid']): Promise<UserSession | nul
     });
 }
 
-async function getUserSessionFromDatabase(uid: User['uid']): Promise<UserSession> {
+async function getSessionUserFromDatabase(uid: User['uid']): Promise<UserSession> {
   // Fetch the user from the database
   const user = await prisma.user
     .findUnique({
@@ -63,12 +63,12 @@ async function getUserSessionFromDatabase(uid: User['uid']): Promise<UserSession
  * @param uid
  * @param credential
  */
-export async function getUserSession(uid: User['uid'], credential?: string): Promise<UserSession> {
-  const cached = await getCachedUserSession(uid);
+export async function getSessionUser(uid: User['uid'], credential?: string): Promise<UserSession> {
+  const cached = await getCachedSessionUser(uid);
   if (cached) return cached;
 
-  const session = await getUserSessionFromDatabase(uid);
-  await cacheUserSession(uid, session);
+  const session = await getSessionUserFromDatabase(uid);
+  await cacheSessionUser(uid, session);
   return {
     ...session,
     credential,
@@ -122,9 +122,9 @@ function normalizePermissions({
   }));
 }
 
-export async function purgeUserSessions(uid: User['uid']) {
+export async function purgeSessionsUser(uid: User['uid']) {
   return redisClient()
-    .del(userSessionsKey(uid))
+    .del(sessionUserCacheKey(uid))
     .catch((error) => {
       console.error(`Failed to purge user session for ${uid}: ${error?.toString()}`);
     });

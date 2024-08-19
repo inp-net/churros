@@ -1,4 +1,4 @@
-import { builder, freeUidValidator, log, prisma, purgeUserSessions } from '#lib';
+import { builder, freeUidValidator, log, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { getDescendants, hasCycle } from 'arborist';
@@ -269,7 +269,7 @@ builder.mutationField('upsertGroup', (t) =>
             },
           },
         });
-        purgeUserSessions(user.uid);
+        purgeSessionsUser(user.uid);
       }
 
       await log('groups', oldUid ? 'update' : 'create', group, group.uid, user);

@@ -1,4 +1,4 @@
-import { getUserSession } from '#lib';
+import { getSessionUser } from '#lib';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
 import { api } from '../express.js';
@@ -19,7 +19,7 @@ const oauth2Strategy = new OAuth2Strategy(
     cb: VerifyCallback,
   ) {
     try {
-      const userSession = await getUserSession(profile[process.env.OAUTH_UID_KEY] as string);
+      const userSession = await getSessionUser(profile[process.env.OAUTH_UID_KEY] as string);
 
       if (!userSession) {
         cb('This account is not linked to any user', false);

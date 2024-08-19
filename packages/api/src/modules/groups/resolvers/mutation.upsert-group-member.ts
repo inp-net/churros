@@ -1,4 +1,4 @@
-import { builder, log, objectValuesFlat, prisma, purgeUserSessions, sendMail } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeSessionsUser, sendMail } from '#lib';
 import { updateMemberBoardLists } from '#modules/mails';
 import { fullName } from '#modules/users';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
@@ -68,7 +68,7 @@ builder.mutationField('upsertGroupMember', (t) =>
         where: { id: memberId },
         select: { uid: true },
       });
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       const oldMember = await prisma.groupMember.findUnique({
         where: { groupId_memberId: { groupId, memberId } },
       });

@@ -33,6 +33,7 @@ builder.objectField(LinkType, 'computedValue', (t) =>
       for (const [humanKey, databaseKey] of Object.entries(wrapWithNonAccentedKeys(REPLACE_MAP))) {
         value = value.replaceAll(
           `[${humanKey}]`,
+          // FIXME(@lebihae): try to fix this lmao
           encodeURIComponent(accessKey((user as never) ?? {}, databaseKey) ?? '') +
             (databaseKey === 'yearTier' ? 'A' : ''),
         );

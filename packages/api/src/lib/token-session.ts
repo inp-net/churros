@@ -1,6 +1,6 @@
-import { prisma, redisClient } from '#lib';
+import { getSessionUser, prisma, redisClient, type UserSession } from '#lib';
 import { CredentialType, type Credential } from '@churros/db/prisma';
-import { getUserSession, type UserSession } from './user-session.js';
+import { isPast } from 'date-fns';
 
 function tokenSessionKey(token: Credential['value']): string {
   return `token:${token}`;
@@ -15,7 +15,7 @@ async function getTokenSessionFromCache(token: Credential['value']): Promise<Use
 
   if (!uid) return null;
 
-  return getUserSession(uid);
+  return getSessionUser(uid);
 }
 
 async function getTokenSessionFromDatabase(token: Credential['value']): Promise<UserSession> {
@@ -28,7 +28,7 @@ async function getTokenSessionFromDatabase(token: Credential['value']): Promise<
     },
   });
 
-  if (credential.expiresAt !== null && credential.expiresAt < new Date())
+  if (credential.expiresAt !== null && isPast(credential.expiresAt))
     await prisma.credential.delete({ where: { id: credential.id } });
 
   await redisClient()
@@ -43,7 +43,7 @@ async function getTokenSessionFromDatabase(token: Credential['value']): Promise<
       console.error(`Failed to cache token session: ${error?.toString()}`);
     });
 
-  return getUserSession(credential.user.uid, token);
+  return getSessionUser(credential.user.uid, token);
 }
 
 export async function getTokenSession(token: Credential['value']): Promise<UserSession | null> {

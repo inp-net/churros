@@ -1,4 +1,4 @@
-import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { LinkInput } from '#modules/links';
 import { userIsAdminOf } from '#permissions';
@@ -138,7 +138,7 @@ builder.mutationField('updateUser', (t) =>
       if (!userIsAdmin && changingGraduationYear)
         throw new GraphQLError('Demande au bureau de ton AE pour changer de promo');
 
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       if (
         changingContributesWith &&
         contributesWith &&
