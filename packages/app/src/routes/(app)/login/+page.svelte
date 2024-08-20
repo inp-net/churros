@@ -1,22 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { cache } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
-  import { toasts } from '$lib/toasts';
-  import { zeus } from '$lib/zeus';
-  import { onMount } from 'svelte';
+  import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+  import { route } from '$lib/ROUTES';
+  import { saveSessionToken } from '$lib/session';
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
-  import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
-  import { me, saveSessionToken } from '$lib/session';
-  import { onMount } from 'svelte';
   import { Login } from './mutations';
-  import { cache } from '$houdini';
-  import { route } from '$lib/ROUTES';
 
   let email = '';
   let password = '';
@@ -50,17 +45,12 @@
       });
 
       if (mutationSucceeded('login', result)) {
-        cache.reset();
         saveSessionToken(document, {
           ...result.data.login.data,
           expiresAt: result.data.login.data.expiresAt ?? null,
         });
+        cache.reset();
         await redirect();
-      }
-
-      if (result.data?.login.__typename === 'Error') {
-        errorMessages = [result.data.login.message];
-        return;
       }
 
       if (result.data?.login.__typename === 'AwaitingValidationError') {
@@ -75,14 +65,6 @@
       loading = false;
     }
   };
-
-  onMount(async () => {
-    // Client-side redirect to avoid login detection
-    if ($me && !$page.url.searchParams.has('migrate')) {
-      window.localStorage.removeItem('isReallyLoggedout');
-      await redirect();
-    }
-  });
 </script>
 
 <h1>Connexion</h1>

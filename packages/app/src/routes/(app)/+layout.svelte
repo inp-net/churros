@@ -1,24 +1,21 @@
-<script lang="ts" context="module">
-  export const AppLayoutScanningEvent = new AppLayoutScanningEventStore();
-</script>
-
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate, goto, onNavigate } from '$app/navigation';
+  import { goto, onNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { AppLayoutScanningEventStore, graphql } from '$houdini';
+  import { graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
+  import NavigationTop, { type NavigationContext } from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import PickGroup from '$lib/components/PickGroup.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { isMobile } from '$lib/mobile';
   import { mutate } from '$lib/mutations';
-  import { refroute, scanningEventsRouteID } from '$lib/navigation';
+  import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
@@ -30,20 +27,12 @@
   import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import NavigationTop, { type NavigationContext } from '$lib/components/NavigationTop.svelte';
 
   onNavigate(setupViewTransition);
 
   const mobile = isMobile();
   export let data: PageData;
   $: ({ AppLayout, RootLayout } = data);
-
-  afterNavigate(async ({ to }) => {
-    if (!browser) return;
-    if (!to) return;
-    if (to.route.id === scanningEventsRouteID)
-      await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
-  });
 
   let scrolled = false;
   setupScrollPositionRestorer(
@@ -114,9 +103,9 @@
   $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
 
   let openChangelog: () => void;
-  $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) {
+  $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) 
     openChangelog?.();
-  }
+  
 </script>
 
 {#if $AppLayout.data?.combinedChangelog}
