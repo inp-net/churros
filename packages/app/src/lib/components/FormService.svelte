@@ -56,6 +56,7 @@
           {
             '__typename': true,
             '...on Error': { message: true },
+            '...on ZodError': { message: true },
             '...on MutationUpsertServiceSuccess': {
               data: {
                 id: true,
@@ -81,7 +82,7 @@
         ],
       });
 
-      if (upsertService.__typename === 'Error') {
+      if (upsertService.__typename !== 'MutationUpsertServiceSuccess') {
         serverError = upsertService.message;
         return;
       }

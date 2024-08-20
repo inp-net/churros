@@ -66,6 +66,9 @@
           '...on Error': {
             message: true,
           },
+          '...on ZodError': {
+            message: true,
+          },
           '...on MutationUpsertBarWeekSuccess': {
             data: {
               id: true,
@@ -87,7 +90,7 @@
       ],
     });
 
-    if (upsertBarWeek.__typename === 'Error') {
+    if (upsertBarWeek.__typename !== 'MutationUpsertBarWeekSuccess') {
       serverErrors[barWeek.id ?? 'new'] = upsertBarWeek.message;
       toasts.error('Impossible de mettre à jour cette semaine de bar', upsertBarWeek.message);
       return;

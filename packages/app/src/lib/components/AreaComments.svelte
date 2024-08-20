@@ -1,10 +1,6 @@
 <script lang="ts">
   import CardComment from '$lib/components/CardComment.svelte';
-  import { refroute } from '$lib/navigation';
-  import { me } from '$lib/session';
   import { zeus } from '$lib/zeus';
-  import Alert from './Alert.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
 
   export let comments: {
     edges: Array<{
@@ -89,44 +85,37 @@
   }
 </script>
 
-{#if $me}
-  <CardComment
-    bodyHtml=""
-    bind:body={newComment.body}
-    author={$me}
-    id=""
-    canReply={false}
-    createdAt={new Date()}
-    updatedAt={undefined}
-    creating
-    on:edit={async () => addComment()}
-  ></CardComment>
+<CardComment
+  bodyHtml=""
+  bind:body={newComment.body}
+  id=""
+  canReply={false}
+  createdAt={new Date()}
+  updatedAt={undefined}
+  creating
+  on:edit={async () => addComment()}
+></CardComment>
 
-  <ul class="nobullet comments">
-    {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
-      <li class="comment">
-        <CardComment
-          bind:replyingTo
-          on:reply={reply}
-          on:edit={async ({ detail: [id, body] }) => {
-            await editComment(id, body);
-          }}
-          on:delete={async ({ detail: id }) => {
-            await removeComment(id);
-          }}
-          {...node}
-          replies={comments.edges
-            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
-            .map((c) => c.node)}
-        />
-      </li>
-    {/each}
-  </ul>
-{:else}
-  <Alert theme="warning">
-    <ButtonSecondary href={refroute('/login')} insideProse>Connectez-vous</ButtonSecondary> pour commenter.
-  </Alert>
-{/if}
+<ul class="nobullet comments">
+  {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
+    <li class="comment">
+      <CardComment
+        bind:replyingTo
+        on:reply={reply}
+        on:edit={async ({ detail: [id, body] }) => {
+          await editComment(id, body);
+        }}
+        on:delete={async ({ detail: id }) => {
+          await removeComment(id);
+        }}
+        {...node}
+        replies={comments.edges
+          .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
+          .map((c) => c.node)}
+      />
+    </li>
+  {/each}
+</ul>
 
 <style>
   .comments {

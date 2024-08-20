@@ -152,7 +152,6 @@
             uid: data.user.uid,
             nickname,
             description,
-            links: links.filter((l) => Boolean(l.value) && l.value.trim() !== '#'),
             address,
             graduationYear,
             majorId: major?.id ?? null,
@@ -168,12 +167,13 @@
           {
             '__typename': true,
             '...on Error': { message: true },
+            '...on ZodError': { message: true },
             '...on MutationUpdateUserSuccess': { data: userQuery },
           },
         ],
       });
 
-      if (updateUser.__typename === 'Error') {
+      if (updateUser.__typename !== 'MutationUpdateUserSuccess') {
         toasts.error('Impossible de sauvegarder le profil', updateUser.message);
         return;
       }

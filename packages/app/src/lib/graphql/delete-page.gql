@@ -1,18 +1,10 @@
 mutation DeletePage($id: ID!) {
   deletePage(id: $id) {
-    ... on Error {
-      message
-    }
+    ...MutationErrors
     ... on MutationDeletePageSuccess {
       data {
         title
         id @PagesEdge_delete
-      }
-    }
-    ... on ZodError {
-      fieldErrors {
-        message
-        path
       }
     }
   }

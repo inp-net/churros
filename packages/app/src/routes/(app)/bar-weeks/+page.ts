@@ -1,24 +1,26 @@
-import { loadQuery, Selector } from '$lib/zeus';
+import { graphql } from '$houdini';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery(
-    {
-      barWeeks: Selector('BarWeek')({
-        id: true,
-        uid: true,
-        startsAt: true,
-        endsAt: true,
-        descriptionHtml: true,
-        description: true,
-        groups: {
-          id: true,
-          uid: true,
-          pictureFile: true,
-          pictureFileDark: true,
-          name: true,
-        },
-      }),
-    },
-    { fetch, parent },
-  );
+export const load: PageLoad = async (event) => {
+  return await graphql(`
+    query BarWeeksPage {
+      barWeeks {
+        id
+        uid: slug
+        startsAt
+        endsAt
+        descriptionHtml
+        description
+        groups {
+          id
+          uid
+          pictureFile
+          pictureFileDark
+          name
+        }
+      }
+    }
+  `)
+    .fetch({ event })
+    .then((d) => d.data ?? { barWeeks: [] });
+};

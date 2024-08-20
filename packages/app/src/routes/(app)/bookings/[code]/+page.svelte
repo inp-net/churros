@@ -119,7 +119,8 @@
         {#if loading(booking.canManage, false) && !loading(booking.paid, false)}
           <ButtonSecondary
             on:click={async () => {
-              const result = await mutate(MarkBookingAsPaid, {
+              if (!loaded(booking.code)) return;
+              const result = await MarkBookingAsPaid.mutate({
                 code: booking.code,
               });
               toasts.mutation(

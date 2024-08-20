@@ -96,7 +96,7 @@
     --radius-block: 0;
   }
 
-  .more-bookings {
+  /* .more-bookings {
     --cutout-size: var(--radius-block);
 
     position: relative;
@@ -128,7 +128,7 @@
   .more-bookings::before {
     top: 0;
     mask: radial-gradient(1rem at 0 1rem, transparent 98%, black);
-  }
+  } */
 
   article {
     position: relative;

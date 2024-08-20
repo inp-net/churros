@@ -1,202 +1,188 @@
+<script lang="ts" context="module">
+  import { ButtonGhost, OverflowMenu, ButtonPrimary, LogoChurros } from '$lib/components';
+  import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
+  import { isMobile } from '$lib/mobile';
+  import { topnavConfigs } from '$lib/navigation';
+  import { SvelteComponent } from 'svelte';
+  import IconBack from '~icons/msl/arrow-back';
+  import IconBugReport from '~icons/msl/bug-report-outline';
+  import type { LayoutRouteId } from '../../routes/$types';
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type NavigationQuickAction = Omit<ActionData<any>, 'label' | 'icon'> & {
+    mobileOnly?: boolean;
+  } & (
+      | {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          overflow?: OverflowMenuAction<any>[];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          icon: typeof SvelteComponent<any>;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          filledIcon?: typeof SvelteComponent<any>;
+        }
+      | {
+          label: string;
+        }
+    );
+
+  export type NavigationContext = {
+    back?: string | null;
+    title?: string | null;
+    quickAction?: NavigationQuickAction | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    actions: OverflowMenuAction<any>[];
+  };
+</script>
+
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { fragment, graphql, type NavigationTop, type NavigationTopCurrentEvent } from '$houdini';
-  import { formatDate } from '$lib/dates';
-  import { loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
-  import { theme } from '$lib/theme';
-  import IconAccount from '~icons/mdi/account-circle-outline';
-  import IconNotifFilled from '~icons/mdi/bell';
-  import IconNotif from '~icons/mdi/bell-outline';
-  import IconIssue from '~icons/mdi/chat-alert-outline';
-  import IconSearch from '~icons/mdi/search';
-  import ButtonBack from './ButtonBack.svelte';
-  import ButtonGhost from './ButtonGhost.svelte';
-  import ButtonSecondary from './ButtonSecondary.svelte';
-  import LogoChurros from './LogoChurros.svelte';
-  import ModalReportIssue from './ModalReportIssue.svelte';
-  import LoadingText from '$lib/components/LoadingText.svelte';
-  import { refroute } from '$lib/navigation';
 
   export let scrolled = false;
-  let deviceWidth = browser ? window.innerWidth : 500;
-  let reportIssueDialogElement: HTMLDialogElement;
 
-  export let userIsLoading = false;
+  let { back, title, quickAction, actions } = { actions: [] } as NavigationContext;
 
-  export let user: NavigationTop | null;
-  $: data = fragment(
-    user,
-    graphql(`
-      fragment NavigationTop on User @loading {
-        pictureURL
-        uid
-      }
-    `),
-  );
+  $: topnavConfig = $page.route.id
+    ? topnavConfigs[$page.route.id as NonNullable<LayoutRouteId>]
+    : undefined;
 
-  export let event: NavigationTopCurrentEvent | null;
-  $: currentEvent = fragment(
-    event,
-    graphql(`
-      fragment NavigationTopCurrentEvent on Event @loading {
-        title
-        startsAt
-      }
-    `),
-  );
+  afterNavigate(({ to }) => {
+    if (!to?.route.id) return;
+    topnavConfig = topnavConfigs[to.route.id as NonNullable<LayoutRouteId>];
+  });
+
+  $: if (topnavConfig) {
+    ({
+      back,
+      title,
+      quickAction,
+      actions = [],
+      // @ts-expect-error $page loses type precision
+    } = typeof topnavConfig === 'function' ? topnavConfig($page) : topnavConfig);
+  }
+
+  $: backHref = $page.url.searchParams.get('from') ?? back;
+
+  const mobile = isMobile();
 </script>
 
 <svelte:window
-  on:resize={() => {
-    deviceWidth = window.innerWidth;
+  on:NAVTOP_UPDATE_TITLE={({ detail }) => {
+    title = detail;
   }}
 />
 
-<ModalReportIssue bind:element={reportIssueDialogElement} />
-
-<nav id="navigation-top" class:scrolled class:transparent={Boolean($currentEvent)} class={$theme}>
-  {#if $currentEvent}
-    <div class="current-event">
-      <ButtonBack />
-      <div class="event-name">
-        <h1><LoadingText value={$currentEvent.title}>Lorem ipsum sit dolor</LoadingText></h1>
-        <p>
-          <LoadingText value={mapLoading($currentEvent.startsAt, formatDate)}
-            >16 juillet 2003</LoadingText
-          >
-        </p>
-      </div>
-    </div>
-  {:else}
-    <a href="/" class="wordmark">
-      <LogoChurros wordmark={deviceWidth > 400} />
-    </a>
+<svelte:head>
+  {#if title}
+    <title>{title} · Churros</title>
   {/if}
+</svelte:head>
 
-  <div class="actions">
-    {#if $currentEvent}
-      <ButtonGhost
-        help="Signaler un bug ou proposer une idée"
-        on:click={() => {
-          reportIssueDialogElement.showModal();
-        }}
-        style="color:red"><IconIssue /></ButtonGhost
-      >
-      <div class="wordmark">
-        <LogoChurros />
-      </div>
-    {:else}
-      <ButtonGhost
-        help="Signaler un bug ou proposer une idée"
-        on:click={() => {
-          reportIssueDialogElement.showModal();
-        }}
-        style="color:red"><IconIssue /></ButtonGhost
-      >
-      {#if $data || userIsLoading}
-        <ButtonGhost href="/notifications/" help="Notifications">
-          {#if $page.url.pathname === '/notifications/'}
-            <IconNotifFilled />
-          {:else}
-            <IconNotif />{/if}</ButtonGhost
-        >
-        <ButtonGhost href="/search/" help="Rechercher"><IconSearch /></ButtonGhost>
-        <ButtonGhost
-          loading={!$data || ($data && !loaded($data.uid)) || !loaded($data.pictureURL)}
-          href={onceLoaded($data?.uid, (uid) => `/${uid}`, '')}
-          help="Mon profil"
-        >
-          {#if $data?.pictureURL}
-            <img class="profilepic" src={loading($data.pictureURL, '')} alt="Moi" />
-          {:else}
-            <IconAccount />
-          {/if}
+<nav class:scrolled>
+  <div class="left">
+    {#if title}
+      {#if backHref}
+        <ButtonGhost href={backHref}>
+          <IconBack></IconBack>
         </ButtonGhost>
-      {:else}
-        <ButtonSecondary href={refroute('/signup')}>Inscription</ButtonSecondary>
-        <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
+      {:else if browser && history.length > 1}
+        <ButtonGhost on:click={() => history.back()}>
+          <IconBack></IconBack>
+        </ButtonGhost>
       {/if}
+      <div class="title">{title}</div>
+    {:else}
+      <a class="left logo" href="/">
+        <LogoChurros wordmark></LogoChurros>
+      </a>
+    {/if}
+  </div>
+  <div class="actions">
+    <button
+      class="bug-report"
+      on:click={() => {
+        window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+      }}
+    >
+      <IconBugReport></IconBugReport>
+    </button>
+    {#if quickAction && !(quickAction.mobileOnly && !mobile)}
+      {#if 'overflow' in quickAction && quickAction.overflow && 'icon' in quickAction}
+        <OverflowMenu actions={quickAction.overflow}>
+          <svelte:component this={quickAction.icon}></svelte:component>
+          <svelte:fragment slot="open">
+            <svelte:component this={quickAction.filledIcon ?? quickAction.icon}></svelte:component>
+          </svelte:fragment>
+        </OverflowMenu>
+      {:else if 'icon' in quickAction}
+        <ButtonGhost on:click={quickAction.do} href={quickAction.href}>
+          <svelte:component this={quickAction.icon}></svelte:component>
+          <svelte:fragment slot="hovering">
+            <svelte:component this={quickAction.filledIcon ?? quickAction.icon}></svelte:component>
+          </svelte:fragment>
+        </ButtonGhost>
+      {:else if 'label' in quickAction}
+        <div class="button-primary">
+          <ButtonPrimary on:click={quickAction.do} href={quickAction.href}
+            >{quickAction.label}</ButtonPrimary
+          >
+        </div>
+      {/if}
+    {/if}
+    {#if actions.length > 0}
+      <OverflowMenu {actions}></OverflowMenu>
     {/if}
   </div>
 </nav>
 
-<style lang="scss">
+<style>
   nav {
-    z-index: 10;
     display: flex;
-    gap: 1rem;
-    align-items: center;
     justify-content: space-between;
-    width: 100%;
-    padding: 1rem 1.5rem;
-    margin: 0;
+    padding: 0.25em 0.75em;
+    font-size: 1.5em;
+    view-transition-name: navigation-top;
     background: var(--nav-top-background, var(--bg));
-    background-repeat: repeat-x;
-    background-size: auto 100%;
-    transition: box-shadow 0.25s ease;
   }
 
-  nav.scrolled {
-    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%);
-  }
-
-  nav.transparent {
-    color: white;
-    background: transparent;
-
-    --text: white;
+  .actions,
+  .left {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.25em;
+    align-items: center;
+    overflow: hidden;
   }
 
   .actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3em;
-  }
-
-  .wordmark {
-    display: flex;
-    align-items: start;
-    width: auto;
-    height: 3rem;
-    object-fit: cover;
-  }
-
-  .profilepic {
-    --size: calc(1.3em);
-
-    width: var(--size);
-    height: var(--size);
-    overflow: hidden;
-    object-fit: cover;
-    border-radius: 50%;
-
-    /* border: 3px solid var(--text); */
-  }
-
-  .current-event {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    max-width: 60%;
-
-    h1 {
-      overflow: hidden;
-      font-size: 1.2rem;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      /* stylelint-disable-next-line property-no-unknown */
-      line-clamp: 1;
-    }
-  }
-
-  .actions > * {
     flex-shrink: 0;
   }
 
-  .transparent .wordmark {
-    width: 3.5rem;
+  .title {
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .logo {
+    max-width: 33vw;
+    height: 2rem;
+    overflow: visible;
+  }
+
+  .bug-report {
+    color: var(--danger);
+  }
+
+  @media (min-width: 900px) {
+    .bug-report {
+      display: none;
+    }
+  }
+
+  .button-primary {
+    font-size: 1rem;
   }
 </style>

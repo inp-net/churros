@@ -10,7 +10,6 @@
   import InputText from '$lib/components/InputText.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { allLoaded, loaded, onceLoaded } from '$lib/loading';
-  import { me } from '$lib/session.js';
   import { toasts } from '$lib/toasts';
 
   function formatPrice(amount: number): string {
@@ -86,7 +85,7 @@
   function optionOfferedToUser(optionId: string) {
     const option = $data?.contributionOptions.find((o) => o.id === optionId);
     if (!option) return false;
-    return $me?.major?.schools.some((school) => option.offeredIn.uid === school.uid);
+    return $Me?.major?.schools.some((school) => option.offeredIn.uid === school.uid);
   }
 
   const CancelContribution = graphql(`

@@ -23,15 +23,7 @@
         group: $group
         studentAssociation: $studentAssociation
       ) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
         ... on MutationUpsertPageSuccess {
           data {
             path

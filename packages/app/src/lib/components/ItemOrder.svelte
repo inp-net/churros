@@ -7,7 +7,6 @@
   import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { ICONS_PAYMENT_METHODS } from '$lib/display';
-  import { me } from '$lib/session';
   import { PaymentMethod } from '$lib/zeus';
 
   export let order: {
@@ -60,6 +59,7 @@
             {
               '__typename': true,
               '...on Error': { message: true },
+              '...on ZodError': { message: true },
               '...on MutationPaidShopPaymentSuccess': {
                 data: {
                   __typename: true,
@@ -68,7 +68,7 @@
             },
           ],
         });
-        if (paidShopPayment.__typename === 'Error') {
+        if (paidShopPayment.__typename !== 'MutationPaidShopPaymentSuccess') {
           const serverError = paidShopPayment.message;
           paymentLoading = false;
           toasts.add('error', serverError);
@@ -80,13 +80,7 @@
         }
       }}
     >
-      <InputText
-        type="tel"
-        label="Numéro de téléphone"
-        initial={$me?.phone}
-        maxlength={255}
-        bind:value={phone}
-      />
+      <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
 
       <section class="submit">
         <ButtonPrimary loading={paymentLoading} submits>Payer {order.totalPrice}€</ButtonPrimary>

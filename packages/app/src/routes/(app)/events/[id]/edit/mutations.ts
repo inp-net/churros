@@ -13,15 +13,7 @@ export const ChangeEventOrganizer = graphql(`
           }
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -35,15 +27,7 @@ export const ChangeEventTitle = graphql(`
           title
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -58,15 +42,7 @@ export const ChangeEventDates = graphql(`
           endsAt
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -95,15 +71,7 @@ export const ChangeEventVisibility = graphql(`
           includeInKiosk
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -117,15 +85,7 @@ export const SetEventKioskModeInclusion = graphql(`
           includeInKiosk
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -161,9 +121,7 @@ export const DeleteEvent = graphql(`
           includeInKiosk
         }
       }
-      ... on Error {
-        message
-      }
+      ...MutationErrors
     }
   }
 `);
@@ -181,15 +139,7 @@ export const ChangeEventCoOrganizers = graphql(`
           }
         }
       }
-      ... on Error {
-        message
-      }
-      ... on ZodError {
-        fieldErrors {
-          message
-          path
-        }
-      }
+      ...MutationErrors
     }
   }
 `);

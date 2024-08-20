@@ -2,6 +2,7 @@ import {
   type BooleanConstraint$options,
   type EventFrequency$options,
   type EventManagerPowerLevel$options,
+  type GroupType$options,
   type PaymentMethod$options,
   type Visibility$options,
 } from '$houdini';
@@ -135,6 +136,7 @@ export const DISPLAY_NOTIFICATION_CHANNELS: Record<NotificationChannel, string> 
   GodparentRequests: 'Demandes de parrainage',
   GroupBoard: 'Changements de bureau',
   Permissions: 'Changement de permissions',
+  Mandatory: 'Notifications obligatoires',
   Other: 'Autres',
 };
 
@@ -157,10 +159,11 @@ export const ICONS_NOTIFICATION_CHANNELS: Record<NotificationChannel, typeof Sve
     GodparentRequests: IconGodparent,
     GroupBoard: IconGroupMembers,
     Other: IconNotification,
+    Mandatory: IconNotification,
     Permissions: IconPermissions,
   };
 
-export const DISPLAY_GROUP_TYPES: Record<GroupType, string> = {
+export const DISPLAY_GROUP_TYPES: Record<GroupType$options, string> = {
   Association: 'Association',
   Club: 'Club',
   Group: 'Groupe',

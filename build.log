@@ -1,64 +1,1841 @@
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/FormService.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/FormShopItem.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/FormUser.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/InputEvent.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/InputRadios.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/InputSelectOneDropdown.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/InputToggleTriState.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ItemBuyingTable.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ItemOrder.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ItemTicket.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ModalChangelog.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ModalCreateCustomPage.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ModalCreateGroup.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ModalDeleteCustomPage.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/NavigationTop.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/PickMajor.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/display.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/announcements/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/backrooms/services/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/bar-weeks/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/birthdays/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/boards/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/claim-code/[code]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/claim-code/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/credits/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/[entity=entity_handle]/+server.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/bookings/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/[slug]/[...path]/+server.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/create/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answered/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answers/analytics/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answer/[[section]]/+page.server.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answer/[[section]]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answers/+layout.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answers/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/edit/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/+layout.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/bank-accounts/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/+layout.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/NavigationTop.svelte
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/quick-signups/manage/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/developers/apps/[id]/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/developers/apps/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/developers/+layout.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(external)/authorize/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(external)/connect/google/callback/+page.ts
-[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(external)/kiosk/+page.ts
-[@churros/app]: Injecting PUBLIC_STORAGE_URL=`https://${sw.location.hostname}/storage` into /home/uwun/projects/churros/packages/app/src/service-worker.ts
-[@churros/app]:     src/routes/(app)/users/[uid]/edit/+page.svelte 97:5  root stylesheet
 Injecting build info into packages/app/src/lib/buildinfo.ts, packages/api/src/lib/buildinfo.ts, packages/app/svelte.config.js
-Injecting CURRENT_COMMIT="45c28d0ecbfb8296380c5f0ef1b1b4a9ca846a32" into packages/api/src/lib/buildinfo.ts
-Injecting CURRENT_COMMIT="45c28d0ecbfb8296380c5f0ef1b1b4a9ca846a32" into packages/app/src/lib/buildinfo.ts
-Injecting CURRENT_VERSION="1.69.1" into packages/api/src/lib/buildinfo.ts
+Injecting CURRENT_COMMIT="39d33bb1e2ef0d4b44eb8cdd7b0168a4d1c3dce2" into packages/app/src/lib/buildinfo.ts
 Injecting CURRENT_VERSION="1.69.1" into packages/app/src/lib/buildinfo.ts
+Injecting CURRENT_COMMIT="39d33bb1e2ef0d4b44eb8cdd7b0168a4d1c3dce2" into packages/app/svelte.config.js
+Injecting CURRENT_VERSION="1.69.1" into packages/app/svelte.config.js
+Injecting CURRENT_COMMIT="39d33bb1e2ef0d4b44eb8cdd7b0168a4d1c3dce2" into packages/api/src/lib/buildinfo.ts
+Injecting CURRENT_VERSION="1.69.1" into packages/api/src/lib/buildinfo.ts
+[@churros/api]: Environment variables loaded from .env
+[@churros/api]: Prisma schema loaded from prisma/schema.prisma
+[@churros/api]: 
+[@churros/api]: ✔ Generated Prisma Client (v5.18.0) to ./src/client in 831ms
+[@churros/api]: 
+[@churros/api]: ✔ Generated Pothos integration to ./src/pothos/index.d.ts in 221ms
+[@churros/api]: 
+[@churros/api]: Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+[@churros/api]: 
+[@churros/api]: Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+[@churros/api]: 
+[@churros/api]: patching file src/client/runtime/library.d.ts
+[@churros/api]: Hunk #1 succeeded at 2753 (offset 64 lines).
+[@churros/api]: Constructing ID_PREFIXES_TO_TYPENAMES from /home/uwun/projects/churros/packages/db/prisma/schema.prisma
+[@churros/api]: Injecting ID_PREFIXES_TO_TYPENAMES in /home/uwun/projects/churros/packages/api/src/lib/global-id.ts
+[@churros/api]: Injecting ID_PREFIXES_TO_TYPENAMES in /home/uwun/projects/churros/packages/app/src/lib/typenames.ts
+[@churros/api]: Updated barrelsby.config.json
+[@churros/api]: Generated index.ts for modules announcements bar-weeks changelogs comments curriculum documents events forms gitlab global groups health-checks links logs mails notifications oauth pages payments pictures posts profiles reactions schools services shop student-associations themes ticketing users
+[@churros/api]: Running barrelsby
+[@churros/api]: Fixed extension-less imports from barrelsby in 705 files
+[@churros/api]: Formatting barrels for consistency
+[@churros/api]: [ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+[@churros/api]:     at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)
+[@churros/api]:     at __node_internal_exceptionWithHostPort (node:internal/errors:671:12)
+[@churros/api]:     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1595:16)
+[@churros/api]: [ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+[@churros/api]:     at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)
+[@churros/api]:     at __node_internal_exceptionWithHostPort (node:internal/errors:671:12)
+[@churros/api]:     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1595:16)
+[@churros/api]: signup-accepted.mjml is an empty MJML template
+[@churros/api]: signup-done.mjml is an empty MJML template
+[@churros/api]: Successfully compiled 10 mail templates: booking, form-answers, group-board-updated, reset-password, signup-accepted, signup-done, signup-rejected, signup-verify-mail, verify-mail, welcome
+[@churros/api]: [ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+[@churros/api]:     at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)
+[@churros/api]:     at __node_internal_exceptionWithHostPort (node:internal/errors:671:12)
+[@churros/api]:     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1595:16)
+[@churros/api]: [ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+[@churros/api]:     at __node_internal_captureLargerStackTrace (node:internal/errors:496:5)
+[@churros/api]:     at __node_internal_exceptionWithHostPort (node:internal/errors:671:12)
+[@churros/api]:     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1595:16)
+[@churros/api]: ✨ Schema exported in [36;1m27.5 ms[0m
+[@churros/api]: 📄 Copied mail template [36;1msignup-accepted.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1msignup-done.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1m_footer.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1m_header.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1mbooking.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1m_head.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1mform-answers.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1mgroup-board-updated.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1mreset-password.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1msignup-rejected.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1msignup-verify-mail.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1mverify-mail.mjml[0m
+[@churros/api]: 📄 Copied mail template [36;1mwelcome.mjml[0m
+[@churros/app]: Injecting PUBLIC_STORAGE_URL=`https://${sw.location.hostname}/storage` into /home/uwun/projects/churros/packages/app/src/service-worker.ts
+[@churros/app]: 🎩 Generating runtime...
+[@churros/app]: ⚠️  Your Node interface is not properly defined, please fix your schema to be able to use this interface. (For more info, add flag "-l full")
+[@churros/app]: 📃 Unchanged: 236
+[@churros/app]: 
+[@churros/app]: ====================================
+[@churros/app]: Loading svelte-check in workspace: /home/uwun/projects/churros/packages/app
+[@churros/app]: Getting Svelte diagnostics...
+[@churros/app]: 
+[@churros/app]: DEPRECATION WARNING: Sass's behavior for declarations that appear after nested
+[@churros/app]: rules will be changing to match the behavior specified by CSS in an upcoming
+[@churros/app]: version. To keep the existing behavior, move the declaration above the nested
+[@churros/app]: rule. To opt into the new behavior, wrap the declaration in `& {}`.
+[@churros/app]: 
+[@churros/app]: More info: https://sass-lang.com/d/mixed-decls
+[@churros/app]: 
+[@churros/app]:     ╷
+[@churros/app]: 92  │ ┌     &::before {
+[@churros/app]: 93  │ │       padding: 0 0.5em;
+[@churros/app]: 94  │ │       content: '•';
+[@churros/app]: 95  │ │     }
+[@churros/app]:     │ └─── nested rule
+[@churros/app]: ... │
+[@churros/app]: 97  │       font-weight: 600;
+[@churros/app]:     │       ^^^^^^^^^^^^^^^^ declaration
+[@churros/app]:     ╵
+[@churros/app]:     src/routes/(app)/users/[uid]/edit/+page.svelte 97:5  root stylesheet
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/+page.ts:21:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export async function load({ fetch, parent, url }) {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) redirectToLogin(url.pathname, url.searchParams);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/+page.ts:37:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/+layout.ts:15:14
+[@churros/app]: Error: Type '() => Promise<LayoutParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<LayoutParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'LayoutParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answer/[[section]]/+page.server.ts:5:48
+[@churros/app]: Error: Cannot find module './_disabled+page.svelte' or its corresponding type declarations. 
+[@churros/app]: import { error, fail, redirect } from '@sveltejs/kit';
+[@churros/app]: import { FORM_SECTION_HIDDEN_INPUT_NAME } from './_disabled+page.svelte';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answer/[[section]]/+page.ts:110:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answered/+page.ts:22:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answers/+page.ts:57:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answers/+layout.ts:20:14
+[@churros/app]: Error: Type '() => Promise<LayoutParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<LayoutParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'LayoutParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answers/analytics/+page.ts:52:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/edit/+page.ts:73:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/FormDocument.svelte:14:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import InputText from './InputText.svelte';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { goto } from '$app/navigation';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/ModalReportIssue.svelte:15:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import { page } from '$app/stores';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { default as parseUserAgent } from 'ua-parser-js';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/index.ts:61:38
+[@churros/app]: Error: Cannot find module './FormEvent.svelte' or its corresponding type declarations. 
+[@churros/app]: export { default as FormDocument } from './FormDocument.svelte';
+[@churros/app]: export { default as FormEvent } from './FormEvent.svelte';
+[@churros/app]: export { default as FormEventTicket } from './FormEventTicket.svelte';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/index.ts:62:44
+[@churros/app]: Error: Cannot find module './FormEventTicket.svelte' or its corresponding type declarations. 
+[@churros/app]: export { default as FormEvent } from './FormEvent.svelte';
+[@churros/app]: export { default as FormEventTicket } from './FormEventTicket.svelte';
+[@churros/app]: export { default as FormGroup } from './FormGroup.svelte';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/index.ts:124:39
+[@churros/app]: Error: Cannot find module './ItemTicket.svelte' or its corresponding type declarations. 
+[@churros/app]: export { default as ItemOrder } from './ItemOrder.svelte';
+[@churros/app]: export { default as ItemTicket } from './ItemTicket.svelte';
+[@churros/app]: export { default as ListManageCustomPages } from './ListManageCustomPages.svelte';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/lib/components/NavigationTop.svelte:61:59
+[@churros/app]: Error: Argument of type 'Page<Record<string, string>, string | null>' is not assignable to parameter of type 'Page<{ uid: string; id: string; code: string; major: string; yearTier: string; subject: string; document: string; week: string; ticket: string; form: string; section: string; page: string; itemUid: string; ... 6 more ...; qrcode: string; }, "/(app)"> & ... 92 more ... & Page<...>'.
+[@churros/app]:   Type 'Page<Record<string, string>, string | null>' is not assignable to type 'Page<{ uid: string; id: string; code: string; major: string; yearTier: string; subject: string; document: string; week: string; ticket: string; form: string; section: string; page: string; itemUid: string; ... 6 more ...; qrcode: string; }, "/(app)">'.
+[@churros/app]:     Type 'Record<string, string>' is missing the following properties from type '{ uid: string; id: string; code: string; major: string; yearTier: string; subject: string; document: string; week: string; ticket: string; form: string; section: string; page: string; itemUid: string; token: string; ... 5 more ...; qrcode: string; }': uid, id, code, major, and 16 more. (ts)
+[@churros/app]:       actions = [],
+[@churros/app]:     } = typeof topnavConfig === 'function' ? topnavConfig($page) : topnavConfig);
+[@churros/app]:   }
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.ts:7:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me, token, canEditGroup } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.ts:7:15
+[@churros/app]: Error: Property 'token' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me, token, canEditGroup } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.ts:7:22
+[@churros/app]: Error: Property 'canEditGroup' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me, token, canEditGroup } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.ts:12:24
+[@churros/app]: Error: Binding element 'group' implicitly has an 'any' type. 
+[@churros/app]:     !canEditGroup &&
+[@churros/app]:     !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
+[@churros/app]:   )
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.ts:12:31
+[@churros/app]: Error: Binding element 'canEditMembers' implicitly has an 'any' type. 
+[@churros/app]:     !canEditGroup &&
+[@churros/app]:     !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
+[@churros/app]:   )
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/bulk/+page.ts:7:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ params, parent, url }) => {
+[@churros/app]:   const { me, token } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/bulk/+page.ts:7:15
+[@churros/app]: Error: Property 'token' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ params, parent, url }) => {
+[@churros/app]:   const { me, token } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/bulk/+page.ts:19:24
+[@churros/app]: Error: Binding element 'group' implicitly has an 'any' type. 
+[@churros/app]:     !currentUser?.canEditGroup &&
+[@churros/app]:     !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
+[@churros/app]:   )
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/bulk/+page.ts:19:31
+[@churros/app]: Error: Binding element 'canEditMembers' implicitly has an 'any' type. 
+[@churros/app]:     !currentUser?.canEditGroup &&
+[@churros/app]:     !me.groups.some(({ group, canEditMembers }) => canEditMembers && group.uid === params.uid)
+[@churros/app]:   )
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/members/+page.ts:5:11
+[@churros/app]: Error: Property 'token' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent, params }) => {
+[@churros/app]:   const { token, canEditGroup } = await parent();
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/members/+page.ts:5:18
+[@churros/app]: Error: Property 'canEditGroup' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent, params }) => {
+[@churros/app]:   const { token, canEditGroup } = await parent();
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.ts:5:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   const { group } = await loadQuery(
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/+page.ts:46:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.ts:7:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.ts:49:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/create/+page.ts:6:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/create/+page.ts:34:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/orders/+page.ts:5:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   const data = await loadQuery(
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/orders/+page.ts:41:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/sales/+page.ts:7:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/sales/+page.ts:45:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/sales/[itemUid]/+page.ts:37:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/subgroups/create/+page.ts:34:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/subgroups/create/+page.ts:42:16
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:       },
+[@churros/app]:       { fetch, parent },
+[@churros/app]:     )),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/logs/+layout.ts:7:13
+[@churros/app]: Error: Property 'me' does not exist on type 'LayoutParentData'. 
+[@churros/app]:   const data = await parent();
+[@churros/app]:   if (!data.me) throw redirectToLogin('/logs');
+[@churros/app]:   if (!data.me.admin) throw redirect(307, '/');
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/logs/+layout.ts:8:13
+[@churros/app]: Error: Property 'me' does not exist on type 'LayoutParentData'. 
+[@churros/app]:   if (!data.me) throw redirectToLogin('/logs');
+[@churros/app]:   if (!data.me.admin) throw redirect(307, '/');
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/logs/+page.ts:23:73
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent }) => {
+[@churros/app]:   const { logs } = await loadQuery({ logs: [{}, _pageQuery] }, { fetch, parent });
+[@churros/app]:   return { logs };
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/notifications/+page.ts:32:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent, url }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/notifications/+page.ts:49:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/reports/+page.ts:6:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin('/reports');
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/reports/+page.ts:22:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/reports/[number]/+page.ts:6:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent, params }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin('/reports');
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/reports/[number]/+page.ts:32:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/schools/[uid]/edit/+page.ts:7:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent, url }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/schools/[uid]/edit/+page.ts:27:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/search/[[q]]/+page.ts:6:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, parent, url, params: { q } }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname + url.search);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/search/[[q]]/+page.ts:33:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/services/[id]/edit/+page.ts:37:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/signups/+layout.ts:6:13
+[@churros/app]: Error: Property 'me' does not exist on type 'LayoutParentData'. 
+[@churros/app]:   const data = await parent();
+[@churros/app]:   if (!data.me) throw redirectToLogin(url.pathname);
+[@churros/app]:   return data;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/signups/+page.ts:25:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/signups/edit/[email]/+page.ts:27:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.ts:96:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ fetch, params, parent }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   const { user } = await loadQuery(
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.ts:101:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.ts:146:14
+[@churros/app]: Error: Type '() => Promise<PageParentData>' is not assignable to type '() => Promise<{ token?: string | undefined; }>'.
+[@churros/app]:   Type 'Promise<PageParentData>' is not assignable to type 'Promise<{ token?: string | undefined; }>'.
+[@churros/app]:     Type 'PageParentData' has no properties in common with type '{ token?: string | undefined; }'. 
+[@churros/app]:     },
+[@churros/app]:     { fetch, parent },
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/welcome/+page.ts:5:11
+[@churros/app]: Error: Property 'me' does not exist on type 'PageParentData'. 
+[@churros/app]: export const load: PageLoad = async ({ parent, url }) => {
+[@churros/app]:   const { me } = await parent();
+[@churros/app]:   if (!me) throw redirectToLogin(url.pathname);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/+error.svelte:6:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { loginRedirection, refroute } from '$lib/navigation';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/+layout.svelte:38:22
+[@churros/app]: Error: Property 'mobile' does not exist on type '{ RootLayout: RootLayoutStore; }'. (ts)
+[@churros/app]: 
+[@churros/app]:   setupIsMobile(data.mobile);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/+error.svelte:6:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { loginRedirection } from '$lib/navigation';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/+layout.svelte:9:12
+[@churros/app]: Error: Module '"$houdini"' has no exported member 'AppLayoutScanningEventStore'. (ts)
+[@churros/app]:   import { page } from '$app/stores';
+[@churros/app]:   import { AppLayoutScanningEventStore, graphql } from '$houdini';
+[@churros/app]:   import { CURRENT_VERSION } from '$lib/buildinfo';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/[uid=uid]/Header.svelte:171:23
+[@churros/app]: Error: Property 'name' does not exist on type '({ readonly __typename: string | null; readonly " $fragments": { AvatarUser: {}; AvatarGroup: {}; AvatarStudentAssociation: {}; AvatarMajor: {}; AvatarSchool: {}; }; } & { readonly name: string; ... 9 more ...; readonly __typename: "User"; }) | ({ ...; } & { ...; }) | ({ ...; } & { ...; }) | ({ ...; } & { ...; }) | ...'.
+[@churros/app]:   Property 'name' does not exist on type '{ readonly __typename: unique symbol; readonly " $fragments": { AvatarUser: {}; AvatarGroup: {}; AvatarStudentAssociation: {}; AvatarMajor: {}; AvatarSchool: {}; }; }'. (ts)
+[@churros/app]:               ? $data.shortName
+[@churros/app]:               : $data.name
+[@churros/app]:             : PendingValue}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/[uid=uid]/Header.svelte:322:28
+[@churros/app]: Error: Argument of type '"/student-associations/[uid]/edit"' is not assignable to parameter of type 'FunctionKeys<{ 'GET /[entity=entity_handle]': (entity: string, params?: {} | undefined) => string; 'GET /bookings/[code].pdf': (code: string | number, params?: {} | undefined) => string; 'GET /events/[id]/[slug]/[...path]': (params: { ...; }) => string; ... 127 more ...; '/signup/finish/[token]': (token: string | nu...'. (ts)
+[@churros/app]:             stretches
+[@churros/app]:             href={refroute('/student-associations/[uid]/edit', $page.params.uid)}
+[@churros/app]:             >Modifier</ButtonSecondary
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:9:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import CardSubject from '$lib/components/CardSubject.svelte';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import type { PageData } from './$types';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:67:22
+[@churros/app]: Error: Type '{ unit: undefined; id: string; name: string; emoji: string; shortName: string; semester: number | null; uid: string; nextExamAt: Date | null; yearTier: number | null; minors: ({ readonly name: string; readonly uid: string; readonly id: string; })[]; documentsCount: number; href: string; }' is not assignable to type '{ href: string; emoji: string; createHref?: string | undefined; documentsCount: number; nextExamAt?: Date | undefined; name: string; shortName: string; semester?: number | undefined; yearTier?: number | undefined; unit?: { ...; } | undefined; }'.
+[@churros/app]:   Types of property 'nextExamAt' are incompatible.
+[@churros/app]:     Type 'Date | null' is not assignable to type 'Date | undefined'.
+[@churros/app]:       Type 'null' is not assignable to type 'Date | undefined'. (ts)
+[@churros/app]:         <li>
+[@churros/app]:           <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+[@churros/app]:         </li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:100:22
+[@churros/app]: Error: Type '{ unit: undefined; id: string; name: string; emoji: string; shortName: string; semester: number | null; uid: string; nextExamAt: Date | null; yearTier: number | null; minors: ({ readonly name: string; readonly uid: string; readonly id: string; })[]; documentsCount: number; href: string; }' is not assignable to type '{ href: string; emoji: string; createHref?: string | undefined; documentsCount: number; nextExamAt?: Date | undefined; name: string; shortName: string; semester?: number | undefined; yearTier?: number | undefined; unit?: { ...; } | undefined; }'.
+[@churros/app]:   Types of property 'nextExamAt' are incompatible.
+[@churros/app]:     Type 'Date | null' is not assignable to type 'Date | undefined'. (ts)
+[@churros/app]:         <li>
+[@churros/app]:           <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+[@churros/app]:         </li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/+page.svelte:121:22
+[@churros/app]: Error: Type '{ unit: undefined; id: string; name: string; emoji: string; shortName: string; semester: number | null; uid: string; nextExamAt: Date | null; yearTier: number | null; minors: ({ readonly name: string; readonly uid: string; readonly id: string; })[]; documentsCount: number; href: string; }' is not assignable to type '{ href: string; emoji: string; createHref?: string | undefined; documentsCount: number; nextExamAt?: Date | undefined; name: string; shortName: string; semester?: number | undefined; yearTier?: number | undefined; unit?: { ...; } | undefined; }'.
+[@churros/app]:   Types of property 'nextExamAt' are incompatible.
+[@churros/app]:     Type 'Date | null' is not assignable to type 'Date | undefined'. (ts)
+[@churros/app]:         <li>
+[@churros/app]:           <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
+[@churros/app]:         </li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:19:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import ButtonInk from '$lib/components/ButtonInk.svelte';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import ButtonShare from '$lib/components/ButtonShare.svelte';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:63:28
+[@churros/app]: Error: Cannot assign to 'edges' because it is a read-only property. (ts)
+[@churros/app]:     });
+[@churros/app]:     data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
+[@churros/app]:     if (!comment) {
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:95:28
+[@churros/app]: Error: Cannot assign to 'edges' because it is a read-only property. (ts)
+[@churros/app]:     });
+[@churros/app]:     data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
+[@churros/app]:       node.id === upsertComment.id ? { node: upsertComment } : { node },
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:141:56
+[@churros/app]: Error: Argument of type 'ValueOf<{ readonly CourseNotes: "CourseNotes"; readonly CourseSlides: "CourseSlides"; readonly Exam: "Exam"; readonly Exercises: "Exercises"; readonly GradedExercises: "GradedExercises"; readonly Miscellaneous: "Miscellaneous"; readonly Practical: "Practical"; readonly PracticalExam: "PracticalExam"; readonly Summar...' is not assignable to parameter of type 'DocumentType'.
+[@churros/app]:   Type '"CourseNotes"' is not assignable to type 'DocumentType'. (ts)
+[@churros/app]:     <span class="breadcrumb-icon">
+[@churros/app]:       <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
+[@churros/app]:     </span>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/+page.svelte:209:46
+[@churros/app]: Error: Argument of type 'ValueOf<{ readonly CourseNotes: "CourseNotes"; readonly CourseSlides: "CourseSlides"; readonly Exam: "Exam"; readonly Exercises: "Exercises"; readonly GradedExercises: "GradedExercises"; readonly Miscellaneous: "Miscellaneous"; readonly Practical: "Practical"; readonly PracticalExam: "PracticalExam"; readonly Summar...' is not assignable to parameter of type 'DocumentType'. (ts)
+[@churros/app]:       <p>Ce document n'a aucun fichier… Plutôt cringe</p>
+[@churros/app]:     {:else if documentTypesWithSolutions.has(document.type)}
+[@churros/app]:       {#if paperPaths.length > 0}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit/+page.svelte:27:15
+[@churros/app]: Error: Type '{ readonly title: string; readonly id: string; readonly type: ValueOf<{ readonly CourseNotes: "CourseNotes"; readonly CourseSlides: "CourseSlides"; readonly Exam: "Exam"; readonly Exercises: "Exercises"; ... 4 more ...; readonly Summary: "Summary"; }>; ... 7 more ...; readonly uploader: { ...; } | null; }' is not assignable to type '{ id: string; title: string; schoolYear: number; description: string; subject?: { uid: string; id: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { ...; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined; type: DocumentType; paper...'.
+[@churros/app]:   Types of property 'subject' are incompatible.
+[@churros/app]:     Type '{ readonly name: string; readonly emoji: string; readonly shortName: string; readonly forApprentices: boolean; readonly yearTier: number | null; readonly uid: string; readonly id: string; readonly minors: { ...; }[]; readonly majors: { ...; }[]; } | null' is not assignable to type '{ uid: string; id: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined'.
+[@churros/app]:       Type 'null' is not assignable to type '{ uid: string; id: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined'. (ts)
+[@churros/app]: 
+[@churros/app]: <FormDocument data={data.document}></FormDocument>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:47:32
+[@churros/app]: Error: 'data.major' is possibly 'null'. (ts)
+[@churros/app]: <Breadcrumbs root="/documents">
+[@churros/app]:   <Breadcrumb href="../../..">{data.major.shortName}</Breadcrumb>
+[@churros/app]:   <Breadcrumb href="../..">{$page.params.yearTier.toUpperCase().replaceAll('-', ' ')}</Breadcrumb>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:50:6
+[@churros/app]: Error: 'data.subject' is possibly 'null'. (ts)
+[@churros/app]:   <Breadcrumb href="..">
+[@churros/app]:     {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+[@churros/app]:     {data.subject.shortName || data.subject.name}</Breadcrumb
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:50:30
+[@churros/app]: Error: 'data.subject' is possibly 'null'. (ts)
+[@churros/app]:   <Breadcrumb href="..">
+[@churros/app]:     {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+[@churros/app]:     {data.subject.shortName || data.subject.name}</Breadcrumb
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:51:6
+[@churros/app]: Error: 'data.subject' is possibly 'null'. (ts)
+[@churros/app]:     {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+[@churros/app]:     {data.subject.shortName || data.subject.name}</Breadcrumb
+[@churros/app]:   >
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:51:32
+[@churros/app]: Error: 'data.subject' is possibly 'null'. (ts)
+[@churros/app]:     {data.subject.emoji ? `${data.subject.emoji} ` : ''}
+[@churros/app]:     {data.subject.shortName || data.subject.name}</Breadcrumb
+[@churros/app]:   >
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:56:42
+[@churros/app]: Error: 'document.subject' is possibly 'null'. (ts)
+[@churros/app]: 
+[@churros/app]: <h2>{documentTypeSentence(document.type, document.subject.shortName || document.subject.name)}</h2>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:56:72
+[@churros/app]: Error: 'document.subject' is possibly 'null'. (ts)
+[@churros/app]: 
+[@churros/app]: <h2>{documentTypeSentence(document.type, document.subject.shortName || document.subject.name)}</h2>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/documents/[major]/[yearTier=display_year_tier]/[subject]/create/+page.svelte:58:20
+[@churros/app]: Error: Type '{ id: string; title: string; description: string; type: DocumentType; subject: { readonly name: string; readonly emoji: string; readonly shortName: string; readonly uid: string; readonly id: string; ... 4 more ...; readonly minors: ({ readonly uid: string; readonly name: string; readonly shortName: string; })[]; } |...' is not assignable to type '{ id: string; title: string; schoolYear: number; description: string; subject?: { uid: string; id: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { ...; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined; type: DocumentType; paper...'.
+[@churros/app]:   Types of property 'subject' are incompatible.
+[@churros/app]:     Type '{ readonly name: string; readonly emoji: string; readonly shortName: string; readonly uid: string; readonly id: string; readonly links: { readonly name: string; readonly computedValue: string; }[]; readonly forApprentices: boolean; readonly yearTier: number | null; readonly majors: { ...; }[]; readonly minors: { ......' is not assignable to type '{ uid: string; id: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined'.
+[@churros/app]:       Type 'null' is not assignable to type '{ uid: string; id: string; name: string; shortName: string; minors: { name: string; uid: string; shortName: string; }[]; majors: { name: string; uid: string; shortName: string; }[]; forApprentices: boolean; yearTier?: number | undefined; } | undefined'. (ts)
+[@churros/app]: 
+[@churros/app]: <FormDocument bind:data={document}></FormDocument>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/+page.svelte:49:28
+[@churros/app]: Error: Argument of type '"/groups/[uid]"' is not assignable to parameter of type 'FunctionKeys<{ 'GET /[entity=entity_handle]': (entity: string, params?: {} | undefined) => string; 'GET /bookings/[code].pdf': (code: string | number, params?: {} | undefined) => string; 'GET /events/[id]/[slug]/[...path]': (params: { ...; }) => string; ... 127 more ...; '/signup/finish/[token]': (token: string | nu...'. (ts)
+[@churros/app]:           <li class="avatar">
+[@churros/app]:             <a href={route('/groups/[uid]', loading(group.uid, ''))}>
+[@churros/app]:               <AvatarGroup href="" {group} />
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/bookings/+page.svelte:51:5
+[@churros/app]: Error: Type '"unpaid" | "paid" | "verified"' is not assignable to type 'ValueOf<{ readonly Paid: "Paid"; readonly Unpaid: "Unpaid"; readonly Verified: "Verified"; }>'.
+[@churros/app]:   Type '"unpaid"' is not assignable to type 'ValueOf<{ readonly Paid: "Paid"; readonly Unpaid: "Unpaid"; readonly Verified: "Verified"; }>'. Did you mean '"Unpaid"'? (ts)
+[@churros/app]:     id: $page.params.id,
+[@churros/app]:     filter: $page.url.searchParams.get('tab') as (typeof FILTERS)[number],
+[@churros/app]:   });
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/banned/+page.svelte:92:17
+[@churros/app]: Error: Argument of type 'QueryResult<BanFromEvent$result, BanFromEvent$input> | undefined' is not assignable to parameter of type 'MutationResult<"banFromEvent", { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationBanFromEventSuccess"> | undefined'.
+[@churros/app]:   Type 'QueryResult<BanFromEvent$result, BanFromEvent$input>' is not assignable to type 'MutationResult<"banFromEvent", { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationBanFromEventSuccess">'.
+[@churros/app]:     Types of property 'data' are incompatible.
+[@churros/app]:       Type 'BanFromEvent$result | null' is not assignable to type 'Record<"banFromEvent", OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationBanFromEventSuccess">> | null | undefined'.
+[@churros/app]:         Type 'BanFromEvent$result' is not assignable to type 'Record<"banFromEvent", OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationBanFromEventSuccess">>'.
+[@churros/app]:           Types of property 'banFromEvent' are incompatible.
+[@churros/app]:             Type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationBanFromEventSuccess"; } | { ...; } | { ...; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationBanFromEventSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationBanFromEventSuccess"; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationBanFromEventSuccess">'.
+[@churros/app]:                 Type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationBanFromEventSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, unknown, "MutationBanFromEventSuccess">'.
+[@churros/app]:                   Property '' $fragments'' is missing in type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationBanFromEventSuccess"; }' but required in type '{ data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; ' $fragments': unknown; __typename: "MutationBanFromEventSuccess"; }'. (ts)
+[@churros/app]:               toasts.mutation(
+[@churros/app]:                 result,
+[@churros/app]:                 'banFromEvent',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/banned/+page.svelte:126:19
+[@churros/app]: Error: Argument of type 'QueryResult<UnbanFromEvent$result, UnbanFromEvent$input> | undefined' is not assignable to parameter of type 'MutationResult<"unbanFromEvent", { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationUnbanFromEventSuccess"> | undefined'.
+[@churros/app]:   Type 'QueryResult<UnbanFromEvent$result, UnbanFromEvent$input>' is not assignable to type 'MutationResult<"unbanFromEvent", { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationUnbanFromEventSuccess">'.
+[@churros/app]:     Types of property 'data' are incompatible.
+[@churros/app]:       Type 'UnbanFromEvent$result | null' is not assignable to type 'Record<"unbanFromEvent", OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationUnbanFromEventSuccess">> | null | undefined'.
+[@churros/app]:         Type 'UnbanFromEvent$result' is not assignable to type 'Record<"unbanFromEvent", OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationUnbanFromEventSuccess">>'.
+[@churros/app]:           Types of property 'unbanFromEvent' are incompatible.
+[@churros/app]:             Type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationUnbanFromEventSuccess"; } | { ...; } | { ...; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationUnbanFromEventSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationUnbanFromEventSuccess"; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, never, unknown, "MutationUnbanFromEventSuccess">'.
+[@churros/app]:                 Type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationUnbanFromEventSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }, unknown, "MutationUnbanFromEventSuccess">'.
+[@churros/app]:                   Property '' $fragments'' is missing in type '{ readonly data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; readonly __typename: "MutationUnbanFromEventSuccess"; }' but required in type '{ data: { readonly id: string; readonly banned: { readonly fullName: string; readonly uid: string; readonly " $fragments": { AvatarUser: {}; }; }[]; }; ' $fragments': unknown; __typename: "MutationUnbanFromEventSuccess"; }'. (ts)
+[@churros/app]:                 toasts.mutation(
+[@churros/app]:                   result,
+[@churros/app]:                   'unbanFromEvent',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/contact/+page.svelte:16:23
+[@churros/app]: Error: No overload matches this call.
+[@churros/app]:   The last overload gave the following error.
+[@churros/app]:     Argument of type 'string' is not assignable to parameter of type 'TemplateStringsArray'. (ts)
+[@churros/app]:       on:blur={async () => {
+[@churros/app]:         await graphql(`
+[@churros/app]:           mutation ChangeEventContactDetails($event: LocalID!, $contactMail: String!) {
+[@churros/app]:             updateEvent(event: $event, contactMail: $contactMail) {
+[@churros/app]:               __typename
+[@churros/app]:               ... on MutationUpdateEventSuccess {
+[@churros/app]:                 data {
+[@churros/app]:                   id
+[@churros/app]:                   contactMail
+[@churros/app]:                 }
+[@churros/app]:               }
+[@churros/app]:               ... on Error {
+[@churros/app]:                 message
+[@churros/app]:               }
+[@churros/app]:               ... on ZodError {
+[@churros/app]:                 fieldErrors {
+[@churros/app]:                   path
+[@churros/app]:                   message
+[@churros/app]:                 }
+[@churros/app]:               }
+[@churros/app]:             }
+[@churros/app]:           }
+[@churros/app]:         `);
+[@churros/app]:       }}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/description/+page.svelte:50:27
+[@churros/app]: Error: Argument of type 'QueryResult<UpdateEventDescription$result, UpdateEventDescription$input> | undefined' is not assignable to parameter of type 'MutationResult<"updateEvent", { readonly id: string; readonly description: string; }, never, unknown, "MutationUpdateEventSuccess"> | undefined'.
+[@churros/app]:   Type 'QueryResult<UpdateEventDescription$result, UpdateEventDescription$input>' is not assignable to type 'MutationResult<"updateEvent", { readonly id: string; readonly description: string; }, never, unknown, "MutationUpdateEventSuccess">'.
+[@churros/app]:     Types of property 'data' are incompatible.
+[@churros/app]:       Type 'UpdateEventDescription$result | null' is not assignable to type 'Record<"updateEvent", OperationResult<{ readonly id: string; readonly description: string; }, never, unknown, "MutationUpdateEventSuccess">> | null | undefined'.
+[@churros/app]:         Type 'UpdateEventDescription$result' is not assignable to type 'Record<"updateEvent", OperationResult<{ readonly id: string; readonly description: string; }, never, unknown, "MutationUpdateEventSuccess">>'.
+[@churros/app]:           Types of property 'updateEvent' are incompatible.
+[@churros/app]:             Type '{ readonly __typename: string | null; } & ({ readonly data: { readonly id: string; readonly description: string; }; readonly __typename: "MutationUpdateEventSuccess"; } | { readonly message: string; readonly __typename: "Error"; } | { ...; })' is not assignable to type 'OperationResult<{ readonly id: string; readonly description: string; }, never, unknown, "MutationUpdateEventSuccess">'.
+[@churros/app]:               Type '{ readonly __typename: string | null; } & { readonly data: { readonly id: string; readonly description: string; }; readonly __typename: "MutationUpdateEventSuccess"; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly description: string; }, never, unknown, "MutationUpdateEventSuccess">'.
+[@churros/app]:                 Type '{ readonly __typename: string | null; } & { readonly data: { readonly id: string; readonly description: string; }; readonly __typename: "MutationUpdateEventSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly id: string; readonly description: string; }, unknown, "MutationUpdateEventSuccess">'.
+[@churros/app]:                   Property '' $fragments'' is missing in type '{ readonly __typename: string | null; } & { readonly data: { readonly id: string; readonly description: string; }; readonly __typename: "MutationUpdateEventSuccess"; }' but required in type '{ data: { readonly id: string; readonly description: string; }; ' $fragments': unknown; __typename: "MutationUpdateEventSuccess"; }'. (ts)
+[@churros/app]:           });
+[@churros/app]:           toasts.mutation(result, 'updateEvent', '', 'Impossible de mettre à jour la description');
+[@churros/app]:         }}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/managers/+page.svelte:117:17
+[@churros/app]: Error: Argument of type 'QueryResult<AddEventManager$result, AddEventManager$input> | undefined' is not assignable to parameter of type 'MutationResult<"upsertEventManager", { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, never, unknown, "MutationUpsertEventManagerSuccess"> | undefined'.
+[@churros/app]:   Type 'QueryResult<AddEventManager$result, AddEventManager$input>' is not assignable to type 'MutationResult<"upsertEventManager", { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, never, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:     Types of property 'data' are incompatible.
+[@churros/app]:       Type 'AddEventManager$result | null' is not assignable to type 'Record<"upsertEventManager", OperationResult<{ readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, never, unknown, "MutationUpsertEventManagerSuccess">> | null | undefined'.
+[@churros/app]:         Type 'AddEventManager$result' is not assignable to type 'Record<"upsertEventManager", OperationResult<{ readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, never, unknown, "MutationUpsertEventManagerSuccess">>'.
+[@churros/app]:           Types of property 'upsertEventManager' are incompatible.
+[@churros/app]:             Type '{ readonly data: { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }; readonly __typename: "MutationUpsertEventManagerSuccess"; } | { readonly message: string; readonly __typename: "Error"; } | { ...; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, never, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }; readonly __typename: "MutationUpsertEventManagerSuccess"; }' is not assignable to type 'OperationResult<{ readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, never, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:                 Type '{ readonly data: { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }; readonly __typename: "MutationUpsertEventManagerSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:                   Property '' $fragments'' is missing in type '{ readonly data: { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }; readonly __typename: "MutationUpsertEventManagerSuccess"; }' but required in type '{ data: { readonly id: string; readonly " $fragments": { List_EventManagers_insert: {}; }; }; ' $fragments': unknown; __typename: "MutationUpsertEventManagerSuccess"; }'. (ts)
+[@churros/app]:               toasts.mutation(
+[@churros/app]:                 result,
+[@churros/app]:                 'upsertEventManager',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/managers/+page.svelte:152:30
+[@churros/app]: Error: Argument of type '"/users/[uid]"' is not assignable to parameter of type 'FunctionKeys<{ 'GET /[entity=entity_handle]': (entity: string, params?: {} | undefined) => string; 'GET /bookings/[code].pdf': (code: string | number, params?: {} | undefined) => string; 'GET /events/[id]/[slug]/[...path]': (params: { ...; }) => string; ... 127 more ...; '/signup/finish/[token]': (token: string | nu...'. (ts)
+[@churros/app]:               tag="a"
+[@churros/app]:               href={refroute('/users/[uid]', loading(manager.user.uid, ''))}
+[@churros/app]:               value={manager.user.uid}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/managers/+page.svelte:167:19
+[@churros/app]: Error: Argument of type 'QueryResult<UpdateEventManager$result, UpdateEventManager$input> | undefined' is not assignable to parameter of type 'MutationResult<"upsertEventManager", { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, never, unknown, "MutationUpsertEventManagerSuccess"> | undefined'.
+[@churros/app]:   Type 'QueryResult<UpdateEventManager$result, UpdateEventManager$input>' is not assignable to type 'MutationResult<"upsertEventManager", { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, never, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:     Types of property 'data' are incompatible.
+[@churros/app]:       Type 'UpdateEventManager$result | null' is not assignable to type 'Record<"upsertEventManager", OperationResult<{ readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, never, unknown, "MutationUpsertEventManagerSuccess">> | null | undefined'.
+[@churros/app]:         Type 'UpdateEventManager$result' is not assignable to type 'Record<"upsertEventManager", OperationResult<{ readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, never, unknown, "MutationUpsertEventManagerSuccess">>'.
+[@churros/app]:           Types of property 'upsertEventManager' are incompatible.
+[@churros/app]:             Type '{ readonly data: { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }; readonly __typename: "MutationUpsertEventManagerSuccess"; } | { ...; } | { ...; }' is not assignable to type 'OperationResult<{ readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, never, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }; readonly __typename: "MutationUpsertEventManagerSuccess"; }' is not assignable to type 'OperationResult<{ readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, never, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:                 Type '{ readonly data: { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }; readonly __typename: "MutationUpsertEventManagerSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }, unknown, "MutationUpsertEventManagerSuccess">'.
+[@churros/app]:                   Property '' $fragments'' is missing in type '{ readonly data: { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }; readonly __typename: "MutationUpsertEventManagerSuccess"; }' but required in type '{ data: { readonly power: ValueOf<{ readonly Edit: "Edit"; readonly EditPermissions: "EditPermissions"; readonly ReadOnly: "ReadOnly"; readonly ScanTickets: "ScanTickets"; }>; }; ' $fragments': unknown; __typename: "MutationUpsertEventManagerSuccess"; }'. (ts)
+[@churros/app]:                 toasts.mutation(
+[@churros/app]:                   result,
+[@churros/app]:                   'upsertEventManager',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/edit/managers/+page.svelte:182:19
+[@churros/app]: Error: Argument of type 'QueryResult<RemoveEventManager$result, RemoveEventManager$input> | undefined' is not assignable to parameter of type 'MutationResult<"removeEventManager", { readonly id: string; }, never, unknown, "MutationRemoveEventManagerSuccess"> | undefined'.
+[@churros/app]:   Type 'QueryResult<RemoveEventManager$result, RemoveEventManager$input>' is not assignable to type 'MutationResult<"removeEventManager", { readonly id: string; }, never, unknown, "MutationRemoveEventManagerSuccess">'.
+[@churros/app]:     Types of property 'data' are incompatible.
+[@churros/app]:       Type 'RemoveEventManager$result | null' is not assignable to type 'Record<"removeEventManager", OperationResult<{ readonly id: string; }, never, unknown, "MutationRemoveEventManagerSuccess">> | null | undefined'.
+[@churros/app]:         Type 'RemoveEventManager$result' is not assignable to type 'Record<"removeEventManager", OperationResult<{ readonly id: string; }, never, unknown, "MutationRemoveEventManagerSuccess">>'.
+[@churros/app]:           Types of property 'removeEventManager' are incompatible.
+[@churros/app]:             Type '{ readonly data: { readonly id: string; }; readonly __typename: "MutationRemoveEventManagerSuccess"; } | { readonly message: string; readonly __typename: "Error"; } | { readonly fieldErrors: { ...; }[]; readonly __typename: "ZodError"; }' is not assignable to type 'OperationResult<{ readonly id: string; }, never, unknown, "MutationRemoveEventManagerSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly id: string; }; readonly __typename: "MutationRemoveEventManagerSuccess"; }' is not assignable to type 'OperationResult<{ readonly id: string; }, never, unknown, "MutationRemoveEventManagerSuccess">'.
+[@churros/app]:                 Type '{ readonly data: { readonly id: string; }; readonly __typename: "MutationRemoveEventManagerSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly id: string; }, unknown, "MutationRemoveEventManagerSuccess">'.
+[@churros/app]:                   Property '' $fragments'' is missing in type '{ readonly data: { readonly id: string; }; readonly __typename: "MutationRemoveEventManagerSuccess"; }' but required in type '{ data: { readonly id: string; }; ' $fragments': unknown; __typename: "MutationRemoveEventManagerSuccess"; }'. (ts)
+[@churros/app]:                 toasts.mutation(
+[@churros/app]:                   result,
+[@churros/app]:                   'removeEventManager',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/ScanResult.svelte:192:42
+[@churros/app]: Error: Argument of type '"/users/[uid]"' is not assignable to parameter of type 'FunctionKeys<{ 'GET /[entity=entity_handle]': (entity: string, params?: {} | undefined) => string; 'GET /bookings/[code].pdf': (code: string | number, params?: {} | undefined) => string; 'GET /events/[id]/[slug]/[...path]': (params: { ...; }) => string; ... 127 more ...; '/signup/finish/[token]': (token: string | nu...'. (ts)
+[@churros/app]:             <p class="typo-details details">
+[@churros/app]:               Opposée par <a href={route('/users/[uid]', opposedBy.uid)}>{opposedBy.fullName}</a>
+[@churros/app]:               {formatDateTimeSmart(opposedAt)}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/ScanResult.svelte:202:78
+[@churros/app]: Error: Property 'id' does not exist on type '{ readonly title: string; }'. (ts)
+[@churros/app]:             Cette réservation est pour l'évènement <a
+[@churros/app]:               href={refroute('/events/[id]', $data.registration.ticket.event.id)}
+[@churros/app]:               >{$data.registration.ticket.event.title}</a
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/ScanResult.svelte:213:34
+[@churros/app]: Error: Argument of type '"/users/[uid]"' is not assignable to parameter of type 'FunctionKeys<{ 'GET /[entity=entity_handle]': (entity: string, params?: {} | undefined) => string; 'GET /bookings/[code].pdf': (code: string | number, params?: {} | undefined) => string; 'GET /events/[id]/[slug]/[...path]': (params: { ...; }) => string; ... 127 more ...; '/signup/finish/[token]': (token: string | nu...'. (ts)
+[@churros/app]:             <p class="typo-details details">
+[@churros/app]:               par <a href={route('/users/[uid]', verifiedBy.uid)}>{verifiedBy.fullName}</a>
+[@churros/app]:               {formatDateTimeSmart(verifiedAt)}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/ScanResult.svelte:236:17
+[@churros/app]: Error: Argument of type 'QueryResult<MarkPaidAndVerifyBooking$result, MarkPaidAndVerifyBooking$input>' is not assignable to parameter of type 'MutationResult<"markBookingAsPaid", { readonly " $fragments": unknown; readonly __typename: unknown; }, never, { BookingScanResultBooking: {}; MutationErrors: {}; }, "non-exhaustive; don't match this">'.
+[@churros/app]:   Types of property 'data' are incompatible.
+[@churros/app]:     Type 'MarkPaidAndVerifyBooking$result | null' is not assignable to type 'Record<"markBookingAsPaid", OperationResult<{ readonly " $fragments": unknown; readonly __typename: unknown; }, never, { BookingScanResultBooking: {}; MutationErrors: {}; }, "non-exhaustive; don't match this">> | null | undefined'.
+[@churros/app]:       Type 'MarkPaidAndVerifyBooking$result' is not assignable to type 'Record<"markBookingAsPaid", OperationResult<{ readonly " $fragments": unknown; readonly __typename: unknown; }, never, { BookingScanResultBooking: {}; MutationErrors: {}; }, "non-exhaustive; don't match this">>'.
+[@churros/app]:         Types of property 'markBookingAsPaid' are incompatible.
+[@churros/app]:           Type '{ readonly " $fragments": { BookingScanResultBooking: {}; MutationErrors: {}; }; } & ({ readonly code: string; readonly beneficiaryUser: { readonly uid: string; readonly fullName: string; readonly " $fragments": { ...; }; } | null; ... 16 more ...; readonly __typename: "Registration"; } | { ...; })' is not assignable to type 'OperationResult<{ readonly " $fragments": unknown; readonly __typename: unknown; }, never, { BookingScanResultBooking: {}; MutationErrors: {}; }, "non-exhaustive; don't match this">'.
+[@churros/app]:             Type '{ readonly " $fragments": { BookingScanResultBooking: {}; MutationErrors: {}; }; } & { readonly code: string; readonly beneficiaryUser: { readonly uid: string; readonly fullName: string; readonly " $fragments": { ...; }; } | null; ... 16 more ...; readonly __typename: "Registration"; }' is not assignable to type 'OperationResult<{ readonly " $fragments": unknown; readonly __typename: unknown; }, never, { BookingScanResultBooking: {}; MutationErrors: {}; }, "non-exhaustive; don't match this">'.
+[@churros/app]:               Type '{ readonly " $fragments": { BookingScanResultBooking: {}; MutationErrors: {}; }; } & { readonly code: string; readonly beneficiaryUser: { readonly uid: string; readonly fullName: string; readonly " $fragments": { ...; }; } | null; ... 16 more ...; readonly __typename: "Registration"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly " $fragments": unknown; readonly __typename: unknown; }, { BookingScanResultBooking: {}; MutationErrors: {}; }, "non-exhaustive; don't match this">'.
+[@churros/app]:                 Property ''data'' is missing in type '{ readonly " $fragments": { BookingScanResultBooking: {}; MutationErrors: {}; }; } & { readonly code: string; readonly beneficiaryUser: { readonly uid: string; readonly fullName: string; readonly " $fragments": { ...; }; } | null; ... 16 more ...; readonly __typename: "Registration"; }' but required in type '{ data: { readonly " $fragments": unknown; readonly __typename: unknown; }; ' $fragments': { BookingScanResultBooking: {}; MutationErrors: {}; }; __typename: "non-exhaustive; don't match this"; }'. (ts)
+[@churros/app]:               toasts.mutation(
+[@churros/app]:                 await MarkAsPaidAndVerify.mutate({
+[@churros/app]:                   code: $data.registration.code,
+[@churros/app]:                 }),
+[@churros/app]:                 'markBookingAsPaid',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/ScanResult.svelte:237:25
+[@churros/app]: Error: '$data.registration' is possibly 'null'. (ts)
+[@churros/app]:                 await MarkAsPaidAndVerify.mutate({
+[@churros/app]:                   code: $data.registration.code,
+[@churros/app]:                 }),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/ScanResult.svelte:240:20
+[@churros/app]: Error: '$data.registration' is possibly 'null'. (ts)
+[@churros/app]:                 'markBookingAsPaid',
+[@churros/app]:                 `${$data.registration.code} marquée comme payée`,
+[@churros/app]:                 'Impossible de marquer la réservation comme payée',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/+page.svelte:127:21
+[@churros/app]: Error: Property 'registration' does not exist on type 'BookingScanResult'. (ts)
+[@churros/app]:       {:else}
+[@churros/app]:         {#if result.registration}
+[@churros/app]:           <ButtonSecondary href={refroute('/bookings/[code]', result.registration.code)}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/+page.svelte:128:70
+[@churros/app]: Error: Property 'registration' does not exist on type 'BookingScanResult'. (ts)
+[@churros/app]:         {#if result.registration}
+[@churros/app]:           <ButtonSecondary href={refroute('/bookings/[code]', result.registration.code)}
+[@churros/app]:             >Voir le billet</ButtonSecondary
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/events/[id]/scan/+page.svelte:134:13
+[@churros/app]: Error: Type 'undefined' is not assignable to type 'BookingScanResult'. (ts)
+[@churros/app]:           on:click={() => {
+[@churros/app]:             result = undefined;
+[@churros/app]:             manualVerificationInput = '';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answered/+page.svelte:27:11
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationMailFormAnswersSuccess': { data: true; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationMailFormAnswersSuccess": AliasType<{ data?: boolean | ... 1 more ... | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationMailFormAnswersSuccess': { data: true; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationMailFormAnswersSuccess": AliasType<{ data?: boolean | `@${string}` | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typ...'. (ts)
+[@churros/app]:           { formId: data.form.id },
+[@churros/app]:           {
+[@churros/app]:             '__typename': true,
+[@churros/app]:             '...on Error': { message: true },
+[@churros/app]:             '...on MutationMailFormAnswersSuccess': { data: true },
+[@churros/app]:           },
+[@churros/app]:         ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/answered/+page.svelte:35:59
+[@churros/app]: Error: Argument of type 'unknown' is not assignable to parameter of type 'string | undefined'. (ts)
+[@churros/app]:       if (mailFormAnswers.__typename === 'Error') {
+[@churros/app]:         toasts.error("Impossible d'envoyer les réponses", mailFormAnswers.message);
+[@churros/app]:         answersSent = false;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/[form]/edit/+page.svelte:122:22
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:     data={data.form}
+[@churros/app]:     availableGroups={data.me.boardMemberships.map((g) => g.group)}
+[@churros/app]:   >
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/forms/create/+page.svelte:11:38
+[@churros/app]: Error: 'data.me' is possibly 'null'. (ts)
+[@churros/app]:   <h1>Créer un formulaire</h1>
+[@churros/app]:   <FormBasicDetails availableGroups={data.me.boardMemberships.map((g) => g.group)}
+[@churros/app]:   ></FormBasicDetails>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:7:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import IconPlus from '~icons/mdi/plus';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { GroupType } from '$lib/zeus';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:13:36
+[@churros/app]: Error: Property 'studentAssociations' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; readonly groups: { readonly id: string; readonly uid: string; readonly name: string; readonly groupId: string; ... 5 more ...; readonly studentAssociation: { ...; }; }[]; }'. (ts)
+[@churros/app]: 
+[@churros/app]:   const studentAssociations = data.studentAssociations?.filter((sa) =>
+[@churros/app]:     $me?.major?.schools.flatMap((s) => s.uid).includes(sa?.school.uid ?? ''),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:13:65
+[@churros/app]: Error: Parameter 'sa' implicitly has an 'any' type. (ts)
+[@churros/app]: 
+[@churros/app]:   const studentAssociations = data.studentAssociations?.filter((sa) =>
+[@churros/app]:     $me?.major?.schools.flatMap((s) => s.uid).includes(sa?.school.uid ?? ''),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:14:34
+[@churros/app]: Error: Parameter 's' implicitly has an 'any' type. (ts)
+[@churros/app]:   const studentAssociations = data.studentAssociations?.filter((sa) =>
+[@churros/app]:     $me?.major?.schools.flatMap((s) => s.uid).includes(sa?.school.uid ?? ''),
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:16:68
+[@churros/app]: Error: Parameter 'sa' implicitly has an 'any' type. (ts)
+[@churros/app]:   );
+[@churros/app]:   const studentAssociationsIds = new Set(studentAssociations?.map((sa) => sa?.uid));
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:35:58
+[@churros/app]: Error: Argument of type 'ValueOf<{ readonly Association: "Association"; readonly Club: "Club"; readonly Group: "Group"; readonly Integration: "Integration"; readonly List: "List"; readonly StudentAssociationSection: "StudentAssociationSection"; }>' is not assignable to parameter of type 'GroupType'.
+[@churros/app]:   Type '"Group"' is not assignable to type 'GroupType'. (ts)
+[@churros/app]:       (g) =>
+[@churros/app]:         [GroupType.Association, GroupType.Club].includes(g.type) &&
+[@churros/app]:         studentAssociationsIds.has(g.studentAssociation?.uid),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:41:80
+[@churros/app]: Error: Argument of type 'ValueOf<{ readonly Association: "Association"; readonly Club: "Club"; readonly Group: "Group"; readonly Integration: "Integration"; readonly List: "List"; readonly StudentAssociationSection: "StudentAssociationSection"; }>' is not assignable to parameter of type 'GroupType'. (ts)
+[@churros/app]:   const allClubsAssos = createForest(
+[@churros/app]:     data.groups.filter((g) => [GroupType.Association, GroupType.Club].includes(g.type)),
+[@churros/app]:     { idKey: 'groupId' },
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:67:11
+[@churros/app]: Error: Property 'studentAssociations' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; readonly groups: { readonly id: string; readonly uid: string; readonly name: string; readonly groupId: string; ... 5 more ...; readonly studentAssociation: { ...; }; }[]; }'. (ts)
+[@churros/app]: 
+[@churros/app]: {#if data.studentAssociations}
+[@churros/app]:   <h2>Tes AEs</h2>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:70:57
+[@churros/app]: Error: Property 'name' does not exist on type 'unknown'. (ts)
+[@churros/app]:   <ul class="nobullet student-associations">
+[@churros/app]:     {#each assertNoUndefineds(studentAssociations) as { name, uid, id } (id)}
+[@churros/app]:       <li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:70:63
+[@churros/app]: Error: Property 'uid' does not exist on type 'unknown'. (ts)
+[@churros/app]:   <ul class="nobullet student-associations">
+[@churros/app]:     {#each assertNoUndefineds(studentAssociations) as { name, uid, id } (id)}
+[@churros/app]:       <li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/+page.svelte:70:68
+[@churros/app]: Error: Property 'id' does not exist on type 'unknown'. (ts)
+[@churros/app]:   <ul class="nobullet student-associations">
+[@churros/app]:     {#each assertNoUndefineds(studentAssociations) as { name, uid, id } (id)}
+[@churros/app]:       <li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:6:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import { isOnClubBoard } from '$lib/permissions';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import type { PageData } from './$types';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:33:70
+[@churros/app]: Error: 'group' is possibly 'null'. (ts)
+[@churros/app]: <div class="content">
+[@churros/app]:   <h1><ButtonBack go={currentTab === '' ? '..' : '../..'} /> Éditer {group.name}</h1>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:35:27
+[@churros/app]: Error: Property 'canEditGroup' does not exist on type 'PageData'.
+[@churros/app]:   Property 'canEditGroup' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; readonly group: { readonly uid: string; readonly parentId: string | null; readonly groupId: string; ... 10 more ...; readonly lydiaAccounts: { ...; }[]; }; }'. (ts)
+[@churros/app]: 
+[@churros/app]:   {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+[@churros/app]:     <NavigationTabs
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:35:72
+[@churros/app]: Error: Binding element 'uid' implicitly has an 'any' type. (ts)
+[@churros/app]: 
+[@churros/app]:   {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+[@churros/app]:     <NavigationTabs
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:35:79
+[@churros/app]: Error: Binding element 'canEditMembers' implicitly has an 'any' type. (ts)
+[@churros/app]: 
+[@churros/app]:   {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+[@churros/app]:     <NavigationTabs
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:35:118
+[@churros/app]: Error: 'group' is possibly 'null'. (ts)
+[@churros/app]: 
+[@churros/app]:   {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+[@churros/app]:     <NavigationTabs
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:35:146
+[@churros/app]: Error: Argument of type '{ [x: string]: any; }' is not assignable to parameter of type '{ president: boolean; secretary: boolean; vicePresident: boolean; treasurer: boolean; }'.
+[@churros/app]:   Type '{ [x: string]: any; }' is missing the following properties from type '{ president: boolean; secretary: boolean; vicePresident: boolean; treasurer: boolean; }': president, secretary, vicePresident, treasurer (ts)
+[@churros/app]: 
+[@churros/app]:   {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+[@churros/app]:     <NavigationTabs
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:38:45
+[@churros/app]: Error: 'data.group' is possibly 'null'. (ts)
+[@churros/app]:       tabs={['', 'members', 'pages', 'bank-accounts']
+[@churros/app]:         .filter((tab) => (tab === 'pages' ? data.group.canListPages : true))
+[@churros/app]:         .map((tab) => ({
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:38:56
+[@churros/app]: Error: Property 'canListPages' does not exist on type '{ readonly uid: string; readonly parentId: string | null; readonly groupId: string; readonly type: ValueOf<{ readonly Association: "Association"; readonly Club: "Club"; readonly Group: "Group"; readonly Integration: "Integration"; readonly List: "List"; readonly StudentAssociationSection: "StudentAssociationSection"...'. (ts)
+[@churros/app]:       tabs={['', 'members', 'pages', 'bank-accounts']
+[@churros/app]:         .filter((tab) => (tab === 'pages' ? data.group.canListPages : true))
+[@churros/app]:         .map((tab) => ({
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+layout.svelte:41:28
+[@churros/app]: Error: 'group' is possibly 'null'. (ts)
+[@churros/app]:           name: TABS[askeyofTABS(tab)],
+[@churros/app]:           href: `/groups/${group.uid}/edit/${tab}`,
+[@churros/app]:           active: currentTab === tab,
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+page.svelte:13:42
+[@churros/app]: Error: Type '{ readonly uid: string; readonly parentId: string | null; readonly groupId: string; readonly type: ValueOf<{ readonly Association: "Association"; readonly Club: "Club"; readonly Group: "Group"; readonly Integration: "Integration"; readonly List: "List"; readonly StudentAssociationSection: "StudentAssociationSection"...' is not assignable to type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; } & ({ uid: string; } | { slug: string; })'.
+[@churros/app]:   Type 'null' is not assignable to type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; } & ({ uid: string; } | { slug: string; })'. (ts)
+[@churros/app]:   <div class="logos">
+[@churros/app]:     <FormPicture objectName="Group" bind:object={group} />
+[@churros/app]:     <FormPicture objectName="Group" bind:object={group} dark />
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+page.svelte:14:42
+[@churros/app]: Error: Type '{ readonly uid: string; readonly parentId: string | null; readonly groupId: string; readonly type: ValueOf<{ readonly Association: "Association"; readonly Club: "Club"; readonly Group: "Group"; readonly Integration: "Integration"; readonly List: "List"; readonly StudentAssociationSection: "StudentAssociationSection"...' is not assignable to type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; } & ({ uid: string; } | { slug: string; })'. (ts)
+[@churros/app]:     <FormPicture objectName="Group" bind:object={group} />
+[@churros/app]:     <FormPicture objectName="Group" bind:object={group} dark />
+[@churros/app]:   </div>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/+page.svelte:16:19
+[@churros/app]: Error: Object literal may only specify known properties, and 'data' does not exist in type '{ creatingSubgroup?: boolean | undefined; group: FormGroup; }'. (ts)
+[@churros/app]:   </div>
+[@churros/app]:   <FormGroup bind:data />
+[@churros/app]: </div>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/bank-accounts/+page.svelte:12:16
+[@churros/app]: Error: Property 'lydiaAccountsOfGroup' does not exist on type 'PageData'. (ts)
+[@churros/app]: 
+[@churros/app]:   $: ({ group, lydiaAccountsOfGroup } = data);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/bank-accounts/+page.svelte:36:39
+[@churros/app]: Error: Parameter 'lydiaAccount' implicitly has an 'any' type. (ts)
+[@churros/app]:           // If the lydia account is already linked to the group, don't show it
+[@churros/app]:           !lydiaAccountsOfGroup.some((lydiaAccount) => lydiaAccount.name === business.name),
+[@churros/app]:       );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/bank-accounts/+page.svelte:54:23
+[@churros/app]: Error: 'group' is possibly 'null'. (ts)
+[@churros/app]:             vendorToken: api_token,
+[@churros/app]:             groupUid: group.uid,
+[@churros/app]:           },
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:60:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on QueryGroupMembersCsvSuccess': { data: true; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on QueryGroupMembersCsvSuccess": AliasType<{ data?: boolean | `@${string}` | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on QueryGroupMembersCsvSuccess': { data: true; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on QueryGroupMembersCsvSuccess": AliasType<{ data?: boolean | `@${string}` | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typena...'. (ts)
+[@churros/app]:         { groupUid: $page.params.uid },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': { message: true },
+[@churros/app]:           '...on QueryGroupMembersCsvSuccess': { data: true },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:69:51
+[@churros/app]: Error: Argument of type 'unknown' is not assignable to parameter of type 'string | undefined'. (ts)
+[@churros/app]:     if (groupMembersCsv.__typename === 'Error') {
+[@churros/app]:       toasts.error("Erreur lors de l'export CSV", groupMembersCsv.message);
+[@churros/app]:       return;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:80:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationAddGroupMemberSuccess': { data: { memberId: true; createdAt: true; title: true; president: true; treasurer: true; secretary: true; ... 5 more ...; member: { ...; }; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAddGroupMemberSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __ty...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationAddGroupMemberSuccess': { data: { memberId: true; createdAt: true; title: true; president: true; treasurer: true; secretary: true; ... 5 more ...; member: { ...; }; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAddGroupMemberSuccess": AliasType<{ data?: AliasType<{ ...; }> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typenam...'. (ts)
+[@churros/app]:         { groupUid: group.uid, uid: newMemberUid, title: newMemberTitle },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': {
+[@churros/app]:             message: true,
+[@churros/app]:           },
+[@churros/app]:           '...on MutationAddGroupMemberSuccess': {
+[@churros/app]:             data: {
+[@churros/app]:               memberId: true,
+[@churros/app]:               createdAt: true,
+[@churros/app]:               title: true,
+[@churros/app]:               president: true,
+[@churros/app]:               treasurer: true,
+[@churros/app]:               secretary: true,
+[@churros/app]:               vicePresident: true,
+[@churros/app]:               canEditMembers: true,
+[@churros/app]:               canEditArticles: true,
+[@churros/app]:               canScanEvents: true,
+[@churros/app]:               isDeveloper: true,
+[@churros/app]:               member: {
+[@churros/app]:                 uid: true,
+[@churros/app]:                 firstName: true,
+[@churros/app]:                 lastName: true,
+[@churros/app]:                 pictureFile: true,
+[@churros/app]:                 fullName: true,
+[@churros/app]:                 yearTier: true,
+[@churros/app]:                 contributesTo: {
+[@churros/app]:                   uid: true,
+[@churros/app]:                 },
+[@churros/app]:               },
+[@churros/app]:             },
+[@churros/app]:           },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:115:7
+[@churros/app]: Error: Type 'unknown' is not assignable to type 'string'. (ts)
+[@churros/app]:     if (addGroupMember.__typename === 'Error') {
+[@churros/app]:       serverError = addGroupMember.message;
+[@churros/app]:     } else {
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:120:7
+[@churros/app]: Error: 'addGroupMember.data' is of type 'unknown'. (ts)
+[@churros/app]:       // XXX for some reason the date is returned as a datestring
+[@churros/app]:       addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
+[@churros/app]:       data.group.members = [...data.group.members, addGroupMember.data];
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:120:48
+[@churros/app]: Error: 'addGroupMember.data' is of type 'unknown'. (ts)
+[@churros/app]:       // XXX for some reason the date is returned as a datestring
+[@churros/app]:       addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
+[@churros/app]:       data.group.members = [...data.group.members, addGroupMember.data];
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:121:29
+[@churros/app]: Error: Type 'unknown' is not assignable to type '{ createdAt: Date; title: string; president: boolean; canEditArticles: boolean; canEditMembers: boolean; canScanEvents: boolean; isDeveloper: boolean; member: { uid: string; yearTier: number; ... 4 more ...; lastName: string; }; memberId: string; secretary: boolean; treasurer: boolean; vicePresident: boolean; }'. (ts)
+[@churros/app]:       addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
+[@churros/app]:       data.group.members = [...data.group.members, addGroupMember.data];
+[@churros/app]:     }
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:121:52
+[@churros/app]: Error: Type 'unknown' is not assignable to type '{ createdAt: Date; title: string; president: boolean; canEditArticles: boolean; canEditMembers: boolean; canScanEvents: boolean; isDeveloper: boolean; member: { uid: string; yearTier: number; ... 4 more ...; lastName: string; }; memberId: string; secretary: boolean; treasurer: boolean; vicePresident: boolean; }'. (ts)
+[@churros/app]:       addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
+[@churros/app]:       data.group.members = [...data.group.members, addGroupMember.data];
+[@churros/app]:     }
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:247:79
+[@churros/app]: Error: Argument of type '{}' is not assignable to parameter of type 'string | number | boolean'. (ts)
+[@churros/app]:         icon={IconDownload}
+[@churros/app]:         href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
+[@churros/app]:         download={`membres-${$page.params.uid}-${format(new Date(), "yyyy-MM-dd-HH'h'mm")}.csv`}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/+page.svelte:280:50
+[@churros/app]: Error: 'member.contributesTo' is possibly 'undefined'. (ts)
+[@churros/app]:           {title}
+[@churros/app]:           {#if data.group.studentAssociation && !member.contributesTo.some((c) => c.uid === data.group.studentAssociation?.uid)}
+[@churros/app]:             <strong class="not-contributor">
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/bulk/+page@(app).svelte:90:11
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationAddGroupMemberSuccess': { data: { __typename: true; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAddGroupMemberSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __ty...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationAddGroupMemberSuccess': { data: { __typename: true; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAddGroupMemberSuccess": AliasType<{ data?: AliasType<{ ...; }> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typenam...'. (ts)
+[@churros/app]:           },
+[@churros/app]:           {
+[@churros/app]:             '__typename': true,
+[@churros/app]:             '...on Error': { message: true },
+[@churros/app]:             '...on MutationAddGroupMemberSuccess': { data: { __typename: true } },
+[@churros/app]:           },
+[@churros/app]:         ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/members/bulk/+page@(app).svelte:97:66
+[@churros/app]: Error: No overload matches this call.
+[@churros/app]:   Overload 1 of 2, '(message?: string | undefined, options?: ErrorOptions | undefined): Error', gave the following error.
+[@churros/app]:     Argument of type 'unknown' is not assignable to parameter of type 'string | undefined'.
+[@churros/app]:   Overload 2 of 2, '(message?: string | undefined): Error', gave the following error.
+[@churros/app]:     Argument of type 'unknown' is not assignable to parameter of type 'string | undefined'. (ts)
+[@churros/app]:       });
+[@churros/app]:       if (addGroupMember.__typename === 'Error') throw new Error(addGroupMember.message);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/edit/pages/[...page]/+page.svelte:53:11
+[@churros/app]: Error: Argument of type 'QueryResult<UpdateGroupPage$result, UpdateGroupPage$input>' is not assignable to parameter of type 'MutationResult<"upsertPage", { readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:   Types of property 'data' are incompatible.
+[@churros/app]:     Type 'UpdateGroupPage$result | null' is not assignable to type 'Record<"upsertPage", OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">> | null | undefined'.
+[@churros/app]:       Type 'UpdateGroupPage$result' is not assignable to type 'Record<"upsertPage", OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">>'.
+[@churros/app]:         Types of property 'upsertPage' are incompatible.
+[@churros/app]:           Type '{ readonly message: string; readonly __typename: "Error"; } | { readonly fieldErrors: { readonly path: string[]; readonly message: string; }[]; readonly __typename: "ZodError"; } | { readonly data: { ...; }; readonly __typename: "MutationUpsertPageSuccess"; }' is not assignable to type 'OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:             Type '{ readonly data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; readonly __typename: "MutationUpsertPageSuccess"; }' is not assignable to type 'OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; readonly __typename: "MutationUpsertPageSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly bodyHtml: string; readonly body: string; readonly title: string; }, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:                 Property '' $fragments'' is missing in type '{ readonly data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; readonly __typename: "MutationUpsertPageSuccess"; }' but required in type '{ data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; ' $fragments': unknown; __typename: "MutationUpsertPageSuccess"; }'. (ts)
+[@churros/app]:         toasts.mutation(
+[@churros/app]:           result,
+[@churros/app]:           'upsertPage',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/members/+page.svelte:7:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { byMemberGroupTitleImportance } from '$lib/sorting';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/members/+page.svelte:19:51
+[@churros/app]: Error: Binding element 'uid' implicitly has an 'any' type. (ts)
+[@churros/app]:   );
+[@churros/app]:   $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:13:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { toasts } from '$lib/toasts';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:58:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUpsertShopPaymentSuccess': { data: { id: true; paid: true; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUpsertShopPaymentSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; _...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUpsertShopPaymentSuccess': { data: { id: true; paid: true; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUpsertShopPaymentSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typename?...'. (ts)
+[@churros/app]:         },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': {
+[@churros/app]:             message: true,
+[@churros/app]:           },
+[@churros/app]:           '...on MutationUpsertShopPaymentSuccess': {
+[@churros/app]:             data: {
+[@churros/app]:               id: true,
+[@churros/app]:               paid: true,
+[@churros/app]:             },
+[@churros/app]:           },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:77:30
+[@churros/app]: Error: Argument of type 'unknown' is not assignable to parameter of type 'string | undefined'. (ts)
+[@churros/app]: 
+[@churros/app]:       toasts.error('Erreur', serverError, { lifetime: 5000, showLifetime: true });
+[@churros/app]:       return;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:86:25
+[@churros/app]: Error: 'upsertShopPayment.data' is of type 'unknown'. (ts)
+[@churros/app]:       if (method === PaymentMethod.Lydia) {
+[@churros/app]:         shopPaymentId = upsertShopPayment.data.id;
+[@churros/app]:         paying = true;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:92:21
+[@churros/app]: Error: 'upsertShopPayment.data' is of type 'unknown'. (ts)
+[@churros/app]:             new URLSearchParams({
+[@churros/app]:               done: upsertShopPayment.data.id,
+[@churros/app]:               ...(upsertShopPayment.data.paid ? { paid: '' } : {}),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:93:19
+[@churros/app]: Error: 'upsertShopPayment.data' is of type 'unknown'. (ts)
+[@churros/app]:               done: upsertShopPayment.data.id,
+[@churros/app]:               ...(upsertShopPayment.data.paid ? { paid: '' } : {}),
+[@churros/app]:             }).toString(),
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/[id]/+page.svelte:200:19
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationPaidShopPaymentSuccess': { data: { __typename: true; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationPaidShopPaymentSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __t...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationPaidShopPaymentSuccess': { data: { __typename: true; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationPaidShopPaymentSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typename?: ...'. (ts)
+[@churros/app]:                   },
+[@churros/app]:                   {
+[@churros/app]:                     '__typename': true,
+[@churros/app]:                     '...on Error': { message: true },
+[@churros/app]:                     '...on MutationPaidShopPaymentSuccess': {
+[@churros/app]:                       data: {
+[@churros/app]:                         __typename: true,
+[@churros/app]:                       },
+[@churros/app]:                     },
+[@churros/app]:                   },
+[@churros/app]:                 ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/sales/+page.svelte:14:63
+[@churros/app]: Error: Property 'me' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; group: { uid: string; boardMembers: { member: { uid: string; }; }[]; shopItems: { nodes: { uid: string; id: string; ... 6 more ...; stockLeft: number; }[]; }; }; }'. (ts)
+[@churros/app]:   const isOnClubBoard = Boolean(
+[@churros/app]:     data.group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/shop/sales/+page.svelte:14:79
+[@churros/app]: Error: Property 'me' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; group: { uid: string; boardMembers: { member: { uid: string; }; }[]; shopItems: { nodes: { uid: string; id: string; ... 6 more ...; stockLeft: number; }[]; }; }; }'. (ts)
+[@churros/app]:   const isOnClubBoard = Boolean(
+[@churros/app]:     data.group.boardMembers.some((s) => s.member.uid === data.me?.uid || data.me?.admin),
+[@churros/app]:   );
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/groups/[uid]/subgroups/create/+page.svelte:12:36
+[@churros/app]: Error: Object literal may only specify known properties, and 'data' does not exist in type '{ creatingSubgroup?: boolean | undefined; group: FormGroup; }'. (ts)
+[@churros/app]: 
+[@churros/app]:   <FormGroup creatingSubgroup bind:data />
+[@churros/app]: </div>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/+page.svelte:11:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+[@churros/app]:   import { me, saveSessionToken } from '$lib/session';
+[@churros/app]:   import { onMount } from 'svelte';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/+page.svelte:48:38
+[@churros/app]: Error: Argument of type 'QueryResult<Login$result, Login$input>' is not assignable to parameter of type 'MutationResult<"login", { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, CaveatKey, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">'.
+[@churros/app]:   Types of property 'data' are incompatible.
+[@churros/app]:     Type 'Login$result | null' is not assignable to type 'Record<"login", OperationResult<{ readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, CaveatKey, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">> | null | undefined'.
+[@churros/app]:       Type 'Login$result' is not assignable to type 'Record<"login", OperationResult<{ readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, CaveatKey, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">>'.
+[@churros/app]:         Types of property 'login' are incompatible.
+[@churros/app]:           Type '{ readonly message: string; readonly __typename: "Error"; } | { readonly data: { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }; readonly __typename: "MutationLoginSuccess"; } | { ...; } | { ...; }' is not assignable to type 'OperationResult<{ readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, CaveatKey, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">'.
+[@churros/app]:             Type '{ readonly data: { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }; readonly __typename: "MutationLoginSuccess"; }' is not assignable to type 'OperationResult<{ readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, CaveatKey, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">'.
+[@churros/app]:               Type '{ readonly data: { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }; readonly __typename: "MutationLoginSuccess"; }' is not assignable to type 'SuccessWithCaveats<CaveatKey, { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">'.
+[@churros/app]:                 Property '' $fragments'' is missing in type '{ readonly data: { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }; readonly __typename: "MutationLoginSuccess"; }' but required in type '{ data: { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }; ' $fragments': unknown; __typename: "MutationLoginSuccess" | "non-exhaustive; don't match this"; }'. (ts)
+[@churros/app]: 
+[@churros/app]:       if (mutationSucceeded('login', result)) {
+[@churros/app]:         cache.reset();
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/+page.svelte:69:54
+[@churros/app]: Error: Argument of type 'QueryResult<Login$result, Login$input>' is not assignable to parameter of type 'MutationResult<"login", { readonly token: string; readonly expiresAt: Date | null; readonly " $fragments": { SessionToken: {}; }; }, CaveatKey, unknown, "MutationLoginSuccess" | "non-exhaustive; don't match this">'. (ts)
+[@churros/app]: 
+[@churros/app]:       errorMessages = mutationErrorMessages('login', result);
+[@churros/app]:     } finally {
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/forgotten/+page.svelte:20:11
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationCreatePasswordResetSuccess': { data: true; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationCreatePasswordResetSuccess": AliasType<{ data?: boolean | ... 1 more ... | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": Alias...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationCreatePasswordResetSuccess': { data: true; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationCreatePasswordResetSuccess": AliasType<{ data?: boolean | ... 1 more ... | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>;...'. (js)
+[@churros/app]:           },
+[@churros/app]:           {
+[@churros/app]:             '__typename': true,
+[@churros/app]:             '...on Error': {
+[@churros/app]:               message: true,
+[@churros/app]:             },
+[@churros/app]:             '...on MutationCreatePasswordResetSuccess': {
+[@churros/app]:               data: true,
+[@churros/app]:             },
+[@churros/app]:           },
+[@churros/app]:         ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/forgotten/+page.svelte:32:9
+[@churros/app]: Error: Type 'unknown' is not assignable to type 'string'. (js)
+[@churros/app]:       if (createPasswordReset.__typename === 'Error') {
+[@churros/app]:         serverError = createPasswordReset.message;
+[@churros/app]:         sent = false;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/reset/[token]/+page.svelte:22:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUsePasswordResetSuccess': { data: true; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUsePasswordResetSuccess": AliasType<{ data?: boolean | ... 1 more ... | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasTyp...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUsePasswordResetSuccess': { data: true; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUsePasswordResetSuccess": AliasType<{ data?: boolean | `@${string}` | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __ty...'. (ts)
+[@churros/app]:         },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': {
+[@churros/app]:             message: true,
+[@churros/app]:           },
+[@churros/app]:           '...on MutationUsePasswordResetSuccess': {
+[@churros/app]:             data: true,
+[@churros/app]:           },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/login/reset/[token]/+page.svelte:36:7
+[@churros/app]: Error: Type 'unknown' is not assignable to type 'string'. (ts)
+[@churros/app]:     if (usePasswordReset.__typename === 'Error') {
+[@churros/app]:       serverError = usePasswordReset.message;
+[@churros/app]:       return;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[[group]]/create/+page.svelte:15:15
+[@churros/app]: Error: 'me' is possibly 'null'. (ts)
+[@churros/app]:     <FormArticle
+[@churros/app]:       groups={me.canCreatePostsOn}
+[@churros/app]:       article={null}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[[group]]/create/+page.svelte:17:22
+[@churros/app]: Error: 'me' is possibly 'null'. (ts)
+[@churros/app]:       article={null}
+[@churros/app]:       selectedGroup={me.canCreatePostsOn.find((g) => g.uid === $page.params.group) ?? null}
+[@churros/app]:     />
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[id]/edit/+page.svelte:13:51
+[@churros/app]: Error: Type '{ readonly __typename: string | null; readonly pictureAltText: string; readonly lightURL: string; readonly darkURL: string; readonly hasSeparateDarkPicture: boolean; readonly id: string; readonly slug: string; readonly group: { ...; }; readonly " $fragments": { ...; }; } | { ...; }' is not assignable to type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; } & ({ uid: string; } | { slug: string; })'.
+[@churros/app]:   Type '{ readonly __typename: string | null; readonly pictureAltText: string; readonly lightURL: string; readonly darkURL: string; readonly hasSeparateDarkPicture: boolean; readonly id: string; readonly slug: string; readonly group: { ...; }; readonly " $fragments": { ...; }; }' is not assignable to type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; } & ({ uid: string; } | { slug: string; })'.
+[@churros/app]:     Type '{ readonly __typename: string | null; readonly pictureAltText: string; readonly lightURL: string; readonly darkURL: string; readonly hasSeparateDarkPicture: boolean; readonly id: string; readonly slug: string; readonly group: { ...; }; readonly " $fragments": { ...; }; }' is not assignable to type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; } & { slug: string; }'.
+[@churros/app]:       Property 'pictureFile' is missing in type '{ readonly __typename: string | null; readonly pictureAltText: string; readonly lightURL: string; readonly darkURL: string; readonly hasSeparateDarkPicture: boolean; readonly id: string; readonly slug: string; readonly group: { ...; }; readonly " $fragments": { ...; }; }' but required in type '{ pictureFile: string; id: string; pictureFileDark?: string | undefined; }'. (ts)
+[@churros/app]:   <MaybeError result={$PagePostEdit} let:data={{ article, me }}>
+[@churros/app]:     <FormPicture rectangular objectName="Article" object={article} />
+[@churros/app]:     <FormArticle
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[id]/edit/+page.svelte:16:7
+[@churros/app]: Error: Type '{ readonly id: string; readonly uid: string; readonly name: string; readonly pictureFile: string; readonly pictureFileDark: string; readonly children: { readonly name: string; readonly studentAssociation: { ...; }; }[]; readonly studentAssociation: { ...; }; readonly events: { ...; }; readonly " $fragments": { ...; ...' is not assignable to type 'FormArticleGroups$data[]'.
+[@churros/app]:   Type '{ readonly id: unique symbol; readonly uid: unique symbol; readonly name: unique symbol; readonly pictureFile: unique symbol; readonly pictureFileDark: unique symbol; readonly __typename: unique symbol; readonly children: { ...; }[]; readonly studentAssociation: { ...; }; readonly events: { ...; }; readonly " $fragm...' is not assignable to type 'FormArticleGroups$data[]'.
+[@churros/app]:     Type '{ readonly id: unique symbol; readonly uid: unique symbol; readonly name: unique symbol; readonly pictureFile: unique symbol; readonly pictureFileDark: unique symbol; readonly __typename: unique symbol; readonly children: { ...; }[]; readonly studentAssociation: { ...; }; readonly events: { ...; }; readonly " $fragm...' is not assignable to type 'FormArticleGroups$data'.
+[@churros/app]:       Types of property 'id' are incompatible.
+[@churros/app]:         Type 'typeof import("/home/uwun/projects/churros/packages/app/$houdini/runtime/lib/types").PendingValue' is not assignable to type 'string'. (ts)
+[@churros/app]:       {article}
+[@churros/app]:       groups={me.canCreatePostsOn}
+[@churros/app]:       selectedGroup={me.canCreatePostsOn.find((g) => g.uid === article.group.uid)}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[id]/edit/+page.svelte:16:15
+[@churros/app]: Error: 'me' is possibly 'null'. (ts)
+[@churros/app]:       {article}
+[@churros/app]:       groups={me.canCreatePostsOn}
+[@churros/app]:       selectedGroup={me.canCreatePostsOn.find((g) => g.uid === article.group.uid)}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[id]/edit/+page.svelte:17:7
+[@churros/app]: Error: Type '{ readonly id: string; readonly uid: string; readonly name: string; readonly pictureFile: string; readonly pictureFileDark: string; readonly children: { readonly name: string; readonly studentAssociation: { ...; }; }[]; readonly studentAssociation: { ...; }; readonly events: { ...; }; readonly " $fragments": { ...; ...' is not assignable to type 'FormArticleGroups$data | null | undefined'.
+[@churros/app]:   Type '{ readonly id: unique symbol; readonly uid: unique symbol; readonly name: unique symbol; readonly pictureFile: unique symbol; readonly pictureFileDark: unique symbol; readonly __typename: unique symbol; readonly children: { ...; }[]; readonly studentAssociation: { ...; }; readonly events: { ...; }; readonly " $fragm...' is not assignable to type 'FormArticleGroups$data'. (ts)
+[@churros/app]:       groups={me.canCreatePostsOn}
+[@churros/app]:       selectedGroup={me.canCreatePostsOn.find((g) => g.uid === article.group.uid)}
+[@churros/app]:     />
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/posts/[id]/edit/+page.svelte:17:22
+[@churros/app]: Error: 'me' is possibly 'null'. (ts)
+[@churros/app]:       groups={me.canCreatePostsOn}
+[@churros/app]:       selectedGroup={me.canCreatePostsOn.find((g) => g.uid === article.group.uid)}
+[@churros/app]:     />
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/quick-signups/create/+page.svelte:35:51
+[@churros/app]: Error: Property 'token' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; me?: { major?: { schools: { uid: string; id: string; name: string; pictureFile: string; }[]; } | undefined; } | undefined; }'. (ts)
+[@churros/app]:     <input type="hidden" name="schoolUid" value={school?.uid} />
+[@churros/app]:     <input type="hidden" name="token" value={data.token} />
+[@churros/app]:     <section class="submit">
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/quick-signups/manage/+page.svelte:36:34
+[@churros/app]: Error: Property 'nodes' does not exist on type 'never[] | { readonly nodes: { readonly code: string; readonly validUntil: Date; readonly expired: boolean; readonly school: { readonly uid: string; readonly name: string; readonly pictureURL: string; readonly color: string; }; }[]; }'.
+[@churros/app]:   Property 'nodes' does not exist on type 'never[]'. (ts)
+[@churros/app]:       <tbody>
+[@churros/app]:         {#each data.quickSignups.nodes ?? [] as { code, validUntil, school } (code)}
+[@churros/app]:           <tr id={code} class:highlighted={$page.url.hash === `#${code}`}>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/quick-signups/manage/+page.svelte:50:37
+[@churros/app]: Error: Property 'nodes' does not exist on type 'never[] | { readonly nodes: { readonly code: string; readonly validUntil: Date; readonly expired: boolean; readonly school: { readonly uid: string; readonly name: string; readonly pictureURL: string; readonly color: string; }; }[]; }'.
+[@churros/app]:   Property 'nodes' does not exist on type 'never[]'. (ts)
+[@churros/app]:                   toasts.success("Lien d'inscription rapide supprimé");
+[@churros/app]:                   data.quickSignups.nodes = data.quickSignups.nodes.filter((n) => n.code !== code);
+[@churros/app]:                 }}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/quick-signups/manage/+page.svelte:50:63
+[@churros/app]: Error: Property 'nodes' does not exist on type 'never[] | { readonly nodes: { readonly code: string; readonly validUntil: Date; readonly expired: boolean; readonly school: { readonly uid: string; readonly name: string; readonly pictureURL: string; readonly color: string; }; }[]; }'.
+[@churros/app]:   Property 'nodes' does not exist on type 'never[]'. (ts)
+[@churros/app]:                   toasts.success("Lien d'inscription rapide supprimé");
+[@churros/app]:                   data.quickSignups.nodes = data.quickSignups.nodes.filter((n) => n.code !== code);
+[@churros/app]:                 }}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/quick-signups/manage/+page.svelte:50:77
+[@churros/app]: Error: Parameter 'n' implicitly has an 'any' type. (ts)
+[@churros/app]:                   toasts.success("Lien d'inscription rapide supprimé");
+[@churros/app]:                   data.quickSignups.nodes = data.quickSignups.nodes.filter((n) => n.code !== code);
+[@churros/app]:                 }}
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/signups/+page.svelte:35:13
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationAcceptRegistrationSuccess': { data: { email: true; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAcceptRegistrationSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; ...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationAcceptRegistrationSuccess': { data: { email: true; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationAcceptRegistrationSuccess": AliasType<{ data?: AliasType<...> | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; __typename...'. (ts)
+[@churros/app]:             { email },
+[@churros/app]:             {
+[@churros/app]:               '__typename': true,
+[@churros/app]:               '...on Error': { message: true },
+[@churros/app]:               '...on MutationAcceptRegistrationSuccess': {
+[@churros/app]:                 data: {
+[@churros/app]:                   email: true,
+[@churros/app]:                 },
+[@churros/app]:               },
+[@churros/app]:             },
+[@churros/app]:           ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/signups/+page.svelte:48:73
+[@churros/app]: Error: Argument of type 'unknown' is not assignable to parameter of type 'string | undefined'. (ts)
+[@churros/app]:         if (result.__typename === 'Error')
+[@churros/app]:           toasts.error("Erreur lors de l'acceptation de l'inscription", result.message);
+[@churros/app]:         else ok = true;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/student-associations/[uid]/edit/pages/[...page]/+page.svelte:58:11
+[@churros/app]: Error: Argument of type 'QueryResult<UpdateStudentAssociationPage$result, UpdateStudentAssociationPage$input>' is not assignable to parameter of type 'MutationResult<"upsertPage", { readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:   Types of property 'data' are incompatible.
+[@churros/app]:     Type 'UpdateStudentAssociationPage$result | null' is not assignable to type 'Record<"upsertPage", OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">> | null | undefined'.
+[@churros/app]:       Type 'UpdateStudentAssociationPage$result' is not assignable to type 'Record<"upsertPage", OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">>'.
+[@churros/app]:         Types of property 'upsertPage' are incompatible.
+[@churros/app]:           Type '{ readonly message: string; readonly __typename: "Error"; } | { readonly fieldErrors: { readonly path: string[]; readonly message: string; }[]; readonly __typename: "ZodError"; } | { readonly data: { ...; }; readonly __typename: "MutationUpsertPageSuccess"; }' is not assignable to type 'OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:             Type '{ readonly data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; readonly __typename: "MutationUpsertPageSuccess"; }' is not assignable to type 'OperationResult<{ readonly bodyHtml: string; readonly body: string; readonly title: string; }, never, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:               Type '{ readonly data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; readonly __typename: "MutationUpsertPageSuccess"; }' is not assignable to type 'SuccessWithCaveats<never, { readonly bodyHtml: string; readonly body: string; readonly title: string; }, unknown, "MutationUpsertPageSuccess">'.
+[@churros/app]:                 Property '' $fragments'' is missing in type '{ readonly data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; readonly __typename: "MutationUpsertPageSuccess"; }' but required in type '{ data: { readonly bodyHtml: string; readonly body: string; readonly title: string; }; ' $fragments': unknown; __typename: "MutationUpsertPageSuccess"; }'. (ts)
+[@churros/app]:         toasts.mutation(
+[@churros/app]:           result,
+[@churros/app]:           'upsertPage',
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:19:12
+[@churros/app]: Error: Module '"$lib/session"' has no exported member 'me'. (ts)
+[@churros/app]:   import { formatDate, formatDateTime } from '$lib/dates';
+[@churros/app]:   import { me } from '$lib/session';
+[@churros/app]:   import { theme } from '$lib/theme';
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:43:7
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:       await $zeus.mutate({ deleteToken: [{ id }, true] });
+[@churros/app]:       data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);
+[@churros/app]:     }
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:43:29
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:       await $zeus.mutate({ deleteToken: [{ id }, true] });
+[@churros/app]:       data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);
+[@churros/app]:     }
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:54:17
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:     await $zeus.mutate({ renameSession: [{ id, name }, true] });
+[@churros/app]:     const idx = data.me.credentials.findIndex((credential) => credential.id === id);
+[@churros/app]:     data.me.credentials[idx].name = name;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:55:5
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:     const idx = data.me.credentials.findIndex((credential) => credential.id === id);
+[@churros/app]:     data.me.credentials[idx].name = name;
+[@churros/app]:     editingSession = undefined;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:67:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUpsertGodparentRequestSuccess': { data: { id: true; createdAt: true; godparent: { uid: true; firstName: true; lastName: true; fullName: true; pictureFile: true; }; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUpsertGodparentRequestSuccess": AliasType<...>; "...on ZodError": AliasType<...>; __typename?: boolean | ... 1 more ... | undefined; }>'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUpsertGodparentRequestSuccess': { data: { id: true; createdAt: true; godparent: { uid: true; firstName: true; lastName: true; fullName: true; pictureFile: true; }; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUpsertGodparentRequestSuccess": AliasType<{ ...; }>; "...on ZodError": AliasType<...>; __typename?: boolean | ... 1 more ... | undefined; }'. (ts)
+[@churros/app]:         { godparentUid, godchildUid: data.user.uid },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': { message: true },
+[@churros/app]:           '...on MutationUpsertGodparentRequestSuccess': {
+[@churros/app]:             data: {
+[@churros/app]:               id: true,
+[@churros/app]:               createdAt: true,
+[@churros/app]:               godparent: {
+[@churros/app]:                 uid: true,
+[@churros/app]:                 firstName: true,
+[@churros/app]:                 lastName: true,
+[@churros/app]:                 fullName: true,
+[@churros/app]:                 pictureFile: true,
+[@churros/app]:               },
+[@churros/app]:             },
+[@churros/app]:           },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:90:7
+[@churros/app]: Error: Type 'unknown' is not assignable to type 'string'. (ts)
+[@churros/app]:     if (upsertGodparentRequest.__typename === 'Error') {
+[@churros/app]:       godparentRequestSendServerError = upsertGodparentRequest.message;
+[@churros/app]:       return;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:97:9
+[@churros/app]: Error: Spread types may only be created from object types. (ts)
+[@churros/app]:       {
+[@churros/app]:         ...upsertGodparentRequest.data,
+[@churros/app]:       },
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:108:9
+[@churros/app]: Error: Type '{ majorId: string | undefined; godparentUid: string; contributesWith: undefined; birthday: Date | null; uid: string; id: string; major?: { schools: { id: string; name: string; studentAssociations: { ...; }[]; }[]; ... 4 more ...; minors: { ...; }[]; } | undefined; ... 23 more ...; phone?: string | undefined; }' is not assignable to type '{ address: string | Variable<any, string>; apprentice: boolean | Variable<any, string>; birthday?: unknown; cededImageRightsToTVn7: boolean | Variable<any, string>; ... 12 more ...; uid: unknown; }'.
+[@churros/app]:   Types of property 'address' are incompatible.
+[@churros/app]:     Type 'string | undefined' is not assignable to type 'string | Variable<any, string>'.
+[@churros/app]:       Type 'undefined' is not assignable to type 'string | Variable<any, string>'. (ts)
+[@churros/app]:       updateUser: [
+[@churros/app]:         {
+[@churros/app]:           ...data.user,
+[@churros/app]:           majorId: data.user.major?.id,
+[@churros/app]:           godparentUid: '',
+[@churros/app]:           contributesWith: undefined,
+[@churros/app]:         },
+[@churros/app]:         {
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:114:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUpdateUserSuccess': { data: { godparent: { uid: true; firstName: true; lastName: true; fullName: true; pictureFile: true; }; }; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUpdateUserSuccess": AliasType<{ data?: AliasType<{ address?: boolean | ... 1 more ... | undefined; ... 66 more ...; __typename?: boolean | ... 1 more ... | undefine...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationUpdateUserSuccess': { data: { godparent: { uid: true; firstName: true; lastName: true; fullName: true; pictureFile: true; }; }; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationUpdateUserSuccess": AliasType<{ data?: AliasType<{ address?: boolean | ... 1 more ... | undefined; ... 66 more ...; __typename?: boolean | ... 1 more ... | undefined; }> | un...'. (ts)
+[@churros/app]:         },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': { message: true },
+[@churros/app]:           '...on MutationUpdateUserSuccess': {
+[@churros/app]:             data: {
+[@churros/app]:               godparent: {
+[@churros/app]:                 uid: true,
+[@churros/app]:                 firstName: true,
+[@churros/app]:                 lastName: true,
+[@churros/app]:                 fullName: true,
+[@churros/app]:                 pictureFile: true,
+[@churros/app]:               },
+[@churros/app]:             },
+[@churros/app]:           },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:134:7
+[@churros/app]: Error: Type 'unknown' is not assignable to type 'string'. (ts)
+[@churros/app]:     if (updateUser.__typename === 'Error') {
+[@churros/app]:       godparentDeleteServerError = updateUser.message;
+[@churros/app]:       return;
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:138:27
+[@churros/app]: Error: 'updateUser.data' is of type 'unknown'. (ts)
+[@churros/app]: 
+[@churros/app]:     data.user.godparent = updateUser.data.godparent;
+[@churros/app]:   };
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:217:14
+[@churros/app]: Error: Type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; user: { birthday: Date | null; uid: string; id: string; major?: { schools: { id: string; name: string; studentAssociations: { ...; }[]; }[]; ... 4 more ...; minors: { ...; }[]; } | undefined; ... 24 more ...; phone?: string | undefined; }; userPermissions: { ...' is not assignable to type '{ user: { address: string; description: string; graduationYear: number; minor?: { id: string; name: string; yearTier: number; shortName: string; } | undefined; major?: { name: string; shortName: string; id: string; minors: { ...; }[]; schools: { ...; }[]; } | undefined; ... 12 more ...; canBeEdited: boolean; }; }'.
+[@churros/app]:   The types of 'user.address' are incompatible between these types.
+[@churros/app]:     Type 'string | undefined' is not assignable to type 'string'.
+[@churros/app]:       Type 'undefined' is not assignable to type 'string'. (ts)
+[@churros/app]:         majors={data.schoolGroups.flatMap((g) => g.majors)}
+[@churros/app]:         bind:data
+[@churros/app]:       />
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:341:59
+[@churros/app]: Error: Property 'token' does not exist on type '{ RootLayout: RootLayoutStore; AppLayout: AppLayoutStore; user: { birthday: Date | null; uid: string; id: string; major?: { schools: { id: string; name: string; studentAssociations: { ...; }[]; }[]; ... 4 more ...; minors: { ...; }[]; } | undefined; ... 24 more ...; phone?: string | undefined; }; userPermissions: { ...'. (ts)
+[@churros/app]:         <p>
+[@churros/app]:           <a href="{env.PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
+[@churros/app]:             Télécharger mes données.
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:341:78
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:         <p>
+[@churros/app]:           <a href="{env.PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
+[@churros/app]:             Télécharger mes données.
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:358:17
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:               await Promise.all(
+[@churros/app]:                 data.me.credentials
+[@churros/app]:                   .filter(({ type, active }) => type === CredentialType.Token && !active)
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:362:37
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:               );
+[@churros/app]:               const activeSession = data.me.credentials.find(
+[@churros/app]:                 ({ type, active }) => type === CredentialType.Token && active,
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/users/[uid]/edit/+page.svelte:370:18
+[@churros/app]: Error: 'data.me' is possibly 'undefined'. (ts)
+[@churros/app]:         <ul class="nobullet">
+[@churros/app]:           {#each data.me.credentials.filter(({ type }) => type === CredentialType.Token) as { createdAt, name, userAgent, active, id }}
+[@churros/app]:             <li>
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: /home/uwun/projects/churros/packages/app/src/routes/(app)/validate-email/[token]/+page.svelte:19:9
+[@churros/app]: Error: Type '{ __typename: true; '...on Error': { message: true; }; '...on MutationRequestEmailChangeSuccess': { data: true; }; }' is not assignable to type 'AliasType<{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationRequestEmailChangeSuccess": AliasType<{ data?: boolean | ... 1 more ... | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasT...'.
+[@churros/app]:   Property '["...on ZodError"]' is missing in type '{ __typename: true; '...on Error': { message: true; }; '...on MutationRequestEmailChangeSuccess': { data: true; }; }' but required in type '{ "...on Error": AliasType<{ message?: boolean | `@${string}` | undefined; __typename?: boolean | `@${string}` | undefined; }>; "...on MutationRequestEmailChangeSuccess": AliasType<{ data?: boolean | ... 1 more ... | undefined; __typename?: boolean | ... 1 more ... | undefined; }>; "...on ZodError": AliasType<...>; ...'. (ts)
+[@churros/app]:         { email },
+[@churros/app]:         {
+[@churros/app]:           '__typename': true,
+[@churros/app]:           '...on Error': { message: true },
+[@churros/app]:           '...on MutationRequestEmailChangeSuccess': { data: true },
+[@churros/app]:         },
+[@churros/app]:       ],
+[@churros/app]: 
+[@churros/app]: 
+[@churros/app]: ====================================
+[@churros/app]: svelte-check found 201 errors and 0 warnings in 78 files
+The command failed for workspaces that are depended upon by other workspaces; can't satisfy the dependency graph
+Failed with errors in 1m 29s

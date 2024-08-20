@@ -30,7 +30,7 @@
   import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import NavigationTop, { type NavigationContext } from './NavigationTop.svelte';
+  import NavigationTop, { type NavigationContext } from '$lib/components/NavigationTop.svelte';
 
   onNavigate(setupViewTransition);
 
@@ -112,14 +112,19 @@
   setContext('navtop', navtop);
 
   $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
+
+  let openChangelog: () => void;
+  $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) {
+    openChangelog?.();
+  }
 </script>
 
-{#if !changelogAcknowledged && $AppLayout.data?.combinedChangelog}
+{#if $AppLayout.data?.combinedChangelog}
   <ModalChangelog
+    bind:open={openChangelog}
     on:acknowledge={() => {
       changelogAcknowledged = true;
     }}
-    open
     log={$AppLayout.data?.combinedChangelog}
   />
 {/if}

@@ -2,6 +2,10 @@ import { browser } from '$app/environment';
 import { goto, pushState } from '$app/navigation';
 import { page } from '$app/stores';
 import { cache, graphql, LogoutStore } from '$houdini';
+import type {
+  NavigationContext,
+  NavigationQuickAction,
+} from '$lib/components/NavigationTop.svelte';
 import { currentPageIsPinned, pinCurrentPage, unpinCurrentPage } from '$lib/pins';
 import { route } from '$lib/ROUTES';
 import type { Page } from '@sveltejs/kit';
@@ -31,10 +35,6 @@ import IconPost from '~icons/msl/text-ad-outline';
 import IconBookingsList from '~icons/msl/view-list-outline';
 import IconWallet from '~icons/msl/wallet';
 import type { LayoutParams, LayoutRouteId } from '../routes/$types';
-import type {
-  NavigationContext,
-  NavigationQuickAction,
-} from '../routes/(app)/NavigationTop.svelte';
 
 export function addReferrer(url: URL | string, referrer?: URL | string): string;
 export function addReferrer(

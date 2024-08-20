@@ -11,9 +11,11 @@
 
   export let value: MaybeLoading<Value> | undefined = undefined;
   export let label: string;
-  export let options: MaybeLoading<
-    Value[] | Record<Value, string> | Map<Value, string> | Array<[Value, string]>
-  >;
+  export let options:
+    | Value[]
+    | Record<Value, MaybeLoading<string>>
+    | Array<[Value, MaybeLoading<string>]>
+    | Map<Value, MaybeLoading<string>> = [];
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -35,12 +37,10 @@
     }
   });
 
-  let optionsWithDisplay: Array<[string, string]> = [];
+  let optionsWithDisplay: Array<[Value, MaybeLoading<string>]> = [];
   $: optionsWithDisplay = Array.isArray(options)
-    ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
-    : options instanceof Map
-      ? [...options.entries()]
-      : Object.entries(options);
+    ? options.map((option) => (Array.isArray(option) ? option : [option, option.toString()]))
+    : Object.entries(options).map(([value, label]) => [value as Value, label as string]);
 
   let fieldsetElement: HTMLFieldSetElement;
 

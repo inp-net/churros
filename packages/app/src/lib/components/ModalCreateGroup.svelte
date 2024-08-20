@@ -29,15 +29,7 @@
           studentAssociation: $studentAssociation
         }
       ) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
         ... on MutationUpsertGroupSuccess {
           data {
             uid

@@ -20,11 +20,7 @@ declare namespace App {
     };
   }
 
-  interface PageData {
-    me?: SessionUserType;
-    mobile: boolean;
-    token?: string;
-  }
+  interface PageData {}
 
   interface Session {
     token?: string;
@@ -93,7 +89,10 @@ declare namespace svelteHTML {
     'on:pressup'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
-    [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
+    // FIXME does not work
+    // [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;
+    'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<{}>) => Promise<void> | void;
   }
 }
 

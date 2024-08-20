@@ -1,33 +1,33 @@
-import { loadQuery } from '$lib/zeus';
-import { redirect } from '@sveltejs/kit';
+import { graphql } from '$houdini';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent }) => {
-  const { me } = await parent();
-  if (!me?.admin) throw redirect(301, '/');
-  return loadQuery(
-    {
-      announcements: [
-        {},
-        {
-          edges: {
-            node: {
-              id: true,
-              title: true,
-              bodyHtml: true,
-              by: {
-                uid: true,
-                fullName: true,
-                pictureFile: true,
-              },
-              startsAt: true,
-              endsAt: true,
-              warning: true,
-            },
-          },
+export const load: PageLoad = async (event) => {
+  return await graphql(`
+    query PageAnnouncementsList {
+      announcements {
+        edges {
+          node {
+            id
+            title
+            bodyHtml
+            by {
+              uid
+              fullName
+              pictureFile
+            }
+            startsAt
+            endsAt
+            warning
+          }
+        }
+      }
+    }
+  `)
+    .fetch({ event })
+    .then(
+      (d) =>
+        d.data ?? {
+          announcements: { edges: [] },
         },
-      ],
-    },
-    { fetch, parent },
-  );
+    );
 };

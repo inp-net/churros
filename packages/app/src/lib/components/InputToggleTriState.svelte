@@ -27,7 +27,12 @@
   $: if (_value === undefined && loaded(value)) _value = value as boolean;
 </script>
 
-<div class="switch">
+<div
+  class="switch"
+  role="switch"
+  aria-label={labels.find(([v]) => v === _value)?.[1]}
+  aria-checked={_value === undefined ? 'mixed' : _value ? 'true' : 'false'}
+>
   <input
     on:change={() => {
       dispatch('update', _value);

@@ -1,54 +1,34 @@
-import { isOnClubBoard } from '$lib/permissions';
-import { loadQuery, Selector } from '$lib/zeus';
-import { redirect } from '@sveltejs/kit';
+import { graphql } from '$houdini';
 import type { PageLoad } from './$types';
 
-export const _clubQuery = Selector('Group')({
-  uid: true,
-  parentId: true,
-  groupId: true,
-  type: true,
-  name: true,
-  color: true,
-  address: true,
-  description: true,
-  email: true,
-  pictureFile: true,
-  longDescription: true,
-  links: {
-    name: true,
-    value: true,
-  },
-  selfJoinable: true,
-});
-
-export const load: PageLoad = async ({ fetch, params, parent }) => {
-  const { me, token } = await parent();
-
-  const { user: currentUser } = await loadQuery(
-    {
-      user: [{ id: me?.id }, { canEditGroup: [{ uid: params.uid }, true] }],
-    },
-    { fetch, token },
-  );
-
-  if (
-    !currentUser?.canEditGroup &&
-    !me?.groups.some(({ group, ...perms }) => group.uid === params.uid && isOnClubBoard(perms))
-  )
-    throw redirect(307, '..');
-
-  return loadQuery(
-    {
-      group: [{ uid: params.uid }, _clubQuery],
-      lydiaAccountsOfGroup: [
-        { uid: params.uid },
-        Selector('LydiaAccount')({
-          id: true,
-          name: true,
-        }),
-      ],
-    },
-    { fetch, token },
-  );
+export const load: PageLoad = async (event) => {
+  return await graphql(`
+    query PageGroupEditBankAccounts($uid: String!) {
+      group(uid: $uid) {
+        uid
+        parentId
+        groupId
+        type
+        name
+        color
+        address
+        description
+        email
+        pictureFile
+        longDescription
+        selfJoinable
+        links {
+          name
+          value
+        }
+        selfJoinable
+        lydiaAccounts {
+          id
+          name
+        }
+      }
+    }
+  `)
+    .fetch({ event, variables: { uid: event.params.uid } })
+    .then((d) => d.data ?? { group: null });
 };

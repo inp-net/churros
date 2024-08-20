@@ -12,7 +12,6 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { page } from '$app/stores';
-  import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import { ModalOrDrawer } from '$lib/components';
@@ -41,17 +40,17 @@
     const ua = parseUserAgent(navigator.userAgent);
     const metadata = {
       ...(includeCurrentPageURL ? { Location: $page.url.toString() } : {}),
-      'Logged-in': $me ? 'Yes' : 'No',
-      'Version': CURRENT_VERSION,
-      'Build': CURRENT_COMMIT,
-      'Browser': `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
+      // 'Logged-in': $me ? 'Yes' : 'No',
+      Version: CURRENT_VERSION,
+      Build: CURRENT_COMMIT,
+      Browser: `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
         ua.engine.name ?? 'unknown'
       } v${ua.engine.version ?? '?'})`,
-      'OS': `${ua.os.name ?? 'unknown'} v${ua.os.version ?? '?'}`,
-      'Device': `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
+      OS: `${ua.os.name ?? 'unknown'} v${ua.os.version ?? '?'}`,
+      Device: `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
         ua.device.model ?? 'unknown'
       } (arch ${ua.cpu.architecture ?? 'unknown'})`,
-      'ScreenSize': `${innerWidth ?? 'unknown'} x ${innerHeight ?? 'unknown'}`,
+      ScreenSize: `${innerWidth ?? 'unknown'} x ${innerHeight ?? 'unknown'}`,
     };
     try {
       const { createGitlabIssue: number } = await $zeus.mutate({
@@ -144,8 +143,7 @@
       <section class="submit">
         <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
         <p class="typo-details">
-          Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom
-          {/if}sur le dépot
+          Envoyer ce rapport créera une issue Gitlab en ton nom sur le dépot
           <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
         </p>
       </section>

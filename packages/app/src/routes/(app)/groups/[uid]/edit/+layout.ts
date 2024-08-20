@@ -1,17 +1,15 @@
-import { Selector, loadQuery } from '$lib/zeus';
+import { graphql } from '$houdini';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ parent, fetch, params }) =>
-  loadQuery(
-    {
-      group: [
-        { uid: params.uid },
-        Selector('Group')({
-          uid: true,
-          name: true,
-          canListPages: true,
-        }),
-      ],
-    },
-    { fetch, parent },
-  );
+export const load: LayoutLoad = async (event) =>
+  await graphql(`
+    query LayoutAppGroupsGroupEdit($uid: String!) {
+      group(uid: $uid) {
+        uid
+        name
+        canListPages
+      }
+    }
+  `)
+    .fetch({ event, variables: { uid: event.params.uid } })
+    .then((d) => d.data ?? { group: null });

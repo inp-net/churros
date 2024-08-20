@@ -33,6 +33,10 @@ export function zeusVisibility(houdiniVisibility: Visibility$options): Visibilit
   return houdiniVisibility as Visibility;
 }
 
+export function houdiniVisibility(zeusVisibility: Visibility): Visibility$options {
+  return zeusVisibility as Visibility$options;
+}
+
 export function zeusPaymentMethod(houdiniPaymentMethod: PaymentMethod$options): PaymentMethod {
   return houdiniPaymentMethod as PaymentMethod;
 }

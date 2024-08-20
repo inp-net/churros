@@ -27,8 +27,8 @@
       pictureURL
       schools {
         uid
-        pictureURL
         name
+        ...AvatarSchool
       }
     }
   `);
@@ -46,6 +46,13 @@
     }
     return majorsBySchool;
   }
+
+  function schoolFromOption(
+    option: PickMajor$data,
+    schoolUid: string,
+  ): PickMajor$data['schools'][0] {
+    return option.schools.find((school) => school.uid === schoolUid) ?? option.schools[0];
+  }
 </script>
 
 <PickThings
@@ -62,7 +69,7 @@
   let:open
 >
   <svelte:fragment slot="category" let:category let:firstOption>
-    {@const school = firstOption.schools.find((s) => s.uid === category.id)}
+    {@const school = schoolFromOption(firstOption, category.id)}
     <AvatarSchool {school} />
     {category.label}
   </svelte:fragment>

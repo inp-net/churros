@@ -22,6 +22,9 @@ export async function load({ fetch, url }) {
           '...on Error': {
             message: true,
           },
+          '...on ZodError': {
+            message: true,
+          },
         },
       ],
     },
@@ -46,7 +49,7 @@ export async function load({ fetch, url }) {
             startsAt: true,
             endsAt: true,
             location: true,
-            pictureURL: [{ dark: false }, true],
+            pictureURL: [{ dark: false, timestamp: true }, true],
             group: {
               id: true,
               name: true,

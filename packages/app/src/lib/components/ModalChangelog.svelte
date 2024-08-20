@@ -37,7 +37,7 @@
 
   const dispatch = createEventDispatcher();
 
-  let open: () => void;
+  export let open: () => void;
 
   graphql(`
     fragment ModalChangelogChange on ReleaseChange {
@@ -142,7 +142,7 @@
   }
 </script>
 
-<Modal notrigger bind:open bind:element on:close-by-outside-click={acknowledge}>
+<Modal notrigger bind:open on:close-by-outside-click={acknowledge}>
   {@const { first, last } = versionRange(changes)}
   <section class="centered">
     <LogoChurros wordmark />

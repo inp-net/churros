@@ -1,25 +1,20 @@
-import { redirectToLogin } from '$lib/session';
-import { loadQuery } from '$lib/zeus';
+import { graphql } from '$houdini';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, url }) => {
-  const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname);
-  return loadQuery(
-    {
-      birthdays: [
-        {
-          width: 4,
-        },
-        {
-          birthday: true,
-          fullName: true,
-          uid: true,
-          pictureFile: true,
-          major: { shortName: true },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+export const load: PageLoad = async (event) => {
+  return await graphql(`
+    query PageBirthdays {
+      birthdays(width: 4) {
+        birthday
+        fullName
+        uid
+        pictureFile
+        major {
+          shortName
+        }
+      }
+    }
+  `)
+    .fetch({ event })
+    .then((d) => d.data ?? { birthdays: [] });
 };

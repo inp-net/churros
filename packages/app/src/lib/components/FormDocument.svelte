@@ -11,7 +11,6 @@
   import InputSelectOne from './InputSelectOne.svelte';
   import InputSubject from './InputSubject.svelte';
   import InputText from './InputText.svelte';
-  import { me } from '$lib/session';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import { toasts } from '$lib/toasts';
@@ -133,8 +132,8 @@
     );
     const { subject } = upsertDocument.data;
     const majorUid =
-      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? $me?.major?.uid ?? undefined;
-    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier ?? $me?.yearTier;
+      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? undefined;
+    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier;
     toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
     await goto(
       `/documents/${majorUid}/${yearTier}a${subject?.forApprentices ? '-fisa' : ''}/${

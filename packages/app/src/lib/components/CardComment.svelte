@@ -12,7 +12,6 @@
   import { createEventDispatcher } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputLongText from './InputLongText.svelte';
-  import { me } from '$lib/session';
   import ButtonGhost from './ButtonGhost.svelte';
   import { removeIdPrefix } from '$lib/typenames';
   import type { PendingValue } from '$houdini';
@@ -96,7 +95,9 @@
         </div>
       {/if}
     </div>
-    {#if !readonly && ($me?.admin || author?.uid === $me?.uid)}
+    <!-- TODO -->
+    <!-- {#if !readonly && ($me?.admin || author?.uid === $me?.uid)} -->
+    {#if !readonly}
       <div class="actions">
         {#if creating}
           <ButtonGhost

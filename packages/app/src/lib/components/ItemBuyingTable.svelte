@@ -44,9 +44,8 @@
               paid: true,
             },
           },
-          '...on Error': {
-            message: true,
-          },
+          '...on Error': { message: true },
+          '...on ZodError': { message: true },
         },
       ],
     });

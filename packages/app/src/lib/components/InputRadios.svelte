@@ -13,7 +13,7 @@
 
   let optionsWithDisplay: Array<[Value, MaybeLoading<string>]> = [];
   $: optionsWithDisplay = Array.isArray(options)
-    ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
+    ? options.map((option) => (Array.isArray(option) ? option : [option, option.toString()]))
     : Object.entries(options).map(([value, label]) => [value as Value, label as string]);
 </script>
 

@@ -2,7 +2,7 @@ import { OPTION_OTHER_VALUE } from '$lib/components/InputSelectOneRadios.svelte'
 import { TYPENAMES_TO_ID_PREFIXES } from '$lib/typenames';
 import { loadQuery, makeMutation } from '$lib/zeus.js';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { FORM_SECTION_HIDDEN_INPUT_NAME } from './+page.svelte';
+import { FORM_SECTION_HIDDEN_INPUT_NAME } from './_disabled+page.svelte';
 
 export const actions = {
   async postAnswers({ fetch, request, cookies, params }) {
@@ -32,6 +32,9 @@ export const actions = {
               '...on Error': {
                 message: true,
               },
+              '...on ZodError': {
+                message: true,
+              },
               '...on MutationAnswerFormSectionSuccess': {
                 __typename: true,
               },
@@ -40,7 +43,7 @@ export const actions = {
         },
         { fetch, token: cookies.get('token') },
       );
-      if (answerFormSection.__typename === 'Error')
+      if (answerFormSection.__typename !== 'MutationAnswerFormSectionSuccess')
         return fail(400, { message: answerFormSection.message });
     } catch (error_) {
       error(400, { message: error_?.toString() ?? '' });

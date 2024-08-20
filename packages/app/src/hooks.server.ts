@@ -1,7 +1,6 @@
 import { setSession } from '$houdini';
 import { inferIsMobile } from '$lib/mobile';
-import { aled, sessionUserQuery } from '$lib/session';
-import { chain } from '$lib/zeus';
+import { aled } from '$lib/session';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
@@ -15,17 +14,6 @@ export const handle: Handle = async ({ event, resolve }) => {
   const { token: tokenFromCookies } = cookieData;
 
   const token = tokenFromAuthorizationHeader || tokenFromCookies;
-
-  if (token) {
-    try {
-      const { me } = await chain(fetch, { token })('query')({
-        me: sessionUserQuery(),
-      });
-      event.locals.token = token;
-      event.locals.me = me;
-      aled('hooks.server.ts: handle: setting locals on event', event);
-    } catch {}
-  }
 
   event.locals.mobile = Boolean(inferIsMobile(event.request.headers.get('User-Agent') ?? ''));
 

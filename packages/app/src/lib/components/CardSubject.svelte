@@ -8,12 +8,12 @@
   export let emoji: string;
   export let createHref = `${href}/create`;
   export let documentsCount: number;
-  export let nextExamAt: Date | undefined = undefined;
+  export let nextExamAt: Date | null = null;
   export let name: string;
   export let shortName: string;
-  export let semester: number | undefined = undefined;
-  export let yearTier: number | undefined = undefined;
-  export let unit: { shortName: string; name: string } | undefined = undefined;
+  export let semester: number | null = null;
+  export let yearTier: number | null = null;
+  export let unit: { shortName: string; name: string } | null = null;
 
   // Converts relative (1=first or 2=second) semester to absolute (S5, S6, etc) semester. Behavior for relativeSemester>2 is undefined.
   function absoluteSemester(relativeSemester: number) {
