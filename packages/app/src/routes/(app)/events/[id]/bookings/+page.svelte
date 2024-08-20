@@ -24,6 +24,7 @@
   import { notNull } from '$lib/typing';
   import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
+  import { tabToFilter } from './filters';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
@@ -48,7 +49,7 @@
 
   $: updates.listen({
     id: $page.params.id,
-    filter: $page.url.searchParams.get('tab') as (typeof FILTERS)[number],
+    filter: tabToFilter[activeTab],
   });
 
   // Count new bookings by taking the length of the intersection of booking IDs from updates and PageEventAllBookings

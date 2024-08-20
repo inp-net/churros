@@ -1,88 +1,35 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { cache } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
   import { route } from '$lib/ROUTES';
-  import { saveSessionToken } from '$lib/session';
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
-  import { Login } from './mutations';
+  import type { ActionData } from './$types';
 
-  let email = '';
-  let password = '';
+  export let form: ActionData;
   let showingPassword = false;
-
-  /** Redirects the user if a `to` parameter exists, or to "/" otherwise. */
-  const redirect = async () => {
-    let url = new URL(
-      $page.url.searchParams.get('to') ?? $page.url.searchParams.get('from') ?? '/',
-      $page.url,
-    );
-    if (url.origin !== $page.url.origin || url.pathname.startsWith('/login'))
-      url = new URL('/', $page.url);
-    const searchParams = new URLSearchParams(
-      [...$page.url.searchParams.entries()].filter(([k]) => k !== 'to' && k !== 'from'),
-    );
-    return goto(new URL(`${url.toString()}?${searchParams.toString()}`), { invalidateAll: true });
-  };
-
-  let loading = false;
-  let errorMessages: string[] | undefined;
-  const login = async () => {
-    if (loading) return;
-
-    try {
-      loading = true;
-      errorMessages = undefined;
-      const result = await Login.mutate({
-        emailOrUid: email,
-        password,
-      });
-
-      if (mutationSucceeded('login', result)) {
-        saveSessionToken(document, {
-          ...result.data.login.data,
-          expiresAt: result.data.login.data.expiresAt ?? null,
-        });
-        cache.reset();
-        await redirect();
-      }
-
-      if (result.data?.login.__typename === 'AwaitingValidationError') {
-        errorMessages = [
-          "Ton compte n'a pas encore été validé par l'équipe d'administration de ton AE. Encore un peu de patience 😉",
-        ];
-        return;
-      }
-
-      errorMessages = mutationErrorMessages('login', result);
-    } finally {
-      loading = false;
-    }
-  };
 </script>
 
 <h1>Connexion</h1>
 
-<form title="Se connecter" on:submit|preventDefault={login}>
+<form title="Se connecter" method="post">
   {#if $page.url.searchParams.get('why') === 'unauthorized'}
     <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 
-  <Alert theme="danger" closed={errorMessages === undefined}>
-    {errorMessages?.join(' ')}
+  <Alert theme="danger" closed={form?.serverErrors === undefined}>
+    {form?.serverErrors?.join(' ')}
   </Alert>
-  <InputText required label="Adresse e-mail ou nom d'utilisateur" bind:value={email} autofocus />
+  <InputText value="" name="email" required label="Adresse e-mail ou nom d'utilisateur" autofocus />
   <InputText
+    value=""
     required
+    name="password"
     type={showingPassword ? 'text' : 'password'}
     label="Mot de passe"
-    bind:value={password}
     actionIcon={showingPassword ? IconEyeOff : IconEye}
     on:action={() => {
       showingPassword = !showingPassword;

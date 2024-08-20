@@ -50,7 +50,6 @@ const additionalReservedUsernames = new Set([
   'welcome',
   'connect',
   'health',
-  'identity',
   'kiosk',
   'icons',
   'logos',

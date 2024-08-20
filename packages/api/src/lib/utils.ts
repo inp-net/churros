@@ -41,3 +41,7 @@ export function areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
 
   return true;
 }
+
+export function daysToSeconds(days: number): number {
+  return days * 24 * 60 * 60;
+}

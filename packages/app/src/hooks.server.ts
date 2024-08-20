@@ -17,22 +17,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   event.locals.mobile = Boolean(inferIsMobile(event.request.headers.get('User-Agent') ?? ''));
 
-  setSession(event, {
-    token: event.locals.token,
-  });
+  setSession(event, { token });
 
-  const response = await resolve(event);
-
-  // Delete invalid token
-  if (token && !event.locals.me) {
-    aled('hooks.server.ts: handle: deleting invalid token');
-    response.headers.append(
-      'Set-Cookie',
-      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'lax' }),
-    );
-  }
-
-  return response;
+  return resolve(event);
 };
 
 export const handleFetch: HandleFetch = async ({ request, fetch }) => {

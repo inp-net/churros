@@ -1,4 +1,4 @@
-import { builder, log, prisma, purgeUserSessions } from '#lib';
+import { builder, log, prisma, purgeSessionsUser } from '#lib';
 
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { fullName } from '#modules/users';
@@ -47,7 +47,7 @@ builder.mutationField('addGroupMember', (t) =>
       );
     },
     async resolve(query, _, { groupUid, uid, title }, { user }) {
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       try {
         const groupMember = await prisma.groupMember.create({
           ...query,

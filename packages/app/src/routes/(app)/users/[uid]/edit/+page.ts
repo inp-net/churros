@@ -20,11 +20,6 @@ export const _userQuery = Selector('User')({
   birthday: true,
   cededImageRightsToTVn7: true,
   links: { name: true, value: true },
-  authorizedApps: {
-    clientId: true,
-    name: true,
-    faviconUrl: true,
-  },
   godparent: {
     uid: true,
     firstName: true,

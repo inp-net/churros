@@ -14,7 +14,10 @@ z.setErrorMap(customErrorMap);
 // Don't commit with a value other than 0 pls, use it for testing only
 const SIMULATED_RESPONSE_DELAY_TIME_MS = 0;
 
-const yoga = createYoga({
+const yoga = createYoga<{
+  req: Express.Request;
+  res: Express.Response;
+}>({
   schema,
   // CORS are handled below, disable Yoga's default CORS settings
   cors: false,
@@ -90,10 +93,11 @@ api.use('/graphql', async (req, res) => {
   if (inDevelopment() && SIMULATED_RESPONSE_DELAY_TIME_MS > 0)
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_RESPONSE_DELAY_TIME_MS));
 
-  yoga(req, res);
+  await yoga(req, res);
 });
 
-api.get('/', (_req, res) => {
+api.get('/', (req, res) => {
+  const { user } = req;
   res.send(`<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -104,6 +108,7 @@ api.get('/', (_req, res) => {
 </head>
 <body>
   <h1>Churros API</h1>
+  <p>Bienvenue ${user ? user.firstName : ''} sur l'API de Churros.</p>
   <p><strong><a href="${new URL(process.env.PUBLIC_FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>

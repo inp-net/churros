@@ -88,7 +88,6 @@ model User {
   comments                   Comment[]
   bannedFromEvents           Event[]                    @relation("bannedFromEvents")
   reactions                  Reaction[]
-  allowedApps                ThirdPartyApp[]
   shopPayments               ShopPayment[]
   formAnswers                Answer[]
   createdForms               Form[]
@@ -103,7 +102,6 @@ model User {
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
   claimedPromotions         PromotionCode[]
-  thirdPartyCredentials     ThirdPartyCredential[]
   formsWithMarkedCheckboxes Form[]                  @relation("formsWithMarkedCheckbox")
   createdPages              Page[]
 
@@ -336,43 +334,6 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-enum ThirdPartyCredentialType {
-  AuthorizationCode
-  AccessToken
-}
-
-/// A way to give Churros API access to third parties
-model ThirdPartyCredential {
-  id        String                   @id @default(dbgenerated("nanoid('token:')"))
-  type      ThirdPartyCredentialType
-  ownerId   String
-  clientId  String
-  client    ThirdPartyApp            @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  owner     User                     @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  expiresAt DateTime?
-  createdAt DateTime                 @default(now())
-  // TODO scopes
-  value     String                   @db.VarChar(255)
-}
-
-/// A third party service.
-model ThirdPartyApp {
-  id                  String                 @id @default(dbgenerated("nanoid('app:', 30)"))
-  createdAt           DateTime               @default(now())
-  updatedAt           DateTime?              @updatedAt
-  ownerId             String
-  owner               Group                  @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  name                String                 @unique @db.VarChar(255) // Names are unique to prevent identity theft
-  description         String                 @default("") @db.VarChar(255)
-  allowedRedirectUris String[]
-  credentials         ThirdPartyCredential[]
-  secret              String
-  website             String
-  faviconUrl          String                 @default("") @db.VarChar(255) // Computed from website if not provided
-  active              Boolean                @default(false)
-  users               User[]
-}
-
 /// There is one student association per school
 model StudentAssociation {
   id                  String @id @default(dbgenerated("nanoid('ae:')"))
@@ -503,7 +464,6 @@ model Group {
 
   // For full-text search
   search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  thirdPartyApps ThirdPartyApp[]
   forms          Form[]
   boardOf        StudentAssociation?     @relation("studentAssociationBoard")
   boardOfId      String?

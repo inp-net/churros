@@ -39,9 +39,7 @@
 
   let _open: () => void;
   export const open = () => {
-    if (flattenVersions(changes).some(([_, changes]) => changes.length > 0)) 
-      _open();
-    
+    if (flattenVersions(changes).some(([_, changes]) => changes.length > 0)) _open?.();
   };
 
   graphql(`
@@ -147,7 +145,7 @@
   }
 </script>
 
-<Modal notrigger bind:open={_open} on:close-by-outside-click={acknowledge}>
+<Modal tall notrigger bind:open={_open} on:close={acknowledge}>
   {@const { first, last } = versionRange(changes)}
   <section class="centered">
     <LogoChurros wordmark />

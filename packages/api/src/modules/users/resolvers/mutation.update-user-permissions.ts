@@ -1,4 +1,4 @@
-import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 
 import { userIsAdminOf } from '#permissions';
 import { UserType } from '../index.js';
@@ -36,7 +36,7 @@ builder.mutationField('updateUserPermissions', (t) =>
       return userIsAdminOf(user, studentAssociationIds);
     },
     async resolve(query, _, { uid, canAccessDocuments }, { user }) {
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       const userUpdated = await prisma.user.update({
         ...query,
         where: { uid },

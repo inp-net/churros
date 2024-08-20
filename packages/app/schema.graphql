@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -181,14 +176,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -612,80 +600,6 @@ type AnswersOfUser {
   """
   date: DateTime!
   user: User!
-}
-
-"""
-Des données temporelles pour construire des graphiques d'atteintes de rate limiting. La résolution temporelle est d'une minute.
-"""
-type ApiRateLimitHits {
-  """
-  Le nombre d'erreurs de rate-limiting à cette date
-  """
-  count: Int!
-
-  """
-  La date à laquelle les requêtes ont été faites
-  """
-  date: DateTime!
-
-  """
-  Le nom de la query ou mutation ou subscription
-  """
-  queryName: String!
-
-  """
-  Le type de requête effectuée
-  """
-  queryType: String!
-  timestamp: Int!
-  user: User
-}
-
-"""
-Des données temporelles pour construire des graphiques d'utilisation de l'API au cours du temps. La résolution temporelle est d'une minute.
-"""
-type ApiUsage {
-  """
-  Le nombre de requêtes faites à cette date
-  """
-  count: Int!
-
-  """
-  La date à laquelle les requêtes ont été faites
-  """
-  date: DateTime!
-
-  """
-  Le nom de la query ou mutation ou subscription
-  """
-  queryName: String!
-
-  """
-  Le type de requête effectuée
-  """
-  queryType: ApiUsageQueryType!
-  timestamp: Int!
-  user: User
-}
-
-"""
-Type de requête effectuée sur l'API
-"""
-enum ApiUsageQueryType {
-  """
-  Modification de données, ou autre action diverses
-  """
-  Mutation
-
-  """
-  Récupération de données
-  """
-  Query
-
-  """
-  Abonnement à des données pour être informé en temps réel des changements
-  """
-  Subscription
 }
 
 """
@@ -2223,16 +2137,6 @@ type Mutation {
   acknowledgeChangelog(version: String! = "dev"): Boolean!
 
   """
-  Activate a third-party app. Only admins can do this.
-  """
-  activateApp(
-    """
-    The app's ID
-    """
-    id: ID!
-  ): Boolean!
-
-  """
   Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
   """
   addFileToPage(file: File!, page: ID!): MutationAddFileToPageResult!
@@ -2276,40 +2180,6 @@ type Mutation {
     """
     section: ID!
   ): MutationAnswerFormSectionResult!
-
-  """
-  Authorize a third-party client to access the user's data.
-  Returns an access code.
-
-  Use the frontend's /authorize endpoint instead of this, as it requires already being logged-in.
-
-  Do a `GET` request to `http://localhost:5173/authorize?client_id=<clientId>&redirect_uri=<redirectUri>&response_type=code&state=<state>` with:
-
-  - `<clientId>`: The client ID of the app. See registerApp to get this.
-  - `<redirectUri>`: The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
-  - `<state>`: A random string generated from personal information used to prevent CSRF attacks.
-
-  Use that code to get an access token with /token:
-
-  Do a `POST` request to `http://localhost:5173/token` with a `application/x-www-form-urlencoded` body with the following fields:
-
-  - `grant_type`: `authorization_code`
-  - `code`: The code returned by this endpoint
-  - `client_id`: The client ID of the app
-  - `client_secret`: The client secret of the app
-  - `redirect_uri`: The redirect URI used in this request
-  """
-  authorize(
-    """
-    The client ID of the app. See registerApp to get this.
-    """
-    clientId: String!
-
-    """
-    The URL that you want to redirect the user to. The frontend uses this on /authorize to redirect users to `<redirectUri>?code=<return value of this mutation>`
-    """
-    redirectUri: String!
-  ): MutationAuthorizeResult!
 
   """
   Bannir un·e utilisateur·rice d'un événement. Iel ne pourra plus prendre de place (que ce soit pour iel ou pour une autre personne, dans le cas des billets à parrainages)
@@ -2464,16 +2334,6 @@ type Mutation {
     name: String
     shotgun: DateRangeInput!
   ): MutationCreateTicketResult!
-
-  """
-  Deactivate a third-party app. Only admins can do this.
-  """
-  deactivateApp(
-    """
-    The app's ID
-    """
-    id: ID!
-  ): Boolean!
   deleteAnnouncement(id: ID!): Boolean!
   deleteArticle(id: ID!): Boolean!
   deleteArticlePicture(id: ID!): Boolean!
@@ -2547,22 +2407,6 @@ type Mutation {
   deleteTicketGroup(id: ID!): Boolean!
   deleteToken(id: ID!): Boolean!
   deleteUserPicture(uid: String!): Boolean!
-
-  """
-  Update a third-party app's details
-  """
-  editApp(
-    allowedRedirectUris: [String!]
-    description: String
-
-    """
-    The app's ID
-    """
-    id: ID!
-    name: String
-    ownerGroupUid: String
-    website: String
-  ): ThirdPartyApp!
   finishPaypalRegistrationPayment(orderId: String!): MutationFinishPaypalRegistrationPaymentResult!
   kioskReload(
     """
@@ -2636,36 +2480,6 @@ type Mutation {
   refuseRegistration(email: String!, reason: String!): Boolean!
 
   """
-  Register a third-party OAuth2 client. Returns the client secret. The client secret cannot be retrieved at any other time. Use refreshAppSecret to rotate your client secret.
-  """
-  registerApp(
-    """
-    Allowed redirect URIs.
-    """
-    allowedRedirectUris: [String!]!
-
-    """
-    The app's description
-    """
-    description: String!
-
-    """
-    The app's name
-    """
-    name: String!
-
-    """
-    The UID of  the group that made this app
-    """
-    ownerGroupUid: String!
-
-    """
-    URL to the website of the app. Used, amongst other things, to get the icon.
-    """
-    website: String!
-  ): ThirdPartyAppRegistrationResponse!
-
-  """
   Enregistrer un token OAuth2 Google pour l'utilisateur connecté.
   """
   registerGoogleCredential(
@@ -2692,26 +2506,6 @@ type Mutation {
     oldPassword: String!
     uid: String!
   ): MutationResetPasswordResult!
-
-  """
-  Révoque l'accès d'une application au compte utilisateur connecté. Renvoie `true` si l'opération a réussi.
-  """
-  revokeAuthorization(
-    """
-    Identifiant de l'application
-    """
-    clientId: String!
-  ): Boolean!
-
-  """
-  Rotate a third-party app's secret
-  """
-  rotateAppSecret(
-    """
-    The app's ID
-    """
-    id: ID!
-  ): String!
 
   """
   Sauvegarder le numéro de téléphone pour les paiements Lydia de l'utilisateur.ice
@@ -3355,12 +3149,6 @@ type MutationAnswerFormSectionSuccess {
   data: [Answer!]!
 }
 
-union MutationAuthorizeResult = Error | MutationAuthorizeSuccess | OAuth2Error | ZodError
-
-type MutationAuthorizeSuccess {
-  data: String!
-}
-
 union MutationBanFromEventResult = Error | MutationBanFromEventSuccess | ZodError
 
 type MutationBanFromEventSuccess {
@@ -3917,24 +3705,6 @@ input NotificationSubscriptionKeysInput {
   p256dh: String!
 }
 
-type OAuth2Error {
-  code: OAuth2ErrorCode!
-  message: String!
-}
-
-"""
-OAuth2 error codes, see RFC 6749 § 4.1.2.1
-"""
-enum OAuth2ErrorCode {
-  access_denied
-  invalid_request
-  invalid_scope
-  server_error
-  temporarily_unavailable
-  unauthorized_client
-  unsupported_response_type
-}
-
 """
 Une page écrite par un·e utilisateur·rice, servant par exemple à présenter les partenariats d'une AE sur une page dédiée.
 """
@@ -4139,11 +3909,6 @@ type QRCode {
 """
 type Query {
   """
-  Get all OAuth2 clients. Only admins can do this.
-  """
-  allApps: [ThirdPartyApp!]!
-
-  """
   Récupère tous les formulaires. Réservé aux admins.
   """
   allForms(after: String, before: String, first: Int, last: Int): QueryAllFormsConnection!
@@ -4321,7 +4086,6 @@ type Query {
   me: User
   minor(id: ID!): Minor!
   minors(after: String, before: String, first: Int, last: Int): QueryMinorsConnection!
-  myApps: [ThirdPartyApp!]!
   notification(id: ID!): Notification!
   notificationSubscription(endpoint: String!): NotificationSubscription!
   notificationSubscriptions: [NotificationSubscription!]!
@@ -4432,12 +4196,6 @@ type Query {
     """
     all: Boolean
   ): [Theme!]!
-  thirdPartyApp(
-    """
-    The third party app's client_id. The 'app:' id prefix is optional.
-    """
-    id: ID!
-  ): ThirdPartyApp!
   ticket(id: LocalID!): Ticket!
   ticketGroup(id: LocalID!): TicketGroup!
 
@@ -5989,12 +5747,6 @@ type Subscription {
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
   kioskReload: Boolean!
   registration(id: ID!): SubscriptionRegistrationResult!
-  thirdPartyApp(
-    """
-    The third party app's client_id. The 'app:' id prefix is optional.
-    """
-    id: ID!
-  ): ThirdPartyApp!
 }
 
 union SubscriptionRegistrationResult = Error | SubscriptionRegistrationSuccess | ZodError
@@ -6180,88 +5932,6 @@ enum ThemeVariant {
 }
 
 """
-A third-party OAuth2 client
-"""
-type ThirdPartyApp {
-  active: Boolean!
-  allowedRedirectUris: [String!]!
-  apiUsage(after: String, before: String, first: Int, last: Int): ThirdPartyAppApiUsageConnection!
-  clientId: String!
-  createdAt: DateTime!
-  description: String!
-  faviconUrl: String!
-  id: ID!
-
-  """
-  Logs de connexion de l'application tierce, utile pour débugger des problèmes. Mise à jour en temps réel disponible via une subscription sur la query `thirdPartyApp`.
-  """
-  logs(after: String, before: String, first: Int, last: Int): ThirdPartyAppLogsConnection!
-  name: String!
-  owner: Group!
-  rateLimitHits(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): ThirdPartyAppRateLimitHitsConnection!
-  secretLength: Int!
-  updatedAt: DateTime
-  users(after: String, before: String, first: Int, last: Int): ThirdPartyAppUsersConnection!
-  usersCount: Int!
-  website: String!
-}
-
-type ThirdPartyAppApiUsageConnection {
-  edges: [ThirdPartyAppApiUsageConnectionEdge!]!
-  nodes: [ApiUsage!]!
-  pageInfo: PageInfo!
-}
-
-type ThirdPartyAppApiUsageConnectionEdge {
-  cursor: String!
-  node: ApiUsage!
-}
-
-type ThirdPartyAppLogsConnection {
-  edges: [ThirdPartyAppLogsConnectionEdge!]!
-  nodes: [LogEntry!]!
-  pageInfo: PageInfo!
-}
-
-type ThirdPartyAppLogsConnectionEdge {
-  cursor: String!
-  node: LogEntry!
-}
-
-type ThirdPartyAppRateLimitHitsConnection {
-  edges: [ThirdPartyAppRateLimitHitsConnectionEdge!]!
-  nodes: [ApiRateLimitHits!]!
-  pageInfo: PageInfo!
-}
-
-type ThirdPartyAppRateLimitHitsConnectionEdge {
-  cursor: String!
-  node: ApiRateLimitHits!
-}
-
-type ThirdPartyAppRegistrationResponse {
-  client_id: String!
-  client_secret: String!
-}
-
-type ThirdPartyAppUsersConnection {
-  edges: [ThirdPartyAppUsersConnectionEdge!]!
-  nodes: [User!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type ThirdPartyAppUsersConnectionEdge {
-  cursor: String!
-  node: User!
-}
-
-"""
 A ticket is a way to register for an event. May include a price and conditions.
 """
 type Ticket implements Node {
@@ -6438,6 +6108,10 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
+  school: UID
+    @deprecated(
+      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
+    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6465,7 +6139,6 @@ type User implements Node & Pictured {
     """
     studentAssociation: String!
   ): Boolean!
-  allowedApps: [ThirdPartyApp!]! @deprecated(reason: "Use `authorizedApps` instead")
 
   """
   Formulaires complètement répondus par l'utilisateur
@@ -6473,11 +6146,6 @@ type User implements Node & Pictured {
   answeredForms(after: String, before: String, first: Int, last: Int): UserAnsweredFormsConnection!
   apprentice: Boolean!
   articles(after: String, before: String, first: Int, last: Int): UserArticlesConnection!
-
-  """
-  Applications tierces autorisées à accéder à ce compte utilisateur
-  """
-  authorizedApps: [ThirdPartyApp!]!
   birthday: DateTime
 
   """

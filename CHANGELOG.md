@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Technique
+
+- Churros n'est plus un provider OAuth, mais propose maintenant d'être client OAuth. Les pages /developers/\* ont été supprimées
+
 ## [1.71.0] - 2024-08-23
 
 ### Améliorations

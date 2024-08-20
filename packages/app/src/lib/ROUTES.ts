@@ -359,7 +359,6 @@ const SERVERS = {
   },
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
-  'GET /identity': `/identity`,
   '_RESERVED_USERNAMES /check-uid/[uid]': (uid: string | number, params?: {}) => {
     return `/check-uid/${uid}`;
   },
@@ -384,6 +383,7 @@ const ACTIONS = {
   'upsertSection /forms/[form]/edit': (form: string | number, params?: {}) => {
     return `/forms/${form}/edit?/upsertSection`;
   },
+  'default /login': `/login`,
 };
 
 /**
@@ -627,7 +627,6 @@ export type KIT_ROUTES = {
     'GET /users/[uid]': 'uid';
     'GET /connect/google': never;
     'GET /health': never;
-    'GET /identity': never;
     '_RESERVED_USERNAMES /check-uid/[uid]': 'uid';
     'GET /check-uid/[uid]': 'uid';
     'GET /manifest.json': never;
@@ -637,6 +636,7 @@ export type KIT_ROUTES = {
     'upsertForm /forms': never;
     'postAnswers /forms/[form]/answer': 'form' | 'section';
     'upsertSection /forms/[form]/edit': 'form';
+    'default /login': never;
   };
   LINKS: Record<string, never>;
   Params: {

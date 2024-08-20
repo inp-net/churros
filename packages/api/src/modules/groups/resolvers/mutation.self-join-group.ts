@@ -1,4 +1,4 @@
-import { builder, log, prisma, purgeUserSessions, UnauthorizedError } from '#lib';
+import { builder, log, prisma, purgeSessionsUser, UnauthorizedError } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { GraphQLError } from 'graphql';
@@ -29,7 +29,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       )
         throw new GraphQLError(`Tu n'es pas cotisant·e pour ${group.studentAssociation?.name}.`);
 
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       const groupMember = await prisma.groupMember.create({
         ...query,
         data: {

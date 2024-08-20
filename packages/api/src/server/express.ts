@@ -6,11 +6,17 @@ import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
+import passport from 'passport';
 import { setIntervalAsync } from 'set-interval-async';
 import { WebSocketServer } from 'ws';
 import { schema } from '../schema.js';
+import session from './auth/session.js';
 
 export const api = express();
+
+// default passport strategy
+import('./auth/anonymous.js');
+import('./auth/bearer.js');
 
 api.use(
   // Allow queries from the frontend only
@@ -22,9 +28,21 @@ api.use(
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
+  // express-session middleware
+  session,
+  // Passport middleware
+  passport.initialize(),
+  passport.session(),
+  passport.authenticate(['bearer', 'anonymous'], { session: false }),
 );
 
 export async function startApiServer() {
+  // load passport strategies
+  if (process.env.PUBLIC_OAUTH_ENABLED.trim() === '1') {
+    import('./auth/oauth2.js');
+    import('./auth/logout.js');
+  }
+
   // Register other routes on the API
   try {
     import('./graphql.js');
@@ -33,7 +51,6 @@ export async function startApiServer() {
   }
   import('./gdpr.js');
   import('./log.js');
-  import('./oauth.js');
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');
@@ -47,12 +64,36 @@ export async function startApiServer() {
     await checkHealth();
   }, minutesToMilliseconds(5));
 
+  const onSocketError = console.error;
+
   const apiServer = api.listen(4000, () => {
     console.info('API ready at http://localhost:4000');
     const apiWebsocket = new WebSocketServer({
       server: apiServer,
       path: '/graphql',
     });
+
+    apiWebsocket.on('upgrade', (request, socket, head) => {
+      socket.on('error', onSocketError);
+      // @ts-expect-error c'est des golmons (cf https://github.com/websockets/ws/blob/master/examples/express-session-parse/index.js)
+      session(request, {}, () => {
+        if (!request.session.userId) {
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+        }
+
+        socket.removeListener('error', onSocketError);
+
+        apiWebsocket.handleUpgrade(request, socket, head, (ws) => {
+          apiWebsocket.emit('connection', ws, request);
+        });
+      });
+    });
+
+    // apiWebsocket.on('connection', (ws, request) => {
+    //   ws.on('error', onSocketError);
+    // })
 
     GraphQLWS.useServer({ schema, context }, apiWebsocket);
     console.info('Websocket ready at ws://localhost:4000');

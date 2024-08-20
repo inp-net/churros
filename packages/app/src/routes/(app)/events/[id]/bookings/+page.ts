@@ -1,10 +1,5 @@
 import type { PageEventAllBookingsVariables } from './$houdini';
-
-const tabToFilter = {
-  paid: 'Paid',
-  unpaid: 'Unpaid',
-  verified: 'Verified',
-} as const;
+import { tabToFilter } from './filters';
 
 export const _PageEventAllBookingsVariables: PageEventAllBookingsVariables = async ({
   url: { searchParams },

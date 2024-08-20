@@ -3,7 +3,6 @@
  */
 
 export * from './announcement.js';
-export * from './apps.js';
 export * from './article.js';
 export * from './bar-week.js';
 export * from './board.js';

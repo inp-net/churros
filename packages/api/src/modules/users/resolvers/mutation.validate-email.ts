@@ -1,4 +1,4 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, purgeUserSessions } from '#lib';
+import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, purgeSessionsUser } from '#lib';
 
 import { GraphQLError } from 'graphql';
 
@@ -27,7 +27,7 @@ builder.mutationField('validateEmail', (t) =>
         where: { id: user.id },
         data: { email },
       });
-      purgeUserSessions(user.uid);
+      purgeSessionsUser(user.uid);
       await prisma.emailChange.update({
         where: { id },
         data: { pending: false },

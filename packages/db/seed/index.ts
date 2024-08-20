@@ -1167,21 +1167,6 @@ const thirdPartyAppClub = await prisma.group.findUniqueOrThrow({
   where: { uid: faker.helpers.arrayElement(groups).uid },
 });
 
-await prisma.thirdPartyApp.create({
-  data: {
-    name: 'TVn7',
-    description: 'TVn7',
-    secret: await hash('chipichipi'),
-    id: 'app:chapachapa',
-    active: true,
-    website: 'https://wiki.inpt.fr',
-    allowedRedirectUris: {
-      set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
-    },
-    owner: { connect: { id: thirdPartyAppClub.id } },
-  },
-});
-
 await prisma.shopItem.create({
   data: {
     slug: 'boules-quies',
