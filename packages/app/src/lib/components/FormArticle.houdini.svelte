@@ -199,7 +199,7 @@
         $links: [LinkInput!]!
       ) {
         addLinks(id: $id, links: $links, duplicates: Replace) {
-          ...on MutationAddLinksSuccess {
+          ... on MutationAddLinksSuccess {
             data {
               __typename
             }

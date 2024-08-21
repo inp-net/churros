@@ -77,9 +77,9 @@
     const result = await Contribute.mutate({ optionId, phone: contributePhone });
 
     contributeLoading = undefined;
-    if (toasts.mutation(result, 'contribute', '', 'Impossible de cotiser')) {
+    if (toasts.mutation(result, 'contribute', '', 'Impossible de cotiser')) 
       window.location.reload();
-    }
+    
   }
 
   function optionOfferedToUser(optionId: string) {
@@ -102,9 +102,11 @@
   async function cancelContribution(optionId: string) {
     contributeLoading = optionId;
     const result = await CancelContribution.mutate({ optionId });
-    if (toasts.mutation(result, 'cancelPendingContribution', '', 'Impossible d\'annuler la cotisation')) {
+    if (
+      toasts.mutation(result, 'cancelPendingContribution', '', "Impossible d'annuler la cotisation")
+    ) 
       window.location.reload();
-    }
+    
 
     contributeLoading = undefined;
     window.location.reload();

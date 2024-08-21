@@ -53,7 +53,7 @@
             ...AreaEditLinks_Link
           }
         }
-       ...MutationErrors
+        ...MutationErrors
       }
     }
   `);

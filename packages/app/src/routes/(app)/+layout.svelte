@@ -103,9 +103,7 @@
   $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
 
   let openChangelog: () => void;
-  $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) 
-    openChangelog?.();
-  
+  $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) openChangelog?.();
 </script>
 
 {#if $AppLayout.data?.combinedChangelog}
