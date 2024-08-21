@@ -1,106 +1,37 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
+  import type { DocumentType$options } from '$houdini';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import { formatDate } from '$lib/dates';
+  import { ICONS_DOCUMENT_TYPES } from '$lib/display';
+  import { toasts } from '$lib/toasts';
+  import { zeus } from '$lib/zeus';
+  import { isSameDay } from 'date-fns';
   import SEO from 'svelte-seo';
   import IconDelete from '~icons/mdi/delete-outline';
   import IconEdit from '~icons/mdi/edit-outline';
   import IconBack from '~icons/mdi/undo-variant';
   import type { PageData } from './$types';
-  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import { page } from '$app/stores';
-  import { formatDate } from '$lib/dates';
-  import { isSameDay } from 'date-fns';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import { zeus, DocumentType } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import CardComment from '$lib/components/CardComment.svelte';
-  import InputLongText from '$lib/components/InputLongText.svelte';
-  import { env } from '$env/dynamic/public';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
-  import { me } from '$lib/session';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import { goto } from '$app/navigation';
-  import { ICONS_DOCUMENT_TYPES } from '$lib/display';
-  import { toasts } from '$lib/toasts';
 
   const { PUBLIC_STORAGE_URL } = env;
 
   export let data: PageData;
 
-  let newComment = {
-    body: '',
-  };
-  let replyingTo: { body: string; inReplyToId: string } = { body: '', inReplyToId: '' };
   let confirmingDelete = false;
 
-  const documentTypesWithSolutions = new Set<DocumentType>([
-    DocumentType.Exam,
-    DocumentType.Exercises,
-    DocumentType.GradedExercises,
-    DocumentType.Practical,
-    DocumentType.PracticalExam,
+  const documentTypesWithSolutions = new Set<DocumentType$options>([
+    'Exam',
+    'Exercises',
+    'GradedExercises',
+    'Practical',
+    'PracticalExam',
   ]);
-
-  async function addComment(
-    comment: { body: string; inReplyToId: string } | undefined = undefined,
-  ) {
-    const { upsertComment } = await $zeus.mutate({
-      upsertComment: [
-        {
-          resourceId: document.id,
-          ...(comment ?? newComment),
-        },
-        {
-          id: true,
-          bodyHtml: true,
-          body: true,
-          createdAt: true,
-          updatedAt: true,
-          inReplyToId: true,
-          author: { uid: true, fullName: true, pictureFile: true },
-        },
-      ],
-    });
-    data.document.comments.edges = [...data.document.comments.edges, { node: upsertComment }];
-    if (!comment) {
-      newComment = {
-        body: '',
-      };
-    }
-  }
-  async function removeComment(id: string) {
-    await $zeus.mutate({
-      deleteComment: [{ id }, { id: true }],
-    });
-    window.location.reload();
-  }
-  async function editComment(id: string, body: string) {
-    const { upsertComment } = await $zeus.mutate({
-      upsertComment: [
-        {
-          id,
-          resourceId: document.id,
-          body,
-        },
-        {
-          id: true,
-          bodyHtml: true,
-          body: true,
-          createdAt: true,
-          updatedAt: true,
-          inReplyToId: true,
-          author: { uid: true, fullName: true, pictureFile: true },
-        },
-      ],
-    });
-    data.document.comments.edges = data.document.comments.edges.map(({ node }) =>
-      node.id === upsertComment.id ? { node: upsertComment } : { node },
-    );
-  }
-  async function reply() {
-    if (!replyingTo) return;
-    await addComment(replyingTo);
-    replyingTo = { body: '', inReplyToId: '' };
-  }
 
   $: ({
     major,
@@ -113,7 +44,6 @@
       createdAt,
       updatedAt,
       uploader,
-      comments,
       solutionPaths,
       paperPaths,
       type,
@@ -185,7 +115,7 @@
         >
       {:else}
         <ButtonShare text></ButtonShare>
-        {#if $me?.admin || uploader?.uid === $me?.uid}
+        {#if data.me?.admin || uploader?.uid === data.me?.uid}
           <ButtonInk icon={IconEdit} href="./edit">Modifier</ButtonInk>
           <ButtonInk
             on:click={() => {
@@ -261,47 +191,6 @@
     </div>
   </div>
 </article>
-<section class="comments">
-  <h2>Commentaires</h2>
-
-  <form
-    on:submit={async () => {
-      await addComment();
-    }}
-    class="new-comment"
-  >
-    <InputLongText
-      submitShortcut
-      label=""
-      rows={2}
-      rich
-      bind:value={newComment.body}
-      placeholder="Ajouter un commentaire"
-    ></InputLongText>
-    <ButtonSecondary submits>Commenter</ButtonSecondary>
-  </form>
-
-  <ul class="nobullet comments">
-    {#each comments.edges.filter(({ node: { inReplyToId } }) => !inReplyToId) as { node }}
-      <li class="comment">
-        <CardComment
-          bind:replyingTo
-          on:reply={reply}
-          on:edit={async ({ detail }) => {
-            await editComment(node.id, detail);
-          }}
-          on:delete={async ({ detail: id }) => {
-            await removeComment(id);
-          }}
-          {...node}
-          replies={comments.edges
-            .filter(({ node: { inReplyToId } }) => inReplyToId === node.id)
-            .map((c) => c.node)}
-        ></CardComment>
-      </li>
-    {/each}
-  </ul>
-</section>
 
 <style lang="scss">
   .breadcrumb-icon {
@@ -371,22 +260,5 @@
 
   .id code {
     font-weight: normal;
-  }
-
-  .new-comment {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-
-    & :global(> :first-child) {
-      flex-grow: 1;
-    }
-  }
-
-  ul.comments {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1.5rem;
   }
 </style>

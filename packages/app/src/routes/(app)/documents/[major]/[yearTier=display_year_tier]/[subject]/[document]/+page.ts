@@ -5,73 +5,17 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async (event) => {
   const { yearTier, forApprentices } = parseDisplayYearTierAndForApprentices(event.params.yearTier);
-  // return loadQuery(
-  //   {
-  //     major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
-  //     subject: [
-  //       { slug: params.subject, yearTier, forApprentices },
-  //       { name: true, shortName: true, uid: true, id: true, emoji: true },
-  //     ],
-  //     document: [
-  //       {
-  //         subject: params.subject,
-  //         slug: params.document,
-  //       },
-  //       {
-  //         title: true,
-  //         id: true,
-  //         type: true,
-  //         schoolYear: true,
-  //         descriptionHtml: true,
-  //         solutionPaths: true,
-  //         paperPaths: true,
-  //         createdAt: true,
-  //         updatedAt: true,
-  //         subject: {
-  //           name: true,
-  //           uid: true,
-  //           minors: {
-  //             uid: true,
-  //           },
-  //           majors: {
-  //             uid: true,
-  //           },
-  //         },
-  //         uploader: {
-  //           uid: true,
-  //           pictureFile: true,
-  //           fullName: true,
-  //         },
-  //         comments: [
-  //           {
-  //             first: 100,
-  //           },
-  //           {
-  //             edges: {
-  //               node: {
-  //                 id: true,
-  //                 author: { uid: true, fullName: true, pictureFile: true },
-  //                 bodyHtml: true,
-  //                 body: true,
-  //                 inReplyToId: true,
-  //                 createdAt: true,
-  //                 updatedAt: true,
-  //               },
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   { fetch, parent },
-  // );
-  const { major, subject } = await graphql(`
+  const { major, subject, me } = await graphql(`
     query PageDocumentsMajorSubjectDocument_MajorAndSubject(
       $major: String!
       $subject: String!
       $yearTier: Int!
       $forApprentices: Boolean!
     ) {
+      me {
+        admin
+        uid
+      }
       major(uid: $major) {
         name
         shortName
@@ -111,7 +55,7 @@ export const load: PageLoad = async (event) => {
         forApprentices,
       },
     })
-    .then((d) => d.data ?? { major: null, subject: null });
+    .then((d) => d.data ?? { major: null, subject: null, me: null });
 
   if (!major || !subject) error(404, { message: 'Filière ou matière non trouvée' });
 
@@ -174,6 +118,7 @@ export const load: PageLoad = async (event) => {
   if (!document) error(404, { message: 'Document non trouvé' });
 
   return {
+    me,
     major,
     subject,
     document,

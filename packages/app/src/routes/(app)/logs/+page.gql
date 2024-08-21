@@ -1,0 +1,18 @@
+query PageLogs {
+  logs(first: 50) @paginate {
+    edges {
+      node {
+        id
+        happenedAt
+        user {
+          uid
+          fullName
+        }
+        area
+        action
+        target
+        message
+      }
+    }
+  }
+}

@@ -1,11 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import FormNotificationSettings from '$lib/components/FormNotificationSettings.svelte';
   import FormPassword from '$lib/components/FormPassword.svelte';
@@ -14,42 +12,17 @@
   import Permissions from '$lib/components/FormUserPermissions.svelte';
   import InputPerson from '$lib/components/InputPerson.svelte';
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import { formatDate, formatDateTime } from '$lib/dates';
-  import { me } from '$lib/session';
+  import { formatDate } from '$lib/dates';
   import { theme } from '$lib/theme';
-  import { CredentialType, zeus } from '$lib/zeus';
-  import { default as parseUserAgent } from 'ua-parser-js';
-  import IconActive from '~icons/mdi/adjust';
-  import { default as IconCheck, default as IconFinishEditing } from '~icons/mdi/check';
-  import { default as IconCancelEditing, default as IconClose } from '~icons/mdi/close';
-  import IconSynchronize from '~icons/mdi/database-sync-outline';
-  import IconPencil from '~icons/mdi/pencil-outline';
+  import { zeus } from '$lib/zeus';
+  import IconCheck from '~icons/mdi/check';
+  import IconClose from '~icons/mdi/close';
   import type { PageData } from './$types';
 
   let godparentRequestSendServerError = '';
   let godparentRequestSending = false;
   let godparentDeleting = false;
   let godparentDeleteServerError = '';
-  let ldapSyncResult: undefined | boolean = undefined;
-  let editingSession: { id: string; oldName: string } | undefined = undefined;
-
-  const deleteToken = async (id: string, active: boolean) => {
-    if (active) {
-      window.localStorage.setItem('isReallyLoggedout', 'true');
-      await goto(`/logout/?token=${$page.data.token!}`);
-    } else {
-      await $zeus.mutate({ deleteToken: [{ id }, true] });
-      data.me.credentials = data.me.credentials.filter((credential) => credential.id !== id);
-    }
-  };
-
-  const renameSession = async (id: string, name: string) => {
-    await $zeus.mutate({ renameSession: [{ id, name }, true] });
-    const idx = data.me.credentials.findIndex((credential) => credential.id === id);
-    data.me.credentials[idx].name = name;
-    editingSession = undefined;
-  };
 
   const sendGodparentRequest = async () => {
     if (godparentRequestSending) return;
@@ -62,6 +35,7 @@
         {
           '__typename': true,
           '...on Error': { message: true },
+          '...on ZodError': { message: true },
           '...on MutationUpsertGodparentRequestSuccess': {
             data: {
               id: true,
@@ -85,13 +59,7 @@
       godparentRequestSendServerError = upsertGodparentRequest.message;
       return;
     }
-
-    data.user.outgoingGodparentRequests = [
-      ...data.user.outgoingGodparentRequests,
-      {
-        ...upsertGodparentRequest.data,
-      },
-    ];
+    window.location.reload();
   };
 
   const deleteGodparent = async () => {
@@ -102,6 +70,10 @@
       updateUser: [
         {
           ...data.user,
+          address: data.user.address ?? '',
+          phone: data.user.phone ?? '',
+          email: data.user.email ?? '',
+          otherEmails: data.user.otherEmails ?? [],
           majorId: data.user.major?.id,
           godparentUid: '',
           contributesWith: undefined,
@@ -109,6 +81,7 @@
         {
           '__typename': true,
           '...on Error': { message: true },
+          '...on ZodError': { message: true },
           '...on MutationUpdateUserSuccess': {
             data: {
               godparent: {
@@ -130,11 +103,11 @@
       return;
     }
 
-    data.user.godparent = updateUser.data.godparent;
+    window.location.reload();
   };
 
   const deleteGodchild = async (godchildUid: string) => {
-    const { deleteGodchild } = await $zeus.mutate({
+    await $zeus.mutate({
       deleteGodchild: [
         {
           parentUid: data.user.uid,
@@ -144,11 +117,7 @@
       ],
     });
 
-    if (deleteGodchild) {
-      data.user.godchildren = data.user.godchildren.filter(
-        (godchild) => godchild.uid !== godchildUid,
-      );
-    }
+    window.location.reload();
   };
 
   const answerGodchildRequest = (id: string, accept: boolean) => async () => {
@@ -164,26 +133,7 @@
       ],
     });
 
-    if (data.user.outgoingGodparentRequests.some((req) => req.id === id)) {
-      data.user.outgoingGodparentRequests = data.user.outgoingGodparentRequests.filter(
-        (req) => req.id !== id,
-      );
-      return;
-    }
-
-    const { godchild } = data.user.incomingGodparentRequests.find((req) => req.id === id)!;
-
-    data.user.incomingGodparentRequests = data.user.incomingGodparentRequests.filter(
-      (req) => req.id !== id,
-    );
-    if (accept) data.user.godchildren = [...data.user.godchildren, godchild];
-  };
-
-  const humanizeUserAgent = (userAgent: string) => {
-    const { browser, os } = parseUserAgent(userAgent);
-    if (!browser.name) return userAgent;
-    if (!os.name) return `${browser.name}`;
-    return `${browser.name} sur ${os.name}`;
+    window.location.reload();
   };
 
   export let data: PageData;
@@ -193,12 +143,7 @@
 <div class="content">
   <h1>
     <ButtonBack go=".." />
-    {#if data.user.uid === $me?.uid}
-      Paramètres
-    {:else}
-      Éditer
-      {data.user.fullName}
-    {/if}
+    Éditer {data.user.fullName}
   </h1>
   <div class="forms">
     <section class="details">
@@ -214,27 +159,11 @@
       <FormPassword user={data.user} />
     </section>
     <section class="misc">
-      {#if $me?.admin}
-        <h2>LDAP</h2>
-        {#if ldapSyncResult !== undefined}
-          <Alert theme={ldapSyncResult ? 'success' : 'danger'}>
-            {#if ldapSyncResult}Utilisateur synchronisé{:else}Erreur lors de la synchronisation{/if}
-          </Alert>
-        {/if}
-        <ButtonSecondary
-          icon={IconSynchronize}
-          on:click={async () => {
-            ({ syncUserLdap: ldapSyncResult } = await $zeus.mutate({
-              syncUserLdap: [{ uid: data.user.uid }, true],
-            }));
-          }}>Synchroniser</ButtonSecondary
-        >
-      {/if}
       {#if data.userPermissions}
         <h2>Permissions</h2>
         <Permissions bind:data />
       {/if}
-      {#if $me?.uid === data.user.uid}
+      {#if data.me?.uid === data.user.uid}
         <h2>Apparence</h2>
         <InputSelectOne
           label="Thème"
@@ -325,7 +254,7 @@
           Demandez à votre fillot·e de vous demander en tant que parrain/marraine
         </p>
       {/if}
-      {#if data.user.uid === $me?.uid}
+      {#if data.user.uid === data.me?.uid}
         <h2>Notifications</h2>
         <FormNotificationSettings
           userUid={data.user.uid}
@@ -333,91 +262,12 @@
         ></FormNotificationSettings>
         <h2>Données personnelles</h2>
         <p>
-          <a href="{env.PUBLIC_USER_DUMP_URL}?token={data.token}" download="{data.me.uid}.json">
-            Télécharger mes données.
-          </a>
-        </p>
-        <p>
-          Si vous souhaitez supprimer votre compte, merci de nous contacter via
+          Si vous souhaitez supprimer votre compte ou récupérer vos données personnelles, merci de
+          nous contacter via
           <a href="mailto:{env.PUBLIC_SUPPORT_EMAIL}">{env.PUBLIC_SUPPORT_EMAIL}</a>.
         </p>
       {/if}
     </section>
-    {#if $me?.uid === data.user.uid}
-      <section class="sessions">
-        <h2>
-          Sessions <ButtonSecondary
-            danger
-            on:click={async () => {
-              await Promise.all(
-                data.me.credentials
-                  .filter(({ type, active }) => type === CredentialType.Token && !active)
-                  .map(async ({ id }) => deleteToken(id, false)),
-              );
-              const activeSession = data.me.credentials.find(
-                ({ type, active }) => type === CredentialType.Token && active,
-              );
-              if (activeSession) await deleteToken(activeSession.id, true);
-            }}>Tout déconnecter</ButtonSecondary
-          >
-        </h2>
-        <ul class="nobullet">
-          {#each data.me.credentials.filter(({ type }) => type === CredentialType.Token) as { createdAt, name, userAgent, active, id }}
-            <li>
-              <div class="active-indicator">
-                {#if active}
-                  <IconActive />
-                {/if}
-              </div>
-              <div class="date-and-ua">
-                <p class="date">Ouverte le {formatDateTime(createdAt)}</p>
-                <p class="name">
-                  <!--                  -->
-                  {#if editingSession?.id === id}
-                    <InputText label="" maxlength={255} bind:value={name} />
-                  {:else}
-                    {name.length > 0 ? name : humanizeUserAgent(userAgent)}
-                  {/if}
-
-                  {#if active}
-                    <span class="active"> Session actuelle </span>
-                  {/if}
-                </p>
-              </div>
-              <div class="actions">
-                {#if editingSession?.id === id}
-                  <ButtonGhost class="success" on:click={async () => renameSession(id, name)}>
-                    <IconFinishEditing />
-                  </ButtonGhost>
-                  <ButtonGhost
-                    help="Annuler les modifications"
-                    class="danger"
-                    on:click={() => {
-                      name = editingSession?.oldName ?? '';
-                      editingSession = undefined;
-                    }}
-                  >
-                    <IconCancelEditing />
-                  </ButtonGhost>
-                {:else}
-                  <ButtonGhost
-                    help="Renommer"
-                    on:click={() => {
-                      editingSession = { id, oldName: name };
-                    }}
-                  >
-                    <IconPencil />
-                  </ButtonGhost>
-                {/if}
-                <ButtonSecondary danger on:click={async () => deleteToken(id, active)}>
-                  Déconnecter
-                </ButtonSecondary>
-              </div>
-            </li>
-          {/each}
-        </ul>
-      </section>
-    {/if}
   </div>
 </div>
 
@@ -467,59 +317,6 @@
 
   .content section h3 {
     margin-top: 0.5rem;
-  }
-
-  .content .sessions {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .sessions ul {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 0.5rem;
-  }
-
-  .sessions li:not(.empty) {
-    display: grid;
-    grid-template-columns: 2rem 1fr 0.5fr;
-    gap: 0.5rem;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-block);
-  }
-
-  .sessions li:nth-child(even) {
-    background: var(--primary-bg);
-  }
-
-  .sessions .active-indicator {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .sessions .name {
-    display: flex;
-    flex-wrap: wrap-reverse;
-    align-items: center;
-  }
-
-  .sessions .active {
-    &::before {
-      padding: 0 0.5em;
-      content: '•';
-    }
-
-    font-weight: 600;
-  }
-
-  .sessions .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-    align-items: center;
-    justify-content: center;
-    justify-self: self-end;
   }
 
   .send-request {

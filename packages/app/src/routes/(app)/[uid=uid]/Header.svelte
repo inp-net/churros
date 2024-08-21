@@ -95,9 +95,9 @@
           ...AvatarStudentAssociation
         }
         ... on Major {
-          shortName
+          name
           ...AvatarMajor
-          fullName: name
+          fullName
           schools {
             ...AvatarSchool
           }
@@ -164,13 +164,7 @@
     </div>
     <div class="text">
       <h2>
-        <LoadingText
-          value={$data
-            ? $data.__typename === 'Major'
-              ? $data.shortName
-              : $data.name
-            : PendingValue}
-        />
+        <LoadingText value={$data && 'name' in $data ? $data.name : PendingValue} />
       </h2>
       <div class="details">
         {#if !$data || !loaded($data.__typename)}
@@ -317,11 +311,7 @@
     {:else if $data.__typename === 'StudentAssociation'}
       {#if $data.contributing}
         {#if $data.canEditDetails}
-          <ButtonSecondary
-            stretches
-            href={refroute('/student-associations/[uid]/edit', $page.params.uid)}
-            >Modifier</ButtonSecondary
-          >
+          <!-- TODO -->
         {:else}
           <ButtonSecondary stretches disabled icon={IconCheck}>Cotisant.e</ButtonSecondary>
         {/if}
@@ -336,9 +326,7 @@
       <!-- TODO edit page -->
     {:else if $data.__typename === 'School'}
       {#if $data.canEdit}
-        <ButtonSecondary stretches href={refroute('/schools/[uid]/edit', $page.params.uid)}>
-          Modifier
-        </ButtonSecondary>
+        <!-- TODO edit page -->
       {/if}
     {/if}
     <ButtonShare let:share>

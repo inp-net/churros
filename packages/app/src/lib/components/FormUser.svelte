@@ -50,35 +50,33 @@
 
   export let data: {
     user: {
-      address: string;
+      address: string | null;
       description: string;
       graduationYear: number;
-      minor?: {
+      minor: null | {
         id: string;
         name: string;
         yearTier: number;
         shortName: string;
       };
-      major?:
-        | undefined
-        | {
-            name: string;
-            shortName: string;
-            id: string;
-            minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
-            schools: Array<{
-              name: string;
-              id: string;
-              studentAssociations: Array<{ id: string; name: string }>;
-            }>;
-          };
+      major: null | {
+        name: string;
+        shortName: string;
+        id: string;
+        minors: Array<{ id: string; name: string; yearTier: number; shortName: string }>;
+        schools: Array<{
+          name: string;
+          id: string;
+          studentAssociations: Array<{ id: string; name: string }>;
+        }>;
+      };
       links: Array<{ name: string; value: string }>;
       nickname: string;
-      phone: string;
+      phone: null | string;
       firstName: string;
       lastName: string;
-      email: string;
-      otherEmails: string[];
+      email: string | null;
+      otherEmails: string[] | null;
       birthday: Date | null;
       uid: string;
       apprentice: boolean;
@@ -152,15 +150,15 @@
             uid: data.user.uid,
             nickname,
             description,
-            address,
+            address: address ?? '',
             graduationYear,
             majorId: major?.id ?? null,
             minorId: minor?.id ?? null,
-            phone,
+            phone: phone ?? '',
             apprentice,
             birthday,
-            otherEmails,
-            email,
+            otherEmails: otherEmails ?? [],
+            email: email ?? '',
             contributesWith: canEditContributions ? contributesWith.map((c) => c.id) : undefined,
             cededImageRightsToTVn7,
           },
@@ -277,11 +275,13 @@
   {/if}
   <div class="side-by-side">
     <InputText
+      required
       type="email"
       label="Email principale"
       hint="Celle que tu utilises pour te connecter"
       maxlength={255}
-      bind:value={email}
+      value={email ?? ''}
+      on:input={({ detail }) => (email = detail.currentTarget.value || null)}
     />
   </div>
   {#if canEditContributions}
@@ -296,7 +296,14 @@
     facultatives.
   </p>
   <InputSocialLinks bind:value={links} label="Réseaux sociaux" />
-  <InputEmailList placeholder="moi@example.com" label="Autres emails" bind:value={otherEmails} />
+  <InputEmailList
+    placeholder="moi@example.com"
+    label="Autres emails"
+    value={otherEmails ?? []}
+    on:input={({ detail }) => {
+      otherEmails = detail;
+    }}
+  />
   <InputDate
     actionIcon={IconClear}
     on:action={() => {
@@ -306,8 +313,19 @@
     label="Date de naissance"
     bind:value={birthday}
   />
-  <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
-  <InputText label="Adresse postale" maxlength={255} bind:value={address} />
+  <InputText
+    type="tel"
+    label="Numéro de téléphone"
+    maxlength={255}
+    value={phone ?? ''}
+    on:input={({ detail }) => (phone = detail.currentTarget.value || null)}
+  />
+  <InputText
+    label="Adresse postale"
+    maxlength={255}
+    value={address ?? ''}
+    on:input={({ detail }) => (address = detail.currentTarget.value || null)}
+  />
   <section class="submit">
     <ButtonPrimary submits {loading}>Sauvegarder</ButtonPrimary>
   </section>

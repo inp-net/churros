@@ -5,11 +5,11 @@ query PagePostEdit($id: LocalID!) {
     group {
       uid
     }
-    ...FormPicture @mask_disable
+    ...FormPicture
     ...FormArticle
   }
 
-  me {
+  me: assertMe {
     canCreatePostsOn {
       ...FormArticleGroups @mask_disable
     }

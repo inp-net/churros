@@ -17,7 +17,7 @@
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let user: User | undefined = undefined;
+  export let user: User | null | undefined = null;
 
   $: avatarHref = user ? `/users/${user?.uid ?? ''}` : '';
 

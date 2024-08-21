@@ -9,12 +9,11 @@
     MaybeError,
   } from '$lib/components';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
-  import { loading, LoadingText } from '$lib/loading';
+  import { loading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
   import type { PageData } from './$houdini';
-  import { refroute } from '$lib/navigation';
 
   export let data: PageData;
   $: ({ PageEventEditManagers } = data);
@@ -32,15 +31,7 @@
             power
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -54,15 +45,7 @@
             ...List_EventManagers_insert
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -75,15 +58,7 @@
             id @EventManager_delete
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -146,12 +121,7 @@
       {#each event.managers as manager}
         <li>
           <div class="left">
-            <AvatarUser user={manager.user} />
-            <LoadingText
-              tag="a"
-              href={refroute('/users/[uid]', loading(manager.user.uid, ''))}
-              value={manager.user.uid}
-            />
+            <AvatarUser name user={manager.user} />
           </div>
           <div class="right">
             <InputSelectOneDropdown

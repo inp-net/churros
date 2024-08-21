@@ -1,150 +1,159 @@
-import { loadQuery, Selector } from '$lib/zeus';
-import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import { graphql } from '$houdini';
+import { error } from '@sveltejs/kit';
 
-export const _userQuery = Selector('User')({
-  id: true,
-  uid: true,
-  email: true,
-  otherEmails: true,
-  firstName: true,
-  lastName: true,
-  nickname: true,
-  fullName: true,
-  description: true,
-  pictureFile: true,
-  address: true,
-  apprentice: true,
-  graduationYear: true,
-  phone: true,
-  birthday: true,
-  cededImageRightsToTVn7: true,
-  links: { name: true, value: true },
-  godparent: {
-    uid: true,
-    firstName: true,
-    lastName: true,
-    pictureFile: true,
-    fullName: true,
-  },
-  godchildren: {
-    uid: true,
-    firstName: true,
-    lastName: true,
-    pictureFile: true,
-    fullName: true,
-  },
-  outgoingGodparentRequests: {
-    id: true,
-    godparent: {
-      uid: true,
-      firstName: true,
-      lastName: true,
-      pictureFile: true,
-      fullName: true,
-    },
-    createdAt: true,
-  },
-  incomingGodparentRequests: {
-    id: true,
-    godchild: {
-      uid: true,
-      firstName: true,
-      lastName: true,
-      pictureFile: true,
-      fullName: true,
-    },
-    createdAt: true,
-  },
-  contributesTo: {
-    name: true,
-    id: true,
-  },
-  contributesWith: {
-    name: true,
-    id: true,
-  },
-  familyTree: {
-    users: { uid: true },
-  },
-  minor: { id: true, name: true, yearTier: true, shortName: true, uid: true },
-  major: {
-    shortName: true,
-    uid: true,
-    id: true,
-    name: true,
-    minors: { id: true, name: true, yearTier: true, shortName: true },
-    schools: {
-      name: true,
-      id: true,
-      studentAssociations: {
-        name: true,
-        id: true,
-      },
-    },
-  },
-  enabledNotificationChannels: true,
-  canBeEdited: true,
-});
-
-export const load: PageLoad = async ({ fetch, params, parent }) => {
-  const { me } = await parent();
-  const { user } = await loadQuery(
-    {
-      user: [params, { canBeEdited: true }],
-    },
-    { fetch, parent },
-  );
-  if (!user.canBeEdited || !me) throw redirect(307, '..');
-
-  const result = await loadQuery(
-    {
-      user: [params, _userQuery],
-      // If the user is an admin, we also load the permissions
-      __alias: {
-        userPermissions: me.admin
-          ? {
-              user: [params, { admin: true, canAccessDocuments: true }],
+export async function load(event) {
+  const result = await graphql(`
+    query PageUserEdit($uid: String!) {
+      user(uid: $uid) {
+        id
+        uid
+        email
+        otherEmails
+        firstName
+        lastName
+        nickname
+        fullName
+        description
+        pictureFile
+        address
+        apprentice
+        graduationYear
+        phone
+        birthday
+        cededImageRightsToTVn7
+        links {
+          name
+          value
+        }
+        godparent {
+          uid
+          firstName
+          lastName
+          pictureFile
+          fullName
+        }
+        godchildren {
+          uid
+          firstName
+          lastName
+          pictureFile
+          fullName
+        }
+        outgoingGodparentRequests {
+          id
+          godparent {
+            uid
+            firstName
+            lastName
+            pictureFile
+            fullName
+          }
+          createdAt
+        }
+        incomingGodparentRequests {
+          id
+          godchild {
+            uid
+            firstName
+            lastName
+            pictureFile
+            fullName
+          }
+          createdAt
+        }
+        contributesTo {
+          name
+          id
+        }
+        contributesWith {
+          name
+          id
+        }
+        familyTree {
+          users {
+            uid
+          }
+        }
+        minor {
+          id
+          name
+          yearTier
+          shortName
+          uid
+        }
+        major {
+          shortName
+          uid
+          id
+          name
+          minors {
+            id
+            name
+            yearTier
+            shortName
+          }
+          schools {
+            name
+            id
+            studentAssociations {
+              name
+              id
             }
-          : {},
-      },
-      schoolGroups: {
-        names: true,
-        majors: { id: true, name: true, minors: { id: true, name: true, yearTier: true } },
-      },
-      contributionOptions: {
-        name: true,
-        id: true,
-      },
-      me: {
-        uid: true,
-        admin: true,
-        credentials: {
-          id: true,
-          name: true,
-          type: true,
-          userAgent: true,
-          createdAt: true,
-          active: true,
-        },
-        cededImageRightsToTVn7: true,
-        groups: {
-          group: {
-            uid: true,
-            name: true,
-            pictureFile: true,
-          },
-          title: true,
-        },
-      },
-    },
-    { fetch, parent },
-  );
-  return {
-    ...result,
-    user: {
-      ...result.user,
-      birthday: result.user.birthday ?? null,
-    },
-  };
-};
+          }
+        }
+        enabledNotificationChannels
+        canBeEdited
+      }
+
+      schoolGroups {
+        names
+        majors {
+          id
+          name
+          minors {
+            id
+            name
+            yearTier
+          }
+        }
+      }
+
+      contributionOptions {
+        name
+        id
+      }
+
+      me {
+        uid
+        admin
+        credentials {
+          id
+          name
+          type
+          userAgent
+          createdAt
+          active
+        }
+        cededImageRightsToTVn7
+        groups {
+          group {
+            uid
+            name
+            pictureFile
+          }
+          title
+        }
+      }
+
+      userPermissions: user(uid: $uid) {
+        admin
+        canAccessDocuments
+      }
+    }
+  `)
+    .fetch({ event, variables: event.params })
+    .then((d) => d.data);
+
+  if (!result?.user) error(404, { message: 'Personne non trouvée' });
+  return result;
+}

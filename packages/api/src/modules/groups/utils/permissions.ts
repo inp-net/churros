@@ -132,6 +132,24 @@ export function userIsOnGroupBoard(user: Context['user'], group: { uid: string }
   );
 }
 
+export function canEditGroupMembers(
+  user: Context['user'],
+  group: Prisma.GroupGetPayload<{ include: typeof canEditGroupMembers.prismaIncludes }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, group.studentAssociationId)) return true;
+  if (userIsGroupEditorOf(user, group.studentAssociationId)) return true;
+  if (userIsOnGroupBoard(user, group)) return true;
+  if (group.members.some((member) => member.memberId === user.id && member.canEditMembers))
+    return true;
+  return false;
+}
+
+canEditGroupMembers.prismaIncludes = {
+  members: true,
+} as const satisfies Prisma.GroupInclude;
+
 /** Allows passing to function either only the groups' uids or IDs */
 function groupsAreTheSame<G extends { id: string } | { uid: string }>(
   group: G,

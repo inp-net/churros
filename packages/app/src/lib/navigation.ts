@@ -24,7 +24,6 @@ import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
-import IconForm from '~icons/msl/list-alt-outline';
 import IconLogout from '~icons/msl/logout';
 import IconNotificationSettings from '~icons/msl/notifications-outline';
 import IconPostAdd from '~icons/msl/post-add';
@@ -180,11 +179,12 @@ const quickActionAdd = {
         disabled: !me?.admin && !me?.canCreateEventsOn.length,
       };
     },
-    {
-      icon: IconForm,
-      label: 'Formulaire',
-      href: route('/forms/create'),
-    },
+    // TODO
+    // {
+    //   icon: IconForm,
+    //   label: 'Formulaire',
+    //   href: route('/forms/create'),
+    // },
     async () => {
       const me = browser ? await navtopPermissions() : null;
       return {
@@ -216,11 +216,6 @@ const rootPagesActions = [
     icon: IconInformation,
     label: 'À propos',
     href: route('/credits'),
-  },
-  {
-    icon: IconXML,
-    label: 'Developers',
-    href: route('GET /developers'),
   },
   async () => {
     const me = browser ? await navtopPermissions() : null;

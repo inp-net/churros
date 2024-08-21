@@ -24,6 +24,9 @@
           '...on Error': {
             message: true,
           },
+          '...on ZodError': {
+            message: true,
+          },
           '...on MutationUsePasswordResetSuccess': {
             data: true,
           },
@@ -32,7 +35,7 @@
     });
     loading = false;
 
-    if (usePasswordReset.__typename === 'Error') {
+    if (usePasswordReset.__typename !== 'MutationUsePasswordResetSuccess') {
       serverError = usePasswordReset.message;
       return;
     }

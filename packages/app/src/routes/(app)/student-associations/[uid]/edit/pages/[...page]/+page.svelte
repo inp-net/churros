@@ -20,15 +20,7 @@
       $body: String!
     ) {
       upsertPage(body: $body, studentAssociation: $uid, path: $page, title: $title) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
         ... on MutationUpsertPageSuccess {
           data {
             bodyHtml

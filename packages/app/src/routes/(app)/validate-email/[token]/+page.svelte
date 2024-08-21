@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { graphql } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { toasts } from '$lib/toasts';
-  import { zeus } from '$lib/zeus';
   import type { PageData } from './$types';
 
   let email = '';
@@ -13,19 +13,20 @@
 
   async function rerequestValidation() {
     loading = true;
-    await $zeus.mutate({
-      requestEmailChange: [
-        { email },
-        {
-          '__typename': true,
-          '...on Error': { message: true },
-          '...on MutationRequestEmailChangeSuccess': { data: true },
-        },
-      ],
-    });
-    toasts.info(
-      'E-mail envoyé !',
+    toasts.mutation(
+      await graphql(`
+        mutation RequestEmailChange($email: String!) {
+          requestEmailChange(email: $email) {
+            ...MutationErrors
+            ... on MutationRequestEmailChangeSuccess {
+              data
+            }
+          }
+        }
+      `).mutate({ email }),
+      'requestEmailChange',
       "Si l'adresse fournie existe, tu devrais recevoir un e-mail de validation dans quelques instants.",
+      "Erreur lors de l'envoi de l'e-mail de validation",
     );
     loading = false;
   }

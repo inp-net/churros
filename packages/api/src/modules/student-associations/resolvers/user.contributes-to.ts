@@ -1,4 +1,5 @@
 import { builder, prisma } from '#lib';
+import { prismaQueryOnClubBoard } from '#modules/groups';
 
 import { StudentAssociationType } from '../index.js';
 
@@ -15,11 +16,26 @@ builder.prismaObjectField('User', 'contributesTo', (t) =>
           ...(user.admin
             ? {}
             : {
-                admins: {
-                  some: {
-                    id: user.id,
+                OR: [
+                  {
+                    admins: {
+                      some: {
+                        id: user.id,
+                      },
+                    },
                   },
-                },
+                  {
+                    groups: {
+                      some: {
+                        members: {
+                          some: {
+                            AND: [{ memberId: user.id }, prismaQueryOnClubBoard()],
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
               }),
           contributionOptions: {
             some: {

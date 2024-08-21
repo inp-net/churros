@@ -15,6 +15,13 @@
   // 	],
   // 	"description": "Log output to console"
   // }
+  "From Zeus": {
+    "scope": "typescript",
+    "prefix": "ntmzeus",
+    "body": [
+      "return await graphql(`$0`).fetch({ event, variables: { $1 } }).then(d => d.data ?? {$2})",
+    ],
+  },
   "New page": {
     "scope": "svelte",
     "prefix": "houdinipage",

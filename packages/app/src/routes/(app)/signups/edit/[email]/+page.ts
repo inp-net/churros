@@ -1,28 +1,35 @@
-import { loadQuery } from '$lib/zeus';
+import { graphql } from '$houdini';
+import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, parent }) =>
-  loadQuery(
-    {
-      userCandidateByEmail: [
-        params,
-        {
-          firstName: true,
-          lastName: true,
-          fullName: true,
-          email: true,
-          address: true,
-          birthday: true,
-          graduationYear: true,
-          majorId: true,
-          phone: true,
-          schoolEmail: true,
-          schoolServer: true,
-          schoolUid: true,
-          cededImageRightsToTVn7: true,
-        },
-      ],
-      schoolGroups: { names: true, majors: { id: true, name: true, schools: { name: true } } },
-    },
-    { fetch, parent },
-  );
+export const load: PageLoad = async (event) => {
+  const result = await graphql(`
+    query PageSignupsEdit($email: String!) {
+      userCandidateByEmail(email: $email) {
+        firstName
+        lastName
+        fullName
+        email
+        birthday
+        graduationYear
+        majorId
+        cededImageRightsToTVn7
+      }
+      schoolGroups {
+        names
+        majors {
+          id
+          name
+          schools {
+            name
+          }
+        }
+      }
+    }
+  `)
+    .fetch({ event, variables: event.params })
+    .then((d) => d.data ?? { userCandidateByEmail: null, schoolGroups: { names: [], majors: [] } });
+
+  if (!result.userCandidateByEmail) error(404, { message: 'Candidat non trouvé' });
+  return result;
+};

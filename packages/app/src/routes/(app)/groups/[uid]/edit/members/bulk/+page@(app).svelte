@@ -90,6 +90,7 @@
           {
             '__typename': true,
             '...on Error': { message: true },
+            '...on ZodError': { message: true },
             '...on MutationAddGroupMemberSuccess': { data: { __typename: true } },
           },
         ],

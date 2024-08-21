@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { refroute } from '$lib/navigation';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { graphql, type BookingScanResult } from '$houdini';
+  import { graphql, type BookingScanResult$data } from '$houdini';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { onceLoaded } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import { differenceInMilliseconds } from 'date-fns';
@@ -12,9 +15,6 @@
   import { onDestroy } from 'svelte';
   import type { PageData } from './$houdini';
   import ScanResult from './ScanResult.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputTextGhost from '$lib/components/InputTextGhost.svelte';
 
   export let data: PageData;
   $: ({ PageEventScanBookings } = data);
@@ -33,7 +33,7 @@
   const lastScanTimestamp = 0;
   let previousDecodedContents = '';
   let manualVerificationInput = '';
-  let result: BookingScanResult;
+  let result: BookingScanResult$data | null;
   let videoElement: HTMLVideoElement;
 
   const VerifyBooking = graphql(`
@@ -41,10 +41,7 @@
       verifyBooking(bookingURLTemplate: $urlTemplate, event: $event, qrcode: $decodedContent) {
         ... on MutationVerifyBookingSuccess {
           data {
-            registration {
-              code
-            }
-            ...BookingScanResult
+            ...BookingScanResult @mask_disable
           }
         }
         ...MutationErrors
@@ -131,7 +128,7 @@
         {/if}
         <ButtonSecondary
           on:click={() => {
-            result = undefined;
+            result = null;
             manualVerificationInput = '';
             previousDecodedContents = '';
           }}>Fermer</ButtonSecondary

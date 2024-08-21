@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { NotificationChannel } from '$lib/zeus';
+  import type { NotificationChannel$options } from '$houdini';
+  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
   import { formatDistanceToNow } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
-  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
 
   export let href: string;
-  export let channel: NotificationChannel;
+  export let channel: NotificationChannel$options;
   export let title: string;
   export let body: string;
-  export let timestamp: Date | undefined = undefined;
+  export let timestamp: Date | null = null;
   export let actions: Array<{ name: string; value: string }>;
   const date = timestamp
     ? formatDistanceToNow(timestamp, { addSuffix: true, locale: fr })

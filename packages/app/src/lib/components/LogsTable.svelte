@@ -9,9 +9,9 @@
     happenedAt: Date;
     area: string;
     action: string;
-    target?: string;
+    target?: string | null;
     message: string;
-    user?: {
+    user?: null | {
       uid: string;
       fullName: string;
     };

@@ -25,7 +25,7 @@
 
 <nav>
   <ButtonNavigation
-    href="/"
+    href={route('/')}
     routeID="/(app)"
     label="Accueil"
     icon={IconHomeOutline}
@@ -33,14 +33,14 @@
   />
 
   <ButtonNavigation
-    href="/groups"
-    routeID="/(app)/groups"
+    href={route('/search')}
+    routeID="/(app)/search/[[q]]"
     label="Clubs"
     icon={IconSearch}
     iconFilled={IconSearch}
   />
   <ButtonNavigation
-    href="/events"
+    href={route('/events')}
     routeID="/(app)/events/[[week=date]]"
     label="Événements"
     icon={IconCalendarOutline}
@@ -48,7 +48,7 @@
   />
 
   <ButtonNavigation
-    href="/services"
+    href={route('/services')}
     routeID="/(app)/services"
     label="Services"
     icon={IconDotsCircleOutline}

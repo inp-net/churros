@@ -20,7 +20,7 @@
     <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 
-  <Alert theme="danger" closed={form?.serverErrors === undefined}>
+  <Alert theme="danger" closed={form?.serverErrors === undefined || form.serverErrors.length === 0}>
     {form?.serverErrors?.join(' ')}
   </Alert>
   <InputText value="" name="email" required label="Adresse e-mail ou nom d'utilisateur" autofocus />

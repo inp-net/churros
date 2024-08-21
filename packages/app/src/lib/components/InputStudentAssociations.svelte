@@ -16,7 +16,7 @@
   export let label: string;
   export let disallowed: StudentAssociation[] = [];
   export let required = false;
-  export let association: StudentAssociation | undefined = undefined;
+  export let association: StudentAssociation | null = null;
   export let associations: StudentAssociation[] = [];
   export let clearable = !required;
   export let multiple = false;

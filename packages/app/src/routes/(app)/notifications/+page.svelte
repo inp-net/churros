@@ -1,20 +1,50 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import { arrayBufferToBase64 } from '$lib/base64';
   import { zeus } from '$lib/zeus';
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import { onMount } from 'svelte';
-  import { _notificationsQuery } from './+page';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardNotification from '$lib/components/CardNotification.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import { toasts } from '$lib/toasts';
+  import { graphql } from '$houdini';
 
   export let data: PageData;
+  $: ({ PageNotificationsInitial } = data);
   let subscriptionName = '';
   let subscription: PushSubscription | null;
+
+  const Notifications = graphql(`
+    query PageNotifications($endpoint: ID!) {
+      notifications(subscriptionEndpoint: $endpoint) {
+        edges {
+          node {
+            id
+            title
+            body
+            goto
+            imageFile
+            timestamp
+            channel
+            group {
+              uid
+              name
+              pictureFile
+            }
+            actions {
+              name
+              value
+              computedValue
+            }
+          }
+        }
+      }
+    }
+  `);
 
   onMount(async () => {
     let sw: ServiceWorkerRegistration;
@@ -26,15 +56,8 @@
       return;
     }
 
-    const { notifications } = await $zeus.query({
-      notifications: [
-        {
-          subscriptionEndpoint: subscription?.endpoint,
-        },
-        _notificationsQuery,
-      ],
-    });
-    data.notifications = notifications;
+    if (subscription?.endpoint)
+      await Notifications.fetch({ variables: { endpoint: subscription?.endpoint } });
   });
 
   let subscribed = false;
@@ -49,8 +72,10 @@
 
     const sw = await navigator.serviceWorker.ready;
     const subscription = await sw.pushManager.getSubscription();
-    subscribed = data.notificationSubscriptions.some(
-      ({ endpoint }) => endpoint === subscription?.endpoint,
+    subscribed = Boolean(
+      $PageNotificationsInitial.data?.notificationSubscriptions.some(
+        ({ endpoint }) => endpoint === subscription?.endpoint,
+      ),
     );
   }
 
@@ -146,66 +171,68 @@
   }
 </script>
 
-<div class="content" class:subscribed>
-  {#await checkIfSubscribed()}
-    <h1>
-      <LoadingSpinner />
-      Chargement…
-    </h1>
-  {:then}
-    {#if unsupported}
-      <h1>Navigateur non supporté.</h1>
-      <p>Ce navigateur ne supporte pas les notifcations Web Push.</p>
-    {:else if !subscribed}
-      <h1>Les notifications sont désactivées</h1>
-      <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
-      <ButtonPrimary
-        {loading}
-        on:click={async () => {
-          try {
-            await subscribeToNotifications();
-          } catch (error) {
-            toasts.error("Impossible d'activer les notifications", error?.toString());
-          }
-        }}>Activer</ButtonPrimary
-      >
-    {:else}
+<MaybeError result={$Notifications} let:data>
+  <div class="content" class:subscribed>
+    {#await checkIfSubscribed()}
       <h1>
-        Notifications
-
-        <div class="actions">
-          <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
-            >Désactiver</ButtonSecondary
-          >
-          <ButtonSecondary
-            danger
-            on:click={async () => {
-              if (subscription) {
-                await $zeus.mutate({
-                  testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true],
-                });
-              }
-            }}>Tester</ButtonSecondary
-          >
-        </div>
+        <LoadingSpinner />
+        Chargement…
       </h1>
+    {:then}
+      {#if unsupported}
+        <h1>Navigateur non supporté.</h1>
+        <p>Ce navigateur ne supporte pas les notifcations Web Push.</p>
+      {:else if !subscribed}
+        <h1>Les notifications sont désactivées</h1>
+        <input type="hidden" bind:value={subscriptionName} placeholder="Nom de l'appareil" />
+        <ButtonPrimary
+          {loading}
+          on:click={async () => {
+            try {
+              await subscribeToNotifications();
+            } catch (error) {
+              toasts.error("Impossible d'activer les notifications", error?.toString());
+            }
+          }}>Activer</ButtonPrimary
+        >
+      {:else}
+        <h1>
+          Notifications
 
-      {#if subscribed}
-        <ul class="notifications nobullet">
-          {#each data.notifications.edges.map(({ node }) => node) as { id, ...notif } (id)}
-            <li>
-              <CardNotification {...notif} href={notif.goto} />
-            </li>
-          {:else}
-            <li class="empty">Aucune notification reçue pour le moment.</li>
-          {/each}
-        </ul>
+          <div class="actions">
+            <ButtonSecondary on:click={async () => unsubscribeFromNotifications()}
+              >Désactiver</ButtonSecondary
+            >
+            <ButtonSecondary
+              danger
+              on:click={async () => {
+                if (subscription) {
+                  await $zeus.mutate({
+                    testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true],
+                  });
+                }
+              }}>Tester</ButtonSecondary
+            >
+          </div>
+        </h1>
+
+        {#if subscribed}
+          <ul class="notifications nobullet">
+            {#each data.notifications.edges.map(({ node }) => node) as { id, ...notif } (id)}
+              <li>
+                <CardNotification {...notif} href={notif.goto} />
+              </li>
+            {:else}
+              <li class="empty">Aucune notification reçue pour le moment.</li>
+            {/each}
+          </ul>
+        {/if}
       {/if}
-    {/if}
-  {:catch error}
-    <Alert theme="danger">Impossible d'activer les notifications: {error}</Alert>
-  {/await}
-</div>
+    {:catch error}
+      <Alert theme="danger">Impossible d'activer les notifications: {error}</Alert>
+    {/await}
+  </div>
+</MaybeError>
 
 <style lang="scss">
   h1 {

@@ -8,9 +8,7 @@ declare namespace App {
   type XSSSafeHTMLString = import('ts-opaque').Opaque<string, 'XSSSafeHTMLString'>;
 
   interface Locals {
-    me?: SessionUserType;
     mobile: boolean;
-    token?: string;
   }
 
   interface Metadata {

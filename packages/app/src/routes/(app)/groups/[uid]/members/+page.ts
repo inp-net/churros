@@ -1,42 +1,42 @@
-import { loadQuery, Selector } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import { graphql } from '$houdini';
+import { error } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ fetch, parent, params }) => {
-  const { token, canEditGroup } = await parent();
+export async function load(event) {
+  const { group } = await graphql(`
+    query PageGroupMembers($uid: String!) {
+      group(uid: $uid) {
+        id
+        uid
+        name
+        canEditDetails
+        canEditMembers
+        members {
+          memberId
+          createdAt
+          member {
+            uid
+            firstName
+            lastName
+            pictureFile
+            fullName
+            graduationYear
+          }
+          title
+          president
+          treasurer
+          secretary
+          vicePresident
+          canEditMembers
+          canEditArticles
+          canScanEvents
+          isDeveloper
+        }
+      }
+    }
+  `)
+    .fetch({ event, variables: event.params })
+    .then((d) => d.data ?? { group: null });
 
-  const { group } = await loadQuery(
-    {
-      group: [
-        { uid: params.uid },
-        Selector('Group')({
-          name: true,
-          uid: true,
-          members: {
-            member: {
-              uid: true,
-              firstName: true,
-              lastName: true,
-              fullName: true,
-              pictureFile: true,
-              graduationYear: true,
-            },
-            title: true,
-            canEditArticles: true,
-            canEditMembers: true,
-            president: true,
-            createdAt: true,
-            treasurer: true,
-            secretary: true,
-            vicePresident: true,
-          },
-        }),
-      ],
-    },
-    { fetch, token },
-  );
-
-  return {
-    group,
-    canEditGroup,
-  };
-};
+  if (!group) error(404, { message: 'Groupe non trouvé' });
+  return { group };
+}

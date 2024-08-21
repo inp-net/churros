@@ -14,6 +14,7 @@
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import { toasts } from '$lib/toasts';
+  import type { DocumentType$options } from '$houdini';
 
   let files: FileList | undefined = undefined;
 
@@ -24,19 +25,17 @@
     title: string;
     schoolYear: number;
     description: string;
-    subject?:
-      | undefined
-      | {
-          uid: string;
-          id: string;
-          name: string;
-          shortName: string;
-          minors: Array<{ name: string; uid: string; shortName: string }>;
-          majors: Array<{ name: string; uid: string; shortName: string }>;
-          forApprentices: boolean;
-          yearTier?: number | undefined;
-        };
-    type: DocumentType;
+    subject: null | {
+      uid: string;
+      id: string;
+      name: string;
+      shortName: string;
+      minors: Array<{ name: string; uid: string; shortName: string }>;
+      majors: Array<{ name: string; uid: string; shortName: string }>;
+      forApprentices: boolean;
+      yearTier: number | null;
+    };
+    type: DocumentType$options;
     paperPaths: string[];
     solutionPaths: string[];
   };
@@ -50,7 +49,7 @@
           description: data.description,
           schoolYear: data.schoolYear,
           title: data.title,
-          type: data.type,
+          type: data.type as DocumentType,
           id: data.id,
           subject: data.subject.id,
         },
@@ -131,8 +130,7 @@
       }),
     );
     const { subject } = upsertDocument.data;
-    const majorUid =
-      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? undefined;
+    const majorUid = subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? undefined;
     const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier;
     toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
     await goto(

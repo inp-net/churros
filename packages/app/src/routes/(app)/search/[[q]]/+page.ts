@@ -1,35 +1,42 @@
-import { redirectToLogin } from '$lib/session';
-import { loadQuery } from '$lib/zeus';
+import { graphql } from '$houdini';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, url, params: { q } }) => {
-  const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname + url.search);
+export const load: PageLoad = async (event) => {
+  const { q } = event.params;
+
   if (!q) return { searchUsers: [], searchGroups: [], searchEvents: [], searchArticles: [] };
 
-  const similarityCutoff = url.searchParams.get('sim')
-    ? Number.parseFloat(url.searchParams.get('sim')!)
+  const similarityCutoff = event.url.searchParams.get('sim')
+    ? Number.parseFloat(event.url.searchParams.get('sim')!)
     : undefined;
 
-  return loadQuery(
-    {
-      searchUsers: [
-        { q, similarityCutoff },
-        {
-          similarity: true,
-          rank: true,
-          user: { uid: true, firstName: true, lastName: true, pictureFile: true, fullName: true },
-        },
-      ],
-      searchGroups: [
-        { q, similarityCutoff },
-        {
-          similarity: true,
-          rank: true,
-          group: { uid: true, name: true, pictureFile: true, pictureFileDark: true },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+  return await graphql(`
+    query PageSearch($q: String!, $similarityCutoff: Float) {
+      searchUsers(q: $q, similarityCutoff: $similarityCutoff) {
+        similarity
+        rank
+        user {
+          uid
+          firstName
+          lastName
+          pictureFile
+          fullName
+        }
+      }
+      searchGroups(q: $q, similarityCutoff: $similarityCutoff) {
+        similarity
+        rank
+        group {
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+      }
+    }
+  `)
+    .fetch({ event, variables: { similarityCutoff, q } })
+    .then(
+      (d) => d.data ?? { searchUsers: [], searchGroups: [], searchEvents: [], searchArticles: [] },
+    );
 };

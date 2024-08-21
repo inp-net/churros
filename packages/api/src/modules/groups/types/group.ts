@@ -1,10 +1,13 @@
-import { builder, fromYearTier, prisma, toHtml } from '#lib';
+import { builder, ensureGlobalId, fromYearTier, prisma, toHtml } from '#lib';
 import { DateTimeScalar, Email, HTMLScalar } from '#modules/global';
-
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PicturedInterface } from '../../global/types/pictured.js';
 import { canEditGroup, GroupEnumType } from '../index.js';
-import { canSetGroupRoomOpenState, requiredPrismaIncludesForPermissions } from '../utils/index.js';
+import {
+  canEditGroupMembers,
+  canSetGroupRoomOpenState,
+  requiredPrismaIncludesForPermissions,
+} from '../utils/index.js';
 
 export const GroupTypePrismaIncludes = requiredPrismaIncludesForPermissions;
 
@@ -137,6 +140,16 @@ export const GroupType = builder.prismaNode('Group', {
     root: t.relation('familyRoot', { nullable: true }),
     familyChildren: t.relation('familyChildren'),
     related: t.relation('related'),
+    canEditMembers: t.boolean({
+      description: "Vrai si l'utilisateur·ice connecté·e peut modifier les membres du groupe",
+      resolve: async ({ id: groupId }, _, { user }) => {
+        const group = await prisma.group.findUniqueOrThrow({
+          where: { id: ensureGlobalId(groupId, 'Group') },
+          include: canEditGroupMembers.prismaIncludes,
+        });
+        return canEditGroupMembers(user, group);
+      },
+    }),
     canEditDetails: t.boolean({
       description: "Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe",
       resolve: async (group, _, { user }) => {

@@ -7,17 +7,16 @@ import { Login } from './mutations';
 export const actions: Actions = {
   async default(event) {
     const formdata = Object.fromEntries(await event.request.formData().then((fd) => fd.entries()));
-    const { email, password } = await z
+    const { error, data } = z
       .object({
         email: z.string().min(1),
         password: z.string().min(1),
       })
-      .parseAsync(formdata)
-      .catch((error) => {
-        throw fail(400, {
-          serverErrors: error.errors,
-        });
-      });
+      .safeParse(formdata);
+
+    if (!data) return fail(400, { serverErrors: error.errors.map((e) => e.message) });
+
+    const { email, password } = data;
 
     const result = await Login.mutate({ emailOrUid: email, password }, { event });
 
@@ -37,7 +36,7 @@ export const actions: Actions = {
       return redirect(301, new URL(`${url.toString()}?${searchParams.toString()}`));
     }
 
-    throw fail(401, {
+    return fail(401, {
       serverErrors:
         result.data?.login.__typename === 'AwaitingValidationError'
           ? [

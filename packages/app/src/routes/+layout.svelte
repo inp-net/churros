@@ -35,7 +35,7 @@
     $theme.id = newTheme.localID;
   }
 
-  setupIsMobile(data.mobile);
+  setupIsMobile(window.navigator.userAgent?.toLowerCase().includes('mobile'));
 
   onMount(() => {
     // if (!$me && !localStorage.getItem('isReallyLoggedout')) {

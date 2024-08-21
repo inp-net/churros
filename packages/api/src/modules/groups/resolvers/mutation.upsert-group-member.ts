@@ -1,8 +1,8 @@
-import { builder, log, objectValuesFlat, prisma, purgeSessionsUser, sendMail } from '#lib';
+import { builder, ensureGlobalId, log, prisma, purgeSessionsUser, sendMail } from '#lib';
 import { updateMemberBoardLists } from '#modules/mails';
 import { fullName } from '#modules/users';
-import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
-import { GroupMemberType } from '../index.js';
+import { onBoard } from '#permissions';
+import { canEditGroupMembers, GroupMemberType } from '../index.js';
 
 // TODO centralize the mailer object in #lib instead of creating it here
 
@@ -24,21 +24,11 @@ builder.mutationField('upsertGroupMember', (t) =>
       isDeveloper: t.arg.boolean(),
     },
     async authScopes(_, { groupId }, { user }) {
-      let studentAssociation: string[] | null = null;
-      if (groupId) {
-        studentAssociation = objectValuesFlat(
-          await prisma.group.findUnique({
-            where: { id: groupId },
-            select: { studentAssociation: true },
-          }),
-        );
-      }
-
-      return Boolean(
-        userIsAdminOf(user, studentAssociation) ||
-          userIsGroupEditorOf(user, studentAssociation) ||
-          user?.groups.some(({ group, canEditMembers }) => canEditMembers && group.id === groupId),
-      );
+      const group = await prisma.group.findUniqueOrThrow({
+        where: { id: ensureGlobalId(groupId, 'Group') },
+        include: canEditGroupMembers.prismaIncludes,
+      });
+      return canEditGroupMembers(user, group);
     },
     async resolve(
       query,

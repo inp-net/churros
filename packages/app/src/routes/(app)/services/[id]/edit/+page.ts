@@ -1,38 +1,40 @@
-import { loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import { graphql } from '$houdini';
+import { error } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ fetch, params, parent }) =>
-  loadQuery(
-    {
-      service: [
-        params,
-        {
-          id: true,
-          name: true,
-          url: true,
-          description: true,
-          logo: true,
-          logoSourceType: true,
-          importance: true,
-          group: {
-            id: true,
-            uid: true,
-            name: true,
-            pictureFile: true,
-            pictureFileDark: true,
-          },
-          studentAssociation: {
-            id: true,
-            uid: true,
-            name: true,
-          },
-          school: {
-            id: true,
-            uid: true,
-            name: true,
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+export async function load(event) {
+  const { service } = await graphql(`
+    query PageServicesEdit($id: LocalID!) {
+      service(id: $id) {
+        id
+        name
+        url
+        description
+        logo
+        logoSourceType
+        importance
+        group {
+          id
+          uid
+          name
+          pictureFile
+          pictureFileDark
+        }
+        studentAssociation {
+          id
+          uid
+          name
+        }
+        school {
+          id
+          uid
+          name
+        }
+      }
+    }
+  `)
+    .fetch({ event, variables: event.params })
+    .then((d) => d.data ?? { service: null });
+
+  if (!service) error(404, { message: 'Service non trouvé' });
+  return { service };
+}

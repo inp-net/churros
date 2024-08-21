@@ -7,9 +7,12 @@ export const MajorType = builder.prismaObject('Major', {
   interfaces: [PicturedInterface],
   fields: (t) => ({
     id: t.exposeID('id'),
-    name: t.exposeString('name'),
+    fullName: t.exposeString('name'),
     uid: t.exposeString('uid'),
-    shortName: t.exposeString('shortName'),
+    name: t.exposeString('shortName'),
+    shortName: t.exposeString('shortName', {
+      deprecationReason: "Use 'name' instead",
+    }),
     schools: t.relation('schools', { query: { orderBy: { name: 'asc' } } }),
     ldapSchool: t.relation('ldapSchool', { nullable: true }),
     minors: t.relation('minors', { query: { orderBy: { name: 'asc' } } }),

@@ -157,24 +157,6 @@ const PAGES = {
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
   },
-  '/forms': `/forms`,
-  '/forms/[form]/answer': (form: string | number, params?: { section?: string | number }) => {
-    return `/forms/${form}/answer${params?.section ? `/${params?.section}` : ''}`;
-  },
-  '/forms/[form]/answered': (form: string | number, params?: {}) => {
-    return `/forms/${form}/answered`;
-  },
-  '/forms/[form]/answers': (form: string | number, params?: {}) => {
-    return `/forms/${form}/answers`;
-  },
-  '/forms/[form]/answers/analytics': (form: string | number, params?: {}) => {
-    return `/forms/${form}/answers/analytics`;
-  },
-  '/forms/[form]/edit': (form: string | number, params?: {}) => {
-    return `/forms/${form}/edit`;
-  },
-  '/forms/create': `/forms/create`,
-  '/groups': `/groups`,
   '/groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
     return `/groups/${params.uid}/${params.page?.join('/')}`;
   },
@@ -202,33 +184,6 @@ const PAGES = {
   '/groups/[uid]/members': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/members`;
   },
-  '/groups/[uid]/shop': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop`;
-  },
-  '/groups/[uid]/shop/[id]': (params: { uid: string | number; id: string | number }) => {
-    return `/groups/${params.uid}/shop/${params.id}`;
-  },
-  '/groups/[uid]/shop/[id]/edit': (params: { uid: string | number; id: string | number }) => {
-    return `/groups/${params.uid}/shop/${params.id}/edit`;
-  },
-  '/groups/[uid]/shop/create': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop/create`;
-  },
-  '/groups/[uid]/shop/orders': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop/orders`;
-  },
-  '/groups/[uid]/shop/sales': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/shop/sales`;
-  },
-  '/groups/[uid]/shop/sales/[itemUid]': (params: {
-    uid: string | number;
-    itemUid: string | number;
-  }) => {
-    return `/groups/${params.uid}/shop/sales/${params.itemUid}`;
-  },
-  '/groups/[uid]/subgroups/create': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/subgroups/create`;
-  },
   '/help': `/help`,
   '/login': `/login`,
   '/login/forgotten': `/login/forgotten`,
@@ -254,9 +209,6 @@ const PAGES = {
   '/reports': `/reports`,
   '/reports/[number]': (number: string | number, params?: {}) => {
     return `/reports/${number}`;
-  },
-  '/schools/[uid]/edit': (uid: string | number, params?: {}) => {
-    return `/schools/${uid}/edit`;
   },
   '/search': (params?: { q?: string | number }) => {
     return `/search${params?.q ? `/${params?.q}` : ''}`;
@@ -331,12 +283,6 @@ const SERVERS = {
   'GET /events/[id]/bookings.csv': (id: string | number, params?: {}) => {
     return `/events/${id}/bookings.csv`;
   },
-  'GET /forms/[form]/answers.[extension]': (params: {
-    form: string | number;
-    extension: string | number;
-  }) => {
-    return `/forms/${params.form}/answers.${params.extension}`;
-  },
   'GET /frappe': `/frappe`,
   'GET /groups/[uid]': (uid: string | number, params?: {}) => {
     return `/groups/${uid}`;
@@ -373,16 +319,6 @@ const SERVERS = {
  * ACTIONS
  */
 const ACTIONS = {
-  'upsertForm /forms': `/forms?/upsertForm`,
-  'postAnswers /forms/[form]/answer': (
-    form: string | number,
-    params?: { section?: string | number },
-  ) => {
-    return `/forms/${form}/answer${params?.section ? `/${params?.section}` : ''}?/postAnswers`;
-  },
-  'upsertSection /forms/[form]/edit': (form: string | number, params?: {}) => {
-    return `/forms/${form}/edit?/upsertSection`;
-  },
   'default /login': `/login`,
 };
 
@@ -549,14 +485,6 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
     '/events/[id]/scan': 'id';
-    '/forms': never;
-    '/forms/[form]/answer': 'form' | 'section';
-    '/forms/[form]/answered': 'form';
-    '/forms/[form]/answers': 'form';
-    '/forms/[form]/answers/analytics': 'form';
-    '/forms/[form]/edit': 'form';
-    '/forms/create': never;
-    '/groups': never;
     '/groups/[uid]/[...page]': 'uid' | 'page';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -565,14 +493,6 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/pages': 'uid';
     '/groups/[uid]/edit/pages/[...page]': 'uid' | 'page';
     '/groups/[uid]/members': 'uid';
-    '/groups/[uid]/shop': 'uid';
-    '/groups/[uid]/shop/[id]': 'uid' | 'id';
-    '/groups/[uid]/shop/[id]/edit': 'uid' | 'id';
-    '/groups/[uid]/shop/create': 'uid';
-    '/groups/[uid]/shop/orders': 'uid';
-    '/groups/[uid]/shop/sales': 'uid';
-    '/groups/[uid]/shop/sales/[itemUid]': 'uid' | 'itemUid';
-    '/groups/[uid]/subgroups/create': 'uid';
     '/help': never;
     '/login': never;
     '/login/forgotten': never;
@@ -587,7 +507,6 @@ export type KIT_ROUTES = {
     '/quick-signups/qr/[code]': 'code';
     '/reports': never;
     '/reports/[number]': 'number';
-    '/schools/[uid]/edit': 'uid';
     '/search': 'q';
     '/services': never;
     '/services/[id]/edit': 'id';
@@ -614,7 +533,6 @@ export type KIT_ROUTES = {
     'GET /bookings/[code].pdf': 'code';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /events/[id]/bookings.csv': 'id';
-    'GET /forms/[form]/answers.[extension]': 'form' | 'extension';
     'GET /frappe': never;
     'GET /groups/[uid]': 'uid';
     'GET /groups/[uid].pdf': 'uid';
@@ -632,12 +550,7 @@ export type KIT_ROUTES = {
     'GET /manifest.json': never;
     'POST /markdown': never;
   };
-  ACTIONS: {
-    'upsertForm /forms': never;
-    'postAnswers /forms/[form]/answer': 'form' | 'section';
-    'upsertSection /forms/[form]/edit': 'form';
-    'default /login': never;
-  };
+  ACTIONS: { 'default /login': never };
   LINKS: Record<string, never>;
   Params: {
     uid: never;
@@ -650,10 +563,7 @@ export type KIT_ROUTES = {
     document: never;
     week: never;
     ticket: never;
-    form: never;
-    section: never;
     page: never;
-    itemUid: never;
     token: never;
     group: never;
     number: never;
@@ -664,6 +574,5 @@ export type KIT_ROUTES = {
     entity: never;
     slug: never;
     path: never;
-    extension: never;
   };
 };

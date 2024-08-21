@@ -18,7 +18,7 @@ export async function load(event) {
   const response = await Finish.mutate(event.params, { event });
   const token = response.data?.completeSignup.token;
   if (token) {
-    saveSessionToken(event, token);
+    saveSessionToken(event.cookies, token);
     redirect(302, route('/welcome'));
   }
   return response;

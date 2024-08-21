@@ -1,24 +1,23 @@
 <script lang="ts">
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import Fuse from 'fuse.js';
-  import IconSearch from '~icons/mdi/search';
-  import IconAdd from '~icons/mdi/add';
-  import IconBulkAddMembers from '~icons/mdi/account-multiple-plus-outline';
-  import InputText from '$lib/components/InputText.svelte';
-  import { zeus } from '$lib/zeus';
-  import type { PageData } from './$types';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import Alert from '$lib/components/Alert.svelte';
-  import { isBefore } from 'date-fns';
-  import InputPerson from '$lib/components/InputPerson.svelte';
-  import InputField from '$lib/components/InputField.svelte';
-  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
-  import IconDownload from '~icons/mdi/download-outline';
   import { page } from '$app/stores';
-  import { format } from 'date-fns';
+  import Alert from '$lib/components/Alert.svelte';
+  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+  import InputPerson from '$lib/components/InputPerson.svelte';
+  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
   import { toasts } from '$lib/toasts';
+  import { zeus } from '$lib/zeus';
+  import { format, isBefore } from 'date-fns';
+  import Fuse from 'fuse.js';
+  import IconBulkAddMembers from '~icons/mdi/account-multiple-plus-outline';
+  import IconAdd from '~icons/mdi/add';
+  import IconDownload from '~icons/mdi/download-outline';
+  import IconSearch from '~icons/mdi/search';
+  import type { PageData } from './$types';
 
   export let data: PageData;
   const { group } = data;
@@ -60,12 +59,13 @@
         {
           '__typename': true,
           '...on Error': { message: true },
+          '...on ZodError': { message: true },
           '...on QueryGroupMembersCsvSuccess': { data: true },
         },
       ],
     });
 
-    if (groupMembersCsv.__typename === 'Error') {
+    if (groupMembersCsv.__typename !== 'QueryGroupMembersCsvSuccess') {
       toasts.error("Erreur lors de l'export CSV", groupMembersCsv.message);
       return;
     }
@@ -80,6 +80,9 @@
         {
           '__typename': true,
           '...on Error': {
+            message: true,
+          },
+          '...on ZodError': {
             message: true,
           },
           '...on MutationAddGroupMemberSuccess': {
@@ -111,14 +114,15 @@
         },
       ],
     });
-    if (addGroupMember.__typename === 'Error') {
-      serverError = addGroupMember.message;
-    } else {
+    if (addGroupMember.__typename === 'MutationAddGroupMemberSuccess') {
       newMemberUid = '';
       newMemberTitle = '';
       // XXX for some reason the date is returned as a datestring
       addGroupMember.data.createdAt = new Date(addGroupMember.data.createdAt);
-      data.group.members = [...data.group.members, addGroupMember.data];
+      // data.group.members = [...data.group.members, addGroupMember.data];
+      window.location.reload();
+    } else {
+      serverError = addGroupMember.message;
     }
   };
 
@@ -127,7 +131,7 @@
       await $zeus.mutate({
         deleteGroupMember: [{ groupId: group.id, memberId }, true],
       });
-      data.group.members = data.group.members.filter((member) => member.memberId !== memberId);
+      window.location.reload();
     } catch (error: unknown) {
       toasts.error(`Impossible de virer ce membre`, error?.toString());
     }
@@ -138,7 +142,7 @@
     try {
       if (!member) throw new Error('Member not found');
       const updateData = { ...member, ...updatingMember };
-      const { upsertGroupMember } = await $zeus.mutate({
+      await $zeus.mutate({
         upsertGroupMember: [
           {
             groupId: data.group.id,
@@ -166,14 +170,7 @@
           },
         ],
       });
-      data.group.members = group.members.map((member) =>
-        member.memberId === memberId
-          ? { ...member, ...upsertGroupMember }
-          : {
-              ...member,
-              president: upsertGroupMember.president ? false : member.president,
-            },
-      );
+      window.location.reload();
       updatingMember.memberId = '';
     } catch (error: unknown) {
       toasts.error(`Impossible de changer @${member?.member.uid ?? '?'}`, error?.toString());
@@ -277,7 +274,7 @@
             : { canEditArticles, canEditMembers, canScanEvents, isDeveloper }}
         >
           {title}
-          {#if data.group.studentAssociation && !member.contributesTo.some((c) => c.uid === data.group.studentAssociation?.uid)}
+          {#if data.group.studentAssociation && !member.contributesTo?.some((c) => c.uid === data.group.studentAssociation?.uid)}
             <strong class="not-contributor">
               &bull; non cotisant à {data.group.studentAssociation?.name}</strong
             >

@@ -1,18 +1,15 @@
 import {
   type BooleanConstraint$options,
+  type DocumentType$options,
   type EventFrequency$options,
   type EventManagerPowerLevel$options,
   type GroupType$options,
+  type IssueState$options,
+  type NotificationChannel$options,
   type PaymentMethod$options,
   type Visibility$options,
 } from '$houdini';
-import {
-  DocumentType,
-  IssueState,
-  NotificationChannel,
-  Visibility,
-  type GroupType,
-} from '$lib/zeus';
+import { NotificationChannel, Visibility } from '$lib/zeus';
 import type { SvelteComponent } from 'svelte';
 import LogoLydia from '~icons/custom-logos/lydia';
 import LogoPaypal from '~icons/logos/paypal';
@@ -150,18 +147,20 @@ export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
   NotificationChannel.Other,
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ICONS_NOTIFICATION_CHANNELS: Record<NotificationChannel, typeof SvelteComponent<any>> =
-  {
-    Articles: IconArticle,
-    Shotguns: IconShotgun,
-    Comments: IconComment,
-    GodparentRequests: IconGodparent,
-    GroupBoard: IconGroupMembers,
-    Other: IconNotification,
-    Mandatory: IconNotification,
-    Permissions: IconPermissions,
-  };
+export const ICONS_NOTIFICATION_CHANNELS: Record<
+  NotificationChannel$options,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  typeof SvelteComponent<any>
+> = {
+  Articles: IconArticle,
+  Shotguns: IconShotgun,
+  Comments: IconComment,
+  GodparentRequests: IconGodparent,
+  GroupBoard: IconGroupMembers,
+  Other: IconNotification,
+  Mandatory: IconNotification,
+  Permissions: IconPermissions,
+};
 
 export const DISPLAY_GROUP_TYPES: Record<GroupType$options, string> = {
   Association: 'Association',
@@ -198,41 +197,41 @@ export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency$options, string> = {
   Once: 'Une seule fois',
 };
 
-export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType, string>([
-  [DocumentType.CourseNotes, 'Notes de cours'],
-  [DocumentType.CourseSlides, 'Diapositives du cours'],
-  [DocumentType.Exam, 'Partiel'],
-  [DocumentType.Exercises, 'TD'],
-  [DocumentType.GradedExercises, 'DM'],
-  [DocumentType.Miscellaneous, 'Autre'],
-  [DocumentType.Practical, 'TP'],
-  [DocumentType.PracticalExam, 'BE'],
-  [DocumentType.Summary, 'Fiche'],
+export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType$options, string>([
+  ['CourseNotes', 'Notes de cours'],
+  ['CourseSlides', 'Diapositives du cours'],
+  ['Exam', 'Partiel'],
+  ['Exercises', 'TD'],
+  ['GradedExercises', 'DM'],
+  ['Miscellaneous', 'Autre'],
+  ['Practical', 'TP'],
+  ['PracticalExam', 'BE'],
+  ['Summary', 'Fiche'],
 ]);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ICONS_DOCUMENT_TYPES = new Map<DocumentType, typeof SvelteComponent<any>>([
-  [DocumentType.CourseNotes, IconFileDocumentOutline],
-  [DocumentType.CourseSlides, IconPlayBoxOutline],
-  [DocumentType.Exam, IconCalendarEndOutline],
-  [DocumentType.Exercises, IconAndroidStudio],
-  [DocumentType.GradedExercises, IconStar],
-  [DocumentType.Miscellaneous, IconDotsHorizontal],
-  [DocumentType.Practical, IconTestTube],
-  [DocumentType.PracticalExam, IconHammerWrench],
-  [DocumentType.Summary, IconSigma],
+export const ICONS_DOCUMENT_TYPES = new Map<DocumentType$options, typeof SvelteComponent<any>>([
+  ['CourseNotes', IconFileDocumentOutline],
+  ['CourseSlides', IconPlayBoxOutline],
+  ['Exam', IconCalendarEndOutline],
+  ['Exercises', IconAndroidStudio],
+  ['GradedExercises', IconStar],
+  ['Miscellaneous', IconDotsHorizontal],
+  ['Practical', IconTestTube],
+  ['PracticalExam', IconHammerWrench],
+  ['Summary', IconSigma],
 ]);
 
-export const ORDER_DOCUMENT_TYPES: DocumentType[] = [
-  DocumentType.Exam,
-  DocumentType.Summary,
-  DocumentType.CourseNotes,
-  DocumentType.Exercises,
-  DocumentType.GradedExercises,
-  DocumentType.Practical,
-  DocumentType.PracticalExam,
-  DocumentType.CourseSlides,
-  DocumentType.Miscellaneous,
+export const ORDER_DOCUMENT_TYPES: DocumentType$options[] = [
+  'Exam',
+  'Summary',
+  'CourseNotes',
+  'Exercises',
+  'GradedExercises',
+  'Practical',
+  'PracticalExam',
+  'CourseSlides',
+  'Miscellaneous',
 ];
 
 export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡', '💀', '🎉'] as const;
@@ -244,10 +243,10 @@ export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡'
 //   }
 // }
 
-export const ISSUE_STATE_DISPLAY = new Map<IssueState, string>([
-  [IssueState.Closed, 'Terminé'],
-  [IssueState.Open, 'En cours'],
-  [IssueState.Deployed, 'En ligne'],
+export const ISSUE_STATE_DISPLAY = new Map<IssueState$options, string>([
+  ['Closed', 'Terminé'],
+  ['Open', 'En cours'],
+  ['Deployed', 'En ligne'],
 ]);
 
 export function orderedDisplay<T extends string | number | symbol>(

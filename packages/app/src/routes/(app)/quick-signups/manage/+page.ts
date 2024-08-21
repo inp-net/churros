@@ -9,15 +9,12 @@ export async function load(event) {
           validUntil
           expired
           school {
-            uid
-            name
-            pictureURL
-            color
+            ...AvatarSchool
           }
         }
       }
     }
   `)
     .fetch({ event })
-    .then((d) => d.data ?? { quickSignups: [] });
+    .then((d) => d.data ?? { quickSignups: { nodes: [] } });
 }

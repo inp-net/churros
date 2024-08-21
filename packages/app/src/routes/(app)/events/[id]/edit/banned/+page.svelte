@@ -31,15 +31,7 @@
             }
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
       }
     }
   `);
@@ -57,15 +49,7 @@
             }
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
       }
     }
   `);

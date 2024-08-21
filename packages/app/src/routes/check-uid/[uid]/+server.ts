@@ -27,7 +27,6 @@ const additionalReservedUsernames = new Set([
   'credits',
   'documents',
   'events',
-  'forms',
   'frappe',
   'groups',
   'help',

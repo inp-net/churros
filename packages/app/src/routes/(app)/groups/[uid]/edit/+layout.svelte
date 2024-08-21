@@ -2,8 +2,6 @@
   import { page } from '$app/stores';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { isOnClubBoard } from '$lib/permissions';
-  import { me } from '$lib/session';
   import type { PageData } from './$types';
 
   const TABS = {
@@ -32,7 +30,7 @@
 <div class="content">
   <h1><ButtonBack go={currentTab === '' ? '..' : '../..'} /> Éditer {group.name}</h1>
 
-  {#if $me?.admin || data.canEditGroup || $me?.groups.some(({ group: { uid }, canEditMembers, ...perms }) => uid === group.uid && (isOnClubBoard(perms) || canEditMembers))}
+  {#if data.group.canEditDetails}
     <NavigationTabs
       tabs={['', 'members', 'pages', 'bank-accounts']
         .filter((tab) => (tab === 'pages' ? data.group.canListPages : true))

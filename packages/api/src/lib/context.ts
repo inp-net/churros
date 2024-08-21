@@ -8,6 +8,7 @@ type ContextOptions = YogaInitialContext & {
 
 function baseContext() {
   return {
+    user: null,
     caveats: [] as string[],
   };
 }

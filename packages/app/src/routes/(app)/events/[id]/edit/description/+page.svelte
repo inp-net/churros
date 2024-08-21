@@ -17,15 +17,7 @@
             description
           }
         }
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            message
-            path
-          }
-        }
+        ...MutationErrors
       }
     }
   `);

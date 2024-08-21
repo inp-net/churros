@@ -22,18 +22,21 @@
             '...on Error': {
               message: true,
             },
+            '...on ZodError': {
+              message: true,
+            },
             '...on MutationCreatePasswordResetSuccess': {
               data: true,
             },
           },
         ],
       });
-      if (createPasswordReset.__typename === 'Error') {
-        serverError = createPasswordReset.message;
-        sent = false;
-      } else {
+      if (createPasswordReset.__typename === 'MutationCreatePasswordResetSuccess') {
         serverError = '';
         sent = true;
+      } else {
+        serverError = createPasswordReset.message;
+        sent = false;
       }
     } finally {
       loading = false;

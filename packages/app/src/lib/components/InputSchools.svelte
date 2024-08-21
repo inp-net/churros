@@ -16,7 +16,7 @@
   export let label: string;
   export let disallowed: School[] = [];
   export let required = false;
-  export let school: School | undefined = undefined;
+  export let school: School | null = null;
   export let schools: School[] = [];
   export let clearable = !required;
   export let multiple = false;

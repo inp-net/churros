@@ -1,25 +1,26 @@
+import { graphql } from '$houdini';
 import { yearTier } from '$lib/dates';
 import { redirectToLogin } from '$lib/session';
-import { makeMutation } from '$lib/zeus';
 import { redirect } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = ({ locals, url, fetch }) => {
-  const { me, token } = locals;
-  if (!me) throw redirectToLogin(url.pathname);
+export async function GET(event) {
+  const { me } = await graphql(`
+    query PageFrappeRedirect {
+      me {
+        graduationYear
+        major {
+          uid
+        }
+        apprentice
+      }
+    }
+  `)
+    .fetch({ event })
+    .then((d) => d.data ?? { me: null });
+
+  if (!me) return redirectToLogin(event.url.pathname);
+
   const tier = yearTier(me.graduationYear);
-
-  try {
-    void makeMutation(
-      { updateSubjectsExamDates: true },
-      {
-        fetch,
-        token,
-      },
-    );
-  } catch (error) {
-    console.error(`Could not update subject exam dates: ${error?.toString() ?? ''}`);
-  }
 
   throw redirect(
     303,
@@ -31,4 +32,4 @@ export const GET: RequestHandler = ({ locals, url, fetch }) => {
           }/`
       : '/documents/',
   );
-};
+}

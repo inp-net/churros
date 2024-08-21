@@ -14,12 +14,12 @@
   // emails of registrations that are currently being accepted/refused
   let loadingRegistrations: string[] = [];
 
-  $: userCandidates = data.userCandidates.edges.map(({ node }) => node);
+  let userCandidates = data.userCandidates.edges.map(({ node }) => node);
 
   const removeRow = (email: string) => {
-    data.userCandidates.edges = data.userCandidates.edges.filter(
-      ({ node }) => node.email !== email,
-    );
+    userCandidates = data.userCandidates.edges
+      .filter(({ node }) => node.email !== email)
+      .map(({ node }) => node);
   };
 
   async function decide(email: string, accept: boolean, why = ''): Promise<void> {
@@ -35,6 +35,7 @@
             {
               '__typename': true,
               '...on Error': { message: true },
+              '...on ZodError': { message: true },
               '...on MutationAcceptRegistrationSuccess': {
                 data: {
                   email: true,

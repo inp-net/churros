@@ -7,17 +7,16 @@
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
+  import HTMLContent from '$lib/components/HTMLContent.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
   import { sentenceJoin } from '$lib/i18n';
   import { LoadingText, loading, mapAllLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
-  import { route } from '$lib/ROUTES';
   import IconDate from '~icons/msl/calendar-today-outline';
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
-  import HTMLContent from '$lib/components/HTMLContent.svelte';
   import ModalBookTicket from './ModalBookTicket.svelte';
   export let data: PageData;
 
@@ -46,10 +45,7 @@
       <ul class="nobullet avatars-details">
         {#each [event.organizer, ...event.coOrganizers] as group}
           <li class="avatar">
-            <a href={route('/groups/[uid]', loading(group.uid, ''))}>
-              <AvatarGroup href="" {group} />
-              <LoadingText value={group.name} />
-            </a>
+            <AvatarGroup name {group} />
           </li>
         {/each}
       </ul>
@@ -246,12 +242,6 @@
 
     gap: 1rem;
     padding: 0 2rem;
-  }
-
-  .avatars-details li a {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
   }
 
   .tickets {

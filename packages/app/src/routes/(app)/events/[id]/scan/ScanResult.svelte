@@ -1,8 +1,7 @@
 <script lang="ts">
   import {
-    fragment,
     graphql,
-    type BookingScanResult,
+    type BookingScanResult$data,
     type RegistrationVerificationState$options,
   } from '$houdini';
   import { ButtonSecondary } from '$lib/components';
@@ -30,7 +29,7 @@
     OtherEvent: [50, 50, 50, 50],
   };
 
-  $: if (navigator.vibrate && $data) navigator.vibrate(VIBRATION_PATTERNS[$data.state]);
+  $: if (navigator.vibrate && result) navigator.vibrate(VIBRATION_PATTERNS[result.state]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const STATE_TO_ICON: Record<RegistrationVerificationState$options, typeof SvelteComponent<any>> =
@@ -79,6 +78,7 @@
           name
         }
         event {
+          id
           title
         }
       }
@@ -91,25 +91,24 @@
     }
   `);
 
-  export let result: BookingScanResult | null;
-  $: data = fragment(
-    result,
-    graphql(`
-      fragment BookingScanResult on RegistrationVerificationResult {
-        state
-        message
-        registration {
-          ...BookingScanResultBooking @mask_disable
-        }
+  export let result: BookingScanResult$data | null;
+  graphql(`
+    fragment BookingScanResult on RegistrationVerificationResult {
+      state
+      message
+      registration {
+        ...BookingScanResultBooking @mask_disable
       }
-    `),
-  );
+    }
+  `);
 
   const MarkAsPaidAndVerify = graphql(`
     mutation MarkPaidAndVerifyBooking($code: String!) {
       markBookingAsPaid(code: $code, verify: true) {
         ... on MutationMarkBookingAsPaidSuccess {
-          ...BookingScanResultBooking @mask_disable
+          data {
+            ...BookingScanResultBooking @mask_disable
+          }
         }
         ...MutationErrors
       }
@@ -126,17 +125,17 @@
     </div>
     <h2 class="invalid">Impossible de scanner cet évènement</h2>
     <p class="typo-details">Assure-toi d'être manager de l'évènement</p> -->
-  {#if !$data}
+  {#if !result}
     <p class="idle">Prêt à scanner</p>
-  {:else if $data.state === 'NotFound'}
+  {:else if result.state === 'NotFound'}
     <div class="icon">
       <div class="circle danger">
-        <svelte:component this={STATE_TO_ICON[$data.state]} />
+        <svelte:component this={STATE_TO_ICON[result.state]} />
       </div>
     </div>
     <h2 class="invalid">Billet invalide</h2>
-    <p>{$data.message}</p>
-  {:else if $data.registration}
+    <p>{result.message}</p>
+  {:else if result.registration}
     {@const {
       authorIsBeneficiary,
       externalBeneficiary,
@@ -145,11 +144,11 @@
       authorEmail,
       paymentMethod,
       ticket,
-    } = $data.registration}
-    {@const ok = $data.state === 'Ok'}
+    } = result.registration}
+    {@const ok = result.state === 'Ok'}
     <header class="header">
       <div class="circle" class:danger={!ok} class:success={ok}>
-        <svelte:component this={STATE_TO_ICON[$data.state]} />
+        <svelte:component this={STATE_TO_ICON[result.state]} />
       </div>
       <div class="text">
         {#if authorIsBeneficiary}
@@ -182,35 +181,35 @@
             Payée via <svelte:component this={ICONS_PAYMENT_METHODS[paymentMethod ?? 'Other']} />
             {DISPLAY_PAYMENT_METHODS[paymentMethod ?? 'Other']}
           </p>
-        {:else if $data.state === 'Opposed'}
+        {:else if result.state === 'Opposed'}
           <p>
             <strong>En opposition</strong>
           </p>
-          {#if $data.registration?.opposedAt && $data.registration?.opposedBy}
-            {@const { opposedAt, opposedBy } = $data.registration}
+          {#if result.registration?.opposedAt && result.registration?.opposedBy}
+            {@const { opposedAt, opposedBy } = result.registration}
             <p class="typo-details details">
-              Opposée par <a href={route('/users/[uid]', opposedBy.uid)}>{opposedBy.fullName}</a>
+              Opposée par <a href={route('/[uid=uid]', opposedBy.uid)}>{opposedBy.fullName}</a>
               {formatDateTimeSmart(opposedAt)}
             </p>
           {/if}
-        {:else if $data.state === 'NotPaid'}
+        {:else if result.state === 'NotPaid'}
           <p><strong>Non payée</strong></p>
-        {:else if $data.state === 'OtherEvent'}
+        {:else if result.state === 'OtherEvent'}
           <p><strong>Mauvais évènement</strong></p>
           <p class="typo-details details">
             Cette réservation est pour l'évènement <a
-              href={refroute('/events/[id]', $data.registration.ticket.event.id)}
-              >{$data.registration.ticket.event.title}</a
+              href={refroute('/events/[id]', result.registration.ticket.event.id)}
+              >{result.registration.ticket.event.title}</a
             >
           </p>
-        {:else if $data.state === 'AlreadyVerified'}
+        {:else if result.state === 'AlreadyVerified'}
           <p>
             <strong>Déjà vérifiée</strong>
           </p>
-          {#if $data.registration?.verifiedAt && $data.registration?.verifiedBy}
-            {@const { verifiedAt, verifiedBy } = $data.registration}
+          {#if result.registration?.verifiedAt && result.registration?.verifiedBy}
+            {@const { verifiedAt, verifiedBy } = result.registration}
             <p class="typo-details details">
-              par <a href={route('/users/[uid]', verifiedBy.uid)}>{verifiedBy.fullName}</a>
+              par <a href={route('/[uid=uid]', verifiedBy.uid)}>{verifiedBy.fullName}</a>
               {formatDateTimeSmart(verifiedAt)}
             </p>
           {/if}
@@ -227,17 +226,18 @@
           {ticket.name}
         </span>
       </div>
-      {#if $data?.registration && $data.state === 'NotPaid'}
+      {#if result?.registration && result.state === 'NotPaid'}
         <div class="action">
           <ButtonSecondary
             icon={IconCheck}
             on:click={async () => {
+              if (!result.registration) return;
               toasts.mutation(
                 await MarkAsPaidAndVerify.mutate({
-                  code: $data.registration.code,
+                  code: result.registration.code,
                 }),
                 'markBookingAsPaid',
-                `${$data.registration.code} marquée comme payée`,
+                `${result.registration.code} marquée comme payée`,
                 'Impossible de marquer la réservation comme payée',
               );
             }}>Payée</ButtonSecondary

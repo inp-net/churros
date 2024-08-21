@@ -1677,6 +1677,11 @@ type Group implements Node & Pictured {
   canEditDetails: Boolean!
 
   """
+  Vrai si l'utilisateur·ice connecté·e peut modifier les membres du groupe
+  """
+  canEditMembers: Boolean!
+
+  """
   L'utilisateur·ice connecté·e peut éditer (créer ou modifier) les pages du groupe
   """
   canEditPages: Boolean!
@@ -2047,6 +2052,7 @@ type Major implements Pictured {
   Ancienne filière n'existant plus dans les cursus actuels
   """
   discontinued: Boolean!
+  fullName: String!
 
   """
   Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
@@ -2087,7 +2093,7 @@ type Major implements Pictured {
     timestamp: Boolean! = true
   ): String!
   schools: [School!]!
-  shortName: String!
+  shortName: String! @deprecated(reason: "Use 'name' instead")
   subjects(forApprentices: Boolean, yearTier: Int): [Subject!]!
   uid: String!
 }
@@ -2134,7 +2140,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "dev"): Boolean!
+  acknowledgeChangelog(version: String! = "1.69.1"): Boolean!
 
   """
   Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
@@ -3966,7 +3972,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (dev).
+    The version to request a changelog for. Defaults to the current version (1.69.1).
     """
     version: String
   ): ChangelogRelease!
@@ -3985,9 +3991,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
+    The version to end at, **inclusive**. Leave empty to end at the current version (1.69.1).
     """
-    to: String! = "dev"
+    to: String! = "1.69.1"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!

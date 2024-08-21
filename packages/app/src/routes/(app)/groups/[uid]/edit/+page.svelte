@@ -1,20 +1,21 @@
 <script lang="ts">
-  import type { PageData } from './$types';
+  import type { PageData } from './$houdini';
   import FormGroup from '$lib/components/FormGroup.svelte';
-  import FormPicture from '$lib/components/FormPicture.old.svelte';
+  import FormPicture from '$lib/components/FormPicture.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
 
   export let data: PageData;
-
-  $: ({ group } = data);
+  $: ({ PageGroupEdit } = data);
 </script>
 
-<div class="forms">
-  <div class="logos">
-    <FormPicture objectName="Group" bind:object={group} />
-    <FormPicture objectName="Group" bind:object={group} dark />
+<MaybeError result={$PageGroupEdit} let:data={{ group }}>
+  <div class="forms">
+    <div class="logos">
+      <FormPicture resource={group} />
+    </div>
+    <FormGroup {group} />
   </div>
-  <FormGroup bind:data />
-</div>
+</MaybeError>
 
 <style>
   .forms {
