@@ -52,8 +52,8 @@ module.exports = {
     'unicorn/no-document-cookie': 'off',
     'unicorn/prefer-top-level-await': 'off',
     'unicorn/prevent-abbreviations': 'off',
-    'unicorn/no-empty-file': 'warn',
-    'unicorn/no-array-callback-reference': 'warn',
+    'unicorn/no-empty-file': 'off', // TODO reenable before merging to main
+    'unicorn/no-array-callback-reference': 'off',
     'unicorn/prefer-spread': process.argv.includes('--fix') ? 'off' : 'warn',
   },
   overrides: [

@@ -48,7 +48,7 @@
 <style>
   .avatar-student-association {
     display: inline-flex;
-    align-items: center;
     gap: 0.5ch;
+    align-items: center;
   }
 </style>

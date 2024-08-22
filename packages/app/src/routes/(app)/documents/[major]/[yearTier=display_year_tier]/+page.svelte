@@ -33,7 +33,6 @@
     );
   }
 
-  $: displayPreferredMinor = false;
   // TODO
   // $: displayPreferredMinor = minors.length > 1 && $me?.minor && minors.some((m) => m.uid === $me?.minor?.uid);
 </script>
@@ -145,18 +144,18 @@
     gap: 0.5rem;
   }
 
-  .define-your-minor {
-    width: 100%;
-    padding: 1rem;
-    margin-top: 2rem;
-    text-align: center;
-    border: var(--border-block) dashed;
-    border-radius: var(--radius-block);
+  // .define-your-minor {
+  //   width: 100%;
+  //   padding: 1rem;
+  //   margin-top: 2rem;
+  //   text-align: center;
+  //   border: var(--border-block) dashed;
+  //   border-radius: var(--radius-block);
 
-    p {
-      margin-bottom: 0.5rem;
-    }
-  }
+  //   p {
+  //     margin-bottom: 0.5rem;
+  //   }
+  // }
 
   .minorless-subjects {
     margin-top: 2rem;
@@ -169,7 +168,7 @@
     visibility: hidden;
   }
 
-  hr {
-    margin: 3rem auto;
-  }
+  // hr {
+  //   margin: 3rem auto;
+  // }
 </style>

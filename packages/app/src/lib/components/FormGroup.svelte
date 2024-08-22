@@ -5,7 +5,6 @@
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
   import { toasts } from '$lib/toasts';
-  import { GroupType, zeus } from '$lib/zeus';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import InputGroups from './InputGroups.svelte';

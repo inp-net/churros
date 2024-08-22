@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
 
+  // eslint-disable-next-line prefer-const
   let [componentName, slotContent] = $page.params.componentName.split('/', 2);
   componentName = componentName.replaceAll('-', '/');
   let props = Object.fromEntries(

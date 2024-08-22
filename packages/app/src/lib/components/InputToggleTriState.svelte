@@ -77,7 +77,7 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Visually hide*/
+  /* Visually hide */
   .switch input {
     z-index: 1;
     opacity: 0;
@@ -94,11 +94,11 @@
   }
 
   .slider .icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: absolute;
     inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .slider::before {

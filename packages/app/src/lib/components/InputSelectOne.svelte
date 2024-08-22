@@ -71,6 +71,8 @@
     outline: calc(2 / 3 * var(--border-block)) solid var(--border);
     outline-offset: calc(-1 * var(--border-block));
 
+    /* targets firefox only */
+    /* stylelint-disable-next-line */
     @-moz-document url-prefix() {
       outline-offset: -1px;
     }

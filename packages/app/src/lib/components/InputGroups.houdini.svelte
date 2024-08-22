@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { graphql, type InputGroups, type InputGroups$data } from '$houdini';
+  import { graphql, type InputGroups$data } from '$houdini';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import IconCheck from '~icons/mdi/check';

@@ -68,15 +68,15 @@
             },
           ],
         });
-        if (paidShopPayment.__typename !== 'MutationPaidShopPaymentSuccess') {
+        if (paidShopPayment.__typename === 'MutationPaidShopPaymentSuccess') {
+          await goto('?' + new URLSearchParams({ done: order.id }).toString());
+          paymentLoading = false;
+          toasts.add('success', 'La demande de paiement a été envoyée');
+        } else {
           const serverError = paidShopPayment.message;
           paymentLoading = false;
           toasts.add('error', serverError);
           return;
-        } else {
-          await goto('?' + new URLSearchParams({ done: order.id }).toString());
-          paymentLoading = false;
-          toasts.add('success', 'La demande de paiement a été envoyée');
         }
       }}
     >

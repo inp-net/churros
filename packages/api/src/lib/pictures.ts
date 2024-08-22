@@ -180,9 +180,11 @@ export async function updatePicture({
   }
 
   if (pictureFile && resource !== 'photos') {
-    try {
-      await unlink(join(root, pictureFile));
-    } catch {}
+    await unlink(join(root, pictureFile)).catch((error) =>
+      console.error(
+        `Could not delete ${pictureFile}: ${error} (this is considered OK, continuing to update picture)`,
+      ),
+    );
   }
 
   const path = pictureDestinationFile({ folder, extension, identifier, root });
