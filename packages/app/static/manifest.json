@@ -27,6 +27,30 @@
       "sizes": "1000x1000",
       "type": "image/png",
       "purpose": "monochrome"
+    },
+    {
+      "src": "/maskable_icon_x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/maskable_icon_x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screen-bookings.png",
+      "sizes": "1080x2400"
+    },
+    {
+      "src": "/screen-wide.png",
+      "sizes": "1830x921",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ],
   "theme_color": "#1b6f7c",
@@ -42,12 +66,12 @@
   "shortcuts": [
     {
       "name": "Évènements",
-      "short_name": "Évènements",
+      "short_name": "events",
       "description": "Voir les évènements à venir",
-      "url": "https://churros.inpt.fr/events",
+      "url": "/events",
       "icons": [
         {
-          "src": "https://churros.inpt.fr/icons/planning.png",
+          "src": "/icons/planning.png",
           "sizes": "192x192"
         }
       ]
