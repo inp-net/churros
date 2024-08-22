@@ -5,6 +5,7 @@
   import { tooltip } from '$lib/tooltip';
   import { scrollableContainer } from '$lib/scroll';
   import { isMobile } from '$lib/mobile';
+  import type { Page } from '@sveltejs/kit';
 
   const dispatch = createEventDispatcher<{ click: undefined }>();
 
@@ -20,18 +21,24 @@
 
   const mobile = isMobile();
 
-  $: isCurrent = (route: LayoutRouteId | null, href: string) =>
-    route ? $page.route.id === route : $page.url.pathname === href;
+  function isPathwiseEqual(a: URL, b: URL) {
+    return a.pathname.replace(/\/$/, '') === b.pathname.replace(/\/$/, '');
+  }
+
+  function isCurrent(route: LayoutRouteId | null, href: string, page: Page) {
+    if (route) return page.route.id === route;
+    return isPathwiseEqual(new URL(href, page.url), page.url);
+  }
 </script>
 
 <svelte:element
-  this={isCurrent(routeID, href) ? 'button' : 'a'}
+  this={isCurrent(routeID, href, $page) ? 'button' : 'a'}
   {href}
   class="button-navigation"
-  role={isCurrent(routeID, href) ? 'button' : 'link'}
-  class:current={isCurrent(routeID, href)}
+  role={isCurrent(routeID, href, $page) ? 'button' : 'link'}
+  class:current={isCurrent(routeID, href, $page)}
   use:tooltip={label ? { content: label, placement: tooltipsOn } : undefined}
-  on:click={isCurrent(routeID, href)
+  on:click={isCurrent(routeID, href, $page)
     ? () => {
         scrollableContainer(mobile).scrollTo({ top: 0, behavior: 'smooth' });
         dispatch('click');
@@ -39,7 +46,7 @@
     : undefined}
 >
   <slot>
-    {#if isCurrent(routeID, href)}
+    {#if isCurrent(routeID, href, $page)}
       <svelte:component this={iconFilled}></svelte:component>
     {:else if icon}
       <svelte:component this={icon}></svelte:component>
