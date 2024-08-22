@@ -2,18 +2,16 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql, type PageEventAllBookings$result } from '$houdini';
-  import {
-    Alert,
-    AvatarUser,
-    BookingBeneficiary,
-    BookingPaymentMethod,
-    BookingStatus,
-    BookingAuthor,
-    ButtonCopyToClipboard,
-    ButtonSecondary,
-    MaybeError,
-    NavigationTabs,
-  } from '$lib/components';
+  import Alert from '$lib/components/Alert.svelte';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
+  import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
+  import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
+  import BookingStatus from '$lib/components/BookingStatus.svelte';
+  import BookingAuthor from '$lib/components/BookingAuthor.svelte';
+  import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
   import { allLoaded, loaded, loading, LoadingText, mapLoading } from '$lib/loading';

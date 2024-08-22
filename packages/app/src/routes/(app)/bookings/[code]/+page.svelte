@@ -1,18 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import {
-    BookingAuthor,
-    BookingBeneficiary,
-    ButtonAddToGoogleWallet,
-    ButtonPrimary,
-    ButtonSecondary,
-    CardEvent,
-    LoadingChurros,
-    MaybeError,
-    ModalOrDrawer,
-    PillLink,
-  } from '$lib/components';
+  import BookingAuthor from '$lib/components/BookingAuthor.svelte';
+  import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
+  import ButtonAddToGoogleWallet from '$lib/components/ButtonAddToGoogleWallet.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardEvent from '$lib/components/CardEvent.svelte';
+  import LoadingChurros from '$lib/components/LoadingChurros.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import PillLink from '$lib/components/PillLink.svelte';
   import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
   import { formatDateTime } from '$lib/dates';
   import {

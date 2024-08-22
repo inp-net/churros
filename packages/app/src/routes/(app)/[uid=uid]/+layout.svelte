@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { MaybeError } from '$lib/components';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { route } from '$lib/ROUTES';
   import type { PageData } from './$houdini';

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { ButtonSecondary, MaybeError } from '$lib/components';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import { route } from '$lib/ROUTES';
   import type { PageData } from './$houdini';

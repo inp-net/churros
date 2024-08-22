@@ -14,7 +14,7 @@
   import { page } from '$app/stores';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import { ModalOrDrawer } from '$lib/components';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
 
   let title = '';
   let description = '';

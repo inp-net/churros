@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
-  import { ButtonGhost, OverflowMenu, ButtonPrimary, LogoChurros } from '$lib/components';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import OverflowMenu from '$lib/components/OverflowMenu.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import LogoChurros from '$lib/components/LogoChurros.svelte';
   import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
   import { isMobile } from '$lib/mobile';
   import { topnavConfigs } from '$lib/navigation';

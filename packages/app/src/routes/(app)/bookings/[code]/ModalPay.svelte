@@ -10,7 +10,7 @@
     type ModalCurrentBookingStep,
     type SubmitBookingPayment$input,
   } from '$houdini';
-  import { ButtonPrimary } from '$lib/components';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';

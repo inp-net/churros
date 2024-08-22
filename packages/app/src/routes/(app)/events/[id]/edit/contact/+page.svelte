@@ -1,6 +1,6 @@
 <script lang="ts">
   import { graphql } from '$houdini';
-  import { InputText } from '$lib/components';
+  import InputText from '$lib/components/InputText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';

@@ -1,7 +1,8 @@
 <script lang="ts">
   import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
-  import { CardBooking, ModalOrDrawer } from '$lib/components';
+  import CardBooking from '$lib/components/CardBooking.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';

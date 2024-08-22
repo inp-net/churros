@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fragment, graphql, type NavigationBottomMe } from '$houdini';
-  import { ButtonNavigation, ButtonSecondary } from '$lib/components';
+  import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { route } from '$lib/ROUTES';
   import IconAccount from '~icons/msl/account-circle';
   import IconAccountOutline from '~icons/msl/account-circle-outline';

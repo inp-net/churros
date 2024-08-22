@@ -1,6 +1,6 @@
 <script lang="ts">
   import { MutationStore, type BooleanConstraint$options } from '$houdini';
-  import { SubmenuItem } from '$lib/components';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { LoadingText, loaded, mapAllLoading, type MaybeLoading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';

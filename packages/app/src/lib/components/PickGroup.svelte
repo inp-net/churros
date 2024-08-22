@@ -1,6 +1,7 @@
 <script lang="ts">
   import { graphql, type PickGroup$data } from '$houdini';
-  import { AvatarGroup_houdini, LoadingText } from '$lib/components';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import AvatarGroup_houdini from '$lib/components/AvatarGroup.houdini.svelte';
   import PickThings from '$lib/components/PickThings.svelte';
   import { type MaybeLoading } from '$lib/loading';
   import type { NavigationTopStateKeys } from '$lib/navigation';

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { CardService_houdini as CardService, MaybeError } from '$lib/components';
+  import CardService from '$lib/components/CardService.houdini.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import type { PageData } from './$houdini';
 
   export let data: PageData;

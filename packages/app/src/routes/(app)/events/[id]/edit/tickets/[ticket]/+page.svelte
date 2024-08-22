@@ -1,23 +1,21 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import {
-    Alert,
-    AvatarGroup_houdini as AvatarGroup,
-    ButtonGhost,
-    IconLinkVariant,
-    InputDateTime,
-    InputDateTimeRange,
-    InputText,
-    InputToggle,
-    MaybeError,
-    ModalOrDrawer,
-    PickGroup,
-    PickMajor,
-    Submenu,
-    SubmenuItem,
-  } from '$lib/components';
+  import Alert from '$lib/components/Alert.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
   import InputCheckboxes from '$lib/components/InputCheckboxes.svelte';
+  import InputDateTime from '$lib/components/InputDateTime.svelte';
+  import InputDateTimeRange from '$lib/components/InputDateTimeRange.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import InputToggle from '$lib/components/InputToggle.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import PickGroup from '$lib/components/PickGroup.svelte';
+  import PickMajor from '$lib/components/PickMajor.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { fromYearTier } from '$lib/dates';
   import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';

@@ -7,8 +7,9 @@
     type CardTicketDetails,
     type CardTicketPlaces,
   } from '$houdini';
-  import { AvatarGroup_houdini, AvatarSchool } from '$lib/components';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';
+  import AvatarSchool from '$lib/components/AvatarSchool.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import {
     allLoaded,
@@ -114,7 +115,7 @@
             <AvatarMajor {major} />
           {/each}
           {#each $dataDetails.openToGroups?.filter(Boolean) ?? [] as group}
-            <AvatarGroup_houdini {group} />
+            <AvatarGroup {group} />
           {/each}
         </div>
       {/if}

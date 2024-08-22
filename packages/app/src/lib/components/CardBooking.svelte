@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fragment, graphql, type CardBooking } from '$houdini';
-  import { BookingStatus } from '$lib/components';
+  import BookingStatus from '$lib/components/BookingStatus.svelte';
   import { loading, LoadingText } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { refroute } from '$lib/navigation';

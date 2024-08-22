@@ -1,6 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { ButtonPrimary, ButtonSecondary, ModalOrDrawer } from '$lib/components';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { loaded, loading, type MaybeLoading } from '$lib/loading';
   import { type NavigationTopStateKeys } from '$lib/navigation';
   import { createEventDispatcher } from 'svelte';

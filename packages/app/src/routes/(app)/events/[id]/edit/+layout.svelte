@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { PickGroup } from '$lib/components';
+  import PickGroup from '$lib/components/PickGroup.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';

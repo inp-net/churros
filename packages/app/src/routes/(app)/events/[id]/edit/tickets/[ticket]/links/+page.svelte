@@ -1,10 +1,8 @@
 <script lang="ts">
+  import Alert from '$lib/components/Alert.svelte';
+  import AreaEditLinks from '$lib/components/AreaEditLinks.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import type { PageData } from './$houdini';
-  import { MaybeError, ButtonSecondary, AreaEditLinks, Alert } from '$lib/components';
-  import { route } from '$lib/ROUTES';
-  import { refroute } from '$lib/navigation';
-  import { mutate } from '$lib/mutations';
-  import { onceLoaded, mapLoading, LoadingText } from '$lib/loading';
 
   export let data: PageData;
   $: ({ PageEditEventTicketLinks } = data);

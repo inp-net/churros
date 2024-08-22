@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { MaybeError, SubmenuItem } from '$lib/components';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';

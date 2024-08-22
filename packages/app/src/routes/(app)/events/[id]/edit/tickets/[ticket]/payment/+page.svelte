@@ -1,12 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import {
-    ButtonSecondary,
-    InputCheckbox,
-    MaybeError,
-    Submenu,
-    SubmenuItem,
-  } from '$lib/components';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import {
     DISPLAY_PAYMENT_METHODS,
     ICONS_PAYMENT_METHODS,

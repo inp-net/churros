@@ -1,13 +1,11 @@
 <script lang="ts">
   import { graphql, type EventManagerPowerLevel$options } from '$houdini';
-  import {
-    AvatarUser,
-    ButtonGhost,
-    ButtonPrimary,
-    InputSelectOneDropdown,
-    InputTextGhost,
-    MaybeError,
-  } from '$lib/components';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
+  import InputTextGhost from '$lib/components/InputTextGhost.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
   import { loading } from '$lib/loading';
   import { mutate } from '$lib/mutations';

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { CardBooking, MaybeError } from '$lib/components';
+  import CardBooking from '$lib/components/CardBooking.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import { infinitescroll } from '$lib/scroll';
   import type { PageData } from './$houdini';
 

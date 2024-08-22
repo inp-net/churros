@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MaybeError } from '$lib/components';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import type { PageData } from './$houdini';
   import FormSignup from './FormSignup.svelte';
 

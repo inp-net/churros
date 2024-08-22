@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fragment, graphql, type BookingBeneficiary } from '$houdini';
-  import { AvatarUser } from '$lib/components';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
   import { LoadingText, allLoaded } from '$lib/loading';
 
   /** Whether to use the UIDs instead of the full names */

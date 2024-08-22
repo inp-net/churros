@@ -1,17 +1,15 @@
 <script lang="ts">
+  import { graphql } from '$houdini';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import InputTextGhost from '$lib/components/InputTextGhost.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import { loading, LoadingText } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
   import type { PageData } from './$houdini';
-  import { graphql } from '$houdini';
-  import {
-    AvatarUser,
-    ButtonGhost,
-    MaybeError,
-    InputTextGhost,
-    ButtonPrimary,
-  } from '$lib/components';
 
   export let data: PageData;
   $: ({ PageEventEditBanned } = data);

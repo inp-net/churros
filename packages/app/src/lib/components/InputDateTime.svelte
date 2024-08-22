@@ -6,7 +6,8 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import InputField from '$lib/components/InputField.svelte';
-  import { InputText, InputDate } from '$lib/components';
+  import InputText from '$lib/components/InputText.svelte';
+  import InputDate from '$lib/components/InputDate.svelte';
   import IconClear from '~icons/msl/backspace-outline';
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { nanoid } from 'nanoid';

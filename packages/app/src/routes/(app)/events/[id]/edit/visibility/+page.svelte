@@ -1,13 +1,11 @@
 <script lang="ts">
-  import {
-    Alert,
-    InputField,
-    InputRadios,
-    InputToggle,
-    Submenu,
-    SubmenuItem,
-    MaybeError,
-  } from '$lib/components';
+  import Alert from '$lib/components/Alert.svelte';
+  import InputField from '$lib/components/InputField.svelte';
+  import InputRadios from '$lib/components/InputRadios.svelte';
+  import InputToggle from '$lib/components/InputToggle.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
   import { onceAllLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';

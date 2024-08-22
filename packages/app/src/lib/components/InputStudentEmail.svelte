@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fragment, graphql, type InputStudentEmail } from '$houdini';
-  import { ButtonInk } from '$lib/components';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { loading } from '$lib/loading';
   import Fuse from 'fuse.js';

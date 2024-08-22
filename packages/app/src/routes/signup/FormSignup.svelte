@@ -16,7 +16,7 @@
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
   import { fragment, graphql, type FormSignup, type FormSignupQuickSignup } from '$houdini';
-  import { InputUID } from '$lib/components';
+  import InputUID from '$lib/components/InputUID.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputMajor from '$lib/components/InputMajor.svelte';

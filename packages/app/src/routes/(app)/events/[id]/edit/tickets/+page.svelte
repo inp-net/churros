@@ -4,15 +4,13 @@
   import PickLydiaAccount from './PickBeneficiary.svelte';
   import { route } from '$lib/ROUTES';
   import Alert from '$lib/components/Alert.svelte';
-  import {
-    ButtonSecondary,
-    InputText,
-    InputToggle,
-    MaybeError,
-    Submenu,
-    SubmenuItem,
-    TextTicketSummary,
-  } from '$lib/components';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import InputToggle from '$lib/components/InputToggle.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import TextTicketSummary from '$lib/components/TextTicketSummary.svelte';
   import {
     LoadingText,
     loaded,

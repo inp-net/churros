@@ -4,7 +4,7 @@
     type BookingScanResult$data,
     type RegistrationVerificationState$options,
   } from '$houdini';
-  import { ButtonSecondary } from '$lib/components';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
   import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';

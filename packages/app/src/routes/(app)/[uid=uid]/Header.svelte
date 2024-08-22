@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { fragment, graphql, PendingValue, type ProfileHeader } from '$houdini';
-  import { HTMLContent } from '$lib/components';
+  import HTMLContent from '$lib/components/HTMLContent.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';

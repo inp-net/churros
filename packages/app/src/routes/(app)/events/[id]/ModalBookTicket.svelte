@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { fragment, graphql, type ModalBookTicket, type ModalBookTicketMe } from '$houdini';
-  import { MaybeError } from '$lib/components';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
