@@ -1,5 +1,5 @@
-query PagePostDetail($id: LocalID!, $loggedIn: LoggedIn!) {
-  me @include(if: $loggedIn) @loading {
+query PagePostDetail($id: LocalID!) {
+  me @loading {
     ...AreaCommentsUser @loading
   }
 

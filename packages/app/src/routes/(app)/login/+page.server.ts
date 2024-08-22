@@ -1,8 +1,15 @@
 import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+import { oauthEnabled, oauthInitiateLoginURL, oauthLoginBypassed } from '$lib/oauth';
 import { saveSessionToken } from '$lib/session';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
 import { Login } from './mutations';
+
+export async function load(event) {
+  if (oauthEnabled() && !oauthLoginBypassed(event)) 
+    redirect(307, oauthInitiateLoginURL(event));
+  
+}
 
 export const actions: Actions = {
   async default(event) {

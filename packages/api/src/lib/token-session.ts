@@ -18,8 +18,10 @@ async function getTokenSessionFromCache(token: Credential['value']): Promise<Ses
   return getSessionUser(uid);
 }
 
-async function getTokenSessionFromDatabase(token: Credential['value']): Promise<SessionUser> {
-  const credential = await prisma.credential.findFirstOrThrow({
+async function getTokenSessionFromDatabase(
+  token: Credential['value'],
+): Promise<SessionUser | null> {
+  const credential = await prisma.credential.findFirst({
     where: { type: CredentialType.Token, value: token },
     include: {
       user: {
@@ -27,6 +29,8 @@ async function getTokenSessionFromDatabase(token: Credential['value']): Promise<
       },
     },
   });
+
+  if (!credential) return null;
 
   if (credential.expiresAt !== null && isPast(credential.expiresAt))
     await prisma.credential.delete({ where: { id: credential.id } });

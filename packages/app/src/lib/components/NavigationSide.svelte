@@ -1,6 +1,5 @@
 <script lang="ts">
   import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import { page } from '$app/stores';
   import { type NavigationSide, fragment, graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
@@ -129,11 +128,9 @@
     >
       <IconBugReport></IconBugReport>
     </ButtonGhost>
-    {#if $page.data.token}
-      <ButtonGhost href="{route('GET /logout')}?token={encodeURIComponent($page.data.token)}">
-        <IconLogout></IconLogout>
-      </ButtonGhost>
-    {/if}
+    <ButtonGhost href={route('GET /logout')}>
+      <IconLogout></IconLogout>
+    </ButtonGhost>
   </div>
 </nav>
 

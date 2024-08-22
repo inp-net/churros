@@ -2,6 +2,7 @@ import { getSessionUser } from '#lib';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
 import { api } from '../express.js';
+import { AUTHED_VIA_COOKIE_NAME, AuthedViaCookie } from './constants.js';
 
 const oauth2Strategy = new OAuth2Strategy(
   {
@@ -9,7 +10,7 @@ const oauth2Strategy = new OAuth2Strategy(
     tokenURL: process.env.PUBLIC_OAUTH_TOKEN_URL,
     clientID: process.env.PUBLIC_OAUTH_CLIENT_ID,
     clientSecret: process.env.OAUTH_CLIENT_SECRET,
-    callbackURL: `/auth/oauth2/callback`,
+    callbackURL: '/auth/oauth2/callback',
     scope: process.env.PUBLIC_OAUTH_SCOPES.split(','),
   },
   async function (
@@ -51,11 +52,28 @@ oauth2Strategy.userProfile = async function (
 
 passport.use(oauth2Strategy);
 
-api.get('/auth/oauth2', passport.authenticate('oauth2'));
+api.get('/auth/oauth2', (req, res, next) => {
+  // Thanks express
+  const searchParams = new URL(`http://localhost${req.url}`).searchParams;
+
+  passport.authenticate('oauth2', {
+    // @ts-expect-error undocumented option
+    callbackURL: new URL(
+      `/auth/oauth2/callback?${new URLSearchParams({ from: searchParams.get('from') ?? '' })}`,
+      process.env.PUBLIC_API_URL,
+    ).toString(),
+  })(req, res, next);
+});
 api.get(
   '/auth/oauth2/callback',
   passport.authenticate('oauth2', { failureRedirect: '/login' }),
-  function (_req, res) {
-    res.redirect(process.env.PUBLIC_FRONTEND_ORIGIN); // Successful authentication, redirect home.
+  function (req, res) {
+    // Thanks express
+    const searchParams = new URL(`http://localhost${req.url}`).searchParams;
+
+    res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
+    res.redirect(
+      new URL(searchParams.get('from') ?? '/', process.env.PUBLIC_FRONTEND_ORIGIN).toString(),
+    ); // Successful authentication, redirect home.
   },
 );

@@ -81,12 +81,8 @@ export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
   plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
-    // console.log(
-    //   `fetching client params from token ${JSON.stringify(
-    //     session?.token,
-    //   )}, varaibles ${JSON.stringify(variables)}`,
-    // );
     return {
+      credentials: 'include',
       headers: {
         Authorization: session?.token ? `Bearer ${session.token}` : '',
       },

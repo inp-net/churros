@@ -48,6 +48,7 @@ export const saveUser = async (
       birthday,
       cededImageRightsToTVn7,
       apprentice,
+      // TODO only store for non-ldap-backed accounts
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
       canAccessDocuments: Boolean(majorId), // TODO behavior should be different for ensat

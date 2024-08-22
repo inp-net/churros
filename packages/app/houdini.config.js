@@ -159,15 +159,7 @@ const config = {
     },
   },
   features: {
-    runtimeScalars: {
-      LoggedIn: {
-        type: 'Boolean',
-        resolve: ({ session }) => {
-          console.log({ session });
-          return Boolean(session?.token);
-        },
-      },
-    },
+    runtimeScalars: {},
   },
 };
 

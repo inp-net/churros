@@ -15,7 +15,7 @@
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { isMobile } from '$lib/mobile';
   import { mutate } from '$lib/mutations';
-  import { refroute } from '$lib/navigation';
+  import { addReferrer, refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
   import { isDark } from '$lib/theme';
@@ -205,7 +205,10 @@
         <h2>Connexion</h2>
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
         <section class="actions">
-          <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
+          <!-- Can't use refroute here cuz it's not called again on every page change, since this lives in the layout -->
+          <ButtonSecondary href={addReferrer(route('/login'), $page.url.pathname)}
+            >Connexion</ButtonSecondary
+          >
           <ButtonSecondary href={refroute('/signup')}>Inscription</ButtonSecondary>
         </section>
       </section>

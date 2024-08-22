@@ -124,7 +124,8 @@ async function downloadRandomPeoplePhoto(): Promise<File> {
   return new File([await response.blob()], 'profile.jpeg', { type: 'image/jpeg' });
 }
 
-const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
+const createUid = async ({ firstName, lastName, uid }: { firstName: string; lastName: string, uid?: string }) => {
+  if (uid) return uid
   const toAscii = (x: string) =>
     slug(x.toLocaleLowerCase(), {
       charmap: {
@@ -466,6 +467,7 @@ const contributionOptions = await prisma.contributionOption.findMany({
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
 const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
+  { firstName: "Ewen", lastName: "Le Bihan", admin: true, uid: 'lebihae' }, // Pour tester l'oauth
   { firstName: 'Bernard', lastName: 'Tichaut' },
   { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
