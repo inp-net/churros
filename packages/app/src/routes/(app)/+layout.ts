@@ -1,6 +1,5 @@
 import { load_AppLayout, loadAll, type AppLayout$input } from '$houdini';
 import { CURRENT_VERSION } from '$lib/buildinfo';
-export const ssr = false;
 
 export async function load(event) {
   const result = await loadAll(
