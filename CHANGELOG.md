@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Améliorations
+
+- La page de migration de mot de passe propose maintenant de revenir en arrière après avoir terminé la migration
+
 ## [1.70.0] - 2024-08-23
 
 ### Nouveautés

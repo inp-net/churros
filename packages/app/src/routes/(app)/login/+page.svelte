@@ -5,12 +5,14 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
+  import { toasts } from '$lib/toasts';
+  import { zeus } from '$lib/zeus';
+  import { onMount } from 'svelte';
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
 
-  import { me, saveSessionToken, sessionUserQuery } from '$lib/session';
-  import { zeus } from '$lib/zeus';
-  import { onMount } from 'svelte';
+  $: migratingPassword = $page.url.searchParams.has('migrate');
 
   let email = '';
   let password = '';
@@ -62,13 +64,24 @@
       }
 
       saveSessionToken(document, { ...login.data, expiresAt: login.data.expiresAt ?? null });
-      await redirect();
+      if (migratingPassword) {
+        toasts.success('Mot de passe migré!', 'Tu peux retourner revenir où tu en étais', {
+          data: {},
+          lifetime: Number.POSITIVE_INFINITY,
+          action() {
+            window.history.back();
+          },
+          labels: {
+            action: 'Retour',
+          },
+        });
+      } else {
+        await redirect();
+      }
     } finally {
       loading = false;
     }
   };
-
-  $: migratingPassword = $page.url.searchParams.has('migrate');
 
   onMount(async () => {
     // Client-side redirect to avoid login detection
