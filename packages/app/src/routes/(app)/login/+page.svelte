@@ -68,9 +68,11 @@
     }
   };
 
+  $: migratingPassword = $page.url.searchParams.has('migrate');
+
   onMount(async () => {
     // Client-side redirect to avoid login detection
-    if ($me) {
+    if ($me && !$page.url.searchParams.has('migrate')) {
       window.localStorage.removeItem('isReallyLoggedout');
       await redirect();
     }
@@ -101,7 +103,9 @@
     }}
   />
   <section class="submit">
-    <ButtonPrimary submits>Se connecter</ButtonPrimary>
+    <ButtonPrimary submits
+      >{#if migratingPassword}Migrer{:else}Se connecter{/if}</ButtonPrimary
+    >
   </section>
 
   <hr />

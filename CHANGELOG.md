@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Page de migration de mot de passe vers le nouveau système d'authentification centralisée
+
 ## [1.69.1] - 2024-08-14
 
 ### Corrections
