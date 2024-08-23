@@ -62,8 +62,6 @@
   export let data: PageData;
   $: ({ PageProfile } = data);
   $: tab = $page.url.searchParams.get('tab') || 'infos';
-
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
 <MaybeError result={$PageProfile} let:data={{ profile, me }}>

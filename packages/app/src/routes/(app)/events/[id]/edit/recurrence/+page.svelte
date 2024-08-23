@@ -19,7 +19,6 @@
   export let data: PageData;
 
   $: ({ PageEventEditRecurrence } = data);
-  // HINT: Don't forget to add an entry in $lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
 <MaybeError result={$PageEventEditRecurrence} let:data={{ event }}>

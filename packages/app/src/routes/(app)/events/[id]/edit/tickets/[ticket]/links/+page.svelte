@@ -6,7 +6,6 @@
 
   export let data: PageData;
   $: ({ PageEditEventTicketLinks } = data);
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
 <MaybeError result={$PageEditEventTicketLinks} let:data={{ event }}>
