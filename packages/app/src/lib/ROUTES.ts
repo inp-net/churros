@@ -29,9 +29,6 @@ const PAGES = {
     params.tab = params.tab ?? 'infos';
     return `/${uid}${appendSp({ tab: params.tab })}`;
   },
-  '/[uid=uid]/edit': (uid: Parameters<typeof import('../params/uid.ts').match>[0], params?: {}) => {
-    return `/${uid}/edit`;
-  },
   '/announcements': `/announcements`,
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
@@ -185,7 +182,11 @@ const PAGES = {
     return `/groups/${uid}/members`;
   },
   '/help': `/help`,
-  '/login': `/login`,
+  '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
+    params = params ?? {};
+    params.bypass_oauth = params.bypass_oauth ?? undefined;
+    return `/login${appendSp({ bypass_oauth: params.bypass_oauth })}`;
+  },
   '/login/forgotten': `/login/forgotten`,
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
@@ -242,6 +243,33 @@ const PAGES = {
   '/users/[uid]/edit': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit`;
   },
+  '/users/[uid]/edit/bio': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/bio`;
+  },
+  '/users/[uid]/edit/contribution': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/contribution`;
+  },
+  '/users/[uid]/edit/curriculum': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/curriculum`;
+  },
+  '/users/[uid]/edit/email': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/email`;
+  },
+  '/users/[uid]/edit/family': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/family`;
+  },
+  '/users/[uid]/edit/links': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/links`;
+  },
+  '/users/[uid]/edit/name': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/name`;
+  },
+  '/users/[uid]/edit/old': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/old`;
+  },
+  '/users/[uid]/edit/other-emails': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/other-emails`;
+  },
   '/validate-email/[token]': (token: string | number, params?: {}) => {
     return `/validate-email/${token}`;
   },
@@ -269,6 +297,12 @@ const SERVERS = {
     params?: {},
   ) => {
     return `/${entity}`;
+  },
+  'GET /[uid=uid].png': (
+    uid: Parameters<typeof import('../params/uid.ts').match>[0],
+    params?: {},
+  ) => {
+    return `/${uid}.png`;
   },
   'GET /bookings/[code].pdf': (code: string | number, params?: {}) => {
     return `/bookings/${code}.pdf`;
@@ -435,7 +469,6 @@ export type KIT_ROUTES = {
   PAGES: {
     '/': never;
     '/[uid=uid]': 'uid';
-    '/[uid=uid]/edit': 'uid';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
@@ -519,6 +552,15 @@ export type KIT_ROUTES = {
     '/student-associations/[uid]/edit/pages': 'uid';
     '/student-associations/[uid]/edit/pages/[...page]': 'uid' | 'page';
     '/users/[uid]/edit': 'uid';
+    '/users/[uid]/edit/bio': 'uid';
+    '/users/[uid]/edit/contribution': 'uid';
+    '/users/[uid]/edit/curriculum': 'uid';
+    '/users/[uid]/edit/email': 'uid';
+    '/users/[uid]/edit/family': 'uid';
+    '/users/[uid]/edit/links': 'uid';
+    '/users/[uid]/edit/name': 'uid';
+    '/users/[uid]/edit/old': 'uid';
+    '/users/[uid]/edit/other-emails': 'uid';
     '/validate-email/[token]': 'token';
     '/welcome': never;
     '/connect/google/callback': never;
@@ -530,6 +572,7 @@ export type KIT_ROUTES = {
   };
   SERVERS: {
     'GET /[entity=entity_handle]': 'entity';
+    'GET /[uid=uid].png': 'uid';
     'GET /bookings/[code].pdf': 'code';
     'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /events/[id]/bookings.csv': 'id';
@@ -564,6 +607,7 @@ export type KIT_ROUTES = {
     week: never;
     ticket: never;
     page: never;
+    bypass_oauth: never;
     token: never;
     group: never;
     number: never;

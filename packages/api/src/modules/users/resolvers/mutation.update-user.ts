@@ -9,6 +9,8 @@ import { UserType, requestEmailChange } from '../index.js';
 builder.mutationField('updateUser', (t) =>
   t.prismaField({
     type: UserType,
+    deprecationReason:
+      'Use `updateUserProfile`, `requestEmailChange` and other `updateUser*` mutations instead',
     errors: {},
     args: {
       uid: t.arg({ type: UIDScalar }),
@@ -129,7 +131,12 @@ builder.mutationField('updateUser', (t) =>
           },
         });
         // Send a validation email
-        await requestEmailChange(email, targetUser.id);
+        await requestEmailChange(
+          {},
+          email,
+          targetUser.id,
+          new URL('/validate-email/[token]', process.env.PUBLIC_FRONTEND_ORIGIN),
+        );
       }
 
       if (!userIsAdmin && changingGraduationYear)

@@ -28,7 +28,7 @@
     "body": [
       "<script lang=\"ts\">",
       "\timport type { PageData } from './\\$houdini';",
-      "\timport { MaybeError, ButtonSecondary } from '\\$lib/components';",
+      "\timport MaybeError from '\\$lib/components/MaybeError.svelte';",
       "\timport { route } from '\\$lib/ROUTES';",
       "\timport { refroute } from '\\$lib/navigation';",
       "\timport { mutate } from '\\$lib/mutations';",

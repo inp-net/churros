@@ -19,9 +19,13 @@ import('./auth/anonymous.js');
 import('./auth/bearer.js');
 
 api.use(
-  // Allow queries from the frontend only
-  // cors({ origin: ['http://192.168.*', process.env.FRONTEND_ORIGIN, 'http://app'] }),
-  cors(),
+  // Allow any origin, this is a public API :)
+  cors({
+    credentials: true,
+    origin(_, callback) {
+      callback(null, true);
+    },
+  }),
   // Set basic security headers
   helmet({
     contentSecurityPolicy: false,

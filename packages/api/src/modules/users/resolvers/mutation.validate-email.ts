@@ -1,19 +1,19 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma, purgeSessionsUser } from '#lib';
+import { builder, prisma, purgeSessionsUser } from '#lib';
+import { EmailChangeType } from '#modules/users/types';
 
 import { GraphQLError } from 'graphql';
 
 builder.mutationField('validateEmail', (t) =>
-  t.field({
-    type: 'Boolean',
+  t.prismaField({
+    type: EmailChangeType,
     errors: {},
     args: {
       token: t.arg.string(),
     },
-    async resolve(_, { token }) {
-      const id = `${TYPENAMES_TO_ID_PREFIXES['EmailChange']!}:${token.toLowerCase()}`;
+    async resolve(query, _, { token }) {
       // prisma errors out if the email validation is not found
       const { email, user, pending } = await prisma.emailChange.findUniqueOrThrow({
-        where: { id },
+        where: { token },
         include: { user: true },
       });
 
@@ -28,11 +28,11 @@ builder.mutationField('validateEmail', (t) =>
         data: { email },
       });
       purgeSessionsUser(user.uid);
-      await prisma.emailChange.update({
-        where: { id },
+      return prisma.emailChange.update({
+        ...query,
+        where: { token },
         data: { pending: false },
       });
-      return true;
     },
   }),
 );

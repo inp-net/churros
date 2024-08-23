@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { fragment, graphql, type NavigationBottomMe } from '$houdini';
   import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -22,6 +23,13 @@
       }
     `),
   );
+
+  let loginLongpressTimeout: number;
+  function setLongpressTimeout() {
+    loginLongpressTimeout = setTimeout(() => {
+      goto(route('/login', { bypass_oauth: '1' }));
+    }, 3000) as unknown as number;
+  }
 </script>
 
 <nav>
@@ -65,7 +73,22 @@
       iconFilled={IconAccount}
     />
   {:else}
-    <ButtonSecondary href={route('/login')}>Connexion</ButtonSecondary>
+    <ButtonSecondary
+      on:contextmenu={(e) => {
+        e?.preventDefault();
+        goto(route('/login', { bypass_oauth: '1' }));
+      }}
+      on:touchstart={(e) => {
+        e?.preventDefault();
+        setLongpressTimeout();
+      }}
+      on:touchmove={(e) => {
+        e?.preventDefault();
+        clearTimeout(loginLongpressTimeout);
+        setLongpressTimeout();
+      }}
+      href={route('/login')}>Connexion</ButtonSecondary
+    >
   {/if}
 </nav>
 

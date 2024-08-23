@@ -12,6 +12,7 @@ export * from './local-id.js';
 export * from './loose-url.js';
 export * from './markdown.js';
 export * from './mixed-search-result.js';
+export * from './phone-number.js';
 export * from './pictured.js';
 export * from './positive-int.js';
 export * from './qr-code.js';

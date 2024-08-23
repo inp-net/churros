@@ -3,6 +3,7 @@ import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { LinkInput, MAXIMUM_LINKS } from '#modules/links';
 import { canEditArticle } from '#modules/posts';
 import { TicketTypePrismaIncludes } from '#modules/ticketing';
+import { canEditProfile, UserTypePrismaIncludes } from '#modules/users';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 import { HasLinks } from '../types/has-links.js';
@@ -61,6 +62,13 @@ builder.mutationField('addLinks', (t) =>
           });
           return canEditEvent(ticket.event, user);
         }
+        case 'User': {
+          const targetUser = await prisma.user.findUniqueOrThrow({
+            where: { id },
+            include: canEditProfile.prismaIncludes,
+          });
+          return canEditProfile(user, targetUser);
+        }
         default: {
           throw new GraphQLError('Cette ressource ne permet pas de définir des liens');
         }
@@ -77,20 +85,13 @@ builder.mutationField('addLinks', (t) =>
           id = ensureGlobalId(id, 'Article');
           await log('posts', 'set-links', { id, links }, id, user);
           // const query = queryFor('Article');
-          const {
-            _count: { links: linksCount },
-          } = await prisma.article.findUniqueOrThrow({
-            where: { id },
-            select: {
-              _count: {
-                select: {
-                  links: true,
-                },
-              },
-            },
-          });
-          if (linksCount + links.length > MAXIMUM_LINKS)
-            throw new GraphQLError("Impossible d'avoir plus de 10 liens");
+          ensureLinksCountLimit(
+            await prisma.article.findUniqueOrThrow({
+              where: { id },
+              select: ensureLinksCountLimit.prismaSelect,
+            }),
+            links,
+          );
 
           return prisma.article.update({
             // ...query,
@@ -101,27 +102,7 @@ builder.mutationField('addLinks', (t) =>
             },
             where: { id },
             data: {
-              links: {
-                updateMany:
-                  duplicates === 'Replace'
-                    ? links.map((l) => ({
-                        where: {
-                          value: l.url,
-                        },
-                        data: {
-                          name: l.text,
-                          value: l.url,
-                        },
-                      }))
-                    : [],
-                createMany: {
-                  skipDuplicates: duplicates !== 'Error',
-                  data: links.map((l) => ({
-                    name: l.text,
-                    value: l.url,
-                  })),
-                },
-              },
+              links: updateLinksPrisma(links, duplicates),
             },
           });
         }
@@ -129,20 +110,13 @@ builder.mutationField('addLinks', (t) =>
           id = ensureGlobalId(id, 'Ticket');
           await log('ticketing', 'set-links', { id, links }, id, user);
           // const query = queryFor('Ticket');
-          const {
-            _count: { links: linksCount },
-          } = await prisma.ticket.findUniqueOrThrow({
-            where: { id },
-            select: {
-              _count: {
-                select: {
-                  links: true,
-                },
-              },
-            },
-          });
-          if (linksCount + links.length > MAXIMUM_LINKS)
-            throw new GraphQLError("Impossible d'avoir plus de 10 liens");
+          ensureLinksCountLimit(
+            await prisma.ticket.findUniqueOrThrow({
+              where: { id },
+              select: ensureLinksCountLimit.prismaSelect,
+            }),
+            links,
+          );
 
           return prisma.ticket.update({
             // ...query,
@@ -153,27 +127,7 @@ builder.mutationField('addLinks', (t) =>
             },
             where: { id },
             data: {
-              links: {
-                updateMany:
-                  duplicates === 'Replace'
-                    ? links.map((l) => ({
-                        where: {
-                          value: l.url,
-                        },
-                        data: {
-                          name: l.text,
-                          value: l.url,
-                        },
-                      }))
-                    : [],
-                createMany: {
-                  skipDuplicates: duplicates !== 'Error',
-                  data: links.map((l) => ({
-                    name: l.text,
-                    value: l.url,
-                  })),
-                },
-              },
+              links: updateLinksPrisma(links, duplicates),
             },
           });
         }
@@ -182,20 +136,13 @@ builder.mutationField('addLinks', (t) =>
           id = ensureGlobalId(id, 'Event');
           await log('event', 'set-links', { id, links }, id, user);
           // const query = queryFor('Event');
-          const {
-            _count: { links: linksCount },
-          } = await prisma.event.findUniqueOrThrow({
-            where: { id },
-            select: {
-              _count: {
-                select: {
-                  links: true,
-                },
-              },
-            },
-          });
-          if (linksCount + links.length > MAXIMUM_LINKS)
-            throw new GraphQLError("Impossible d'avoir plus de 10 liens");
+          ensureLinksCountLimit(
+            await prisma.event.findUniqueOrThrow({
+              where: { id },
+              select: ensureLinksCountLimit.prismaSelect,
+            }),
+            links,
+          );
 
           return prisma.event.update({
             // ...query,
@@ -209,27 +156,33 @@ builder.mutationField('addLinks', (t) =>
             },
             where: { id },
             data: {
-              links: {
-                updateMany:
-                  duplicates === 'Replace'
-                    ? links.map((l) => ({
-                        where: {
-                          value: l.url,
-                        },
-                        data: {
-                          name: l.text,
-                          value: l.url,
-                        },
-                      }))
-                    : [],
-                createMany: {
-                  skipDuplicates: duplicates !== 'Error',
-                  data: links.map((l) => ({
-                    name: l.text,
-                    value: l.url,
-                  })),
-                },
-              },
+              links: updateLinksPrisma(links, duplicates),
+            },
+          });
+        }
+
+        case 'User': {
+          id = ensureGlobalId(id, 'User');
+          await log('users', 'set-links', { id, links }, id, user);
+          // const query = queryFor('User');
+          ensureLinksCountLimit(
+            await prisma.user.findUniqueOrThrow({
+              where: { id },
+              select: ensureLinksCountLimit.prismaSelect,
+            }),
+            links,
+          );
+
+          return prisma.user.update({
+            // ...query,
+            include: {
+              // ...('include' in query ? query.include : undefined),
+              ...UserTypePrismaIncludes,
+              links: true,
+            },
+            where: { id },
+            data: {
+              links: updateLinksPrisma(links, duplicates),
             },
           });
         }
@@ -238,3 +191,43 @@ builder.mutationField('addLinks', (t) =>
     },
   }),
 );
+
+function updateLinksPrisma(
+  links: Array<{ text: string; url: string }>,
+  duplicates: 'Error' | 'Replace' | 'Skip',
+) {
+  return {
+    updateMany:
+      duplicates === 'Replace'
+        ? links.map((l) => ({
+            where: {
+              value: l.url,
+            },
+            data: {
+              name: l.text,
+              value: l.url,
+            },
+          }))
+        : [],
+    createMany: {
+      skipDuplicates: duplicates !== 'Error',
+      data: links.map((l) => ({
+        name: l.text,
+        value: l.url,
+      })),
+    },
+  } as const;
+}
+
+function ensureLinksCountLimit(currentResource: { _count: { links: number } }, links: unknown[]) {
+  if (currentResource._count.links + links.length > MAXIMUM_LINKS)
+    throw new GraphQLError("Impossible d'avoir plus de 10 liens");
+}
+
+ensureLinksCountLimit.prismaSelect = {
+  _count: {
+    select: {
+      links: true,
+    },
+  },
+} as const;

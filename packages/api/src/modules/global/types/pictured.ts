@@ -14,6 +14,7 @@ export const PicturedInterface = builder.interfaceRef<Pictured>('Pictured').impl
     return decodeGlobalID(id).typename;
   },
   fields: (t) => ({
+    id: t.exposeID('id', { description: "L'identifiant global de la ressource" }),
     pictureFile: t.exposeString('pictureFile', { description: "Le nom du fichier de l'image" }),
     pictureFileDark: t.string({
       description: "Le nom du fichier de l'image, en thème sombre",

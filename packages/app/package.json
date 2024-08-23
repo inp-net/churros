@@ -115,8 +115,7 @@
     "preview": "vite preview",
     "format-at": "prettier --write",
     "start": "node ./build/index.js",
-    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions",
-    "barrelize": "tsx src/scripts/barrelize-components.ts"
+    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
   },
   "type": "module",
   "volta": {

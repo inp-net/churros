@@ -9,7 +9,9 @@ export const load: PageLoad = async ({ params, url, fetch }) => {
       validateEmail(token: $token) {
         ...MutationErrors @mask_disable
         ... on MutationValidateEmailSuccess {
-          data
+          data {
+            id
+          }
         }
       }
     }

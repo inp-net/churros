@@ -92,7 +92,7 @@
 
   let links = socialMediaNames.map((name) => ({
     name,
-    value: $data.links.find((link) => link.name === name)?.value ?? '',
+    value: $data?.links.find((link) => link.name === name)?.value ?? '',
   }));
 
   let loading = false;

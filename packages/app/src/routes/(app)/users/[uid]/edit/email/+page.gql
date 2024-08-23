@@ -1,0 +1,10 @@
+query PageUserEditEmail($uid: String!) @loading {
+  user(uid: $uid) {
+    email
+    emailChangeRequests(pending: true) @list(name: "List_EmailChangeRequests") {
+      localID
+      email
+      createdAt
+    }
+  }
+}

@@ -26,5 +26,5 @@ export const context = async ({ req }: ContextOptions) => {
 };
 
 export type Context = ContextOptions & {
-  user: Express.User;
+  user: Express.User | null;
 };

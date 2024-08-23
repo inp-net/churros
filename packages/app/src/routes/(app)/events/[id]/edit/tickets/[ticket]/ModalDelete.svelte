@@ -14,7 +14,7 @@
   export let ticketId: MaybeLoading<string>;
 
   let implicitClose: () => void;
-  let open: () => void;
+  export let open: () => void;
   $: if ($page.state.NAVTOP_DELETING) open();
   else implicitClose?.();
 

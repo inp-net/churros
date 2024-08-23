@@ -82,6 +82,12 @@
             ...AreaEditLinks_Link @mask_disable
           }
         }
+        ... on User {
+          id
+          links @list(name: "AreaEditLinks_UserLinks") {
+            ...AreaEditLinks_Link @mask_disable
+          }
+        }
       }
     `),
   );
@@ -95,8 +101,10 @@
   `);
 
   let addingLink = false;
-  $: resourceId = ($data as typeof $data & { __typename: 'Ticket' | 'Event' | 'Article' })?.id;
-  $: links = ($data as typeof $data & { __typename: 'Ticket' | 'Event' | 'Article' })?.links ?? [];
+  $: resourceId = ($data as typeof $data & { __typename: 'Ticket' | 'Event' | 'Article' | 'User' })
+    ?.id;
+  $: links =
+    ($data as typeof $data & { __typename: 'Ticket' | 'Event' | 'Article' | 'User' })?.links ?? [];
 </script>
 
 <slot name="toplabel">

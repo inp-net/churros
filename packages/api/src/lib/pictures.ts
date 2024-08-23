@@ -1,4 +1,4 @@
-import { ensureGlobalId, prisma } from '#lib';
+import { ensureGlobalId, log, prisma, storageRoot, type Context } from '#lib';
 import { GraphQLError } from 'graphql';
 import type { ImageFileExtension } from 'image-type';
 import imageType from 'image-type';
@@ -139,8 +139,9 @@ export async function updatePicture({
     }
 
     case 'user': {
-      const result = await prisma.user.findUniqueOrThrow({
-        where: { uid: identifier },
+      // TODO only take id, not uid. This function is low-level enough that the uid convenience is useless
+      const result = await prisma.user.findFirstOrThrow({
+        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'User') }] },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
@@ -148,8 +149,9 @@ export async function updatePicture({
     }
 
     case 'group': {
-      const result = await prisma.group.findUniqueOrThrow({
-        where: { uid: identifier },
+      // TODO only take id, not uid. This function is low-level enough that the uid convenience is useless
+      const result = await prisma.group.findFirstOrThrow({
+        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'User') }] },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
@@ -157,8 +159,8 @@ export async function updatePicture({
     }
 
     case 'student-association': {
-      const result = await prisma.studentAssociation.findUniqueOrThrow({
-        where: { uid: identifier },
+      const result = await prisma.studentAssociation.findFirstOrThrow({
+        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'User') }] },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
@@ -211,16 +213,29 @@ export async function updatePicture({
     }
 
     case 'group': {
-      await prisma.group.update({
-        where: { uid: identifier },
+      // TODO don't accept uid, only id (see above)
+      await prisma.group.updateMany({
+        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'Group') }] },
         data: { [propertyName]: relative(root, path) },
       });
       break;
     }
 
     case 'user': {
-      await prisma.user.update({
-        where: { uid: identifier },
+      // TODO don't accept uid, only id (see above)
+      await prisma.user.updateMany({
+        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'User') }] },
+        data: { [propertyName]: relative(root, path) },
+      });
+      break;
+    }
+
+    case 'student-association': {
+      // TODO don't accept uid, only id (see above)
+      await prisma.studentAssociation.updateMany({
+        where: {
+          OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'StudentAssociation') }],
+        },
         data: { [propertyName]: relative(root, path) },
       });
       break;
@@ -248,4 +263,38 @@ export async function updatePicture({
   }
 
   return relative(root, path);
+}
+
+export async function removePicture({
+  user,
+  resourceId,
+  resourceType,
+}: {
+  user: Context['user'];
+  /** The *global* ID */
+  resourceId: string;
+  resourceType: 'user' | 'group' | 'event' | 'article' | 'school' | 'studentAssociation';
+}): Promise<{ alreadyDeleted: boolean; pictureFile: string }> {
+  await log('pictures', 'delete-picture', {}, resourceId, user);
+  // @ts-expect-error prisma won't infer type (i mean this is kinda to be expected but whatever)
+  const { pictureFile } = await prisma[resourceType].findUniqueOrThrow({
+    where: { id: resourceId },
+    select: { pictureFile: true },
+  });
+  if (pictureFile) {
+    const root = storageRoot();
+    await unlink(join(root, pictureFile)).catch((error) =>
+      console.error(
+        `Could not delete ${pictureFile}: ${error} (this is considered OK, continuing to update picture)`,
+      ),
+    );
+    // @ts-expect-error prisma won't infer type (i mean this is kinda to be expected but whatever)
+    await prisma[resourceType].update({
+      where: { id: resourceId },
+      data: { pictureFile: '' },
+    });
+    return { alreadyDeleted: false, pictureFile };
+  }
+
+  return { alreadyDeleted: true, pictureFile: '' };
 }

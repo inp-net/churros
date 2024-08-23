@@ -37,6 +37,7 @@
   class:danger
   class:highlighted
   class:success
+  on:contextmenu
   class:stretches
   class:circle
   class:inside-prose={insideProse}

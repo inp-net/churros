@@ -1,6 +1,6 @@
 query PageEditEventTicketPayment($id: LocalID!, $ticket: LocalID!) {
   event(id: $id) {
-    assertCanEdit(else: "Tu n'a pas les droits pour modifier cet événement")
+    canEdit(assert: "Tu n'a pas les droits pour modifier cet événement")
     lydiaAccountId
     ticket(id: $ticket) {
       allowedPaymentMethods

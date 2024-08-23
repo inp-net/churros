@@ -5,7 +5,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import PickMajor from '$lib/components/PickMajor.svelte';
-  import { loading } from '$lib/loading';
+  import { loading, type MaybeLoading } from '$lib/loading';
   import IconChevronRight from '~icons/msl/chevron-right';
 
   /** Selected major uid */
@@ -15,7 +15,7 @@
   export let clearable = false;
 
   /** Text on the clear button */
-  export let clearLabel = 'Effacer';
+  export let clearLabel: MaybeLoading<string> = 'Effacer';
 
   export let initialSchool: InputMajorInitialSchool | null;
   $: dataInitialSchool = fragment(
@@ -91,11 +91,15 @@
         let:open
       >
         {#if clearable && major}
-          <ButtonSecondary
-            on:click={() => {
-              major = '';
-            }}>{clearLabel}</ButtonSecondary
-          >
+          <slot name="clear-button">
+            <ButtonSecondary
+              on:click={() => {
+                major = '';
+              }}
+            >
+              <LoadingText value={clearLabel} />
+            </ButtonSecondary>
+          </slot>
         {/if}
         <ButtonSecondary on:click={open}>
           {#if major || clearable}Changer{:else}Choisir{/if}

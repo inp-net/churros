@@ -68,6 +68,7 @@
     UpdateShotgunDates,
   } from './mutations';
   import SubmenuItemBooleanConstraint from './SubmenuItemBooleanConstraint.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
   $: ({ PageEventEditTicket } = data);
@@ -80,9 +81,11 @@
       new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
     );
   }
+
+  let openDeleteModal: () => void;
 </script>
 
-<ModalDelete ticketId={$page.params.ticket} />
+<ModalDelete bind:open={openDeleteModal} ticketId={$page.params.ticket} />
 
 <MaybeError result={$PageEventEditTicket} let:data={{ event, groups, majors }}>
   {#if event.ticket}
@@ -506,6 +509,14 @@
           </Alert>
         {/if}
       </section>
+      <section class="actions">
+        <ButtonSecondary
+          danger
+          on:click={() => {
+            openDeleteModal();
+          }}>Supprimer le billet</ButtonSecondary
+        >
+      </section>
     </div>
   {:else}
     <Alert theme="danger">
@@ -545,5 +556,12 @@
 
   .no-payment-method {
     font-size: 1.5em;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
   }
 </style>

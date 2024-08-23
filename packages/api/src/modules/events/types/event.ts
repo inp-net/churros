@@ -152,18 +152,16 @@ export const EventType = builder.prismaNode('Event', {
     }),
     canEdit: t.boolean({
       description: "L'utilisateur·ice connecté·e peut modifier cet évènement",
-      resolve: (event, _, { user }) => canEditEvent(event, user),
-    }),
-    assertCanEdit: t.boolean({
-      description:
-        "L'utilisateur·ice connecté·e peut modifier cet événement, sinon lève une erreur avec le message donné en argument",
       args: {
-        else: t.arg.string(),
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec ce message si l'utilisateur·ice n'a pas les droits",
+        }),
       },
-      resolve: (event, { else: errorMessage }, { user }) => {
-        if (!canEditEvent(event, user)) throw new GraphQLError(errorMessage);
-
-        return true;
+      resolve: (event, { assert }, { user }) => {
+        const can = canEditEvent(event, user);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
       },
     }),
     canEditManagers: t.boolean({

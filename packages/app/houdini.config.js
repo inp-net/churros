@@ -127,6 +127,9 @@ const config = {
     Markdown: {
       type: 'string',
     },
+    PhoneNumber: {
+      type: 'string',
+    },
     Email: {
       type: 'string',
     },

@@ -1,0 +1,5 @@
+query PageUserEditLinks($uid: String!) @loading {
+  user(uid: $uid) {
+    ...AreaEditLinks
+  }
+}

@@ -1,12 +1,11 @@
-import { builder, log, prisma, splitID, storageRoot, updatePicture } from '#lib';
+import { builder, prisma, removePicture, splitID, updatePicture } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { FileScalar, PicturedInterface } from '#modules/global/types';
 import { ThemeVariantType } from '#modules/themes';
+import { canEditProfile } from '#modules/users';
 import { ThemeVariant } from '@churros/db/prisma';
 import { queryFromInfo } from '@pothos/plugin-prisma';
 import { GraphQLError } from 'graphql';
-import { unlink } from 'node:fs/promises';
-import path from 'node:path';
 import { ZodError } from 'zod';
 
 builder.mutationField('setPicture', (t) =>
@@ -50,6 +49,13 @@ builder.mutationField('setPicture', (t) =>
           });
           return canEditEvent(event, user);
         }
+        case 'User': {
+          const targetUser = await prisma.user.findUniqueOrThrow({
+            where: { id: resource },
+            include: canEditProfile.prismaIncludes,
+          });
+          return canEditProfile(user, targetUser);
+        }
         default: {
           // TODO
           return false;
@@ -72,28 +78,37 @@ builder.mutationField('setPicture', (t) =>
               identifier: localid,
             });
           } else {
-            await log('events', 'delete-picture', {}, resource, user);
-            const { pictureFile } = await prisma.event.findUniqueOrThrow({
-              where: { id: resource },
-              select: { pictureFile: true },
+            const { alreadyDeleted } = await removePicture({
+              user,
+              resourceId: resource,
+              resourceType: 'event',
             });
-            if (pictureFile) {
-              const root = storageRoot();
-              await unlink(path.join(root, pictureFile));
-              return prisma.event.update({
-                ...queryFor('Event'),
-                where: { id: resource },
-                data: { pictureFile: '' },
-              });
-            } else {
+            if (alreadyDeleted) 
               context.caveats.unshift("L'image a déjà été supprimée");
-              return prisma.event.findUniqueOrThrow({
-                ...queryFor('Event'),
-                where: { id: resource },
-              });
-            }
+            
           }
           return prisma.event.findUniqueOrThrow({ ...queryFor('Event'), where: { id: resource } });
+        }
+        case 'User': {
+          if (file) {
+            await updatePicture({
+              resource: 'user',
+              folder: 'users',
+              extension: 'jpg',
+              file,
+              identifier: localid,
+            });
+          } else {
+            const { alreadyDeleted } = await removePicture({
+              user,
+              resourceId: resource,
+              resourceType: 'user',
+            });
+            if (alreadyDeleted) 
+              context.caveats.unshift("L'image a déjà été supprimée");
+            
+          }
+          return prisma.user.findUniqueOrThrow({ ...queryFor('User'), where: { id: resource } });
         }
         default: {
           // TODO

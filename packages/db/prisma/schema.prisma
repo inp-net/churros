@@ -183,6 +183,8 @@ model EmailChange {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId    String
   pending   Boolean   @default(true)
+  // token is not exposed to the API, whereas id has to be
+  token     String    @unique @default(dbgenerated("nanoid('', 30)"))
 }
 
 model QuickSignup {
@@ -463,10 +465,10 @@ model Group {
   ldapGidNumber Int @unique @default(autoincrement())
 
   // For full-text search
-  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  forms          Form[]
-  boardOf        StudentAssociation?     @relation("studentAssociationBoard")
-  boardOfId      String?
+  search    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  forms     Form[]
+  boardOf   StudentAssociation?     @relation("studentAssociationBoard")
+  boardOfId String?
 
   @@index([search], type: Gin)
 }

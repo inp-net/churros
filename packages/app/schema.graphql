@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -176,7 +181,14 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
+  """
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+  """
   answer: [String!]!
 
   """
@@ -1040,10 +1052,15 @@ scalar Email
 """
 A email validation request
 """
-type EmailChange {
+type EmailChange implements Node {
   createdAt: DateTime!
   email: String!
   id: ID!
+
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
   pending: Boolean!
   updatedAt: DateTime!
   user: User!
@@ -1077,11 +1094,6 @@ An event is a date, time and place, as well as an optional ticket
 """
 type Event implements Node & Pictured & Reactable & Shareable {
   articles: [Article!]!
-
-  """
-  L'utilisateur·ice connecté·e peut modifier cet événement, sinon lève une erreur avec le message donné en argument
-  """
-  assertCanEdit(else: String!): Boolean!
   author: User
   authorId: ID
   banned: [User!]!
@@ -1113,7 +1125,12 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   L'utilisateur·ice connecté·e peut modifier cet évènement
   """
-  canEdit: Boolean!
+  canEdit(
+    """
+    Lève une erreur avec ce message si l'utilisateur·ice n'a pas les droits
+    """
+    assert: String
+  ): Boolean!
 
   """
   L'utilisateur·ice connecté·e peut ajouter, enlever ou modifier les droits des managers de cet évènement
@@ -1887,7 +1904,7 @@ enum GroupType {
 
 scalar HTML
 
-union HasLinks = Article | Event | Ticket
+union HasLinks = Article | Event | Ticket | User
 
 """
 Results of a health self-check
@@ -2140,7 +2157,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "dev"): Boolean!
+  acknowledgeChangelog(version: String! = "1.71.0"): Boolean!
 
   """
   Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
@@ -2505,7 +2522,13 @@ type Mutation {
   """
   removeFileFromPage(filename: String!, page: ID!): MutationRemoveFileFromPageResult!
   renameSession(id: ID!, name: String!): Boolean!
-  requestEmailChange(email: String!): MutationRequestEmailChangeResult!
+  requestEmailChange(
+    """
+    URL vers laquelle faire pointer le lien de validation de la nouvelle adresse email. [token] sera remplacé par le token d'activation.
+    """
+    callbackURL: URL!
+    email: Email!
+  ): MutationRequestEmailChangeResult!
   resetPassword(
     disconnectAll: Boolean!
     newPassword: String!
@@ -2891,6 +2914,9 @@ type Mutation {
     phone: String!
     uid: UID!
   ): MutationUpdateUserResult!
+    @deprecated(
+      reason: "Use `updateUserProfile`, `requestEmailChange` and other `updateUser*` mutations instead"
+    )
   updateUserCandidate(
     birthday: DateTime
     cededImageRightsToTVn7: Boolean!
@@ -2910,8 +2936,28 @@ type Mutation {
     """
     uid: UID!
   ): MutationUpdateUserCandidateResult!
+
+  """
+  Met à jour les infos sur le cursus scolaire de l'utilisateur.ice
+  """
+  updateUserCurriculum(
+    apprentice: Boolean
+
+    """
+    Vrai pour déconnecter la personne de sa filière (et donc faire du compte un compte exté)
+    """
+    external: Boolean
+    graduationYear: PositiveInt
+    major: UID
+    uid: UID!
+  ): MutationUpdateUserCurriculumResult!
   updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
   updateUserPicture(file: File!, uid: String!): String!
+
+  """
+  Met à jour le profil de l'utilisateur
+  """
+  updateUserProfile(profile: UserProfileInput!, uid: UID!): MutationUpdateUserProfileResult!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
   upsertAnnouncement(
     body: String!
@@ -3335,7 +3381,7 @@ type MutationRemoveFileFromPageSuccess {
 union MutationRequestEmailChangeResult = Error | MutationRequestEmailChangeSuccess | ZodError
 
 type MutationRequestEmailChangeSuccess {
-  data: Boolean!
+  data: EmailChange!
 }
 
 union MutationResetPasswordResult = Error | MutationResetPasswordSuccess | ZodError
@@ -3437,6 +3483,18 @@ union MutationUpdateUserCandidateResult = Error | MutationUpdateUserCandidateSuc
 
 type MutationUpdateUserCandidateSuccess {
   data: Boolean!
+}
+
+union MutationUpdateUserCurriculumResult = Error | MutationUpdateUserCurriculumSuccess | ZodError
+
+type MutationUpdateUserCurriculumSuccess {
+  data: User!
+}
+
+union MutationUpdateUserProfileResult = Error | MutationUpdateUserProfileSuccess | ZodError
+
+type MutationUpdateUserProfileSuccess {
+  data: User!
 }
 
 union MutationUpdateUserResult = Error | MutationUpdateUserSuccess | ZodError
@@ -3630,7 +3688,7 @@ type MutationUsePasswordResetSuccess {
 union MutationValidateEmailResult = Error | MutationValidateEmailSuccess | ZodError
 
 type MutationValidateEmailSuccess {
-  data: Boolean!
+  data: EmailChange!
 }
 
 union MutationVerifyBookingResult = Error | MutationVerifyBookingSuccess | ZodError
@@ -3824,6 +3882,11 @@ enum PaymentMethod {
   Transfer
 }
 
+"""
+Numéro de téléphone, au format international (E.164, avec préfixes “+”), ou au format local français (10 chiffres, sans préfixe).
+"""
+scalar PhoneNumber
+
 type Picture {
   id: ID!
   path: String!
@@ -3838,6 +3901,11 @@ interface Pictured {
   Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
   """
   hasSeparateDarkPicture: Boolean!
+
+  """
+  L'identifiant global de la ressource
+  """
+  id: ID!
 
   """
   Texte alternatif de l'image
@@ -3972,7 +4040,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (dev).
+    The version to request a changelog for. Defaults to the current version (1.71.0).
     """
     version: String
   ): ChangelogRelease!
@@ -3991,9 +4059,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
+    The version to end at, **inclusive**. Leave empty to end at the current version (1.71.0).
     """
-    to: String! = "dev"
+    to: String! = "1.71.0"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
@@ -6114,10 +6182,6 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
-  school: UID
-    @deprecated(
-      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
-    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6216,6 +6280,16 @@ type User implements Node & Pictured {
   canEditGroups: Boolean!
 
   """
+  Peut-on modifier le profil de cet utilisateur·ice ?
+  """
+  canEditProfile(
+    """
+    Lève une erreur avec ce message si l’utilisateur·ice ne peut pas éditer ce profil
+    """
+    assert: String
+  ): Boolean!
+
+  """
   Si cet·te utilisateur·rice peut créer, modifier ou supprimer des annonces
   """
   canManageAnnouncements: Boolean!
@@ -6227,7 +6301,12 @@ type User implements Node & Pictured {
   description: String!
   descriptionHtml: HTML!
   email: Email
-  emailChangeRequests: [EmailChange!]!
+  emailChangeRequests(
+    """
+    Ne renvoyer que les demandes en attente (mail envoyé mais non confirmé)
+    """
+    pending: Boolean
+  ): [EmailChange!]!
   enabledNotificationChannels: [NotificationChannel!]!
   external: Boolean!
   familyTree: FamilyTree!
@@ -6402,6 +6481,45 @@ type UserPartiallyAnsweredFormsConnection {
 type UserPartiallyAnsweredFormsConnectionEdge {
   cursor: String!
   node: Form!
+}
+
+"""
+Champs constituant le profil d'un·e utilisateur·ice
+"""
+input UserProfileInput {
+  """
+  Pour effacer: `""`
+  """
+  address: String
+
+  """
+  Date d'anniversaire. Pour supprimer une date existante, utiliser unsetBirthday
+  """
+  birthday: DateTime
+  description: Markdown
+  firstName: String
+  lastName: String
+
+  """
+  Pour effacer: `""`
+  """
+  nickname: String
+  otherEmails: [Email!]
+
+  """
+  Pour effacer, mettre unsetPhone à `true`
+  """
+  phone: PhoneNumber
+
+  """
+  Supprimer une date d'anniversaire existante
+  """
+  unsetBirthday: Boolean
+
+  """
+  Supprimer le numéro de téléphone
+  """
+  unsetPhone: Boolean
 }
 
 type UserSearchResult {

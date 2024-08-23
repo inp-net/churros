@@ -1,0 +1,5 @@
+query PageUserEditBio($uid: String!) {
+  user(uid: $uid) {
+    description
+  }
+}

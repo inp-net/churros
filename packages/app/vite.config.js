@@ -51,6 +51,11 @@ export default mergeConfig(
         format: 'route(path)',
         post_update_run: 'yarn format-at ./src/lib/ROUTES.ts',
         PAGES: {
+          '/login': {
+            explicit_search_params: {
+              bypass_oauth: { type: "undefined | '1'", default: 'undefined' },
+            },
+          },
           '/events/[id]/bookings': {
             explicit_search_params: {
               tab: { type: '"unpaid" | "paid" | "verified"', default: '"unpaid"' },

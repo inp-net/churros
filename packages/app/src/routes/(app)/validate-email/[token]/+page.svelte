@@ -3,6 +3,7 @@
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import type { PageData } from './$types';
 
@@ -15,15 +16,17 @@
     loading = true;
     toasts.mutation(
       await graphql(`
-        mutation RequestEmailChange($email: String!) {
-          requestEmailChange(email: $email) {
+        mutation RequestEmailChangeAgain($email: Email!, $callbackURL: URL!) {
+          requestEmailChange(email: $email, callbackURL: $callbackURL) {
             ...MutationErrors
             ... on MutationRequestEmailChangeSuccess {
-              data
+              data {
+                ...List_EmailChangeRequests_insert
+              }
             }
           }
         }
-      `).mutate({ email }),
+      `).mutate({ email, callbackURL: new URL(route('/validate-email/[token]', '[token]')) }),
       'requestEmailChange',
       "Si l'adresse fournie existe, tu devrais recevoir un e-mail de validation dans quelques instants.",
       "Erreur lors de l'envoi de l'e-mail de validation",

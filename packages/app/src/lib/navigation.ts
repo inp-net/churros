@@ -260,8 +260,11 @@ export const topnavConfigs: Partial<{
         return {
           icon: IconCog,
           label: 'Gérer',
-          href: route('/[uid=uid]/edit', uid),
-          hidden: typename === 'User',
+          href:
+            typename === 'User'
+              ? route('/users/[uid]/edit', uid)
+              : route('/groups/[uid]/edit', uid),
+          hidden: !typename || !['User', 'Group'].includes(typename),
         };
       },
       commonActions.copyID,
@@ -426,6 +429,51 @@ export const topnavConfigs: Partial<{
       },
       commonActions.pin,
     ],
+  }),
+  '/(app)/users/[uid]/edit': ({ params: { uid } }) => ({
+    title: 'Modifier le profil',
+    back: route('/[uid=uid]', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/bio': ({ params: { uid } }) => ({
+    title: 'Bio',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/contribution': ({ params: { uid } }) => ({
+    title: 'Cotisations',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/curriculum': ({ params: { uid } }) => ({
+    title: 'Cursus scolaire',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/email': ({ params: { uid } }) => ({
+    title: 'E-mail',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/family': ({ params: { uid } }) => ({
+    title: 'Fillot·e·s',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/links': ({ params: { uid } }) => ({
+    title: 'Liens sur le profil',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/name': ({ params: { uid } }) => ({
+    title: 'Prénom & nom de famille',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/other-emails': ({ params: { uid } }) => ({
+    title: 'E-mails secondaires',
+    back: route('/users/[uid]/edit', uid),
+    actions: [],
   }),
   '/(app)/bookings/[code]': ({ params: { code } }) => ({
     title: 'Billet',

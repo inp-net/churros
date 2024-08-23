@@ -105,6 +105,10 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    PhoneNumber: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;

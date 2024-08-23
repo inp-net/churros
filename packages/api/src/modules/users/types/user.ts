@@ -1,8 +1,14 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
 import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
 import { userIsStudent } from '#permissions';
-import { NotificationChannel } from '@churros/db/prisma';
-import { canBeEdited, fullName } from '../index.js';
+import { NotificationChannel, type Prisma } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
+import { canBeEdited, canEditProfile, fullName } from '../index.js';
+
+export const UserTypePrismaIncludes = {
+  adminOfStudentAssociations: true,
+  canEditGroups: true,
+} as const satisfies Prisma.UserInclude;
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -12,10 +18,7 @@ export const UserType = builder.prismaNode('User', {
     ...(id === user?.id ? ['me'] : []),
     ...(majorId ? ['student'] : []),
   ],
-  include: {
-    adminOfStudentAssociations: true,
-    canEditGroups: true,
-  },
+  include: UserTypePrismaIncludes,
   fields: (t) => ({
     majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
@@ -127,6 +130,27 @@ export const UserType = builder.prismaNode('User', {
         return canBeEdited(user, me);
       },
     }),
+    canEditProfile: t.boolean({
+      description: 'Peut-on modifier le profil de cet utilisateur·ice ?',
+      args: {
+        assert: t.arg.string({
+          description:
+            'Lève une erreur avec ce message si l’utilisateur·ice ne peut pas éditer ce profil',
+          required: false,
+        }),
+      },
+      async resolve({ id }, { assert }, { user }) {
+        const targetUser = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          include: canEditProfile.prismaIncludes,
+        });
+        const can = canEditProfile(user, targetUser);
+        if (assert && !can) 
+          throw new GraphQLError(assert);
+        
+        return can;
+      },
+    }),
     studentAssociationAdmin: t.boolean({
       description:
         "Vrai si cette personne est administratrice d'au moins une association étudiante",
@@ -205,7 +229,20 @@ export const UserType = builder.prismaNode('User', {
     outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
     incomingGodparentRequests: t.relation('incomingGodparentRequests'),
     emailChangeRequests: t.relation('emailChanges', {
+      args: {
+        pending: t.arg.boolean({
+          required: false,
+          description: 'Ne renvoyer que les demandes en attente (mail envoyé mais non confirmé)',
+        }),
+      },
       authScopes: { $granted: 'me' },
+      query({ pending }) {
+        return {
+          where: {
+            pending: pending ?? undefined,
+          },
+        };
+      },
     }),
   }),
 });

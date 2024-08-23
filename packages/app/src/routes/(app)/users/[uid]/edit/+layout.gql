@@ -1,0 +1,26 @@
+query LayoutUserEdit($uid: String!) @loading {
+  user(uid: $uid) {
+    ...FormPicture
+    id
+    uid
+    canEditProfile(assert: "Tu n'a pas les permissions nécéssaires pour modifier ce profil.")
+    firstName
+    lastName
+    nickname
+    email
+    otherEmails
+    phone
+    address
+    major {
+      ...AvatarMajor
+    }
+    yearTier
+    birthday
+    godparent {
+      ...AvatarUser
+    }
+    contributesTo {
+      ...AvatarStudentAssociation
+    }
+  }
+}
