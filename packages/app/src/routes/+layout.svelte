@@ -35,6 +35,7 @@
     $theme.id = newTheme.localID;
   }
 
+  // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);
 
   onMount(() => {
