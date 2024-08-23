@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import PickGroup from '$lib/components/PickGroup.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
@@ -9,6 +8,8 @@
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import PickGroup from '$lib/components/PickGroup.svelte';
+  import Split from '$lib/components/Split.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { formatDate } from '$lib/dates';
@@ -30,7 +31,7 @@
   import IconTickets from '~icons/msl/receipt-long-outline';
   import IconManagers from '~icons/msl/supervised-user-circle-outline';
   import IconVisibility from '~icons/msl/visibility-outline';
-  import type { LayoutData, LayoutRouteId } from './$houdini';
+  import type { LayoutData } from './$houdini';
   import ModalDelete from './ModalDelete.svelte';
   import {
     ChangeEventCoOrganizers,
@@ -43,9 +44,6 @@
   const mobile = isMobile();
 
   export let data: LayoutData;
-
-  $: leftSplitShownOnMobile =
-    $page.route.id === ('/(app)/events/[id]/edit' as LayoutRouteId) || layoutErrored;
 
   $: ({ LayoutEventEdit } = data);
 
@@ -66,18 +64,10 @@
       end: $LayoutEventEdit.data.event.endsAt,
     };
   }
-
-  let splitElement: HTMLDivElement;
-  $: if (splitElement) {
-    splitElement.style.setProperty(
-      '--distance-to-top',
-      `${splitElement.getBoundingClientRect().top}px`,
-    );
-  }
 </script>
 
-<div class="split" bind:this={splitElement}>
-  <div class="left" class:mobile-shown={leftSplitShownOnMobile}>
+<Split mobilePart={$page.route.id === '/(app)/events/[id]/edit' ? 'left' : 'right'}>
+  <svelte:fragment slot="left">
     <MaybeError
       bind:errored={layoutErrored}
       result={$LayoutEventEdit}
@@ -315,58 +305,15 @@
         </SubmenuItem>
       </Submenu>
     </MaybeError>
-  </div>
-  <div class="right" class:mobile-shown={!leftSplitShownOnMobile}>
+  </svelte:fragment>
+  <div slot="right">
     {#if !layoutErrored}
       <slot></slot>
     {/if}
   </div>
-</div>
+</Split>
 
 <style>
-  @media (min-width: 1400px) {
-    :global(body[data-route^='/(app)/events/[id]/edit'] #layout) {
-      --scrollable-content-width: calc(clamp(1000px, 100vw - 400px, 1200px));
-    }
-
-    /* XXX: If a page in /(app)/events/[id]/edit resets or changes the layout (with +page@...svelte) this will break scrolling */
-    :global(body[data-route^='/(app)/events/[id]/edit']) {
-      overflow: hidden;
-    }
-
-    .split {
-      --gap: 3rem;
-
-      position: relative;
-      display: grid;
-      grid-template-columns: 40% calc(60% - var(--gap));
-      column-gap: var(--gap);
-    }
-
-    .left {
-      height: calc(100vh - 1rem - var(--distance-to-top));
-      overflow: hidden auto;
-      scrollbar-width: thin;
-    }
-
-    .right {
-      height: calc(100vh - 1rem - var(--distance-to-top));
-      overflow: hidden auto;
-      scrollbar-width: thin;
-    }
-  }
-
-  @media (max-width: 1400px) {
-    .split {
-      display: grid;
-      grid-template-columns: 100%;
-    }
-
-    .split > div:not(.mobile-shown) {
-      display: none;
-    }
-  }
-
   .basic-info {
     display: flex;
     gap: 1rem;
