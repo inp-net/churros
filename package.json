@@ -4,7 +4,6 @@
   "devDependencies": {
     "@changesets/changelog-git": "^0.2.0",
     "@changesets/cli": "^2.27.7",
-    "changesets-gitlab": "^0.12.0",
     "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@types/lodash": "^4.17.7",
@@ -12,6 +11,7 @@
     "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "changesets-gitlab": "^0.12.0",
     "dotenv-cli": "^7.4.2",
     "dotenv-parser-serializer": "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch",
     "eslint": "^8.57.0",

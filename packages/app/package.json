@@ -7,7 +7,6 @@
     "@iconify-json/logos": "^1.1.44",
     "@paypal/paypal-js": "^8.1.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
-    "arborist": "workspace:^0.1.0",
     "@swc/core": "^1.7.10",
     "@swc/wasm": "^1.7.10",
     "@zxcvbn-ts/core": "^3.0.4",
