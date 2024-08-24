@@ -2,14 +2,16 @@
   "name": "churros",
   "type": "module",
   "devDependencies": {
+    "@changesets/changelog-git": "^0.2.0",
+    "@changesets/cli": "^2.27.7",
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.1.0",
-    "@release-it/keep-a-changelog": "^5.0.0",
     "@types/lodash": "^4.17.0",
     "@types/lodash.uniqby": "^4.7.9",
     "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
+    "changesets-gitlab": "^0.12.0",
     "dotenv-cli": "^7.4.1",
     "dotenv-parser-serializer": "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch",
     "eslint": "^8.57.0",
@@ -25,7 +27,6 @@
     "prettier-plugin-jsdoc": "^1.3.0",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-svelte": "^3.2.2",
-    "release-it": "^17.1.1",
     "stylelint": "^16.3.1",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-prettier": "^9.0.5",
@@ -37,7 +38,7 @@
     "typescript": "^5.4.3"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@4.3.1",
+  "packageManager": "yarn@4.4.1",
   "private": true,
   "scripts": {
     "@app": "yarn workspace @churros/app",
@@ -63,39 +64,9 @@
   },
   "volta": {
     "node": "20.6.1",
-    "yarn": "4.2.2"
+    "yarn": "4.4.1"
   },
   "workspaces": [
     "packages/*"
-  ],
-  "release-it": {
-    "git": {
-      "commitMessage": "chore(release): v${version}"
-    },
-    "npm": {
-      "publish": false,
-      "ignoreVersion": true
-    },
-    "gitlab": {
-      "release": true
-    },
-    "github": {
-      "release": false
-    },
-    "plugins": {
-      "@release-it/keep-a-changelog": {
-        "filename": "CHANGELOG.md",
-        "head": "main",
-        "addVersionUrl": true,
-        "addUnreleased": true,
-        "versionUrlFormats": {
-          "repositoryUrl": "https://git.inpt.fr/inp-net/churros",
-          "unreleasedUrl": "{repositoryUrl}/-/compare/{tagName}...{head}",
-          "versionUrl": "{repositoryUrl}/-/releases/tag/{tagName}",
-          "firstVersionUrl": "{repositoryUrl}/-/releases/tag/{tagName}"
-        }
-      }
-    }
-  },
-  "version": "1.71.0"
+  ]
 }

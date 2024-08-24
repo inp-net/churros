@@ -1,6 +1,6 @@
 {
   "name": "@churros/db",
-  "packageManager": "yarn@4.2.2",
+  "version": "0.0.0",
   "scripts": {
     "prisma": "prisma",
     "generate": "run-s \"generate:*\"",

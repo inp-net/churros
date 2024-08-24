@@ -1,5 +1,5 @@
 .volta:
-  image: debian:11
+  image: debian:12
   before_script:
     - apt-get update && apt-get install -y curl git jq moreutils
     - export VOLTA_HOME=/root/.volta
