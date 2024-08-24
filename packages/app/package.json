@@ -1,5 +1,6 @@
 {
   "name": "@churros/app",
+  "version": "1.71.0",
   "dependencies": {
     "@carbon/charts-svelte": "^1.15.5",
     "@graphql-tools/utils": "^10.2.2",
@@ -8,7 +9,7 @@
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@swc/core": "^1.4.11",
     "@swc/wasm": "^1.4.11",
-    "arborist": "workspace:^",
+    "arborist": "workspace:^0.1.0",
     "calendar-link": "^2.6.0",
     "cookie": "^0.6.0",
     "date-fns": "^2.30.0",

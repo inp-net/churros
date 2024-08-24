@@ -1,7 +1,8 @@
 {
   "name": "@churros/sync",
+  "version": "1.71.0",
   "dependencies": {
-    "@churros/db": "workspace:^",
+    "@churros/db": "workspace:^0.0.0",
     "@inp-net/ldap7": "^1.0.8",
     "tslog": "^4.9.3"
   },
@@ -13,7 +14,6 @@
     "tsx": "^4.16.2",
     "typescript": "^5.5.4"
   },
-  "private": true,
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "tsc"
