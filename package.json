@@ -11,6 +11,7 @@
     "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
+    "changesets-gitlab": "^0.12.0",
     "dotenv-cli": "^7.4.1",
     "dotenv-parser-serializer": "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch",
     "eslint": "^8.57.0",
@@ -68,35 +69,5 @@
   },
   "workspaces": [
     "packages/*"
-  ],
-  "release-it": {
-    "git": {
-      "commitMessage": "chore(release): v${version}"
-    },
-    "npm": {
-      "publish": false,
-      "ignoreVersion": true
-    },
-    "gitlab": {
-      "release": true
-    },
-    "github": {
-      "release": false
-    },
-    "plugins": {
-      "@release-it/keep-a-changelog": {
-        "filename": "CHANGELOG.md",
-        "head": "main",
-        "addVersionUrl": true,
-        "addUnreleased": true,
-        "versionUrlFormats": {
-          "repositoryUrl": "https://git.inpt.fr/inp-net/churros",
-          "unreleasedUrl": "{repositoryUrl}/-/compare/{tagName}...{head}",
-          "versionUrl": "{repositoryUrl}/-/releases/tag/{tagName}",
-          "firstVersionUrl": "{repositoryUrl}/-/releases/tag/{tagName}"
-        }
-      }
-    }
-  },
-  "version": "1.71.0"
+  ]
 }

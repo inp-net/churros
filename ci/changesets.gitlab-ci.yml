@@ -1,0 +1,30 @@
+.changesets:
+  image: debian:12
+  before_script:
+    - apt-get update && apt-get install -y curl git jq moreutils
+    - export VOLTA_HOME=/root/.volta
+    - export PATH=$VOLTA_HOME/bin:$PATH
+    - curl https://get.volta.sh | bash -s -- --skip-setup
+    - yarn config set enableGlobalCache false
+    - yarn config set enableImmutableInstalls true
+    - yarn install
+    - export GITLAB_TOKEN=$CHANGESETS_TOKEN
+  cache:
+    paths:
+      - .yarn/cache/
+
+comment:
+  extends: .changesets
+  stage: changesets
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - yarn changesets-gitlab comment
+
+release:
+  extends: .changesets
+  stage: changesets
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - yarn changesets-gitlab
