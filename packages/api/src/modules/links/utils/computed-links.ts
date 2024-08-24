@@ -20,7 +20,7 @@ export const renderURLPrismaIncludes = {
 
 export function renderURL(
   value: string,
-  user: undefined | Prisma.UserGetPayload<{ include: typeof renderURLPrismaIncludes }>,
+  user: null | undefined | Prisma.UserGetPayload<{ include: typeof renderURLPrismaIncludes }>,
 ) {
   const removeAccents = (text: string) => text.normalize('NFKD').replaceAll(/[\u0300-\u036F]/g, '');
   const accessKey = (obj: Record<string, unknown>, dotstring: string) => {

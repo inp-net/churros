@@ -6,6 +6,9 @@ export const load: PageLoad = async (event) => {
     query PageGroupEditBankAccounts($uid: String!) {
       group(uid: $uid) {
         uid
+        canEditLydiaAccounts(
+          assert: "Tu n'as pas les droits pour modifier les comptes Lydia de ce groupe"
+        )
         parentId
         groupId
         type

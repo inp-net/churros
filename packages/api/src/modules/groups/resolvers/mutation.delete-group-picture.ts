@@ -6,6 +6,7 @@ import { userIsAdminOf, userIsGroupEditorOf } from '../../../permissions/index.j
 /** Delete the club's picture */
 builder.mutationField('deleteGroupPicture', (t) =>
   t.field({
+    deprecationReason: 'Use setPicture instead',
     type: 'Boolean',
     args: { uid: t.arg.string(), dark: t.arg.boolean() },
     async authScopes(_, { uid }, { user }) {

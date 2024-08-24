@@ -166,6 +166,12 @@ const PAGES = {
   '/groups/[uid]/edit/bank-accounts': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/bank-accounts`;
   },
+  '/groups/[uid]/edit/bio': (uid: string | number, params?: {}) => {
+    return `/groups/${uid}/edit/bio`;
+  },
+  '/groups/[uid]/edit/links': (uid: string | number, params?: {}) => {
+    return `/groups/${uid}/edit/links`;
+  },
   '/groups/[uid]/edit/members': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/members`;
   },
@@ -180,6 +186,9 @@ const PAGES = {
     page: (string | number)[];
   }) => {
     return `/groups/${params.uid}/edit/pages/${params.page?.join('/')}`;
+  },
+  '/groups/[uid]/edit/type': (uid: string | number, params?: {}) => {
+    return `/groups/${uid}/edit/type`;
   },
   '/groups/[uid]/members': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/members`;
@@ -524,10 +533,13 @@ export type KIT_ROUTES = {
     '/events/[id]/scan': 'id';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
+    '/groups/[uid]/edit/bio': 'uid';
+    '/groups/[uid]/edit/links': 'uid';
     '/groups/[uid]/edit/members': 'uid';
     '/groups/[uid]/edit/members/bulk': 'uid';
     '/groups/[uid]/edit/pages': 'uid';
     '/groups/[uid]/edit/pages/[...page]': 'uid' | 'page';
+    '/groups/[uid]/edit/type': 'uid';
     '/groups/[uid]/members': 'uid';
     '/help': never;
     '/login': never;

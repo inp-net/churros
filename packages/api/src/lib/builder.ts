@@ -109,6 +109,10 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    Color: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;

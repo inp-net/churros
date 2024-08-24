@@ -1,0 +1,5 @@
+query PageGroupEditLinks($uid: String!) {
+  group(uid: $uid) {
+    ...AreaEditLinks
+  }
+}

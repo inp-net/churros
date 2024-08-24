@@ -31,6 +31,7 @@
     "@zxcvbn-ts/language-fr": "^3.0.2",
     "argon2": "^0.40.3",
     "bunyan": "^1.8.15",
+    "colord": "^2.9.3",
     "connect-redis": "^7.1.1",
     "cors": "^2.8.5",
     "croner": "^8.1.1",

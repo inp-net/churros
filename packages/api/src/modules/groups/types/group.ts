@@ -1,10 +1,16 @@
 import { builder, ensureGlobalId, fromYearTier, prisma, toHtml } from '#lib';
-import { DateTimeScalar, Email, HTMLScalar } from '#modules/global';
+import { ColorScalar, DateTimeScalar, Email, HTMLScalar } from '#modules/global';
 import { prismaQueryAccessibleArticles } from '#permissions';
+import { GraphQLError } from 'graphql';
 import { PicturedInterface } from '../../global/types/pictured.js';
 import { canEditGroup, GroupEnumType } from '../index.js';
 import {
+  canChangeGroupStudentAssociation,
+  canChangeGroupType,
+  canChangeParentGroup,
   canEditGroupMembers,
+  canEditLydiaAccounts,
+  canSetGroupJoinPolicy,
   canSetGroupRoomOpenState,
   requiredPrismaIncludesForPermissions,
 } from '../utils/index.js';
@@ -19,13 +25,23 @@ export const GroupType = builder.prismaNode('Group', {
     // Because `id` is a Relay id, expose `groupId` as the real db id
     groupId: t.exposeID('id'),
     type: t.expose('type', { type: GroupEnumType }),
+    unlisted: t.exposeBoolean('unlisted', {
+      description: 'Le groupe doit être caché des listes de groupes',
+    }),
     uid: t.exposeString('uid'),
     parentId: t.exposeID('parentId', { nullable: true }),
     familyId: t.exposeID('familyId', { nullable: true }),
     name: t.exposeString('name'),
-    color: t.exposeString('color'),
+    color: t.field({
+      nullable: true,
+      type: ColorScalar,
+      resolve: (group) => group.color || null,
+    }),
     address: t.exposeString('address'),
-    description: t.exposeString('description'),
+    description: t.exposeString('description', {
+      deprecationReason: 'Use `shortDescription` instead',
+    }),
+    shortDescription: t.exposeString('description'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     email: t.field({ type: Email, nullable: true, resolve: ({ email }) => email || null }),
     mailingList: t.exposeString('mailingList'),
@@ -142,6 +158,12 @@ export const GroupType = builder.prismaNode('Group', {
     related: t.relation('related'),
     canEditMembers: t.boolean({
       description: "Vrai si l'utilisateur·ice connecté·e peut modifier les membres du groupe",
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
       resolve: async ({ id: groupId }, _, { user }) => {
         const group = await prisma.group.findUniqueOrThrow({
           where: { id: ensureGlobalId(groupId, 'Group') },
@@ -152,8 +174,103 @@ export const GroupType = builder.prismaNode('Group', {
     }),
     canEditDetails: t.boolean({
       description: "Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe",
-      resolve: async (group, _, { user }) => {
-        return canEditGroup(user, group);
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canEditGroup(user, group);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
+    canEditStudentAssociation: t.boolean({
+      description: "On peut modifier l'AE de rattachement",
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canChangeGroupStudentAssociation(user, group);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
+    canEditType: t.boolean({
+      description: 'On peut changer le type de groupe',
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canChangeGroupType(user, group);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
+    canEditUnlisted: t.boolean({
+      description: 'On peut changer le statut de liste de groupe',
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canChangeGroupType(user, group);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
+    canEditParent: t.boolean({
+      description: 'On peut changer le groupe parent',
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canChangeParentGroup(user, {
+          child: group,
+          parent: 'any',
+        });
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
+    canEditJoinPolicy: t.boolean({
+      description: "On peut changer la politique d'adhésion au groupe (inscription libre ou non)",
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canSetGroupJoinPolicy(user, group);
+        if (!can && assert) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
+    canEditLydiaAccounts: t.boolean({
+      description: 'On peut changer les comptes Lydias du groupe',
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+        }),
+      },
+      resolve: async (group, { assert }, { user }) => {
+        const can = canEditLydiaAccounts(user, group);
+        if (!can && assert) throw new GraphQLError(assert);
+        return can;
       },
     }),
   }),

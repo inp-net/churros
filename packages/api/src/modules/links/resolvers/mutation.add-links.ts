@@ -1,5 +1,6 @@
 import { builder, ensureGlobalId, log, prisma, splitID } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
+import { canEditGroup, GroupTypePrismaIncludes } from '#modules/groups';
 import { LinkInput, MAXIMUM_LINKS } from '#modules/links';
 import { canEditArticle } from '#modules/posts';
 import { TicketTypePrismaIncludes } from '#modules/ticketing';
@@ -69,6 +70,13 @@ builder.mutationField('addLinks', (t) =>
           });
           return canEditProfile(user, targetUser);
         }
+        case 'Group': {
+          const group = await prisma.group.findUniqueOrThrow({
+            where: { id },
+            include: canEditGroup.prismaIncludes,
+          });
+          return canEditGroup(user, group);
+        }
         default: {
           throw new GraphQLError('Cette ressource ne permet pas de définir des liens');
         }
@@ -83,7 +91,7 @@ builder.mutationField('addLinks', (t) =>
       switch (typeName) {
         case 'Article': {
           id = ensureGlobalId(id, 'Article');
-          await log('posts', 'set-links', { id, links }, id, user);
+          await log('posts', 'add-links', { id, links }, id, user);
           // const query = queryFor('Article');
           ensureLinksCountLimit(
             await prisma.article.findUniqueOrThrow({
@@ -108,7 +116,7 @@ builder.mutationField('addLinks', (t) =>
         }
         case 'Ticket': {
           id = ensureGlobalId(id, 'Ticket');
-          await log('ticketing', 'set-links', { id, links }, id, user);
+          await log('ticketing', 'add-links', { id, links }, id, user);
           // const query = queryFor('Ticket');
           ensureLinksCountLimit(
             await prisma.ticket.findUniqueOrThrow({
@@ -134,7 +142,7 @@ builder.mutationField('addLinks', (t) =>
 
         case 'Event': {
           id = ensureGlobalId(id, 'Event');
-          await log('event', 'set-links', { id, links }, id, user);
+          await log('event', 'add-links', { id, links }, id, user);
           // const query = queryFor('Event');
           ensureLinksCountLimit(
             await prisma.event.findUniqueOrThrow({
@@ -163,7 +171,7 @@ builder.mutationField('addLinks', (t) =>
 
         case 'User': {
           id = ensureGlobalId(id, 'User');
-          await log('users', 'set-links', { id, links }, id, user);
+          await log('users', 'add-links', { id, links }, id, user);
           // const query = queryFor('User');
           ensureLinksCountLimit(
             await prisma.user.findUniqueOrThrow({
@@ -179,6 +187,32 @@ builder.mutationField('addLinks', (t) =>
               // ...('include' in query ? query.include : undefined),
               ...UserTypePrismaIncludes,
               links: true,
+            },
+            where: { id },
+            data: {
+              links: updateLinksPrisma(links, duplicates),
+            },
+          });
+        }
+
+        case 'Group': {
+          id = ensureGlobalId(id, 'Group');
+          await log('groups', 'add-links', { id, links }, id, user);
+          // const query = queryFor('Group');
+          ensureLinksCountLimit(
+            await prisma.group.findUniqueOrThrow({
+              where: { id },
+              select: ensureLinksCountLimit.prismaSelect,
+            }),
+            links,
+          );
+
+          return prisma.group.update({
+            // ...query,
+            include: {
+              // ...('include' in query ? query.include : undefined),
+              links: true,
+              ...GroupTypePrismaIncludes,
             },
             where: { id },
             data: {

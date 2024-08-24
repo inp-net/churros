@@ -53,6 +53,8 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
 /** Upserts a group. */
 builder.mutationField('upsertGroup', (t) =>
   t.prismaField({
+    deprecationReason:
+      'Mutation séparée en plusieurs mutations plus spécifiques. Voir la documentation du module groups',
     type: GroupType,
     errors: { types: [ZodError, Error] },
     args: {

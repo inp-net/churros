@@ -1,5 +1,4 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
-
 import {
   priceWithPromotionsApplied as actualPrice,
   payEventRegistrationViaLydia,

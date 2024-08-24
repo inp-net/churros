@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -181,14 +176,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -836,6 +824,11 @@ type ChangelogRelease {
   """
   version: String!
 }
+
+"""
+Une couleur. En entrée, un code héxadécimal avec '#', ou un nom de couleur CSS. En sortie, un code héxadécimal avec '#' présent. La transparence n'est pas supportée.
+"""
+scalar Color
 
 type Comment implements Node & Reactable {
   author: User
@@ -1691,17 +1684,87 @@ type Group implements Node & Pictured {
   """
   Vrai si l'utilisateur·ice connecté·e peut modifier les informations du groupe
   """
-  canEditDetails: Boolean!
+  canEditDetails(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
+
+  """
+  On peut changer la politique d'adhésion au groupe (inscription libre ou non)
+  """
+  canEditJoinPolicy(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
+
+  """
+  On peut changer les comptes Lydias du groupe
+  """
+  canEditLydiaAccounts(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
 
   """
   Vrai si l'utilisateur·ice connecté·e peut modifier les membres du groupe
   """
-  canEditMembers: Boolean!
+  canEditMembers(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
 
   """
   L'utilisateur·ice connecté·e peut éditer (créer ou modifier) les pages du groupe
   """
   canEditPages: Boolean!
+
+  """
+  On peut changer le groupe parent
+  """
+  canEditParent(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
+
+  """
+  On peut modifier l'AE de rattachement
+  """
+  canEditStudentAssociation(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
+
+  """
+  On peut changer le type de groupe
+  """
+  canEditType(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
+
+  """
+  On peut changer le statut de liste de groupe
+  """
+  canEditUnlisted(
+    """
+    Lève une erreur avec le message donné si la permission n'est pas accordée
+    """
+    assert: String
+  ): Boolean!
 
   """
   L'utilisateur·ice connecté·e peut lister les pages du groupe
@@ -1714,9 +1777,9 @@ type Group implements Node & Pictured {
   canSetGroupRoomOpenState: Boolean!
   children: [Group!]!
   coOrganizedEvents: [Event!]!
-  color: String!
+  color: Color
   createdAt: DateTime!
-  description: String!
+  description: String! @deprecated(reason: "Use `shortDescription` instead")
   email: Email
   events(after: String, before: String, first: Int, last: Int): GroupEventsConnection!
   familyChildren: [Group!]!
@@ -1787,6 +1850,11 @@ type Group implements Node & Pictured {
   pages(after: String, before: String, first: Int, last: Int): PagesConnection!
 
   """
+  Nombre de pages associées au groupe
+  """
+  pagesCount: Int!
+
+  """
   Parent group, from which this group inherits its permissions
   """
   parent: Group
@@ -1835,10 +1903,16 @@ type Group implements Node & Pictured {
   shopItem(id: LocalID!): ShopItem
   shopItems(after: String, before: String, first: Int, last: Int): GroupShopItemsConnection!
   shopOrders: [ShopPayment!]!
+  shortDescription: String!
   studentAssociation: StudentAssociation!
   treasurers: [GroupMember!]!
   type: GroupType!
   uid: String!
+
+  """
+  Le groupe doit être caché des listes de groupes
+  """
+  unlisted: Boolean!
   vicePresidents: [GroupMember!]!
   website: String!
 }
@@ -1852,6 +1926,18 @@ type GroupEventsConnection {
 type GroupEventsConnectionEdge {
   cursor: String!
   node: Event!
+}
+
+enum GroupJoinPolicy {
+  """
+  Seul le bureau (et autres ayant les permissions) peut ajouter des membres
+  """
+  Closed
+
+  """
+  Tout le monde peut rejoindre le groupe
+  """
+  Open
 }
 
 """
@@ -1872,6 +1958,29 @@ type GroupMember {
   title: String!
   treasurer: Boolean!
   vicePresident: Boolean!
+}
+
+"""
+Les champs du profil d'un groupe
+"""
+input GroupProfileInput {
+  color: Color
+  email: Email
+  longDescription: Markdown
+  name: String
+  relatedGroups: [UID!]
+  room: String
+  shortDescription: String
+
+  """
+  Supprimer la couleur du groupe
+  """
+  unsetColor: Boolean
+
+  """
+  Supprimer l’adresse email du groupe
+  """
+  unsetEmail: Boolean
 }
 
 type GroupSearchResult {
@@ -1904,7 +2013,7 @@ enum GroupType {
 
 scalar HTML
 
-union HasLinks = Article | Event | Ticket | User
+union HasLinks = Article | Event | Group | Ticket | User
 
 """
 Results of a health self-check
@@ -2044,11 +2153,16 @@ scalar LooseURL
 """
 A Lydia account
 """
-type LydiaAccount {
+type LydiaAccount implements Node {
   events: [Event!]!
   group: Group
   groupId: ID
   id: ID!
+
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
   name: String!
   studentAssociation: StudentAssociation
   studentAssociationId: ID
@@ -2315,6 +2429,20 @@ type Mutation {
   ): MutationCreateGoogleWalletPassResult!
 
   """
+  Créer un nouveau groupe
+  """
+  createGroup(
+    name: String!
+
+    """
+    AE de rattachement du groupe
+    """
+    studentAssociation: UID!
+    type: GroupType! = Group
+    uid: UID!
+  ): MutationCreateGroupResult!
+
+  """
   Crée une feuille Google Sheets (si elle n'existe pas déjà) qui contiendra les réponses au formulaire (et sera mise à jour automatiquement). Renvoie l'URL de la feuille Google Sheets.
   """
   createLinkedGoogleSheet(
@@ -2377,6 +2505,7 @@ type Mutation {
   deleteGroup(uid: String!): Boolean!
   deleteGroupMember(groupId: ID!, memberId: ID!): Boolean!
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
+    @deprecated(reason: "Use setPicture instead")
   deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
 
   """
@@ -2623,6 +2752,44 @@ type Mutation {
     """
     open: Boolean!
   ): Group!
+
+  """
+  Définir comment l'on peut rejoindre un groupe
+  """
+  setGroupJoinPolicy(policy: GroupJoinPolicy!, uid: UID!): MutationSetGroupJoinPolicyResult!
+
+  """
+  Changer l'AE liée à un groupe
+  """
+  setGroupStudentAssociation(
+    group: UID!
+    studentAssociation: UID!
+  ): MutationSetGroupStudentAssociationResult!
+
+  """
+  Changer le type d'un groupe
+  """
+  setGroupType(
+    type: GroupType
+    uid: UID!
+
+    """
+    Si le groupe doit être caché des listes de groupes
+    """
+    unlisted: Boolean
+  ): MutationSetGroupTypeResult!
+
+  """
+  Changer le groupe parent d'un groupe
+  """
+  setParentGroup(
+    child: UID!
+
+    """
+    Le groupe parent. Null pour déconnecter d'un groupe parent
+    """
+    parent: UID
+  ): MutationSetParentGroupResult!
   setPicture(
     """
     Le fichier de l'image. Si null, l'image sera supprimée.
@@ -2826,6 +2993,12 @@ type Mutation {
     recurringUntil: DateTime
   ): MutationUpdateEventRecurrenceResult!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
+    @deprecated(reason: "Use setPicture instead")
+
+  """
+  Mettre à jour le profil d'un groupe
+  """
+  updateGroupProfile(profile: GroupProfileInput!, uid: UID!): MutationUpdateGroupProfileResult!
   updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
 
   """
@@ -3017,6 +3190,9 @@ type Mutation {
     id: ID
   ): MutationUpsertGodparentRequestResult!
   upsertGroup(input: UpsertGroupInput!, uid: UID): MutationUpsertGroupResult!
+    @deprecated(
+      reason: "Mutation séparée en plusieurs mutations plus spécifiques. Voir la documentation du module groups"
+    )
   upsertGroupMember(
     canEditArticles: Boolean!
     canEditMembers: Boolean!
@@ -3255,6 +3431,12 @@ type MutationCreateGoogleWalletPassSuccess {
   data: String!
 }
 
+union MutationCreateGroupResult = Error | MutationCreateGroupSuccess | ZodError
+
+type MutationCreateGroupSuccess {
+  data: Group!
+}
+
 union MutationCreatePasswordResetResult = Error | MutationCreatePasswordResetSuccess | ZodError
 
 type MutationCreatePasswordResetSuccess {
@@ -3420,6 +3602,33 @@ type MutationSetEventVisibilitySuccess {
   data: Event!
 }
 
+union MutationSetGroupJoinPolicyResult = Error | MutationSetGroupJoinPolicySuccess | ZodError
+
+type MutationSetGroupJoinPolicySuccess {
+  data: Group!
+}
+
+union MutationSetGroupStudentAssociationResult =
+  | Error
+  | MutationSetGroupStudentAssociationSuccess
+  | ZodError
+
+type MutationSetGroupStudentAssociationSuccess {
+  data: Group!
+}
+
+union MutationSetGroupTypeResult = Error | MutationSetGroupTypeSuccess | ZodError
+
+type MutationSetGroupTypeSuccess {
+  data: Group!
+}
+
+union MutationSetParentGroupResult = Error | MutationSetParentGroupSuccess | ZodError
+
+type MutationSetParentGroupSuccess {
+  data: Group!
+}
+
 union MutationSetPictureResult = Error | MutationSetPictureSuccess | ZodError
 
 type MutationSetPictureSuccess {
@@ -3452,6 +3661,12 @@ union MutationUpdateEventResult = Error | MutationUpdateEventSuccess | ZodError
 
 type MutationUpdateEventSuccess {
   data: Event!
+}
+
+union MutationUpdateGroupProfileResult = Error | MutationUpdateGroupProfileSuccess | ZodError
+
+type MutationUpdateGroupProfileSuccess {
+  data: Group!
 }
 
 union MutationUpdateLinkResult = Error | MutationUpdateLinkSuccess | ZodError
@@ -4120,7 +4335,14 @@ type Query {
   godparentRequests: [GodparentRequest!]!
   group(uid: String!): Group!
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
-  groups(types: [GroupType!]): [Group!]!
+  groups(
+    types: [GroupType!]
+
+    """
+    Inclures les groupes non répertoriés
+    """
+    unlisted: Boolean! = false
+  ): [Group!]!
 
   """
   - **Rate limit:** 5/seconde
@@ -6182,6 +6404,10 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
+  school: UID
+    @deprecated(
+      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
+    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!

@@ -1,5 +1,4 @@
 import { builder, prisma } from '#lib';
-
 import { prismaQueryVisibleEvents } from '#permissions';
 import { EventType } from '../index.js';
 

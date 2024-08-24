@@ -420,6 +420,7 @@ model Group {
   roomIsOpen           Boolean   @default(false)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @default(now()) @updatedAt
+  unlisted             Boolean   @default(false)
 
   address         String @default("") @db.VarChar(255)
   description     String @default("") @db.VarChar(255)

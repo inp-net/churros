@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { dev } from '$app/environment';
   import { page } from '$app/stores';
   import { type QueryResult } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
+  import { debugging } from '$lib/debugging';
   import { refroute } from '$lib/navigation';
   import { createEventDispatcher } from 'svelte';
 
@@ -48,7 +50,9 @@
     {/if}
   </Alert>
 {:else if result?.fetching || (result && !result.data)}
-  <pre> {JSON.stringify(result, null, 2)} </pre>
+  {#if dev || $debugging}
+    <pre> {JSON.stringify(result, null, 2)} </pre>
+  {/if}
   <section class="loading">
     <div class="spinner">
       <LoadingChurros />

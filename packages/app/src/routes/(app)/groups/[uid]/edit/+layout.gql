@@ -1,0 +1,45 @@
+query LayoutGroupEdit($uid: String!) @loading {
+  allGroups: groups {
+    ...PickGroup @mask_disable
+  }
+  allStudentAssociations: studentAssociations {
+    ...PickStudentAssociation @mask_disable
+  }
+
+  group(uid: $uid) {
+    ...FormPicture
+    canEditDetails(assert: "Tu n'a pas les permissions nécéssaires pour modifier ce groupe.")
+    name
+    shortDescription
+    color
+    email
+    address
+    related {
+      uid
+      name
+      ...AvatarGroup
+    }
+    canEditStudentAssociation
+    studentAssociation {
+      uid
+      ...AvatarStudentAssociation
+    }
+
+    canEditParent
+    parent {
+      uid
+      name
+      ...AvatarGroup
+    }
+    canEditJoinPolicy
+    selfJoinable
+    membersCount
+    activeMembersCount: membersCount(yearTiers: [1, 2, 3])
+    pagesCount
+    canEditType
+    type
+    canEditUnlisted
+    unlisted
+    canEditLydiaAccounts
+  }
+}

@@ -1,7 +1,0 @@
-query PageGroupEdit($uid: String!) {
-  group(uid: $uid) {
-    uid
-    ...FormGroup
-    ...FormPicture
-  }
-}

@@ -42,7 +42,7 @@
     {actionIcon}
     {...$$restProps}
   >
-    <slot name="before" slot="before" />
+    <slot let:value {value} name="before" slot="before" />
   </BaseInputText>
   <slot name="hint" slot="hint">{hint}</slot>
 </InputField>

@@ -7,7 +7,7 @@ import * as PrismaTypes from '@churros/db/prisma';
 import { mappedGetAncestors } from 'arborist';
 
 export function prismaQueryVisibleEvents(
-  user: { uid: string } | undefined,
+  user: { uid: string } | undefined | null,
 ): Prisma.EventWhereInput {
   return {
     OR: [

@@ -116,7 +116,7 @@
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">
-        <slot name="before" />
+        <slot {value} name="before" />
       </div>
     {/if}
     <input

@@ -6,6 +6,7 @@ import {
   type MutationStore,
 } from '$houdini';
 import { allLoaded, type DeepMaybeLoading, type MaybeLoading } from '$lib/loading';
+import { toasts } from '$lib/toasts';
 import type { RequestEvent } from '@sveltejs/kit';
 
 /**
@@ -53,3 +54,24 @@ graphql(`
     }
   }
 `);
+
+export async function mutateAndToast<
+  Data extends GraphQLObject,
+  Input extends GraphQLVariables,
+  Optimistic extends GraphQLObject,
+>(
+  mutationStore: MutationStore<Data, Input, Optimistic>,
+  variables: { [key in keyof Input]: MaybeLoading<Input[key]> },
+  options?: {
+    success?: string;
+    error?: string;
+    optimistic?: NoInfer<Optimistic>;
+  },
+) {
+  const result = await mutate(mutationStore, variables, {
+    optimisticResponse: options?.optimistic,
+  });
+  const mutationName = Object.keys(result?.data ?? {}).at(0);
+  // @ts-expect-error FIXME typing is hard to get right here but tkt it works™
+  toasts.mutation(result, mutationName, options?.success, options?.error);
+}

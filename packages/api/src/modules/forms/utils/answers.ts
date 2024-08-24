@@ -65,7 +65,7 @@ export function answerToString(
     };
     createdById: string | null;
   },
-  user: undefined | { id: string } = undefined,
+  user: null | undefined | { id: string } = undefined,
 ): string {
   if (anonymous && (!user || createdById !== user.id)) return REDACTED_ANSWER;
   if (answer.length === 0) return '';

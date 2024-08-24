@@ -88,6 +88,12 @@
             ...AreaEditLinks_Link @mask_disable
           }
         }
+        ... on Group {
+          id
+          links @list(name: "AreaEditLinks_GroupLinks") {
+            ...AreaEditLinks_Link @mask_disable
+          }
+        }
       }
     `),
   );

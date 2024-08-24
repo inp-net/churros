@@ -1,11 +1,13 @@
 import { builder, prisma, removePicture, splitID, updatePicture } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { FileScalar, PicturedInterface } from '#modules/global/types';
+import { canEditGroup } from '#modules/groups';
 import { ThemeVariantType } from '#modules/themes';
 import { canEditProfile } from '#modules/users';
 import { ThemeVariant } from '@churros/db/prisma';
 import { queryFromInfo } from '@pothos/plugin-prisma';
 import { GraphQLError } from 'graphql';
+import path from 'node:path/posix';
 import { ZodError } from 'zod';
 
 builder.mutationField('setPicture', (t) =>
@@ -56,13 +58,20 @@ builder.mutationField('setPicture', (t) =>
           });
           return canEditProfile(user, targetUser);
         }
+        case 'Group': {
+          const group = await prisma.group.findUniqueOrThrow({
+            where: { id: resource },
+            include: canEditGroup.prismaIncludes,
+          });
+          return canEditGroup(user, group);
+        }
         default: {
           // TODO
           return false;
         }
       }
     },
-    async resolve(_, { resource, file }, context, info) {
+    async resolve(_, { resource, variant, file }, context, info) {
       const { user } = context;
       const [typename, localid] = splitID(resource);
       const queryFor = <T extends string>(typeName: T) =>
@@ -73,7 +82,7 @@ builder.mutationField('setPicture', (t) =>
             await updatePicture({
               resource: 'event',
               folder: 'events',
-              extension: 'jpg',
+              extension: 'png',
               file,
               identifier: localid,
             });
@@ -83,9 +92,7 @@ builder.mutationField('setPicture', (t) =>
               resourceId: resource,
               resourceType: 'event',
             });
-            if (alreadyDeleted) 
-              context.caveats.unshift("L'image a déjà été supprimée");
-            
+            if (alreadyDeleted) context.caveats.unshift("L'image a déjà été supprimée");
           }
           return prisma.event.findUniqueOrThrow({ ...queryFor('Event'), where: { id: resource } });
         }
@@ -94,7 +101,7 @@ builder.mutationField('setPicture', (t) =>
             await updatePicture({
               resource: 'user',
               folder: 'users',
-              extension: 'jpg',
+              extension: 'png',
               file,
               identifier: localid,
             });
@@ -104,11 +111,28 @@ builder.mutationField('setPicture', (t) =>
               resourceId: resource,
               resourceType: 'user',
             });
-            if (alreadyDeleted) 
-              context.caveats.unshift("L'image a déjà été supprimée");
-            
+            if (alreadyDeleted) context.caveats.unshift("L'image a déjà été supprimée");
           }
           return prisma.user.findUniqueOrThrow({ ...queryFor('User'), where: { id: resource } });
+        }
+        case 'Group': {
+          if (file) {
+            await updatePicture({
+              resource: 'group',
+              folder: path.join('groups', variant.toLowerCase()),
+              extension: 'png',
+              file,
+              identifier: localid,
+            });
+          } else {
+            const { alreadyDeleted } = await removePicture({
+              user,
+              resourceId: resource,
+              resourceType: 'group',
+            });
+            if (alreadyDeleted) context.caveats.unshift("L'image a déjà été supprimée");
+          }
+          return prisma.group.findUniqueOrThrow({ ...queryFor('Group'), where: { id: resource } });
         }
         default: {
           // TODO

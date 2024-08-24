@@ -4,7 +4,7 @@ import { isPast } from 'date-fns';
 
 export async function priceWithPromotionsApplied(
   ticket: { price: number; id: string },
-  user: { id: string } | undefined,
+  user: { id: string } | undefined | null,
 ) {
   if (!user) return ticket.price;
   const promotionCode = await prisma.promotionCode.findFirst({

@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
 import { onBoard, userIsAdminOf, userIsGroupEditorOf, userIsMemberOf } from '#permissions';
-import { GroupType, Prisma, type Group, type StudentAssociation } from '@churros/db/prisma';
+import { GroupType, Prisma, type Group } from '@churros/db/prisma';
 
 export const requiredPrismaIncludesForPermissions = {
   studentAssociation: true,
@@ -28,6 +28,7 @@ export function canCreateGroup(
     type,
   }: {
     studentAssociationUid?: string | null | undefined;
+    /** @deprecated setting parent group is done in another mutation now  */
     parentUid?: string | null | undefined;
     type: GroupType;
   },
@@ -53,10 +54,7 @@ export function canCreateGroup(
  */
 export function canEditGroup(
   user: Context['user'],
-  existingGroup: Group & {
-    studentAssociation: StudentAssociation | null;
-    parent: null | Group;
-  },
+  existingGroup: Prisma.GroupGetPayload<{ include: typeof canEditGroup.prismaIncludes }>,
   newGroup:
     | {
         studentAssociationUid?: string | null | undefined;
@@ -66,12 +64,9 @@ export function canEditGroup(
       }
     | undefined
     | null = null,
-  newParentGroup:
-    | null
-    | (Group & {
-        studentAssociation: StudentAssociation | null;
-        parent: null | Group;
-      }) = null,
+  newParentGroup: null | Prisma.GroupGetPayload<{
+    include: typeof canEditGroup.prismaIncludes;
+  }> = null,
 ) {
   if (!user) return false;
 
@@ -125,6 +120,11 @@ export function canEditGroup(
 
   return false;
 }
+
+canEditGroup.prismaIncludes = {
+  studentAssociation: true,
+  parent: true,
+} as const satisfies Prisma.GroupInclude;
 
 export function userIsOnGroupBoard(user: Context['user'], group: { uid: string } | { id: string }) {
   return user?.groups.some(
@@ -211,3 +211,107 @@ export function canSetGroupRoomOpenState(user: Context['user'], group: Group) {
     userIsMemberOf(user, group.uid)
   );
 }
+
+export function canSetGroupJoinPolicy(
+  user: Context['user'],
+  group: Prisma.GroupGetPayload<{
+    include: typeof canSetGroupJoinPolicy.prismaIncludes;
+  }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, group.studentAssociationId)) return true;
+  if (userIsGroupEditorOf(user, group.studentAssociationId)) return true;
+  if (userIsOnGroupBoard(user, group)) return true;
+  return false;
+}
+
+canSetGroupJoinPolicy.prismaIncludes = {
+  studentAssociation: true,
+} as const satisfies Prisma.GroupInclude;
+
+export function canChangeGroupType(
+  user: Context['user'],
+  group: Prisma.GroupGetPayload<{
+    include: typeof canChangeGroupType.prismaIncludes;
+  }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, group.studentAssociationId)) return true;
+  if (user.canEditGroups) return true;
+  return false;
+}
+
+canChangeGroupType.prismaIncludes = {
+  studentAssociation: true,
+} as const satisfies Prisma.GroupInclude;
+
+export function canChangeGroupStudentAssociation(
+  user: Context['user'],
+  group: Prisma.GroupGetPayload<{
+    include: typeof canChangeGroupStudentAssociation.prismaIncludes;
+  }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, group.studentAssociationId)) return true;
+  if (user.canEditGroups) return true;
+  return false;
+}
+
+canChangeGroupStudentAssociation.prismaIncludes = {
+  studentAssociation: true,
+} as const satisfies Prisma.GroupInclude;
+
+export function canChangeParentGroup(
+  user: Context['user'],
+  {
+    child,
+    parent,
+  }: {
+    child: Prisma.GroupGetPayload<{
+      include: typeof canChangeParentGroup.prismaIncludes;
+    }>;
+    /** The 'any' value should only be used for UI purposes, and tells us that user can do at least something about the parent group (set it to some group, or maybe remove it) */
+    parent:
+      | 'any'
+      | null
+      | Prisma.GroupGetPayload<{
+          include: typeof canChangeParentGroup.prismaIncludes;
+        }>;
+  },
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, child.studentAssociationId)) return true;
+  if (userIsGroupEditorOf(user, child.studentAssociationId)) return true;
+  if (!canEditGroup(user, child)) return false;
+  if (parent === 'any') return true;
+  if (parent) return canEditGroup(user, parent);
+  // Only admins & group editors can unset a parent group
+  // Is this the right things to do? idk
+  return false;
+}
+
+canChangeParentGroup.prismaIncludes = {
+  ...canEditGroup.prismaIncludes,
+} as const satisfies Prisma.GroupInclude;
+
+export function canEditLydiaAccounts(
+  user: Context['user'],
+  group: Prisma.GroupGetPayload<{
+    include: typeof canEditLydiaAccounts.prismaIncludes;
+  }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, group.studentAssociationId)) return true;
+  if (userIsGroupEditorOf(user, group.studentAssociationId)) return true;
+  if (userIsOnGroupBoard(user, group)) return true;
+  return false;
+}
+
+canEditLydiaAccounts.prismaIncludes = {
+  studentAssociation: true,
+} as const satisfies Prisma.GroupInclude;

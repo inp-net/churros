@@ -1,0 +1,8 @@
+query PageGroupEditType($uid: String!) {
+  group(uid: $uid) {
+    type
+    canEditType(
+      assert: "Tu n'a pas les permissions nécéssaires pour modifier le type de ce groupe."
+    )
+  }
+}

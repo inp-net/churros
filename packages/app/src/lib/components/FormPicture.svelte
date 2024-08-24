@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { fragment, graphql } from '$houdini';
-  import IconAccount from '~icons/msl/person';
+  import { fragment, graphql, type ThemeVariant$options } from '$houdini';
   import { loaded, loading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import IconDelete from '~icons/msl/delete-outline';
+  import IconAccount from '~icons/msl/person';
   import ButtonInk from './ButtonInk.svelte';
   import CardEvent from './CardEvent.svelte';
   import InputFile from './InputFile.svelte';
-  import { tooltip } from '$lib/tooltip';
+
+  export let variant: ThemeVariant$options = 'Light';
 
   export let resource;
   $: data = fragment(
@@ -27,6 +29,8 @@
       }
     `),
   );
+
+  $: pictureURL = variant === 'Light' ? $data.lightURL : $data.darkURL;
 
   const Update = graphql(`
     mutation UpdatePicture($resource: ID!, $file: File!, $variant: ThemeVariant!) {
@@ -58,7 +62,7 @@
   `);
 
   async function deletePicture() {
-    const result = await mutate(Delete, { resource: $data.id, variant: 'Light' });
+    const result = await mutate(Delete, { resource: $data.id, variant });
     toasts.mutation(result, 'setPicture', 'Image supprimée', "Impossible de supprimer l'image");
   }
 
@@ -70,7 +74,7 @@
   accept="image/jpeg,image/png,image/webp"
   data-typename={loading($data.__typename, '')}
   on:change={async ({ detail: file }) => {
-    const result = await mutate(Update, { resource: $data.id, file, variant: 'Light' });
+    const result = await mutate(Update, { resource: $data.id, file, variant });
     toasts.mutation(
       result,
       'setPicture',
@@ -95,7 +99,7 @@
   </div>
   <section class="actions">
     {#if loading($data.__typename, '') === 'Event'}
-      {#if loaded($data.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
+      {#if loaded(pictureURL) && loaded($data.pictureAltText) && pictureURL}
         <ButtonInk on:click={openPicker}>Changer</ButtonInk>
         <ButtonInk danger on:click={deletePicture}>Supprimer</ButtonInk>
       {:else}
@@ -103,8 +107,14 @@
       {/if}
     {:else}
       <ButtonInk on:click={openPicker}>
-        {#if loaded($data.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
-          Modifier la photo
+        {#if loaded(pictureURL) && loaded($data.pictureAltText) && pictureURL}
+          {#if loading($data.__typename, '') === 'Group'}
+            Modifier
+          {:else}
+            Modifier la photo
+          {/if}
+        {:else if loading($data.__typename, '') === 'Group'}
+          Ajouter
         {:else}
           Ajouter une photo
         {/if}

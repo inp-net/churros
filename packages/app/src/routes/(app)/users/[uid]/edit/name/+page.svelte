@@ -25,15 +25,10 @@
   <div class="contents">
     <Alert theme="warning">
       <h2>Attention</h2>
-      <p>Les changements de prénoms et noms de familles ne sont pas à prendre à la légère.</p>
       <p>
-        Nous te donnon la possibilité d'en changer par toi-meme pour ne pas avoir à attendre des
-        procédures administratives complexes pour (par exemple) un changement de nom suite à un
-        changement d'identité de genre
-      </p>
-      <p>
-        Les administrateur.ice.s sont notifié.e.s à chaque changement de nom, et tout abus manifeste
-        sera lourdement sanctionné
+        Les changements de prénoms et noms de familles ne sont pas à prendre à la légère. Les
+        administrateur.ice.s sont notifié.e.s à chaque changement de nom, et tout abus manifeste
+        sera sanctionné
       </p>
     </Alert>
     <form

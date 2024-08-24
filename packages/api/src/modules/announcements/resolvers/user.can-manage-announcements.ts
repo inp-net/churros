@@ -1,7 +1,7 @@
 import { builder } from '#lib';
 import { UserType } from '#modules/users';
 
-export function canManageAnnouncements(user: undefined | { admin: boolean }) {
+export function canManageAnnouncements(user: null | undefined | { admin: boolean }) {
   return Boolean(user?.admin);
 }
 

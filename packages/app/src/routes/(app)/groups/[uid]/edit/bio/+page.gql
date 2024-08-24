@@ -1,0 +1,6 @@
+query PageGroupEditBio($uid: String!) {
+  group(uid: $uid) {
+    longDescription
+    longDescriptionHtml
+  }
+}
