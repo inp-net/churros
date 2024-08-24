@@ -5569,6 +5569,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "churros@workspace:."
   dependencies:
+    "@changesets/changelog-git": "npm:^0.2.0"
     "@changesets/cli": "npm:^2.27.7"
     "@commitlint/cli": "npm:^19.2.1"
     "@commitlint/config-conventional": "npm:^19.1.0"

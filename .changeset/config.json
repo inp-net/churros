@@ -1,11 +1,11 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.2/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": "@changesets/changelog-git",
   "commit": false,
   "fixed": [],
   "linked": [],
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@churros/mock-n7-ldap"]
+  "ignore": []
 }
