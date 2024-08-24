@@ -26,5 +26,7 @@ release:
   stage: changesets
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    INPUT_COMMIT: 'chore: version packages'
   script:
     - yarn changesets-gitlab
