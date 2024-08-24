@@ -29,6 +29,12 @@ const PAGES = {
     params.tab = params.tab ?? 'infos';
     return `/${uid}${appendSp({ tab: params.tab })}`;
   },
+  '/[uid=uid]/[...page]': (params: {
+    uid: Parameters<typeof import('../params/uid.ts').match>[0];
+    page: (string | number)[];
+  }) => {
+    return `/${params.uid}/${params.page?.join('/')}`;
+  },
   '/announcements': `/announcements`,
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
@@ -154,9 +160,6 @@ const PAGES = {
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
   },
-  '/groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
-    return `/groups/${params.uid}/${params.page?.join('/')}`;
-  },
   '/groups/[uid]/edit': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit`;
   },
@@ -264,9 +267,6 @@ const PAGES = {
   '/users/[uid]/edit/name': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit/name`;
   },
-  '/users/[uid]/edit/old': (uid: string | number, params?: {}) => {
-    return `/users/${uid}/edit/old`;
-  },
   '/users/[uid]/edit/other-emails': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit/other-emails`;
   },
@@ -323,6 +323,9 @@ const SERVERS = {
   },
   'GET /groups/[uid].pdf': (uid: string | number, params?: {}) => {
     return `/groups/${uid}.pdf`;
+  },
+  'GET /groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
+    return `/groups/${params.uid}/${params.page?.join('/')}`;
   },
   'GET /help/prefilled-links': `/help/prefilled-links`,
   'GET /logout': `/logout`,
@@ -469,6 +472,7 @@ export type KIT_ROUTES = {
   PAGES: {
     '/': never;
     '/[uid=uid]': 'uid';
+    '/[uid=uid]/[...page]': 'uid' | 'page';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
@@ -518,7 +522,6 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
     '/events/[id]/scan': 'id';
-    '/groups/[uid]/[...page]': 'uid' | 'page';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
     '/groups/[uid]/edit/members': 'uid';
@@ -559,7 +562,6 @@ export type KIT_ROUTES = {
     '/users/[uid]/edit/family': 'uid';
     '/users/[uid]/edit/links': 'uid';
     '/users/[uid]/edit/name': 'uid';
-    '/users/[uid]/edit/old': 'uid';
     '/users/[uid]/edit/other-emails': 'uid';
     '/validate-email/[token]': 'token';
     '/welcome': never;
@@ -579,6 +581,7 @@ export type KIT_ROUTES = {
     'GET /frappe': never;
     'GET /groups/[uid]': 'uid';
     'GET /groups/[uid].pdf': 'uid';
+    'GET /groups/[uid]/[...page]': 'uid' | 'page';
     'GET /help/prefilled-links': never;
     'GET /logout': never;
     'GET /me': never;
@@ -598,6 +601,7 @@ export type KIT_ROUTES = {
   Params: {
     uid: never;
     tab: never;
+    page: never;
     id: never;
     code: never;
     major: never;
@@ -606,7 +610,6 @@ export type KIT_ROUTES = {
     document: never;
     week: never;
     ticket: never;
-    page: never;
     bypass_oauth: never;
     token: never;
     group: never;
