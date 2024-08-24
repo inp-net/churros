@@ -60,7 +60,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@churros/api": "workspace:^",
     "@iconify-json/material-symbols": "^1.1.87",
     "@iconify-json/material-symbols-light": "^1.1.27",
     "@iconify-json/mdi": "^1.1.68",
