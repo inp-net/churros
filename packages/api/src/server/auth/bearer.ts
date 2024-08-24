@@ -1,5 +1,6 @@
 import passport from 'passport';
 import { type IVerifyOptions, Strategy as BearerStrategy } from 'passport-http-bearer';
+import { getGATSession } from '../../lib/gat-session.js';
 import { getTokenSession } from '../../lib/token-session.js';
 
 const bearerStrategy = new BearerStrategy(async function (
@@ -11,8 +12,14 @@ const bearerStrategy = new BearerStrategy(async function (
   ) => void,
 ): Promise<void> {
   try {
-    const session = await getTokenSession(token);
-    done(null, session);
+    const user = await getTokenSession(token);
+    if (user) {
+      done(null, { user: user });
+    } else {
+      const group = await getGATSession(token);
+      if (group) done(null, { group });
+      else done(null, null);
+    }
   } catch (error) {
     done(error);
   }

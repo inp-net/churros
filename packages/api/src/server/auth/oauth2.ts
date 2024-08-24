@@ -27,7 +27,7 @@ const oauth2Strategy = new OAuth2Strategy(
         return;
       }
 
-      cb(null, userSession);
+      cb(null, { user: userSession });
     } catch (error) {
       cb(error, false);
     }

@@ -5,13 +5,18 @@ import session from 'express-session';
 import passport from 'passport';
 
 passport.serializeUser<User['uid']>((user, done) => {
-  done(null, user.uid);
+  if (!user.user) {
+    throw new Error(
+      "Cannot use session cookie with group access token - please include the token as a Bearer token in the request's Authorization header",
+    );
+  }
+  done(null, user.user.uid);
 });
 
 passport.deserializeUser<User['uid']>(async (session, done) => {
   try {
     const user = await getSessionUser(session);
-    done(null, user);
+    done(null, { user });
   } catch (error) {
     done(error, null);
   }

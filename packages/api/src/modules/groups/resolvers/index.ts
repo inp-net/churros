@@ -5,6 +5,7 @@
 export * from './group.ancestors.js';
 export * from './group.members.js';
 export * from './mutation.add-group-member.js';
+export * from './mutation.create-group-access-token.js';
 export * from './mutation.create-group.js';
 export * from './mutation.delete-group-member.js';
 export * from './mutation.delete-group-picture.js';

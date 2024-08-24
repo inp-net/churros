@@ -1,4 +1,6 @@
+import type { SessionUser } from '#lib';
 import type { YogaInitialContext } from '@graphql-yoga/node';
+import type { SessionGroup } from './session-group.js';
 
 type ContextOptions = YogaInitialContext & {
   req: Express.Request;
@@ -9,22 +11,26 @@ type ContextOptions = YogaInitialContext & {
 function baseContext() {
   return {
     user: null,
+    group: null,
     caveats: [] as string[],
   };
 }
 
 /** The request context, made available in all resolvers. */
-export const context = async ({ req }: ContextOptions) => {
-  if (!req) return baseContext();
+export async function context(ctx: ContextOptions): Promise<Context> {
+  if (!ctx.req) return { ...ctx, ...baseContext() };
 
-  const { user } = req;
+  // Express's 'user" could be a group when using a Group Access Token
+  const userOrGroup = ctx.req.user;
 
   return {
+    ...ctx,
     ...baseContext(),
-    user: user ?? null,
+    ...userOrGroup,
   };
-};
+}
 
 export type Context = ContextOptions & {
-  user: Express.User | null;
+  user: SessionUser | null;
+  group: SessionGroup | null;
 };

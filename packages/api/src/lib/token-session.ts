@@ -30,7 +30,7 @@ async function getTokenSessionFromDatabase(
     },
   });
 
-  if (!credential) return null;
+  if (!credential?.user) return null;
 
   if (credential.expiresAt !== null && isPast(credential.expiresAt))
     await prisma.credential.delete({ where: { id: credential.id } });

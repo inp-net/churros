@@ -315,3 +315,15 @@ export function canEditLydiaAccounts(
 canEditLydiaAccounts.prismaIncludes = {
   studentAssociation: true,
 } as const satisfies Prisma.GroupInclude;
+
+export function canCreateGroupAccessToken(user: Context['user'], group: Group) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (
+    user.groups.some(
+      (membership) => membership.isDeveloper && groupsAreTheSame(group, membership.group),
+    )
+  )
+    return true;
+  return false;
+}

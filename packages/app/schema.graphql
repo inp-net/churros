@@ -911,6 +911,7 @@ type Credential {
 
 enum CredentialType {
   Google
+  GroupAccessToken
   Password
   Token
 }
@@ -2443,6 +2444,11 @@ type Mutation {
   ): MutationCreateGroupResult!
 
   """
+  Créer un token d'accès pour un groupe. Les requêtes effectuées avec ce token auront des permissions différentes, et permettent d'effectuer certaines actions en tant qu'un groupe au lieu d'une personne
+  """
+  createGroupAccessToken(group: UID!): MutationCreateGroupAccessTokenResult!
+
+  """
   Crée une feuille Google Sheets (si elle n'existe pas déjà) qui contiendra les réponses au formulaire (et sera mise à jour automatiquement). Renvoie l'URL de la feuille Google Sheets.
   """
   createLinkedGoogleSheet(
@@ -3429,6 +3435,15 @@ union MutationCreateGoogleWalletPassResult =
 
 type MutationCreateGoogleWalletPassSuccess {
   data: String!
+}
+
+union MutationCreateGroupAccessTokenResult =
+  | Error
+  | MutationCreateGroupAccessTokenSuccess
+  | ZodError
+
+type MutationCreateGroupAccessTokenSuccess {
+  data: Credential!
 }
 
 union MutationCreateGroupResult = Error | MutationCreateGroupSuccess | ZodError

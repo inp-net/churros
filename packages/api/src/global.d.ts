@@ -107,6 +107,9 @@ declare global {
   }
 
   namespace Express {
-    interface User extends SessionUser {}
+    interface User {
+      user?: SessionUser;
+      group?: SessionGroup;
+    }
   }
 }
