@@ -60,7 +60,8 @@
     "release": "release-it",
     "candidaterelease": "release-it --preRelease=rc",
     "generate-buildinfo": "yarn tsx scripts/generate-buildinfo.ts",
-    "sync-with-example-dotenv": "yarn tsx scripts/sync-with-example-dotenv.ts && yarn cp-env"
+    "sync-with-example-dotenv": "yarn tsx scripts/sync-with-example-dotenv.ts && yarn cp-env",
+    "update-versions": "changeset version && yarn install"
   },
   "volta": {
     "node": "20.6.1",

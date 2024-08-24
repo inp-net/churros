@@ -28,5 +28,7 @@ release:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   variables:
     INPUT_COMMIT: 'chore: version packages'
+    YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+    INPUT_VERSION: 'yarn update-versions'
   script:
     - yarn changesets-gitlab
