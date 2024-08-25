@@ -31,5 +31,6 @@ release:
     INPUT_COMMIT: 'chore: version packages'
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     INPUT_VERSION: 'yarn update-versions'
+    INPUT_PUBLISH: 'true'
   script:
     - yarn changesets-gitlab
