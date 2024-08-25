@@ -9,7 +9,7 @@
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
 
   /** The area is meant to edit Social links. The link name cannot be edited, but is instead inferred from the URL itself to the social network's name, or the domain name when it cannot be inferred. */
-  // export let social = false;
+  export let social = false;
 
   let newLink = {
     text: '',
@@ -116,22 +116,24 @@
 <slot name="toplabel">
   <p class="typo-field-label">Liens</p>
 </slot>
-<ul class="nobullet links">
+<ul class="nobullet links" class:social>
   {#each links as link (link.id)}
     <li>
-      <InputTextGhost
-        on:blur={async ({ detail }) => {
-          const result = await mutate(UpdateLink, {
-            id: link.id,
-            text: detail,
-          });
-          toasts.mutation(result, 'updateLink', '', 'Impossible de changer le texte du lien');
-        }}
-        required
-        placeholder="Texte affiché"
-        label="Texte à afficher"
-        value={link.text}
-      />
+      {#if !social}
+        <InputTextGhost
+          on:blur={async ({ detail }) => {
+            const result = await mutate(UpdateLink, {
+              id: link.id,
+              text: detail,
+            });
+            toasts.mutation(result, 'updateLink', '', 'Impossible de changer le texte du lien');
+          }}
+          required
+          placeholder="Texte affiché"
+          label="Texte à afficher"
+          value={link.text}
+        />
+      {/if}
       <InputTextGhost
         on:blur={async ({ detail }) => {
           const result = await mutate(UpdateLink, {
@@ -174,53 +176,60 @@
     </li>
   {/each}
   <li class="new">
-    <InputTextGhost
-      placeholder="Texte affiché"
-      label="Texte à afficher"
-      bind:value={newLink.text}
-    />
-    <InputTextGhost placeholder="Lien" label="Adresse (URL)" type="url" bind:value={newLink.url} />
-    <div class="action">
-      <ButtonGhost
-        loading={addingLink}
-        on:click={async () => {
-          if (typeof newLink === 'string') return;
-          if (!newLink.text) return;
-          if (!$data || !loaded(resourceId) || !allLoaded($data)) return;
-          addingLink = true;
-          const result = await mutate(
-            AddLink,
-            {
-              resource: resourceId,
-              links: [newLink],
-            },
-            // {
-            // FIXME: makes everything reload briefly, dunno why
-            //   optimisticResponse: {
-            //     addLinks: {
-            //       __typename: 'MutationAddLinksSuccess',
-            //       data: {
-            //         ...$data,
-            //         id: resourceId,
-            //         links: [...links, newLink],
-            //       },
-            //     },
-            //   },
-            // },
-          );
-          addingLink = false;
-          if (!result) return;
-          if (toasts.mutation(result, 'addLinks', '', 'Impossible de rajouter le lien')) {
-            newLink = {
-              text: '',
-              url: '',
-            };
-          }
-        }}
-      >
-        <IconAdd />
-      </ButtonGhost>
-    </div>
+    <form
+      on:submit|preventDefault={async () => {
+        if (!$data || !loaded(resourceId) || !allLoaded($data)) return;
+        addingLink = true;
+        const result = await mutate(
+          AddLink,
+          {
+            resource: resourceId,
+            links: [social ? { url: newLink.url, text: newLink.url } : newLink],
+          },
+          // {
+          // FIXME: makes everything reload briefly, dunno why
+          //   optimisticResponse: {
+          //     addLinks: {
+          //       __typename: 'MutationAddLinksSuccess',
+          //       data: {
+          //         ...$data,
+          //         id: resourceId,
+          //         links: [...links, newLink],
+          //       },
+          //     },
+          //   },
+          // },
+        );
+        addingLink = false;
+        if (!result) return;
+        if (toasts.mutation(result, 'addLinks', '', 'Impossible de rajouter le lien')) {
+          newLink = {
+            text: '',
+            url: '',
+          };
+        }
+      }}
+    >
+      {#if !social}
+        <InputTextGhost
+          placeholder="Texte affiché"
+          label="Texte à afficher"
+          bind:value={newLink.text}
+        />
+      {/if}
+      <InputTextGhost
+        placeholder="Lien"
+        label="Adresse (URL)"
+        type="url"
+        required
+        bind:value={newLink.url}
+      />
+      <div class="action">
+        <ButtonGhost loading={addingLink} type="submit">
+          <IconAdd />
+        </ButtonGhost>
+      </div>
+    </form>
   </li>
 </ul>
 
@@ -235,13 +244,30 @@
     margin-top: 1rem;
   }
 
-  li {
+  li:not(.new),
+  li.new form {
     display: grid;
     grid-template-columns: 1fr 1fr max-content;
     gap: 0.5rem;
   }
 
-  li > :last-child {
+  li.new,
+  li.new form {
+    align-items: center;
+    width: 100%;
+  }
+
+  li.new form {
+    font-size: 1rem;
+  }
+
+  .social li:not(.new),
+  .social li.new form {
+    grid-template-columns: 1fr max-content;
+  }
+
+  li > :last-child,
+  li.new form > :last-child {
     font-size: 1.5rem;
   }
 </style>

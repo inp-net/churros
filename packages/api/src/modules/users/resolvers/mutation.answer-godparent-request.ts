@@ -1,16 +1,18 @@
-import { builder, log, objectValuesFlat, prisma } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
+import { LocalID } from '#modules/global';
 import { notify } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@churros/db/prisma';
-import { fullName } from '../index.js';
+import { fullName, GodparentRequestType } from '../index.js';
 
-builder.mutationField('deleteGodparentRequest', (t) =>
+builder.mutationField('answerGodparentRequest', (t) =>
   t.prismaField({
-    type: 'GodparentRequest',
+    type: GodparentRequestType,
+    errors: {},
     description:
       "Deletes a pending godparent request. If accept is true, the request will be accepted (and the godparent of the requester will be changed), otherwise it will be rejected (the godparent of the requester won't be changed)",
     args: {
-      id: t.arg.id(),
+      id: t.arg({ type: LocalID }),
       accept: t.arg.boolean(),
     },
     async authScopes(_, { id, accept }, { user }) {
@@ -59,6 +61,7 @@ builder.mutationField('deleteGodparentRequest', (t) =>
             },
           },
         });
+        await purgeSessionsUser(request.godchild.uid);
         await notify([request.godchild], {
           body: `${fullName(request.godparent)} a accepté votre demande de parrainage!`,
           title: `Demande de parrainage acceptée!`,

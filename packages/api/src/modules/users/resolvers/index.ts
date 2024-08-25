@@ -3,13 +3,14 @@
  */
 
 export * from './mutation.accept-registration.js';
+export * from './mutation.answer-godparent-request.js';
 export * from './mutation.bookmark.js';
 export * from './mutation.complete-signup.js';
 export * from './mutation.create-bot.js';
 export * from './mutation.create-password-reset.js';
 export * from './mutation.create-quick-signup.js';
 export * from './mutation.delete-godchild.js';
-export * from './mutation.delete-godparent-request.js';
+export * from './mutation.delete-godparent.js';
 export * from './mutation.delete-quick-signup.js';
 export * from './mutation.delete-token.js';
 export * from './mutation.delete-user-picture.js';

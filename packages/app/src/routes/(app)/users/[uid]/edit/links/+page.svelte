@@ -9,7 +9,7 @@
 
 <MaybeError result={$PageUserEditLinks} let:data={{ user }}>
   <div class="contents">
-    <AreaEditLinks resource={user} />
+    <AreaEditLinks social resource={user} />
   </div>
 </MaybeError>
 

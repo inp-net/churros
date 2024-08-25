@@ -233,8 +233,14 @@ export const UserType = builder.prismaNode('User', {
     }),
     godparent: t.relation('godparent', { nullable: true }),
     godchildren: t.relation('godchildren'),
-    outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
-    incomingGodparentRequests: t.relation('incomingGodparentRequests'),
+    outgoingGodparentRequests: t.relation('outgoingGodparentRequests', {
+      description:
+        'Demandes de parrainage faites par cet utilisateur·ice (donc pour devenir fillot·e)',
+    }),
+    incomingGodparentRequests: t.relation('incomingGodparentRequests', {
+      description:
+        'Demandes de parrainage reçues par cet utilisateur·ice (donc pour devenir parrain·e)',
+    }),
     emailChangeRequests: t.relation('emailChanges', {
       args: {
         pending: t.arg.boolean({

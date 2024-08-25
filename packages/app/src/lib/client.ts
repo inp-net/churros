@@ -30,7 +30,6 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
 const logger: ClientPlugin = () => ({
   start(ctx, { next }) {
     // add the start time to the context's stuff
-    // console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}`);
     ctx.metadata = {
       ...ctx.metadata,
       queryTimestamps: {
@@ -43,7 +42,7 @@ const logger: ClientPlugin = () => ({
     next(ctx);
   },
   beforeNetwork(ctx, { next }) {
-    console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}: Hitting network`);
+    console.info(`${ctx.name}: Hitting network`);
     if (ctx.metadata?.queryTimestamps) ctx.metadata.queryTimestamps.network = Date.now();
 
     next(ctx);
@@ -51,7 +50,7 @@ const logger: ClientPlugin = () => ({
   afterNetwork(ctx, { resolve }) {
     if (ctx.metadata) {
       console.info(
-        `[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}: Hitting network: took ${Date.now() - ctx.metadata.queryTimestamps.network}ms`,
+        `${ctx.name}: Hitting network: took ${Date.now() - ctx.metadata.queryTimestamps.network}ms`,
       );
     }
     resolve(ctx);
