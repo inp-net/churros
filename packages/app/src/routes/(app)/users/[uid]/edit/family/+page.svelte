@@ -7,7 +7,7 @@
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { formatDate } from '$lib/dates';
-  import { allLoaded } from '$lib/loading';
+  import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
   import IconCheck from '~icons/msl/check';
   import IconClose from '~icons/msl/close';
@@ -17,7 +17,8 @@
   $: ({ PageUserEditFamily } = data);
 
   let godparentUid: string;
-  $: godparentUid ??= $PageUserEditFamily?.data?.user?.godparent?.uid;
+  $: initialGodparentUid = $PageUserEditFamily?.data?.user?.godparent?.uid;
+  $: if (initialGodparentUid && loaded(initialGodparentUid)) godparentUid ??= initialGodparentUid;
 
   const SendGodparentRequest = graphql(`
     mutation SendGodparentRequest($parent: String!, $child: String!) {
@@ -47,7 +48,8 @@
     }
   `);
 
-  async function answerGodparentRequest(id: string, accept: boolean) {
+  async function answerGodparentRequest(id: MaybeLoading<string>, accept: boolean) {
+    if (!loaded(id)) return;
     await graphql(`
       mutation AnswerGodparentRequest($id: LocalID!, $accept: Boolean!) {
         answerGodparentRequest(id: $id, accept: $accept) {
@@ -63,7 +65,8 @@
     await PageUserEditFamily.fetch({ variables: { uid: $page.params.uid } });
   }
 
-  async function deleteGodchild(uid: string) {
+  async function deleteGodchild(uid: MaybeLoading<string>) {
+    if (!loaded(uid)) return;
     await graphql(`
       mutation DeleteGodchild($parent: UID!, $child: UID!) {
         deleteGodchild(parent: $parent, child: $child) {
