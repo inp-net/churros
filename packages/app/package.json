@@ -103,7 +103,6 @@
     "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
-  "private": true,
   "scripts": {
     "generate": "node src/scripts/generate-dotenv-service-worker.js && tsx src/scripts/generate-reserved-usernames-from-routes.ts && svelte-kit sync && yarn zeus && houdini generate",
     "build": "yarn generate && yarn check --threshold warning && vite build",

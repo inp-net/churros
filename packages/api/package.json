@@ -164,7 +164,6 @@
     "#modules/*": "./build/src/modules/*/index.js",
     "#permissions": "./build/src/permissions/index.js"
   },
-  "private": true,
   "scripts": {
     "format-at": "prettier --write --ignore-unknown",
     "format": "yarn format-at .",
