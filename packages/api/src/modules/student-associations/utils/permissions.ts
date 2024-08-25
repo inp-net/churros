@@ -53,3 +53,21 @@ export function canEditDetails(
     user.admin || user.adminOfStudentAssociations.some((sa) => sa.id === studentAssociation.id)
   );
 }
+
+export function canMarkContributionAsPaid(
+  user: Context['user'],
+  option: Prisma.ContributionOptionGetPayload<{
+    include: typeof canMarkContributionAsPaid.prismaIncludes;
+  }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  // Can only mark contribution as paid if user is student association admin on ALL associations the contribution option pays for
+  return option.paysFor.every((sa) =>
+    user.adminOfStudentAssociations.some((adminSA) => adminSA.id === sa.id),
+  );
+}
+
+canMarkContributionAsPaid.prismaIncludes = {
+  paysFor: true,
+} as const satisfies Prisma.ContributionOptionInclude;

@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -176,7 +181,14 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
+  """
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+  """
   answer: [String!]!
 
   """
@@ -883,11 +895,30 @@ type CommentsEdge {
   node: Comment!
 }
 
-type ContributionOption {
+type ContributionOption implements Node {
+  """
+  On peut marquer une cotisation de cette option comme payée
+  """
+  canMarkAsPaid: Boolean!
   descriptionHtml: String!
   id: ID!
+
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
   name: String!
   offeredIn: School!
+
+  """
+  Une personne paye une cotisation avec cette option
+  """
+  paidBy(
+    """
+    UID de l'utilisateur·ice
+    """
+    uid: String!
+  ): Boolean!
   paysFor: [StudentAssociation!]!
   price: Float!
 }
@@ -2496,6 +2527,11 @@ type Mutation {
   deleteArticlePicture(id: ID!): Boolean!
   deleteBarWeek(id: ID!): Boolean!
   deleteComment(id: ID!): Comment!
+
+  """
+  Supprimer une cotisation
+  """
+  deleteContribution(option: LocalID!, user: UID!): MutationDeleteContributionResult!
   deleteDocument(id: ID!): Boolean!
   deleteDocumentFile(documentId: ID!, filename: String!): Boolean!
   deleteEvent(id: LocalID!): MutationDeleteEventResult!
@@ -2607,6 +2643,18 @@ type Mutation {
     """
     verify: Boolean
   ): MutationMarkBookingAsPaidResult!
+
+  """
+  Marquer une cotisation comme payée.
+  """
+  markContributionAsPaid(
+    """
+    Créer la cotisation si elle n'existe pas (et immédiatement la marquer comme payée)
+    """
+    create: Boolean! = false
+    option: LocalID!
+    user: UID!
+  ): MutationMarkContributionAsPaidResult!
   mergeDocuments(from: [ID!]!, into: ID!): Document!
   opposeRegistration(id: ID!): MutationOpposeRegistrationResult!
   paidShopPayment(
@@ -3464,6 +3512,12 @@ type MutationCreateTicketSuccess {
   data: Ticket!
 }
 
+union MutationDeleteContributionResult = Error | MutationDeleteContributionSuccess | ZodError
+
+type MutationDeleteContributionSuccess {
+  data: ContributionOption!
+}
+
 union MutationDeleteEventResult = Error | MutationDeleteEventSuccess | ZodError
 
 type MutationDeleteEventSuccess {
@@ -3529,6 +3583,15 @@ union MutationMarkBookingAsPaidResult = Error | MutationMarkBookingAsPaidSuccess
 
 type MutationMarkBookingAsPaidSuccess {
   data: Registration!
+}
+
+union MutationMarkContributionAsPaidResult =
+  | Error
+  | MutationMarkContributionAsPaidSuccess
+  | ZodError
+
+type MutationMarkContributionAsPaidSuccess {
+  data: ContributionOption!
 }
 
 union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSuccess | ZodError
@@ -5883,6 +5946,11 @@ type StudentAssociation implements Pictured {
   groupsCount: Int!
 
   """
+  Si l'utilisateur·ice connecté·e a une cotisation en attente de paiement
+  """
+  hasPendingContribution: Boolean!
+
+  """
   Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
   """
   hasSeparateDarkPicture: Boolean!
@@ -6419,10 +6487,6 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
-  school: UID
-    @deprecated(
-      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
-    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6491,6 +6555,11 @@ type User implements Node & Pictured {
   canBeEdited: Boolean!
 
   """
+  Les AEs pour lesquelles la personne peut cotiser
+  """
+  canContributeTo: [StudentAssociation!]!
+
+  """
   Groupes sur lesquels l'utilisateur·ice peut créer des évènements
   """
   canCreateEventsOn: [Group!]!
@@ -6537,6 +6606,11 @@ type User implements Node & Pictured {
   cededImageRightsToTVn7: Boolean!
   contributesTo: [StudentAssociation!]
   contributesWith: [ContributionOption!]!
+
+  """
+  Options de cotisations que l'utilisateur·ice connecté·e peut utiliser.
+  """
+  contributionOptions: [ContributionOption!]!
   createdAt: DateTime!
   credentials: [Credential!]!
   description: String!
@@ -6564,6 +6638,11 @@ type User implements Node & Pictured {
   hasSeparateDarkPicture: Boolean!
   id: ID!
   incomingGodparentRequests: [GodparentRequest!]!
+
+  """
+  Vrai si cet utilisateur est l’utilisateur connecté
+  """
+  isMe: Boolean
   lastName: String!
   latestVersionSeenInChangelog: String!
   links: [Link!]!

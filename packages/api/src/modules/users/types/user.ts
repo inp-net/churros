@@ -20,6 +20,14 @@ export const UserType = builder.prismaNode('User', {
   ],
   include: UserTypePrismaIncludes,
   fields: (t) => ({
+    isMe: t.boolean({
+      nullable: true,
+      description: 'Vrai si cet utilisateur est l’utilisateur connecté',
+      resolve({ id }, _, { user }) {
+        if (!user) return null;
+        return id === user.id;
+      },
+    }),
     majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
     schoolUid: t.exposeString('schoolUid', {
@@ -145,9 +153,8 @@ export const UserType = builder.prismaNode('User', {
           include: canEditProfile.prismaIncludes,
         });
         const can = canEditProfile(user, targetUser);
-        if (assert && !can) 
-          throw new GraphQLError(assert);
-        
+        if (assert && !can) throw new GraphQLError(assert);
+
         return can;
       },
     }),

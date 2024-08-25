@@ -1,0 +1,24 @@
+query PageUserEditContributions($uid: String!) @loading {
+  user(uid: $uid) {
+    isMe
+    fullName
+    uid
+    canContributeTo {
+      ...AvatarStudentAssociation
+      uid
+      contributing
+    }
+    contributionOptions @list(name: "List_UserContributions_Options") {
+      canMarkAsPaid
+      paidByUser: paidBy(uid: $uid)
+      localID
+      ...ItemContribution
+    }
+    contributesWith @list(name: "List_UserContributions_Paid") {
+      ...ItemContribution
+    }
+    pendingContributions @list(name: "List_UserContributions_Pending") {
+      ...ItemContribution
+    }
+  }
+}
