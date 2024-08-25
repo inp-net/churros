@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.js"
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.js",
+    "check": "exit 0"
   },
   "type": "module",
   "volta": {

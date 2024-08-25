@@ -9,7 +9,8 @@
     "migrate": "prisma migrate dev",
     "studio": "prisma studio",
     "format": "prettier --write .",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "check": "exit 0"
   },
   "dependencies": {
     "prisma": "^5.18.0"
