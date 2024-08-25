@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, purgeSessionsUser } from '#lib';
 import { PositiveInt, UIDScalar } from '#modules/global';
 import { UserType } from '#modules/users/types';
 import { canEditProfile } from '#modules/users/utils';
@@ -29,6 +29,7 @@ builder.mutationField('updateUserCurriculum', (t) =>
     },
     async resolve(query, _, args, { user }) {
       await log('users', 'edit-curriculum', args, args.uid, user);
+      await purgeSessionsUser(args.uid);
       const result = await prisma.user.update({
         include: { major: { include: { schools: true } } },
         where: { uid: args.uid },

@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, log, prisma, purgeUserSessions } from '#lib';
+import { builder, ensureGlobalId, log, prisma, purgeSessionsUser } from '#lib';
 import { EventManagerPowerLevelType, EventManagerType } from '#modules/events/types';
 import {
   canEditManagers,
@@ -39,7 +39,7 @@ builder.mutationField('upsertEventManager', (t) =>
       if (!managers.some((m) => m.userId === userId) && managers.length >= 50)
         throw new GraphQLError("Impossible d'avoir plus de 50 managers");
 
-      await purgeUserSessions(args.user);
+      await purgeSessionsUser(args.user);
 
       return prisma.eventManager.upsert({
         ...query,

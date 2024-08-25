@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { UserProfileInput, UserType } from '#modules/users/types';
 import { canEditProfile } from '#modules/users/utils';
@@ -22,6 +22,7 @@ builder.mutationField('updateUserProfile', (t) =>
     },
     async resolve(query, _, { uid, profile }, { user }) {
       await log('users', 'edit-profile', { uid, profile }, uid, user);
+      await purgeSessionsUser(uid);
       const result = await prisma.user.update({
         ...query,
         where: { uid },

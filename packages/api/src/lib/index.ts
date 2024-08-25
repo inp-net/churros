@@ -26,7 +26,6 @@ export * from './ratelimit.js';
 export * from './redis.js';
 export * from './search.js';
 export * from './session-user.js';
-export * from './sessioncache.js';
 export * from './storage.js';
 export * from './token-session.js';
 export * from './uid.js';
