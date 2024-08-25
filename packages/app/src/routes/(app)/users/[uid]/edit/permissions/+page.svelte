@@ -10,7 +10,7 @@
   import { sentenceJoin } from '$lib/i18n';
   import { loading, mapAllLoading } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
-  import type { PageData } from '../../permissions/$houdini';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PageUserEditPermissions } = data);
