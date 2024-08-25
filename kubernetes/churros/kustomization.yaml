@@ -1,0 +1,4 @@
+resources:
+- api/
+- app/
+- sync/

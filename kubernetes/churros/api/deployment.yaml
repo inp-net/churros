@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churros-api
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        podAffinityTerm:
+          topologyKey: 'kubernetes.io/hostname'
+          matchLabels:
+            app: api
+  template:
+    spec:
+      containers:
+      - image: harbor.k8s.inpt.fr/net7/churros/api:latest
+        imagePullPolicy: IfNotPresent
+        name: api
+        readinessProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: 4000
+        resources:
+          requests:
+            memory: '512Mi'
+            cpu: '300m'
+          limits:
+            memory: '1024Mi'
+            cpu: '800m'
+        env:
+        - name: DATABASE_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-app
+              key: uri
+        - name: DATABASE_URL
+          value: $(DATABASE_BASE_URL)?pool_timeout=60
+      initContainers:
+      - image: harbor.k8s.inpt.fr/net7/churros/prisma:latest
+        name: migrator
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DATABASE_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-app
+              key: uri
+        - name: DATABASE_URL
+          value: $(DATABASE_BASE_URL)?pool_timeout=60
+
+      #   volumeMounts:
+      #   - mountPath: /app/packages/api/storage
+      #     name: centraverse-data
+
+      # volumes:
+      # - name: centraverse-data
+      #   persistentVolumeClaim:
+      #     claimName: centraverse-data

@@ -9,6 +9,11 @@
     - yarn config set enableImmutableInstalls true
     - yarn install
     - export GITLAB_TOKEN=$CHANGESETS_TOKEN
+    - |
+      cat << EOF > "$HOME/.npmrc"
+        email=$NPM_EMAIL
+        //registry.npmjs.org/:_authToken=$NPM_TOKEN
+      EOF
   cache:
     paths:
       - .yarn/cache/
@@ -31,5 +36,6 @@ release:
     INPUT_COMMIT: 'chore: version packages'
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     INPUT_VERSION: 'yarn update-versions'
+    INPUT_PUBLISH: 'yarn changeset tag'
   script:
     - yarn changesets-gitlab

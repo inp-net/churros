@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churros-redis
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        podAffinityTerm:
+          topologyKey: 'kubernetes.io/hostname'
+          matchLabels:
+            app: redis
+  template:
+    spec:
+      containers:
+      - name: churros-redis
+        image: redis/redis-stack-server:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: '128Mi'
+            cpu: '500m'
+        ports:
+        - containerPort: 6379
