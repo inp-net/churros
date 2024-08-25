@@ -155,3 +155,28 @@ canEditCurriculum.prismaIncludes = {
     },
   },
 } as const satisfies Prisma.UserInclude;
+
+export function canEditUserPermissions(
+  user: Context['user'],
+  targetUser: Prisma.UserGetPayload<{ include: typeof canEditUserPermissions.prismaIncludes }>,
+) {
+  if (!user) return false;
+  if (targetUser.admin) return false;
+  if (user.admin) return true;
+  return userIsAdminOf(
+    user,
+    targetUser.major?.schools.flatMap((s) => s.studentAssociations.map((s) => s.id)),
+  );
+}
+
+canEditUserPermissions.prismaIncludes = {
+  major: {
+    include: {
+      schools: {
+        include: {
+          studentAssociations: true,
+        },
+      },
+    },
+  },
+} as const satisfies Prisma.UserInclude;

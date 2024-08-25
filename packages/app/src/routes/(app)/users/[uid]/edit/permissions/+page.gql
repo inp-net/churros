@@ -1,0 +1,23 @@
+query PageUserEditPermissions($uid: String!) {
+  me {
+    admin
+  }
+  studentAssociations {
+    ...PickStudentAssociation @mask_disable
+  }
+  user(uid: $uid) {
+    admin
+    canEditPermissions
+    canAccessDocuments
+    adminOf {
+      uid
+      name
+      ...AvatarStudentAssociation
+    }
+    groupsEditorOf {
+      uid
+      name
+      ...AvatarStudentAssociation
+    }
+  }
+}

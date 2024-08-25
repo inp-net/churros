@@ -20,6 +20,7 @@
   import IconBio from '~icons/msl/notes';
   import IconName from '~icons/msl/person-outline';
   import IconCurriculum from '~icons/msl/school-outline';
+  import IconPermission from '~icons/msl/shield-outline';
   import IconOtherEmails from '~icons/msl/stacked-email-outline';
   import IconFamily from '~icons/msl/supervised-user-circle-outline';
   import type { LayoutData } from './$houdini';
@@ -190,6 +191,12 @@
           icon={IconContribution}
         >
           Cotisations
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconPermission}
+          href={route('/users/[uid]/edit/permissions', $page.params.uid)}
+        >
+          Permissions
         </SubmenuItem>
         <SubmenuItem icon={IconName} href={route('/users/[uid]/edit/name', $page.params.uid)}>
           Prénom & nom de famille

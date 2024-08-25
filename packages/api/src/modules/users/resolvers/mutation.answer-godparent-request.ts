@@ -63,20 +63,20 @@ builder.mutationField('answerGodparentRequest', (t) =>
         });
         await purgeSessionsUser(request.godchild.uid);
         await notify([request.godchild], {
-          body: `${fullName(request.godparent)} a accepté votre demande de parrainage!`,
+          body: `${fullName(request.godparent)} a accepté ta demande de parrainage!`,
           title: `Demande de parrainage acceptée!`,
           data: {
-            goto: `/me`,
+            goto: `/${request.godchild.uid}`,
             channel: NotificationChannel.GodparentRequests,
             group: undefined,
           },
         });
       } else {
         await notify([request.godchild], {
-          body: `${fullName(request.godparent)} a refusé votre demande de parrainage.`,
+          body: `${fullName(request.godparent)} a refusé ta demande de parrainage.`,
           title: `Demande de parrainage refusée :/`,
           data: {
-            goto: `/me`,
+            goto: `/${request.godchild.uid}`,
             channel: NotificationChannel.GodparentRequests,
             group: undefined,
           },

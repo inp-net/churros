@@ -3183,7 +3183,12 @@ type Mutation {
     major: UID
     uid: UID!
   ): MutationUpdateUserCurriculumResult!
-  updateUserPermissions(canAccessDocuments: Boolean!, uid: String!): User!
+  updateUserPermissions(
+    adminOf: [UID!]
+    canAccessDocuments: Boolean
+    canEditGroupsOf: [UID!]
+    user: UID!
+  ): MutationUpdateUserPermissionsResult!
   updateUserPicture(file: File!, uid: String!): String!
 
   """
@@ -3807,6 +3812,12 @@ type MutationUpdateUserCandidateSuccess {
 union MutationUpdateUserCurriculumResult = Error | MutationUpdateUserCurriculumSuccess | ZodError
 
 type MutationUpdateUserCurriculumSuccess {
+  data: User!
+}
+
+union MutationUpdateUserPermissionsResult = Error | MutationUpdateUserPermissionsSuccess | ZodError
+
+type MutationUpdateUserPermissionsSuccess {
   data: User!
 }
 
@@ -4464,7 +4475,12 @@ type Query {
   """
   Vrai si l'utilisateur·ice est connecté·e
   """
-  loggedIn: Boolean!
+  loggedIn(
+    """
+    Si renseigné, renvoie une erreur si l’utilisateur·ice n’est pas connecté·e
+    """
+    assert: String
+  ): Boolean!
   logs(after: String, before: String, first: Int, last: Int): QueryLogsConnection!
   lydiaAccount(id: ID!): LydiaAccount!
   lydiaAccounts: [LydiaAccount!]!
@@ -6532,9 +6548,14 @@ type User implements Node & Pictured {
   admin: Boolean!
 
   """
+  Les associations étudiantes dont cet utilisateur·ice est administrateur·ice
+  """
+  adminOf: [StudentAssociation!]!
+
+  """
   Vrai si cette personne est administratrice de l'association étudiante donnée
   """
-  adminOf(
+  adminOfStudentAssociation(
     """
     UID de l'association étudiante
     """
@@ -6611,9 +6632,14 @@ type User implements Node & Pictured {
   ): Boolean!
 
   """
-  Vrai si cette personne peut éditer des groupes
+  Vrai si cette personne peut éditer les groupes d'au moins une AE
   """
   canEditGroups: Boolean!
+
+  """
+  On peut modifier les permissions de cet·te utilisateur·ice
+  """
+  canEditPermissions: Boolean!
 
   """
   Peut-on modifier le profil de cet utilisateur·ice ?
@@ -6657,6 +6683,11 @@ type User implements Node & Pictured {
   godparent: User
   graduationYear: Int!
   groups: [GroupMember!]!
+
+  """
+  Les groupes dont cet·te utilisateur·ice peut éditer les permissions
+  """
+  groupsEditorOf: [StudentAssociation!]!
 
   """
   Si la ressource supported d'avoir une image en thème sombre différente de celle en thème clair
