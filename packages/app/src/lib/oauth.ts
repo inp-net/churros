@@ -6,7 +6,9 @@ export function oauthEnabled(): boolean {
 }
 
 export function oauthLoginBypassed(event: { url: URL }): boolean {
-  return event.url.searchParams.get('bypass_oauth') === '1';
+  return (
+    event.url.searchParams.has('migrate') || event.url.searchParams.get('bypass_oauth') === '1'
+  );
 }
 
 export function oauthInitiateLoginURL(event: { url: URL }): URL {
@@ -20,11 +22,9 @@ export function oauthLogoutURL(): URL {
 }
 
 export function authedVia(event: { cookies: Cookies }): 'oauth2' | 'token' | null {
-  if (event.cookies.get('authed_via') === 'oauth2') 
-    return 'oauth2';
-  
-  if (event.cookies.get('token')) 
-    return 'token';
-  
+  if (event.cookies.get('authed_via') === 'oauth2') return 'oauth2';
+
+  if (event.cookies.get('token')) return 'token';
+
   return null;
 }

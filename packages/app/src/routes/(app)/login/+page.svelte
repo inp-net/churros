@@ -11,9 +11,13 @@
 
   export let form: ActionData;
   let showingPassword = false;
+
+  $: migratingPassword = $page.url.searchParams.has('migrate');
 </script>
 
-<h1>Connexion</h1>
+<h1>
+  {#if migratingPassword}Migration{:else}Connexion{/if}
+</h1>
 
 <form title="Se connecter" method="post">
   {#if $page.url.searchParams.get('why') === 'unauthorized'}
