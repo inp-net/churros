@@ -65,7 +65,7 @@
 
       saveSessionToken(document, { ...login.data, expiresAt: login.data.expiresAt ?? null });
       if (migratingPassword) {
-        toasts.success('Mot de passe migré!', 'Tu peux retourner revenir où tu en étais', {
+        toasts.success('Mot de passe migré!', 'Tu peux reprendre où tu en étais', {
           data: {},
           lifetime: Number.POSITIVE_INFINITY,
           action() {
