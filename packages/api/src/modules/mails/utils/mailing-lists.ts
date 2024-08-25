@@ -108,14 +108,14 @@ export async function updateMemberBoardLists(
     },
   });
 
-  if (nbBoard === 0) removeMemberFromMailingList(allBoardMailingList, email);
-  else if (nbBoard >= 1) addMemberToMailingList(allBoardMailingList, email);
+  if (nbBoard === 0) await removeMemberFromMailingList(allBoardMailingList, email);
+  else if (nbBoard >= 1) await addMemberToMailingList(allBoardMailingList, email);
 
-  if (nbPrez === 0) removeMemberFromMailingList(allPrezMailingList, email);
-  else if (nbPrez >= 1) addMemberToMailingList(allPrezMailingList, email);
+  if (nbPrez === 0) await removeMemberFromMailingList(allPrezMailingList, email);
+  else if (nbPrez >= 1) await addMemberToMailingList(allPrezMailingList, email);
 
-  if (nbTrez === 0) removeMemberFromMailingList(allTrezMailingList, email);
-  else if (nbTrez >= 1) addMemberToMailingList(allTrezMailingList, email);
+  if (nbTrez === 0) await removeMemberFromMailingList(allTrezMailingList, email);
+  else if (nbTrez >= 1) await addMemberToMailingList(allTrezMailingList, email);
 }
 
 export async function addMemberToGroupMailingList(groupId: string, email: string) {

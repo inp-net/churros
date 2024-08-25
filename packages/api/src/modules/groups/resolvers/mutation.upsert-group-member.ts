@@ -111,7 +111,11 @@ builder.mutationField('upsertGroupMember', (t) =>
         include: { member: true },
       });
 
-      await updateMemberBoardLists(memberId, groupId, group.type);
+      try {
+        await updateMemberBoardLists(memberId, groupId, group.type);
+      } catch (error) {
+        await log('mailing-lists', 'update-member/error', { error }, groupId, me);
+      }
 
       await log(
         'group-member',

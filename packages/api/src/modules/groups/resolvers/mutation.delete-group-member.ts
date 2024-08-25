@@ -36,8 +36,12 @@ builder.mutationField('deleteGroupMember', (t) =>
         select: { type: true },
       });
 
-      await removeMemberFromGroupMailingList(groupId, email);
-      await updateMemberBoardLists(memberId, groupId, type);
+      try {
+        await removeMemberFromGroupMailingList(groupId, email);
+        await updateMemberBoardLists(memberId, groupId, type);
+      } catch (error) {
+        await log('mails', 'remove-member/error', { error }, groupId, me);
+      }
 
       purgeSessionsUser(uid);
       await prisma.groupMember.delete({ where: { groupId_memberId: { groupId, memberId } } });
