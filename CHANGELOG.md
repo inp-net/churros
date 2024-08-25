@@ -11,6 +11,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [1.71.1] - 2024-08-25
+
 ## [1.71.0] - 2024-08-23
 
 ### Améliorations
