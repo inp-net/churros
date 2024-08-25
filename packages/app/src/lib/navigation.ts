@@ -475,6 +475,51 @@ export const topnavConfigs: Partial<{
     back: route('/users/[uid]/edit', uid),
     actions: [],
   }),
+  '/(app)/groups/[uid]/edit': ({ params: { uid } }) => ({
+    title: `Modifier ${uid}`,
+    back: route('/[uid=uid]', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/bank-accounts': ({ params: { uid } }) => ({
+    title: 'Comptes bancaires',
+    back: route('/groups/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/bio': ({ params: { uid } }) => ({
+    title: 'Bio',
+    back: route('/groups/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/links': ({ params: { uid } }) => ({
+    title: 'Liens sur le profil',
+    back: route('/groups/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/members/bulk': ({ params: { uid } }) => ({
+    title: 'Ajout en masse de membres',
+    back: route('/groups/[uid]/edit/members', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/members': ({ params: { uid } }) => ({
+    title: 'Gérer les membres',
+    back: route('/groups/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/pages/[...page]': ({ params: { uid, page } }) => ({
+    title: `Modifier ${page}`,
+    back: route('/groups/[uid]/edit/pages', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/pages': ({ params: { uid } }) => ({
+    title: 'Gérer les pages',
+    back: route('/groups/[uid]/edit', uid),
+    actions: [],
+  }),
+  '/(app)/groups/[uid]/edit/type': ({ params: { uid } }) => ({
+    title: 'Type de groupe',
+    back: route('/groups/[uid]/edit', uid),
+    actions: [],
+  }),
   '/(app)/bookings/[code]': ({ params: { code } }) => ({
     title: 'Billet',
     back: route('/bookings'),

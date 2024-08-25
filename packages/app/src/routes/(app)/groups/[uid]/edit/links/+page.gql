@@ -1,5 +1,6 @@
 query PageGroupEditLinks($uid: String!) {
   group(uid: $uid) {
+    canEditDetails(assert: "Tu n'as pas les droits pour modifier les liens du groupe")
     ...AreaEditLinks
   }
 }
