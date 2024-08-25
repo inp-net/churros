@@ -10,10 +10,11 @@ export const PhoneNumber = builder.scalarType('PhoneNumber', {
     let { isValid, phoneNumber } = phone(s, { country: 'FRA' });
     if (isValid && phoneNumber) return phoneNumber;
     ({ isValid, phoneNumber } = phone(s));
-    if (!isValid || !phoneNumber)
-      {throw new GraphQLError(
+    if (!isValid || !phoneNumber) {
+      throw new GraphQLError(
         'Numéro de téléphone invalide: il faut 10 chiffres (numéro français) ou le format international (+XX ou +XXX ...)',
-      );}
+      );
+    }
     return phoneNumber;
   },
   // TODO format with spaces

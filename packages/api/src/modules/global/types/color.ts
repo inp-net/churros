@@ -8,9 +8,8 @@ export const ColorScalar = builder.scalarType('Color', {
   serialize: (s) => s,
   parseValue(s: unknown): string {
     // TODO accept french color names as inputs too?
-    if (typeof s !== 'string') 
-      throw new GraphQLError('Invalid color: must be a string');
-    
+    if (typeof s !== 'string') throw new GraphQLError('Invalid color: must be a string');
+
     try {
       const color = new Colord(s);
       color.alpha(1);

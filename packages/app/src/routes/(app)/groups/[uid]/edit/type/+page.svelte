@@ -25,7 +25,7 @@
       options={DISPLAY_GROUP_TYPES}
       value={group.type}
     >
-      <div class="option" slot="name" let:option>
+      <div slot="label" class="option" let:option>
         <span class="display">{DISPLAY_GROUP_TYPES[option]}</span>
         <!-- TODO: -->
         <!-- <p class="explanation muted"></p> -->

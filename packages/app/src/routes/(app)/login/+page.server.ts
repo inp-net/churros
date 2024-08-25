@@ -6,9 +6,7 @@ import { z } from 'zod';
 import { Login } from './mutations';
 
 export async function load(event) {
-  if (oauthEnabled() && !oauthLoginBypassed(event)) 
-    redirect(307, oauthInitiateLoginURL(event));
-  
+  if (oauthEnabled() && !oauthLoginBypassed(event)) redirect(307, oauthInitiateLoginURL(event));
 }
 
 export const actions: Actions = {

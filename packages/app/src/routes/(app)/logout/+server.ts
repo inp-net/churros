@@ -11,9 +11,7 @@ export const GET: RequestHandler = async (event) => {
 
   event.cookies.delete('token', { path: '/' });
 
-  if (oauthEnabled() && authedVia(event) === 'oauth2') 
-    redirect(307, oauthLogoutURL());
-  
+  if (oauthEnabled() && authedVia(event) === 'oauth2') redirect(307, oauthLogoutURL());
 
   redirect(307, '/');
 };

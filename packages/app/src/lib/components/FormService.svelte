@@ -107,7 +107,7 @@
   };
 </script>
 
-{#await $zeus.query( { groups: [{}, { name: true, uid: true, id: true, pictureFile: true, pictureFileDark: true }] }, )}
+{#await $zeus.query( { groups: [{ unlisted: false }, { name: true, uid: true, id: true, pictureFile: true, pictureFileDark: true }] }, )}
   <p class="loading muted">Chargement...</p>
 {:then { groups: allGroups }}
   <form on:submit|preventDefault={updateService}>

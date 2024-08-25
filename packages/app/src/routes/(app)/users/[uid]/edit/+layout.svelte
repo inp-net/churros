@@ -81,7 +81,7 @@
               <InputDate
                 on:blur={async ({ detail }) => {
                   if (detail) {
-                    const result = await mutate(SetUserBirthday, {
+                    const result = await SetUserBirthday.mutate({
                       uid: $page.params.uid,
                       birthday: detail,
                     });
@@ -92,7 +92,7 @@
                       'Impossible de changer de date de naissance',
                     );
                   } else {
-                    const result = await mutate(ClearUserBirthday, {
+                    const result = await ClearUserBirthday.mutate({
                       uid: $page.params.uid,
                     });
                     toasts.mutation(

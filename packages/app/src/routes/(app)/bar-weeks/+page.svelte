@@ -122,7 +122,7 @@
     </div>
   </h1>
 
-  {#await $zeus.query( { groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
+  {#await $zeus.query( { groups: [{ unlisted: false }, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
     <p class="muted loading">Chargement...</p>
   {:then { groups: allGroups }}
     <ul class="nobullet">

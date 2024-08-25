@@ -133,8 +133,8 @@
           options={allGroups}
           title="Voir aussi"
           value={mapAllLoading(
-            [group.related.uid, ...group.related.map((o) => o.uid)],
-            (orga, ...x) => x.filter((x) => x !== orga),
+            group.related.map((g) => g.uid),
+            (...uids) => uids,
           )}
           on:finish={async ({ detail }) => {
             await mutateAndToast(
