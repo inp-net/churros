@@ -16,14 +16,17 @@ strict digraph ImportGraph {
     "groups" -> "mails";
     "groups" -> "users";
     "links" -> "events";
+    "links" -> "groups";
     "links" -> "posts";
     "links" -> "ticketing";
-    "oauth" -> "users";
+    "links" -> "users";
     "pages" -> "groups";
     "pages" -> "student-associations";
     "payments" -> "groups";
     "pictures" -> "events";
+    "pictures" -> "groups";
     "pictures" -> "themes";
+    "pictures" -> "users";
     "posts" -> "comments";
     "posts" -> "notifications";
     "posts" -> "reactions";
