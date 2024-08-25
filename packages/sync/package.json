@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "tsx src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "check": "exit 0"
   },
   "type": "module",
   "volta": {

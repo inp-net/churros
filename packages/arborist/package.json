@@ -22,7 +22,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "c8 ts-node-esm ./test.ts"
+    "test": "c8 ts-node-esm ./test.ts",
+    "check": "exit 0"
   },
   "type": "module",
   "volta": {
