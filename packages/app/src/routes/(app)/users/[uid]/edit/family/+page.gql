@@ -3,6 +3,7 @@ query PageUserEditFamily($uid: String!) @loading {
     uid
     canEditProfile(assert: "Tu ne peux pas modifier ce profil")
     godchildren @list(name: "List_Godchildren") {
+      uid
       ...AvatarUser
     }
     godparent {
