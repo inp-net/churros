@@ -54,7 +54,7 @@ export const GroupType = builder.prismaNode('Group', {
     pictureFile: t.exposeString('pictureFile'),
     pictureFileDark: t.exposeString('pictureFileDark'),
     ldapUid: t.exposeString('ldapUid'),
-    roomIsOpen: t.exposeBoolean('roomIsOpen', { authScopes: { student: true } }),
+    roomIsOpen: t.exposeBoolean('roomIsOpen'),
     canSetGroupRoomOpenState: t.boolean({
       description: "L'utilisater.ice connecté.e a le droit de mettre à jour roomIsOpen",
       resolve: (group, _, { user }) => canSetGroupRoomOpenState(user, group),
