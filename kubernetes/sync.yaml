@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: centraverse-sync
+  namespace: centraverse-prod
+spec:
+  concurrencyPolicy: Forbid
+  schedule: '@hourly'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: centraverse-sync
+              image: harbor.k8s.inpt.fr/net7/centraverse/sync:v1.71.0 # {"$imagepolicy": "flux-system:centraverse-sync-image-policy"}
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef: { name: centraverse-configmap }
+                - secretRef: { name: centraverse-secrets }
+              env:
+                - name: DATABASE_BASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql-app
+                      key: uri
+                - name: DATABASE_URL
+                  value: $(DATABASE_BASE_URL)?pool_timeout=60
+          restartPolicy: Never
