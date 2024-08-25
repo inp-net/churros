@@ -1,4 +1,4 @@
-import { CURRENT_VERSION, prisma, redisClient, yearTier } from '#lib';
+import { CURRENT_VERSION, prisma, redisClient, yearTier, type OAuthScope } from '#lib';
 import { fullName } from '#modules/users/utils';
 import { onBoard } from '#permissions';
 import type { Credential, Group, Prisma, StudentAssociation, User } from '@churros/db/prisma';
@@ -153,4 +153,10 @@ export async function purgeSessionsUser(uid: User['uid']) {
     .catch((error) => {
       console.error(`Failed to purge user session for ${uid}: ${error?.toString()}`);
     });
+}
+
+export async function getSessionWeakUserByBearer(bearer: string): Promise<{
+  user:SessionUser; scopes: OAuthScope[]
+}|null> {
+  
 }

@@ -1,4 +1,4 @@
-import type { SessionUser } from '#lib';
+import type { OAuthScope, SessionUser } from '#lib';
 import type { YogaInitialContext } from '@graphql-yoga/node';
 import type { SessionGroup } from './session-group.js';
 
@@ -11,6 +11,7 @@ type ContextOptions = YogaInitialContext & {
 function baseContext() {
   return {
     user: null,
+    weakUser: null,
     group: null,
     caveats: [] as string[],
   };
@@ -32,5 +33,7 @@ export async function context(ctx: ContextOptions): Promise<Context> {
 
 export type Context = ContextOptions & {
   user: SessionUser | null;
+  /** We are logged-in as a user but we don't have permission to do everything as that user. Permissions granted are given in `scopes` */
+  weakUser: (SessionUser & { scopes: OAuthScope[] }) | null;
   group: SessionGroup | null;
 };

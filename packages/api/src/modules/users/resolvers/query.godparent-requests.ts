@@ -7,13 +7,13 @@ import { prismaUserFilterForStudentAssociationAdmins } from '../utils/permission
 builder.queryField('godparentRequests', (t) =>
   t.prismaField({
     type: [GodparentRequestType],
-    authScopes: { admin: true, studentAssociationAdmin: true },
-    async resolve(query, _, {}, { user }) {
+    authScopes: { 'admin': true, 'studentAssociationAdmin': true, 'family:write': true },
+    async resolve(query, _, {}, { user, weakUser }) {
       if (!user) throw new GraphQLError("Vous n'êtes pas connecté·e");
       return prisma.godparentRequest.findMany({
         ...query,
         orderBy: { updatedAt: 'desc' },
-        where: { godparent: { ...prismaUserFilterForStudentAssociationAdmins(user) } },
+        where: { godparent: { ...prismaUserFilterForStudentAssociationAdmins(user ?? weakUser) } },
       });
     },
   }),

@@ -15,6 +15,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       godparentUid: t.arg.string(),
     },
     async authScopes(_, { godchildUid }, { user }) {
+      if (!user) return { 'family:write': true };
       const studentAssociations = objectValuesFlat(
         await prisma.user.findUniqueOrThrow({
           where: { uid: godchildUid },
@@ -38,7 +39,8 @@ builder.mutationField('upsertGodparentRequest', (t) =>
       if (godchildUid !== user?.uid) return Boolean(userIsAdminOf(user, studentAssociations));
       return Boolean(user);
     },
-    async resolve(query, _, { id, godparentUid, godchildUid }, { user }) {
+    async resolve(query, _, { id, godparentUid, godchildUid }, { user, weakUser }) {
+      user ??= weakUser;
       if (!user) throw new GraphQLError('Not logged in');
       const godparent = await prisma.user.findUniqueOrThrow({ where: { uid: godparentUid } });
       const godchild = await prisma.user.findUniqueOrThrow({ where: { uid: godchildUid } });

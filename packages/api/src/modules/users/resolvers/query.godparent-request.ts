@@ -10,7 +10,7 @@ builder.queryField('godparentRequest', (t) =>
       id: t.arg.id(),
     },
     async authScopes(_, { id }, { user }) {
-      if (!user) return false;
+      if (!user) return { 'family:write': true };
       const request = await prisma.godparentRequest.findUniqueOrThrow({
         where: { id },
         select: {

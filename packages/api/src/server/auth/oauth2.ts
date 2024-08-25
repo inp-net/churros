@@ -44,7 +44,9 @@ oauth2Strategy.userProfile = async function (
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    done(null, await res.json());
+    const profile = await res.json();
+    console.log({ profile, accessToken });
+    done(null, profile);
   } catch (error) {
     done(error, {});
   }
