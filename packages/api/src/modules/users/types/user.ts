@@ -3,7 +3,7 @@ import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/g
 import { userIsStudent } from '#permissions';
 import { NotificationChannel, type Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
-import { canBeEdited, canEditProfile, fullName } from '../index.js';
+import { canBeEdited, canEditProfile, canEditUserPermissions, fullName } from '../index.js';
 
 export const UserTypePrismaIncludes = {
   adminOfStudentAssociations: true,
@@ -106,7 +106,10 @@ export const UserType = builder.prismaNode('User', {
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
     admin: t.exposeBoolean('admin'),
-    adminOf: t.boolean({
+    adminOf: t.relation('adminOfStudentAssociations', {
+      description: 'Les associations étudiantes dont cet utilisateur·ice est administrateur·ice',
+    }),
+    adminOfStudentAssociation: t.boolean({
       description: "Vrai si cette personne est administratrice de l'association étudiante donnée",
       args: { studentAssociation: t.arg.string({ description: "UID de l'association étudiante" }) },
       resolve: async ({ id }, { studentAssociation }) => {
@@ -190,7 +193,7 @@ export const UserType = builder.prismaNode('User', {
       },
     }),
     canEditGroups: t.boolean({
-      description: 'Vrai si cette personne peut éditer des groupes',
+      description: "Vrai si cette personne peut éditer les groupes d'au moins une AE",
       resolve: async ({ id }) => {
         const user = await prisma.user.findUniqueOrThrow({
           where: { id },
@@ -202,6 +205,9 @@ export const UserType = builder.prismaNode('User', {
 
         return user.canEditGroups.length > 0;
       },
+    }),
+    groupsEditorOf: t.relation('canEditGroups', {
+      description: 'Les groupes dont cet·te utilisateur·ice peut éditer les permissions',
     }),
     canAccessDocuments: t.boolean({
       resolve: ({ admin, canAccessDocuments }) => admin || canAccessDocuments,
@@ -240,6 +246,18 @@ export const UserType = builder.prismaNode('User', {
     incomingGodparentRequests: t.relation('incomingGodparentRequests', {
       description:
         'Demandes de parrainage reçues par cet utilisateur·ice (donc pour devenir parrain·e)',
+    }),
+    canEditPermissions: t.boolean({
+      description: 'On peut modifier les permissions de cet·te utilisateur·ice',
+      async resolve({ id }, _, { user }) {
+        return canEditUserPermissions(
+          user,
+          await prisma.user.findUniqueOrThrow({
+            where: { id },
+            include: canEditUserPermissions.prismaIncludes,
+          }),
+        );
+      },
     }),
     emailChangeRequests: t.relation('emailChanges', {
       args: {

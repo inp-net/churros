@@ -73,5 +73,5 @@ export async function mutateAndToast<
   });
   const mutationName = Object.keys(result?.data ?? {}).at(0);
   // @ts-expect-error FIXME typing is hard to get right here but tkt it works™
-  toasts.mutation(result, mutationName, options?.success, options?.error);
+  toasts.mutation(result, mutationName, options?.success, options?.error ?? 'Erreur');
 }

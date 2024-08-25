@@ -233,6 +233,7 @@ const PAGES = {
   '/services/create': `/services/create`,
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
+  '/settings': `/settings`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -278,6 +279,9 @@ const PAGES = {
   },
   '/users/[uid]/edit/other-emails': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit/other-emails`;
+  },
+  '/users/[uid]/edit/permissions': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/permissions`;
   },
   '/validate-email/[token]': (token: string | number, params?: {}) => {
     return `/validate-email/${token}`;
@@ -357,6 +361,7 @@ const SERVERS = {
   'GET /check-uid/[uid]': (uid: string | number, params?: {}) => {
     return `/check-uid/${uid}`;
   },
+  'GET /gdpr': `/gdpr`,
   'GET /manifest.json': `/manifest.json`,
   'POST /markdown': `/markdown`,
 };
@@ -561,6 +566,7 @@ export type KIT_ROUTES = {
     '/services/create': never;
     '/services/submit': never;
     '/set-password': never;
+    '/settings': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';
@@ -575,6 +581,7 @@ export type KIT_ROUTES = {
     '/users/[uid]/edit/links': 'uid';
     '/users/[uid]/edit/name': 'uid';
     '/users/[uid]/edit/other-emails': 'uid';
+    '/users/[uid]/edit/permissions': 'uid';
     '/validate-email/[token]': 'token';
     '/welcome': never;
     '/connect/google/callback': never;
@@ -605,6 +612,7 @@ export type KIT_ROUTES = {
     'GET /health': never;
     '_RESERVED_USERNAMES /check-uid/[uid]': 'uid';
     'GET /check-uid/[uid]': 'uid';
+    'GET /gdpr': never;
     'GET /manifest.json': never;
     'POST /markdown': never;
   };

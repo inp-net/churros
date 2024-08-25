@@ -44,7 +44,14 @@
   }
 </script>
 
-<ModalOrDrawer {...$$restProps} removeBottomPadding tall bind:open bind:implicitClose={close}>
+<ModalOrDrawer
+  {...$$restProps}
+  removeBottomPadding
+  tall
+  notrigger
+  bind:open
+  bind:implicitClose={close}
+>
   <svelte:fragment slot="header">
     <p class="title">{title}</p>
     <!-- <InputSearchQuery bind:q /> -->

@@ -15,6 +15,7 @@ graphql(`
 const additionalReservedUsernames = new Set([
   '_component',
   'check-uid',
+  'gdpr',
   'markdown',
   'signup',
   'announcements',
@@ -42,6 +43,7 @@ const additionalReservedUsernames = new Set([
   'search',
   'services',
   'set-password',
+  'settings',
   'signups',
   'student-associations',
   'users',

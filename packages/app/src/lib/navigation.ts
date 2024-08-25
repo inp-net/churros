@@ -25,7 +25,10 @@ import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
 import IconLogout from '~icons/msl/logout';
-import IconNotificationSettings from '~icons/msl/notifications-outline';
+import {
+  default as IconNotifications,
+  default as IconNotificationSettings,
+} from '~icons/msl/notifications-outline';
 import IconPostAdd from '~icons/msl/post-add';
 import IconScanQR from '~icons/msl/qr-code-scanner';
 import IconCog from '~icons/msl/settings-outline';
@@ -208,6 +211,16 @@ const quickActionAdd = {
 
 const rootPagesActions = [
   {
+    icon: IconNotifications,
+    label: 'Notifications',
+    href: route('/notifications'),
+  },
+  {
+    icon: IconCog,
+    label: 'Paramètres',
+    href: route('/settings'),
+  },
+  {
     icon: IconGift,
     label: 'Nouveautés',
     href: route('/changelog'),
@@ -271,6 +284,12 @@ export const topnavConfigs: Partial<{
     ],
   }),
   '/(app)/search/[[q]]': {
+    quickAction: quickActionAdd,
+    actions: rootPagesActions,
+  },
+  '/(app)/settings': {
+    title: 'Réglages',
+    back: route('/'),
     quickAction: quickActionAdd,
     actions: rootPagesActions,
   },
@@ -433,6 +452,11 @@ export const topnavConfigs: Partial<{
   '/(app)/users/[uid]/edit': ({ params: { uid } }) => ({
     title: 'Modifier le profil',
     back: route('/[uid=uid]', uid),
+    actions: [],
+  }),
+  '/(app)/users/[uid]/edit/permissions': ({ params: { uid } }) => ({
+    title: `Permissions de ${uid}`,
+    back: route('/users/[uid]/edit', uid),
     actions: [],
   }),
   '/(app)/users/[uid]/edit/bio': ({ params: { uid } }) => ({

@@ -109,8 +109,8 @@
       />
 
       <ButtonNavigation
-        href={route('/users/[uid]/edit', $data.uid)}
-        routeID="/(app)/users/[uid]/edit"
+        href={route('/settings')}
+        routeID="/(app)/settings"
         label="Paramètres"
         tooltipsOn="left"
         icon={IconSettings}

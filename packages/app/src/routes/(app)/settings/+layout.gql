@@ -1,0 +1,13 @@
+query LayoutSettings @loading {
+  # TODO:
+  # themes {
+  #     name
+  #     author {
+  #         ...AvatarGroup
+  #     }
+  # }
+  me: assertMe {
+    uid
+    # TODO: enabledNotificationChannels
+  }
+}
