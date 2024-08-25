@@ -10,9 +10,9 @@
   $: ({ LayoutProfile } = data);
 </script>
 
-<MaybeError result={$LayoutProfile} let:data={{ profile }}>
+<MaybeError result={$LayoutProfile} let:data={{ profile, me }}>
   <div class="contents">
-    <Header {profile} />
+    <Header {me} {profile} />
 
     <div class="tabs">
       {#if profile.__typename === 'Group'}

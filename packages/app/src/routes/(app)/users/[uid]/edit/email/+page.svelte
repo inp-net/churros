@@ -5,7 +5,7 @@
   import InputText from '$lib/components/InputText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { formatDateTime } from '$lib/dates';
-  import { LoadingText, mapLoading } from '$lib/loading';
+  import { loading, LoadingText, mapLoading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
@@ -28,7 +28,7 @@
   `);
 
   export let newEmail: string = '';
-  $: newEmail ||= $PageUserEditEmail?.data?.user.email ?? '';
+  $: newEmail ||= loading($PageUserEditEmail?.data?.user.email, '') ?? '';
 </script>
 
 <MaybeError result={$PageUserEditEmail} let:data={{ user }}>

@@ -78,7 +78,12 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    const response = await fetch(new URL(env.PUBLIC_API_URL), { body, method: 'POST', headers });
+    const response = await fetch(new URL(env.PUBLIC_API_URL), {
+      body,
+      method: 'POST',
+      headers,
+      credentials: 'include',
+    });
 
     // If we received an HTTP error, propagate it
     if (!response.ok) throw error(response.status as NumericRange<400, 599>);

@@ -97,6 +97,20 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
         return userContributesTo(user, sa);
       },
     }),
+    hasPendingContribution: t.boolean({
+      description: "Si l'utilisateur·ice connecté·e a une cotisation en attente de paiement",
+      async resolve({ id }, _, { user }) {
+        return Boolean(
+          await prisma.contribution.count({
+            where: {
+              user: { uid: user?.uid },
+              option: { paysFor: { some: { id } } },
+              paid: false,
+            },
+          }),
+        );
+      },
+    }),
     studentsCount: t.int({
       description:
         "Nombre d'étudiant.e.s rattachés à l'AE (cotisant.e.s ou non). Légalement (selon en particulier les statuts de l'AEn7), compte à la fois les membres et les étudiant.e.s susceptibles d'être membres temporaires durant un évènement organisé par l'AE",

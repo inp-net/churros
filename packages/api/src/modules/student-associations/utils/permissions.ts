@@ -32,7 +32,7 @@ export function userContributesTo(
 ) {
   if (!user) return false;
   return studentAssociation.contributionOptions.some((option) =>
-    option.contributions.some(({ userId }) => userId === user.id),
+    option.contributions.some(({ userId, paid }) => paid && userId === user.id),
   );
 }
 

@@ -1,6 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { fragment, graphql, PendingValue, type ProfileHeader } from '$houdini';
+  import {
+    fragment,
+    graphql,
+    PendingValue,
+    type ProfileHeader,
+    type ProfileHeader_Me,
+  } from '$houdini';
   import HTMLContent from '$lib/components/HTMLContent.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
@@ -22,6 +28,17 @@
   import IconCheck from '~icons/msl/check';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { tooltip } from '$lib/tooltip';
+  import ModalContribute from '$lib/components/ModalContribute.svelte';
+
+  export let me: ProfileHeader_Me | null;
+  $: Me = fragment(
+    me,
+    graphql(`
+      fragment ProfileHeader_Me on User @loading {
+        ...AreaContribute_User
+      }
+    `),
+  );
 
   export let profile: ProfileHeader | null;
   $: data = fragment(
@@ -73,6 +90,7 @@
           ...AvatarGroup
         }
         ... on StudentAssociation {
+          ...AreaContribute_StudentAssociation
           name
           email
           descriptionHtml
@@ -90,6 +108,7 @@
             id
           }
           contributing
+          hasPendingContribution
           canContribute
           canEditDetails
           ...AvatarStudentAssociation
@@ -315,8 +334,16 @@
         {:else}
           <ButtonSecondary stretches disabled icon={IconCheck}>Cotisant.e</ButtonSecondary>
         {/if}
-      {:else if $data.canContribute}
-        <ButtonSecondary stretches href={refroute('/')}>Cotiser 💖</ButtonSecondary>
+      {:else if $data.canContribute || $data.hasPendingContribution}
+        <ModalContribute me={$Me} studentAssociation={$data} let:open>
+          <ButtonSecondary stretches on:click={open}>
+            {#if $data.hasPendingContribution}
+              Paiement en attente
+            {:else}
+              Cotiser 💖
+            {/if}
+          </ButtonSecondary>
+        </ModalContribute>
       {:else if $data.email}
         <ButtonSecondary stretches href="mailto:{loading($data.email, '')}"
           >Contacter</ButtonSecondary

@@ -9,7 +9,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import { allLoaded, loaded, onceLoaded } from '$lib/loading';
+  import { allLoaded, loaded, loading } from '$lib/loading';
   import { toasts } from '$lib/toasts';
 
   function formatPrice(amount: number): string {
@@ -44,7 +44,7 @@
     user,
     graphql(`
       fragment AreaContribute_User on User @loading {
-        phone
+        lydiaPhone
         major {
           schools {
             uid
@@ -59,7 +59,8 @@
   );
 
   let contributeLoading: string | undefined = undefined;
-  $: contributePhone = onceLoaded($Me?.phone, (phone) => phone ?? '', '');
+  let contributePhone: string;
+  $: contributePhone ||= loading($Me?.lydiaPhone, '') ?? '';
 
   const Contribute = graphql(`
     mutation Contribute($optionId: ID!, $phone: String!) {
@@ -77,9 +78,8 @@
     const result = await Contribute.mutate({ optionId, phone: contributePhone });
 
     contributeLoading = undefined;
-    if (toasts.mutation(result, 'contribute', '', 'Impossible de cotiser')) 
+    if (toasts.mutation(result, 'contribute', '', 'Impossible de cotiser'))
       window.location.reload();
-    
   }
 
   function optionOfferedToUser(optionId: string) {
@@ -104,9 +104,8 @@
     const result = await CancelContribution.mutate({ optionId });
     if (
       toasts.mutation(result, 'cancelPendingContribution', '', "Impossible d'annuler la cotisation")
-    ) 
+    )
       window.location.reload();
-    
 
     contributeLoading = undefined;
     window.location.reload();
