@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -176,7 +181,14 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
+  """
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+  """
   answer: [String!]!
 
   """
@@ -2291,7 +2303,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "1.71.0"): Boolean!
+  acknowledgeChangelog(version: String! = "dev"): Boolean!
 
   """
   Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
@@ -2337,6 +2349,11 @@ type Mutation {
     """
     section: ID!
   ): MutationAnswerFormSectionResult!
+
+  """
+  Deletes a pending godparent request. If accept is true, the request will be accepted (and the godparent of the requester will be changed), otherwise it will be rejected (the godparent of the requester won't be changed)
+  """
+  answerGodparentRequest(accept: Boolean!, id: LocalID!): MutationAnswerGodparentRequestResult!
 
   """
   Bannir un·e utilisateur·rice d'un événement. Iel ne pourra plus prendre de place (que ce soit pour iel ou pour une autre personne, dans le cas des billets à parrainages)
@@ -2526,12 +2543,12 @@ type Mutation {
   deleteEventManager(eventId: ID!, user: String!): Boolean!
     @deprecated(reason: "Use 'removeEventManager' instead")
   deleteEventPicture(id: ID!): Event!
-  deleteGodchild(godchildUid: String!, parentUid: String!): Boolean!
+  deleteGodchild(child: UID!, parent: UID!): MutationDeleteGodchildResult!
 
   """
-  Deletes a pending godparent request. If accept is true, the request will be accepted (and the godparent of the requester will be changed), otherwise it will be rejected (the godparent of the requester won't be changed)
+  Supprime le parrain ou la marraine, que ce soit une demande de parrainage en cours ou simplement un·e parrain/marraine existant·e. Renvoie lea fillo·t·e
   """
-  deleteGodparentRequest(accept: Boolean!, id: ID!): GodparentRequest!
+  deleteGodparent(child: UID!, parent: UID!): MutationDeleteGodparentResult!
   deleteGroup(uid: String!): Boolean!
   deleteGroupMember(groupId: ID!, memberId: ID!): Boolean!
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
@@ -3419,6 +3436,15 @@ type MutationAnswerFormSectionSuccess {
   data: [Answer!]!
 }
 
+union MutationAnswerGodparentRequestResult =
+  | Error
+  | MutationAnswerGodparentRequestSuccess
+  | ZodError
+
+type MutationAnswerGodparentRequestSuccess {
+  data: GodparentRequest!
+}
+
 union MutationBanFromEventResult = Error | MutationBanFromEventSuccess | ZodError
 
 type MutationBanFromEventSuccess {
@@ -3515,6 +3541,18 @@ type MutationDeleteEventSuccess {
   Indique que l'évènement n'a pas été supprimé mais plutôt passé en privé. La valeur est un message expliquant cela, et pourquoi c'est arrivé.
   """
   didSoftDelete: String
+}
+
+union MutationDeleteGodchildResult = Error | MutationDeleteGodchildSuccess | ZodError
+
+type MutationDeleteGodchildSuccess {
+  data: User!
+}
+
+union MutationDeleteGodparentResult = Error | MutationDeleteGodparentSuccess | ZodError
+
+type MutationDeleteGodparentSuccess {
+  data: User!
 }
 
 union MutationDeleteLinkResult = Error | MutationDeleteLinkSuccess | ZodError
@@ -4321,7 +4359,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (1.71.0).
+    The version to request a changelog for. Defaults to the current version (dev).
     """
     version: String
   ): ChangelogRelease!
@@ -4340,9 +4378,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (1.71.0).
+    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
     """
-    to: String! = "1.71.0"
+    to: String! = "dev"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
@@ -6475,10 +6513,6 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
-  school: UID
-    @deprecated(
-      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
-    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
@@ -6629,6 +6663,10 @@ type User implements Node & Pictured {
   """
   hasSeparateDarkPicture: Boolean!
   id: ID!
+
+  """
+  Demandes de parrainage reçues par cet utilisateur·ice (donc pour devenir parrain·e)
+  """
   incomingGodparentRequests: [GodparentRequest!]!
 
   """
@@ -6650,6 +6688,10 @@ type User implements Node & Pictured {
   minor: Minor
   nickname: String!
   otherEmails: [Email!]
+
+  """
+  Demandes de parrainage faites par cet utilisateur·ice (donc pour devenir fillot·e)
+  """
   outgoingGodparentRequests: [GodparentRequest!]!
 
   """

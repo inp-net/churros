@@ -1,6 +1,5 @@
 <script lang="ts">
   import { graphql } from '$houdini';
-  import { page } from '$app/stores';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
@@ -16,8 +15,7 @@
         ...MutationErrors
         ... on MutationMarkContributionAsPaidSuccess {
           data {
-            # FIXME: for some reason the _insert does not always work, we re-fetch the page store instead
-            # ...List_UserContributions_Paid_insert
+            ...List_UserContributions_Paid_insert
             ...List_UserContributions_Options_remove
           }
         }
@@ -59,8 +57,8 @@
                   },
                   { error: 'Impossible de créer la cotisation' },
                 );
-                // TODO figure out why this is needed???
-                await PageUserEditContributions.fetch({ variables: { uid: $page.params.uid } });
+                // // TODO figure out why this is needed???
+                // await PageUserEditContributions.fetch({ variables: { uid: $page.params.uid } });
               }}
             >
               Rendre cotisant·e

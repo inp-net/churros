@@ -10,7 +10,7 @@
 
 <MaybeError result={$PageGroupEditLinks} let:data={{ group }}>
   <div class="contents">
-    <AreaEditLinks resource={group} />
+    <AreaEditLinks social resource={group} />
   </div>
 </MaybeError>
 

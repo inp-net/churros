@@ -1,17 +1,11 @@
 <script lang="ts">
-  import {
-    cache,
-    fragment,
-    graphql,
-    PageUserEditContributionsStore,
-    type ItemContribution,
-  } from '$houdini';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { mapLoading, LoadingText, loading, type MaybeLoading, loaded } from '$lib/loading';
-  import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
+  import { fragment, graphql, type ItemContribution } from '$houdini';
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
-  import IconSuccess from '~icons/msl/check';
+  import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { loaded, loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
+  import IconSuccess from '~icons/msl/check';
 
   export let paid: boolean;
   /** uid of the user paying the contribution */
@@ -57,8 +51,7 @@
           data {
             ...List_UserContributions_Pending_remove
             ...List_UserContributions_Paid_remove
-            # See https://github.com/HoudiniGraphql/houdini/issues/1346
-            # ...List_UserContributions_Options_insert
+            ...List_UserContributions_Options_insert @with(uid: $user)
           }
         }
       }
@@ -111,13 +104,6 @@
                 { error: `Impossible de supprimer ${loading($data.name, '…')}` },
               );
               if (!loaded(by)) return;
-              // See https://github.com/HoudiniGraphql/houdini/issues/1346
-              cache.markStale('User', {
-                field: 'contributionOptions',
-              });
-              await new PageUserEditContributionsStore().fetch({
-                variables: { uid: by },
-              });
             }}>Supprimer</ButtonSecondary
           >
         {/if}
