@@ -1,0 +1,100 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: centraverse-ingress
+  namespace: centraverse-prod
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.org/client-max-body-size: 100m # see https://stackoverflow.com/a/67923692
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 100m
+    nginx.ingress.kubernetes.io/proxy-buffering: 'on'
+    nginx.ingress.kubernetes.io/proxy-buffers-number: '4'
+    nginx.ingress.kubernetes.io/proxy-max-temp-file-size: 1024m
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-methods: GET
+    nginx.ingress.kubernetes.io/websocket-services: centraverse-api
+spec:
+  rules:
+    - &conf
+      host: churros.inpt.fr
+      http:
+        paths:
+          # - backend:
+          #    service:
+          #      name: centraverse-maintenance
+          #      port:
+          #       number: 4002
+          #   path: /
+          #   pathType: Prefix
+          - backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+            path: /storage
+            pathType: Prefix
+          - backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+            path: /graphql
+            pathType: Prefix
+          - backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+            path: /token
+            pathType: Prefix
+          - backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+            path: /print-booking
+            pathType: Prefix
+          - backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+            path: /print-handover
+            pathType: Prefix
+          - backend:
+              service:
+                name: centraverse-app
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+          - pathType: Prefix
+            path: /lydia-webhook
+            backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4001
+          - pathType: Prefix
+            path: /log
+            backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+          - pathType: Prefix
+            path: /dump
+            backend:
+              service:
+                name: centraverse-api
+                port:
+                  number: 4000
+    - <<: *conf
+      host: churros.app
+
+  tls:
+    - hosts:
+        - churros.inpt.fr
+        - churros.app
+      secretName: churros-tls

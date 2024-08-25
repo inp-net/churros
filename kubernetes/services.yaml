@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: centraverse-app
+  namespace: centraverse-prod
+spec:
+  ports:
+    - name: app
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: centraverse-app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: centraverse-api
+  namespace: centraverse-prod
+spec:
+  ports:
+    - name: graphql
+      port: 4000
+      protocol: TCP
+      targetPort: 4000
+    - name: lydia-webhook
+      port: 4001
+      protocol: TCP
+      targetPort: 4001
+    - name: prometheus-exporter
+      port: 9999
+      protocol: TCP
+      targetPort: 9999
+  selector:
+    app: centraverse-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: centraverse-maintenance
+  namespace: centraverse-prod
+spec:
+  ports:
+    - name: maintenance
+      port: 4002
+      protocol: TCP
+      targetPort: 4002
+  selector:
+    app: centraverse-api
