@@ -65,6 +65,7 @@
     <p>
       Aucune donnée n'a été chargée ici. Ça ne devrait pas arriver, les devs ont fait des conneries!
     </p>
+    <ButtonSecondary on:click={() => window.location.reload()}>Recharger la page</ButtonSecondary>
     <small>(désOwOlé)</small>
   </Alert>
 {:else}
