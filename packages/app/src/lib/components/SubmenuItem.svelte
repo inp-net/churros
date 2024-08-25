@@ -130,8 +130,8 @@
     line-height: 1.1;
     color: var(--shy);
     text-overflow: ellipsis;
-    white-space: nowrap;
     line-clamp: 2;
+    white-space: nowrap;
   }
 
   .right {
