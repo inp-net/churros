@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: centraverse-api
+  namespace: centraverse-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: centraverse-api
+  template:
+    metadata:
+      labels:
+        app: centraverse-api
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef: { name: centraverse-configmap }
+            - secretRef: { name: centraverse-secrets }
+          env:
+            - name: DATABASE_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: uri
+            - name: DATABASE_URL
+              value: $(DATABASE_BASE_URL)?pool_timeout=60
+          image: harbor.k8s.inpt.fr/net7/centraverse/api:v1.71.0 # {"$imagepolicy": "flux-system:centraverse-api-image-policy"}
+          imagePullPolicy: Always
+          name: centraverse
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 4000
+          volumeMounts:
+            - mountPath: /app/packages/api/storage
+              name: centraverse-data
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '300m'
+            limits:
+              memory: '1024Mi'
+              cpu: '800m'
+      volumes:
+        - name: centraverse-data
+          persistentVolumeClaim:
+            claimName: centraverse-data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: centraverse-app
+  namespace: centraverse-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: centraverse-app
+  template:
+    metadata:
+      labels:
+        app: centraverse-app
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef: { name: centraverse-configmap }
+          image: harbor.k8s.inpt.fr/net7/centraverse/app:v1.71.0 # {"$imagepolicy": "flux-system:centraverse-app-image-policy"}
+          imagePullPolicy: Always
+          name: centraverse
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            httpGet:
+              scheme: HTTP
+              path: /health
+              port: 3000
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
