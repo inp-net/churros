@@ -113,7 +113,7 @@
     "preview": "vite preview",
     "format-at": "prettier --write",
     "start": "node ./build/index.js",
-    "zeus": "zeus ../api/build/schema.graphql ./src --es --subscriptions"
+    "zeus": "zeus ./schema.graphql ./src --es --subscriptions"
   },
   "type": "module",
   "volta": {
