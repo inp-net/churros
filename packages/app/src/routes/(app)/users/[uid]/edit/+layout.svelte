@@ -187,7 +187,7 @@
           Parrainages
         </SubmenuItem>
         <SubmenuItem
-          href={route('/users/[uid]/edit/contribution', $page.params.uid)}
+          href={route('/users/[uid]/edit/contributions', $page.params.uid)}
           icon={IconContribution}
         >
           Cotisations

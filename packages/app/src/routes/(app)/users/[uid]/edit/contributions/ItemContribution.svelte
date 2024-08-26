@@ -44,7 +44,7 @@
   `);
 
   const DeleteContribution = graphql(`
-    mutation DeleteContribution($user: UID!, $option: LocalID!) {
+    mutation DeleteContribution($user: String!, $option: LocalID!) {
       deleteContribution(user: $user, option: $option) {
         ...MutationErrors
         ... on MutationDeleteContributionSuccess {

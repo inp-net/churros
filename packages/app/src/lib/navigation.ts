@@ -464,7 +464,7 @@ export const topnavConfigs: Partial<{
     back: route('/users/[uid]/edit', uid),
     actions: [],
   }),
-  '/(app)/users/[uid]/edit/contribution': ({ params: { uid } }) => ({
+  '/(app)/users/[uid]/edit/contributions': ({ params: { uid } }) => ({
     title: 'Cotisations',
     back: route('/users/[uid]/edit', uid),
     actions: [],
