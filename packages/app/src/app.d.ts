@@ -91,6 +91,7 @@ declare namespace svelteHTML {
     // [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
     'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;
     'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_COPY_ID'?: (event: CustomEvent<{}>) => Promise<void> | void;
   }
 }
 

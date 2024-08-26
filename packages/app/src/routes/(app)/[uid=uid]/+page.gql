@@ -1,9 +1,9 @@
 query PageProfile($uid: UID!) @loading {
-  me {
-    uid
-  }
   profile(uid: $uid) {
     ... on User {
+      id
+      isMe
+
       # tab: groups
       memberOf: groups {
         group {
@@ -35,6 +35,7 @@ query PageProfile($uid: UID!) @loading {
     }
 
     ... on Group {
+      id
       # tab: members
       membersCount
       boardMembers {
@@ -66,6 +67,7 @@ query PageProfile($uid: UID!) @loading {
     }
 
     ... on StudentAssociation {
+      id
       # tab: boards
       boards: groups(types: [StudentAssociationSection]) {
         nodes {
@@ -100,6 +102,7 @@ query PageProfile($uid: UID!) @loading {
     }
 
     ... on School {
+      id
       # tab: infos
       address
       studentMailDomain
@@ -120,6 +123,7 @@ query PageProfile($uid: UID!) @loading {
     }
 
     ... on Major {
+      id
       # tab: infos
       discontinued
       longName: name
