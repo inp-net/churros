@@ -1,8 +1,14 @@
 <script lang="ts" context="module">
-  export function copyToClipboard(text: string) {
+  export async function copyToClipboard(text: string) {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(text);
-      toasts.success('Copié', `"${text}" a été copié dans ton presse-papier`);
+      await navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          toasts.success('Copié', `"${text}" a été copié dans ton presse-papier`);
+        })
+        .catch((error) => {
+          toasts.error('Impossible de copier', error);
+        });
     } else {
       toasts.error('Impossible de copier', 'Ton navigateur ne supporte pas cette fonctionnalité');
     }
@@ -20,14 +26,17 @@
 </script>
 
 {#if label}
-  <ButtonSecondary disabled={!loaded(text)} on:click={() => copyToClipboard(loading(text, ''))}
-    >Copier</ButtonSecondary
+  <ButtonSecondary
+    disabled={!loaded(text)}
+    on:click={async () => copyToClipboard(loading(text, ''))}
   >
+    Copier
+  </ButtonSecondary>
 {:else}
   <ButtonGhost
     disabled={!loaded(text)}
     help="Copier"
-    on:click={() => copyToClipboard(loading(text, ''))}
+    on:click={async () => copyToClipboard(loading(text, ''))}
   >
     <IconCopy></IconCopy>
   </ButtonGhost>
