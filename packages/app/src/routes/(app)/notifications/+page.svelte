@@ -159,11 +159,13 @@
           $authKey: String!
           $p256dhKey: String!
           $endpoint: String!
+          $expiresAt: DateTime
         ) {
           subscribeToNotifications(
             name: $name
             endpoint: $endpoint
             keys: { auth: $authKey, p256dh: $p256dhKey }
+            expiresAt: $expiresAt
           ) {
             ...MutationErrors
             ... on MutationSubscribeToNotificationsSuccess {
@@ -180,6 +182,7 @@
         authKey: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
         p256dhKey: await arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0)),
         endpoint,
+        expiresAt: expirationTime ? new Date(expirationTime) : null,
       });
       if (
         toasts.mutation(
