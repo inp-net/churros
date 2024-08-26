@@ -115,6 +115,19 @@ async function profileKind(uid: string) {
   return profile.__typename;
 }
 
+async function isMe(uid: string) {
+  const { me } = await graphql(`
+    query NavigationTopIsMe @cache(policy: CacheOrNetwork) {
+      me {
+        uid
+      }
+    }
+  `)
+    .fetch()
+    .then((r) => r.data ?? { me: null });
+  return me?.uid === uid;
+}
+
 const commonActions = {
   pin: async (page: Page) => {
     const pinned = await currentPageIsPinned(page);
@@ -152,8 +165,9 @@ const commonActions = {
   },
 } as const;
 
-const quickActionConfigureNotfications = {
+const quickActionConfigureNotfications: NavigationQuickAction = {
   icon: IconNotificationSettings,
+  disabled: true, //TODO reenable once we implement notificaiton configuration
   do() {
     navtopPushState('NAVTOP_NOTIFICATION_SETTINGS');
   },
@@ -262,27 +276,38 @@ export const topnavConfigs: Partial<{
     quickAction: quickActionAdd,
     actions: rootPagesActions,
   },
-  '/(app)/[uid=uid]': ({ params: { uid } }) => ({
-    back: route('/'),
-    title: uid,
-    quickAction: quickActionConfigureNotfications,
-    actions: [
-      commonActions.pin,
-      async ({ params: { uid } }) => {
-        const typename = await profileKind(uid);
-        return {
-          icon: IconCog,
-          label: 'Gérer',
-          href:
-            typename === 'User'
-              ? route('/users/[uid]/edit', uid)
-              : route('/groups/[uid]/edit', uid),
-          hidden: !typename || !['User', 'Group'].includes(typename),
-        };
-      },
-      commonActions.copyID,
-    ],
-  }),
+  '/(app)/[uid=uid]': ({ params: { uid } }) => {
+    return {
+      back: route('/'),
+      title: uid,
+      quickAction: quickActionConfigureNotfications,
+      actions: [
+        commonActions.pin,
+        async ({ params: { uid } }) => {
+          const isme = await isMe(uid);
+          return {
+            label: 'Réglages',
+            icon: IconCog,
+            href: refroute('/settings'),
+            hidden: !isme,
+          };
+        },
+        async ({ params: { uid } }) => {
+          const typename = await profileKind(uid);
+          return {
+            icon: IconPen,
+            label: 'Gérer',
+            href:
+              typename === 'User'
+                ? route('/users/[uid]/edit', uid)
+                : route('/groups/[uid]/edit', uid),
+            hidden: !typename || !['User', 'Group'].includes(typename),
+          };
+        },
+        commonActions.copyID,
+      ],
+    };
+  },
   '/(app)/search/[[q]]': {
     quickAction: quickActionAdd,
     actions: rootPagesActions,
@@ -290,8 +315,12 @@ export const topnavConfigs: Partial<{
   '/(app)/settings': {
     title: 'Réglages',
     back: route('/'),
-    quickAction: quickActionAdd,
-    actions: rootPagesActions,
+    actions: [],
+  },
+  '/(app)/notifications': {
+    title: 'Notifications',
+    back: route('/'),
+    actions: [],
   },
   '/(app)/services': {
     quickAction: quickActionAdd,
