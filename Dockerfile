@@ -114,13 +114,17 @@ WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
-FROM node:20-alpine AS prisma-debug
+FROM node:20-alpine AS prisma
 
 WORKDIR /app
+COPY packages/db/prisma/ /app/packages/db/prisma/
 COPY packages/db/prisma /app/prisma
 COPY packages/db/package.json /app/package.json
+COPY packages/db/entrypoint.sh /app/entrypoint.sh
+
+RUN chmod +x /app/entrypoint.sh
 
 RUN npm install -g corepack
 RUN yarn install
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["./entrypoint.sh"]
