@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { Gif } from 'svelte-tenor';
+  import { env } from '$env/dynamic/public';
+  import { SubscribeToNotificationsStore } from '$houdini';
   import { arrayBufferToBase64 } from '$lib/base64';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import party from 'party-js';
   import { onMount } from 'svelte';
-  import { zeus } from '$lib/zeus';
-  import { env } from '$env/dynamic/public';
+  import { Gif } from 'svelte-tenor';
 
   $: me = $page.data.me!;
 
@@ -56,29 +56,15 @@
             });
             if (!subscription) return;
 
-            const { expirationTime, endpoint } = subscription;
-            await $zeus.mutate({
-              upsertNotificationSubscription: [
-                {
-                  // eslint-disable-next-line unicorn/no-null
-                  expiresAt: expirationTime ? new Date(expirationTime) : null,
-                  name: '',
-                  endpoint,
-                  keys: {
-                    auth: await arrayBufferToBase64(
-                      subscription.getKey('auth') ?? new ArrayBuffer(0),
-                    ),
-                    p256dh: await arrayBufferToBase64(
-                      subscription.getKey('p256dh') ?? new ArrayBuffer(0),
-                    ),
-                  },
-                },
-                {
-                  id: true,
-                  expiresAt: true,
-                  endpoint: true,
-                },
-              ],
+            const { endpoint, expirationTime } = subscription;
+            await new SubscribeToNotificationsStore().mutate({
+              name: '',
+              authKey: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
+              p256dhKey: await arrayBufferToBase64(
+                subscription.getKey('p256dh') ?? new ArrayBuffer(0),
+              ),
+              endpoint,
+              expiresAt: expirationTime ? new Date(expirationTime) : null,
             });
           }
         }}>Activer les notifs</ButtonSecondary
