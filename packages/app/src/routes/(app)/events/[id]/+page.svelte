@@ -19,6 +19,7 @@
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
   import ModalBookTicket from './ModalBookTicket.svelte';
+  import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
@@ -36,6 +37,12 @@
 
   $: if (bookingTicketId) bookTicket?.();
 </script>
+
+<svelte:window
+  on:NAVTOP_COPY_ID={async () => {
+    await copyToClipboard(loading($PageEventDetail.data?.event.id, '') ?? '');
+  }}
+/>
 
 <MaybeError result={$PageEventDetail} let:data={{ event, me }}>
   {@const highlightedBooking = event.highlightedBooking.at(0)}

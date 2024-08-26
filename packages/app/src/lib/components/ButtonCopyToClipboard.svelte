@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   export async function copyToClipboard(text: string) {
+    if (!text) return;
     if (navigator.clipboard) {
       await navigator.clipboard
         .writeText(text)

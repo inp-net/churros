@@ -3,6 +3,7 @@ query PageEventDetail($id: LocalID!) @loading {
     ...ModalBookTicketMe
   }
   event(id: $id) {
+    id
     canScanBookings
     canEdit
     externalTicketing

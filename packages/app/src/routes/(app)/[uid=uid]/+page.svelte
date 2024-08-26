@@ -1,12 +1,13 @@
 <script lang="ts">
-  import MaybeError from '$lib/components/MaybeError.svelte';
-  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
+  import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import MemberRoleEmoji from '$lib/components/MemberRoleEmoji.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { refroute } from '$lib/navigation';
   import IconBirthday from '~icons/msl/cake-outline';
   import IconPhone from '~icons/msl/call-outline';
@@ -64,8 +65,17 @@
   $: tab = $page.url.searchParams.get('tab') || 'infos';
 </script>
 
-<MaybeError result={$PageProfile} let:data={{ profile, me }}>
-  {@const mine = $page.params.uid === me?.uid}
+<svelte:window
+  on:NAVTOP_COPY_ID={async () => {
+    if (!$PageProfile.data?.profile) return;
+    if (!('id' in $PageProfile.data.profile)) return;
+    const id = loading($PageProfile.data?.profile.id, '');
+    if (!id) return;
+    await copyToClipboard(id);
+  }}
+/>
+
+<MaybeError result={$PageProfile} let:data={{ profile }}>
   <div class="contents">
     {#if profile.__typename === 'User' && tab === 'groups'}
       <ul class="avatars">
@@ -86,7 +96,7 @@
         {#if profile.phone}
           <SubmenuItem
             icon={IconPhone}
-            subtext={mine ? 'Uniquement visible par les autres étudiant.e.s' : ''}
+            subtext={profile.isMe ? 'Uniquement visible par les autres étudiant.e.s' : ''}
           >
             <LoadingText value={mapLoading(profile.phone, formatPhoneNumber)} />
             <ButtonSecondary
@@ -99,14 +109,14 @@
         {#if profile.postalAddress}
           <SubmenuItem
             icon={IconAddress}
-            subtext={mine ? 'Uniquement visible par les autres étudiant.e.s' : ''}
+            subtext={profile.isMe ? 'Uniquement visible par les autres étudiant.e.s' : ''}
           >
             <LoadingText value={profile.postalAddress} />
             <ButtonSecondary
               slot="right"
               href={onceLoaded(
                 profile.postalAddress,
-                (addr) => `https://google.com/maps?&q=${addr}`,
+                (addr) => `https://google.com/maps?q=${addr}`,
                 '',
               )}>Maps</ButtonSecondary
             >
@@ -143,7 +153,7 @@
           </SubmenuItem>
         {/if}
         {#if profile.schoolUid}
-          <SubmenuItem icon={IconStudentUid}>
+          <SubmenuItem icon={IconStudentUid} subtext="Identifiant de l'école">
             <LoadingText value={profile.schoolUid} />
             <ButtonCopyToClipboard label text={profile.schoolUid} />
           </SubmenuItem>
@@ -151,7 +161,7 @@
         {#if profile.contributesTo}
           <SubmenuItem
             icon={IconContributesTo}
-            subtext={mine ? "Visible par toi et l'équipe administrative" : undefined}
+            subtext={profile.isMe ? "Visible par toi et l'équipe administrative" : undefined}
           >
             <div class="contributes-for">
               {#if profile.contributesTo.length > 0}
