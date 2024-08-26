@@ -259,8 +259,8 @@ const PAGES = {
   '/users/[uid]/edit/bio': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit/bio`;
   },
-  '/users/[uid]/edit/contribution': (uid: string | number, params?: {}) => {
-    return `/users/${uid}/edit/contribution`;
+  '/users/[uid]/edit/contributions': (uid: string | number, params?: {}) => {
+    return `/users/${uid}/edit/contributions`;
   },
   '/users/[uid]/edit/curriculum': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit/curriculum`;
@@ -574,7 +574,7 @@ export type KIT_ROUTES = {
     '/student-associations/[uid]/edit/pages/[...page]': 'uid' | 'page';
     '/users/[uid]/edit': 'uid';
     '/users/[uid]/edit/bio': 'uid';
-    '/users/[uid]/edit/contribution': 'uid';
+    '/users/[uid]/edit/contributions': 'uid';
     '/users/[uid]/edit/curriculum': 'uid';
     '/users/[uid]/edit/email': 'uid';
     '/users/[uid]/edit/family': 'uid';

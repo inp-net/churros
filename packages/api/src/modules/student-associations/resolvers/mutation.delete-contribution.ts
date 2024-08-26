@@ -1,5 +1,5 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
-import { LocalID, UIDScalar } from '#modules/global';
+import { LocalID } from '#modules/global';
 import { ContributionOptionType } from '#modules/student-associations/types';
 import { canMarkContributionAsPaid } from '#modules/student-associations/utils';
 
@@ -10,7 +10,8 @@ builder.mutationField('deleteContribution', (t) =>
     errors: {},
     args: {
       option: t.arg({ type: LocalID }),
-      user: t.arg({ type: UIDScalar }),
+      // user: t.arg({ type: UIDScalar }), //TODO
+      user: t.arg.string(),
     },
     async authScopes(_, { option }, { user: me }) {
       return canMarkContributionAsPaid(
