@@ -4,7 +4,6 @@
   import Alert from '$lib/components/Alert.svelte';
   import AreaComments from '$lib/components/AreaComments.houdini.svelte';
   import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
@@ -75,7 +74,6 @@
   } = $PagePostDetail.data.article}
   <div class="page" class:future={publishedYet({ publishedAt })}>
     <h1>
-      <ButtonBack></ButtonBack>
       <LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText>
     </h1>
     {#if !publishedYet({ publishedAt })}
