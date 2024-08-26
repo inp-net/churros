@@ -18,7 +18,6 @@
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
   import IconHourglassEmpty from '~icons/msl/hourglass-empty';
-  import BadgeVisibility from './BadgeVisibility.svelte';
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LoadingText from './LoadingText.svelte';
@@ -71,7 +70,6 @@
           frequency
           recurringUntil
         }
-        visibility
       }
     `),
   );
@@ -87,7 +85,6 @@
     group,
     author,
     event,
-    visibility,
     pictureURL,
   } =
     $data ??
@@ -125,7 +122,6 @@
         frequency: PendingValue,
         recurringUntil: PendingValue,
       },
-      visibility: PendingValue,
       pictureURL: PendingValue,
     } as CardArticle$data));
 
@@ -187,9 +183,6 @@
             {:else}
               <LoadingText>{intlFormatDistance(subMinutes(new Date(), 5), new Date())}</LoadingText>
             {/if}
-          </span>
-          <span class="visibility">
-            <BadgeVisibility {visibility} />
           </span>
         </header>
         <h2 class="title"><LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText></h2>
@@ -331,14 +324,6 @@
   header .date {
     display: flex;
     align-items: center;
-  }
-
-  .visibility {
-    padding: 0.2em 0.7em;
-    margin-left: auto;
-    font-size: 0.7em;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
   }
 
   .image {

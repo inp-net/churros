@@ -3,8 +3,7 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardArticle from '$lib/components/CardArticle.houdini.svelte';
-  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
@@ -15,7 +14,7 @@
   const mobile = isMobile();
 
   export let data: PageData;
-  $: ({ PageHomeFeed, Birthdays, MyGroups, AppLayout } = data);
+  $: ({ PageHomeFeed, Birthdays, AppLayout } = data);
 
   let defaultBirthdaysSection: MaybeLoading<string> = PendingValue;
   let selectedBirthdaysYearTier: string | undefined = undefined;
@@ -37,19 +36,15 @@
   }
 </script>
 
-<h1>Mon feed</h1>
-
-{#if $MyGroups.data?.me}
-  <section class="groups">
-    <CarouselGroups groups={$MyGroups.data.me.groups.map(({ group }) => group) ?? []} />
-  </section>
+{#if mobile}
+  <QuickAccessList pins={$AppLayout?.data?.me ?? null} />
 {/if}
 
 {#if $Birthdays.data}
   <section class="birthdays">
     <h2>
       Anniversaires
-      <InputSelectOne
+      <InputSelectOneDropdown
         bind:value={selectedBirthdaysYearTier}
         label=""
         options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
@@ -79,10 +74,6 @@
   </section>
 {/if}
 
-{#if mobile}
-  <QuickAccessList pins={$AppLayout?.data?.me ?? null} />
-{/if}
-
 <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
   {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article }}
     <CardArticle {article} />
@@ -98,17 +89,6 @@
 </section>
 
 <style>
-  h1 {
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  section.groups {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-  }
-
   section.articles {
     display: flex;
     flex-direction: column;
