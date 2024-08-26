@@ -2559,7 +2559,6 @@ type Mutation {
   Supprimer un lien existant
   """
   deleteLink(id: LocalID!): MutationDeleteLinkResult!
-  deleteNotificationSubscription(endpoint: String!): Boolean!
 
   """
   Supprime une page existante. On peut renseigner l'identifiant de la page ou son chemin ainsi que son groupe ou AE d'appartenance.
@@ -2945,6 +2944,12 @@ type Mutation {
     quickSignupCode: String
     uid: UID!
   ): MutationStartSignupResult!
+  subscribeToNotifications(
+    endpoint: String!
+    expiresAt: DateTime
+    keys: NotificationSubscriptionKeysInput!
+    name: String!
+  ): MutationSubscribeToNotificationsResult!
   syncUserLdap(uid: String!): Boolean!
   testNotification(subscriptionEndpoint: String!): Boolean!
   toggleReaction(
@@ -2987,6 +2992,7 @@ type Mutation {
     """
     target: ID!
   ): Reactable!
+  unsubscribeFromNotifications(endpoint: String!): MutationUnsubscribeFromNotificationsResult!
   updateArticlePicture(file: File!, id: ID!): String!
 
   """
@@ -3279,12 +3285,6 @@ type Mutation {
   ): LydiaAccount!
   upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]!
     @deprecated(reason: "Use 'upsertEventManager' and 'removeEventManager' instead")
-  upsertNotificationSubscription(
-    endpoint: String!
-    expiresAt: DateTime
-    keys: NotificationSubscriptionKeysInput!
-    name: String!
-  ): NotificationSubscription!
 
   """
   Crée ou met à jour une page.
@@ -3754,10 +3754,28 @@ type MutationStartSignupSuccess {
   data: UserCandidate!
 }
 
+union MutationSubscribeToNotificationsResult =
+  | Error
+  | MutationSubscribeToNotificationsSuccess
+  | ZodError
+
+type MutationSubscribeToNotificationsSuccess {
+  data: NotificationSubscription!
+}
+
 union MutationUnbanFromEventResult = Error | MutationUnbanFromEventSuccess | ZodError
 
 type MutationUnbanFromEventSuccess {
   data: Event!
+}
+
+union MutationUnsubscribeFromNotificationsResult =
+  | Error
+  | MutationUnsubscribeFromNotificationsSuccess
+  | ZodError
+
+type MutationUnsubscribeFromNotificationsSuccess {
+  data: NotificationSubscription!
 }
 
 union MutationUpdateEventRecurrenceResult = Error | MutationUpdateEventRecurrenceSuccess | ZodError

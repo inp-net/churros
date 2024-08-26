@@ -92,7 +92,14 @@
 
       const result = await graphql(`
         mutation UnsubscribeFromNotifications($endpoint: String!) {
-          deleteNotificationSubscription(endpoint: $endpoint)
+          unsubscribeFromNotifications(endpoint: $endpoint) {
+            ...MutationErrors
+            ... on MutationUnsubscribeFromNotificationsSuccess {
+              data {
+                id
+              }
+            }
+          }
         }
       `).mutate({
         endpoint: subscription.endpoint,
@@ -101,7 +108,7 @@
       if (
         toasts.mutation(
           result,
-          'deleteNotificationSubscription',
+          'unsubscribeFromNotifications',
           '',
           'Impossible de désactiver les notifications',
         )
@@ -153,14 +160,19 @@
           $p256dhKey: String!
           $endpoint: String!
         ) {
-          upsertNotificationSubscription(
+          subscribeToNotifications(
             name: $name
             endpoint: $endpoint
             keys: { auth: $authKey, p256dh: $p256dhKey }
           ) {
-            id
-            expiresAt
-            endpoint
+            ...MutationErrors
+            ... on MutationSubscribeToNotificationsSuccess {
+              data {
+                id
+                expiresAt
+                endpoint
+              }
+            }
           }
         }
       `).mutate({
@@ -172,7 +184,7 @@
       if (
         toasts.mutation(
           result,
-          'upsertNotificationSubscription',
+          'subscribeToNotifications',
           '',
           "Impossible d'activer les notifications",
         )
