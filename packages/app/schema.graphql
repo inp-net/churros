@@ -1,4 +1,9 @@
 """
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -176,7 +181,14 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
+  """
+  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
+
+  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
+  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
+  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
+  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
+  """
   answer: [String!]!
 
   """
@@ -2524,7 +2536,7 @@ type Mutation {
   """
   Supprimer une cotisation
   """
-  deleteContribution(option: LocalID!, user: UID!): MutationDeleteContributionResult!
+  deleteContribution(option: LocalID!, user: String!): MutationDeleteContributionResult!
   deleteDocument(id: ID!): Boolean!
   deleteDocumentFile(documentId: ID!, filename: String!): Boolean!
   deleteEvent(id: LocalID!): MutationDeleteEventResult!
@@ -6517,10 +6529,6 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
-  school: UID
-    @deprecated(
-      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
-    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
