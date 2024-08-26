@@ -62,9 +62,7 @@
 
     if (subscription?.endpoint)
       await Notifications.fetch({ variables: { endpoint: subscription?.endpoint } });
-    else 
-      noSubscription = true;
-    
+    else noSubscription = true;
   });
 
   let subscribed = false;
@@ -91,24 +89,26 @@
       const sw = await navigator.serviceWorker.ready;
       const subscription = await sw.pushManager.getSubscription();
       if (!subscription) return;
-      const { deleteNotificationSubscription } = await $zeus.mutate({
-        deleteNotificationSubscription: [
-          {
-            endpoint: subscription.endpoint,
-          },
-          true,
-        ],
+
+      const result = await graphql(`
+        mutation UnsubscribeFromNotifications($endpoint: String!) {
+          deleteNotificationSubscription(endpoint: $endpoint)
+        }
+      `).mutate({
+        endpoint: subscription.endpoint,
       });
 
-      if (!deleteNotificationSubscription) {
-        toasts.error(
+      if (
+        toasts.mutation(
+          result,
+          'deleteNotificationSubscription',
+          '',
           'Impossible de désactiver les notifications',
-          "L'appareil n'est pas abonné aux notifications",
-        );
-        return;
+        )
+      ) {
+        subscribed = false;
+        noSubscription = true;
       }
-
-      subscribed = false;
     }
   }
 
@@ -146,30 +146,40 @@
 
       const { expirationTime, endpoint } = subscription;
       toasts.debug('start mutation', JSON.stringify({ expirationTime, endpoint }));
-      await $zeus.mutate({
-        upsertNotificationSubscription: [
-          {
-            // eslint-disable-next-line unicorn/no-null
-            expiresAt: expirationTime ? new Date(expirationTime) : null,
-            name: subscriptionName,
-            endpoint,
-            keys: {
-              auth: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
-              p256dh: await arrayBufferToBase64(
-                subscription.getKey('p256dh') ?? new ArrayBuffer(0),
-              ),
-            },
-          },
-          {
-            id: true,
-            expiresAt: true,
-            endpoint: true,
-          },
-        ],
+      const result = await graphql(`
+        mutation SubscribeToNotifications(
+          $name: String!
+          $authKey: String!
+          $p256dhKey: String!
+          $endpoint: String!
+        ) {
+          upsertNotificationSubscription(
+            name: $name
+            endpoint: $endpoint
+            keys: { auth: $authKey, p256dh: $p256dhKey }
+          ) {
+            id
+            expiresAt
+            endpoint
+          }
+        }
+      `).mutate({
+        name: subscriptionName,
+        authKey: await arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
+        p256dhKey: await arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0)),
+        endpoint,
       });
-      toasts.debug('mutation OK. marking as subscribed');
-      subscribed = true;
-      noSubscription = false;
+      if (
+        toasts.mutation(
+          result,
+          'upsertNotificationSubscription',
+          '',
+          "Impossible d'activer les notifications",
+        )
+      ) {
+        subscribed = true;
+        noSubscription = false;
+      }
     } catch (error) {
       toasts.debug('caught', error?.toString());
       throw error?.toString();

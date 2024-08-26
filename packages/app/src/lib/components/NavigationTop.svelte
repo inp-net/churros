@@ -110,7 +110,7 @@
     >
       <IconBugReport></IconBugReport>
     </button>
-    {#if quickAction && !(quickAction.mobileOnly && !mobile)}
+    {#if quickAction && !quickAction.disabled && !quickAction.hidden && !(quickAction.mobileOnly && !mobile)}
       {#if 'overflow' in quickAction && quickAction.overflow && 'icon' in quickAction}
         <OverflowMenu actions={quickAction.overflow}>
           <svelte:component this={quickAction.icon}></svelte:component>
