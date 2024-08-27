@@ -42,7 +42,7 @@ builder.mutationField('startSignup', (t) =>
       }),
       uid: t.arg({
         type: UIDScalar,
-        validate: [freeUidValidator],
+        validate: [freeUidValidator, { minLength: 3 }],
       }),
       firstName: t.arg.string({
         description: 'Prénom',

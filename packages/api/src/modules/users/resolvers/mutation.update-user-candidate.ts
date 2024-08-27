@@ -15,7 +15,11 @@ builder.mutationField('updateUserCandidate', (t) =>
           "Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte",
       }),
       email: t.arg.string(),
-      uid: t.arg({ type: UIDScalar, validate: [freeUidValidator], description: 'Le @ souhaité' }),
+      uid: t.arg({
+        type: UIDScalar,
+        validate: [freeUidValidator, { minLength: 3 }],
+        description: 'Le @ souhaité',
+      }),
       firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
       majorId: t.arg.id(),
