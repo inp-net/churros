@@ -9,8 +9,7 @@ builder.prismaObjectField(EventType, 'enabledSpecialOffers', (t) =>
   t.field({
     type: [PromotionTypeEnum],
     nullable: true,
-    description:
-      "Liste des promotions activées pour tout les billets de l'évènement. Si certains billets ont des promotions activées différentes, renvoie `null`. Si l'évènement n'a pas de billets, renvoie `[]`.",
+    description: "Liste des promotions activées pour tout les billets de l'évènement.",
     authScopes(event, _, { user }) {
       return canSeeAllBookings(event, user);
     },
@@ -18,15 +17,21 @@ builder.prismaObjectField(EventType, 'enabledSpecialOffers', (t) =>
       const tickets = await prisma.ticket.findMany({
         where: { eventId: id },
         select: {
-          subjectToPromotions: {
-            select: { type: true },
+          event: {
+            select: {
+              applicableOffers: {
+                select: {
+                  type: true,
+                },
+              },
+            },
           },
         },
       });
       // Gather enabled promotion types for each ticket - we use a set because the order doesn't matter
       const promotions: Array<Set<PromotionType>> = [];
       for (const ticket of tickets)
-        promotions.push(new Set(ticket.subjectToPromotions.map((p) => p.type)));
+        promotions.push(new Set(ticket.event.applicableOffers.map((p) => p.type)));
 
       if (promotions.length === 0) return [];
 

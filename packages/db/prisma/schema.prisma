@@ -539,41 +539,42 @@ enum EventFrequency {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id             String         @id @default(dbgenerated("nanoid('e:')"))
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now()) @updatedAt
-  authorId       String?
-  groupId        String
-  contactMail    String
-  beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description    String         @db.Text
-  slug           String         @db.VarChar(255)
-  title          String         @db.VarChar(255)
+  id               String         @id @default(dbgenerated("nanoid('e:')"))
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  authorId         String?
+  groupId          String
+  contactMail      String
+  beneficiary      LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
+  description      String         @db.Text
+  slug             String         @db.VarChar(255)
+  title            String         @db.VarChar(255)
   // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
-  startsAt       DateTime?
-  endsAt         DateTime?
-  globalCapacity Int?
-  notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location       String         @default("") @db.VarChar(255)
-  visibility     Visibility
-  frequency      EventFrequency @default(Once)
-  recurringUntil DateTime?
-  pictureFile    String         @default("") @db.VarChar(255)
-  showPlacesLeft Boolean        @default(true)
-  managers       EventManager[]
-  author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  includeInKiosk Boolean        @default(false)
-  group          Group          @relation(fields: [groupId], references: [id])
-  coOrganizers   Group[]        @relation("coOrganizer")
-  tickets        Ticket[]
-  ticketGroups   TicketGroup[]
-  articles       Article[]
-  lydiaAccountId String?
-  links          Link[]
-  bannedUsers    User[]         @relation("bannedFromEvents")
-  reactions      Reaction[]
-  forms          Form[]
-  sharedBy       User[]         @relation("shares")
+  startsAt         DateTime?
+  endsAt           DateTime?
+  globalCapacity   Int?
+  notifiedAt       DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  location         String         @default("") @db.VarChar(255)
+  visibility       Visibility
+  frequency        EventFrequency @default(Once)
+  recurringUntil   DateTime?
+  pictureFile      String         @default("") @db.VarChar(255)
+  showPlacesLeft   Boolean        @default(true)
+  managers         EventManager[]
+  author           User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk   Boolean        @default(false)
+  group            Group          @relation(fields: [groupId], references: [id])
+  coOrganizers     Group[]        @relation("coOrganizer")
+  tickets          Ticket[]
+  ticketGroups     TicketGroup[]
+  articles         Article[]
+  lydiaAccountId   String?
+  links            Link[]
+  bannedUsers      User[]         @relation("bannedFromEvents")
+  reactions        Reaction[]
+  forms            Form[]
+  sharedBy         User[]         @relation("shares")
+  applicableOffers Promotion[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -647,9 +648,10 @@ model Ticket {
 
   onlyManagersCanProvide Boolean @default(false)
 
-  event               Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  group               TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  subjectToPromotions Promotion[]
+  event       Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group       TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Promotion   Promotion?   @relation(fields: [promotionId], references: [id])
+  promotionId String?
 }
 
 /// A reservation is a user's registration for a ticket
@@ -985,6 +987,7 @@ model Promotion {
   validOn    Ticket[]
 
   priceOverride Int
+  events        Event[]
 }
 
 model Picture {

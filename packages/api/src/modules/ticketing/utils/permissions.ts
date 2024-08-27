@@ -148,9 +148,11 @@ canMarkBookingAsPaid.prismaIncludes = {
   ticket: {
     include: {
       event: {
-        include: canSeeAllBookingsPrismaIncludes,
+        include: {
+          ...canSeeAllBookingsPrismaIncludes,
+          ...actualPrice.prismaIncludes.event.include,
+        },
       },
-      ...actualPrice.prismaIncludes,
     },
   },
 } as const satisfies Prisma.RegistrationInclude;

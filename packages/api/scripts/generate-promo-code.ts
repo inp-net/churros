@@ -56,20 +56,14 @@ if (eventId) {
     console.error('Invalid event ID');
     usage();
   }
-  event = await prisma.event.findUniqueOrThrow({
+  event = await prisma.event.update({
     where: { id: ensureGlobalId(eventId, 'Event') },
+    data: {
+      applicableOffers: { connect: { id: promotion.id } },
+    },
     include: { group: true },
   });
-  const tickets = await prisma.ticket.findMany({ where: { event: { id: event.id } } });
-  for (const ticket of tickets) {
-    console.info(`Adding ${ticket.name} to SIMPPS promotion ${promotion.id}`);
-    await prisma.ticket.update({
-      where: { id: ticket.id },
-      data: {
-        subjectToPromotions: { connect: { id: promotion.id } },
-      },
-    });
-  }
+  console.info(`Added ${event.title} to SIMPPS promotion ${promotion.id}`);
 }
 
 for (let i = 0; i < count; i++) {

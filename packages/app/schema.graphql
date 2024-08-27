@@ -1,9 +1,4 @@
 """
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
-"""
 Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 """
 type Announcement implements Node {
@@ -181,14 +176,7 @@ type AnswerFileUpload implements Answer {
 }
 
 input AnswerInput {
-  """
-  Réponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.
-
-  - Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`
-  - Pour les questions de type `Time`, utiliser le format `HH:MM:ss`
-  - Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice
-  - Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)
-  """
+  "\nRéponse à la question. Pour les questions à une seule réponse, ne mettre qu'un seul élément.\n    \n- Pour les questions de type `Date`, utiliser le format `YYYY-mm-dd`\n- Pour les questions de type `Time`, utiliser le format `HH:MM:ss`\n- Pour les questions de type `Scale`, utiliser simplement le nombre répondu par l'utilisateur·ice\n- Pour les questions de type `FileUpload`, utiliser la mutation [`answerFileQuestion`](#mutation/answerFileQuestion)\n      "
   answer: [String!]!
 
   """
@@ -1118,6 +1106,10 @@ type EvenSearchResult {
 An event is a date, time and place, as well as an optional ticket
 """
 type Event implements Node & Pictured & Reactable & Shareable {
+  """
+  Les promotions applicables à cet évènement
+  """
+  applicableOffers: [PromotionType!]!
   articles: [Article!]!
   author: User
   authorId: ID
@@ -1195,7 +1187,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
   descriptionPreview: String!
 
   """
-  Liste des promotions activées pour tout les billets de l'évènement. Si certains billets ont des promotions activées différentes, renvoie `null`. Si l'évènement n'a pas de billets, renvoie `[]`.
+  Liste des promotions activées pour tout les billets de l'évènement.
   """
   enabledSpecialOffers: [PromotionType!]
   endsAt: DateTime
@@ -2746,6 +2738,14 @@ type Mutation {
     title: String!
   ): Boolean!
   setDocumentFileIsSolution(documentId: ID!, filename: String!, isSolution: Boolean!): Boolean!
+
+  """
+  Définir les promotions applicables pour cet évènement.
+  """
+  setEventApplicableOffers(
+    event: LocalID!
+    offers: [PromotionType!]!
+  ): MutationSetEventApplicableOffersResult!
   setEventBeneficiary(
     event: LocalID!
 
@@ -3685,6 +3685,15 @@ union MutationSelfJoinGroupResult = Error | MutationSelfJoinGroupSuccess | ZodEr
 
 type MutationSelfJoinGroupSuccess {
   data: GroupMember!
+}
+
+union MutationSetEventApplicableOffersResult =
+  | Error
+  | MutationSetEventApplicableOffersSuccess
+  | ZodError
+
+type MutationSetEventApplicableOffersSuccess {
+  data: Event!
 }
 
 union MutationSetEventBeneficiaryResult = Error | MutationSetEventBeneficiarySuccess | ZodError
@@ -6547,6 +6556,10 @@ input UpsertGroupInput {
   name: String!
   parent: UID
   related: [String!]!
+  school: UID
+    @deprecated(
+      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
+    )
   selfJoinable: Boolean!
   studentAssociation: UID
   type: GroupType!
