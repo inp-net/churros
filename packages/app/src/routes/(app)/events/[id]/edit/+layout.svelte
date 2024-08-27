@@ -9,6 +9,7 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import PickGroup from '$lib/components/PickGroup.svelte';
+  import PickThings from '$lib/components/PickThings.svelte';
   import Split from '$lib/components/Split.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
@@ -17,17 +18,19 @@
   import { sentenceJoin } from '$lib/i18n';
   import { allLoaded, loaded, loading, mapAllLoading } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
-  import { mutate } from '$lib/mutations';
+  import { mutate, mutateAndToast } from '$lib/mutations';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import IconBannedUsers from '~icons/msl/account-circle-off-outline';
   import IconRecurrence from '~icons/msl/calendar-month-outline';
   import IconDates from '~icons/msl/calendar-today-outline';
+  import IconSuccess from '~icons/msl/check';
   import IconDescription from '~icons/msl/format-align-left';
   import IconCoOrgnizers from '~icons/msl/group-work-outline';
   import IconImage from '~icons/msl/image-outline';
   import IconLocation from '~icons/msl/location-on-outline';
   import IconContact from '~icons/msl/mail-outline';
+  import IconSpecialOffers from '~icons/msl/percent';
   import IconTickets from '~icons/msl/receipt-long-outline';
   import IconManagers from '~icons/msl/supervised-user-circle-outline';
   import IconVisibility from '~icons/msl/visibility-outline';
@@ -39,6 +42,7 @@
     ChangeEventLocation,
     ChangeEventOrganizer,
     ChangeEventTitle,
+    SetEventApplicableOffers,
   } from './mutations';
 
   const mobile = isMobile();
@@ -272,6 +276,49 @@
           Billetterie
         </SubmenuItem>
         <SubmenuItem
+          icon={IconManagers}
+          subtext="Qui peut voir les résas, scanner des billets, modifier l'évènement…"
+          href={route('/events/[id]/edit/managers', loading(event.localID, ''))}
+        >
+          Managers
+        </SubmenuItem>
+        <PickThings
+          multiple
+          title="Promotions"
+          value={mapAllLoading(event.applicableOffers, (...offers) => offers)}
+          options={[{ uid: 'SIMPPS', label: 'SIMPPS' }]}
+          let:open
+          on:finish={async ({ detail }) => {
+            mutateAndToast(
+              SetEventApplicableOffers,
+              {
+                event: $page.params.id,
+                offers: detail,
+              },
+              { error: 'Impossible de changer les promotions applicables' },
+            );
+          }}
+        >
+          <span slot="option" let:option let:selected>
+            <span class="applicable-offer-option" class:success={selected}>
+              {#if selected}
+                <IconSuccess />
+              {/if}
+              {option.uid}
+            </span>
+          </span>
+          <SubmenuItem
+            clickable
+            on:click={open}
+            icon={IconSpecialOffers}
+            subtext={mapAllLoading(event.applicableOffers, (...offers) =>
+              offers.length > 0 ? sentenceJoin(offers) : 'Aucune',
+            )}
+          >
+            Promotions applicables
+          </SubmenuItem>
+        </PickThings>
+        <SubmenuItem
           icon={IconRecurrence}
           href={route('/events/[id]/edit/recurrence', loading(event.localID, ''))}
           subtext={mapAllLoading(
@@ -288,13 +335,6 @@
           href={route('/events/[id]/edit/contact', loading(event.localID, ''))}
         >
           Contact de l'orga
-        </SubmenuItem>
-        <SubmenuItem
-          icon={IconManagers}
-          subtext="Qui peut voir les résas, scanner des billets, modifier l'évènement…"
-          href={route('/events/[id]/edit/managers', loading(event.localID, ''))}
-        >
-          Managers
         </SubmenuItem>
         <SubmenuItem
           icon={IconBannedUsers}
@@ -363,5 +403,11 @@
     gap: 0.5rem;
     align-items: center;
     margin-right: 0.5em;
+  }
+
+  .applicable-offer-option {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
   }
 </style>

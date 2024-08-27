@@ -3,7 +3,7 @@ import type { Prisma } from '@churros/db/prisma';
 import { isPast } from 'date-fns';
 
 export async function priceWithPromotionsApplied(
-  ticket: { price: number; id: string },
+  ticket: { price: number; id: string; eventId: string },
   user: { id: string } | undefined | null,
 ) {
   if (!user) return ticket.price;
@@ -17,7 +17,7 @@ export async function priceWithPromotionsApplied(
           gte: new Date(),
         },
         validOn: {
-          some: { id: ticket.id },
+          some: { eventId: ticket.eventId },
         },
       },
     },
@@ -42,7 +42,7 @@ export function actualPrice(
   }>,
 ) {
   if (!user) return ticket.price;
-  const offer = ticket.subjectToPromotions.find((offer) => {
+  const offer = ticket.event.applicableOffers.find((offer) => {
     // Promotion is expired
     if (offer.validUntil && isPast(offer.validUntil)) return false;
     // Not claimed by user
@@ -54,10 +54,14 @@ export function actualPrice(
 }
 
 actualPrice.prismaIncludes = {
-  subjectToPromotions: {
+  event: {
     include: {
-      validOn: true,
-      codes: true,
+      applicableOffers: {
+        include: {
+          validOn: true,
+          codes: true,
+        },
+      },
     },
   },
 } as const satisfies Prisma.TicketInclude;

@@ -143,3 +143,16 @@ export const ChangeEventCoOrganizers = graphql(`
     }
   }
 `);
+
+export const SetEventApplicableOffers = graphql(`
+  mutation SetEventApplicableOffers($event: LocalID!, $offers: [PromotionType!]!) {
+    setEventApplicableOffers(event: $event, offers: $offers) {
+      ...MutationErrors
+      ... on MutationSetEventApplicableOffersSuccess {
+        data {
+          applicableOffers
+        }
+      }
+    }
+  }
+`);

@@ -23,6 +23,7 @@ query LayoutEventEdit($id: LocalID!) {
     ...TextEventDates
     location
     visibility
+    applicableOffers
     coOrganizers {
       uid
       name

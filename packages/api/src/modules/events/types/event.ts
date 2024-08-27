@@ -7,7 +7,7 @@ import {
   VisibilityEnum,
 } from '#modules/global';
 import { LogType } from '#modules/logs';
-import { ProfitsBreakdownType } from '#modules/payments';
+import { ProfitsBreakdownType, PromotionTypeEnum } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
@@ -187,6 +187,17 @@ export const EventType = builder.prismaNode('Event', {
             target: id,
           },
         }),
+    }),
+    applicableOffers: t.field({
+      type: [PromotionTypeEnum],
+      description: 'Les promotions applicables à cet évènement',
+      async resolve({ id }) {
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          include: { applicableOffers: true },
+        });
+        return event.applicableOffers.map((o) => o.type);
+      },
     }),
     profitsBreakdown: t.field({
       type: ProfitsBreakdownType,
