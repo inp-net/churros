@@ -2,4 +2,4 @@ commonLabels:
   app: sync
 
 resources:
-  - ./cronjob.yaml
+- ./cronjob.yaml
