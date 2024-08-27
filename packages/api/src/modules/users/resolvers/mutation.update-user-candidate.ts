@@ -17,7 +17,7 @@ builder.mutationField('updateUserCandidate', (t) =>
       email: t.arg.string(),
       uid: t.arg({
         type: UIDScalar,
-        validate: [freeUidValidator, { minLength: 3 }],
+        validate: freeUidValidator,
         description: 'Le @ souhaité',
       }),
       firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
