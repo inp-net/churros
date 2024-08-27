@@ -15,7 +15,7 @@ builder.mutationField('createGroup', (t) =>
       }),
       uid: t.arg({
         type: UIDScalar,
-        validate: [freeUidValidator],
+        validate: [freeUidValidator, { minLength: 3 }],
       }),
       name: t.arg.string({
         validate: { maxLength: 50 },
