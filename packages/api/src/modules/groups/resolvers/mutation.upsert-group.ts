@@ -24,7 +24,7 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
     uid: t.field({
       required: false,
       type: UIDScalar,
-      validate: [freeUidValidator],
+      validate: freeUidValidator,
       description:
         "Ne sert qu'à la création du groupe. Il est impossible de modifier un uid existant",
     }),
