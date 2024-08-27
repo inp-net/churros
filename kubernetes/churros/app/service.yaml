@@ -4,9 +4,9 @@ metadata:
   name: churros-app
 spec:
   ports:
-    - name: churros-app
-      port: 3000
-      protocol: TCP
-      targetPort: 3000
+  - name: churros-app
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
   selector:
     app: churros-app

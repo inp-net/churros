@@ -1,2 +1,2 @@
 resources:
-  - cluster.yaml
+- cluster.yaml
