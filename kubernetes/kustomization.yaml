@@ -1,4 +1,4 @@
 resources:
-  - postgresql/
-  - redis/
-  - churros/
+- postgresql/
+- redis/
+- churros/
