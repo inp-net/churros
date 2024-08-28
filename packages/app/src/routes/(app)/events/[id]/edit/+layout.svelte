@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { PendingValue, type LayoutEventEdit$result, type PromotionType$options } from '$houdini';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
@@ -16,7 +17,14 @@
   import { formatDate } from '$lib/dates';
   import { DISPLAY_EVENT_FREQUENCY, DISPLAY_VISIBILITIES } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';
-  import { allLoaded, loaded, loading, mapAllLoading } from '$lib/loading';
+  import {
+    allLoaded,
+    loaded,
+    loading,
+    mapAllLoading,
+    mapLoading,
+    type MaybeLoading,
+  } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { mutate, mutateAndToast } from '$lib/mutations';
   import { route } from '$lib/ROUTES';
@@ -67,6 +75,15 @@
       start: $LayoutEventEdit.data.event.startsAt,
       end: $LayoutEventEdit.data.event.endsAt,
     };
+  }
+
+  function applicableOffers(
+    event: LayoutEventEdit$result['event'],
+  ): MaybeLoading<PromotionType$options[]> {
+    if (event.applicableOffers.every(loaded)) 
+      return event.applicableOffers;
+    
+    return PendingValue;
   }
 </script>
 
@@ -285,7 +302,7 @@
         <PickThings
           multiple
           title="Promotions"
-          value={mapAllLoading(event.applicableOffers, (...offers) => offers)}
+          value={applicableOffers(event)}
           options={[{ uid: 'SIMPPS', label: 'SIMPPS' }]}
           let:open
           on:finish={async ({ detail }) => {
@@ -311,9 +328,7 @@
             clickable
             on:click={open}
             icon={IconSpecialOffers}
-            subtext={mapAllLoading(event.applicableOffers, (...offers) =>
-              offers.length > 0 ? sentenceJoin(offers) : 'Aucune',
-            )}
+            subtext={mapLoading(applicableOffers(event), sentenceJoin) || 'Aucune'}
           >
             Promotions applicables
           </SubmenuItem>
