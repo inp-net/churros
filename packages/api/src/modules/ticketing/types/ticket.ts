@@ -40,8 +40,8 @@ export const TicketType = builder.prismaNode('Ticket', {
     }),
     basePrice: t.exposeFloat('price'),
     price: t.float({
-      async resolve({ price, id }, _, { user }) {
-        return actualPrice({ price, id }, user);
+      async resolve(ticket, _, { user }) {
+        return actualPrice(ticket, user);
       },
     }),
     capacity: t.exposeInt('capacity', { nullable: true }),
