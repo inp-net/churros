@@ -75,6 +75,7 @@
   data-typename={loading($data.__typename, '')}
   on:change={async ({ detail: file }) => {
     if (!loaded($data.id)) return;
+    if (!file) return;
     const result = await Update.mutate({ resource: $data.id, file, variant });
     toasts.mutation(
       result,
