@@ -46,7 +46,9 @@
       <p>Une erreur est survenue.</p>
     {/if}
     {#if !loggedIn}
-      <ButtonSecondary href={refroute('/login')}>Se connecter</ButtonSecondary>
+      <ButtonSecondary noClientSideNavigation href={refroute('/login')}
+        >Se connecter</ButtonSecondary
+      >
     {/if}
   </Alert>
 {:else if result?.fetching || (result && !result.data)}

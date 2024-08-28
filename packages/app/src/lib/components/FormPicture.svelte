@@ -74,7 +74,8 @@
   accept="image/jpeg,image/png,image/webp"
   data-typename={loading($data.__typename, '')}
   on:change={async ({ detail: file }) => {
-    const result = await mutate(Update, { resource: $data.id, file, variant });
+    if (!loaded($data.id)) return;
+    const result = await Update.mutate({ resource: $data.id, file, variant });
     toasts.mutation(
       result,
       'setPicture',

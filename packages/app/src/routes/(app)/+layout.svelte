@@ -206,10 +206,13 @@
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
         <section class="actions">
           <!-- Can't use refroute here cuz it's not called again on every page change, since this lives in the layout -->
-          <ButtonSecondary href={addReferrer(route('/login'), $page.url.pathname)}
-            >Connexion</ButtonSecondary
+          <ButtonSecondary
+            noClientSideNavigation
+            href={addReferrer(route('/login'), $page.url.pathname)}>Connexion</ButtonSecondary
           >
-          <ButtonSecondary href={refroute('/signup')}>Inscription</ButtonSecondary>
+          <ButtonSecondary noClientSideNavigation href={refroute('/signup')}
+            >Inscription</ButtonSecondary
+          >
         </section>
       </section>
     {/if}

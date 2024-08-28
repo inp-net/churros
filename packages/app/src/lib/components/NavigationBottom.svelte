@@ -87,6 +87,7 @@
         clearTimeout(loginLongpressTimeout);
         setLongpressTimeout();
       }}
+      noClientSideNavigation
       href={route('/login')}>Connexion</ButtonSecondary
     >
   {/if}

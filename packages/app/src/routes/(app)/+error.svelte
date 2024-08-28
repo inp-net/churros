@@ -46,7 +46,9 @@
           window.location.reload();
         }}>Recharger</ButtonSecondary
       >
-      <ButtonSecondary href={loginRedirection({ explain: false })}>Se connecter</ButtonSecondary>
+      <ButtonSecondary noClientSideNavigation href={loginRedirection({ explain: false })}
+        >Se connecter</ButtonSecondary
+      >
     </div>
   {:else}
     <h1>Erreur {status}</h1>

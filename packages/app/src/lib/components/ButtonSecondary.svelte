@@ -25,6 +25,7 @@
   export let help = '';
   export let highlighted = false;
   export let stretches = false;
+  export let noClientSideNavigation = false;
 </script>
 
 <svelte:element
@@ -33,6 +34,7 @@
   target={newTab ? '_blank' : undefined}
   type={submits ? 'submit' : 'button'}
   use:tooltip={help || undefined}
+  data-sveltekit-reload={noClientSideNavigation ? true : undefined}
   class="button-secondary typo-paragraph"
   class:danger
   class:highlighted

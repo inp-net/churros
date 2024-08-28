@@ -140,7 +140,9 @@
   </ul>
 {:else}
   <Alert theme="primary">
-    <ButtonSecondary href={refroute('/login')} insideProse>Connectez-vous</ButtonSecondary> pour commenter.
+    <ButtonSecondary noClientSideNavigation href={refroute('/login')} insideProse
+      >Connectez-vous</ButtonSecondary
+    > pour commenter.
   </Alert>
 {/if}
 
