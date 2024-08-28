@@ -151,7 +151,7 @@ export async function updatePicture({
     case 'group': {
       // TODO only take id, not uid. This function is low-level enough that the uid convenience is useless
       const result = await prisma.group.findFirstOrThrow({
-        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'User') }] },
+        where: { OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'Group') }] },
         select: { [propertyName]: true },
       });
       pictureFile = result[propertyName] as unknown as string;
