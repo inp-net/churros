@@ -1,7 +1,7 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes, CapacityScalar } from '#modules/events';
 import { DateRangeInput, LocalID } from '#modules/global';
-import { PaymentMethodEnum, PromotionTypeEnum } from '#modules/payments';
+import { PaymentMethodEnum } from '#modules/payments';
 import { TicketType } from '#modules/ticketing/types';
 import { handleUnlimitedCapacity } from '#modules/ticketing/utils';
 import { GraphQLError } from 'graphql';
@@ -22,11 +22,6 @@ builder.mutationField('updateTicket', (t) =>
         description: 'Prix en euros du billet',
       }),
       capacity: t.arg({ required: false, type: CapacityScalar }),
-      applicableOffers: t.arg({
-        required: false,
-        type: [PromotionTypeEnum],
-        description: 'Promotions applicables au billet',
-      }),
       godsonLimit: t.arg.int({
         required: false,
         description: 'Nombre maximum de parrainages par billet (0 pour désactiver les parrainages)',
@@ -50,7 +45,6 @@ builder.mutationField('updateTicket', (t) =>
     async resolve(query, _, args, { user }) {
       const id = ensureGlobalId(args.ticket, 'Ticket');
       await log('ticketing', 'update-ticket', args, id, user);
-      const allOffers = await prisma.promotion.findMany();
 
       if (args.allowedPaymentMethods?.includes('Lydia')) {
         const { lydiaAccountId } = await prisma.ticket
@@ -78,13 +72,6 @@ builder.mutationField('updateTicket', (t) =>
           name: args.name ?? undefined,
           price: args.price ?? undefined,
           capacity: args.capacity ? handleUnlimitedCapacity(args.capacity) : undefined,
-          subjectToPromotions: args.applicableOffers
-            ? {
-                set: allOffers
-                  .filter((o) => args.applicableOffers?.includes(o.type))
-                  .map((o) => ({ id: o.id })),
-              }
-            : undefined,
           godsonLimit: args.godsonLimit ?? undefined,
           allowedPaymentMethods: args.allowedPaymentMethods
             ? { set: args.allowedPaymentMethods }
