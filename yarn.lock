@@ -729,7 +729,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10.2.2"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.0"
-    "@inp-net/ldap7": "npm:^1.0.8"
+    "@inp-net/ldap7": "npm:^1.0.9"
     "@pothos/core": "npm:4.0.2"
     "@pothos/plugin-complexity": "npm:^4.0.2"
     "@pothos/plugin-dataloader": "npm:^4.0.2"
@@ -976,7 +976,7 @@ __metadata:
   resolution: "@churros/sync@workspace:packages/sync"
   dependencies:
     "@churros/db": "workspace:^0.0.0"
-    "@inp-net/ldap7": "npm:^1.0.8"
+    "@inp-net/ldap7": "npm:^1.0.9"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
     "@tsconfig/strictest": "npm:^2.0.5"
@@ -2482,16 +2482,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@inp-net/ldap7@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "@inp-net/ldap7@npm:1.0.8"
+"@inp-net/ldap7@npm:^1.0.9":
+  version: 1.0.9
+  resolution: "@inp-net/ldap7@npm:1.0.9"
   dependencies:
-    crypto-random-string: "npm:5.0.0"
     latinize: "npm:^2.0.0"
-    ldapts: "npm:^7.1.0"
-    sha512-crypt-ts: "npm:^0.1.27"
+    ldapts: "npm:^7.1.1"
     tslog: "npm:^4.9.3"
-  checksum: 10c0/c9be9b7a064e21aa6cc5f4ee8fff57704ce3a0ebc9da44969722cab446e0c0cd962478c0c1e7d5faccf435ba7cd4bfd09cb413c2cb74b0e1a65d6ebef400d047
+    unixcrypt: "npm:^2.0.0"
+  checksum: 10c0/3fb81ce12f965d49f0269c15a29f5239e62bc266852c6f5311cee1a891f3f9833eefc4ea5db879e4f1c636f34457fdde569fa8071f8300cb6d63a0883c2358e4
   languageName: node
   linkType: hard
 
@@ -6287,15 +6286,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-random-string@npm:5.0.0":
-  version: 5.0.0
-  resolution: "crypto-random-string@npm:5.0.0"
-  dependencies:
-    type-fest: "npm:^2.12.2"
-  checksum: 10c0/cac9860697fdf49a22c222c2daa515103c9798474bbe30fca53fbf73d88448bedd200eafaaaf7823ab83b01b9082b840f530d0e146d25f588945a79442e61cd4
-  languageName: node
-  linkType: hard
-
 "css-functions-list@npm:^3.2.2":
   version: 3.2.2
   resolution: "css-functions-list@npm:3.2.2"
@@ -6789,7 +6779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.4, debug@npm:~4.3.5":
+"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.4, debug@npm:~4.3.6":
   version: 4.3.6
   resolution: "debug@npm:4.3.6"
   dependencies:
@@ -10752,16 +10742,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ldapts@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "ldapts@npm:7.1.0"
+"ldapts@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "ldapts@npm:7.1.1"
   dependencies:
     "@types/asn1": "npm:>=0.2.4"
     asn1: "npm:~0.2.6"
-    debug: "npm:~4.3.5"
+    debug: "npm:~4.3.6"
     strict-event-emitter-types: "npm:~2.0.0"
     uuid: "npm:~10.0.0"
-  checksum: 10c0/d43ce9bb0a3dc2ee4ea2f3eb890cbbb8c049d60bcd19e3d2072337defd1e4cfa2a3e439f2e6fda30f00407c60d73bf42190bf2d1ddd08d1c0e4622738881d2fb
+    whatwg-url: "npm:~14.0.0"
+  checksum: 10c0/785ad0c77ca8fdcd637ab34020e9ba5c6d2fa0431c9dcb7ccc32d963a55173fbb8061cc1091d6a1da782e81cb05fedd18df282bbf102c3d7fbc2f417ff01429b
   languageName: node
   linkType: hard
 
@@ -14099,7 +14090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0":
+"punycode@npm:^2.1.0, punycode@npm:^2.3.1":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10c0/14f76a8206bc3464f794fb2e3d3cc665ae416c01893ad7a02b23766eb07159144ee612ad67af5e84fa4479ccfe67678c4feb126b0485651b302babf66f04f9e9
@@ -15112,13 +15103,6 @@ __metadata:
   version: 1.2.0
   resolution: "setprototypeof@npm:1.2.0"
   checksum: 10c0/68733173026766fa0d9ecaeb07f0483f4c2dc70ca376b3b7c40b7cda909f94b0918f6c5ad5ce27a9160bdfb475efaa9d5e705a11d8eaae18f9835d20976028bc
-  languageName: node
-  linkType: hard
-
-"sha512-crypt-ts@npm:^0.1.27":
-  version: 0.1.27
-  resolution: "sha512-crypt-ts@npm:0.1.27"
-  checksum: 10c0/f57e911670945e6ed430511694cf705e532cac35600b6df8c0a9bb7bec8302992ee2d255487d96b33c9d8c9cef3a34546aede0d384a71e790afa7c07be9d7ee3
   languageName: node
   linkType: hard
 
@@ -16374,6 +16358,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tr46@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "tr46@npm:5.0.0"
+  dependencies:
+    punycode: "npm:^2.3.1"
+  checksum: 10c0/1521b6e7bbc8adc825c4561480f9fe48eb2276c81335eed9fa610aa4c44a48a3221f78b10e5f18b875769eb3413e30efbf209ed556a17a42aa8d690df44b7bee
+  languageName: node
+  linkType: hard
+
 "tr46@npm:~0.0.3":
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
@@ -16563,7 +16556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^2.12.2, type-fest@npm:^2.19.0":
+"type-fest@npm:^2.19.0":
   version: 2.19.0
   resolution: "type-fest@npm:2.19.0"
   checksum: 10c0/a5a7ecf2e654251613218c215c7493574594951c08e52ab9881c9df6a6da0aeca7528c213c622bc374b4e0cb5c443aa3ab758da4e3c959783ce884c3194e12cb
@@ -16827,6 +16820,13 @@ __metadata:
   version: 2.0.1
   resolution: "universalify@npm:2.0.1"
   checksum: 10c0/73e8ee3809041ca8b818efb141801a1004e3fc0002727f1531f4de613ea281b494a40909596dae4a042a4fb6cd385af5d4db2e137b1362e0e91384b828effd3a
+  languageName: node
+  linkType: hard
+
+"unixcrypt@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "unixcrypt@npm:2.0.0"
+  checksum: 10c0/c3c355b4c7999c79ec0e4ba09a1acc3b83ede9b101a645898a135757619e9fc9c0d78491b2a2476d700fc2f5eae859292d245138740cca13daddce2fbcabd3c1
   languageName: node
   linkType: hard
 
@@ -17312,6 +17312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"webidl-conversions@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "webidl-conversions@npm:7.0.0"
+  checksum: 10c0/228d8cb6d270c23b0720cb2d95c579202db3aaf8f633b4e9dd94ec2000a04e7e6e43b76a94509cdb30479bd00ae253ab2371a2da9f81446cc313f89a4213a2c4
+  languageName: node
+  linkType: hard
+
 "webpack-sources@npm:^3.2.3":
   version: 3.2.3
   resolution: "webpack-sources@npm:3.2.3"
@@ -17333,6 +17340,16 @@ __metadata:
     tr46: "npm:~0.0.3"
     webidl-conversions: "npm:^3.0.0"
   checksum: 10c0/1588bed84d10b72d5eec1d0faa0722ba1962f1821e7539c535558fb5398d223b0c50d8acab950b8c488b4ba69043fd833cc2697056b167d8ad46fac3995a55d5
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:~14.0.0":
+  version: 14.0.0
+  resolution: "whatwg-url@npm:14.0.0"
+  dependencies:
+    tr46: "npm:^5.0.0"
+    webidl-conversions: "npm:^7.0.0"
+  checksum: 10c0/ac32e9ba9d08744605519bbe9e1371174d36229689ecc099157b6ba102d4251a95e81d81f3d80271eb8da182eccfa65653f07f0ab43ea66a6934e643fd091ba9
   languageName: node
   linkType: hard
 
