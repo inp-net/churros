@@ -780,7 +780,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10.3.4"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.1"
-    "@inp-net/ldap7": "npm:^1.0.8"
+    "@inp-net/ldap7": "npm:^1.0.9"
     "@orangeopensource/hurl": "npm:^4.3.2"
     "@pothos/core": "npm:4.2.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
@@ -7602,7 +7602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.5, debug@npm:~4.3.6":
+"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.6":
   version: 4.3.6
   resolution: "debug@npm:4.3.6"
   dependencies:
@@ -15124,7 +15124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0, punycode@npm:^2.1.1":
+"punycode@npm:^2.1.0, punycode@npm:^2.1.1, punycode@npm:^2.3.1":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10c0/14f76a8206bc3464f794fb2e3d3cc665ae416c01893ad7a02b23766eb07159144ee612ad67af5e84fa4479ccfe67678c4feb126b0485651b302babf66f04f9e9
@@ -16174,13 +16174,6 @@ __metadata:
   version: 1.2.0
   resolution: "setprototypeof@npm:1.2.0"
   checksum: 10c0/68733173026766fa0d9ecaeb07f0483f4c2dc70ca376b3b7c40b7cda909f94b0918f6c5ad5ce27a9160bdfb475efaa9d5e705a11d8eaae18f9835d20976028bc
-  languageName: node
-  linkType: hard
-
-"sha512-crypt-ts@npm:^0.1.27":
-  version: 0.1.27
-  resolution: "sha512-crypt-ts@npm:0.1.27"
-  checksum: 10c0/f57e911670945e6ed430511694cf705e532cac35600b6df8c0a9bb7bec8302992ee2d255487d96b33c9d8c9cef3a34546aede0d384a71e790afa7c07be9d7ee3
   languageName: node
   linkType: hard
 
