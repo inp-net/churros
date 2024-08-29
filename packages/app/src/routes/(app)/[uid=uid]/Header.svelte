@@ -196,11 +196,11 @@
             <span>
               <LoadingText value={$data.major?.name ?? 'Exté'} />
             </span>
-            <span>
+            <div class="schools">
               {#each $data.major?.schools ?? [] as school}
                 <AvatarSchool name {school} />
               {/each}
-            </span>
+            </div>
           </div>
           <div class="badges">
             {#if loading($data.bot, false)}
@@ -380,6 +380,13 @@
 
   .bio {
     font-size: 0.9rem;
+  }
+
+  .schools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    align-items: center;
   }
 
   section.intro {
