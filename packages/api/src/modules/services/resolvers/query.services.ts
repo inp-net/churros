@@ -16,15 +16,30 @@ builder.queryField('services', (t) =>
         where:
           mine && user
             ? {
-                studentAssociation: {
-                  school: {
-                    uid: {
-                      in: user.major?.schools.map((school) => school.uid),
+                OR: [
+                  {
+                    studentAssociation: {
+                      school: {
+                        uid: {
+                          in: user.major?.schools.map((school) => school.uid),
+                        },
+                      },
                     },
                   },
-                },
+                  {
+                    school: {
+                      uid: { in: user.major?.schools.map((school) => school.uid) },
+                    },
+                  },
+                ],
               }
-            : {},
+            : {
+                OR: [
+                  { group: { isNot: null } },
+                  { studentAssociation: { isNot: null } },
+                  { school: { isNot: null } },
+                ],
+              },
         include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
