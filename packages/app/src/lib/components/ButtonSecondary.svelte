@@ -75,6 +75,9 @@
     align-items: center;
     height: fit-content;
     padding: 0.25rem 0.75rem;
+
+    // https://stackoverflow.com/a/68141091
+    line-height: inherit;
     cursor: pointer;
     background: transparent;
     border: solid var(--border-block);
