@@ -47,129 +47,131 @@
   let openMobileDrawer = false;
 </script>
 
-{#if mobile && !editing}
-  <h2>
-    Accès rapide
-    <ModalDrawer bind:open={openMobileDrawer}>
-      <ButtonInk slot="trigger" on:click={() => {}}>Modifier</ButtonInk>
-      <div class="modal-content">
-        <svelte:self
-          editing
-          {pins}
-          on:finishEditing={() => {
-            openMobileDrawer = false;
-          }}
-        ></svelte:self>
-      </div>
-    </ModalDrawer>
-  </h2>
-
-  <ul class="nobullet cards">
-    {#each $data?.bookmarks ?? [] as { path, id } (id)}
-      <li class="card" transition:scale={{ duration: 200 }}>
-        <a href={addReferrer(path)}>
-          {#await pinDisplay(path)}
-            <LoadingText>{path}</LoadingText>
-          {:then data}
-            {#if data}
-              {@const { title, icon } = data}
-              <div class="icon">
-                {#if typeof icon === 'string'}
-                  <img src={icon} aria-hidden alt="" />
-                {:else}
-                  <svelte:component this={icon}></svelte:component>
-                {/if}
-              </div>
-              <span class="label">{title}</span>
-            {:else}
-              <span class="label">{path}</span>
-            {/if}
-          {:catch}
-            <span class="label">{path}</span>
-          {/await}
-        </a>
-      </li>
-    {:else}
-      <li class="muted">
-        <p>
-          Aucune page épinglée à l'accès rapide. Utilise
-          <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
-          ajouter.
-        </p>
-      </li>
-    {/each}
-  </ul>
-{:else}
-  <h2>
-    Accès rapide
-    <ButtonInk
-      on:click={() => {
-        editing = !editing;
-        dispatch('finishEditing');
-      }}
-      >{#if editing}Terminé{:else}Modifier{/if}</ButtonInk
-    >
-  </h2>
-
-  <ul
-    class="nobullet items"
-    class:editing
-    class:empty={($data?.bookmarks.filter(allLoaded)?.length ?? 0) === 0}
-  >
-    {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id } (id)}
-      <li class="item" transition:fly={{ x: -50, duration: 200 }}>
-        <div class="remove-button">
-          <ButtonGhost
-            on:click={async () => {
-              await RemoveBookmark.mutate(
-                { path },
-                {
-                  optimisticResponse: {
-                    unbookmark: { id },
-                  },
-                },
-              );
+<div class="bookmarks">
+  {#if mobile && !editing}
+    <h2>
+      Accès rapide
+      <ModalDrawer bind:open={openMobileDrawer}>
+        <ButtonInk slot="trigger" on:click={() => {}}>Modifier</ButtonInk>
+        <div class="modal-content">
+          <svelte:self
+            editing
+            {pins}
+            on:finishEditing={() => {
+              openMobileDrawer = false;
             }}
-          >
-            <IconRemove></IconRemove>
-            <svelte:fragment slot="hovering">
-              <IconRemoveFilled></IconRemoveFilled>
-            </svelte:fragment>
-          </ButtonGhost>
+          ></svelte:self>
         </div>
-        <a href={addReferrer(path)}>
-          {#await pinDisplay(path)}
-            <LoadingText>{path}</LoadingText>
-          {:then data}
-            {#if data}
-              {@const { title, icon } = data}
-              <div class="icon">
-                {#if typeof icon === 'string'}
-                  <img src={icon} aria-hidden alt="" />
-                {:else}
-                  <svelte:component this={icon}></svelte:component>
-                {/if}
-              </div>
-              {title}
-            {:else}
+      </ModalDrawer>
+    </h2>
+
+    <ul class="nobullet cards">
+      {#each $data?.bookmarks ?? [] as { path, id } (id)}
+        <li class="card" transition:scale={{ duration: 200 }}>
+          <a href={addReferrer(path)}>
+            {#await pinDisplay(path)}
+              <LoadingText>{path}</LoadingText>
+            {:then data}
+              {#if data}
+                {@const { title, icon } = data}
+                <div class="icon">
+                  {#if typeof icon === 'string'}
+                    <img src={icon} aria-hidden alt="" />
+                  {:else}
+                    <svelte:component this={icon}></svelte:component>
+                  {/if}
+                </div>
+                <span class="label">{title}</span>
+              {:else}
+                <span class="label">{path}</span>
+              {/if}
+            {:catch}
+              <span class="label">{path}</span>
+            {/await}
+          </a>
+        </li>
+      {:else}
+        <li class="muted">
+          <p>
+            Aucune page épinglée à l'accès rapide. Utilise
+            <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
+            ajouter.
+          </p>
+        </li>
+      {/each}
+    </ul>
+  {:else}
+    <h2>
+      Accès rapide
+      <ButtonInk
+        on:click={() => {
+          editing = !editing;
+          dispatch('finishEditing');
+        }}
+        >{#if editing}Terminé{:else}Modifier{/if}</ButtonInk
+      >
+    </h2>
+
+    <ul
+      class="nobullet items"
+      class:editing
+      class:empty={($data?.bookmarks.filter(allLoaded)?.length ?? 0) === 0}
+    >
+      {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id } (id)}
+        <li class="item" transition:fly={{ x: -50, duration: 200 }}>
+          <div class="remove-button">
+            <ButtonGhost
+              on:click={async () => {
+                await RemoveBookmark.mutate(
+                  { path },
+                  {
+                    optimisticResponse: {
+                      unbookmark: { id },
+                    },
+                  },
+                );
+              }}
+            >
+              <IconRemove></IconRemove>
+              <svelte:fragment slot="hovering">
+                <IconRemoveFilled></IconRemoveFilled>
+              </svelte:fragment>
+            </ButtonGhost>
+          </div>
+          <a href={addReferrer(path)}>
+            {#await pinDisplay(path)}
+              <LoadingText>{path}</LoadingText>
+            {:then data}
+              {#if data}
+                {@const { title, icon } = data}
+                <div class="icon">
+                  {#if typeof icon === 'string'}
+                    <img src={icon} aria-hidden alt="" />
+                  {:else}
+                    <svelte:component this={icon}></svelte:component>
+                  {/if}
+                </div>
+                {title}
+              {:else}
+                {path}
+              {/if}
+            {:catch}
               {path}
-            {/if}
-          {:catch}
-            {path}
-          {/await}
-        </a>
-      </li>
-    {:else}
-      <li class="muted">
-        <p>
-          Aucune page épinglée à l'accès rapide. Utilise
-          <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
-          ajouter.
-        </p>
-      </li>
-    {/each}
-  </ul>
-{/if}
+            {/await}
+          </a>
+        </li>
+      {:else}
+        <li class="muted">
+          <p>
+            Aucune page épinglée à l'accès rapide. Utilise
+            <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
+            ajouter.
+          </p>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+</div>
 
 <style>
   h2 {
@@ -178,6 +180,11 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
+  }
+
+  .bookmarks {
+    display: flex;
+    flex-direction: column;
   }
 
   .cards {
