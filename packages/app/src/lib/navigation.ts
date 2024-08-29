@@ -207,7 +207,7 @@ const quickActionAdd = {
       return {
         icon: IconGroup,
         label: 'Groupe',
-        do: () => alert('TODO'),
+        do: () => navtopPushState('NAVTOP_CREATING_GROUP'),
         disabled: !me?.admin && !me?.canCreateGroupsOn.length,
       };
     },

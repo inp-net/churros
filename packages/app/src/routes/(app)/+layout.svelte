@@ -27,6 +27,8 @@
   import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
+  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
+  import { allLoaded } from '$lib/loading';
 
   onNavigate(setupViewTransition);
 
@@ -68,14 +70,14 @@
   // Select which student association to create groups linked to.
   // We get all the student associations the logged-in user can create groups on,
   // and we get the one which has the most groups existing
-  // $: creatingGroupLinkedTo =
-  //   $AppLayout.data?.me?.major?.schools
-  //     .filter((s) => allLoaded(s))
-  //     .flatMap((s) => s.studentAssociations)
-  //     .filter((ae) => ae.canCreateGroups)
-  //     .sort((a, b) => a.groupsCount - b.groupsCount)
-  //     .toReversed()
-  //     .at(0)?.uid ?? null;
+  $: creatingGroupLinkedTo =
+    $AppLayout.data?.me?.major?.schools
+      .filter((s) => allLoaded(s))
+      .flatMap((s) => s.studentAssociations)
+      .filter((ae) => ae.canCreateGroups)
+      .sort((a, b) => a.groupsCount - b.groupsCount)
+      .toReversed()
+      .at(0)?.uid ?? null;
 
   let changelogAcknowledged = false;
 
@@ -116,8 +118,7 @@
   />
 {/if}
 
-<!-- <ModalCreateGroup studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
-></ModalCreateGroup> -->
+<ModalCreateGroup studentAssociation={creatingGroupLinkedTo}></ModalCreateGroup>
 
 {#if $AppLayout.data?.me}
   <PickGroup
