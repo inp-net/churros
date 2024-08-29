@@ -11,11 +11,14 @@
   import { route } from '$lib/ROUTES';
   import { theme } from '$lib/theme';
   import IconTrash from '~icons/msl/delete-outline';
+  import IconDebug from '~icons/msl/code';
   import IconPersonalData from '~icons/msl/download';
   import IconNotification from '~icons/msl/notifications-outline';
   import IconTheme from '~icons/msl/palette-outline';
   import IconProfile from '~icons/msl/person-outline';
   import type { LayoutData } from './$houdini';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import { debugging } from '$lib/debugging';
 
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
@@ -57,6 +60,10 @@
       </SubmenuItem>
       <SubmenuItem clickable on:click={deleteAccountModal} icon={IconTrash}>
         Supprimer mon compte
+      </SubmenuItem>
+      <SubmenuItem icon={IconDebug} label>
+        Mode debug
+        <InputCheckbox slot="right" label="" bind:value={$debugging}></InputCheckbox>
       </SubmenuItem>
     </Submenu>
     <ModalOrDrawer bind:open={deleteAccountModal}>
