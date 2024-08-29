@@ -526,7 +526,6 @@ model Article {
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
-  @@unique([groupId, slug])
   @@index([search], type: Gin)
 }
 

@@ -3,6 +3,7 @@
  */
 
 export * from './group.articles.js';
+export * from './mutation.create-post.js';
 export * from './mutation.delete-article-picture.js';
 export * from './mutation.delete-article.js';
 export * from './mutation.update-article-picture.js';

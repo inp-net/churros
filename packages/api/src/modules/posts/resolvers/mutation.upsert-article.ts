@@ -3,8 +3,9 @@ import { DateTimeScalar, UIDScalar, VisibilityEnum } from '#modules/global';
 import { Visibility } from '@churros/db/prisma';
 import { differenceInDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
+import slug from 'slug';
 import { ZodError } from 'zod';
-import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
+import { ArticleType, scheduleNewArticleNotification } from '../index.js';
 import { canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticle', (t) =>
@@ -89,7 +90,7 @@ builder.mutationField('upsertArticle', (t) =>
         where: { id: id ?? '' },
         create: {
           ...data,
-          slug: await createUid({ title, groupId: group.id }),
+          slug: slug(title),
           event: eventId ? { connect: { id: eventId } } : undefined,
         },
         update: {

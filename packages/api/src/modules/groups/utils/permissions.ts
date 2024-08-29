@@ -188,6 +188,28 @@ export function prismaQueryCanCreatePostsOn(user: { id: string }): Prisma.GroupW
   };
 }
 
+export function canCreatePostsOn(
+  user: Context['user'],
+  group: Prisma.GroupGetPayload<{ include: typeof canCreatePostsOn.prismaIncludes }>,
+) {
+  if (!user) return false;
+  if (user.admin) return true;
+  if (userIsAdminOf(user, group.studentAssociationId)) return true;
+  if (userIsGroupEditorOf(user, group.studentAssociationId)) return true;
+  if (userIsOnGroupBoard(user, group)) return true;
+  if (
+    user.groups.some(
+      (membership) => groupsAreTheSame(group, membership.group) && membership.canEditArticles,
+    )
+  )
+    return true;
+  return false;
+}
+
+canCreatePostsOn.prismaIncludes = {
+  studentAssociation: true,
+} as const satisfies Prisma.GroupInclude;
+
 export function prismaQueryCanCreateEventsOn(user: { id: string }): Prisma.GroupWhereInput {
   return {
     OR: [

@@ -92,6 +92,9 @@
 
 <style>
   .contents {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
     padding: 0 1rem;
   }
 

@@ -62,13 +62,13 @@ export function addReferrer(
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
 export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT'}`;
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
 
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'POST' | 'GROUP'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
@@ -346,6 +346,10 @@ export const topnavConfigs: Partial<{
     ],
     title: 'Post',
   }),
+  '/(app)/posts/[id]/edit': () => ({
+    actions: [commonActions.delete, commonActions.pin],
+    title: 'Modifier le post',
+  }),
   '/(app)/events/[[week=date]]': {
     quickAction: {
       icon: IconWallet,
@@ -377,12 +381,16 @@ export const topnavConfigs: Partial<{
       {
         icon: IconPostAdd,
         label: 'Post lié',
-        do: () => navtopPushState('NAVTOP_CREATING_POST'),
+        do: () => navigationTopActionEventDispatcher('NAVTOP_CREATE_POST_ON_EVENT'),
       },
       commonActions.pin,
       commonActions.copyID,
     ],
   }),
+  '/(app)/posts/[[group]]/create': {
+    title: 'Nouveau post',
+    actions: [],
+  },
   '/(app)/events/[id]/scan': ({ params: { id } }) => ({
     title: 'Scanner des billets',
     back: route('/events/[id]', id),

@@ -1,0 +1,7 @@
+query LayoutEventPage($id: LocalID!) {
+  event(id: $id) {
+    organizer {
+      uid
+    }
+  }
+}
