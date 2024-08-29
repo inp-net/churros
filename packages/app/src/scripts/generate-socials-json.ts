@@ -57,7 +57,7 @@ function iconExists(site: string) {
 // 2. Get extraction data from the Sherlock project
 
 const sherlockData: SherlockData = await fetch(
-  'https://raw.githubusercontent.com/sherlock-project/sherlock/master/sherlock/resources/data.json',
+  'https://raw.githubusercontent.com/sherlock-project/sherlock/master/sherlock_project/resources/data.json',
 ).then((res) => res.json());
 
 // 3. Augment with our own
@@ -68,6 +68,19 @@ sherlockData.Wakatime = {
   username_claimed: 'alan',
   errorType: 'status_code',
 };
+
+sherlockData.Facebook = {
+  url: 'https://www.facebook.com/{}',
+  urlMain: 'https://facebook.com/',
+  username_claimed: 'Meta',
+  errorType: 'message',
+  errorMsg: "isn't available right now",
+};
+
+sherlockData.Twitter.url = 'https://twitter.com/{}';
+sherlockData.Twitter.urlMain = 'https://twitter.com/';
+
+sherlockData.LinkedIn.regexCheck = '^[\\w._-]+$';
 // sherlockData.inpgit = {
 //   ...sherlockData.GitLab,
 //   url: 'https://git.inpt.fr/{}',
@@ -87,6 +100,11 @@ function extractionData(siteName: string) {
   return { url, urlMain, regexCheck };
 }
 
+function removeWWWandMobile(url: string) {
+  url = url.replace(/^http(s?):\/\/(www|m)\./, 'http$1://');
+  return url;
+}
+
 function generateSocialSiteData(siteName: string) {
   const extraction = extractionData(siteName);
 
@@ -98,9 +116,9 @@ function generateSocialSiteData(siteName: string) {
             url: ${JSON.stringify(extraction.url)},
             urlMain: ${JSON.stringify(extraction.urlMain)},
             regex: new RegExp(${JSON.stringify(
-              extraction.url.replace(
+              removeWWWandMobile(extraction.url).replace(
                 '{}',
-                `(?<username>${extraction.regexCheck?.replace(/^\^/, '').replace(/\$$/, '') ?? '[\\w_-]+'})`,
+                `(?<username>${extraction.regexCheck?.replace(/^\^/, '').replace(/\$$/, '') ?? '[\\w_.-]+'})`,
               ),
             )}),
             usernameIsValid: ${

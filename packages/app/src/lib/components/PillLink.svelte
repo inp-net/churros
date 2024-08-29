@@ -10,6 +10,12 @@
 
   function socialSiteFromURL(url: URL) {
     for (const site of Object.values(socials)) {
+      // "normalize" by removing prefixing www. and m. from domain names
+      const u = new URL(url.href);
+      u.hostname = u.hostname.replace(/^(www|m)\./, '');
+      if (u.hostname === 'x.com' || u.hostname.endsWith('.x.com'))
+        u.hostname = u.hostname.slice(0, -6) + 'twitter.com';
+
       const match = site.regex.exec(url.href);
       if (match) {
         return {
@@ -86,7 +92,7 @@
     margin-right: 0.5ch;
   }
 
-  /* .icon.is-logo {
-    font-size: 0.8em;
-  } */
+  .icon.is-logo {
+    font-size: 0.75em;
+  }
 </style>

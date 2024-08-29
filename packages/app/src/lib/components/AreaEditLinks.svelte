@@ -180,11 +180,12 @@
       on:submit|preventDefault={async () => {
         if (!$data || !loaded(resourceId) || !allLoaded($data)) return;
         addingLink = true;
+        const displayURL = URL.canParse(newLink.url) ? new URL(newLink.url).hostname : newLink.url;
         const result = await mutate(
           AddLink,
           {
             resource: resourceId,
-            links: [social ? { url: newLink.url, text: newLink.url } : newLink],
+            links: [social ? { url: newLink.url, text: displayURL } : newLink],
           },
           // {
           // FIXME: makes everything reload briefly, dunno why
