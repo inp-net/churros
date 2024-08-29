@@ -397,12 +397,12 @@ model ContributionOption {
 
 /// The different kinds of groups
 enum GroupType {
+  StudentAssociationSection
   Association
   Club
-  Group
-  Integration
-  StudentAssociationSection
   List
+  Integration
+  Group
 }
 
 /// A group is a collection of users

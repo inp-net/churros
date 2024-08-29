@@ -218,10 +218,6 @@ export const UserType = builder.prismaNode('User', {
       authScopes: { student: true, $granted: 'me' },
       query: { orderBy: { publishedAt: 'desc' } },
     }),
-    groups: t.relation('groups', {
-      // authScopes: { loggedIn: true, $granted: 'me' },
-      query: { orderBy: { group: { name: 'asc' } } },
-    }),
     credentials: t.relation('credentials', {
       authScopes: { $granted: 'me' },
       query: { orderBy: { createdAt: 'desc' } },

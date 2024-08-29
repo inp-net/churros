@@ -14,6 +14,7 @@ import {
   canSetGroupRoomOpenState,
   requiredPrismaIncludesForPermissions,
 } from '../utils/index.js';
+import { prismaOrderGroupMemberships } from '../utils/sort.js';
 
 export const GroupTypePrismaIncludes = requiredPrismaIncludesForPermissions;
 
@@ -77,15 +78,8 @@ export const GroupType = builder.prismaNode('Group', {
     }),
     // TODO connection
     members: t.relation('members', {
-      // marche pas même quand ça devrait
-      // authScopes: { student: true },
       query: {
-        orderBy: [
-          { president: 'desc' },
-          { treasurer: 'desc' },
-          { member: { firstName: 'asc' } },
-          { member: { lastName: 'asc' } },
-        ],
+        orderBy: prismaOrderGroupMemberships,
       },
     }),
     membersCount: t.int({
@@ -147,6 +141,7 @@ export const GroupType = builder.prismaNode('Group', {
               { treasurer: true },
             ],
           },
+          orderBy: prismaOrderGroupMemberships,
         }),
     }),
     studentAssociation: t.relation('studentAssociation'),
