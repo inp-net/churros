@@ -65,7 +65,7 @@
     {/if}
   </div>
   <LoadingText
-    value={socialSite
+    value={socialSite || social
       ? mapAllLoading([socialSite, $data?.url], (s, u) => s?.username || u?.hostname)
       : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u?.hostname || u?.pathname)}
     >Chargement…</LoadingText
