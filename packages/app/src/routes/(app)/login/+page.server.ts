@@ -1,5 +1,6 @@
 import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
 import { oauthEnabled, oauthInitiateLoginURL, oauthLoginBypassed } from '$lib/oauth';
+import { route } from '$lib/ROUTES';
 import { saveSessionToken } from '$lib/session';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -27,18 +28,13 @@ export const actions: Actions = {
 
     if (mutationSucceeded('login', result)) {
       saveSessionToken(event.cookies, result.data.login.data);
-      let url = new URL(
-        event.url.searchParams.get('to') ?? event.url.searchParams.get('from') ?? '/',
-        event.url,
-      );
-      if (url.origin !== event.url.origin || url.pathname.startsWith('/login'))
-        url = new URL('/', event.url);
 
-      const searchParams = new URLSearchParams(
-        [...event.url.searchParams.entries()].filter(([k]) => k !== 'to' && k !== 'from'),
+      return redirect(
+        301,
+        `${route('/login/done')}?${new URLSearchParams({
+          from: event.url.searchParams.get('from') ?? '/',
+        })}`,
       );
-
-      return redirect(301, new URL(`${url.toString()}?${searchParams.toString()}`));
     }
 
     return fail(401, {

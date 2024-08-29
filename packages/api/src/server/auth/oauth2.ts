@@ -73,7 +73,9 @@ api.get(
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
     res.redirect(
-      new URL(searchParams.get('from') ?? '/', process.env.PUBLIC_FRONTEND_ORIGIN).toString(),
-    ); // Successful authentication, redirect home.
+      `${new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN)}?${new URLSearchParams({
+        from: searchParams.get('from') ?? '/',
+      })}`,
+    );
   },
 );

@@ -166,6 +166,7 @@ const config = {
   },
   features: {
     runtimeScalars: {},
+    imperativeCache: true,
   },
 };
 

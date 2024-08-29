@@ -199,10 +199,12 @@ const PAGES = {
     params.bypass_oauth = params.bypass_oauth ?? undefined;
     return `/login${appendSp({ bypass_oauth: params.bypass_oauth })}`;
   },
+  '/login/done': `/login/done`,
   '/login/forgotten': `/login/forgotten`,
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
   },
+  '/logout': `/logout`,
   '/logs': `/logs`,
   '/notifications': `/notifications`,
   '/posts/create': (params?: { group?: string | number }) => {
@@ -341,7 +343,6 @@ const SERVERS = {
     return `/groups/${params.uid}/${params.page?.join('/')}`;
   },
   'GET /help/prefilled-links': `/help/prefilled-links`,
-  'GET /logout': `/logout`,
   'GET /me': `/me`,
   'GET /schools/[uid]': (uid: string | number, params?: {}) => {
     return `/schools/${uid}`;
@@ -548,8 +549,10 @@ export type KIT_ROUTES = {
     '/groups/[uid]/members': 'uid';
     '/help': never;
     '/login': never;
+    '/login/done': never;
     '/login/forgotten': never;
     '/login/reset/[token]': 'token';
+    '/logout': never;
     '/logs': never;
     '/notifications': never;
     '/posts/create': 'group';
@@ -602,7 +605,6 @@ export type KIT_ROUTES = {
     'GET /groups/[uid].pdf': 'uid';
     'GET /groups/[uid]/[...page]': 'uid' | 'page';
     'GET /help/prefilled-links': never;
-    'GET /logout': never;
     'GET /me': never;
     'GET /schools/[uid]': 'uid';
     'GET /student-associations/[uid]': 'uid';

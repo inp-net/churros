@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { goto, pushState } from '$app/navigation';
 import { page } from '$app/stores';
-import { cache, graphql, LogoutStore } from '$houdini';
+import { graphql } from '$houdini';
 import type {
   NavigationContext,
   NavigationQuickAction,
@@ -257,9 +257,7 @@ const rootPagesActions = [
     icon: IconLogout,
     label: 'Se déconnecter',
     async do() {
-      new LogoutStore().mutate(null);
-      cache.reset();
-      await goto(route('/'));
+      await goto(route('/logout'));
     },
   },
 ] as Array<NavigationContext['actions'][number]>;

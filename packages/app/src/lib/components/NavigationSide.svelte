@@ -128,9 +128,11 @@
     >
       <IconBugReport></IconBugReport>
     </ButtonGhost>
-    <ButtonGhost href={route('GET /logout')}>
-      <IconLogout></IconLogout>
-    </ButtonGhost>
+    {#if user}
+      <ButtonGhost href={route('/logout')}>
+        <IconLogout></IconLogout>
+      </ButtonGhost>
+    {/if}
   </div>
 </nav>
 
