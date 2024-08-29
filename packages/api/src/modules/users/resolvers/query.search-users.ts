@@ -5,9 +5,13 @@ import { UserSearchResultType } from '../index.js';
 builder.queryField('searchUsers', (t) =>
   t.field({
     type: [UserSearchResultType],
-    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
+    args: {
+      q: t.arg.string({ required: false }),
+      similarityCutoff: t.arg.float({ required: false }),
+    },
     authScopes: { student: true },
     async resolve(_, { q, similarityCutoff }) {
+      if (!q) return [];
       return await searchUsers(q, similarityCutoff ?? undefined);
     },
   }),

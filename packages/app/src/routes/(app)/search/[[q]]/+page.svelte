@@ -1,25 +1,23 @@
 <script lang="ts">
+  import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
-  import IconSearch from '~icons/mdi/magnify';
-  import type { PageData } from './$types';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import CardGroup from '$lib/components/CardGroup.svelte';
   import CardPerson from '$lib/components/CardPerson.svelte';
-  import { goto } from '$app/navigation';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import { debugging } from '$lib/debugging';
+  import IconSearch from '~icons/msl/search';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageSearch } = data);
 
   $: initialQ = $page.params.q ?? '';
   let q = initialQ;
-  const similarityCutoff = $page.url.searchParams.get('sim') ?? undefined;
-
-  $: results = [...data.searchUsers, ...data.searchGroups];
 
   const submitSearchQuery = async () => {
-    await goto(
-      `/search/${encodeURIComponent(q)}` + (similarityCutoff ? `?sim=${similarityCutoff}` : ''),
-    );
+    await PageSearch.fetch({ variables: { q } });
+    pushState(`/search/${encodeURIComponent(q)}`, {});
   };
 </script>
 
@@ -35,44 +33,47 @@
   />
 </form>
 
-{#if !initialQ}
-  <p class="empty">Pas de question, pas de réponse</p>
-{:else if results.length === 0}
-  <p class="empty">Aucun résultat</p>
-{:else}
-  {#if data.searchUsers.length > 0}
-    <h2>Personnes</h2>
-    <p class="typo-details results-count">
-      {data.searchUsers.length} résultat{data.searchUsers.length > 1 ? 's' : ''}
-    </p>
-    <ul class="nobullet">
-      {#each data.searchUsers as { user: { uid, ...rest }, rank, similarity }}
-        <li data-rank={rank ?? 'null'} data-similarity={similarity}>
-          {#if $debugging}
-            <pre>rank {rank} <br />sim {similarity}</pre>
-          {/if}
-          <CardPerson href="/users/{uid}" {...rest} />
-        </li>
-      {/each}
-    </ul>
+<MaybeError result={$PageSearch} let:data>
+  {@const results = [...data.searchUsers, ...data.searchGroups]}
+  {#if !initialQ}
+    <p class="empty">Pas de question, pas de réponse</p>
+  {:else if results.length === 0}
+    <p class="empty">Aucun résultat</p>
+  {:else}
+    {#if data.searchUsers.length > 0}
+      <h2>Personnes</h2>
+      <p class="typo-details results-count">
+        {data.searchUsers.length} résultat{data.searchUsers.length > 1 ? 's' : ''}
+      </p>
+      <ul class="nobullet">
+        {#each data.searchUsers as { user: { uid, ...rest }, rank, similarity }}
+          <li data-rank={rank ?? 'null'} data-similarity={similarity}>
+            {#if $debugging}
+              <pre>rank {rank} <br />sim {similarity}</pre>
+            {/if}
+            <CardPerson href="/users/{uid}" {...rest} />
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if data.searchGroups.length > 0}
+      <h2>Groupes</h2>
+      <p class="typo-details results-count">
+        {data.searchGroups.length} résultat{data.searchGroups.length > 1 ? 's' : ''}
+      </p>
+      <ul class="nobullet">
+        {#each data.searchGroups as { group: { uid, ...rest }, rank, similarity }}
+          <li data-rank={rank ?? 'null'} data-similarity={similarity}>
+            {#if $debugging}
+              <pre>rank {rank} <br />sim {similarity}</pre>
+            {/if}
+            <CardGroup href="/groups/{uid}" {...rest} />
+          </li>
+        {/each}
+      </ul>
+    {/if}
   {/if}
-  {#if data.searchGroups.length > 0}
-    <h2>Groupes</h2>
-    <p class="typo-details results-count">
-      {data.searchGroups.length} résultat{data.searchGroups.length > 1 ? 's' : ''}
-    </p>
-    <ul class="nobullet">
-      {#each data.searchGroups as { group: { uid, ...rest }, rank, similarity }}
-        <li data-rank={rank ?? 'null'} data-similarity={similarity}>
-          {#if $debugging}
-            <pre>rank {rank} <br />sim {similarity}</pre>
-          {/if}
-          <CardGroup href="/groups/{uid}" {...rest} />
-        </li>
-      {/each}
-    </ul>
-  {/if}
-{/if}
+</MaybeError>
 
 <style lang="scss">
   form.query {

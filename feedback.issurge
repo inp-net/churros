@@ -1,63 +1,19 @@
 ~ui-v2
 		~bug
-				~importance:urgent ~difficulty:unknown 
+				~importance:high ~difficulty:unknown 
 						enabling notifications results in infinite loading spinner after accepting:
 								reloading page fixes it
 				~importance:urgent ~difficulty:unknown 
-						UI does not update immediately after logging in
-						login in infinite loop on own profile:
-								and possibly in other places too (everywhere where the handleError hook redirects to login)
 						search does not show results until 2nd or 3rd time hitting enter
-				~importance:urgent ~difficulty:moderate
+				~importance:moderate ~difficulty:moderate
 						no services in backrooms
+
+				~importance:urgent ~difficulty:moderate
 						don't show error when a service has no owner
 						close button on modalchangelog does not work
-				~importance:urgent ~difficulty:moderate
-						/events/id/edit/image is borked:
-								Fields "canEdit" conflict because they have differing arguments. Use different aliases on the fields to fetch both if this was intentional.
-				~importance:urgent ~difficulty:unknown 
-						report issue modal does not work
-
+						
 				~importance:high ~difficulty:unknown 
 						missing avatars and names on family tree view on profile
 
 				~importance:medium ~difficulty:moderate
 						contribute button on AE page when loggedout is weird
-
-				~importance:high ~difficulty:unknown
-						inferrence of social media names and usernames on PillLink[social] is broken
-
-
-		~css
-				~importance:low ~difficulty:unknown skeleton ui boxes have weird border
-				~importance:medium ~difficulty:unknown skeleton ui stays on some logos on event cards even when card has loaded
-				~importance:high ~difficulty:low fix missing horizontal padding on /
-				~importance:high ~difficulty:low fix missing spacing on /
-				~importance:high ~difficulty:low missing spacing an alignment on user schools
-				~importance:high ~difficulty:low missing spacing on profile details (major, yeartier, …)
-				~importance:high ~difficulty:low user profile badge icons not aligned
-				~importance:high ~difficulty:low avatars can sometimes be squished:
-						see esp. groups tab on user profile
-				~importance:high ~difficulty:moderate more spacing on /events
-				~importance:medium ~difficulty:low missing right alignment on school uid copy button
-				~importance:medium ~difficulty:low missing right alignment on school uid copy button
-				~importance:medium ~difficulty:low make icon or logo larger on mobile bookmark cards
-				~importance:medium ~difficulty:low ~notsure center mobile bookmarks
-				~importance:medium ~difficulty:low make desktop layout wide on /logs
-				~importance:medium ~difficulty:moderate redo styling of post detail page:
-						it's bien guez
-				~importance:high ~difficulty:moderate ButtonSecondary links vs buttons don't have the same height
-
-						
-
-		~enhancement
-				~importance:medium ~difficulty:moderate put announcements somewhere else:
-						especially on desktop they could be somewhere else
-				~importance:high ~difficulty:moderate surface errors when enabling notifications:
-						console.error only c pas ouf :clown:
-				~importance:high ~difficulty:moderate
-						order group memberships on user profile by role
-				~importance:low ~difficulty:high
-						implement pagination on /changelog, or at least put a LoadingChurros
-				~importance:medium ~difficulty:high
-						allow reordering bookmarks
