@@ -101,8 +101,6 @@
 
   $: if (totalChangesCount(changes) > 0) open?.();
 
-  let element: HTMLDialogElement;
-
   function flattenVersions(versions: typeof changes) {
     const byCategory = Object.fromEntries(
       ORDER_CHANGELOG_CATEGORIES.map((c) => [c, []]),
@@ -145,7 +143,7 @@
   }
 </script>
 
-<Modal tall notrigger bind:open={_open} on:close={acknowledge}>
+<Modal tall notrigger bind:open={_open} on:close={acknowledge} let:close>
   {@const { first, last } = versionRange(changes)}
   <section class="centered">
     <LogoChurros wordmark />
@@ -182,7 +180,7 @@
   <section class="actions">
     <ButtonSecondary
       on:click={() => {
-        element.close();
+        close();
         acknowledge();
       }}>Fermer</ButtonSecondary
     >
