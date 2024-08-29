@@ -1,7 +1,7 @@
 query PageEventEditImage($id: LocalID!) {
   event(id: $id) {
     id
-    canEdit(assert: "Tu n'as pas les droits pour modifier cet événement")
+    canEditPicture: canEdit(assert: "Tu n'as pas les droits pour modifier cet événement")
     ...FormPicture
   }
 }
