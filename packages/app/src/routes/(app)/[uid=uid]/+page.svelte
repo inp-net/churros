@@ -173,7 +173,12 @@
                 Non cotisant.e
               {/if}
             </div>
-            <!-- TODO Gérer button -->
+            <ButtonSecondary
+              slot="right"
+              href={refroute('/users/[uid]/edit/contributions', $page.params.uid)}
+            >
+              Gérer
+            </ButtonSecondary>
           </SubmenuItem>
         {/if}
       </Submenu>
