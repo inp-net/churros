@@ -105,7 +105,7 @@
   {/if}
 </ModalOrDrawer>
 
-<ModalOrDrawer notrigger bind:open bind:implicitClose={closeMainModal}>
+<ModalOrDrawer tall notrigger bind:open bind:implicitClose={closeMainModal}>
   <svelte:fragment slot="header" let:close>
     <h1>
       {#if issueType === 'bug'}Signaler{:else}Proposer{/if}
