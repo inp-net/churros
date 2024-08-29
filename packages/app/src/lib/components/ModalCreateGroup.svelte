@@ -40,15 +40,12 @@
   let implicitClose: () => void;
 
   $: page.subscribe(({ state }) => {
-    if (state.NAVTOP_CREATING_GROUP) 
-      open?.();
-     else 
-      implicitClose?.();
-    
+    if (state.NAVTOP_CREATING_GROUP) open?.();
+    else implicitClose?.();
   });
 </script>
 
-<ModalOrDrawer bind:open bind:implicitClose let:close>
+<ModalOrDrawer notrigger bind:open bind:implicitClose let:close>
   <h1 slot="header">Créer un nouveau groupe</h1>
 
   <form
