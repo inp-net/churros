@@ -36,59 +36,65 @@
   }
 </script>
 
-{#if mobile}
-  <QuickAccessList pins={$AppLayout?.data?.me ?? null} />
-{/if}
+<div class="contents">
+  {#if mobile}
+    <QuickAccessList pins={$AppLayout?.data?.me ?? null} />
+  {/if}
 
-{#if $Birthdays.data}
-  <section class="birthdays">
-    <h2>
-      Anniversaires
-      <InputSelectOneDropdown
-        bind:value={selectedBirthdaysYearTier}
-        label=""
-        options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
-      />
-      <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
-    </h2>
-    <ul class="nobullet">
-      {#each shownBirthdays as { uid, major, birthday, ...user } (uid)}
-        <li>
-          <AvatarPerson
-            href="/users/{uid}"
-            {...user}
-            role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
-              (birthday?.getFullYear() ?? 0)} ans"
-          />
-        </li>
+  {#if $Birthdays.data}
+    <section class="birthdays">
+      <h2>
+        Anniversaires
+        <InputSelectOneDropdown
+          bind:value={selectedBirthdaysYearTier}
+          label=""
+          options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
+        />
+        <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
+      </h2>
+      <ul class="nobullet">
+        {#each shownBirthdays as { uid, major, birthday, ...user } (uid)}
+          <li>
+            <AvatarPerson
+              href="/users/{uid}"
+              {...user}
+              role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
+                (birthday?.getFullYear() ?? 0)} ans"
+            />
+          </li>
+        {:else}
+          <li>
+            {#if selectedBirthdaysYearTier === 'all'}
+              Personne n'est né aujourd'hui :/
+            {:else}
+              Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
+
+  <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
+    {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article }}
+      <CardArticle {article} />
+    {/each}
+    <div class="scroll-end">
+      {#if $PageHomeFeed.pageInfo.hasNextPage}
+        <CardArticle article={null} />
       {:else}
-        <li>
-          {#if selectedBirthdaysYearTier === 'all'}
-            Personne n'est né aujourd'hui :/
-          {:else}
-            Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/
-          {/if}
-        </li>
-      {/each}
-    </ul>
+        <p class="no-more-posts">Plus de posts à afficher!</p>
+        <!-- TODO défi d'inté??? -->
+      {/if}
+    </div>
   </section>
-{/if}
-
-<section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
-  {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article }}
-    <CardArticle {article} />
-  {/each}
-  <div class="scroll-end">
-    {#if $PageHomeFeed.pageInfo.hasNextPage}
-      <CardArticle article={null} />
-    {:else}
-      <p class="no-more-posts">Plus de posts à afficher!</p>
-      <!-- TODO défi d'inté??? -->
-    {/if}
-  </div>
-</section>
+</div>
 
 <style>
+  .contents {
+    padding: 0 1rem;
+  }
+
   section.articles {
     display: flex;
     flex-direction: column;
