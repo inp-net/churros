@@ -2,7 +2,7 @@ import { load_RootLayout } from '$houdini';
 import { setDefaultOptions } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 
-export const ssr = true;
+export const ssr = false;
 
 export const trailingSlash = 'always';
 
