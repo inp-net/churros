@@ -27,6 +27,7 @@
   a {
     position: relative;
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: var(--avatar-size, 1em);
