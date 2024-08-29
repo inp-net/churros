@@ -124,9 +124,17 @@
     try {
       const status = await Notification.requestPermission();
       toasts.debug('got permission status', status);
-      if (status === 'default') throw "T'a refusé les notifications";
-      if (status === 'denied')
-        throw 'Ton navigateur a refusé les notifications. Réinitialise les permissions de churros.inpt.fr dans Chrome ou Safari';
+      if (status === 'default') {
+        toasts.error("T'a refusé les notifications");
+        return;
+      }
+      if (status === 'denied') {
+        toasts.error(
+          'Ton navigateur a refusé les notifications',
+          `Réinitialise les permissions de ${env.PUBLIC_FRONTEND_ORIGIN} dans Chrome ou Safari`,
+        );
+        return;
+      }
 
       toasts.debug('permission granted. aqcuiring sw');
       const sw = await navigator.serviceWorker.ready;
