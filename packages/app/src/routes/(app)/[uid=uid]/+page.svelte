@@ -155,7 +155,7 @@
         {#if profile.schoolUid}
           <SubmenuItem icon={IconStudentUid} subtext="Identifiant de l'école">
             <LoadingText value={profile.schoolUid} />
-            <ButtonCopyToClipboard label text={profile.schoolUid} />
+            <ButtonCopyToClipboard slot="right" label text={profile.schoolUid} />
           </SubmenuItem>
         {/if}
         {#if profile.contributesTo}
