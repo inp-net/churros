@@ -72,3 +72,39 @@ export function canSeeEventLogs(
 ): boolean {
   return canEditEvent(event, user);
 }
+
+export function canAccessEvent(
+  user: Context['user'],
+  event: Prisma.EventGetPayload<{ include: typeof canAccessEvent.prismaIncludes }>,
+) {
+  if (canEditEvent(event, user)) return true;
+
+  switch (event.visibility) {
+    case 'Unlisted':
+    case 'Public': {
+      return true;
+    }
+    case 'SchoolRestricted': {
+      if (!user) return false;
+      return [event.group, ...event.coOrganizers].some(({ studentAssociation: { school } }) =>
+        user.major?.schools.some((s) => s.uid === school.uid),
+      );
+    }
+    case 'GroupRestricted': {
+      if (!user) return false;
+      // TODO handle subgroups
+      return [event.group, ...event.coOrganizers].some(({ groupId }) =>
+        user.groups.some((g) => g.groupId === groupId),
+      );
+    }
+    case 'Private': {
+      return false;
+    }
+  }
+}
+
+canAccessEvent.prismaIncludes = {
+  ...canEditEventPrismaIncludes,
+  group: { include: { studentAssociation: { include: { school: true } } } },
+  coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+} as const satisfies Prisma.EventInclude;
