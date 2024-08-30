@@ -16,10 +16,5 @@ echo '
 -------------------------------------------------------------------------------------------------------------------
 '
 
-echo 'Running migrations...'
-yarn prisma migrate deploy
-echo 'Migrated!'
-
-
 echo 'Starting churros api...'
 yarn workspace @churros/api start
