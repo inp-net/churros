@@ -320,6 +320,10 @@ export const topnavConfigs: Partial<{
     back: route('/'),
     actions: [],
   },
+  '/(app)/birthdays': {
+    title: 'Anniversaires',
+    actions: [],
+  },
   '/(app)/services': {
     quickAction: quickActionAdd,
     actions: [

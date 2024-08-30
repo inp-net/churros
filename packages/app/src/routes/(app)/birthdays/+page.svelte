@@ -1,23 +1,45 @@
 <script lang="ts">
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import { format, parse } from 'date-fns';
-  import type { PageData } from './$types';
   import fr from 'date-fns/locale/fr/index.js';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import type { PageData } from './$houdini';
+  import { notNull } from '$lib/typing';
+  import { loaded } from '$lib/loading';
 
   export let data: PageData;
+  $: ({ PageBirthdays } = data);
 
-  const groupedByBirthday: Record<string, Array<(typeof data)['birthdays'][number]>> = {};
-
-  $: {
-    for (const user of data.birthdays) {
+  function groupedByBirthday(birthdays: NonNullable<(typeof $PageBirthdays)['data']>['birthdays']) {
+    const grouped: Record<
+      string,
+      Array<
+        (typeof birthdays)[number] & {
+          uid: string;
+          birthday: Date | null;
+        }
+      >
+    > = {};
+    for (const user of birthdays) {
       if (!user.birthday) continue;
+      if (!loaded(user.birthday)) continue;
+      if (!loaded(user.uid)) continue;
       let key = format(user.birthday, 'd MMMM', { locale: fr });
       if (key === format(new Date(), 'd MMMM', { locale: fr })) key = "Aujourd'hui";
 
-      if (key in groupedByBirthday) groupedByBirthday[key].push(user);
-      else groupedByBirthday[key] = [user];
+      if (key in grouped) {
+        grouped[key].push({ ...user, birthday: user.birthday, uid: user.uid });
+      } else {
+        grouped[key] = [
+          {
+            ...user,
+            birthday: user.birthday,
+            uid: user.uid,
+          },
+        ];
+      }
     }
+    return grouped;
   }
 
   const parseBackDisplayedDate = (date: string) => {
@@ -29,63 +51,32 @@
     parseBackDisplayedDate(b).valueOf() - parseBackDisplayedDate(a).valueOf();
 </script>
 
-<div class="content">
-  <h1><ButtonBack /> Anniversaires</h1>
-
-  <ul class="nobullet birthdays">
-    {#each Object.entries(groupedByBirthday)
-      .sort(([a, _], [b, _2]) => sortWithDisplayDate(a, b))
-      .reverse() as [birthday, users] (birthday)}
-      <li class="birthday">
-        <h2>{birthday}</h2>
-        <ul class="nobullet">
-          {#each users.filter(Boolean) as { uid, major, birthday, ...user } (uid)}
-            <li>
-              <AvatarPerson
-                href="/users/{uid}"
-                {...user}
-                role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
-                  (birthday?.getFullYear() ?? 0)} ans"
-              />
-            </li>
-          {/each}
-        </ul>
-      </li>
-    {/each}
-  </ul>
-</div>
+<MaybeError result={$PageBirthdays} let:data={{ birthdays }}>
+  <div class="content">
+    <ul class="nobullet birthdays">
+      {#each Object.entries(groupedByBirthday(birthdays))
+        .sort(([a, _], [b, _2]) => sortWithDisplayDate(a, b))
+        .reverse() as [birthday, users] (birthday)}
+        <li class="birthday">
+          <h2 class="typo-field-label">{birthday}</h2>
+          <ul class="nobullet">
+            {#each users.filter(notNull) as user (user.uid)}
+              <li>
+                <AvatarUser name {user} />
+              </li>
+            {/each}
+          </ul>
+        </li>
+      {/each}
+    </ul>
+  </div>
+</MaybeError>
 
 <style>
-  .content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  h1 {
-    display: flex;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
   .birthdays {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center;
-  }
-
-  h2 {
-    text-align: center;
-  }
-
-  @media (max-width: 1200px) {
-    .birthdays {
-      flex-direction: column;
-    }
-
-    .birthday ul {
-      max-width: 400px;
-      margin: 0 auto;
-    }
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 1.2rem;
   }
 </style>

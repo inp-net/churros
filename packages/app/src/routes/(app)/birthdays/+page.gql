@@ -1,0 +1,7 @@
+query PageBirthdays {
+  birthdays(width: 10) @loading {
+    birthday
+    uid
+    ...AvatarUser
+  }
+}
