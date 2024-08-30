@@ -51,6 +51,14 @@
     });
   });
 
+  onMount(() => {
+    document.querySelector('#loading-overlay')?.classList.remove('visible');
+    setTimeout(() => {
+      document.querySelector('#loading-overlay')?.remove();
+      document.body.classList.remove('loading');
+    }, 1000);
+  });
+
   type NProgress = {
     start: () => void;
     done: () => void;
