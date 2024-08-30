@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import CardGroup from '$lib/components/CardGroup.svelte';
@@ -8,7 +7,6 @@
   import { debugging } from '$lib/debugging';
   import IconSearch from '~icons/msl/search';
   import type { PageData } from './$houdini';
-  import { cache } from '$houdini';
 
   export let data: PageData;
   $: ({ PageSearch } = data);
@@ -17,10 +15,12 @@
   let q = initialQ;
 
   const submitSearchQuery = async () => {
-    cache.markStale('UserSearchResult');
-    cache.markStale('GroupSearchResult');
-    await PageSearch.fetch({ variables: { q } });
-    pushState(`/search/${encodeURIComponent(q)}`, {});
+    // Works in dev but not in prod 🤡
+    // cache.markStale('UserSearchResult');
+    // cache.markStale('GroupSearchResult');
+    // await PageSearch.fetch({ variables: { q } });
+    // pushState(`/search/${encodeURIComponent(q)}`, {});
+    window.location.href = `/search/${encodeURIComponent(q)}`;
   };
 </script>
 
