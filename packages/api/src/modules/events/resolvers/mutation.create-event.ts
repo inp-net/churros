@@ -43,6 +43,14 @@ builder.mutationField('createEvent', (t) =>
           contactMail: group.email,
           author: { connect: { id: user.id } },
           group: { connect: { id: group.id } },
+          managers: {
+            create: {
+              userId: user.id,
+              canEdit: true,
+              canEditPermissions: true,
+              canVerifyRegistrations: true,
+            },
+          },
         },
       });
     },
