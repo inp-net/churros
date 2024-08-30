@@ -8,6 +8,7 @@
   import { debugging } from '$lib/debugging';
   import IconSearch from '~icons/msl/search';
   import type { PageData } from './$houdini';
+  import { cache } from '$houdini';
 
   export let data: PageData;
   $: ({ PageSearch } = data);
@@ -16,6 +17,8 @@
   let q = initialQ;
 
   const submitSearchQuery = async () => {
+    cache.markStale('UserSearchResult');
+    cache.markStale('GroupSearchResult');
     await PageSearch.fetch({ variables: { q } });
     pushState(`/search/${encodeURIComponent(q)}`, {});
   };
