@@ -4,8 +4,10 @@
   import IndicatorVisibility from './IndicatorVisibility.svelte';
   import { tooltip } from '$lib/tooltip';
   import type { Visibility$options } from '$houdini';
+  import { mapLoading, type MaybeLoading } from '$lib/loading';
+  import LoadingText from '$lib/components/LoadingText.svelte';
 
-  export let value: Visibility$options;
+  export let value: MaybeLoading<Visibility$options>;
   export let name: string | undefined = undefined;
   export let disabled = false;
   export let help: string | undefined = undefined;
@@ -13,7 +15,8 @@
 
 <label use:tooltip={help} class="input-visibility" class:muted={disabled}>
   <IndicatorVisibility visibility={value}></IndicatorVisibility>
-  <span class="text">{DISPLAY_VISIBILITIES[value]}</span>
+  <span class="text"><LoadingText value={mapLoading(value, (v) => DISPLAY_VISIBILITIES[v])} /></span
+  >
   <select {disabled} {name} bind:value>
     {#each ORDER_VISIBILITIES as visibility}
       <option value={visibility}>

@@ -24,10 +24,11 @@
 <InputField {hint} {errors} {label} {required}>
   <BaseInputText
     type="number"
-    inputmode="numeric"
+    inputmode="decimal"
     bind:value
     on:input
     on:change
+    on:blur
     on:action
     {autocomplete}
     {name}

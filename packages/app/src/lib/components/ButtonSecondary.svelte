@@ -24,6 +24,8 @@
   export let tabindex = 0;
   export let help = '';
   export let highlighted = false;
+  export let stretches = false;
+  export let noClientSideNavigation = false;
 </script>
 
 <svelte:element
@@ -32,10 +34,13 @@
   target={newTab ? '_blank' : undefined}
   type={submits ? 'submit' : 'button'}
   use:tooltip={help || undefined}
+  data-sveltekit-reload={noClientSideNavigation ? true : undefined}
   class="button-secondary typo-paragraph"
   class:danger
   class:highlighted
   class:success
+  on:contextmenu
+  class:stretches
   class:circle
   class:inside-prose={insideProse}
   href={disabled ? undefined : href}
@@ -60,7 +65,7 @@
   <slot />
 </svelte:element>
 
-<style>
+<style lang="scss">
   .button-secondary {
     position: relative;
     display: inline-flex;
@@ -70,23 +75,32 @@
     align-items: center;
     height: fit-content;
     padding: 0.25rem 0.75rem;
-    color: var(--text);
+
+    // https://stackoverflow.com/a/68141091
+    line-height: inherit;
     cursor: pointer;
-    background: var(--bg);
-    border: var(--border-block) solid var(--border);
-    border-radius: 1000px;
+    background: transparent;
+    border: solid var(--border-block);
+    border-radius: 5px;
     transition: all 200ms ease;
   }
 
+  .button-secondary.stretches {
+    flex-grow: 1;
+    justify-content: center;
+  }
+
   .button-secondary.highlighted {
-    color: var(--primary-bg);
-    background-color: #9ce0ff;
-    border-color: var(--primary-bg);
+    color: var(--primary);
+    background-color: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .button-secondary:disabled,
   .button-secondary[disabled] {
     cursor: not-allowed;
+
+    --color: var(--shy);
   }
 
   .button-secondary:disabled:not(.muted) {
@@ -104,11 +118,8 @@
 
   .button-secondary:not(:disabled):hover,
   .button-secondary:not(:disabled):focus-visible {
-    color: var(--hover-text);
-
-    /* color: var(--bg); */
-    background: var(--secondary-bg);
-    border: var(--border-block) solid var(--secondary-hover-border, var(--secondary-bg));
+    color: var(--original-bg);
+    background: var(--color, var(--fg));
   }
 
   .icon {

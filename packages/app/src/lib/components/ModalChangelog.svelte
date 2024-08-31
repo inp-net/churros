@@ -32,12 +32,15 @@
   import { createEventDispatcher } from 'svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LogoChurros from './LogoChurros.svelte';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalOrDrawer.svelte';
   import { track } from '$lib/analytics';
 
   const dispatch = createEventDispatcher();
 
-  export let open: boolean;
+  let _open: () => void;
+  export const open = () => {
+    if (flattenVersions(changes).some(([_, changes]) => changes.length > 0)) _open?.();
+  };
 
   graphql(`
     fragment ModalChangelogChange on ReleaseChange {
@@ -96,7 +99,7 @@
   );
   $: changes = $data && 'data' in $data ? $data.data : [];
 
-  let element: HTMLDialogElement;
+  $: if (totalChangesCount(changes) > 0) open?.();
 
   function flattenVersions(versions: typeof changes) {
     const byCategory = Object.fromEntries(
@@ -140,12 +143,7 @@
   }
 </script>
 
-<Modal
-  opened={open && totalChangesCount(changes) > 0}
-  maxWidth="800px"
-  bind:element
-  on:close-by-outside-click={acknowledge}
->
+<Modal tall notrigger bind:open={_open} on:close={acknowledge} let:close>
   {@const { first, last } = versionRange(changes)}
   <section class="centered">
     <LogoChurros wordmark />
@@ -182,7 +180,7 @@
   <section class="actions">
     <ButtonSecondary
       on:click={() => {
-        element.close();
+        close();
         acknowledge();
       }}>Fermer</ButtonSecondary
     >
@@ -215,7 +213,6 @@
   h2 {
     margin: 2rem 0 1rem;
     line-height: 0.7;
-    color: var(--link);
   }
 
   h2::after {
@@ -223,7 +220,7 @@
     width: 100%;
     height: 0.2em;
     content: '';
-    background: var(--link);
+    background: currentcolor;
     border-radius: var(--radius-block);
   }
 

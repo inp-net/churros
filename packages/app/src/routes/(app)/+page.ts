@@ -1,7 +1,5 @@
-import { loadAll, load_Birthdays, load_MyGroups, load_PageHomeFeed } from '$houdini';
-
-export const ssr = true;
+import { loadAll, load_Birthdays, load_PageHomeFeed } from '$houdini';
 
 export async function load(event) {
-  return loadAll(load_PageHomeFeed({ event }), load_Birthdays({ event }), load_MyGroups({ event }));
+  return loadAll(load_PageHomeFeed({ event }), load_Birthdays({ event }));
 }

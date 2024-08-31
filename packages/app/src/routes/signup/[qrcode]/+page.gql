@@ -1,0 +1,6 @@
+query PageQuickSignup($qrcode: LocalID!) {
+  ...FormSignup
+  quickSignup(id: $qrcode) {
+    ...FormSignupQuickSignup
+  }
+}

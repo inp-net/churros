@@ -1,13 +1,20 @@
 export function authorIsBeneficiary(
-  author: { uid: string; fullName: string; firstName: string; lastName: string; email: string },
-  beneficiary: string,
+  author: {
+    id: string;
+    uid: string;
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  },
+  externalBeneficiary: string | null,
+  internalBeneficiaryId: string | null,
   authorEmail: string,
 ) {
   return (
-    !beneficiary.trim() ||
-    author.uid === beneficiary ||
-    author.fullName === beneficiary ||
-    `${author.firstName} ${author.lastName}` === beneficiary ||
+    !externalBeneficiary?.trim() ||
+    !internalBeneficiaryId ||
+    author.id === internalBeneficiaryId ||
     authorEmail === author.email
   );
 }

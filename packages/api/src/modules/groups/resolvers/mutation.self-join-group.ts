@@ -1,4 +1,4 @@
-import { builder, log, prisma, purgeUserSessions, UnauthorizedError } from '#lib';
+import { builder, log, prisma, purgeSessionsUser, UnauthorizedError } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { addMemberToGroupMailingList } from '#modules/mails';
 import { GraphQLError } from 'graphql';
@@ -8,6 +8,7 @@ import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../in
 builder.mutationField('selfJoinGroup', (t) =>
   t.prismaField({
     type: GroupMemberType,
+    errors: {},
     args: { uid: t.arg({ type: UIDScalar }) },
     authScopes: { student: true },
     async resolve(query, _, { uid }, { user: me }) {
@@ -28,7 +29,7 @@ builder.mutationField('selfJoinGroup', (t) =>
       )
         throw new GraphQLError(`Tu n'es pas cotisant·e pour ${group.studentAssociation?.name}.`);
 
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       const groupMember = await prisma.groupMember.create({
         ...query,
         data: {

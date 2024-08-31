@@ -1,11 +1,10 @@
-// TODO rename to user.services (services available to a user)
 import { builder, prisma } from '#lib';
-
-import { ServiceType } from '../index.js';
+import { ServiceType, ServiceTypePrismaIncludes } from '../index.js';
 
 builder.queryField('userServices', (t) =>
   t.prismaField({
     type: [ServiceType],
+    deprecationReason: 'Use `services(mine: true)` instead',
     async resolve(query, _, {}, { user: me }) {
       if (!me) return [];
 
@@ -20,9 +19,7 @@ builder.queryField('userServices', (t) =>
             },
           },
         },
-        include: {
-          group: true,
-        },
+        include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
       return services;

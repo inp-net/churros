@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { NotificationChannel } from '$lib/zeus';
+  import type { NotificationChannel$options } from '$houdini';
+  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
   import { formatDistanceToNow } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
-  import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
 
   export let href: string;
-  export let channel: NotificationChannel;
+  export let channel: NotificationChannel$options;
   export let title: string;
   export let body: string;
-  export let timestamp: Date | undefined = undefined;
+  export let timestamp: Date | null = null;
   export let actions: Array<{ name: string; value: string }>;
   const date = timestamp
     ? formatDistanceToNow(timestamp, { addSuffix: true, locale: fr })
@@ -48,15 +48,15 @@
     width: 100%;
     height: var(--size);
     padding: 1rem 1.5rem;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
   .content:hover,
   .content:focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
-    border-color: var(--hover-border);
+    color: var(--primary);
+    background: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .icon {
@@ -107,16 +107,16 @@
   }
 
   .mono {
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-top-right-radius: var(--radius-block);
     border-bottom-right-radius: var(--radius-block);
   }
 
   .mono:hover,
   .mono:focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
-    border-color: var(--hover-border);
+    color: var(--primary);
+    background: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .action-label {
@@ -135,22 +135,22 @@
   }
 
   .duo .up {
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-bottom-width: calc(var(--border-block) / 2);
     border-top-right-radius: var(--radius-block);
   }
 
   .duo .down {
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-top-width: calc(var(--border-block) / 2);
     border-bottom-right-radius: var(--radius-block);
   }
 
   .duo .action-label:hover,
   .duo .action-label:focus-visible {
-    color: var(--hover-text);
-    background: var(--hover-bg);
-    border-color: var(--hover-border);
+    color: var(--primary);
+    background: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   .card-notification.has-actions .content {

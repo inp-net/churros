@@ -7,11 +7,12 @@
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/ldapjs": "^3.0.6",
-    "tsx": "^4.7.1"
+    "tsx": "^4.17.0"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.js"
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false ./src/index.js",
+    "check": "exit 0"
   },
   "type": "module",
   "volta": {

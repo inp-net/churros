@@ -7,12 +7,12 @@
     Visibility,
     type FormArticle,
     type FormArticleGroups$data,
-    type InputEvent$data,
     type UpdateArticle$input,
   } from '$houdini';
   import { track } from '$lib/analytics';
   import Alert from '$lib/components/Alert.svelte';
   import InputLinks from '$lib/components/InputLinks.svelte';
+  import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { HELP_VISIBILITY, HELP_VISIBILITY_DYNAMIC } from '$lib/display';
   import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
@@ -25,17 +25,14 @@
   import IconClose from '~icons/mdi/close';
   import IconSend from '~icons/mdi/send-outline';
   import BadgeVisibility from './BadgeVisibility.svelte';
-  import ButtonBack from './ButtonBack.svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputGroups from './InputGroups.houdini.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputPillDate from './InputPillDate.svelte';
-  import InputPillEvent from './InputPillEvent.svelte';
-  import InputText from './InputText.svelte';
   import InputVisibility from './InputVisibility.houdini.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
 
   export let afterGoTo: (article: { group: { uid: string }; localID: string }) => string = (
     article,
@@ -58,11 +55,6 @@
       studentAssociation {
         school {
           name
-        }
-      }
-      events {
-        nodes {
-          ...InputEvent @mask_disable
         }
       }
     }
@@ -113,23 +105,15 @@
             title
           }
         }
-        eventId
         event {
-          id
-          uid
           title
-          startsAt
-          endsAt
-          visibility
-          pictureFile
-          recurringUntil
-          location
-          frequency
+          localID
         }
         links {
-          computedValue
-          value
-          name
+          computedValue: url
+          url
+          rawURL
+          text
         }
         publishedAt
         pictureFile
@@ -146,7 +130,7 @@
   // If $data is not provided, immediately mark the data has loaded
   // (there's no data to load)
   let inputLoaded = Boolean($data);
-  let input: Omit<UpdateArticle$input, 'group' | 'eventId'> = {
+  let input: Omit<UpdateArticle$input, 'group'> = {
     body: '',
     id: '',
     links: [],
@@ -156,12 +140,11 @@
   };
 
   export let selectedGroup: FormArticleGroups$data | null = null;
-  export let selectedEvent: InputEvent$data | null = null;
 
   $: if (!inputLoaded && allLoaded($data) && $data) {
     input = structuredClone({
       ...$data,
-      links: $data.links.map(({ value, name }) => ({ value, name })),
+      links: $data.links.map(({ rawURL, text }) => ({ url: rawURL, text })),
       group: $data.group.uid,
     });
     inputLoaded = true;
@@ -182,36 +165,36 @@
 
   async function updateArticle() {
     if (!allLoaded($data)) return;
-    if (!selectedGroup) {
-      toasts.error('Impossible de créer le post', 'Il faut choisir un groupe');
-      return;
-    }
     await graphql(`
       mutation UpdateArticle(
         $id: ID!
-        $eventId: ID
         $group: UID!
         $title: String!
         $body: String!
         $publishedAt: DateTime!
-        $links: [LinkInput!]!
         $visibility: Visibility!
+        $links: [LinkInput!]!
       ) {
+        addLinks(id: $id, links: $links, duplicates: Replace) {
+          ... on MutationAddLinksSuccess {
+            data {
+              __typename
+            }
+          }
+          ...MutationErrors
+        }
         upsertArticle(
           id: $id
-          event: $eventId
           group: $group
           title: $title
           body: $body
           publishedAt: $publishedAt
-          links: $links
           visibility: $visibility
         ) {
-          ... on Error {
-            message
-          }
+          ...MutationErrors
           ... on MutationUpsertArticleSuccess {
             data {
+              __typename
               localID
               group {
                 uid
@@ -224,8 +207,7 @@
     `)
       .mutate({
         ...input,
-        group: selectedGroup.uid,
-        eventId: selectedEvent?.id,
+        group: selectedGroup?.uid || $data?.group.uid || '',
       })
       .then((result) => {
         if (
@@ -235,8 +217,10 @@
             `Ton post a bien été ${input.id ? 'modifié' : 'créé'}`,
             'Impossible de sauvegarder le post',
           )
-        )
+        ) {
+          // @ts-expect-error TODO fix typing in toasts.mutation
           goto(afterGoTo(result.data.upsertArticle.data));
+        }
       });
   }
 
@@ -300,6 +284,22 @@
   </div>
 </Modal>
 
+{#if $data?.event}
+  <Alert theme="success">
+    <p>
+      Ce post est lié à l'évènement
+      <LoadingText value={$data.event.title} />
+    </p>
+  </Alert>
+{:else}
+  <Alert theme="primary">
+    <p>
+      Pour créer un post lié à un évènement, se rendre sur la page de l'évènement puis choisir ⋮ >
+      Post lié
+    </p>
+  </Alert>
+{/if}
+
 <form
   class="form-article"
   on:submit|preventDefault={async () => {
@@ -315,8 +315,7 @@
   }}
 >
   <h1>
-    <ButtonBack />
-    <InputText required label="" bind:value={input.title}></InputText>
+    <InputTextGhost placeholder="Titre" required label="" bind:value={input.title}></InputTextGhost>
   </h1>
   <div class="content">
     <div class="description">
@@ -348,13 +347,6 @@
     </p>
   </div>
   <section class="pills">
-    {#if selectedGroup}
-      <InputPillEvent
-        suggestions={groups.flatMap((g) => g.events.nodes)}
-        bind:event={selectedEvent}
-        group={selectedGroup.uid}
-      ></InputPillEvent>
-    {/if}
     {#if !$data || !$data.published}
       <InputPillDate
         after={new Date()}
@@ -456,6 +448,7 @@
   form {
     display: flex;
     flex-flow: column wrap;
+    margin-top: 2rem;
   }
 
   h1 {
@@ -517,7 +510,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   section.author :global(.input-visibility) {

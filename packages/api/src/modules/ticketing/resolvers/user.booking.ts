@@ -8,7 +8,12 @@ builder.prismaObjectField(UserType, 'booking', (t) =>
     type: RegistrationType,
     args: {
       event: t.arg.id(),
-      beneficiary: t.arg.string({ required: false }),
+      // TODO: split into 2 arguments
+      beneficiary: t.arg.string({
+        required: false,
+        description:
+          'Identifiant complet (avec le préfixe) pour un bénéficiaire avec compte Churros, ou texte libre pour un bénéficiaire externe',
+      }),
     },
     async resolve(query, _, { event: eventId, beneficiary: argBeneficiary }, { user }) {
       if (!user) throw new GraphQLError('User not found');
@@ -21,16 +26,18 @@ builder.prismaObjectField(UserType, 'booking', (t) =>
       });
 
       const registration = registrations.find(
-        ({ author, beneficiary, authorEmail }) =>
+        ({ author, externalBeneficiary, internalBeneficiaryId, authorEmail }) =>
           (author?.uid === user.uid || authorEmail === user.email) &&
           ((author
             ? authorIsBeneficiary(
                 { ...author, fullName: fullName(author) },
-                beneficiary,
+                externalBeneficiary,
+                internalBeneficiaryId,
                 authorEmail,
               )
             : false) ||
-            beneficiary === argBeneficiary),
+            externalBeneficiary === argBeneficiary ||
+            internalBeneficiaryId === argBeneficiary),
       );
 
       if (!registration) throw new GraphQLError('Registration not found');

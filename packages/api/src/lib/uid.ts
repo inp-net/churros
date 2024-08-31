@@ -31,4 +31,7 @@ export async function uidIsFree(uid: string): Promise<boolean> {
   return true;
 }
 
-export const freeUidValidator = [uidIsFree, (uid: string) => `@${uid} est indisponible`] as const;
+export const freeUidValidator = [
+  [(uid: string) => uid.length >= 3, () => '3 caractères minimum'],
+  [uidIsFree, (uid: string) => `@${uid} est indisponible`],
+] as const;

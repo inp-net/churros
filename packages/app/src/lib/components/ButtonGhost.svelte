@@ -15,6 +15,7 @@
   export let tight = false;
   export let inline = false;
   export let loading = false;
+  export let hovering = false;
 </script>
 
 <svelte:element
@@ -30,17 +31,34 @@
   class:tight
   class:danger
   class:success
+  on:mouseenter={() => {
+    hovering = true;
+  }}
+  on:mouseleave={() => {
+    hovering = false;
+  }}
+  on:focus={() => {
+    hovering = true;
+  }}
+  on:blur={() => {
+    hovering = false;
+  }}
   {disabled}
   {type}
   {href}
   use:tooltip={help}
   class="button-ghost {$$restProps.class}"
+  class:has-hover-content={$$slots.hovering}
   on:click
   on:mousedown
   class:skeleton-effect-wave={loading}
 >
   {#if loading}
     <div class="loading-blackout"><slot /></div>
+  {:else if hovering}
+    <slot name="hovering">
+      <slot></slot>
+    </slot>
   {:else}
     <slot />
   {/if}
@@ -55,11 +73,6 @@
     opacity: 0;
   }
 
-  .button-ghost.danger,
-  .button-ghost.success {
-    color: var(--link);
-  }
-
   .button-ghost {
     --bg: transparent;
 
@@ -67,6 +80,13 @@
     width: max-content;
     padding: 0.25em;
     font-size: 1em;
+    color: var(--text);
+    word-wrap: break-word;
+    white-space: normal;
+    background: var(--bg);
+    border: var(--border-inline) solid transparent;
+    border-radius: var(--radius-inline);
+    outline: 0 solid var(--fg);
 
     &.tight {
       padding: 0;
@@ -75,14 +95,6 @@
     &:not(.inline) {
       display: flex;
     }
-
-    color: var(--text);
-    word-wrap: break-word;
-    white-space: normal;
-    background: var(--bg);
-    border: var(--border-inline) solid transparent;
-    border-radius: var(--radius-inline);
-    outline: 0 solid var(--ring);
 
     &.disabled {
       cursor: not-allowed;
@@ -93,27 +105,18 @@
       cursor: pointer;
 
       &:focus-visible {
-        outline-width: 0.25rem;
+        outline-width: 1px;
       }
 
       &:hover,
       &:focus-visible {
-        --text: var(--hover-text);
-
-        &.danger,
-        &.success {
-          --text: var(--hover-text);
-
-          background: var(--bg);
-        }
-
-        &:not(.dark-shadow) {
-          background: var(--hover-bg);
-        }
-
         &.dark-shadow {
           background: rgba($color: #fff, $alpha: 50%);
         }
+      }
+
+      &:hover:not(.has-hover-content) {
+        color: var(--shy);
       }
     }
   }

@@ -1,316 +1,261 @@
 <script lang="ts">
-  import ItemTicket from '$lib/components/ItemTicket.svelte';
-  import IconPlus from '~icons/mdi/plus';
-  import { me } from '$lib/session';
-  import type { PageData } from './$types';
-  import CardArticle from '$lib/components/CardArticle.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import Header from './Header.svelte';
-  import { groupLogoSrc } from '$lib/logos';
-  import { isDark } from '$lib/theme';
-  import AreaReactions from './AreaReactions.svelte';
-  import { calendarLinks } from '$lib/calendars';
-  import IconGoogleCalendar from '~icons/logos/google-calendar';
-  import IconCalendar from '~icons/mdi/calendar-export-outline';
-  import { onMount } from 'svelte';
-  import { toasts } from '$lib/toasts';
-  import { subscribe } from '$lib/subscriptions';
+  import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
-  import IconForm from '~icons/mdi/form-select';
-  import { route } from '$lib/ROUTES';
-
+  import CardBooking from '$lib/components/CardBooking.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import ButtonLike from '$lib/components/ButtonLike.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import CardTicket from '$lib/components/CardTicket.svelte';
+  import HTMLContent from '$lib/components/HTMLContent.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import PillLink from '$lib/components/PillLink.svelte';
+  import TextEventDates from '$lib/components/TextEventDates.svelte';
+  import { sentenceJoin } from '$lib/i18n';
+  import { LoadingText, loading, mapAllLoading } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
+  import IconDate from '~icons/msl/calendar-today-outline';
+  import IconLocation from '~icons/msl/location-on-outline';
+  import type { PageData } from './$houdini';
+  import ModalBookTicket from './ModalBookTicket.svelte';
+  import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
   export let data: PageData;
 
-  const event = data.event!;
+  $: ({ PageEventDetail, RootLayout } = data);
 
-  let {
-    descriptionHtml,
-    links,
-    group,
-    coOrganizers,
-    contactMail,
-    articles,
-    capacity,
-    reactionCounts,
-    myReactions,
-    forms,
-    placesLeft,
-    tickets,
-  } = event;
+  const ORGANIZERS_LIMIT = 3;
 
-  /**
-   * List of ticket IDs that received new data from the websocket connection
-   */
-  let updatedTicketsIds: string[] = [];
+  let openOrganizersDetailModal: () => void;
 
-  onMount(() => {
-    $subscribe(
-      {
-        event: [
-          { id: $page.params.id },
-          { placesLeft: true, tickets: { placesLeft: true, id: true } },
-        ],
-      },
-      async (eventData) => {
-        const freshData = await eventData;
-        if ('errors' in freshData) return;
-        if (!freshData.event) return;
-        placesLeft = freshData.event.placesLeft as unknown as number | null;
-        // @ts-expect-error zeus est con
-        tickets = data.event.tickets.map((t) => {
-          const freshTicket = freshData.event?.tickets.find((t2) => t2?.id === t.id);
-          if ((freshTicket?.placesLeft as unknown as number | null) !== t.placesLeft)
-            updatedTicketsIds.push(t.id);
-          return { ...t, ...freshTicket };
-        });
-        setTimeout(() => {
-          updatedTicketsIds = [];
-        }, 500);
-      },
-    );
-  });
+  let bookingTicketId: string | undefined = undefined;
 
-  function notUndefined<T>(x: T | undefined): x is T {
-    return x !== undefined;
-  }
+  let bookTicket: () => void;
 
-  $: usersRegistration = tickets
-    .flatMap((t) => t.registrations?.filter(notUndefined) ?? [])
-    .filter(({ beneficiary, author }) => author?.uid === $me?.uid || beneficiary === $me?.uid);
+  $: if ($page.url.hash.startsWith('#book/'))
+    bookingTicketId = $page.url.hash.replace('#book/', '');
 
-  const bookingURL = (registrationId: string) =>
-    `/bookings/${registrationId.split(':', 2)[1].toUpperCase()}`;
-
-  const calendarURLs = calendarLinks(event);
-
-  onMount(() => {
-    if (data.claimedCode) toasts.success('Ton code de réduction a bien été appliqué ;)');
-    else if (data.claimCodeError) toasts.error(data.claimCodeError);
-  });
+  $: if (bookingTicketId) bookTicket?.();
 </script>
 
-<Header {...event} />
+<svelte:window
+  on:NAVTOP_COPY_ID={async () => {
+    await copyToClipboard(loading($PageEventDetail.data?.event.id, '') ?? '');
+  }}
+/>
 
-{#if usersRegistration.length > 0}
-  <ul class="nobullet bookings">
-    {#each usersRegistration as { ticket, beneficiary, author, authorIsBeneficiary, beneficiaryUser, id, opposed, cancelled }}
-      {#if !opposed && !cancelled}
-        <li>
-          <ButtonPrimary href={bookingURL(id)}
-            >{#if authorIsBeneficiary || author?.uid !== $me?.uid}Ma place{:else}Place pour {#if beneficiaryUser}{beneficiaryUser.firstName}
-                {beneficiaryUser.lastName}{:else}{beneficiary}{/if}{/if}
-            <span class="ticket-name">{ticket.name}</span></ButtonPrimary
-          >
-        </li>
-      {/if}
-    {/each}
-  </ul>
-{/if}
-
-<section class="description user-html">
-  {#if links.length + forms.length > 0}
-    <ul class="links nobullet">
-      {#each forms as form}
-        <li>
-          <ButtonSecondary icon={IconForm} href="/forms/{form.localId}/answer"
-            >{form.title}</ButtonSecondary
-          >
-        </li>
-      {/each}
-      {#each links as link}
-        <li>
-          <ButtonSecondary href={link.computedValue}>{link.name}</ButtonSecondary>
-        </li>
-      {/each}
-    </ul>
+<MaybeError result={$PageEventDetail} let:data={{ event, me }}>
+  {@const highlightedBooking = event.highlightedBooking.at(0)}
+  {@const tooManyOrganizers = [event.organizer, ...event.coOrganizers].length > ORGANIZERS_LIMIT}
+  {#if tooManyOrganizers}
+    <ModalOrDrawer removeBottomPadding bind:open={openOrganizersDetailModal}>
+      <h2 slot="header" class="all-organizers">Groupes organisateurs</h2>
+      <ul class="nobullet avatars-details">
+        {#each [event.organizer, ...event.coOrganizers] as group}
+          <li class="avatar">
+            <AvatarGroup name {group} />
+          </li>
+        {/each}
+      </ul>
+    </ModalOrDrawer>
   {/if}
-
-  <div data-user-html>
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html descriptionHtml}
-  </div>
-</section>
-
-<section class="reactions">
-  <AreaReactions bind:myReactions bind:reactionCounts connection={{ eventId: event.id }} />
-</section>
-
-{#if tickets.length > 0}
-  <section class="tickets">
-    <h2>
-      Places {#if placesLeft !== undefined && placesLeft !== null}<span class="places">
-          {#if placesLeft === Number.POSITIVE_INFINITY || capacity === 0}
-            Illimitées
-          {:else}
-            <span class="left">{placesLeft} restante{placesLeft > 1 ? 's' : ''}</span><span
-              class="capacity">{capacity}</span
-            >
-          {/if}
-        </span>{/if}
-    </h2>
-
-    <ul class="nobullet">
-      {#each tickets.sort( (a, b) => (a.group?.name ?? '').localeCompare(b.group?.name ?? ''), ) as { id, ...ticket } (id)}
-        <li>
-          <ItemTicket {...ticket} {event} />
-        </li>
-      {/each}
-    </ul>
-  </section>
-{/if}
-
-<section class="add-to-calendar">
-  <h2>Ajouter à mon calendrier</h2>
-  <ul class="nobullet options">
-    <li>
-      <ButtonSecondary icon={IconGoogleCalendar} newTab href={calendarURLs.google}
-        >Google Agenda</ButtonSecondary
-      >
-    </li>
-    <li>
-      <ButtonSecondary icon={IconCalendar} newTab href={calendarURLs.ical}>Autres</ButtonSecondary>
-    </li>
-  </ul>
-</section>
-
-<section class="news">
-  <h2>
-    Actualités
-
-    {#if $me?.admin || event.managers.some(({ user, canEdit }) => user.uid === $me?.uid && canEdit)}
-      <ButtonSecondary icon={IconPlus} href="./write">Post</ButtonSecondary>
+  <ModalBookTicket
+    {me}
+    ticket={event.tickets.find((t) => t.localID === bookingTicketId) ?? null}
+    bind:open={bookTicket}
+    on:close={() => {
+      pushState('#', { bookingTicketId: null });
+    }}
+  />
+  <div class="contents">
+    {#if highlightedBooking}
+      <CardBooking
+        booking={highlightedBooking}
+        hasMoreBookingsCount={event.myBookings.length - 1}
+      />
     {/if}
-  </h2>
-  <ul class="nobullet">
-    {#each articles as { localID, reactionCounts, myReactions, ...article } (localID)}
-      <li>
-        <CardArticle
-          likes={reactionCounts['❤️']}
-          liked={myReactions['❤️']}
-          href={route('/posts/[id]', localID)}
-          {...article}
+    <header>
+      <svelte:element
+        this={tooManyOrganizers ? 'button' : 'div'}
+        class="organizers"
+        on:click={openOrganizersDetailModal}
+        role={tooManyOrganizers ? 'button' : undefined}
+      >
+        <ul class="nobullet avatars">
+          {#each [event.organizer, ...event.coOrganizers].slice(0, ORGANIZERS_LIMIT) as group}
+            <li class="avatar">
+              <AvatarGroup href={tooManyOrganizers ? '' : undefined} {group} />
+            </li>
+          {/each}
+          {#if tooManyOrganizers}
+            <li class="avatar">
+              +{[event.organizer, ...event.coOrganizers].length - ORGANIZERS_LIMIT}
+            </li>
+          {/if}
+        </ul>
+        <div class="text">
+          <LoadingText
+            value={mapAllLoading(
+              [event.organizer.name, ...event.coOrganizers.map((o) => o.name)],
+              (...names) => sentenceJoin(names),
+            )}
+          >
+            Chargement des organisateurs…
+          </LoadingText>
+        </div>
+      </svelte:element>
+      <h2 class="title"><LoadingText value={event.title}>Lorem dolor ipsum</LoadingText></h2>
+      <section class="metadata">
+        <div class="dates">
+          <IconDate />
+          <TextEventDates {event} />
+        </div>
+        {#if event.location}
+          <div class="location">
+            <IconLocation />
+            <LoadingText value={event.location}>Chargement du lieu…</LoadingText>
+          </div>
+        {/if}
+      </section>
+    </header>
+    {#if event.links.length > 0}
+      <ul class="links nobullet">
+        {#each event.links.filter((l) => loading(l.rawURL, null) !== event.externalTicketing?.toString()) as link}
+          <PillLink social {link} />
+        {/each}
+      </ul>
+    {/if}
+    <HTMLContent tag="main" html={event.descriptionHtml}></HTMLContent>
+    <section class="tickets">
+      {#if event.externalTicketing}
+        <CardTicket ticket={null} externalURL={event.externalTicketing} />
+      {/if}
+      {#each event.tickets as ticket}
+        <CardTicket
+          on:book={({ detail }) => {
+            bookingTicketId = detail;
+            bookTicket?.();
+          }}
+          {ticket}
+          details={ticket}
+          places={ticket}
         />
-      </li>
-    {:else}
-      <li class="empty muted">Aucun post pour le moment.</li>
-    {/each}
-  </ul>
-</section>
+      {:else}
+        {#if !$RootLayout.data?.loggedIn}
+          <Alert theme="warning">
+            Il est possible que tu doive <a data-sveltekit-reload href={refroute('/login')}
+              >te connecter</a
+            > pour réserver une place
+          </Alert>
+        {/if}
+      {/each}
+    </section>
 
-<section class="organizer">
-  <h2>
-    Organisé par
-    <ButtonSecondary href="mailto:{contactMail}">Contacter l'orga</ButtonSecondary>
-  </h2>
-  <ul class="nobullet organizers">
-    {#each [group, ...coOrganizers] as g}
-      <li class="organizer-name-and-contact">
-        <a class="organizer-name" href="/groups/{g.uid}">
-          <img src={groupLogoSrc($isDark, g)} alt="" />
-          {g.name}
-        </a>
-      </li>
-    {/each}
-  </ul>
-</section>
+    <section class="actions">
+      <ButtonLike resource={event} />
+      <ButtonShare resource={event} />
+    </section>
+  </div>
+</MaybeError>
 
-<style lang="scss">
-  section {
-    max-width: 1000px;
-    padding: 0 1rem;
-    margin-top: 2rem;
-  }
-
-  h2 {
+<style>
+  .contents {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 2rem;
   }
 
-  .places {
-    display: inline-block;
-  }
-
-  h2 .places {
-    margin-left: auto;
-  }
-
-  ul.links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
-    margin-bottom: 3rem;
-  }
-
-  .tickets ul {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1rem;
-    margin: 0 1rem;
-  }
-
-  .places .left::after {
-    display: inline-block;
-    height: 1.25em;
-    margin: 0.3em;
-    margin-bottom: -0.25em;
-    content: '';
-    background: var(--text);
-    transform: rotate(30deg);
-  }
-
-  h2 .places .left::after {
-    width: 3px;
-  }
-
-  .ticket .places .left::after {
-    width: 1px;
-  }
-
-  .add-to-calendar .options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .organizers {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem 2rem;
-    margin-top: 0.5rem;
-  }
-
-  .organizer-name-and-contact {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .organizer-name {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-
-    img {
-      width: 3rem;
-      height: 3rem;
-      object-fit: contain;
+  @media (max-width: 900px) {
+    .contents {
+      padding: 0 1rem;
     }
   }
 
-  ul.bookings {
+  header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  header .organizers {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.2em;
+
+    --avatar-size: 2rem;
+  }
+
+  header .organizers .avatars {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-right: 0.5em;
+  }
+
+  header .organizers .avatar {
+    display: flex;
+    align-items: center;
+  }
+
+  header .organizers .text {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  header .title {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  header .metadata {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+  }
+
+  header .metadata > div {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .links {
     display: flex;
     flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    font-size: 1.2em;
+  }
+
+  h2.all-organizers {
+    width: 100%;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .avatars-details {
+    display: flex;
+    flex-direction: column;
+
+    --avatar-size: 3rem;
+
     gap: 1rem;
-    justify-content: center;
-    margin: 2rem 0;
+    padding: 0 2rem;
+  }
+
+  .tickets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 </style>

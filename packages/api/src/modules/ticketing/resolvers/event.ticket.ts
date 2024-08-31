@@ -1,41 +1,42 @@
-import { builder, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma } from '#lib';
 import { EventType } from '#modules/events';
+import { LocalID } from '#modules/global';
 import { TicketType } from '#modules/ticketing/types';
 import {
-  userCanSeeTicket,
-  userCanSeeTicketPrismaIncludes,
-  userCanSeeTicketPrismaIncludesForUser,
-} from '#permissions';
+  canSeeTicket,
+  canSeeTicketPrismaIncludes,
+  canSeeTicketPrismaIncludesForUser,
+} from '#modules/ticketing/utils';
 
 builder.prismaObjectField(EventType, 'ticket', (t) =>
   t.prismaField({
     type: TicketType,
     nullable: true,
     args: {
-      slug: t.arg.string({ required: true }),
+      id: t.arg({ type: LocalID }),
     },
-    async authScopes(event, { slug }, { user }) {
+    async authScopes(_, args, { user }) {
+      const id = ensureGlobalId(args.id, 'Ticket');
       const ticket = await prisma.ticket.findUnique({
         where: {
-          eventId_slug: { slug, eventId: event.id },
+          id,
         },
-        include: userCanSeeTicketPrismaIncludes,
+        include: canSeeTicketPrismaIncludes,
       });
       if (!ticket) return true;
       const userWithContributesTo = user
         ? await prisma.user.findUnique({
             where: { id: user.id },
-            include: userCanSeeTicketPrismaIncludesForUser,
+            include: canSeeTicketPrismaIncludesForUser,
           })
-        : undefined;
-      return userCanSeeTicket(ticket, userWithContributesTo);
+        : null;
+      return canSeeTicket(ticket, userWithContributesTo);
     },
-    async resolve(query, event, { slug }) {
+    async resolve(query, _, { id }) {
       return prisma.ticket.findFirst({
         ...query,
         where: {
-          slug,
-          eventId: event.id,
+          id: ensureGlobalId(id, 'Ticket'),
         },
       });
     },

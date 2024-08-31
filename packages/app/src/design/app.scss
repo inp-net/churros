@@ -1,8 +1,6 @@
 @import 'sanitize.css/sanitize';
 @import 'sanitize.css/assets';
 @import 'sanitize.css/typography';
-@import './default-theme';
-@import './themes';
 
 * {
   max-width: 100%;
@@ -41,68 +39,6 @@
   /* Big button */
   --size-big-button: 1.1rem;
   --weight-big-button: 700;
-}
-
-:root.gd7t {
-  background-image: url('/gd7t-bg.jpg');
-}
-
-.primary {
-  --bg: var(--primary-bg);
-  --text: var(--primary-text);
-  --link: var(--primary-link);
-  --border: var(--primary-border);
-  --shadow: var(--primary-shadow);
-  --ring: var(--primary-ring);
-  --hover-bg: var(--primary-hover-bg);
-  --hover-text: var(--primary-hover-text);
-  --hover-border: var(--primary-hover-border);
-  --disabled-bg: var(--primary-disabled-bg);
-  --disabled-text: var(--primary-disabled-text);
-  --disabled-border: var(--primary-disabled-border);
-}
-
-.success {
-  --bg: var(--success-bg);
-  --text: var(--success-text);
-  --link: var(--success-link);
-  --border: var(--success-border);
-  --shadow: var(--success-shadow);
-  --disabled-bg: var(--success-disabled-bg);
-  --disabled-text: var(--success-disabled-text);
-  --disabled-border: var(--success-disabled-border);
-}
-
-.danger {
-  --bg: var(--danger-bg);
-  --text: var(--danger-text);
-  --link: var(--danger-link);
-  --border: var(--danger-border);
-  --shadow: var(--danger-shadow);
-  --disabled-bg: var(--danger-disabled-bg);
-  --disabled-text: var(--danger-disabled-text);
-  --disabled-border: var(--danger-disabled-border);
-}
-
-.warning {
-  --bg: var(--warning-bg);
-  --text: var(--warning-text);
-  --link: var(--warning-link);
-  --border: var(--warning-border);
-  --shadow: var(--warning-shadow);
-  --disabled-bg: var(--warning-disabled-bg);
-  --disabled-text: var(--warning-disabled-text);
-  --disabled-border: var(--warning-disabled-border);
-}
-
-.muted {
-  --bg: var(--muted-bg);
-  --text: var(--muted-text);
-  --link: var(--muted-link);
-  --border: var(--muted-border);
-
-  // Not sure about the side-effect here
-  color: var(--text);
 }
 
 .icon {
@@ -179,7 +115,7 @@ a {
 dd > a:not([class^='button']),
 p > a:not([class^='button']),
 a.in-body {
-  color: var(--link);
+  color: var(--primary);
   text-decoration: underline;
   text-decoration-thickness: 0.125em;
   text-underline-offset: 0.5ch;
@@ -215,9 +151,10 @@ body {
   }
 }
 
-ul,
-ol {
-  padding-left: 1em;
+:not([data-user-html]) ul,
+:not([data-user-html]) ol {
+  padding-left: 0;
+  list-style: none;
 }
 
 ul.nobullet {
@@ -226,13 +163,13 @@ ul.nobullet {
 }
 
 ins {
-  color: var(--success-text);
+  color: var(--success);
   text-decoration: none;
   background-color: var(--success-bg);
 }
 
 del {
-  color: var(--danger-text);
+  color: var(--danger);
   background-color: var(--danger-bg);
 }
 
@@ -245,7 +182,6 @@ hr {
 
 code {
   font-family: var(--font-mono);
-  font-weight: bold;
   color: currentcolor;
 }
 
@@ -255,7 +191,7 @@ code.hljs {
 
 a.user-mention {
   padding: 0.25rem;
-  color: var(--primary-text) !important;
+  color: var(--primary) !important;
   text-decoration: none !important;
   background-color: var(--primary-bg) !important;
   border-radius: var(--radius-inline);
@@ -263,8 +199,8 @@ a.user-mention {
 
 a.user-mention:hover,
 a.user-mention:focus-visible {
-  color: var(--primary-hover-text) !important;
-  background-color: var(--primary-hover-bg) !important;
+  color: var(--primary) !important;
+  background-color: var(--primary-bg) !important;
 }
 
 .skeleton-effect-wave {
@@ -286,5 +222,31 @@ div.skeleton-effect-wave {
 
   100% {
     mask-position: -150% top;
+  }
+}
+
+button {
+  font-size: 1em;
+  color: currentcolor;
+  appearance: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+// TODO for now no view transitions on desktop cuz they're borked
+@media (min-width: 900px) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

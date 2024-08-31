@@ -78,7 +78,12 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    const response = await fetch(new URL(env.PUBLIC_API_URL), { body, method: 'POST', headers });
+    const response = await fetch(new URL(env.PUBLIC_API_URL), {
+      body,
+      method: 'POST',
+      headers,
+      credentials: 'include',
+    });
 
     // If we received an HTTP error, propagate it
     if (!response.ok) throw error(response.status as NumericRange<400, 599>);
@@ -117,6 +122,45 @@ export const scalars = ZeusScalars({
   LocalID: {
     decode: (value: unknown): string => value as string,
     encode: (value: unknown): string => JSON.stringify(value),
+  },
+  Markdown: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  Email: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  HTML: {
+    decode: (value: unknown): App.XSSSafeHTMLString => value as App.XSSSafeHTMLString,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  ShortString: {
+    decode: (value: unknown): string => value as string,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  PositiveInt: {
+    decode: (value: unknown): number => value as number,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  PositiveFloat: {
+    decode: (value: unknown): number => value as number,
+    encode: (value: unknown): string => JSON.stringify(value),
+  },
+  Capacity: {
+    // type: 'number | null',
+    decode: (x: unknown): string => (x === 'Unlimited' ? null : x),
+    encode: (x: unknown): string => (x === null ? 'Unlimited' : x),
+  },
+  URL: {
+    // type: 'URL | null',
+    decode: (x: unknown): URL | null => (URL.canParse(x) ? new URL(x) : null),
+    encode: (x: unknown): string => x.toString(),
+  },
+  LooseURL: {
+    // type: 'string',
+    decode: (x: unknown): number | null => x,
+    encode: (x: unknown): string => x,
   },
 });
 

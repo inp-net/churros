@@ -64,15 +64,7 @@
               ...FormAnnouncement
             }
           }
-          ... on Error {
-            message
-          }
-          ... on ZodError {
-            fieldErrors {
-              path
-              message
-            }
-          }
+          ...MutationErrors
         }
       }
     `).mutate({ id: $data?.id, title, body, startsAt, endsAt, warning });

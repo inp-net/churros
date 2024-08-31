@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import { fragment, graphql, type AreaComments, type AreaCommentsUser } from '$houdini';
   import CardComment from '$lib/components/CardComment.svelte';
   import { loaded } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
   import { notNull } from '$lib/typing';
   import Alert from './Alert.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
@@ -139,10 +139,9 @@
     {/each}
   </ul>
 {:else}
-  <Alert theme="warning">
-    <ButtonSecondary
-      href="/login?{new URLSearchParams({ to: $page.url.pathname }).toString()}"
-      insideProse>Connectez-vous</ButtonSecondary
+  <Alert theme="primary">
+    <ButtonSecondary noClientSideNavigation href={refroute('/login')} insideProse
+      >Connectez-vous</ButtonSecondary
     > pour commenter.
   </Alert>
 {/if}

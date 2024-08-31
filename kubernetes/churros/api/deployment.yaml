@@ -57,12 +57,3 @@ spec:
                   key: uri
             - name: DATABASE_URL
               value: $(DATABASE_BASE_URL)?pool_timeout=60
-
-      #   volumeMounts:
-      #   - mountPath: /app/packages/api/storage
-      #     name: centraverse-data
-
-      # volumes:
-      # - name: centraverse-data
-      #   persistentVolumeClaim:
-      #     claimName: centraverse-data

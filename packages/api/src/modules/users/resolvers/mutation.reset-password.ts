@@ -1,4 +1,4 @@
-import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 import { hashPassword, verifyPassword } from '#modules/users/utils';
 
 import { userIsAdminOf } from '#permissions';
@@ -89,7 +89,7 @@ builder.mutationField('resetPassword', (t) =>
             user,
           );
 
-          if (disconnectAll) purgeUserSessions(userEdited.uid);
+          if (disconnectAll) purgeSessionsUser(userEdited.uid);
 
           return true;
         }

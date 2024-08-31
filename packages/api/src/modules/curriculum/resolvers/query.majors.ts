@@ -4,6 +4,17 @@ import { MajorType } from '../index.js';
 builder.queryField('majors', (t) =>
   t.prismaField({
     type: [MajorType],
-    resolve: async (query) => prisma.major.findMany({ ...query, orderBy: { name: 'asc' } }),
+    args: {
+      discontinued: t.arg.boolean({
+        defaultValue: false,
+        description: "Inclure les filières anciennes n'existant plus dans les cursus actuels",
+      }),
+    },
+    resolve: async (query, _, { discontinued }) =>
+      prisma.major.findMany({
+        ...query,
+        where: discontinued ? {} : { discontinued: false },
+        orderBy: { name: 'asc' },
+      }),
   }),
 );

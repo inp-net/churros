@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PAYMENT_METHODS_ICONS } from '$lib/display';
+  import { ICONS_PAYMENT_METHODS } from '$lib/display';
   import type { PaymentMethod } from '$lib/zeus';
   import AvatarPerson from './AvatarPerson.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
@@ -44,9 +44,8 @@
               paid: true,
             },
           },
-          '...on Error': {
-            message: true,
-          },
+          '...on Error': { message: true },
+          '...on ZodError': { message: true },
         },
       ],
     });
@@ -91,7 +90,7 @@
           <td>{payment.paid ? 'Oui' : 'Non'}</td>
           <td class="payicon">
             <svelte:component
-              this={PAYMENT_METHODS_ICONS[payment.paymentMethod ?? 'Other']}
+              this={ICONS_PAYMENT_METHODS[payment.paymentMethod ?? 'Other']}
               class="icon"
             />
           </td>

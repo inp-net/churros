@@ -4,8 +4,8 @@ import { serverCanSendNotificationToUser } from '#permissions';
 import { Prisma, type NotificationSubscription, type User } from '@churros/db/prisma';
 import type { MaybePromise } from '@pothos/core';
 import webpush, { WebPushError } from 'web-push';
-import { setVapidDetails } from '../index.js';
 import type { PushNotification } from './push-notification.js';
+import { setVapidDetails } from './vapid.js';
 
 export async function notifyInBulk<U extends User>(
   jobId: string,

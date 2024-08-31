@@ -1,27 +1,26 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import { PendingValue, graphql } from '$houdini';
+  import Alert from '$lib/components/Alert.svelte';
   import AreaComments from '$lib/components/AreaComments.houdini.svelte';
   import BadgeVisibility from '$lib/components/BadgeVisibility.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
   import { formatEventDates } from '$lib/dates';
+  import { allLoaded, loaded, loading } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
-  import { subMinutes, formatDistance, intlFormatDistance, isPast } from 'date-fns';
+  import { formatDistance, intlFormatDistance, isPast, subMinutes } from 'date-fns';
   import fr from 'date-fns/locale/fr/index.js';
   import IconNotifications from '~icons/mdi/bell-outline';
   import IconGear from '~icons/mdi/gear-outline';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
-  import IconInfo from '~icons/mdi/information-outline';
   import type { PageData } from './$houdini';
-  import { allLoaded, loaded, loading } from '$lib/loading';
-  import LoadingText from '$lib/components/LoadingText.svelte';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
@@ -75,13 +74,10 @@
   } = $PagePostDetail.data.article}
   <div class="page" class:future={publishedYet({ publishedAt })}>
     <h1>
-      <ButtonBack></ButtonBack>
       <LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText>
     </h1>
     {#if !publishedYet({ publishedAt })}
-      <div class="unpublished warning typo-details">
-        <IconInfo></IconInfo> Ce post n'est pas encore publié
-      </div>
+      <Alert theme="primary">Ce post n'est pas encore publié</Alert>
     {/if}
     <div class="content">
       <div class="description" data-user-html>
@@ -256,7 +252,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   section.author {
@@ -270,7 +266,7 @@
 
   section.author a:hover,
   section.author a:focus-visible {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   section.author .group {
@@ -322,10 +318,6 @@
     flex-wrap: wrap;
     gap: 0.5em;
     margin-top: 0.5rem;
-  }
-
-  .unpublished {
-    margin-left: calc(4rem - 1em - 0.5ch);
   }
 
   .like-icon.filled {

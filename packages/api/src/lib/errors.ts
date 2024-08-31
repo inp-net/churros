@@ -2,6 +2,8 @@ import i18next from 'i18next';
 import { z } from 'zod';
 import { makeZodI18nMap } from 'zod-i18n-map';
 
+// XXX: must be the same as in the frontend
+// TODO: use a separate error instead
 export const UNAUTHORIZED_ERROR_MESSAGE = "Tu n'es pas autorisé à effectuer cette action.";
 
 export class UnauthorizedError extends Error {

@@ -20,15 +20,17 @@ import '#modules/links';
 import '#modules/logs';
 import '#modules/mails';
 import '#modules/notifications';
-import '#modules/oauth';
 import '#modules/pages';
 import '#modules/payments';
+import '#modules/pictures';
 import '#modules/posts';
+import '#modules/profiles';
 import '#modules/reactions';
 import '#modules/schools';
 import '#modules/services';
 import '#modules/shop';
 import '#modules/student-associations';
+import '#modules/themes';
 import '#modules/ticketing';
 import '#modules/users';
 

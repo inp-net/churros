@@ -1,22 +1,14 @@
 <script lang="ts">
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import IconGear from '~icons/mdi/gear-outline';
-  import groupBy from 'lodash.groupby';
-  import type { PageData } from './$types';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import { me } from '$lib/session';
-  import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import { isOnClubBoard, roleEmojis } from '$lib/permissions';
+  import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { roleEmojis } from '$lib/permissions';
+  import { byMemberGroupTitleImportance } from '$lib/sorting';
+  import groupBy from 'lodash.groupby';
+  import IconGear from '~icons/mdi/gear-outline';
+  import type { PageData } from './$types';
 
   export let data: PageData;
-
-  $: clubBoard = group.members?.filter((m) => isOnClubBoard(m));
-  $: onClubBoard = clubBoard.some(({ member }) => member.uid === $me?.uid);
-  $: canEditMembers = Boolean(
-    $me?.admin || myPermissions?.canEditMembers || onClubBoard || data.canEditGroup,
-  );
-  $: myPermissions = $me?.groups.find(({ group: { uid } }) => uid === group.uid);
 
   $: ({
     group: { name, members },
@@ -30,7 +22,7 @@
 
     {members.length} membre{members.length > 2 ? 's' : ''} de {name}
 
-    {#if canEditMembers}
+    {#if group.canEditMembers}
       <div class="title-actions">
         <ButtonSecondary href="../edit/members" icon={IconGear}>Gérer</ButtonSecondary>
       </div>

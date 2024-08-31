@@ -10,6 +10,7 @@
   import InputStudentAssociations from './InputStudentAssociations.svelte';
   import InputNumber from './InputNumber.svelte';
   import { route } from '$lib/ROUTES';
+  import type { LogoSourceType$options } from '$houdini';
 
   export let service: {
     id?: string;
@@ -18,18 +19,27 @@
     description: string;
     url: string;
     logo: string;
-    logoSourceType: LogoSourceType;
-    school?: { uid: string; name: string; id: string };
-    studentAssociation?: { uid?: string; name: string; id: string };
-    group?: { id: string; uid: string; name: string; pictureFile: string; pictureFileDark: string };
+    logoSourceType: LogoSourceType$options;
+    school: null | { uid: string; name: string; id: string };
+    studentAssociation: null | { uid?: string; name: string; id: string };
+    group: null | {
+      id: string;
+      uid: string;
+      name: string;
+      pictureFile: string;
+      pictureFileDark: string;
+    };
     importance: number;
   } = {
     name: '',
     description: '',
     url: '',
     logo: '',
-    logoSourceType: LogoSourceType.Icon,
+    logoSourceType: 'Icon',
     importance: 0,
+    school: null,
+    studentAssociation: null,
+    group: null,
   };
 
   let serverError = '';
@@ -47,7 +57,7 @@
             url: service.url,
             description: service.description,
             logo: service.logo,
-            logoSourceType: service.logoSourceType,
+            logoSourceType: service.logoSourceType as LogoSourceType,
             groupUid: service.group?.uid,
             schoolUid: service.school?.uid,
             studentAssociationUid: service.studentAssociation?.uid,
@@ -56,6 +66,7 @@
           {
             '__typename': true,
             '...on Error': { message: true },
+            '...on ZodError': { message: true },
             '...on MutationUpsertServiceSuccess': {
               data: {
                 id: true,
@@ -81,12 +92,13 @@
         ],
       });
 
-      if (upsertService.__typename === 'Error') {
+      if (upsertService.__typename !== 'MutationUpsertServiceSuccess') {
         serverError = upsertService.message;
         return;
       }
 
       serverError = '';
+      // @ts-expect-error - undefineds vs nulls blah blah blah i don't care
       service = upsertService.data;
       if (service.localID) await goto(route('/services/[id]/edit', service.localID));
     } finally {
@@ -95,7 +107,7 @@
   };
 </script>
 
-{#await $zeus.query( { groups: [{}, { name: true, uid: true, id: true, pictureFile: true, pictureFileDark: true }] }, )}
+{#await $zeus.query( { groups: [{ unlisted: false }, { name: true, uid: true, id: true, pictureFile: true, pictureFileDark: true }] }, )}
   <p class="loading muted">Chargement...</p>
 {:then { groups: allGroups }}
   <form on:submit|preventDefault={updateService}>

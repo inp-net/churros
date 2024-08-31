@@ -6,30 +6,55 @@ import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
 import * as GraphQLWS from 'graphql-ws/lib/use/ws';
 import helmet from 'helmet';
+import passport from 'passport';
 import { setIntervalAsync } from 'set-interval-async';
 import { WebSocketServer } from 'ws';
 import { schema } from '../schema.js';
+import session from './auth/session.js';
 
 export const api = express();
 
+// default passport strategy
+import('./auth/anonymous.js');
+import('./auth/bearer.js');
+
 api.use(
-  // Allow queries from the frontend only
-  // cors({ origin: ['http://192.168.*', process.env.FRONTEND_ORIGIN, 'http://app'] }),
-  cors(),
+  // Allow any origin, this is a public API :)
+  cors({
+    credentials: true,
+    origin(_, callback) {
+      callback(null, true);
+    },
+  }),
   // Set basic security headers
   helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
+  // express-session middleware
+  session,
+  // Passport middleware
+  passport.initialize(),
+  passport.session(),
+  passport.authenticate(['bearer', 'anonymous'], { session: false }),
 );
 
 export async function startApiServer() {
+  // load passport strategies
+  if (process.env.PUBLIC_OAUTH_ENABLED.trim() === '1') {
+    import('./auth/oauth2.js');
+    import('./auth/logout.js');
+  }
+
   // Register other routes on the API
-  import('./graphql.js');
+  try {
+    import('./graphql.js');
+  } catch (error) {
+    console.error('Failed to initialize GraphQL server', error);
+  }
   import('./gdpr.js');
   import('./log.js');
-  import('./oauth.js');
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');

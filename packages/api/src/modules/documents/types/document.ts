@@ -6,10 +6,10 @@ import { DocumentTypeEnum } from '../index.js';
 
 export const DocumentType = builder.prismaNode('Document', {
   id: { field: 'id' },
+  include: { reactions: true },
   interfaces: [
     // @ts-expect-error dunno why it complainnns
     CommentableInterface,
-    // @ts-expect-error dunno why it complainnns
     ReactableInterface,
   ],
   fields: (t) => ({
@@ -39,42 +39,19 @@ export const DocumentType = builder.prismaNode('Document', {
     }),
     uploader: t.relation('uploader', { nullable: true }),
     uploaderId: t.exposeID('uploaderId', { nullable: true }),
-    comments: t.relatedConnection(
-      'comments',
+    comments: t.prismaConnection(
       {
         cursor: 'id',
         type: CommentType,
-        query: {
-          orderBy: { createdAt: 'asc' },
+        async resolve(query, { id }) {
+          return prisma.comment.findMany({
+            ...query,
+            where: { documentId: id },
+            orderBy: { createdAt: 'desc' },
+          });
         },
       },
       CommentsConnectionType,
     ),
-    reacted: t.boolean({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }, { user }) {
-        if (!user) return false;
-        return Boolean(
-          await prisma.reaction.findFirst({
-            where: {
-              documentId: id,
-              emoji,
-              authorId: user.id,
-            },
-          }),
-        );
-      },
-    }),
-    reactions: t.int({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }) {
-        return prisma.reaction.count({
-          where: {
-            documentId: id,
-            emoji,
-          },
-        });
-      },
-    }),
   }),
 });

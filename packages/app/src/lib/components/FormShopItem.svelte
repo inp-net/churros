@@ -16,7 +16,7 @@
   import InputSelectMultiple from './InputSelectMultiple.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import InputText from './InputText.svelte';
-  import InputToggle from './InputToggle.svelte';
+  import InputToggle from './InputToggleWithLabel.svelte';
 
   export let data: {
     id: string;
@@ -107,6 +107,7 @@
         {
           '__typename': true,
           '...on Error': { message: true },
+          '...on ZodError': { message: true },
           '...on MutationUpsertShopItemSuccess': {
             data: {
               uid: true,
@@ -289,6 +290,7 @@
               {
                 '__typename': true,
                 '...on Error': { message: true },
+                '...on ZodError': { message: true },
                 '...on MutationDeleteShopItemSuccess': { data: true },
               },
             ],

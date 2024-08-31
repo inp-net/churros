@@ -1,0 +1,11 @@
+query PageUserEditCurriculum($uid: String!) @loading {
+  ...InputMajor
+  user(uid: $uid) {
+    yearTier
+    major {
+      uid
+    }
+    graduationYear
+    apprentice
+  }
+}

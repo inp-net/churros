@@ -7,3 +7,4 @@ export * from './mutation.upsert-announcement.js';
 export * from './query.announcement.js';
 export * from './query.announcements-now.js';
 export * from './query.announcements.js';
+export * from './user.can-manage-announcements.js';

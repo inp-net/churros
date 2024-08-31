@@ -1,0 +1,9 @@
+query PageEventEditRecurrence($id: LocalID!) @loading {
+  event(id: $id) {
+    id
+    canEdit(assert: "Tu n'a pas les droits pour modifier cet événement")
+    frequency
+    recurringUntil
+    endsAt
+  }
+}

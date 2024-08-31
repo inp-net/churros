@@ -1,6 +1,6 @@
 import { setSession } from '$houdini';
-import { aled, sessionUserQuery } from '$lib/session';
-import { chain } from '$lib/zeus';
+import { inferIsMobile } from '$lib/mobile';
+import { aled } from '$lib/session';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
 import * as cookie from 'cookie';
 
@@ -15,37 +15,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const token = tokenFromAuthorizationHeader || tokenFromCookies;
 
-  if (token) {
-    try {
-      const { me } = await chain(fetch, { token })('query')({
-        me: sessionUserQuery(),
-      });
-      event.locals.token = token;
-      event.locals.me = me;
-      aled('hooks.server.ts: handle: setting locals on event', event);
-    } catch {}
-  }
+  event.locals.mobile = Boolean(inferIsMobile(event.request.headers.get('User-Agent') ?? ''));
 
-  event.locals.mobile = Boolean(
-    event.request.headers.get('User-Agent')?.toLowerCase().includes('mobile'),
-  );
+  setSession(event, { token });
 
-  setSession(event, {
-    token: event.locals.token,
-  });
-
-  const response = await resolve(event);
-
-  // Delete invalid token
-  if (token && !event.locals.me) {
-    aled('hooks.server.ts: handle: deleting invalid token');
-    response.headers.append(
-      'Set-Cookie',
-      cookie.serialize('token', '', { expires: new Date(0), path: '/', sameSite: 'lax' }),
-    );
-  }
-
-  return response;
+  return resolve(event);
 };
 
 export const handleFetch: HandleFetch = async ({ request, fetch }) => {
@@ -59,9 +33,14 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
 
   aled('hooks.server.ts: handleFetch', request);
 
-  return fetch(request).catch(() => {
-    throw new TypeError('Impossible de joindre le serveur.');
-  });
+  return fetch(request)
+    .catch((error) => {
+      console.error(error);
+      throw new TypeError('Impossible de joindre le serveur.');
+    })
+    .then((response) => {
+      return response;
+    });
 };
 
 export const handleError: HandleServerError = ({ error }) => {

@@ -1,782 +1,356 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
+  import { graphql, type PageEventAllBookings$result } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
-  import Badge from '$lib/components/Badge.svelte';
-  import IconRefresh from '~icons/mdi/refresh';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
+  import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
+  import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
+  import BookingStatus from '$lib/components/BookingStatus.svelte';
+  import BookingAuthor from '$lib/components/BookingAuthor.svelte';
+  import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-  import { formatDateTime } from '$lib/dates';
-  import { DISPLAY_PAYMENT_METHODS, PAYMENT_METHODS_ICONS } from '$lib/display';
-  import { me } from '$lib/session';
-  import { subscribe } from '$lib/subscriptions';
-  import { toasts } from '$lib/toasts';
-  import { tooltip } from '$lib/tooltip';
-  import { zeus } from '$lib/zeus';
-  import { compareAsc, compareDesc, format, isSameDay } from 'date-fns';
-  import debounce from 'lodash.debounce';
-  import { onMount } from 'svelte';
-  import type { Writable } from 'svelte/store';
-  import { queryParam } from 'sveltekit-search-params';
-  import IconCancel from '~icons/mdi/cancel';
-  import IconCheck from '~icons/mdi/check';
-  import IconChevronRight from '~icons/mdi/chevron-right';
-  import { default as IconClear, default as IconClose } from '~icons/mdi/close';
-  import IconCash from '~icons/mdi/currency-usd';
-  import IconCashOff from '~icons/mdi/currency-usd-off';
-  import IconDownload from '~icons/mdi/download-outline';
-  import IconOpposed from '~icons/mdi/hand-back-right-off-outline';
-  import IconSearch from '~icons/mdi/magnify';
-  import IconSortDown from '~icons/mdi/triangle-small-down';
-  import IconSortUp from '~icons/mdi/triangle-small-up';
-  import type { PageData } from './$types';
-  import { _registrationsQuery } from './+page';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import { formatDateTimeSmart } from '$lib/dates';
+  import { allLoaded, loaded, loading, LoadingText, mapLoading } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
+  import { isPWA } from '$lib/pwa';
+  import { route } from '$lib/ROUTES';
+  import { infinitescroll } from '$lib/scroll';
+  import { notNull } from '$lib/typing';
+  import IconOpenTicketPage from '~icons/msl/open-in-new';
+  import type { PageData } from './$houdini';
+  import { tabToFilter } from './filters';
 
   export let data: PageData;
-  let compact = false;
-  let loadingMore = false;
-  let csvExportError = '';
-  let loadingSearchResults = false;
-  let initialRegistrationsTotalCount = data.event.bookingsCounts.total;
-  let newRegistrationsSinceLoad = 0;
-  const searchQuery = queryParam('q', {
-    encode: (v) => v || undefined,
-    decode: (v) => v ?? '',
-  }) as Writable<string>;
+  $: ({ PageEventAllBookings } = data);
 
-  let searchResults: typeof registrations = {
-    pageInfo: { endCursor: undefined, hasNextPage: false },
-    edges: [],
-  };
+  const FILTERS = ['unpaid', 'paid', 'verified'] as const;
+  $: activeTab = ($page.url.searchParams.get('tab') ?? 'unpaid') as (typeof FILTERS)[number];
 
-  onMount(() => {
-    $subscribe(
-      {
-        event: [
-          { id: $page.params.id },
-          {
-            bookingsCounts: {
-              cancelled: true,
-              paid: true,
-              unpaidLydia: true,
-              total: true,
-              verified: true,
-            },
-          },
-        ],
-      },
-      async (eventData) => {
-        const freshData = await eventData;
-        if ('errors' in freshData) return;
-        const freshCounts = freshData.event?.bookingsCounts;
-        if (!freshCounts) return;
-        if (freshCounts.total > initialRegistrationsTotalCount)
-          newRegistrationsSinceLoad = freshCounts.total - initialRegistrationsTotalCount;
+  let openBookingDetailModal: () => void;
+  let selectedBooking: PageEventAllBookings$result['event']['bookings']['nodes'][number];
 
-        data.event.bookingsCounts = freshCounts;
-      },
-    );
+  const updates = graphql(`
+    subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
+      event(id: $id) {
+        bookings(first: 10, only: $filter) {
+          nodes {
+            id
+          }
+        }
+      }
+    }
+  `);
+
+  $: updates.listen({
+    id: $page.params.id,
+    filter: tabToFilter[activeTab],
   });
 
-  async function submitSearchQuery(q: string) {
-    if (!q) {
-      loadingSearchResults = false;
-      return;
-    }
+  // Count new bookings by taking the length of the intersection of booking IDs from updates and PageEventAllBookings
+  $: newBookingsCount =
+    $updates.data?.event.bookings.nodes.filter(
+      (fresh) =>
+        !$PageEventAllBookings.data?.event.bookings.nodes.some(
+          (existing) => existing.id === fresh.id,
+        ),
+    ).length ?? 0;
 
-    loadingSearchResults = true;
-    await debounce(async () => {
-      const results = await $zeus.query({
-        event: [
-          { id: $page.params.id },
-          {
-            searchBookings: [
-              {
-                eventUid: $page.params.uid,
-                groupUid: $page.params.group,
-                q,
-              },
-              {
-                registration: _registrationsQuery.edges.node,
-              },
-            ],
-          },
-        ],
-      });
-
-      searchResults = {
-        pageInfo: { endCursor: '', hasNextPage: false },
-        edges: results.event.searchBookings.map(({ registration }) => ({
-          cursor: '',
-          node: registration,
-        })),
-      };
-      loadingSearchResults = false;
-    }, 500)();
+  $: if (
+    browser &&
+    $PageEventAllBookings.data &&
+    loaded($PageEventAllBookings.data.event.bookingsCounts.total)
+  ) {
+    const total = $PageEventAllBookings.data.event.bookingsCounts.total;
+    window.dispatchEvent(
+      new CustomEvent('NAVTOP_UPDATE_TITLE', {
+        detail: `${total} réservation${total > 1 ? 's' : ''}`,
+      }),
+    );
   }
-
-  async function loadMore() {
-    if (loadingMore) return;
-    try {
-      loadingMore = true;
-      const result = await $zeus.query({
-        event: [
-          { id: $page.params.id },
-          {
-            bookings: [
-              {
-                after: data.event.bookings.pageInfo.endCursor,
-              },
-              _registrationsQuery,
-            ],
-          },
-        ],
-      });
-      registrations.pageInfo = result.event.bookings.pageInfo;
-      registrations.edges = [...registrations.edges, ...result.event.bookings.edges];
-    } finally {
-      loadingMore = false;
-    }
-  }
-
-  async function csv() {
-    if (!registrations) return;
-    const {
-      event: { bookingsCsv: registrationsCsv },
-    } = await $zeus.query({
-      event: [
-        { id: $page.params.id },
-        {
-          bookingsCsv: {
-            '__typename': true,
-            '...on Error': { message: true },
-            '...on EventBookingsCsvSuccess': { data: true },
-          },
-        },
-      ],
-    });
-
-    if (registrationsCsv.__typename === 'Error') {
-      csvExportError = registrationsCsv.message;
-      return;
-    }
-
-    return registrationsCsv.data;
-  }
-
-  $: ({
-    event: { bookingsCounts: registrationsCounts, profitsBreakdown, bookings: registrations },
-  } = data);
-  $: rowIsSelected = Object.fromEntries(registrations.edges.map(({ node }) => [node.id, false]));
-
-  const COLUMNS = [
-    ['date', 'Date'],
-    ['state', 'État'],
-    ['method', 'Via'],
-    ['ticket', 'Billet'],
-    ['beneficiary', 'Bénéficiaire'],
-    ['contributes', 'Cotise'],
-    ['major', 'Filière'],
-    ['graduationYear', 'Année'],
-    ['author', 'Payé par'],
-    ['code', 'Code de réservation'],
-  ] as const;
-
-  function fromSortingQueryParam(sorting: string): SortOptions {
-    // If sorting starts with "-", it's descending, if it starts with "+" (or nothing), it's ascending
-    const desc = sorting.startsWith('-');
-    const key = sorting.replace(/^-+/, '');
-    return {
-      by: key as typeof $sort.by,
-      direction: desc ? 'descending' : 'ascending',
-    };
-  }
-
-  function toSortingQueryParam(by: SortOptions['by'], direction: SortOptions['direction']) {
-    return `${direction === 'descending' ? '-' : ''}${by}`;
-  }
-
-  type SortOptions = {
-    by: (typeof COLUMNS)[number][0];
-    direction: 'ascending' | 'descending';
-  };
-  const sort = queryParam<SortOptions>('sort', {
-    decode: (v) => fromSortingQueryParam(v ?? '-date'),
-    encode: (v) => toSortingQueryParam(v.by, v.direction),
-  }) as Writable<SortOptions>;
-
-  type Registration = (typeof registrations.edges)[number]['node'];
-
-  function compareRegistrations(
-    sortBy: SortOptions['by'],
-    sortDirection: SortOptions['direction'],
-  ): (a: Registration, b: Registration) => number {
-    const desc = sortDirection === 'descending';
-    const benefUser = (r: Registration) =>
-      r.beneficiaryUser ?? (r.authorIsBeneficiary ? r.author : undefined);
-    switch (sortBy) {
-      case 'date': {
-        return (a, b) => (desc ? compareDesc : compareAsc)(a.createdAt, b.createdAt);
-      }
-
-      case 'state': {
-        const sortingIndex = (a: Registration) =>
-          a.opposed ? 0 : a.cancelled ? 1 : a.verifiedAt && a.paid ? 2 : a.paid ? 3 : 4;
-        return (a, b) => (desc ? -1 : 1) * (sortingIndex(a) - sortingIndex(b));
-      }
-
-      case 'method': {
-        const method = (r: Registration) => r.paymentMethod?.toString() ?? '';
-        return (a, b) => (desc ? -1 : 1) * method(a).localeCompare(method(b));
-      }
-
-      case 'beneficiary': {
-        const benef = (r: Registration) => benefUser(r)?.fullName ?? r.beneficiary;
-        return (a, b) => (desc ? -1 : 1) * benef(a).localeCompare(benef(b));
-      }
-
-      case 'contributes': {
-        const contributions = (r: Registration) =>
-          benefUser(r)
-            ?.contributesTo.map((c) => c.name)
-            .join(', ') ?? '';
-        return (a, b) => (desc ? -1 : 1) * contributions(a).localeCompare(contributions(b));
-      }
-
-      case 'author': {
-        const fullNameOrEmail = (r: Registration) => r.author?.fullName ?? r.authorEmail ?? '';
-        return (a, b) => (desc ? -1 : 1) * fullNameOrEmail(a).localeCompare(fullNameOrEmail(b));
-      }
-
-      case 'graduationYear': {
-        return (a, b) =>
-          (desc ? -1 : 1) *
-          ((benefUser(b)?.graduationYear ?? Number.POSITIVE_INFINITY) -
-            (benefUser(a)?.graduationYear ?? Number.POSITIVE_INFINITY));
-      }
-
-      case 'major': {
-        const major = (r: Registration) => benefUser(r)?.major?.shortName ?? '';
-        return (a, b) => major(a).localeCompare(major(b));
-      }
-
-      case 'ticket': {
-        const ticketFullName = (r: Registration) =>
-          r.ticket.group ? `${r.ticket.group.name}/${r.ticket.name}` : r.ticket.name;
-        return (a, b) => (desc ? -1 : 1) * ticketFullName(a).localeCompare(ticketFullName(b));
-      }
-
-      default: {
-        return (a, b) => a.id.localeCompare(b.id);
-      }
-    }
-  }
-
-  async function oppose(registration: Registration) {
-    const { opposeRegistration } = await $zeus.mutate({
-      opposeRegistration: [
-        { id: registration.id },
-        {
-          '__typename': true,
-          '...on Error': {
-            message: true,
-          },
-          '...on MutationOpposeRegistrationSuccess': {
-            data: true,
-          },
-        },
-      ],
-    });
-    if (opposeRegistration.__typename === 'Error') return;
-
-    if (opposeRegistration.data) {
-      const idx = registrations.edges.findIndex((r) => r.node.id === registration.id);
-      registrations.edges[idx].node.opposed = true;
-      registrations.edges[idx].node.opposedAt = new Date();
-      registrations.edges[idx].node.opposedBy = $me;
-    }
-  }
-
-  async function updatePaidStatus(markAsPaid: boolean, registration: Registration): Promise<void> {
-    const { upsertRegistration } = await $zeus.mutate({
-      upsertRegistration: [
-        {
-          id: registration.id,
-          paymentMethod: registration.paymentMethod,
-          beneficiary: registration.beneficiary,
-          ticketId: registration.ticket.id,
-          paid: markAsPaid,
-        },
-        {
-          '__typename': true,
-          '...on MutationUpsertRegistrationSuccess': {
-            data: {
-              paid: true,
-            },
-          },
-          '...on Error': {
-            message: true,
-          },
-        },
-      ],
-    });
-    if (upsertRegistration.__typename !== 'Error') {
-      registrations.edges[
-        registrations.edges.findIndex((r) => r.node.id === registration.id)
-      ].node.paid = upsertRegistration.data.paid;
-    }
-  }
-
-  $: compare = compareRegistrations($sort.by, $sort.direction);
-  $: void submitSearchQuery($searchQuery);
-  $: displayedRegistrations = (
-    $searchQuery && !loadingSearchResults ? searchResults : registrations
-  ).edges.sort((a, b) => compare(a.node, b.node) || a.node.id.localeCompare(b.node.id));
 </script>
 
-<header>
-  <h1>{registrationsCounts.total} Réservations</h1>
-  <section class="counts">
-    {registrationsCounts.paid} payées · {registrationsCounts.verified} scannées · {registrationsCounts.unpaidLydia}
-    Lydias non payées <br />
-    {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-      profitsBreakdown.total,
-    )} de ventes
-  </section>
-
-  <div class="search">
-    <form
-      on:submit|preventDefault={async () => {
-        await submitSearchQuery($searchQuery);
-      }}
+<ModalOrDrawer bind:open={openBookingDetailModal}>
+  <svelte:fragment slot="header">
+    <h1 class="modal-detail-title">Détail</h1>
+    <ButtonSecondary
+      target={isPWA() ? undefined : '_blank'}
+      icon={IconOpenTicketPage}
+      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''))}
     >
-      <InputText
-        label=""
-        actionIcon={$searchQuery ? IconClear : undefined}
-        on:action={() => {
-          $searchQuery = '';
-        }}
-        placeholder="Bénéficiaire, nom de ticket,..."
-        bind:value={$searchQuery}
-      >
-        <span slot="before"><IconSearch></IconSearch></span>
-      </InputText>
-    </form>
-  </div>
-
-  {#if newRegistrationsSinceLoad > 0}
-    <Alert>
-      {newRegistrationsSinceLoad} nouvelles réservations. <ButtonInk
-        icon={IconRefresh}
-        on:click={async () => {
-          const newData = await $zeus.query({
-            event: [
-              { id: $page.params.id },
-              {
-                bookingsCounts: {
-                  total: true,
-                },
-                bookings: [{}, _registrationsQuery],
-              },
-            ],
-          });
-          data.event.bookings = newData.event.bookings;
-          initialRegistrationsTotalCount = newData.event.bookingsCounts.total;
-          newRegistrationsSinceLoad = 0;
-        }}>Afficher</ButtonInk
-      >
-    </Alert>
+      Voir le billet
+    </ButtonSecondary>
+  </svelte:fragment>
+  {#if selectedBooking}
+    <dl>
+      <dt>Code de réservation</dt>
+      <dd>
+        <code>{selectedBooking.code}</code>
+        {#if loaded(selectedBooking.code)}
+          <ButtonCopyToClipboard text={selectedBooking.code}></ButtonCopyToClipboard>
+        {/if}
+      </dd>
+      <dt>Place pour</dt>
+      <dd>
+        <BookingBeneficiary booking={selectedBooking} />
+      </dd>
+      <dt>Payée par</dt>
+      <dd>
+        <BookingAuthor booking={selectedBooking} />
+      </dd>
+      {#if selectedBooking.verifiedAt || selectedBooking.verifiedBy}
+        <dt>Scannée</dt>
+        <dd>
+          {#if selectedBooking.verifiedAt}
+            <LoadingText value={mapLoading(selectedBooking.verifiedAt, formatDateTimeSmart)}
+            ></LoadingText>
+          {/if}
+          {#if selectedBooking.verifiedBy}
+            Par <AvatarUser user={selectedBooking.verifiedBy}></AvatarUser>
+            <LoadingText value={selectedBooking.verifiedBy.fullName} />
+          {/if}
+        </dd>
+      {/if}
+      {#if selectedBooking.cancelledAt || selectedBooking.cancelledBy}
+        <dt>Annulée</dt>
+        <dd>
+          {#if selectedBooking.cancelledAt}
+            <LoadingText value={mapLoading(selectedBooking.cancelledAt, formatDateTimeSmart)}
+            ></LoadingText>
+          {/if}
+          {#if selectedBooking.cancelledBy}
+            Par <AvatarUser user={selectedBooking.cancelledBy}></AvatarUser>
+            <LoadingText value={selectedBooking.cancelledBy.fullName} />
+          {/if}
+        </dd>
+      {/if}
+      {#if selectedBooking.opposedAt || selectedBooking.opposedBy}
+        <dt>Opposée</dt>
+        <dd>
+          {#if selectedBooking.opposedAt}
+            <LoadingText value={mapLoading(selectedBooking.opposedAt, formatDateTimeSmart)}
+            ></LoadingText>
+          {/if}
+          {#if selectedBooking.opposedBy}
+            Par <AvatarUser user={selectedBooking.opposedBy}></AvatarUser>
+            <LoadingText value={selectedBooking.opposedBy.fullName} />
+          {/if}
+        </dd>
+      {/if}
+      <dt>État</dt>
+      <dd>
+        <BookingStatus booking={selectedBooking} />
+      </dd>
+      <dt>Moyen de paiement</dt>
+      <dd>
+        <BookingPaymentMethod booking={selectedBooking} />
+      </dd>
+    </dl>
   {/if}
+</ModalOrDrawer>
 
-  <div class="actions">
-    {#await csv()}
-      <ButtonSecondary icon={IconDownload} loading>Exporter en .csv</ButtonSecondary>
-    {:then csvContents}
-      <ButtonSecondary
-        disabled={Boolean(csvExportError)}
-        help={csvExportError}
-        icon={IconDownload}
-        href="data:application/octet-stream;charset=utf-8,{encodeURIComponent(csvContents ?? '')}"
-        download={`reservations-${$page.params.group}-${$page.params.uid}-${format(
-          new Date(),
-          "yyyy-MM-dd-HH'h'mm",
-        )}.csv`}>Exporter en .csv</ButtonSecondary
+<MaybeError result={$PageEventAllBookings} let:data={{ event }}>
+  <div class="contents">
+    <header>
+      {#if newBookingsCount}
+        <Alert theme="primary">
+          {newBookingsCount} nouvelles réservations <ButtonSecondary
+            on:click={async () => PageEventAllBookings.fetch()}>Charger</ButtonSecondary
+          >
+        </Alert>
+      {/if}
+      <NavigationTabs
+        on:click={({ detail }) => {
+          // To change tabs visually before the page has even finished loading
+          activeTab = detail;
+        }}
+        tabs={FILTERS.map((name) => ({
+          name,
+          active: name === activeTab,
+          href: route('/events/[id]/bookings', $page.params.id, {
+            tab: name,
+          }),
+        }))}
       >
-    {/await}
-    <InputCheckbox label="Vue compacte" bind:value={compact} />
-    {#if registrations.pageInfo.hasNextPage}
-      <ButtonSecondary
-        help={`${registrations.edges.length}/${registrationsCounts.total} chargées`}
-        on:click={loadMore}
-        loading={loadingMore}>Charger plus</ButtonSecondary
-      >
-    {/if}
-  </div>
-</header>
-
-<div class="table-scroller">
-  <table class:compact>
-    <thead>
-      <tr>
-        <th />
-        {#each COLUMNS as [key, label] (key)}
-          <th
-            class:sorting={$sort.by === key}
+        <div slot="tab" class="tab" let:tab let:active class:active>
+          <span class="tab-title">
+            {#if tab === 'unpaid'}
+              Non payées
+            {:else if tab === 'paid'}
+              Payées
+            {:else if tab === 'verified'}
+              Scannées
+            {/if}
+          </span>
+          <div class="subtitle muted">
+            {#if tab === 'unpaid'}
+              <LoadingText value={event.bookingsCounts.unpaidAll}>...</LoadingText
+              >{#if event.tickets.some((t) => 'Lydia' in t.allowedPaymentMethods)}
+                · dont <LoadingText value={event.bookingsCounts.unpaidLydias}>...</LoadingText> Lydias{/if}
+            {:else if tab === 'paid'}
+              <LoadingText value={event.bookingsCounts.paid}>...</LoadingText> · <LoadingText
+                value={mapLoading(event.profitsBreakdown.total, (total) => `${total}€`)}
+                >...</LoadingText
+              >
+            {:else if tab === 'verified'}
+              <LoadingText value={event.bookingsCounts.verified}>...</LoadingText>
+            {/if}
+          </div>
+        </div>
+      </NavigationTabs>
+    </header>
+    <ul class="bookings" use:infinitescroll={() => PageEventAllBookings.loadNextPage()}>
+      {#each event.bookings.nodes.filter(notNull) as booking}
+        <li>
+          <button
+            class="booking"
             on:click={() => {
-              $sort.by = key;
-              $sort.direction = $sort.direction === 'ascending' ? 'descending' : 'ascending';
+              selectedBooking = booking;
+              openBookingDetailModal?.();
             }}
-            ><div class="inner">
-              {label}
-              <div class="sort-icon">
-                {#if $sort.by === key}
-                  {#if $sort.direction === 'ascending'}
-                    <IconSortUp />
+          >
+            <div class="top">
+              <div class="people">
+                <div class="beneficiary">
+                  <BookingBeneficiary {booking} />
+                </div>
+                <div class="author desktop-only">
+                  {#if booking.author && loading(booking.authorIsBeneficiary, false)}
+                    Payé par <AvatarUser user={booking.author} />
+                    <LoadingText value={booking.author.fullName} />
                   {:else}
-                    <IconSortDown />
+                    <p></p>
                   {/if}
-                {/if}
+                </div>
+              </div>
+              <div class="code">
+                <LoadingText tag="code" value={booking.code}></LoadingText>
               </div>
             </div>
-          </th>
-        {/each}
-        <th />
-      </tr>
-    </thead>
-    <tbody>
-      {#if loadingSearchResults}
-        <tr><td colspan={COLUMNS.length + 1}><LoadingSpinner></LoadingSpinner></td></tr>
+            <div class="bottom">
+              <BookingStatus {booking} />
+              <div class="date muted">
+                <LoadingText value={mapLoading(booking.updatedAt, formatDateTimeSmart)} />
+              </div>
+              {#if allLoaded(event.tickets) && event.tickets.length > 1}
+                <div class="ticket">
+                  <LoadingText value={booking.ticket.name} />
+                </div>
+              {:else}
+                <div class="payment">
+                  <BookingPaymentMethod {booking} />
+                </div>
+              {/if}
+            </div>
+          </button>
+        </li>
       {:else}
-        {#each displayedRegistrations as { node: registration, node: { paid, id, beneficiary, authorEmail, ticket, beneficiaryUser, author, authorIsBeneficiary, createdAt, paymentMethod, verifiedAt, verifiedBy, opposed, opposedAt, opposedBy, cancelled, cancelledAt, cancelledBy } } (id)}
-          {@const benef = beneficiaryUser ?? (authorIsBeneficiary ? author : undefined)}
-          {@const code = id.replace(/^r:/, '').toUpperCase()}
-          <tr class:selected={rowIsSelected[id]}>
-            <td class="actions">
-              <InputCheckbox bind:value={rowIsSelected[id]} label="" />
-            </td>
-            <td>
-              {#if isSameDay(createdAt, new Date())}
-                {format(createdAt, 'HH:mm')}
-              {:else}
-                {formatDateTime(createdAt)}
-              {/if}
-            </td>
-            <td
-              class="centered"
-              class:danger={opposed || cancelled}
-              class:success={paid && verifiedAt}
-              class:warning={!paid}
-              use:tooltip={opposedAt || verifiedAt || cancelledAt
-                ? (opposedAt
-                    ? `Opposée le ${formatDateTime(opposedAt)} par ${opposedBy?.fullName ?? '?'}`
-                    : '') +
-                  (verifiedAt ? ', ' : '') +
-                  (verifiedAt
-                    ? `Scannée le ${formatDateTime(verifiedAt)} par ${verifiedBy?.fullName ?? '?'}`
-                    : '') +
-                  (cancelledAt ? ', ' : '') +
-                  (cancelledAt
-                    ? `Annulée le ${formatDateTime(cancelledAt)} par ${
-                        cancelledBy?.fullName ?? '?'
-                      }`
-                    : '')
-                : paid
-                  ? 'Payée'
-                  : 'Non payée'}
-            >
-              {#if opposed}
-                <IconOpposed />
-              {:else if cancelledAt}
-                <IconCancel />
-              {:else if verifiedAt && paid}
-                <IconCheck />
-              {:else if paid}
-                <IconCash />
-              {:else}
-                <IconCashOff />
-              {/if}
-            </td>
-            <td
-              class="centered"
-              use:tooltip={paymentMethod ? DISPLAY_PAYMENT_METHODS[paymentMethod] : 'Inconnue'}
-            >
-              <svelte:component this={PAYMENT_METHODS_ICONS[paymentMethod ?? 'Other']} />
-            </td>
-            <td>
-              {#if ticket.group}
-                {ticket.group.name} <IconChevronRight />
-              {/if}
-              {ticket.name}
-            </td>
-            {#if benef}
-              <td>
-                {#if compact}
-                  <a href="/users/{benef.uid}">{benef.fullName}</a>
-                {:else}
-                  <AvatarPerson href="/users/{benef.uid}" {...benef} />
-                {/if}
-              </td>
-              <td class="centered">
-                {#if benef.contributesTo.length > 0}
-                  {#if compact && benef.contributesTo.find(({ name }) => name === 'AEn7')}
-                    <IconCheck />
-                  {:else}
-                    {benef.contributesTo.map(({ name }) => name).join(', ')}
-                  {/if}
-                {:else}
-                  <IconClose />
-                {/if}
-              </td>
-              <td class="centered">
-                {benef.major?.shortName ?? ''}
-              </td>
-              <td class="centered">
-                {benef.yearTier}A
-              </td>
-            {:else}
-              <td colspan="4">{beneficiary || authorEmail} <Badge>exté</Badge> </td>
-            {/if}
-            <td>
-              {#if !authorIsBeneficiary}
-                {#if author}
-                  {#if compact}
-                    <a href="/users/{author.uid}">{author.fullName}</a>
-                  {:else}
-                    <AvatarPerson href="/users/{author.uid}" {...author} />
-                  {/if}
-                {:else}
-                  {authorEmail}
-                {/if}
-              {/if}
-            </td>
-            <td class="centered">
-              <a href="/bookings/{code}?utm_source=event-page"><code>{code}</code></a>
-            </td>
-            <td class="actions">
-              <ButtonGhost
-                danger={paid}
-                success={!paid}
-                help={'Marquer comme ' + (paid ? 'non payée' : 'payée')}
-                on:click={async () => updatePaidStatus(!paid, registration)}
-              >
-                {#if paid}
-                  <IconCashOff />
-                {:else}
-                  <IconCash />
-                {/if}
-              </ButtonGhost>
-              {#if !verifiedAt}
-                <ButtonGhost
-                  danger={Boolean(verifiedAt)}
-                  success={!verifiedAt}
-                  help={'Vérifier la réservation'}
-                  on:click={async () => {
-                    await updatePaidStatus(true, registration);
-                    const { verifyBooking: verifyRegistration } = await $zeus.mutate({
-                      verifyBooking: [
-                        {
-                          event: $page.params.id,
-                          id,
-                        },
-                        {
-                          '__typename': true,
-                          '...on Error': {
-                            message: true,
-                          },
-                          '...on MutationVerifyBookingSuccess': {
-                            data: {
-                              registration: {
-                                paid: true,
-                                verifiedAt: true,
-                                verifiedBy: {
-                                  uid: true,
-                                  pictureFile: true,
-                                  fullName: true,
-                                },
-                              },
-                            },
-                          },
-                        },
-                      ],
-                    });
+        <li class="booking empty muted">Aucune résevation pour le moment</li>
+      {/each}
+    </ul>
+  </div>
+</MaybeError>
 
-                    if (verifyRegistration.__typename === 'Error') {
-                      toasts.error(`Impossible de vérifier ${id}`, verifyRegistration.message);
-                      return;
-                    }
-
-                    if (verifyRegistration.__typename === 'MutationVerifyBookingSuccess') {
-                      registrations.edges[
-                        registrations.edges.findIndex((r) => r.node.id === registration.id)
-                      ].node.verifiedAt = verifyRegistration.data.registration?.verifiedAt;
-                      registrations.edges[
-                        registrations.edges.findIndex((r) => r.node.id === registration.id)
-                      ].node.verifiedBy = verifyRegistration.data.registration?.verifiedBy;
-                    }
-                  }}
-                >
-                  <IconCheck />
-                </ButtonGhost>
-              {/if}
-              {#if !opposed}
-                <ButtonGhost
-                  danger
-                  help={'Opposer la réservation'}
-                  on:click={async () => {
-                    await oppose(registration);
-                  }}
-                >
-                  <IconOpposed />
-                </ButtonGhost>
-              {/if}
-            </td>
-          </tr>
-        {:else}
-          <tr>
-            <td colspan={COLUMNS.length + 1}
-              >{#if searchQuery}Aucun résultat{:else}
-                Aucune réservation pour le moment.{/if}</td
-            >
-          </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
-
-  {#if !searchQuery && registrations.pageInfo.hasNextPage}
-    <section class="load-more">
-      <ButtonSecondary
-        help={`${displayedRegistrations.length}/${registrationsCounts.total} chargées`}
-        on:click={loadMore}
-        loading={loadingMore}>Charger plus</ButtonSecondary
-      >
-    </section>
-  {/if}
-</div>
-
-<style lang="scss">
-  header {
-    margin: 0 auto;
-    margin-bottom: 2rem;
-    text-align: center;
+<style>
+  .contents {
+    padding: 0 1rem;
   }
 
-  header .actions {
+  .bookings {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .booking {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border-radius: var(--border-block);
+  }
+
+  .booking:hover,
+  .booking:focus-visible {
+    background-color: var(--bg2);
+  }
+
+  .code {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--bg4);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 900px) {
+    .booking .desktop-only {
+      display: none;
+    }
+
+    .bottom {
+      justify-content: space-between;
+    }
+  }
+
+  .top {
+    display: flex;
+    gap: 1rem;
     align-items: center;
-    justify-content: center;
+    width: 100%;
   }
 
-  header .search {
-    max-width: 600px;
-    margin: 0 auto 1rem;
+  .beneficiary {
+    font-size: 1.2em;
   }
 
-  header h1 {
-    padding-bottom: 0;
-    margin-top: 2rem;
-    margin-bottom: 0.25rem;
-  }
-
-  section.counts {
-    margin-bottom: 2rem;
-  }
-
-  .table-scroller {
-    overflow-x: auto;
-  }
-
-  table {
-    --spacing: 1.5rem;
-
-    max-width: 100vw;
-    margin: 0 auto;
-    overflow-y: scroll;
-    border-spacing: calc(max(0.5rem, var(--spacing) / 2));
-    border-collapse: separate;
-  }
-
-  table.compact {
-    --spacing: 0.5rem;
-
-    border-spacing: var(--border-block);
-  }
-
-  .sort-icon {
-    display: inline-block;
+  .bottom {
     display: flex;
+    gap: 1rem;
     align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 100%;
+    container: bottom / inline-size;
   }
 
-  th .inner {
+  @container bottom (min-width: 300px) {
+    .booking .payment-method-name {
+      display: inline;
+    }
+  }
+
+  .payment {
+    color: var(--shy);
+  }
+
+  .author {
     display: flex;
+    gap: 0.5em;
     align-items: center;
   }
 
-  table,
-  th,
-  td {
-    border-color: var(--bg);
+  .beneficiary,
+  .date {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  td,
-  th {
-    padding: calc(max(0.5rem, var(--spacing) / 2));
-    text-align: left;
+  .tab .subtitle {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.8em;
   }
 
-  th {
-    padding-top: 0;
-    padding-bottom: 0;
+  dl {
+    padding: 1rem 2rem;
   }
 
-  td {
-    background: var(--muted-bg);
-  }
-
-  td.danger,
-  td.success {
-    color: var(--text);
-    background: var(--bg);
-  }
-
-  table:not(.compact) td {
-    border-radius: var(--radius-inline);
-  }
-
-  tr.selected td:not(.actions) {
-    background: var(--muted-border);
-    border-right-color: var(--muted-border);
-    border-left-color: var(--muted-border);
-  }
-
-  tr.selected:first-child td {
-    border-top-color: transparent;
-  }
-
-  td[colspan],
-  td.centered {
-    text-align: center;
-  }
-
-  td.actions {
-    width: max-content;
-    padding: 0.25rem 1rem;
-    background: transparent;
-  }
-
-  .load-more {
+  dl dd {
     display: flex;
-    justify-content: center;
-    margin: 2rem 0;
+    gap: 0.5ch;
+    align-items: center;
   }
 </style>

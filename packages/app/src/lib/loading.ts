@@ -1,6 +1,10 @@
 import { dev } from '$app/environment';
 import { PendingValue } from '$houdini';
 
+export { default as LoadingChurros } from '$lib/components/LoadingChurros.svelte';
+export { default as LoadingSpinner } from '$lib/components/LoadingSpinner.svelte';
+export { default as LoadingText } from '$lib/components/LoadingText.svelte';
+
 /**
  * To develop a loading state, set this to true
  * WARNING: NEVER LEAVE THIS TRUE WHEN COMITTING
@@ -13,7 +17,7 @@ function simulatingLoadingState(): boolean {
   return dev && SIMULATE_LOADING_STATE;
 }
 
-export type MaybeLoading<T> = T | typeof PendingValue;
+export type MaybeLoading<T> = T | null | undefined | typeof PendingValue;
 
 /**
  * Provide a fallback value if the value is PendingValue
@@ -23,16 +27,22 @@ export type MaybeLoading<T> = T | typeof PendingValue;
  */
 export function loading<T>(value: MaybeLoading<T>, fallback: T): T {
   if (simulatingLoadingState()) return fallback;
-  return value === PendingValue ? fallback : value;
+  return value === PendingValue || value === null || value === undefined ? fallback : value;
 }
 
-type AllLoaded<T> = T extends object
+export type AllLoaded<T> = T extends object
   ? { [K in keyof T]: AllLoaded<T[K]> }
   : T extends unknown[]
     ? AllLoaded<T[number]>[]
     : T extends typeof PendingValue
       ? never
       : T;
+
+export type DeepMaybeLoading<T> = T extends object
+  ? { [K in keyof T]: DeepMaybeLoading<T[K]> }
+  : T extends unknown[]
+    ? DeepMaybeLoading<T[number]>[]
+    : MaybeLoading<T>;
 
 export function loaded<T>(value: MaybeLoading<T>): value is T {
   if (simulatingLoadingState()) return false;
@@ -72,6 +82,13 @@ export function mapLoading<T, O>(
 ): MaybeLoading<O> {
   if (loaded(value)) return mapping(value);
   return PendingValue;
+}
+
+export function mapAllLoading<T extends unknown[], O>(
+  values: { [K in keyof T]: MaybeLoading<T[K]> },
+  mapping: (...values: T) => O,
+): MaybeLoading<O> {
+  return onceAllLoaded(values, mapping, PendingValue);
 }
 
 export const LOREM_IPSUM = `Lorem ipsum dolor sit amet. A impedit beatae sed nostrum voluptatem

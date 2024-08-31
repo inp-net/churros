@@ -12,10 +12,9 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { page } from '$app/stores';
-  import { me } from '$lib/session';
   import { default as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
-  import Modal from './Modal.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
 
   let title = '';
   let description = '';
@@ -25,8 +24,6 @@
   let loading = false;
   let includeCurrentPageURL = true;
   let errored = false;
-
-  export let element: HTMLDialogElement;
 
   $: link = issueNumber ? `https://git.inpt.fr/inp-net/churros/-/issues/${issueNumber}` : '';
   $: innerWidth = undefined;
@@ -43,17 +40,17 @@
     const ua = parseUserAgent(navigator.userAgent);
     const metadata = {
       ...(includeCurrentPageURL ? { Location: $page.url.toString() } : {}),
-      'Logged-in': $me ? 'Yes' : 'No',
-      'Version': CURRENT_VERSION,
-      'Build': CURRENT_COMMIT,
-      'Browser': `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
+      // 'Logged-in': $me ? 'Yes' : 'No',
+      Version: CURRENT_VERSION,
+      Build: CURRENT_COMMIT,
+      Browser: `${ua.browser.name ?? 'unknown'} v${ua.browser.version ?? '?'} (engine ${
         ua.engine.name ?? 'unknown'
       } v${ua.engine.version ?? '?'})`,
-      'OS': `${ua.os.name ?? 'unknown'} v${ua.os.version ?? '?'}`,
-      'Device': `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
+      OS: `${ua.os.name ?? 'unknown'} v${ua.os.version ?? '?'}`,
+      Device: `${ua.device.type ?? 'unknown'} ${ua.device.vendor ?? 'unknown'} ${
         ua.device.model ?? 'unknown'
       } (arch ${ua.cpu.architecture ?? 'unknown'})`,
-      'ScreenSize': `${innerWidth ?? 'unknown'} x ${innerHeight ?? 'unknown'}`,
+      ScreenSize: `${innerWidth ?? 'unknown'} x ${innerHeight ?? 'unknown'}`,
     };
     try {
       const { createGitlabIssue: number } = await $zeus.mutate({
@@ -77,28 +74,45 @@
     }
 
     loading = false;
-    setTimeout(() => {
-      // time for <Alert> to render. Yes this is ugly hacky code, what yo gonna do bout it?
-      element.scrollTo({
-        top: element.scrollHeight,
-        behavior: 'smooth',
-      });
-    }, 200);
+    closeMainModal?.();
+    openReportResult?.();
   }
+
+  export let open: () => void;
+  let openReportResult: () => void;
+  let closeMainModal: () => void;
 </script>
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-<Modal bind:element>
-  <div class="content">
+<ModalOrDrawer notrigger bind:open={openReportResult}>
+  <!-- TODO don't use alerts, use just one big colored icon above text -->
+  {#if link}
+    <Alert theme="success"
+      >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée a bien été soumise{/if}. C'est
+      <a href={link}>l'issue n°{issueNumber}</a>.
+      <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}>Voir</ButtonSecondary>
+    </Alert>
+  {:else if errored}
+    <Alert theme="danger"
+      >Impossible de créer l'issue. <ButtonSecondary
+        insideProse
+        newTab
+        href="https://git.inpt.fr/inp-net/churros/-/issues/new"
+        >Créer l'issue sur le site</ButtonSecondary
+      >
+    </Alert>
+  {/if}
+</ModalOrDrawer>
+
+<ModalOrDrawer tall notrigger bind:open bind:implicitClose={closeMainModal}>
+  <svelte:fragment slot="header" let:close>
     <h1>
       {#if issueType === 'bug'}Signaler{:else}Proposer{/if}
-      <ButtonGhost
-        on:click={() => {
-          element.close();
-        }}><IconClose /></ButtonGhost
-      >
     </h1>
+    <ButtonGhost on:click={close}><IconClose /></ButtonGhost>
+  </svelte:fragment>
+  <div class="content">
     <p>
       Après signalement, tu pourras suivre la progression de ton rapport sur la page Tes Rapports
       (accessible depuis <IconMore></IconMore> )
@@ -129,34 +143,13 @@
       <section class="submit">
         <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
         <p class="typo-details">
-          Envoyer ce rapport créera une issue Gitlab {#if $me}en ton nom
-          {/if}sur le dépot
+          Envoyer ce rapport créera une issue Gitlab en ton nom sur le dépot
           <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
         </p>
       </section>
-      <section class="feedback">
-        {#if link}
-          <Alert theme="success"
-            >Ton {#if issueType === 'bug'}bug a bien été signalé{:else}idée a bien été soumise{/if}.
-            C'est <a href={link}>l'issue n°{issueNumber}</a>.
-            <ButtonSecondary newTab insideProse href={link} icon={IconArrowRight}
-              >Voir</ButtonSecondary
-            >
-          </Alert>
-        {:else if errored}
-          <Alert theme="danger"
-            >Impossible de créer l'issue. <ButtonSecondary
-              insideProse
-              newTab
-              href="https://git.inpt.fr/inp-net/churros/-/issues/new"
-              >Créer l'issue sur le site</ButtonSecondary
-            >
-          </Alert>
-        {/if}
-      </section>
     </form>
   </div>
-</Modal>
+</ModalOrDrawer>
 
 <style>
   .content {

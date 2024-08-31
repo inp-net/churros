@@ -6,6 +6,7 @@ import { canEditManagers, EventManagerType, ManagerOfEventInput } from '../index
 builder.mutationField('upsertManagersOfEvent', (t) =>
   t.prismaField({
     type: [EventManagerType],
+    deprecationReason: "Use 'upsertEventManager' and 'removeEventManager' instead",
     args: {
       eventId: t.arg.id(),
       managers: t.arg({ type: [ManagerOfEventInput] }),

@@ -9,7 +9,7 @@
     <mj-section>
       <mj-column width="100%">
         <mj-text align="center">
-          <h1>Yo!</h1>
+          <h1>Yo, {{username}}!</h1>
         </mj-text>
         <mj-button href="{{url}}">
           Finaliser mon inscription

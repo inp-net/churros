@@ -5,16 +5,16 @@
   import IconDelete from '~icons/mdi/delete-outline';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
-  import InputFile, { fileListOf } from './InputFile.svelte';
+  import InputFile, { fileListOf } from './InputFile.old.svelte';
   import InputLongText from './InputLongText.svelte';
   import InputNumber from './InputNumber.svelte';
   import InputSelectOne from './InputSelectOne.svelte';
   import InputSubject from './InputSubject.svelte';
   import InputText from './InputText.svelte';
-  import { me } from '$lib/session';
   import { goto } from '$app/navigation';
   import Alert from './Alert.svelte';
   import { toasts } from '$lib/toasts';
+  import type { DocumentType$options } from '$houdini';
 
   let files: FileList | undefined = undefined;
 
@@ -25,19 +25,17 @@
     title: string;
     schoolYear: number;
     description: string;
-    subject?:
-      | undefined
-      | {
-          uid: string;
-          id: string;
-          name: string;
-          shortName: string;
-          minors: Array<{ name: string; uid: string; shortName: string }>;
-          majors: Array<{ name: string; uid: string; shortName: string }>;
-          forApprentices: boolean;
-          yearTier?: number | undefined;
-        };
-    type: DocumentType;
+    subject: null | {
+      uid: string;
+      id: string;
+      name: string;
+      shortName: string;
+      minors: Array<{ name: string; uid: string; shortName: string }>;
+      majors: Array<{ name: string; uid: string; shortName: string }>;
+      forApprentices: boolean;
+      yearTier: number | null;
+    };
+    type: DocumentType$options;
     paperPaths: string[];
     solutionPaths: string[];
   };
@@ -51,13 +49,14 @@
           description: data.description,
           schoolYear: data.schoolYear,
           title: data.title,
-          type: data.type,
+          type: data.type as DocumentType,
           id: data.id,
           subject: data.subject.id,
         },
         {
           '__typename': true,
           '...on Error': { message: true },
+          '...on ZodError': { message: true },
           '...on MutationUpsertDocumentSuccess': {
             data: {
               id: true,
@@ -75,7 +74,7 @@
         },
       ],
     });
-    if (upsertDocument.__typename === 'Error') {
+    if (upsertDocument.__typename !== 'MutationUpsertDocumentSuccess') {
       serverError = upsertDocument.message;
       toasts.error(`Impossible de sauvegarder`, serverError);
       return;
@@ -131,9 +130,8 @@
       }),
     );
     const { subject } = upsertDocument.data;
-    const majorUid =
-      subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? $me?.major?.uid ?? undefined;
-    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier ?? $me?.yearTier;
+    const majorUid = subject?.majors[0]?.uid ?? subject?.minors[0]?.majors[0]?.uid ?? undefined;
+    const yearTier = subject?.yearTier ?? subject?.minors[0]?.yearTier;
     toasts.success('Document modifié', `${upsertDocument.data.title} a bien été modifié.`);
     await goto(
       `/documents/${majorUid}/${yearTier}a${subject?.forApprentices ? '-fisa' : ''}/${

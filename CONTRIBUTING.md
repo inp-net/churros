@@ -49,9 +49,23 @@ yarn reset
 
 5. Démarrer les serveurs de développement
 
-```
-yarn dev
-```
+- ```
+  yarn dev
+  ```
+
+- Ou (c'est mieux), démarrer dans 2 terminaux indépendants les serveurs de dev de l'API et de l'application:
+
+  1.
+
+  ```
+  docker compose up -d
+  ```
+
+  2.  | Terminal 1      | Terminal 2      |
+      | --------------- | --------------- |
+      | `yarn @api dev` | `yarn @app dev` |
+
+  Note que le faux serveur LDAP de l'école ne fonctionnera pas (il faut le lancer dans encore un autre terminal), mais ça ne pose pas de problème si l'on ne développe pas la partie inscriptions.
 
 Parmis d'autres choses, sont notamment lancés:
 

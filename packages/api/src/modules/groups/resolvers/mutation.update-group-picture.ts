@@ -5,6 +5,7 @@ import { userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 /** Update the club's picture */
 builder.mutationField('updateGroupPicture', (t) =>
   t.field({
+    deprecationReason: 'Use setPicture instead',
     type: 'String',
     args: {
       uid: t.arg.string(),

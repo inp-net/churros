@@ -5,6 +5,7 @@
   import CardGroup from './CardGroup.svelte';
   import { PendingValue } from '$houdini';
   import CardGroupPending from '$lib/components/CardGroupPending.svelte';
+  import { route } from '$lib/ROUTES';
 
   export let groups: Array<
     | typeof PendingValue
@@ -18,7 +19,7 @@
   >;
 
   let nbGroups: number;
-  export let go: (groupUid: string) => string = (uid) => `/groups/${uid}`;
+  export let go: (groupUid: string) => string = (uid) => route('/[uid=uid]', uid);
 
   let groupsWidth = 0;
   let nbVisibles = 0;
@@ -172,7 +173,7 @@
     background-color: var(--bg);
     border: none;
     border-radius: 50%;
-    box-shadow: var(--primary-shadow);
+    box-shadow: var(--shadow);
     transform: translateY(-50%);
   }
 

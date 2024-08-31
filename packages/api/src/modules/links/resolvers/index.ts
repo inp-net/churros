@@ -3,3 +3,7 @@
  */
 
 export * from './link.computed-value.js';
+export * from './link.url.js';
+export * from './mutation.add-links.js';
+export * from './mutation.delete-link.js';
+export * from './mutation.update-link.js';

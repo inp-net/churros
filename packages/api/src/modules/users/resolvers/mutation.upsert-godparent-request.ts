@@ -56,7 +56,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
           body: `${fullName(godchild)} veut devenir votre filleul·e !`,
           title: `Demande de parrainage reçue`,
           data: {
-            goto: `/users/${godparentUid}/edit`,
+            goto: `/users/${godparentUid}/edit/family`,
             group: undefined,
             channel: NotificationChannel.GodparentRequests,
           },

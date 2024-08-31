@@ -33,6 +33,10 @@ export function zeusVisibility(houdiniVisibility: Visibility$options): Visibilit
   return houdiniVisibility as Visibility;
 }
 
+export function houdiniVisibility(zeusVisibility: Visibility): Visibility$options {
+  return zeusVisibility as Visibility$options;
+}
+
 export function zeusPaymentMethod(houdiniPaymentMethod: PaymentMethod$options): PaymentMethod {
   return houdiniPaymentMethod as PaymentMethod;
 }
@@ -46,3 +50,8 @@ export type VariableFunctionFixed<Params extends Record<string, string>, Input> 
   Params,
   WithoutRuntimeScalars<Input>
 >;
+
+// See https://github.com/microsoft/TypeScript/issues/38520
+export function entries<K extends string | number, V>(obj: Record<K, V>): [K, V][] {
+  return Object.entries(obj) as [K, V][];
+}

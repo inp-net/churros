@@ -1,63 +1,50 @@
-<script lang="ts" context="module">
-  export const AppLayoutScanningEvent = new AppLayoutScanningEventStore();
-</script>
-
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate } from '$app/navigation';
+  import { goto, onNavigate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { AppLayoutScanningEventStore, graphql } from '$houdini';
+  import { graphql } from '$houdini';
+  import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
-  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
-  import NavigationTop from '$lib/components/NavigationTop.svelte';
+  import NavigationTop, { type NavigationContext } from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
-  import { allLoaded } from '$lib/loading';
-  import { setupScrollPositionRestorer } from '$lib/scroll';
-  import { currentTabDesktop, currentTabMobile } from '$lib/tabs';
-  import { theme } from '$lib/theme.js';
+  import PickGroup from '$lib/components/PickGroup.svelte';
+  import QuickAccessList from '$lib/components/QuickAccessList.svelte';
+  import { isMobile } from '$lib/mobile';
+  import { mutate } from '$lib/mutations';
+  import { addReferrer, refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
+  import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
+  import { isDark } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
+  import { setupViewTransition } from '$lib/view-transitions';
+  import { setContext } from 'svelte';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
   import IconClose from '~icons/mdi/close';
-  import Snowflake from '~icons/mdi/snowflake';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import type { LayoutRouteId, Snapshot } from './$types';
+  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
+  import { allLoaded } from '$lib/loading';
 
+  onNavigate(setupViewTransition);
+
+  const mobile = isMobile();
   export let data: PageData;
-  $: ({ AppLayout } = data);
+  $: ({ AppLayout, RootLayout } = data);
 
-  const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
-  afterNavigate(async ({ to }) => {
-    if (!browser) return;
-    if (!to) return;
-    if (to.route.id === scanningEventsRouteID)
-      await AppLayoutScanningEvent.fetch({ variables: { id: $page.params.id! } });
-  });
-
-  export const snapshot: Snapshot<number> = {
-    capture: () => scrollableArea.scrollTop,
-    restore(y) {
-      scrollableArea.scrollTo(0, y);
-    },
-  };
-
-  let scrollableArea: HTMLElement;
   let scrolled = false;
-  $: if (scrollableArea) {
-    setupScrollPositionRestorer(scrollableArea, (isScrolled) => {
+  setupScrollPositionRestorer(
+    () => scrollableContainer(mobile),
+    (isScrolled) => {
       scrolled = isScrolled;
-    });
-  }
+    },
+  );
 
   const now = new Date();
-
-  function pageIsFullsize(url: URL) {
-    const fragments = url.pathname.split('/');
-    return fragments[1] === 'club' && fragments[3] === 'event';
-  }
 
   function announcementHiddenByUser(id: string, hiddenAnnouncements: string[]): boolean {
     return !browser || hiddenAnnouncements.includes(id);
@@ -94,56 +81,92 @@
 
   let changelogAcknowledged = false;
 
-  let newGroupDialog: HTMLDialogElement;
+  const CreateEvent = graphql(`
+    mutation CreateEvent($group: UID!) {
+      createEvent(group: $group, title: "") {
+        ... on MutationCreateEventSuccess {
+          data {
+            localID
+          }
+        }
+        ...MutationErrors
+      }
+    }
+  `);
+
+  const navtop = writable<NavigationContext>({
+    actions: [],
+    title: null,
+    quickAction: null,
+    back: null,
+  });
+  setContext('navtop', navtop);
+
+  $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
+
+  let openChangelog: () => void;
+  $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) openChangelog?.();
 </script>
 
-{#if !changelogAcknowledged && $AppLayout.data?.combinedChangelog}
+{#if $AppLayout.data?.combinedChangelog}
   <ModalChangelog
+    bind:open={openChangelog}
     on:acknowledge={() => {
       changelogAcknowledged = true;
     }}
-    open
     log={$AppLayout.data?.combinedChangelog}
   />
 {/if}
 
-<ModalCreateGroup studentAssociation={creatingGroupLinkedTo} bind:element={newGroupDialog}
-></ModalCreateGroup>
+<ModalCreateGroup studentAssociation={creatingGroupLinkedTo}></ModalCreateGroup>
+
+{#if $AppLayout.data?.me}
+  <PickGroup
+    statebound="NAVTOP_CREATING_EVENT"
+    notrigger
+    value={$AppLayout.data.me.canCreateEventsOn.at(0)?.uid}
+    on:finish={async ({ detail }) => {
+      const result = await mutate(CreateEvent, { group: detail });
+      if (
+        toasts.mutation(
+          result,
+          'createEvent',
+          'Évènement créé',
+          `Impossible de créer un évènement pour ${detail}`,
+        )
+      )
+        await goto(route('/events/[id]/edit', result.data.createEvent.data.localID));
+    }}
+    options={$AppLayout.data.me.canCreateEventsOn}
+  ></PickGroup>
+{/if}
 
 {#if $AppLayout.data?.me?.bookings}
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
 
-<div class="layout">
-  <NavigationTop
-    {scrolled}
-    userIsLoading={$AppLayout.fetching}
-    user={$AppLayout.data?.me ?? null}
-    event={$page.route.id === scanningEventsRouteID
-      ? ($AppLayoutScanningEvent.data?.scanningEvent ?? null)
-      : null}
-  />
+<svelte:body data-route={$page.route.id} />
 
-  {#if $theme === 'noel'}
-    {#each { length: 100 } as _}
-      <div class="flake">
-        <Snowflake />
+<div class="layout" id="layout" class:mobile>
+  <header class="left">
+    <NavigationSide user={$AppLayout.data?.me ?? null} />
+  </header>
+
+  <div class="mobile-area" class:has-video-overlay={scanningTickets}>
+    <header class="nav-top">
+      <NavigationTop {scrolled}></NavigationTop>
+      <div class="cap">
+        <div class="corner-left-wrapper corner-wrapper">
+          <div class="corner-left"></div>
+        </div>
+        <div class="middle"></div>
+        <div class="corner-right-wrapper corner-wrapper">
+          <div class="corner-right"></div>
+        </div>
       </div>
-    {/each}
-  {/if}
+    </header>
 
-  <div class="page-and-sidenav">
-    <NavigationSide
-      openNewGroupModal={() => newGroupDialog.showModal()}
-      current={currentTabDesktop($page.url)}
-      user={$AppLayout.data?.me ?? null}
-    />
-    <div
-      id="scrollable-area"
-      class="contents-and-announcements"
-      class:fullsize={pageIsFullsize($page.url)}
-      bind:this={scrollableArea}
-    >
+    <div id="scrollable-area" class="contents-and-announcements">
       <section class="announcements fullsize">
         {#if !scanningTickets && !showingTicket && $announcements.data?.announcementsNow}
           {#each $announcements.data?.announcementsNow.filter(({ id }) => !announcementHiddenByUser(id, $hiddenAnnouncements)) as { title, bodyHtml, warning, id } (id)}
@@ -164,107 +187,272 @@
           {/each}
         {/if}
       </section>
-      <main>
+      <div class="page-content">
         <slot />
-        {#if $theme == 'pan7on'}
-          <div class="pan7div"></div>
-        {/if}
-        {#if $theme == 'ber7ker'}
-          <div class="ber7div"></div>
-        {/if}
-      </main>
+      </div>
+    </div>
+    <div class="nav-bottom">
+      <NavigationBottom me={$AppLayout.data?.me ?? null} />
     </div>
   </div>
 
-  <NavigationBottom
-    openNewGroupModal={() => newGroupDialog.showModal()}
-    current={currentTabMobile($page.url)}
-  />
+  <aside class="right">
+    {#if $AppLayout.data?.me}
+      <section class="quick-access">
+        <QuickAccessList pins={$AppLayout.data.me} />
+      </section>
+    {:else if !$RootLayout.data?.loggedIn}
+      <section class="login">
+        <h2>Connexion</h2>
+        <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
+        <section class="actions">
+          <!-- Can't use refroute here cuz it's not called again on every page change, since this lives in the layout -->
+          <ButtonSecondary
+            noClientSideNavigation
+            href={addReferrer(route('/login'), $page.url.pathname)}>Connexion</ButtonSecondary
+          >
+          <ButtonSecondary noClientSideNavigation href={refroute('/signup')}
+            >Inscription</ButtonSecondary
+          >
+        </section>
+      </section>
+    {/if}
+    <footer class="muted">
+      <p>
+        Churros v{CURRENT_VERSION}
+        · <wbr />Made by <a href="https://net7.dev">net7</a>
+        · <wbr /><a href="/credits">À propos</a>
+        · <wbr /><a href="https://git.inpt.fr/inp-net/churros">Code source</a>
+        · <wbr /><a href="https://www.gnu.org/licenses/agpl-3.0.en.html#license-text"
+          >Licensed under AGPL-v3.0</a
+        >
+        · <wbr />&copy;&nbsp;{new Date().getFullYear()}&nbsp;<a href="https://churros.app/@devs"
+          >Churros DevTeam</a
+        >
+      </p>
+      <a href="https://net7.dev" class="net7-logo">
+        <img
+          height="50px"
+          width="100px"
+          src="https://net7.dev/images/net7_{$isDark ? 'white' : 'dark'}.svg"
+          alt="net7"
+        />
+      </a>
+    </footer>
+  </aside>
 </div>
 
 <style lang="scss">
   @use 'sass:math';
 
-  /*
+  /**
 
-The root layout is composed of several elements:
+  Layout:
 
-- atop everything, positionned absolutely:
-  - the loading overlay
-  - toasts
-  - quick bookings
+  +---------------------------------------------+
+  |  sidebar  |      topbar         |   aside   |
+  |  sidebar  |      cap            |   aside   |
+  |  sidebar  | scrollable area     |   aside   |
+  |  sidebar  |      bottombar      |   aside   |
+  +---------------------------------------------+
 
-- the top navbar
-- horizontally:
-  - the side navbar (desktop only)
-  - vertically (this is the content that scrolls):
-    - the announcements
-    - the page content
-- the bottom navbar (mobile only)
-*/
-  .pan7div {
-    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
-    // m'engage à laver les ecocups.
-    height: 3rem;
-  }
+  cap + topbar = nav-top
+  nav-top + scrollable area + bottombar : mobile-area
+  aside : contains stuff like login form, quick access, footer
+          TODO: API kinda like navtop, so allow pages to contribute content here.
+  
 
-  .ber7div {
-    // Si cette div existe encore après les semaines de campagnes, moi Benjamin Soyer
-    // je m'engage à trouver quelqu'un de ber7ker.
-    height: 6rem;
-  }
+  - On desktop:
+
+  - The root element is the scrollable area. This allows using the scroll wheel anywhere on the page. In order to have that rounded border on top of the scrollable content while keeping the scroll on the body, we need to have the border-radius'd part as a separate element that doesn't move (has position: sticky): that's "cap" (no 🧢 fr fr).
+  - The scrollable-area has padding so that the content doesn't go under the cap's rounded corners on scroll
+
+  - On mobile:
+
+  - sidebar and aside as well as cap are all hidden
+  - the mobile-area is a flex element, nav top is not sticky but static, and the element with the scrollbar is scrollable-area: this is so that scaling down the background when opening a drawer does not fuck up the nav bars (if they're position: fixed, they fly out of the element when the [data-vaul-drawer-wrapper] is scaled down). UX-wise this is fine as the mobile-area takes the entire screen width on mobile.
+  - the scrollable-area kisses the screen's borders: this is important to have full-width content like posts cards.
+  */
 
   .layout {
     display: grid;
-    grid-template-rows: max-content 1fr max-content;
-    width: 100dvw;
-    height: 100dvh;
-  }
-
-  .page-and-sidenav {
-    display: grid;
+    grid-template-columns: 1fr minmax(300px, var(--scrollable-content-width, 700px)) 1fr;
     gap: 2rem;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
+    width: 100dvw;
 
-    @media (min-width: 900px) {
-      grid-template-columns: max-content 1fr;
-    }
+    // TODO animate --scrollable-content-width changes
+
+    --scrollable-area-border-color: var(--bg3);
+
+    // Waiting on https://drafts.csswg.org/css-env-1/ to use variables in media queries
+    // --width-mobile: 900px;
   }
 
-  .contents-and-announcements {
-    min-height: 0;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
-    overflow-y: scroll;
-    scrollbar-width: thin;
+  .layout .left {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    align-self: start;
   }
 
-  main {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+  .layout .right {
+    position: sticky;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-self: start;
+    max-width: 300px;
+    padding-top: 100px;
   }
 
-  .contents-and-announcements:not(.fullsize) main {
-    padding: 0 1rem;
+  .layout .mobile-area {
+    grid-column: 2;
   }
 
   #scrollable-area {
     display: flex;
     flex-direction: column;
+    max-width: var(--scrollable-content-width, 700px);
   }
 
-  :global(*::-webkit-scrollbar *) {
-    width: 100px;
-    background-color: red;
+  .layout .nav-bottom {
+    display: none;
+  }
+
+  .cap {
+    display: flex;
+    justify-content: space-between;
+    height: 30px;
+  }
+
+  .cap .middle {
+    flex-grow: 1;
+    background: transparent;
+    border-top: 1px solid var(--scrollable-area-border-color);
+  }
+
+  .cap .corner-wrapper {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    background: var(--bg);
+  }
+
+  .cap .corner-left,
+  .cap .corner-right {
+    position: absolute;
+    inset: 0;
+
+    // z-index: 11;
+  }
+
+  .cap .corner-left {
+    border-top: solid 1px var(--scrollable-area-border-color);
+    border-left: solid 1px var(--scrollable-area-border-color);
+    border-top-left-radius: 30px;
+  }
+
+  .cap .corner-right {
+    border-top: solid 1px var(--scrollable-area-border-color);
+    border-right: solid 1px var(--scrollable-area-border-color);
+    border-top-right-radius: 30px;
+  }
+
+  .nav-top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  @media (max-width: 900px) {
+    .cap {
+      display: none;
+    }
+
+    .layout .left {
+      display: none;
+    }
+
+    .layout .right {
+      display: none;
+    }
+
+    .mobile-area .nav-top,
+    .mobile-area .nav-bottom {
+      position: static;
+      display: block;
+    }
+
+    .mobile-area {
+      display: flex;
+      flex-direction: column;
+      width: 100dvw;
+      height: 100dvh;
+    }
+
+    .layout {
+      display: flex;
+    }
+
+    #scrollable-area {
+      flex: 1;
+      width: 100dvw;
+      padding: 1rem 0;
+      overflow: auto;
+    }
+  }
+
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  footer {
+    margin-top: 4rem;
+  }
+
+  footer p {
+    margin-bottom: 2rem;
+    font-size: 0.8rem;
+  }
+
+  footer p a {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-thickness: unset;
+    text-underline-offset: unset;
+  }
+
+  footer .net7-logo {
+    opacity: 0.5;
+  }
+
+  footer .net7-logo:hover {
+    opacity: 1;
+  }
+
+  .login .actions {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
+  }
+
+  @media (min-width: 900px) {
+    #scrollable-area {
+      height: 100%;
+      padding: 30px;
+      border-right: solid 1px var(--scrollable-area-border-color);
+      border-left: solid 1px var(--scrollable-area-border-color);
+    }
   }
 
   .announcements {
     display: flex;
     flex-flow: column wrap;
     width: 100%;
+    view-timeline-name: announcements;
   }
 
   .announcement {
@@ -275,7 +463,6 @@ The root layout is composed of several elements:
     padding: 0.5rem 2rem;
     color: var(--text);
     background: var(--bg);
-    background-image: url('/gd7t-t.jpg');
   }
 
   @media (min-width: 900px) {
@@ -319,52 +506,42 @@ The root layout is composed of several elements:
     --bg: #000;
     --text: #25bf22;
     --border: #25bf22;
-    --primary-link: #54fe54;
+    --primary: #54fe54;
   }
 
-  @function random-range($min, $max) {
-    $rand: math.random();
-    $random-range: $min + math.floor($rand * (($max - $min) + 1));
-
-    @return $random-range;
-  }
-
-  .flake {
-    position: absolute;
-    z-index: -10;
-    width: 10px;
-    height: 10px;
-    background: transparent;
-    border-radius: 50%;
-
-    $total: 200;
-
-    @for $i from 1 through $total {
-      $random-x: random-range(100000, 900000) * 0.0001vw;
-      $random-offset: random-range(-100000, 100000) * 0.0001vw;
-      $random-x-end: $random-x + $random-offset;
-      $random-x-end-yoyo: $random-x + (math.div($random-offset, 2));
-      $random-yoyo-time: math.div(random-range(30000, 80000), 100000);
-      $random-yoyo-y: $random-yoyo-time * 100vh;
-      $random-scale: math.random(15000) * 0.0001;
-      $fall-duration: random-range(15, 30) * 1s;
-      $fall-delay: math.random(30) * -1s;
-
-      &:nth-child(#{$i}) {
-        opacity: math.random(10000) * 0.0001;
-        transform: translate($random-x, -10px) scale($random-scale);
-        animation: fall-#{$i} $fall-duration $fall-delay linear infinite;
-      }
-
-      @keyframes fall-#{$i} {
-        #{percentage($random-yoyo-time)} {
-          transform: translate($random-x-end, $random-yoyo-y) scale($random-scale);
-        }
-
-        100% {
-          transform: translate($random-x-end-yoyo, 90vh) scale($random-scale);
-        }
-      }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
     }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-from-right {
+    from {
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes slide-to-left {
+    to {
+      transform: scale(1.05);
+    }
+  }
+
+  :root::view-transition-old(root) {
+    animation:
+      90ms ease both fade-out,
+      200ms ease both slide-to-left;
+  }
+
+  :root::view-transition-new(root) {
+    animation:
+      110ms ease both fade-in,
+      200ms ease both slide-from-right;
   }
 </style>

@@ -5,6 +5,9 @@
   import IconChevronDown from '~icons/mdi/chevron-down';
   import GhostButton from './ButtonGhost.svelte';
   import InputField from './InputField.svelte';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ input: string[] }>();
 
   export let label: string;
   export let placeholder = '';
@@ -12,6 +15,8 @@
   export let hint = '';
   export let value: string[] = [];
   export let newValue = '';
+
+  $: dispatch('input', value);
 
   function addLink() {
     if (fieldsAreValid) {
@@ -102,7 +107,7 @@
     justify-content: start;
     padding-left: 0;
     list-style: none;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -149,7 +154,7 @@
 
   .new {
     display: flex;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 </style>

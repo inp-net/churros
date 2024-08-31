@@ -4,7 +4,10 @@ import type { ClientPlugin } from '$houdini';
 import { HoudiniClient, subscription } from '$houdini';
 import { redirectToLogin } from '$lib/session';
 import { createClient } from 'graphql-ws';
-import { UNAUTHORIZED_ERROR_MESSAGE } from '../../../api/src/lib/errors.js';
+
+// XXX: must be the same as in the API
+// TODO: use a separate error instead
+const UNAUTHORIZED_ERROR_MESSAGE = "Tu n'es pas autorisé à effectuer cette action.";
 
 const unauthorizedErrorHandler: ClientPlugin = () => {
   return {
@@ -26,8 +29,42 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
 
 const logger: ClientPlugin = () => ({
   start(ctx, { next }) {
-    console.info(`Fetching ${ctx.name}`);
+    // add the start time to the context's stuff
+    ctx.metadata = {
+      ...ctx.metadata,
+      queryTimestamps: {
+        global: Date.now(),
+        network: 0,
+      },
+    };
+
+    // move onto the next plugin
     next(ctx);
+  },
+  beforeNetwork(ctx, { next }) {
+    console.info(`${ctx.name}: Hitting network`);
+    if (ctx.metadata?.queryTimestamps) ctx.metadata.queryTimestamps.network = Date.now();
+
+    next(ctx);
+  },
+  afterNetwork(ctx, { resolve }) {
+    if (ctx.metadata) {
+      console.info(
+        `${ctx.name}: Hitting network: took ${Date.now() - ctx.metadata.queryTimestamps.network}ms`,
+      );
+    }
+    resolve(ctx);
+  },
+  end(ctx, { resolve }) {
+    // compute the difference in time between the
+    // date we created on `start` and now
+    if (ctx.metadata) {
+      // const diff = Math.abs(Date.now() - ctx.metadata.queryTimestamps.global);
+      // console.info(`[${ctx.session?.token ?? 'loggedout'}] ${ctx.name}: took ${diff}ms`);
+    }
+
+    // we're done
+    resolve(ctx);
   },
 });
 
@@ -46,12 +83,8 @@ export default new HoudiniClient({
   url: env.PUBLIC_API_URL,
   plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
-    // console.log(
-    //   `fetching client params from token ${JSON.stringify(
-    //     session?.token,
-    //   )}, varaibles ${JSON.stringify(variables)}`,
-    // );
     return {
+      credentials: 'include',
       headers: {
         Authorization: session?.token ? `Bearer ${session.token}` : '',
       },

@@ -1,0 +1,7 @@
+query PageEventEditDescription($id: LocalID!) {
+  event(id: $id) {
+    id
+    canEdit(assert: "Tu n'a pas les droits pour modifier cet événement")
+    description
+  }
+}

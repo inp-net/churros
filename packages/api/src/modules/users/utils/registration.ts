@@ -9,7 +9,7 @@ import {
   type UserCandidate,
 } from '@churros/db/prisma';
 import { quickSignupIsValidFor } from './quick-signup.js';
-import { isSchoolEmailForMajor, resolveSchoolMail } from './school-emails.js';
+import { isSchoolEmailForMajor, resolveSchoolMail, schoolDetails } from './school.js';
 
 export const saveUser = async (
   {
@@ -21,13 +21,8 @@ export const saveUser = async (
     majorId,
     graduationYear,
     password,
-    address,
     birthday,
-    phone,
-    schoolEmail,
     apprentice,
-    schoolServer,
-    schoolUid,
     cededImageRightsToTVn7,
   }: UserCandidate,
   returnPrismaQuery: {
@@ -45,18 +40,15 @@ export const saveUser = async (
     data: {
       uid,
       email: resolvedStudentEmail ?? email,
+      ...(await schoolDetails(email, major)),
       graduationYear: graduationYear!,
       firstName,
       lastName,
       major: majorId ? { connect: { id: majorId } } : undefined,
-      address,
       birthday,
-      phone,
-      schoolEmail,
-      schoolServer,
-      schoolUid,
       cededImageRightsToTVn7,
       apprentice,
+      // TODO only store for non-ldap-backed accounts
       credentials: { create: { type: CredentialType.Password, value: password } },
       links: { create: [] },
       canAccessDocuments: Boolean(majorId), // TODO behavior should be different for ensat

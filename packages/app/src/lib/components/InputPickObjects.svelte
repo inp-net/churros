@@ -6,7 +6,7 @@
   import IconSearch from '~icons/mdi/magnify';
   import IconClose from '~icons/mdi/close';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import Modal from './Modal.svelte';
+  import Modal from './ModalDialog.svelte';
   import InputText from './InputText.svelte';
 
   type T = $$Generic<{ id: string }>;

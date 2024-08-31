@@ -1,8 +1,8 @@
 import { builder } from '#lib';
 
-export const LydiaAccountType = builder.prismaObject('LydiaAccount', {
+export const LydiaAccountType = builder.prismaNode('LydiaAccount', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     groupId: t.exposeID('groupId', { nullable: true }),
     group: t.relation('group', { nullable: true }),
     studentAssociation: t.relation('studentAssociation', { nullable: true }),

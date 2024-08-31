@@ -1,0 +1,9 @@
+query LayoutProfile($uid: UID!) @loading {
+  me {
+    ...ProfileHeader_Me
+  }
+  profile(uid: $uid) {
+    __typename
+    ...ProfileHeader
+  }
+}

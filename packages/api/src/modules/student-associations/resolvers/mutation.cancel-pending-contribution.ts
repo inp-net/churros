@@ -5,6 +5,7 @@ import { cancelLydiaTransaction } from '#modules/payments';
 builder.mutationField('cancelPendingContribution', (t) =>
   t.field({
     type: 'Boolean',
+    errors: {},
     args: {
       optionId: t.arg.id(),
     },

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { graphql, type InputGroups, type InputGroups$data } from '$houdini';
+  import { graphql, type InputGroups$data } from '$houdini';
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import IconCheck from '~icons/mdi/check';
@@ -124,7 +124,7 @@
     text-align: center;
     object-fit: contain;
     background: var(--muted-bg);
-    border: 0 solid var(--primary-border);
+    border: 0 solid var(--primary);
     border-radius: var(--radius-block);
     transition: all 0.25s ease;
   }
@@ -151,7 +151,7 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    color: var(--primary-text);
+    color: var(--primary);
     content: '';
     background: var(--primary-bg);
     border-radius: 50%;

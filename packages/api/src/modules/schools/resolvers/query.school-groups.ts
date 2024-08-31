@@ -1,5 +1,5 @@
 import { builder, prisma } from '#lib';
-
+import type { Major } from '@churros/db/prisma';
 import { SchoolGroup } from '../index.js';
 // TODO remove or rename at least, don't really know what it's supposed to reprensent
 
@@ -15,17 +15,11 @@ builder.queryField('schoolGroups', (t) =>
         string,
         {
           names: string[];
-          majors: Array<{
-            id: string;
-            uid: string;
-            ldapSchoolUid: string | null;
-            name: string;
-            shortName: string;
-          }>;
+          majors: Major[];
         }
       >();
 
-      for (const { id, uid, ldapSchoolUid, name, shortName, schools } of majors) {
+      for (const { schools, ...major } of majors) {
         const key = schools
           .map(({ id }) => id)
           .sort()
@@ -36,7 +30,7 @@ builder.queryField('schoolGroups', (t) =>
           majorGroups.set(key, { names, majors: [] });
         }
 
-        majorGroups.get(key)!.majors.push({ id, uid, ldapSchoolUid, name, shortName });
+        majorGroups.get(key)!.majors.push(major);
       }
 
       return [...majorGroups.values()];

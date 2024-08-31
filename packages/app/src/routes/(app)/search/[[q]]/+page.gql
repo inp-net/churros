@@ -1,0 +1,23 @@
+query PageSearch($q: String) {
+  searchUsers(q: $q) {
+    similarity
+    rank
+    user {
+      uid
+      firstName
+      lastName
+      pictureFile
+      fullName
+    }
+  }
+  searchGroups(q: $q) {
+    similarity
+    rank
+    group {
+      uid
+      name
+      pictureFile
+      pictureFileDark
+    }
+  }
+}

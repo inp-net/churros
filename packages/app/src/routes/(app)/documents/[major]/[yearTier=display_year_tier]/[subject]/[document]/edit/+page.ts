@@ -1,69 +1,99 @@
+import { graphql } from '$houdini';
 import { parseDisplayYearTierAndForApprentices } from '$lib/dates';
-import { redirectToLogin } from '$lib/session';
-import { loadQuery } from '$lib/zeus';
+import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, parent, params, url }) => {
-  const { me } = await parent();
-  if (!me) throw redirectToLogin(url.pathname);
-  const { yearTier, forApprentices } = parseDisplayYearTierAndForApprentices(params.yearTier);
-  return loadQuery(
-    {
-      major: [{ uid: params.major }, { name: true, shortName: true, uid: true }],
-      subject: [
-        { slug: params.subject, yearTier, forApprentices },
-        {
-          name: true,
-          shortName: true,
-          uid: true,
-          id: true,
-          forApprentices: true,
-          yearTier: true,
-          emoji: true,
-        },
-      ],
-      document: [
-        {
-          subject: params.subject,
-          slug: params.document,
-        },
-        {
-          title: true,
-          id: true,
-          type: true,
-          schoolYear: true,
-          description: true,
-          solutionPaths: true,
-          paperPaths: true,
-          createdAt: true,
-          updatedAt: true,
-          subject: {
-            name: true,
-            emoji: true,
-            shortName: true,
-            forApprentices: true,
-            yearTier: true,
-            uid: true,
-            id: true,
-            minors: {
-              uid: true,
-              name: true,
-              shortName: true,
-            },
-            majors: {
-              uid: true,
-              name: true,
-              shortName: true,
-            },
-          },
-          uploader: {
-            uid: true,
-            pictureFile: true,
-            fullName: true,
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+export const load: PageLoad = async (event) => {
+  const { yearTier, forApprentices } = parseDisplayYearTierAndForApprentices(event.params.yearTier);
+  const { subject, major } = await graphql(`
+    query PageDocumentEdit_SubjectAndMajor(
+      $major: String!
+      $yearTier: Int!
+      $forApprentices: Boolean!
+      $subject: String!
+    ) {
+      major(uid: $major) {
+        name
+        shortName
+        uid
+      }
+      subject(forApprentices: $forApprentices, slug: $subject, yearTier: $yearTier) {
+        name
+        shortName
+        uid
+        id
+        forApprentices
+        yearTier
+        emoji
+      }
+    }
+  `)
+    .fetch({
+      event,
+      variables: {
+        major: event.params.major,
+        yearTier,
+        forApprentices,
+        subject: event.params.subject,
+      },
+    })
+    .then((d) => d.data ?? { major: null, subject: null });
+
+  if (!major || !subject) error(404, { message: 'Filière ou matière non trouvée' });
+
+  const { document } = await graphql(`
+    query PageDocumentEdit_Document($subject: ID!, $document: String!) {
+      document(subject: $subject, slug: $document) {
+        title
+        id
+        type
+        schoolYear
+        description
+        solutionPaths
+        paperPaths
+        createdAt
+        updatedAt
+        subject {
+          name
+          emoji
+          shortName
+          forApprentices
+          yearTier
+          uid
+          id
+          minors {
+            uid
+            name
+            shortName
+          }
+          majors {
+            uid
+            name
+            shortName
+          }
+        }
+        uploader {
+          uid
+          pictureFile
+          fullName
+        }
+      }
+    }
+  `)
+    .fetch({
+      event,
+      variables: {
+        subject: subject.id,
+        document: event.params.document,
+      },
+    })
+    .then((d) => d.data ?? { document: null });
+
+  if (!document) error(404, { message: 'Document non trouvé' });
+
+  return {
+    major,
+    subject,
+    document,
+  };
 };

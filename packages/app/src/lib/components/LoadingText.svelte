@@ -1,22 +1,25 @@
 <!-- Credits: https://github.com/nolimits4web/skeleton-elements -->
 <script lang="ts">
   import { PendingValue } from '$houdini';
-  import { LOREM_IPSUM, loaded } from '$lib/loading';
+  import { LOREM_IPSUM, loaded, type MaybeLoading } from '$lib/loading';
 
-  export let tag: 'code' | 'span' | 'p' | `h${1 | 2 | 3 | 4 | 5 | 6}` = 'span';
+  export let tag: string = 'span';
   export let lines: number | undefined = undefined;
-  export let value: string | number | typeof PendingValue = PendingValue;
+  export let value: MaybeLoading<string | number> | null | undefined = PendingValue;
 </script>
 
-{#if !loaded(value)}
+{#if !loaded(value) || value === null}
   <svelte:element
     this={tag === 'code' ? 'span' : tag}
     {...$$restProps}
     class="skeleton-text skeleton-effect-wave"
-    ><slot>{LOREM_IPSUM.split('\n').slice(0, lines).join('\n')}</slot></svelte:element
+    ><slot>{lines ? LOREM_IPSUM.split('\n').slice(0, lines).join('\n') : 'Chargement...'}</slot
+    ></svelte:element
   >
 {:else}
-  <svelte:element this={tag} {...$$restProps}>{value}</svelte:element>
+  <slot name="loaded" {value}>
+    <svelte:element this={tag} data-loaded {...$$restProps}>{value}</svelte:element>
+  </slot>
 {/if}
 
 <style>
@@ -31,5 +34,11 @@
       color: var(--skeleton-ui-bg);
       letter-spacing: -0.03em;
     }
+  }
+
+  [data-loaded] {
+    overflow: inherit;
+    text-overflow: inherit;
+    white-space: inherit;
   }
 </style>

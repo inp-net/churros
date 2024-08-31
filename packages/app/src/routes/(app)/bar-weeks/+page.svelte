@@ -66,6 +66,9 @@
           '...on Error': {
             message: true,
           },
+          '...on ZodError': {
+            message: true,
+          },
           '...on MutationUpsertBarWeekSuccess': {
             data: {
               id: true,
@@ -87,7 +90,7 @@
       ],
     });
 
-    if (upsertBarWeek.__typename === 'Error') {
+    if (upsertBarWeek.__typename !== 'MutationUpsertBarWeekSuccess') {
       serverErrors[barWeek.id ?? 'new'] = upsertBarWeek.message;
       toasts.error('Impossible de mettre à jour cette semaine de bar', upsertBarWeek.message);
       return;
@@ -119,7 +122,7 @@
     </div>
   </h1>
 
-  {#await $zeus.query( { groups: [{}, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
+  {#await $zeus.query( { groups: [{ unlisted: false }, { id: true, uid: true, name: true, pictureFile: true, pictureFileDark: true }] }, )}
     <p class="muted loading">Chargement...</p>
   {:then { groups: allGroups }}
     <ul class="nobullet">

@@ -5,7 +5,7 @@ export async function log(
   action: string,
   message: Record<string, unknown>,
   target?: string | null,
-  user?: { uid: string },
+  user?: { uid: string } | null,
 ) {
   // eslint-disable-next-line no-console
   console.log(`<${area}> ${action} ${target ? `on ${target}: ` : ''}${JSON.stringify(message)}`);

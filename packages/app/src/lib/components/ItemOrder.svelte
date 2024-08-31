@@ -6,8 +6,7 @@
   import ShopImageCaroussel from '$lib/components/ShopImageCaroussel.svelte';
   import BadgePaymentStatus from '$lib/components/BadgePaymentStatus.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import { PAYMENT_METHODS_ICONS } from '$lib/display';
-  import { me } from '$lib/session';
+  import { ICONS_PAYMENT_METHODS } from '$lib/display';
   import { PaymentMethod } from '$lib/zeus';
 
   export let order: {
@@ -32,7 +31,7 @@
     <h2>{order.shopItem.name}</h2>
     <div class="priceinfo">
       <p>{order.totalPrice} €</p>
-      <svelte:component this={PAYMENT_METHODS_ICONS[order.paymentMethod ?? 'Other']} class="icon" />
+      <svelte:component this={ICONS_PAYMENT_METHODS[order.paymentMethod ?? 'Other']} class="icon" />
       <p><BadgePaymentStatus paid={order.paid} opposed={false} cancelled={false} /></p>
     </div>
   </div>
@@ -60,6 +59,7 @@
             {
               '__typename': true,
               '...on Error': { message: true },
+              '...on ZodError': { message: true },
               '...on MutationPaidShopPaymentSuccess': {
                 data: {
                   __typename: true,
@@ -68,25 +68,19 @@
             },
           ],
         });
-        if (paidShopPayment.__typename === 'Error') {
+        if (paidShopPayment.__typename === 'MutationPaidShopPaymentSuccess') {
+          await goto('?' + new URLSearchParams({ done: order.id }).toString());
+          paymentLoading = false;
+          toasts.add('success', 'La demande de paiement a été envoyée');
+        } else {
           const serverError = paidShopPayment.message;
           paymentLoading = false;
           toasts.add('error', serverError);
           return;
-        } else {
-          await goto('?' + new URLSearchParams({ done: order.id }).toString());
-          paymentLoading = false;
-          toasts.add('success', 'La demande de paiement a été envoyée');
         }
       }}
     >
-      <InputText
-        type="tel"
-        label="Numéro de téléphone"
-        initial={$me?.phone}
-        maxlength={255}
-        bind:value={phone}
-      />
+      <InputText type="tel" label="Numéro de téléphone" maxlength={255} bind:value={phone} />
 
       <section class="submit">
         <ButtonPrimary loading={paymentLoading} submits>Payer {order.totalPrice}€</ButtonPrimary>

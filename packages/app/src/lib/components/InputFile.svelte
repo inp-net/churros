@@ -1,42 +1,34 @@
-<script lang="ts" context="module">
-  export function fileListOf(files: File[]): FileList {
-    const filelist = new DataTransfer();
-    for (const file of files) filelist.items.add(file);
-    return filelist.files;
-  }
-
-  export function withoutFilename(files: FileList, filename: string): FileList {
-    return fileListOf(Array.from(files).filter((file) => file.name !== filename));
-  }
-</script>
-
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  export let files: FileList | undefined = undefined;
-  export let dropzone = false;
-  export let multiple = false;
-  export let hint = 'Déposer des fichiers ici';
+  const dispatch = createEventDispatcher<{
+    dragover: DragEvent;
+    dragleave: DragEvent;
+    change: File | null;
+  }>();
+
+  /**
+   * Open the file picker dialog.
+   * Only works when called from a user gesture.
+   */
+  export const openPicker = () => {
+    element?.click();
+  };
+
+  let element: HTMLLabelElement;
   let dragging = false;
+  let files: FileList | undefined = undefined;
 
-  const dispatch = createEventDispatcher();
-
-  $: if (files) dispatch('change', files);
-
-  export let inputElement: HTMLInputElement;
+  $: if (files) dispatch('change', [...files].at(0) ?? null);
 </script>
 
 <label
+  bind:this={element}
   class="input-file"
-  class:dropzone
   class:dragging
   on:drop|preventDefault={({ dataTransfer }) => {
     dragging = false;
-    if (dataTransfer) {
-      files = multiple
-        ? fileListOf([...Array.from(files ?? []), ...Array.from(dataTransfer.files)])
-        : dataTransfer.files;
-    }
+    if (dataTransfer) files = dataTransfer.files;
   }}
   on:dragover|preventDefault={(e) => {
     dragging = true;
@@ -47,49 +39,19 @@
     dispatch('dragleave', e);
   }}
 >
-  {#if dropzone}
-    <span class="hint muted">{hint}</span>
-  {/if}
-  <input bind:this={inputElement} type="file" bind:files {...$$restProps} />
+  <input type="file" bind:files {...$$restProps} />
   <slot />
 </label>
 
-<style lang="scss">
-  label {
-    position: relative;
-    display: inline-block;
-    text-align: center;
-    border-radius: var(--radius-block);
-    outline: 0 solid var(--ring);
-    transition: all 80ms ease-in;
-
-    &.dropzone {
-      width: 100%;
-      padding: 1rem;
-      border: var(--border-block) dashed var(--border);
-    }
-
-    &:focus-within,
-    &:hover,
-    &.dragging {
-      cursor: pointer;
-      background-color: var(--muted-bg);
-      border-color: var(--hover-border);
-      border-style: solid;
-
-      .hint {
-        color: var(--hover-text);
-      }
-    }
-
-    > * {
-      pointer-events: none;
-    }
+<style>
+  input {
+    display: none;
   }
 
-  input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
+  label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 </style>

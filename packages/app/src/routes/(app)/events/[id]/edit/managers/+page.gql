@@ -1,0 +1,14 @@
+query PageEventEditManagers($id: LocalID!) {
+  event(id: $id) {
+    id
+    canEdit(assert: "Tu n'a pas les permissions nécéssaires pour modifier cet évènement.")
+    managers @list(name: "List_EventManagers") {
+      power
+      user {
+        uid
+        fullName
+        ...AvatarUser
+      }
+    }
+  }
+}

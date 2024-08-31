@@ -1,24 +1,31 @@
 import { log as _log, builder, ensureGlobalId, prisma, publish } from '#lib';
+import { LocalID, URLScalar } from '#modules/global';
 import { differenceInSeconds } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import {
+  RegistrationPrismaIncludes,
   RegistrationVerificationResultType,
   RegistrationVerificationState,
   canScanBookings,
 } from '../index.js';
-// TODO rename to verify-booking.ts
 
 builder.mutationField('verifyBooking', (t) =>
   t.field({
     type: RegistrationVerificationResultType,
     errors: {},
     args: {
-      id: t.arg.id({ description: 'Identifiant de la place ou code de réservation' }),
-      event: t.arg.id({ description: 'Identifiant de l’événement' }),
+      qrcode: t.arg.string({ description: 'Contenu du QR Code décodé' }),
+      event: t.arg({ type: LocalID, description: 'Identifiant de l’événement' }),
+      bookingURLTemplate: t.arg({
+        type: URLScalar,
+        required: false,
+        description:
+          "URL vers la page du billet, permet d'extraire le code de réservation depuis le contenu du QR Code, qui peut alors être une URL vers le billet plutôt qu'un simple code. `[code]` correspond au code de réservation dans cette URL.",
+      }),
     },
-    async authScopes(_, { event: eventId }, { user }) {
+    async authScopes(_, args, { user }) {
       const event = await prisma.event.findFirstOrThrow({
-        where: { id: eventId },
+        where: { id: ensureGlobalId(args.event, 'Event') },
         include: {
           managers: true,
           group: true,
@@ -27,18 +34,33 @@ builder.mutationField('verifyBooking', (t) =>
       if (!event) return false;
       return canScanBookings(event, user);
     },
-    async resolve(query, { id, event: eventId }, { user }) {
+    async resolve(query, args, { user }) {
       async function log(message: string, target?: string) {
         return _log('scans', 'scan', { message }, target, user);
       }
 
       if (!user) throw new GraphQLError('Must be logged in to verify a registration');
 
+      let code = '';
+      if (args.bookingURLTemplate && URL.canParse(args.qrcode)) {
+        const normalized = new URL(args.qrcode).toString();
+        // Remove characters before [code] in the template in normalized
+        // And remove characters after [code] in the template in normalized
+        const beforeCodeStartIndex = args.bookingURLTemplate.toString().indexOf('[code]');
+        const afterCodeEndIndexFromEnd =
+          args.bookingURLTemplate.toString().length - beforeCodeStartIndex - 6;
+        code = normalized.slice(beforeCodeStartIndex, normalized.length - afterCodeEndIndexFromEnd);
+      } else {
+        code = args.qrcode;
+      }
+
+      code = code.toLowerCase().trim();
+
       let registration = await prisma.registration.findUnique({
-        where: { id: ensureGlobalId(id.trim().toLowerCase(), 'Registration') },
+        where: { id: ensureGlobalId(code, 'Registration') },
         include: {
+          ...RegistrationPrismaIncludes,
           verifiedBy: true,
-          ticket: true,
         },
       });
 
@@ -46,10 +68,11 @@ builder.mutationField('verifyBooking', (t) =>
         await log('Scan failed: registration not found');
         return {
           state: RegistrationVerificationState.NotFound,
+          message: `Aucune réservation pour "${code}" trouvée`,
         };
       }
 
-      if (registration.ticket.eventId !== eventId) {
+      if (registration.ticket.eventId !== ensureGlobalId(args.event, 'Event')) {
         await log('Scan failed: registration is for another event');
         return {
           state: RegistrationVerificationState.OtherEvent,
@@ -78,12 +101,13 @@ builder.mutationField('verifyBooking', (t) =>
       if (registration.paid) {
         registration = await prisma.registration.update({
           ...query,
-          where: { id },
+          where: { id: registration.id },
           data: {
             verifiedAt: registration.verifiedAt ?? new Date(),
             verifiedBy: { connect: { id: user.id } },
           },
           include: {
+            ...RegistrationPrismaIncludes,
             verifiedBy: true,
             ticket: {
               include: {

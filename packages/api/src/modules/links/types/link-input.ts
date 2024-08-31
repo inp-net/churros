@@ -1,20 +1,9 @@
 import { builder } from '#lib';
+import { LooseURL } from '#modules/global';
 
 export const LinkInput = builder.inputType('LinkInput', {
   fields: (t) => ({
-    name: t.field({ type: 'String' }),
-    value: t.field({
-      type: 'String',
-      validate(value) {
-        try {
-          // eslint-disable-next-line no-new
-          new URL(value);
-        } catch {
-          return false;
-        }
-
-        return true;
-      },
-    }),
+    text: t.string({ description: 'Texte à afficher pour le lien' }),
+    url: t.field({ type: LooseURL }),
   }),
 });

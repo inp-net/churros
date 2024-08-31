@@ -1,7 +1,8 @@
-query AppLayout($version: String!, $loggedIn: LoggedIn!) {
-  me @include(if: $loggedIn) @loading {
+query AppLayout($version: String!, $pagePath: String!) {
+  me @loading {
     ...NavigationSide
-    ...NavigationTop
+    ...NavigationBottomMe
+    ...QuickAccessList
     major {
       schools {
         studentAssociations {
@@ -12,10 +13,16 @@ query AppLayout($version: String!, $loggedIn: LoggedIn!) {
       }
     }
 
+    canCreateEventsOn {
+      ...PickGroup @mask_disable
+    }
+
     bookings(forUserOnly: true, first: 5) @loading(count: 0) {
       ...OverlayQuickBookings
     }
   }
+
+  currentPageIsPinned: bookmarked(path: $pagePath)
 
   combinedChangelog(sort: Descending, to: $version) {
     ...ModalChangelog

@@ -32,15 +32,6 @@ builder.mutationField('toggleReaction', (t) =>
         commentId || documentId || articleId || eventId || '<nothing>',
         user,
       );
-      const count = await prisma.reaction.count({
-        where: {
-          emoji,
-          documentId,
-          articleId,
-          commentId,
-          eventId,
-        },
-      });
 
       const reaction = await prisma.reaction.findFirst({
         where: {
@@ -52,10 +43,10 @@ builder.mutationField('toggleReaction', (t) =>
           authorId: user!.id,
         },
         include: {
-          article: true,
-          comment: true,
-          document: true,
-          event: true,
+          article: { include: { reactions: true } },
+          comment: { include: { reactions: true } },
+          document: { include: { reactions: true } },
+          event: { include: { reactions: true } },
         },
       });
       if (reaction) {
@@ -71,9 +62,14 @@ builder.mutationField('toggleReaction', (t) =>
         });
         return {
           id: articleId || commentId || documentId || eventId || '',
-          reacted: false,
-          reactions: count - 1,
           ...(reaction.article ?? reaction.comment ?? reaction.document ?? reaction.event),
+          reactions: (
+            reaction.article?.reactions ??
+            reaction.comment?.reactions ??
+            reaction.document?.reactions ??
+            reaction.event?.reactions ??
+            []
+          ).filter((r) => r.authorId !== user!.id),
         };
       }
 
@@ -87,16 +83,16 @@ builder.mutationField('toggleReaction', (t) =>
           author: { connect: { id: user!.id } },
         },
         include: {
-          article: true,
-          comment: true,
-          document: true,
-          event: true,
+          article: { include: { reactions: true } },
+          comment: { include: { reactions: true } },
+          document: { include: { reactions: true } },
+          event: { include: { reactions: true } },
         },
       });
       return {
         id: articleId || commentId || documentId || eventId || '',
-        reacted: true,
-        reactions: count + 1,
+        reactions:
+          article?.reactions ?? comment?.reactions ?? document?.reactions ?? event?.reactions ?? [],
         ...(article ?? comment ?? document ?? event),
       };
     },

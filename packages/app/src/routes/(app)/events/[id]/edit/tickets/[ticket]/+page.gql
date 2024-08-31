@@ -1,0 +1,54 @@
+query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
+  groups {
+    ...PickGroup @mask_disable
+  }
+  majors {
+    ...PickMajor @mask_disable
+  }
+  event(id: $id) {
+    startsAt
+    endsAt
+    localID
+    organizer {
+      studentAssociation {
+        name
+        school {
+          name
+        }
+      }
+    }
+    ticket(id: $ticket) {
+      id
+      localID
+      canBeSafelyDeleted
+      name
+      opensAt
+      closesAt
+      basePrice
+      capacity
+      group {
+        name
+      }
+      allowedPaymentMethods
+      godsonLimit
+      openToContributors
+      openToAlumni
+      openToApprentices
+      openToExternal
+      openToGroups {
+        ...AvatarGroup
+        uid
+      }
+      openToMajors {
+        shortName
+        name
+        uid
+        schools {
+          name
+        }
+      }
+      openToPromotions
+      onlyManagersCanProvide
+    }
+  }
+}

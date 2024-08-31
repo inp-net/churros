@@ -1,12 +1,14 @@
-# since we still use zeus when booking new tickets, we can't cache this query
-# because houdini is not aware of the change, and serves stale data...
-query PageBookings($loggedIn: LoggedIn!) @cache(policy: NoCache) {
-  me @include(if: $loggedIn) {
-    bookings {
-      nodes {
-        id
-        code
-        ...CardTicket
+query PageMyBookings @loading {
+  me: assertMe {
+    bookings(first: 8) @loading(count: 5) @paginate {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...CardBooking
+        }
       }
     }
   }

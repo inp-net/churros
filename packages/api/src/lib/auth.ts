@@ -1,5 +1,4 @@
 import type { User } from '@churros/db/prisma';
-import { nanoid } from 'nanoid';
 import type { Context } from './context.js';
 
 export interface AuthScopes {
@@ -23,10 +22,21 @@ export const authScopes = ({ user }: Context) => ({
   canAccessDocuments: Boolean(user?.admin || user?.canAccessDocuments),
 });
 
-export function isThirdPartyToken(token: string): boolean {
-  return token.startsWith('churros_');
-}
+// TODO
+// export function permissionField<Resolver>(d: {
+//   description: string,
+//   resolve: Resolver,
 
-export function generateThirdPartyToken(): string {
-  return `churros_${nanoid()}`;
-}
+// }) {
+//   return {
+//     type: 'Boolean',
+//     description: d.description,
+//       args: {
+//         assert: t.arg.string({
+//           required: false,
+//           description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
+//         }),
+//       },
+
+//     }
+// }

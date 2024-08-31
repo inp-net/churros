@@ -1,45 +1,58 @@
 import { prisma } from '#lib';
-import type { Event, Registration, Ticket, User } from '@churros/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
+
+const registrationInclude = {
+  ticket: {
+    include: {
+      event: {
+        include: {
+          group: true,
+        },
+      },
+    },
+  },
+  author: true,
+  internalBeneficiary: true,
+} as const satisfies Prisma.RegistrationInclude;
+
 console.info(`Serving PDF generation of bookings /print-booking/:pseudoID`);
 api.get('/print-booking/:pseudoID', async (req, res) => {
   const id = `r:${req.params.pseudoID.toLowerCase()}`;
 
   const registration = await prisma.registration.findUnique({
     where: { id },
-    include: {
-      ticket: {
-        include: {
-          event: {
-            include: {
-              group: true,
-            },
-          },
-        },
-      },
-      author: true,
-    },
+    include: registrationInclude,
   });
 
   if (!registration) return res.status(404).send('Not found');
 
-  const pdf = generatePDF(registration);
+  try {
+    const pdf = generatePDF(registration);
 
-  const filestem = `${registration.ticket.event.group.name} ${registration.ticket.event.title} - ${registration.ticket.name}`;
+    const filestem = `${registration.ticket.event.group.name} ${registration.ticket.event.title} - ${registration.ticket.name}`;
 
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
-  pdf.pipe(res);
-  pdf.end();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
+    pdf.pipe(res);
+    pdf.end();
 
-  return res.status(200);
+    return res.status(200);
+  } catch (error) {
+    return res
+      .status(500)
+      .send(error?.toString() ?? 'Impossible de générer de PDF pour cette réservation');
+  }
 });
 
 export function generatePDF(
-  registration: Registration & { ticket: Ticket & { event: Event }; author: null | User },
+  registration: Prisma.RegistrationGetPayload<{ include: typeof registrationInclude }>,
 ) {
+  if (!registration.ticket.event.startsAt || !registration.ticket.event.endsAt)
+    throw new Error('Missing event dates');
+
   // playground requires you to assign document definition to a variable called dd
   const DISPLAY_PAYMENT_METHODS = {
     Cash: 'Espèces',
@@ -92,11 +105,13 @@ export function generatePDF(
                       color: '#1d4ed8',
                     },
                   },
-                  registration.beneficiary === ''
-                    ? registration.author
-                      ? `${registration.author.firstName} ${registration.author.lastName}\n`
-                      : registration.authorEmail
-                    : `${registration.beneficiary}\n`,
+                  registration.externalBeneficiary === ''
+                    ? registration.internalBeneficiary
+                      ? `${registration.internalBeneficiary.firstName} ${registration.internalBeneficiary.lastName}\n`
+                      : registration.author
+                        ? `${registration.author.firstName} ${registration.author.lastName}\n`
+                        : registration.authorEmail
+                    : `${registration.externalBeneficiary}\n`,
                   registration.author
                     ? `${registration.author.firstName} ${registration.author.lastName}\n`
                     : registration.authorEmail,

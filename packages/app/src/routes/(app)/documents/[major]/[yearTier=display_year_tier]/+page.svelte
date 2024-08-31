@@ -1,15 +1,12 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-  import IconLink from '~icons/mdi/link';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardSubject from '$lib/components/CardSubject.svelte';
-  import { me } from '$lib/session';
-  import type { PageData } from './$types';
   import groupBy from 'lodash.groupby';
+  import IconLink from '~icons/mdi/link';
   import WipMigrationNotice from '../WIPMigrationNotice.svelte';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -36,11 +33,8 @@
     );
   }
 
-  $: displayPreferredMinor =
-    minors.length > 1 && $me?.minor && minors.some((m) => m.uid === $me?.minor?.uid);
-
-  // eslint-disable-next-line no-console
-  $: console.log($me?.major);
+  // TODO
+  // $: displayPreferredMinor = minors.length > 1 && $me?.minor && minors.some((m) => m.uid === $me?.minor?.uid);
 </script>
 
 <Breadcrumbs root="/documents">
@@ -50,7 +44,8 @@
 
 <WipMigrationNotice></WipMigrationNotice>
 
-{#if displayPreferredMinor && $me?.minor}
+<!-- TODO -->
+<!-- {#if displayPreferredMinor && $me?.minor}
   <div class="minor-anchor" id={$me.minor.uid}></div>
   <h2>
     {$me.minor.name}
@@ -86,7 +81,7 @@
     >
   </div>
   <hr />
-{/if}
+{/if} -->
 
 {#if subjectsOfMinor(undefined).length > 0}
   <ul class="nobullet minorless-subjects">
@@ -104,7 +99,8 @@
   </ul>
 {/if}
 
-{#each minors.filter((m) => m.uid !== $me?.minor?.uid) as minor}
+<!-- {#each minors.filter((m) => m.uid !== $me?.minor?.uid) as minor} -->
+{#each minors as minor}
   {#if minors.length > 1}
     <div class="minor-anchor" id={minor.uid}></div>
     <h2>{minor.name} <a href="#{minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a></h2>
@@ -148,18 +144,18 @@
     gap: 0.5rem;
   }
 
-  .define-your-minor {
-    width: 100%;
-    padding: 1rem;
-    margin-top: 2rem;
-    text-align: center;
-    border: var(--border-block) dashed var(--border);
-    border-radius: var(--radius-block);
+  // .define-your-minor {
+  //   width: 100%;
+  //   padding: 1rem;
+  //   margin-top: 2rem;
+  //   text-align: center;
+  //   border: var(--border-block) dashed;
+  //   border-radius: var(--radius-block);
 
-    p {
-      margin-bottom: 0.5rem;
-    }
-  }
+  //   p {
+  //     margin-bottom: 0.5rem;
+  //   }
+  // }
 
   .minorless-subjects {
     margin-top: 2rem;
@@ -172,7 +168,7 @@
     visibility: hidden;
   }
 
-  hr {
-    margin: 3rem auto;
-  }
+  // hr {
+  //   margin: 3rem auto;
+  // }
 </style>

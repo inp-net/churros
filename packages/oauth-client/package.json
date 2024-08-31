@@ -20,7 +20,8 @@
   "homepage": "https://git.inpt.fr/inp-net/churros/-/tree/main/packages/oauth-client",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --declaration"
+    "build": "tsc --declaration",
+    "check": "exit 0"
   },
   "type": "module",
   "volta": {
@@ -28,8 +29,8 @@
   },
   "devDependencies": {
     "tsc": "^2.0.4",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.3"
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4"
   },
   "release-it": {
     "git": false,

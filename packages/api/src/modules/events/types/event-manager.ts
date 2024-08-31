@@ -2,7 +2,8 @@ import { builder } from '#lib';
 
 import { EventManagerPowerLevelType, permissionsToPowerlevel } from '../index.js';
 
-export const EventManagerType = builder.prismaObject('EventManager', {
+export const EventManagerType = builder.prismaNode('EventManager', {
+  id: { field: 'id' },
   fields: (t) => ({
     canVerifyRegistrations: t.exposeBoolean('canVerifyRegistrations'),
     canEdit: t.exposeBoolean('canEdit'),

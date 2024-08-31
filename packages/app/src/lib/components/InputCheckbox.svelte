@@ -4,7 +4,7 @@
   import Check from '~icons/mdi/check';
   import Close from '~icons/mdi/close';
 
-  export const dispatch = createEventDispatcher<{ willChange: Event }>();
+  export const dispatch = createEventDispatcher<{ willChange: Event; update: boolean | null }>();
 
   export let ternary = false;
   export let value: boolean | null | undefined;
@@ -32,6 +32,8 @@
 
     previousValue = value;
   };
+
+  $: dispatch('update', value);
 
   let checkboxElement: HTMLInputElement;
 </script>
@@ -179,7 +181,7 @@
   }
 
   label:not(.nolabel) {
-    min-width: 120px /* XXX: based on width of input when the label is smaller than "Peu importe" */;
+    min-width: min-content;
   }
 
   .labels {

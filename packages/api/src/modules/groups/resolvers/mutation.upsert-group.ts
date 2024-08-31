@@ -1,6 +1,5 @@
-import { builder, freeUidValidator, log, prisma, purgeUserSessions } from '#lib';
+import { builder, freeUidValidator, log, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
-import { LinkInput } from '#modules/links';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
@@ -25,7 +24,7 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
     uid: t.field({
       required: false,
       type: UIDScalar,
-      validate: [freeUidValidator],
+      validate: freeUidValidator,
       description:
         "Ne sert qu'à la création du groupe. Il est impossible de modifier un uid existant",
     }),
@@ -46,7 +45,6 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
     email: t.string({ validate: { email: true }, required: false }),
     mailingList: t.string({ validate: { email: true }, required: false }),
     longDescription: t.string(),
-    links: t.field({ type: [LinkInput] }),
     selfJoinable: t.boolean(),
     related: t.field({ type: ['String'] }),
   }),
@@ -55,6 +53,8 @@ const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
 /** Upserts a group. */
 builder.mutationField('upsertGroup', (t) =>
   t.prismaField({
+    deprecationReason:
+      'Mutation séparée en plusieurs mutations plus spécifiques. Voir la documentation du module groups',
     type: GroupType,
     errors: { types: [ZodError, Error] },
     args: {
@@ -132,7 +132,6 @@ builder.mutationField('upsertGroup', (t) =>
           email,
           mailingList,
           longDescription,
-          links,
           related,
         },
       },
@@ -225,8 +224,7 @@ builder.mutationField('upsertGroup', (t) =>
         create: {
           ...data,
           color: color ?? '',
-          links: { create: links },
-          uid: newUid!,
+          uid: newUid ?? '',
           related: { connect: related.map((uid) => ({ uid })) },
           parent:
             parentUid === null || parentUid === undefined ? {} : { connect: { uid: parentUid } },
@@ -236,10 +234,6 @@ builder.mutationField('upsertGroup', (t) =>
         },
         update: {
           ...data,
-          links: {
-            deleteMany: {},
-            createMany: { data: links },
-          },
           related: {
             set: related.map((uid) => ({ uid })),
           },
@@ -269,7 +263,7 @@ builder.mutationField('upsertGroup', (t) =>
             },
           },
         });
-        purgeUserSessions(user.uid);
+        purgeSessionsUser(user.uid);
       }
 
       await log('groups', oldUid ? 'update' : 'create', group, group.uid, user);

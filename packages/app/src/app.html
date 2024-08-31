@@ -7,6 +7,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="stylesheet" href="/colors.css" />
+    <link rel="stylesheet" href="/themes.css" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1d4ed8" />
     <meta name="msapplication-TileColor" content="#2d89ef" />
@@ -27,55 +28,105 @@
 
     %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data>
+  <body data-sveltekit-preload-data class="loading" style="scrollbar-gutter: stable">
     <script>
       // Prevent a flash on page load
-      let theme =
-        (sessionStorage.getItem('theme') ?? 'system') === 'system'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light'
-          : sessionStorage.getItem('theme');
-      document.documentElement.classList.add(theme);
+      let actualThemeVariant = localStorage.getItem('themeVariant') ?? 'auto';
+      if (actualThemeVariant === 'auto') {
+        actualThemeVariant = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+      }
+      document.documentElement.dataset.themeVariant = actualThemeVariant;
+
+      let theme = localStorage.getItem('theme');
+      document.documentElement.dataset.theme = theme ?? 'default';
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const troubleshoot = document.querySelector('#loading-overlay .troubleshoot');
+        if (troubleshoot && !navigator.onLine) {
+          troubleshoot.style.opacity = 1;
+          troubleshoot.innerHTML =
+            "<p>Tu n'es pas connecté.e à Internet :/</p><button onclick='window.location.reload();'>Recharger</button>";
+        }
+      });
+      setTimeout(() => {
+        const troubleshoot = document.querySelector('#loading-overlay .troubleshoot');
+        if (troubleshoot) {
+          troubleshoot.style.opacity = 1;
+          fetch('/health')
+            .then((res) => res.json())
+            .then((json) => {
+              troubleshoot.querySelector('.technical p').textContent = JSON.stringify(json);
+            });
+        }
+      }, 5000);
     </script>
     <div id="loading-overlay" class="visible">
-      <img src="/logo-masked.png" alt="AEn7" />
       <div class="spinner">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8" />
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 2345 2345"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="loop"
+        >
+          <path
+            class="main"
+            d="M1545.72 1550.32C1545.77 1553.4 1545.8 1556.47 1545.81 1559.52M1545.72 1550.32C1545.22 1520.34 1542.95 1490.15 1539 1459.9M1545.72 1550.32L1545.81 1559.52M883.105 616.205C846.647 602.755 810.941 592.757 776.218 586.048M883.105 616.205C912.712 627.128 941.893 639.987 970.521 654.602M883.105 616.205L776.218 586.048M883.105 616.205L970.521 654.602M1316.86 1475.06C1316.74 1527.76 1307.96 1575.02 1291.93 1615.85M1316.86 1475.06L1441.9 1521.19M1316.86 1475.06L1291.93 1615.85M1235.49 1178.32C1183.68 1083.33 1110.42 997.842 1025.48 935.613M1235.49 1178.32L1417.3 1101.35M1235.49 1178.32L1752.49 852.318M1025.48 935.613L1091.6 729.025M1025.48 935.613L1542.48 609.613M1236.5 1705.08C1259.6 1680.34 1278.36 1650.4 1291.93 1615.85M1236.5 1705.08L1379.61 1865.73L1424.63 1916.27M1236.5 1705.08L1291.93 1615.85M677.157 575.648C709.091 576.056 742.183 579.472 776.218 586.048M677.157 575.648L731.403 751.734L745.242 796.654M677.157 575.648C677.157 575.648 756.048 525.902 806.598 494.028M677.157 575.648L776.218 586.048M677.157 575.648L806.598 494.028M1091.6 729.025C1066.43 710.816 1040.61 693.932 1014.23 678.523C1012.32 677.402 1010.4 676.29 1008.47 675.185C995.94 667.985 983.285 661.119 970.521 654.602M1091.6 729.025L1608.6 403.025M1545.81 1559.52L1564.67 1547.63L1781.73 1410.76M1545.81 1559.52L1441.9 1521.19M1417.3 1101.35L1767.2 880.718L1934.3 775.352M1417.3 1101.35C1461.07 1180.56 1495.17 1264.14 1517.21 1348.73C1526.85 1385.69 1534.18 1422.84 1539 1459.9M1424.63 1916.27C1344.73 2003.6 1230.32 2049.83 1096.65 2044.14L1022.48 1785.92C984.65 1783.96 944.484 1775.62 902.793 1760.31M1424.63 1916.27L1941.63 1590.27L1781.73 1410.76M367.214 1510.27C447.972 1659.39 563.009 1793.52 696.51 1890.39M367.214 1510.27L550.859 1436.59C545.217 1426.04 539.839 1415.39 534.738 1404.63M367.214 1510.27L534.738 1404.63M696.51 1890.39L763.02 1684.08C806.712 1716.18 853.507 1742.13 902.072 1760.05C902.312 1760.14 902.553 1760.23 902.793 1760.31M696.51 1890.39L902.793 1760.31M355.099 714.713L546.645 921.882C579.069 884.607 620.815 858.215 669.27 844.559M355.099 714.713C284.206 798.05 243.018 915.767 243.405 1059.45L472.362 1144.35C472.348 1147.66 472.369 1151 472.425 1154.36C473.81 1237.85 496.445 1323.9 534.738 1404.63M355.099 714.713L872.099 388.713L909.486 429.15M1752.49 852.318C1700.68 757.332 1627.42 671.842 1542.48 609.613M1752.49 852.318L1934.3 775.352M1542.48 609.613L1608.6 403.025M1539.48 1459.92C1539.32 1459.91 1539.16 1459.9 1539 1459.9M1608.6 403.025C1542.92 355.514 1472.8 317.024 1400.1 290.205C1327.91 263.572 1258.67 250.473 1194.16 249.648L909.486 429.15M1934.3 775.352C2012.8 917.414 2060.22 1073.57 2062.72 1224.32C2062.77 1227.4 2062.8 1230.47 2062.81 1233.52L1781.73 1410.76M1291.93 1615.85L1441.9 1521.19M909.486 429.15C909.486 429.15 846.778 468.691 806.598 494.028M745.242 796.654L756.724 833.928C725.768 833.243 696.462 836.895 669.27 844.559M745.242 796.654L669.27 844.559"
+            stroke="var(--foreground)"
+            stroke-width="var(--logo-stroke-width)"
+          ></path>
+          <path
+            class="face drawing"
+            d="M902.072 1760.05C853.507 1742.13 806.712 1716.18 763.02 1684.08L696.51 1890.39C563.009 1793.52 447.972 1659.39 367.214 1510.27L550.859 1436.59C545.217 1426.04 539.839 1415.39 534.738 1404.63C496.445 1323.9 473.81 1237.85 472.425 1154.36C472.369 1151 472.348 1147.66 472.362 1144.35L243.405 1059.45C243.018 915.767 284.206 798.05 355.099 714.713L546.645 921.882C579.069 884.607 620.815 858.215 669.27 844.559C696.462 836.895 725.768 833.243 756.724 833.928L677.157 575.648C709.091 576.056 742.183 579.472 776.218 586.048L883.105 616.205C912.712 627.128 941.893 639.987 970.521 654.602C983.285 661.119 995.94 667.985 1008.47 675.185C1010.4 676.29 1012.32 677.402 1014.23 678.523C1040.61 693.932 1066.43 710.816 1091.6 729.025L1025.48 935.613C1110.42 997.842 1183.68 1083.33 1235.49 1178.32L1417.3 1101.35C1461.07 1180.56 1495.17 1264.14 1517.21 1348.73C1526.85 1385.69 1534.18 1422.84 1539 1459.9C1542.95 1490.15 1545.22 1520.34 1545.72 1550.32L1545.81 1559.52L1316.86 1475.06C1316.74 1527.76 1307.96 1575.02 1291.93 1615.85C1278.36 1650.4 1259.6 1680.34 1236.5 1705.08L1424.63 1916.27C1344.73 2003.6 1230.32 2049.83 1096.65 2044.14L1022.48 1785.92C984.65 1783.96 944.484 1775.62 902.793 1760.31"
+            stroke="var(--foreground)"
+            stroke-width="calc( var(--logo-stroke-width))"
+            stroke-dasharray="997.8876139322916,4989.438069661459"
+            stroke-dashoffset="5987.32568359375"
+          ></path>
+          <path
+            class="hole"
+            d="M712 1242.19L879.177 1125.67L1046.35 1365.54L879.177 1482.06L712 1242.19Z"
+            stroke="var(--foreground)"
+            stroke-width="var(--logo-stroke-width)"
+          ></path>
         </svg>
       </div>
-      <p class="typo-details">Connexion en cours…</p>
-      <p class="troubleshoot">
-        Si ce message reste affiché longtemps:
+      <div class="troubleshoot" style="opacity: 0">
+        <p>Il est lent ce lait…</p>
         <button onclick="window.location.reload();">Recharger</button>
-      </p>
+        <p class="report">
+          <a
+            href="https://git.inpt.fr/inp-net/churros/-/issues/new?issueable_template=incident&issue[issue_type]=incident"
+            >Signaler un problème</a
+          >
+          · <a href="mailto:contact@net7.dev">Contacter net7</a>
+        </p>
+        <details class="technical">
+          <summary>Détails techniques</summary>
+          <p></p>
+        </details>
+      </div>
     </div>
-    <script>
-      window.addEventListener('load', () => {
-        document.getElementById('loading-overlay').classList.remove('visible');
-      });
-    </script>
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 
   <style>
-    :root {
+    #loading-overlay {
       --font-main: 'Space Grotesk', sans-serif;
+      --background: var(--bg, #0a5bc5);
+      --foreground: var(--fg, white);
+      --logo-stroke-width: 60px;
     }
 
     * {
       font-family: var(--font-main);
     }
 
-    @keyframes spinner {
-      from {
-        transform: rotate(0);
-      }
-
-      to {
-        transform: rotate(1turn);
-      }
+    body.loading {
+      overflow: hidden;
     }
 
     #loading-overlay {
@@ -87,60 +138,101 @@
       gap: 1.5rem;
       align-items: center;
       justify-content: center;
-      color: var(--primary-text);
-      background: var(--primary-bg);
+      color: var(--foreground);
+      background: var(--background);
+    }
 
-      .spinner {
-        font-size: 2rem;
-        animation: spinner 700ms infinite;
+    #loading-overlay .spinner {
+      height: 200px;
+      width: 200px;
+    }
+
+    #loading-overlay img {
+      object-fit: contain;
+      height: 7rem;
+      width: 7rem;
+    }
+
+    #loading-overlay :where(svg) {
+      vertical-align: middle;
+    }
+
+    #loading-overlay .troubleshoot {
+      position: absolute;
+      bottom: 5rem;
+      margin: 0 2rem;
+      text-align: center;
+      transition: opacity 700ms ease;
+    }
+
+    #loading-overlay .troubleshoot button {
+      position: relative;
+      display: inline-flex;
+      flex-grow: 0;
+      flex-shrink: 0;
+      gap: 0.5em;
+      align-items: center;
+      height: fit-content;
+      padding: 0.25rem 0.75rem;
+      color: var(--foreground);
+      cursor: pointer;
+      border: 1px solid var(--foreground);
+      border-radius: 5px;
+      transition: all 200ms ease;
+      background-color: var(--background);
+    }
+
+    #loading-overlay .troubleshoot a {
+      font-size: 0.8rem;
+      text-decoration: underline;
+      text-underline-offset: 0.2lh;
+      color: var(--foreground);
+    }
+
+    #loading-overlay .troubleshoot .technical,
+    #loading-overlay .troubleshoot .report {
+      font-size: 0.8rem;
+    }
+
+    #loading-overlay .troubleshoot .report {
+      margin-top: 2rem;
+    }
+
+    #loading-overlay .loop path.face.drawing {
+      animation: draw 1.2s infinite linear;
+    }
+
+    #loading-overlay path:not(.face) {
+      opacity: 30%;
+    }
+
+    #loading-overlay path.hole {
+      animation: pulse 800ms infinite ease alternate;
+    }
+
+    @keyframes pulse {
+      from {
+        opacity: 100%;
       }
-
-      img {
-        object-fit: contain;
-        height: 7rem;
-        width: 7rem;
-      }
-
-      :where(svg) {
-        vertical-align: middle;
-      }
-
-      .typo-details {
-        font-size: 0.85rem;
-        font-weight: 700;
-      }
-
-      .troubleshoot {
-        position: absolute;
-        bottom: 4rem;
-
-        --bg: transparent;
-        --border: var(--primary-text);
-        --text: var(--primary-text);
-
-        text-align: center;
-
-        button {
-          position: relative;
-          display: inline-flex;
-          flex-grow: 0;
-          flex-shrink: 0;
-          gap: 0.5em;
-          align-items: center;
-          height: fit-content;
-          padding: 0.25rem 0.75rem;
-          color: var(--text);
-          cursor: pointer;
-          background: var(--bg);
-          border: var(--border-block) solid var(--border);
-          border-radius: 1000px;
-          transition: all 200ms ease;
-        }
+      to {
+        opacity: 30%;
       }
     }
 
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    #loading-overlay path.face-masker {
+      stroke: var(--foreground);
+      stroke-width: var(--logo-stroke-width);
+      transition: all 500ms ease;
+    }
+
     #loading-overlay:not(.visible) {
-      display: none;
+      opacity: 0;
     }
   </style>
 </html>

@@ -7,8 +7,6 @@
   $: ({ PageDocuments } = data);
 
   $: schools = $PageDocuments.data?.schools ?? [];
-  $: majors = schools.flatMap((s) => s.majors);
-
   // const majorsBySchool = Object.entries(groupBy(majors, (m) => m.schools[0]?.uid))
   //   .map(([schoolUid, majors]) => [schoolUid, majors.filter((m) => m.subjects.length > 0)])
   //   .filter(([_, majors]) => majors.length > 0)

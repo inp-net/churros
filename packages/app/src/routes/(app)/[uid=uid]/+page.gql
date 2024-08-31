@@ -1,0 +1,155 @@
+query PageProfile($uid: UID!) @loading {
+  profile(uid: $uid) {
+    ... on User {
+      id
+      isMe
+
+      # tab: groups
+      memberOf: groups {
+        group {
+          ...AvatarGroup
+        }
+        ...MemberRoleEmoji
+        title
+      }
+
+      # tab: infos
+      postalAddress: address
+      phone
+      birthday
+      email
+      schoolUid
+      schoolEmail
+      otherEmails
+      contributesTo {
+        ...AvatarStudentAssociation
+      }
+
+      # tab: family
+      familyTree {
+        nesting
+        users {
+          ...AvatarUser
+        }
+      }
+    }
+
+    ... on Group {
+      id
+      # tab: members
+      membersCount
+      boardMembers {
+        title
+        member {
+          ...AvatarUser
+        }
+        ...MemberRoleEmoji
+      }
+
+      # tab: info
+      roomIsOpen
+      canSetGroupRoomOpenState
+      address
+      color
+      email
+
+      # tab: see also
+      familyChildren {
+        uid
+        selfJoinable
+        description
+        ...AvatarGroup
+      }
+      related {
+        description
+        ...AvatarGroup
+      }
+    }
+
+    ... on StudentAssociation {
+      id
+      # tab: boards
+      boards: groups(types: [StudentAssociationSection]) {
+        nodes {
+          ...AvatarGroup
+          president {
+            ...MemberRoleEmoji
+            member {
+              fullName
+            }
+          }
+        }
+      }
+
+      # tab: groups
+      groups(first: 10, types: [Association, Club]) @paginate {
+        edges {
+          node {
+            ...AvatarGroup
+            description
+          }
+        }
+      }
+
+      # tab: services
+      services(first: 10) {
+        edges {
+          node {
+            ...CardService
+          }
+        }
+      }
+    }
+
+    ... on School {
+      id
+      # tab: infos
+      address
+      studentMailDomain
+      aliasMailDomains
+      studentAssociations {
+        ...AvatarStudentAssociation
+      }
+
+      # tab: majors
+      majors {
+        ...AvatarMajor
+      }
+
+      # tab: services
+      schoolServices: services {
+        ...CardService
+      }
+    }
+
+    ... on Major {
+      id
+      # tab: infos
+      discontinued
+      longName: name
+      schools {
+        ...AvatarSchool
+      }
+
+      # tab: subjects
+      subjects {
+        name
+        emoji
+        unit {
+          name
+        }
+      }
+      minors {
+        name
+        yearTier
+        subjects {
+          name
+          emoji
+          unit {
+            name
+          }
+        }
+      }
+    }
+  }
+}

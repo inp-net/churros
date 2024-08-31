@@ -1,23 +1,31 @@
 <script lang="ts">
-  export let value: boolean;
-  export let label: string;
+  import { loaded, type MaybeLoading } from '$lib/loading';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ update: boolean; change: undefined }>();
+
+  type Value = $$Generic<MaybeLoading<boolean> | boolean>;
+
+  export let value: Value;
+
+  let _value: boolean;
+  $: if (_value === undefined && loaded(value)) _value = value as boolean;
 </script>
 
-<label class="switch-container">
-  <div class="switch">
-    <input type="checkbox" on:change bind:checked={value} />
-    <span class="slider" />
-  </div>
-  {label}
-</label>
+<div class="switch">
+  <input
+    type="checkbox"
+    on:change={({ currentTarget }) => {
+      if (!(currentTarget instanceof HTMLInputElement)) return;
+      dispatch('update', currentTarget.checked);
+      dispatch('change');
+    }}
+    bind:checked={_value}
+  />
+  <span class="slider" />
+</div>
 
 <style>
-  .switch-container {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
   /* The switch - the box around the slider */
   .switch {
     position: relative;
@@ -55,11 +63,11 @@
   }
 
   input:checked + .slider {
-    background-color: var(--primary-ring);
+    background-color: var(--primary-bg);
   }
 
   input:checked + .slider::before {
-    background-color: var(--primary-bg);
+    background-color: var(--primary);
 
     /* transform: translate(100%, -25%); */
     transform: translate(calc(2.3em - 1.5em), -25%);

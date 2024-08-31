@@ -1,7 +1,14 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
-import { DateTimeScalar, PicturedInterface } from '#modules/global';
-import { NotificationChannel } from '@churros/db/prisma';
-import { canBeEdited, fullName } from '../index.js';
+import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
+import { userIsStudent } from '#permissions';
+import { NotificationChannel, type Prisma } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
+import { canBeEdited, canEditProfile, canEditUserPermissions, fullName } from '../index.js';
+
+export const UserTypePrismaIncludes = {
+  adminOfStudentAssociations: true,
+  canEditGroups: true,
+} as const satisfies Prisma.UserInclude;
 
 /** Represents a user, mapped on the underlying database object. */
 export const UserType = builder.prismaNode('User', {
@@ -11,22 +18,37 @@ export const UserType = builder.prismaNode('User', {
     ...(id === user?.id ? ['me'] : []),
     ...(majorId ? ['student'] : []),
   ],
-  include: {
-    adminOfStudentAssociations: true,
-    canEditGroups: true,
-  },
+  include: UserTypePrismaIncludes,
   fields: (t) => ({
+    isMe: t.boolean({
+      nullable: true,
+      description: 'Vrai si cet utilisateur est l’utilisateur connecté',
+      resolve({ id }, _, { user }) {
+        if (!user) return null;
+        return id === user.id;
+      },
+    }),
     majorId: t.exposeID('majorId', { nullable: true }),
     uid: t.exposeString('uid'),
     schoolUid: t.exposeString('schoolUid', {
       nullable: true,
       authScopes: { student: true, $granted: 'me' },
     }),
-    otherEmails: t.expose('otherEmails', {
-      type: ['String'],
-      authScopes: { student: true, $granted: 'me' },
+    otherEmails: t.field({
+      type: [Email],
+      nullable: true,
+      resolve: ({ otherEmails }, _, { user }) => (userIsStudent(user) ? otherEmails : null),
     }),
-    email: t.exposeString('email', { authScopes: { student: true, $granted: 'me' } }),
+    email: t.field({
+      type: Email,
+      nullable: true,
+      resolve: ({ email }, _, { user }) => (userIsStudent(user) ? email || null : null),
+    }),
+    schoolEmail: t.field({
+      type: Email,
+      nullable: true,
+      resolve: ({ schoolEmail }, _, { user }) => (userIsStudent(user) ? schoolEmail || null : null),
+    }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
     fullName: t.field({
@@ -52,29 +74,42 @@ export const UserType = builder.prismaNode('User', {
     latestVersionSeenInChangelog: t.exposeString('latestVersionSeenInChangelog'),
 
     // Profile details
-    address: t.exposeString('address', { authScopes: { student: true, $granted: 'me' } }),
-    description: t.exposeString('description', { authScopes: { student: true, $granted: 'me' } }),
-    descriptionHtml: t.string({
+    address: t.string({
+      nullable: true,
+      resolve({ address, id }, _, { user }) {
+        return id === user?.id || userIsStudent(user) ? address : null;
+      },
+    }),
+    description: t.exposeString('description'),
+    descriptionHtml: t.field({
+      type: HTMLScalar,
       async resolve({ description }) {
         return toHtml(description);
       },
     }),
-    birthday: t.expose('birthday', {
+    birthday: t.field({
       type: DateTimeScalar,
       nullable: true,
-      authScopes: { student: true, $granted: 'me' },
+      resolve({ birthday, id }, _, { user }) {
+        return id === user?.id || userIsStudent(user) ? birthday : null;
+      },
     }),
-    links: t.relation('links', {
-      authScopes: { student: true, $granted: 'me' },
+    links: t.relation('links'),
+    nickname: t.exposeString('nickname'),
+    phone: t.string({
+      nullable: true,
+      resolve({ phone, id }, _, { user }) {
+        return id === user?.id || userIsStudent(user) ? phone : null;
+      },
     }),
-    nickname: t.exposeString('nickname', { authScopes: { student: true, $granted: 'me' } }),
-    phone: t.exposeString('phone', { authScopes: { student: true, $granted: 'me' } }),
     pictureFile: t.exposeString('pictureFile'),
     cededImageRightsToTVn7: t.exposeBoolean('cededImageRightsToTVn7'),
     apprentice: t.exposeBoolean('apprentice'),
-
     admin: t.exposeBoolean('admin'),
-    adminOf: t.boolean({
+    adminOf: t.relation('adminOfStudentAssociations', {
+      description: 'Les associations étudiantes dont cet utilisateur·ice est administrateur·ice',
+    }),
+    adminOfStudentAssociation: t.boolean({
       description: "Vrai si cette personne est administratrice de l'association étudiante donnée",
       args: { studentAssociation: t.arg.string({ description: "UID de l'association étudiante" }) },
       resolve: async ({ id }, { studentAssociation }) => {
@@ -104,6 +139,26 @@ export const UserType = builder.prismaNode('User', {
           },
         });
         return canBeEdited(user, me);
+      },
+    }),
+    canEditProfile: t.boolean({
+      description: 'Peut-on modifier le profil de cet utilisateur·ice ?',
+      args: {
+        assert: t.arg.string({
+          description:
+            'Lève une erreur avec ce message si l’utilisateur·ice ne peut pas éditer ce profil',
+          required: false,
+        }),
+      },
+      async resolve({ id }, { assert }, { user }) {
+        const targetUser = await prisma.user.findUniqueOrThrow({
+          where: { id },
+          include: canEditProfile.prismaIncludes,
+        });
+        const can = canEditProfile(user, targetUser);
+        if (assert && !can) throw new GraphQLError(assert);
+
+        return can;
       },
     }),
     studentAssociationAdmin: t.boolean({
@@ -138,7 +193,7 @@ export const UserType = builder.prismaNode('User', {
       },
     }),
     canEditGroups: t.boolean({
-      description: 'Vrai si cette personne peut éditer des groupes',
+      description: "Vrai si cette personne peut éditer les groupes d'au moins une AE",
       resolve: async ({ id }) => {
         const user = await prisma.user.findUniqueOrThrow({
           where: { id },
@@ -151,6 +206,9 @@ export const UserType = builder.prismaNode('User', {
         return user.canEditGroups.length > 0;
       },
     }),
+    groupsEditorOf: t.relation('canEditGroups', {
+      description: 'Les groupes dont cet·te utilisateur·ice peut éditer les permissions',
+    }),
     canAccessDocuments: t.boolean({
       resolve: ({ admin, canAccessDocuments }) => admin || canAccessDocuments,
       authScopes: { admin: true, $granted: 'me' },
@@ -160,16 +218,16 @@ export const UserType = builder.prismaNode('User', {
       authScopes: { student: true, $granted: 'me' },
       query: { orderBy: { publishedAt: 'desc' } },
     }),
-    groups: t.relation('groups', {
-      // authScopes: { loggedIn: true, $granted: 'me' },
-      query: { orderBy: { group: { name: 'asc' } } },
-    }),
     credentials: t.relation('credentials', {
       authScopes: { $granted: 'me' },
       query: { orderBy: { createdAt: 'desc' } },
     }),
-    major: t.relation('major', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
-    minor: t.relation('minor', { nullable: true, authScopes: { student: true, $granted: 'me' } }),
+    lydiaPhone: t.exposeString('lydiaPhone', {
+      nullable: true,
+      authScopes: { $granted: 'me' },
+    }),
+    major: t.relation('major', { nullable: true }),
+    minor: t.relation('minor', { nullable: true }),
     managedEvents: t.relation('managedEvents'),
     enabledNotificationChannels: t.expose('enabledNotificationChannels', {
       type: [NotificationChannel],
@@ -177,10 +235,41 @@ export const UserType = builder.prismaNode('User', {
     }),
     godparent: t.relation('godparent', { nullable: true }),
     godchildren: t.relation('godchildren'),
-    outgoingGodparentRequests: t.relation('outgoingGodparentRequests'),
-    incomingGodparentRequests: t.relation('incomingGodparentRequests'),
+    outgoingGodparentRequests: t.relation('outgoingGodparentRequests', {
+      description:
+        'Demandes de parrainage faites par cet utilisateur·ice (donc pour devenir fillot·e)',
+    }),
+    incomingGodparentRequests: t.relation('incomingGodparentRequests', {
+      description:
+        'Demandes de parrainage reçues par cet utilisateur·ice (donc pour devenir parrain·e)',
+    }),
+    canEditPermissions: t.boolean({
+      description: 'On peut modifier les permissions de cet·te utilisateur·ice',
+      async resolve({ id }, _, { user }) {
+        return canEditUserPermissions(
+          user,
+          await prisma.user.findUniqueOrThrow({
+            where: { id },
+            include: canEditUserPermissions.prismaIncludes,
+          }),
+        );
+      },
+    }),
     emailChangeRequests: t.relation('emailChanges', {
+      args: {
+        pending: t.arg.boolean({
+          required: false,
+          description: 'Ne renvoyer que les demandes en attente (mail envoyé mais non confirmé)',
+        }),
+      },
       authScopes: { $granted: 'me' },
+      query({ pending }) {
+        return {
+          where: {
+            pending: pending ?? undefined,
+          },
+        };
+      },
     }),
   }),
 });

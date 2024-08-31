@@ -42,10 +42,13 @@ builder.mutationField('deleteDocument', (t) =>
           async (filepath) => await rm(path.join(new URL(process.env.STORAGE).pathname, filepath)),
         ),
       );
-      try {
-        if (paths.length > 0)
-          await rmdir(dirname(path.join(new URL(process.env.STORAGE).pathname, paths[0]!)));
-      } catch {}
+
+      if (paths.length > 0) {
+        await rmdir(dirname(path.join(new URL(process.env.STORAGE).pathname, paths[0]!))).catch(
+          (error) =>
+            `Could not delete ${paths[0]}: ${error} (this is considered OK, continuing mutation)`,
+        );
+      }
 
       await prisma.document.delete({
         where: { id },

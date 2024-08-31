@@ -13,8 +13,8 @@
   export let label: string;
   export let required = false;
   export let hint = '';
-  export let value: Array<{ name: string; value: string }> = [];
-  export let newValue: { name: string; value: string } = { name: '', value: '' };
+  export let value: Array<{ text: string; url: string }> = [];
+  export let newValue: { text: string; url: string } = { text: '', url: '' };
   export let computed = true;
   export let linkNotEmpty = false;
 
@@ -30,17 +30,17 @@
   }
 
   function addLink() {
-    if (!/^https?:\/\//.test(newValue.value)) newValue.value = `https://${newValue.value}`;
+    if (!/^https?:\/\//.test(newValue.url)) newValue.url = `https://${newValue.url}`;
 
     try {
       // eslint-disable-next-line no-new
-      new URL(newValue.value);
+      new URL(newValue.url);
     } catch {
       return;
     }
 
     value = [...value, newValue];
-    newValue = { name: '', value: '' };
+    newValue = { text: '', url: '' };
   }
 
   function handleEnter(event: KeyboardEvent) {
@@ -51,7 +51,7 @@
     }
   }
 
-  $: newLinkBothFieldsAreFilled = newValue.name.length > 0 && newValue.value.length > 0;
+  $: newLinkBothFieldsAreFilled = newValue.text.length > 0 && newValue.url.length > 0;
   $: linkNotEmpty = value.length > 0;
 
   function newLinkHandleBlur() {
@@ -64,7 +64,7 @@
   <div class="links-input" on:keypress={handleEnter} role="listitem">
     <ul class="links" style:display={value.length > 0 ? 'block' : 'none'}>
       {#each value as link, i}
-        {@const url = urlOrUndefined(link.value)}
+        {@const url = urlOrUndefined(link.url)}
         <li class="link">
           <div class="link-and-actions">
             <div class="order action-button">
@@ -95,25 +95,25 @@
               {/if}
             </div>
             <div class="inputs">
-              <input required placeholder="Nom de l'action" bind:value={link.name} />
+              <input required placeholder="Nom de l'action" bind:value={link.text} />
               <input
                 type="url"
                 pattern="^https?\:\/\/.+\..+"
                 placeholder="Adresse du site"
-                bind:value={link.value}
+                bind:value={link.url}
               />
             </div>
 
             {#if computed && url?.hostname === 'docs.google.com' && url?.pathname.startsWith('/forms')}
               <div class="action-button manage-replacements">
-                {#if editingComputedLink === link.name}
+                {#if editingComputedLink === link.text}
                   <GhostButton
                     title="Terminé"
                     on:click={() => {
                       for (const [key] of Object.entries(replacements))
                         url.searchParams.delete(key);
 
-                      link.value =
+                      link.url =
                         url.toString() +
                         '&' +
                         Object.entries(replacements)
@@ -134,7 +134,7 @@
                           replacements[key] = value.replaceAll(/^\[|]$/g, '');
                       }
 
-                      editingComputedLink = link.name;
+                      editingComputedLink = link.text;
                     }}
                   >
                     <IconEditReplacements aria-label="Modifier les remplacements" />
@@ -143,7 +143,7 @@
               </div>
             {/if}
             <div class="action-button delete">
-              {#if editingComputedLink === link.name}
+              {#if editingComputedLink === link.text}
                 <GhostButton
                   title="Annuler"
                   on:click={() => {
@@ -165,7 +165,7 @@
               {/if}
             </div>
           </div>
-          {#if editingComputedLink === link.name && url}
+          {#if editingComputedLink === link.text && url}
             {@const params = [...url.searchParams]}
             <ul class="replacements nobullet">
               {#each params.filter(([key]) => key.startsWith('entry.')) as [key, value] (key)}
@@ -195,13 +195,13 @@
         <input
           type="text"
           on:blur={newLinkHandleBlur}
-          bind:value={newValue.name}
+          bind:value={newValue.text}
           placeholder="Nom de l'action"
         />
         <input
           type="text"
           on:blur={newLinkHandleBlur}
-          bind:value={newValue.value}
+          bind:value={newValue.url}
           placeholder="Adresse du site"
         />
       </div>
@@ -228,7 +228,7 @@
     justify-content: start;
     padding-left: 0;
     list-style: none;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -284,7 +284,7 @@
 
   .new {
     display: flex;
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 </style>

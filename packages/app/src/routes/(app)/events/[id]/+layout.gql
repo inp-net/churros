@@ -1,7 +1,7 @@
 query LayoutEventPage($id: LocalID!) {
   event(id: $id) {
-    canScanBookings
-    canEdit
-    canSeeBookings
+    organizer {
+      uid
+    }
   }
 }

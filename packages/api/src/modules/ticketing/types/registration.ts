@@ -1,34 +1,57 @@
-import { TYPENAMES_TO_ID_PREFIXES, builder, prisma } from '#lib';
+import { builder, localID, prisma } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { UserType, fullName } from '#modules/users';
-import { authorIsBeneficiary, preprocessBeneficiary } from '../index.js';
-// TODO rename to booking
+import type { Prisma } from '@churros/db/prisma';
+import { authorIsBeneficiary, canScanBookings, canScanBookingsPrismaIncludes } from '../index.js';
 
+export const RegistrationPrismaIncludes = {
+  lydiaTransaction: true,
+  ticket: true,
+} as const satisfies Prisma.RegistrationInclude;
+
+// TODO rename to booking
 export const RegistrationType = builder.prismaNode('Registration', {
   id: { field: 'id' },
+  include: RegistrationPrismaIncludes,
   fields: (t) => ({
+    canManage: t.boolean({
+      description:
+        "L'utilisateur.ice connecté.e peut marquer la réservation comme payée, la valider, etc.",
+      async resolve({ ticket: { eventId } }, _, { user }) {
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id: eventId },
+          include: canScanBookingsPrismaIncludes,
+        });
+        return canScanBookings(event, user);
+      },
+    }),
     code: t.string({
       resolve({ id }) {
-        return id.replace(TYPENAMES_TO_ID_PREFIXES.Registration + ':', '');
+        return localID(id).toUpperCase();
       },
     }),
     ticketId: t.exposeID('ticketId'),
     authorId: t.exposeID('authorId', { nullable: true }),
-    beneficiary: t.exposeString('beneficiary'),
+    beneficiary: t.string({
+      resolve({ externalBeneficiary }) {
+        return externalBeneficiary ?? '';
+      },
+      deprecationReason: 'Use `externalBeneficiary` instead.',
+    }),
+    externalBeneficiary: t.exposeString('externalBeneficiary', { nullable: true }),
     beneficiaryUser: t.prismaField({
       type: UserType,
       nullable: true,
-      async resolve(query, { beneficiary }) {
+      async resolve(query, { internalBeneficiaryId }) {
         // eslint-disable-next-line unicorn/no-null
-        if (!beneficiary) return null;
+        if (!internalBeneficiaryId) return null;
         return prisma.user.findUnique({
           ...query,
-          where: { uid: preprocessBeneficiary(beneficiary) },
+          where: { id: internalBeneficiaryId },
         });
       },
     }),
-
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     verifiedAt: t.expose('verifiedAt', { type: DateTimeScalar, nullable: true }),
@@ -54,17 +77,35 @@ export const RegistrationType = builder.prismaNode('Registration', {
         return Boolean(cancelledAt && cancelledById);
       },
     }),
+    pendingPayment: t.boolean({
+      description: "Une demande de paiement a été effectuée mais la place n'est pas encore payée",
+      resolve({ lydiaTransaction, paymentMethod, paid }) {
+        if (paid) return false;
+        if (paymentMethod === 'Lydia') return Boolean(lydiaTransaction);
+        return Boolean(paymentMethod);
+      },
+    }),
+    awaitingPayment: t.boolean({
+      description: "En attente du démarrage du paiement par l'utilisateur.ice",
+      resolve({ paid, cancelledAt, opposedAt, paymentMethod, lydiaTransaction }) {
+        if (paid || cancelledAt || opposedAt) return false;
+        // If we chose a payment method but no Lydia transaction was started yet we're still awaiting payment
+        if (paymentMethod === 'Lydia' && lydiaTransaction) return false;
+        return !paymentMethod;
+      },
+    }),
     ticket: t.relation('ticket'),
     author: t.relation('author', { nullable: true }),
     authorEmail: t.exposeString('authorEmail'),
     authorIsBeneficiary: t.boolean({
-      async resolve({ authorId, authorEmail, beneficiary }) {
+      async resolve({ authorId, authorEmail, internalBeneficiaryId, externalBeneficiary }) {
         if (!authorId) return true;
         const author = await prisma.user.findUnique({ where: { id: authorId } });
         if (!author) return false;
         return authorIsBeneficiary(
           { ...author, fullName: fullName(author) },
-          beneficiary,
+          externalBeneficiary,
+          internalBeneficiaryId,
           authorEmail,
         );
       },

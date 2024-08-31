@@ -1,20 +1,22 @@
 <script lang="ts">
+  import type { NotificationChannel$options } from '$houdini';
   import {
     DISPLAY_NOTIFICATION_CHANNELS,
     ICONS_NOTIFICATION_CHANNELS,
     ORDER_NOTIFICATION_CHANNELS,
   } from '$lib/display';
-  import { zeus, type NotificationChannel } from '$lib/zeus';
+  import { NotificationChannel, zeus } from '$lib/zeus';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
 
   export let userUid: string;
   export let loading = false;
-  export let enabledChannels: NotificationChannel[];
+  export let enabledChannels: NotificationChannel$options[];
 
-  let _enabledChannels: Record<NotificationChannel, boolean> = enabledChannelsMap(enabledChannels);
+  let _enabledChannels: Record<NotificationChannel$options, boolean> =
+    enabledChannelsMap(enabledChannels);
 
-  function enabledChannelsMap(channels: NotificationChannel[]) {
+  function enabledChannelsMap(channels: NotificationChannel$options[]) {
     return Object.fromEntries(
       ORDER_NOTIFICATION_CHANNELS.map((chan) => [chan, channels.includes(chan)]),
     ) as typeof _enabledChannels;

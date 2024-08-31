@@ -4,6 +4,7 @@
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
+  import { graphql } from '$houdini';
 
   type User = {
     uid: string;
@@ -12,12 +13,21 @@
     pictureFile: string;
     fullName: string;
   };
+  graphql(`
+    fragment InputPerson on User {
+      uid
+      firstName
+      lastName
+      pictureFile
+      fullName
+    }
+  `);
   export let label: string;
   export let uid: string | undefined;
   export let required = false;
   export let allow: string[] = [];
   export let except: string[] = [];
-  export let user: User | undefined = undefined;
+  export let user: User | null | undefined = null;
 
   $: avatarHref = user ? `/users/${user?.uid ?? ''}` : '';
 

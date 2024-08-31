@@ -1,4 +1,4 @@
-import { localID } from '#lib';
+import { ensureGlobalId, localID } from '#lib';
 import { PrismaClient, PromotionType, type Event, type Group } from '@churros/db/prisma';
 
 function usage(): never {
@@ -31,7 +31,7 @@ if (![2, 3].includes(args.length)) {
 
 const count = parseInt(args[0]!, 10);
 const validUntilYear = parseInt(args[1]!, 10);
-const groupAndEvent = args[2];
+const eventId = args[2];
 
 let promotion = await prisma.promotion.findFirst({
   where: { type: PromotionType.SIMPPS, validUntil: { gte: new Date() } },
@@ -51,27 +51,19 @@ if (!promotion) {
 
 let event: undefined | (Event & { group: Group });
 
-if (groupAndEvent) {
-  const [groupUid, eventSlug] = groupAndEvent ? groupAndEvent.split('/') : [];
-  if (!groupUid || !eventSlug) {
-    console.error('Invalid group/event UID/slug');
+if (eventId) {
+  if (!eventId) {
+    console.error('Invalid event ID');
     usage();
   }
-  const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
-  event = await prisma.event.findUniqueOrThrow({
-    where: { groupId_slug: { groupId: group.id, slug: eventSlug } },
+  event = await prisma.event.update({
+    where: { id: ensureGlobalId(eventId, 'Event') },
+    data: {
+      applicableOffers: { connect: { id: promotion.id } },
+    },
     include: { group: true },
   });
-  const tickets = await prisma.ticket.findMany({ where: { event: { id: event.id } } });
-  for (const ticket of tickets) {
-    console.info(`Adding ${ticket.name} to SIMPPS promotion ${promotion.id}`);
-    await prisma.ticket.update({
-      where: { id: ticket.id },
-      data: {
-        subjectToPromotions: { connect: { id: promotion.id } },
-      },
-    });
-  }
+  console.info(`Added ${event.title} to SIMPPS promotion ${promotion.id}`);
 }
 
 for (let i = 0; i < count; i++) {

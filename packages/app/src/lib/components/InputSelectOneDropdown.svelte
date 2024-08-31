@@ -1,17 +1,21 @@
 <script lang="ts">
+  import { loaded, type MaybeLoading } from '$lib/loading';
+
   import { createEventDispatcher, onMount } from 'svelte';
   import InputField from './InputField.svelte';
   import ChevronUp from '~icons/mdi/chevron-up';
   import ChevronDown from '~icons/mdi/chevron-down';
-  const emit = createEventDispatcher();
+  const emit = createEventDispatcher<{ input: Value }>();
 
-  export let value: string | undefined = undefined;
+  type Value = $$Generic<string>;
+
+  export let value: MaybeLoading<Value> | undefined = undefined;
   export let label: string;
   export let options:
-    | string[]
-    | Record<string, string>
-    | Map<string, string>
-    | Array<[string, string]>;
+    | Value[]
+    | Record<Value, MaybeLoading<string>>
+    | Array<[Value, MaybeLoading<string>]>
+    | Map<Value, MaybeLoading<string>> = [];
   export let name: string | undefined = undefined;
   export let required = false;
   export let hint: string | undefined = undefined;
@@ -33,16 +37,14 @@
     }
   });
 
-  let optionsWithDisplay: Array<[string, string]> = [];
+  let optionsWithDisplay: Array<[Value, MaybeLoading<string>]> = [];
   $: optionsWithDisplay = Array.isArray(options)
-    ? options.map((option) => (Array.isArray(option) ? option : [option, option]))
-    : options instanceof Map
-      ? [...options.entries()]
-      : Object.entries(options);
+    ? options.map((option) => (Array.isArray(option) ? option : [option, option.toString()]))
+    : Object.entries(options).map(([value, label]) => [value as Value, label as string]);
 
   let fieldsetElement: HTMLFieldSetElement;
 
-  $: emit('input', value);
+  $: if (loaded(value)) emit('input', value);
 </script>
 
 <InputField {label} {required} {hint} errors={errorMessage ? [errorMessage] : []}>
@@ -106,7 +108,7 @@
     justify-content: space-between;
     color: var(--text);
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 </style>

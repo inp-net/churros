@@ -1,26 +1,30 @@
-import { loadQuery } from '$lib/zeus';
-import type { PageLoad } from './$types';
+import { graphql } from '$houdini';
 
-export const load: PageLoad = async ({ fetch, parent }) =>
-  loadQuery(
-    {
-      userCandidates: [
-        {},
-        {
-          pageInfo: { hasNextPage: true, endCursor: true },
-          edges: {
-            node: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              fullName: true,
-              email: true,
-              major: { name: true, shortName: true },
-              graduationYear: true,
-            },
-          },
-        },
-      ],
-    },
-    { fetch, parent },
-  );
+export async function load(event) {
+  return await graphql(`
+    query PageManageSignups {
+      userCandidates {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            id
+            firstName
+            lastName
+            fullName
+            email
+            major {
+              name
+              shortName
+            }
+            graduationYear
+          }
+        }
+      }
+    }
+  `)
+    .fetch({ event })
+    .then((d) => d.data ?? { userCandidates: { pageInfo: { hasNextPage: false }, edges: [] } });
+}

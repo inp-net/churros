@@ -1,9 +1,9 @@
 import { builder } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 
-export const EmailChangeType = builder.prismaObject('EmailChange', {
+export const EmailChangeType = builder.prismaNode('EmailChange', {
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     userId: t.exposeID('userId'),
     email: t.exposeString('email'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),

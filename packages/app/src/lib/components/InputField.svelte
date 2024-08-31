@@ -1,8 +1,8 @@
 <script lang="ts">
-  import IconAlertCircle from '~icons/mdi/alert-circle';
-  import IconInfoCircle from '~icons/mdi/information';
-  import IconWarningCircle from '~icons/mdi/warning';
-  import IconSucessCircle from '~icons/mdi/check-circle';
+  import IconAlertCircle from '~icons/msl/error-outline';
+  import IconInfoCircle from '~icons/msl/info-outline';
+  import IconWarningCircle from '~icons/msl/warning-outline';
+  import IconSucessCircle from '~icons/msl/check';
   import { tooltip } from '$lib/tooltip';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
@@ -30,7 +30,7 @@
           {error}
         </span>
       {/each}
-    {:else if hint}
+    {:else if hint || $$slots.hint}
       <span class="hint {hintStyle}">
         {#if hintStyle === 'loading'}
           <LoadingSpinner />
@@ -42,8 +42,7 @@
           <IconInfoCircle aria-hidden="true" />
         {/if}
         <span class="hint-content">
-          {hint}
-          <slot name="hint" />
+          <slot name="hint" {hint}>{hint}</slot>
         </span>
       </span>
     {/if}
@@ -95,10 +94,14 @@
   }
 
   .hint.warning {
-    color: var(--warning-link);
+    color: var(--warning);
+  }
+
+  .hint:has(.hint-content:empty) {
+    display: none;
   }
 
   .hint.success {
-    color: var(--success-link);
+    color: var(--success);
   }
 </style>

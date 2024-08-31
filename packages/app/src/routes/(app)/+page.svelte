@@ -3,15 +3,18 @@
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardArticle from '$lib/components/CardArticle.houdini.svelte';
-  import CarouselGroups from '$lib/components/CarouselGroups.svelte';
-  import InputSelectOne from '$lib/components/InputSelectOne.svelte';
+  import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
+  import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
   import { infinitescroll } from '$lib/scroll';
   import { notNull } from '$lib/typing';
   import type { PageData } from './$houdini';
 
+  const mobile = isMobile();
+
   export let data: PageData;
-  $: ({ PageHomeFeed, Birthdays, MyGroups } = data);
+  $: ({ PageHomeFeed, Birthdays, AppLayout } = data);
 
   let defaultBirthdaysSection: MaybeLoading<string> = PendingValue;
   let selectedBirthdaysYearTier: string | undefined = undefined;
@@ -33,72 +36,66 @@
   }
 </script>
 
-<h1>Mon feed</h1>
+<div class="contents">
+  {#if mobile}
+    <QuickAccessList pins={$AppLayout?.data?.me ?? null} />
+  {/if}
 
-{#if $MyGroups.data?.me}
-  <section class="groups">
-    <CarouselGroups groups={$MyGroups.data.me.groups.map(({ group }) => group) ?? []} />
-  </section>
-{/if}
+  {#if $Birthdays.data}
+    <section class="birthdays">
+      <h2>
+        Anniversaires
+        <InputSelectOneDropdown
+          bind:value={selectedBirthdaysYearTier}
+          label=""
+          options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
+        />
+        <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
+      </h2>
+      <ul class="nobullet">
+        {#each shownBirthdays as { uid, major, birthday, ...user } (uid)}
+          <li>
+            <AvatarPerson
+              href="/users/{uid}"
+              {...user}
+              role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
+                (birthday?.getFullYear() ?? 0)} ans"
+            />
+          </li>
+        {:else}
+          <li>
+            {#if selectedBirthdaysYearTier === 'all'}
+              Personne n'est né aujourd'hui :/
+            {:else}
+              Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
 
-{#if $Birthdays.data}
-  <section class="birthdays">
-    <h2>
-      Anniversaires
-      <InputSelectOne
-        bind:value={selectedBirthdaysYearTier}
-        label=""
-        options={{ 1: '1As', 2: '2As', 3: '3As', all: 'Tous' }}
-      />
-      <ButtonSecondary href="/birthdays">Autres jours</ButtonSecondary>
-    </h2>
-    <ul class="nobullet">
-      {#each shownBirthdays as { uid, major, birthday, ...user } (uid)}
-        <li>
-          <AvatarPerson
-            href="/users/{uid}"
-            {...user}
-            role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
-              (birthday?.getFullYear() ?? 0)} ans"
-          />
-        </li>
+  <section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
+    {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article }}
+      <CardArticle {article} />
+    {/each}
+    <div class="scroll-end">
+      {#if $PageHomeFeed.pageInfo.hasNextPage}
+        <CardArticle article={null} />
       {:else}
-        <li>
-          {#if selectedBirthdaysYearTier === 'all'}
-            Personne n'est né aujourd'hui :/
-          {:else}
-            Aucun·e {selectedBirthdaysYearTier}A n'est né·e aujourd'hui :/
-          {/if}
-        </li>
-      {/each}
-    </ul>
+        <p class="no-more-posts">Plus de posts à afficher!</p>
+        <!-- TODO défi d'inté??? -->
+      {/if}
+    </div>
   </section>
-{/if}
-
-<section class="articles" use:infinitescroll={async () => await PageHomeFeed.loadNextPage()}>
-  {#each $PageHomeFeed.data?.homepage?.edges.filter(notNull) ?? [] as { node: article }}
-    <CardArticle {article} />
-  {/each}
-  <div class="scroll-end">
-    {#if $PageHomeFeed.pageInfo.hasNextPage}
-      <CardArticle article={null} />
-    {:else}
-      <p class="no-more-posts">Plus de posts à afficher!</p>
-      <!-- TODO défi d'inté??? -->
-    {/if}
-  </div>
-</section>
+</div>
 
 <style>
-  h1 {
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  section.groups {
+  .contents {
     display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 1rem;
   }
 
   section.articles {

@@ -1,0 +1,7 @@
+query PageUserEditOtherEmails($uid: String!) {
+  user(uid: $uid) {
+    id
+    otherEmails
+    canEditProfile(assert: "Tu n'a pas les permissions nécéssaires pour modifier ce profil.")
+  }
+}

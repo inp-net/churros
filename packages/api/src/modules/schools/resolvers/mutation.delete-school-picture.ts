@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, storageRoot } from '#lib';
 import { GraphQLError } from 'graphql';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
@@ -19,7 +19,7 @@ builder.mutationField('deleteSchoolPicture', (t) =>
       });
 
       if (!result.pictureFile) throw new GraphQLError('No picture to delete');
-      const root = new URL(process.env.STORAGE).pathname;
+      const root = storageRoot();
       if (result.pictureFile) await unlink(path.join(root, result.pictureFile));
       await prisma.school.update({
         where: { id },

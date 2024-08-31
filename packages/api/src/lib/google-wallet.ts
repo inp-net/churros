@@ -1,5 +1,5 @@
 import { fullName } from '#modules/users';
-import type { Event, Group, Registration, User } from '@churros/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
 import { GoogleAuth, type JWTInput } from 'google-auth-library';
 import { localID } from './global-id.js';
 
@@ -19,11 +19,15 @@ function noLocalhostURL(path: string, base: string): URL {
 }
 
 export function makeGoogleWalletObject(
-  event: Event & { group: Group },
-  registration: Registration & { author: User | null },
+  booking: Prisma.RegistrationGetPayload<{
+    include: typeof makeGoogleWalletObject.prismaIncludes;
+  }>,
 ) {
+  const event = booking.ticket.event;
+  if (!event.startsAt || !event.endsAt)
+    throw new Error('Event must have a start and end date to generate a google wallet object');
   return {
-    id: `${GOOGLE_WALLET_CLASS.id}_${localID(registration.id)}`,
+    id: `${GOOGLE_WALLET_CLASS.id}_${localID(booking.id)}`,
     classId: GOOGLE_WALLET_CLASS.id,
     logo: {
       sourceUri: {
@@ -72,19 +76,21 @@ export function makeGoogleWalletObject(
         id: 'beneficiary',
         header: 'Place pour',
         body:
-          registration.beneficiary ||
-          fullName(
-            registration.author ?? {
-              firstName: '??',
-              lastName: '??',
-            },
-          ),
+          booking.externalBeneficiary ||
+          (booking.internalBeneficiary
+            ? fullName(booking.internalBeneficiary)
+            : fullName(
+                booking.author ?? {
+                  firstName: '??',
+                  lastName: '??',
+                },
+              )),
       },
     ],
     barcode: {
       type: 'QR_CODE',
-      value: registration.id,
-      alternateText: localID(registration.id).toUpperCase(),
+      value: booking.id,
+      alternateText: localID(booking.id).toUpperCase(),
     },
     // hexBackgroundColor: event.group.color,
     hexBackgroundColor: '#ffffff',
@@ -106,6 +112,20 @@ export function makeGoogleWalletObject(
     },
   };
 }
+
+makeGoogleWalletObject.prismaIncludes = {
+  author: true,
+  internalBeneficiary: true,
+  ticket: {
+    include: {
+      event: {
+        include: {
+          group: true,
+        },
+      },
+    },
+  },
+} as const satisfies Prisma.RegistrationInclude;
 
 export const GOOGLE_WALLET_CLASS = {
   id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,

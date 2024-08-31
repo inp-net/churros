@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, storageRoot } from '#lib';
 
 import { GraphQLError } from 'graphql';
 import { rename } from 'node:fs/promises';
@@ -29,7 +29,7 @@ builder.mutationField('mergeDocuments', (t) =>
       // Move all files to target
       for (const source of sources) {
         for (const filePath of [...source.paperPaths, ...source.solutionPaths]) {
-          const root = new URL(process.env.STORAGE).pathname;
+          const root = storageRoot();
           const oldPath = join(root, filePath);
           const newPath = documentFilePath(
             root,
@@ -57,6 +57,7 @@ builder.mutationField('mergeDocuments', (t) =>
         where: { id: { in: from } },
       });
       return prisma.document.update({
+        include: { reactions: true },
         ...query,
         where: { id: target.id },
         data: {

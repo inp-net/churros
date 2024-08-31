@@ -22,8 +22,6 @@
   export let data: PageData;
 
   let {
-    address,
-    phone,
     birthday,
     firstName,
     graduationYear = new Date().getFullYear() + 3,
@@ -36,13 +34,11 @@
 
   $: args = {
     email: data.userCandidateByEmail.email,
-    address,
     birthday,
     firstName,
     graduationYear,
     lastName,
     majorId: majorId!,
-    phone,
     cededImageRightsToTVn7: data.userCandidateByEmail.cededImageRightsToTVn7,
   };
 
@@ -176,19 +172,6 @@
     label="Date de naissance"
     errors={formErrors?.birthday?._errors}
     bind:value={birthday}
-  />
-  <InputText
-    label="Numéro de téléphone"
-    type="tel"
-    errors={formErrors?.phone?._errors}
-    maxlength={255}
-    bind:value={phone}
-  />
-  <InputText
-    label="Adresse"
-    errors={formErrors?.address?._errors}
-    maxlength={255}
-    bind:value={address}
   />
 
   <div class="actions">

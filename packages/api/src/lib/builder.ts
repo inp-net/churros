@@ -25,6 +25,7 @@ import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
 import { default as parseUserAgent } from 'ua-parser-js';
+import { ZodError } from 'zod';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
@@ -68,6 +69,50 @@ export interface PothosTypes {
       Input: string;
       Output: string;
     };
+    Markdown: {
+      Input: string;
+      Output: string;
+    };
+    HTML: {
+      Input: string;
+      Output: never;
+    };
+    ShortString: {
+      Input: string;
+      Output: string;
+    };
+    PositiveInt: {
+      Input: number;
+      Output: number;
+    };
+    PositiveFloat: {
+      Input: number;
+      Output: number;
+    };
+    Capacity: {
+      Input: number | null;
+      Output: number | 'Unlimited';
+    };
+    URL: {
+      Input: URL;
+      Output: URL;
+    };
+    LooseURL: {
+      Input: string;
+      Output: string;
+    };
+    Email: {
+      Input: string;
+      Output: string;
+    };
+    PhoneNumber: {
+      Input: string;
+      Output: string;
+    };
+    Color: {
+      Input: string;
+      Output: string;
+    };
   };
   Directives: {
     rateLimit: RateLimitDirective;
@@ -89,11 +134,13 @@ export const builder = new SchemaBuilder<PothosTypes>({
     DirectivePlugin,
     WithInputPlugin,
   ],
-  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 200 } },
+  complexity: { limit: { complexity: 50_000, depth: 10, breadth: 400 } },
   defaultInputFieldRequiredness: true,
   defaultFieldNullability: false,
   withInput: {},
-  errors: { defaultTypes: [Error] },
+  errors: {
+    defaultTypes: [Error, ZodError],
+  },
   prisma: { client: prisma, exposeDescriptions: true },
   scopeAuth: {
     unauthorizedError: () => new GraphQLError("Tu n'es pas autorisé à effectuer cette action."),
@@ -120,13 +167,13 @@ export const builder = new SchemaBuilder<PothosTypes>({
         () => resolver(source, args, ctx, info),
         (_error, duration) => {
           console.info(
-            `Executed \u001B[36;1m${config.parentType}.${
+            `Executed \u001B[36;1m${(info.operation.name?.value ?? '').padStart(20)} ${config.parentType}.${
               config.name
             }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
           );
           // Do not wait for prometheus counters before sending the response!
           (async () => {
-            const { token, user } = await context(ctx);
+            const { user } = await context(ctx);
             const ua = parseUserAgent(ctx.request?.headers.get('User-Agent') ?? '');
             const ip = ctx.request?.headers.get('X-Real-Ip');
 
@@ -134,7 +181,6 @@ export const builder = new SchemaBuilder<PothosTypes>({
               operationName: ctx.params?.operationName,
               queryType: config.parentType,
               queryName: config.name,
-              token,
               user:
                 user?.id ||
                 (ua.browser.name ? `${ua.browser.name}/${ua.browser.version || '?'}` : ua.ua) +

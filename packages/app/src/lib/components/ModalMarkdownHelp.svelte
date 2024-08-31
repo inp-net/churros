@@ -1,23 +1,28 @@
 <script lang="ts">
   import IconClose from '~icons/mdi/close';
   import ButtonGhost from './ButtonGhost.svelte';
-  import Modal from './Modal.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import { tooltip } from '$lib/tooltip';
 
-  export let element: HTMLDialogElement;
+  export let open: () => void;
 </script>
 
-<Modal bind:element>
+<ModalOrDrawer tall bind:open let:close>
   <div class="content">
     <h1>
       Aide sur Markdown
 
       <ButtonGhost
         on:click={() => {
-          element.close();
+          close();
         }}><IconClose /></ButtonGhost
       >
     </h1>
-    <h2>Gras, italique, etc.</h2>
+    <div class="side-by-side muted legend">
+      <span>Écris…</span>
+      <span>Pour obtenir…</span>
+    </div>
+    <!-- <h2>Gras, italique, etc.</h2> -->
     <div class="side-by-side">
       <code class="markdown-code">**gras**</code>
       <span><strong>gras</strong></span>
@@ -25,8 +30,8 @@
       <span><em>italique</em></span>
       <code class="markdown-code">`code`</code>
       <span><code>code</code></span>
-      <code class="markdown-code">${`\\frac{2}{\\pi}`}$</code>
-      <span class="katex">
+      <code class="markdown-code" use:tooltip={'Syntaxe LaTeX'}>${`\\frac{2}{\\pi}`}$</code>
+      <span class="katex" use:tooltip={'Syntaxe LaTeX'}>
         <span class="katex-mathml"
           ><math xmlns="http://www.w3.org/1998/Math/MathML"
             ><semantics
@@ -76,7 +81,7 @@
       <code class="markdown-code">[lien](https://net7.dev)</code>
       <span><a href="https://net7.dev" class="in-body">lien</a></span>
     </div>
-    <h2>Titres</h2>
+    <!-- <h2>Titres</h2> -->
     <div class="side-by-side">
       <code class="markdown-code"># Titre</code>
       <span><h3>Titre</h3></span>
@@ -85,7 +90,7 @@
       <code class="markdown-code">### Sous-sous titre</code>
       <span><h5>Sous-sous titre</h5></span>
     </div>
-    <h2>Listes</h2>
+    <!-- <h2>Listes</h2> -->
     <div class="side-by-side">
       <pre class="markdown-code">
 - Un
@@ -119,7 +124,7 @@
       >
     </p>
   </div>
-</Modal>
+</ModalOrDrawer>
 
 <style>
   h1 {
@@ -143,9 +148,15 @@
     align-items: center;
   }
 
+  .side-by-side.legend {
+    font-size: 1.2em;
+    border-bottom: var(--border-block) solid var(--bg3);
+  }
+
   .content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem;
   }
 </style>

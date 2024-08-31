@@ -35,7 +35,7 @@
 
     &:hover,
     &:focus-visible {
-      color: var(--link);
+      color: var(--primary);
     }
   }
 </style>

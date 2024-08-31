@@ -7,12 +7,17 @@ builder.queryField('groups', (t) =>
     type: [GroupType],
     args: {
       types: t.arg({ type: [GroupEnumType], required: false }),
+      unlisted: t.arg.boolean({
+        defaultValue: false,
+        description: 'Inclures les groupes non répertoriés',
+      }),
     },
-    resolve: async (query, _, { types }, { user }) =>
+    resolve: async (query, _, { types, unlisted }, { user }) =>
       prisma.group.findMany({
         ...query,
         where: {
           ...(types ? { type: { in: types } } : {}),
+          ...(unlisted ? {} : { unlisted: false }),
           ...(user?.admin
             ? {}
             : {

@@ -12,6 +12,7 @@
   export let smaller = false;
   export let disabled = false;
   export let loading = false;
+  export let danger = false;
   export let help: string | undefined = undefined;
 </script>
 
@@ -21,8 +22,9 @@
   {id}
   class:loading
   {href}
-  class="button-primary typo-big-button primary"
+  class="button-primary primary"
   class:smaller
+  class:danger
   disabled={disabled || loading || undefined}
   on:click
   use:tooltip={help}
@@ -47,12 +49,12 @@
     flex: initial;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.75rem;
-    color: var(--text);
+    padding: 0.25rem 0.75rem;
+    color: var(--original-bg);
     cursor: pointer;
-    background-color: var(--bg);
-    border: none;
-    border-radius: 1000px;
+    background-color: var(--primary);
+    border: var(--border-block) solid var(--primary);
+    border-radius: 5px;
 
     &.loading .content {
       opacity: 0;
@@ -65,14 +67,21 @@
     }
   }
 
-  .button-primary.smaller {
-    padding: 0.5rem 1rem;
+  .button-primary.danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
   }
 
   .button-primary:hover:not([disabled]),
   .button-primary:focus-visible:not([disabled]) {
-    color: var(--hover-text);
-    background: var(--hover-bg);
+    background: color-mix(in srgb, var(--primary) 70%, var(--fg));
+    border-color: color-mix(in srgb, var(--primary) 70%, var(--fg));
+  }
+
+  .button-primary.danger:hover:not([disabled]),
+  .button-primary.danger:focus-visible:not([disabled]) {
+    background: color-mix(in srgb, var(--danger) 70%, var(--fg));
+    border-color: color-mix(in srgb, var(--danger) 70%, var(--fg));
   }
 
   .button-primary .loading {

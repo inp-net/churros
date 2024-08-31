@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { me } from '$lib/session';
+  import { loginRedirection, refroute } from '$lib/navigation';
 
   let error: App.Error | null;
   let status: number;
@@ -32,11 +32,9 @@
   {:else if status === 403}
     <h1>Erreur 403</h1>
     <p>Accès interdit.</p>
-    {#if !$me}
-      <ButtonSecondary href="/login?{new URLSearchParams({ to: $page.url.pathname })}"
-        >Se connecter</ButtonSecondary
-      >
-    {/if}
+    <ButtonSecondary noClientSideNavigation href={loginRedirection({ explain: false })}
+      >Se connecter</ButtonSecondary
+    >
   {:else if status === 404}
     <img src="/404.svg" alt="404" />
     <p>Cette page n'existe pas.</p>
@@ -50,11 +48,9 @@
           window.location.reload();
         }}>Recharger</ButtonSecondary
       >
-      {#if !$me}
-        <ButtonSecondary href="/login?{new URLSearchParams({ to: $page.url.pathname })}"
-          >Se connecter</ButtonSecondary
-        >
-      {/if}
+      <ButtonSecondary noClientSideNavigation href={refroute('/login')}
+        >Se connecter</ButtonSecondary
+      >
     </div>
   {:else}
     <h1>Erreur {status}</h1>

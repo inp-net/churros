@@ -1,0 +1,35 @@
+query PageEditEventTickets($id: LocalID!) @loading {
+  event(id: $id) {
+    canEdit(assert: "Tu n'a pas les droits pour modifier cet événement")
+    id
+    localID
+    showPlacesLeft
+    globalCapacity
+    startsAt
+    endsAt
+    organizer {
+      lydiaAccounts {
+        ...PickBeneficiary @mask_disable
+      }
+    }
+    beneficiary {
+      id
+      name
+    }
+    tickets @list(name: "List_EditEvent_Tickets") {
+      localID
+      name
+      basePrice
+      capacity
+      group {
+        name
+      }
+      ...TextTicketSummary
+    }
+    ticketGroups @list(name: "List_EditEvent_TicketGroups") {
+      name
+      ticketsCount
+      capacity
+    }
+  }
+}

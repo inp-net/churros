@@ -1,5 +1,5 @@
 import type { Prisma, School } from '@churros/db/prisma';
-import { replaceMailDomainPart } from './school-emails.js';
+import { replaceMailDomainPart } from './school.js';
 
 export function fullName(user: { firstName: string; lastName: string; nickname?: string }) {
   const { firstName, lastName, nickname } = user;

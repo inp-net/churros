@@ -1,158 +1,228 @@
 <script lang="ts">
-  import Qrcode from '~icons/mdi/qrcode';
-  import IconCancelled from '~icons/mdi/cancel';
-  import CashClock from '~icons/mdi/cash-clock';
-  import { env } from '$env/dynamic/public';
-  import { fragment, graphql, type CardTicket } from '$houdini';
+  import { page } from '$app/stores';
+  import {
+    fragment,
+    graphql,
+    type CardTicket,
+    type CardTicketDetails,
+    type CardTicketPlaces,
+  } from '$houdini';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarMajor from '$lib/components/AvatarMajor.svelte';
+  import AvatarSchool from '$lib/components/AvatarSchool.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import {
+    allLoaded,
+    loaded,
+    loading,
+    mapAllLoading,
+    mapLoading,
+    onceAllLoaded,
+    onceLoaded,
+    type MaybeLoading,
+  } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
+  import { formatDistance, isWithinInterval } from 'date-fns';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import IconOpenExternal from '~icons/msl/open-in-new';
+  import ButtonSecondary from './ButtonSecondary.svelte';
 
-  export let href: string;
-  export let floating = false;
+  const dispatch = createEventDispatcher<{ book: string }>();
 
-  export let booking: CardTicket;
-  $: data = fragment(
-    booking,
+  /** Returns the unicode infinity symbol if the amount is -1 or Infinity, and the stringified value otherwise */
+  function displayInfinity(amount: number | null): string {
+    if ([Number.POSITIVE_INFINITY, -1, null].includes(amount)) return '∞';
+    return amount!.toString();
+  }
+
+  export let externalURL: MaybeLoading<URL | null> | null = null;
+
+  export let places: CardTicketPlaces | null = null;
+  $: dataPlaces = fragment(
+    places,
     graphql(`
-      fragment CardTicket on Registration {
-        id
-        code
-        beneficiary
-        authorIsBeneficiary
-        paid
-        cancelled
-        opposed
-        author {
-          fullName
+      fragment CardTicketPlaces on Ticket @loading {
+        placesLeft
+        capacity
+      }
+    `),
+  );
+
+  export let details: CardTicketDetails | null = null;
+  $: dataDetails = fragment(
+    details,
+    graphql(`
+      fragment CardTicketDetails on Ticket @loading {
+        openToGroups {
+          ...AvatarGroup
         }
-        authorEmail
-        beneficiaryUser {
-          fullName
+        openToMajors(smart: true) {
+          ...AvatarMajor
         }
-        ticket {
-          name
-          event {
-            pictureFile
-            title
-          }
+        openToSchools {
+          ...AvatarSchool
         }
       }
     `),
   );
 
-  $: ({
+  export let ticket: CardTicket | null;
+  $: data = fragment(
     ticket,
-    author,
-    authorEmail,
-    beneficiary,
-    beneficiaryUser,
-    cancelled,
-    paid,
-    authorIsBeneficiary,
-  } = $data);
+    graphql(`
+      fragment CardTicket on Ticket @loading {
+        localID
+        opensAt
+        closesAt
+        name
+        price
+        event {
+          localID
+        }
+      }
+    `),
+  );
+
+  let now = new Date();
+  onMount(() => {
+    setInterval(() => {
+      now = new Date();
+    }, 500);
+  });
+
+  $: ticketIsOpen =
+    $data &&
+    mapAllLoading(
+      [$data.opensAt, $data.closesAt],
+      (start, end) => start && end && isWithinInterval(now, { start, end }),
+    );
+
+  $: hasAvatars = $dataDetails
+    ? [...$dataDetails.openToSchools, ...$dataDetails.openToGroups, ...$dataDetails.openToMajors]
+        .length > 0
+    : false;
 </script>
 
-<a
-  class="billet"
-  class:floating
-  {href}
-  class:danger={cancelled}
-  class:noimg={!ticket.event.pictureFile}
-  style:background-image={ticket.event.pictureFile
-    ? `linear-gradient(rgba(0, 0, 0, var(--alpha)), rgba(0,0,0,var(--alpha))), url('${env.PUBLIC_STORAGE_URL}${ticket.event.pictureFile}')`
-    : undefined}
-  style:--text={ticket.event.pictureFile ? 'white' : 'var(--text)'}
->
-  <div class="overlay-text">
-    {#if !authorIsBeneficiary}
-      <div class="beneficiary">
-        {#if beneficiary}
-          Pour {beneficiaryUser?.fullName ?? beneficiary}
+<div class="ticket">
+  <div class="text">
+    <div class="title">
+      {#if $dataDetails && hasAvatars}
+        <div class="avatars">
+          {#each $dataDetails.openToSchools?.filter(Boolean) ?? [] as school}
+            <AvatarSchool {school} />
+          {/each}
+          {#each $dataDetails.openToMajors?.filter(Boolean) ?? [] as major}
+            <AvatarMajor {major} />
+          {/each}
+          {#each $dataDetails.openToGroups?.filter(Boolean) ?? [] as group}
+            <AvatarGroup {group} />
+          {/each}
+        </div>
+      {/if}
+      <LoadingText value={$data?.name || 'Place'}>Place</LoadingText>
+    </div>
+    <div class="subtitle">
+      <LoadingText
+        value={mapAllLoading(
+          [$data?.opensAt, $data?.closesAt, externalURL],
+          (start, end, external) => {
+            if (external) return `Billetterie externe sur ${external.host}`;
+
+            if (!start || !end || !now) return '';
+            try {
+              return ticketIsOpen
+                ? `${formatDistance(end, now)} pour shotgun`
+                : `Vente ${formatDistance(start, now, { addSuffix: true })}`;
+            } catch (error) {
+              console.error({ start, end, now, e: error });
+              return '';
+            }
+          },
+        )}>?</LoadingText
+      >
+    </div>
+  </div>
+  <div class="actions">
+    <ButtonSecondary
+      newTab={Boolean(loading(externalURL, null))}
+      href={onceLoaded(externalURL, (u) => u?.toString() ?? '', '') ||
+      ($data && $page.route.id !== '/(app)/events/[id]')
+        ? onceAllLoaded(
+            [$data?.event.localID, $data?.localID],
+            (event, ticket) => `${refroute('/events/[id]', event)}#book/${ticket}`,
+            '',
+          )
+        : undefined}
+      on:click={!onceLoaded(externalURL, Boolean, null) && $page.route.id === '/(app)/events/[id]'
+        ? () => {
+            if (!$data || !loaded($data.localID)) return;
+            dispatch('book', $data.localID);
+          }
+        : undefined}
+      >Obtenir {#if externalURL}<IconOpenExternal />{/if}{#if $data}<span class="price"
+          ><LoadingText value={mapLoading($data?.price, (p) => `${p}€`)}>...</LoadingText></span
+        >{/if}
+    </ButtonSecondary>
+    {#if $dataPlaces}
+      <div class="places">
+        {#if !allLoaded($dataPlaces)}
+          <LoadingText>... places / ...</LoadingText>
+        {:else if $dataPlaces.placesLeft}
+          {displayInfinity($dataPlaces.placesLeft)} places {#if $dataPlaces.capacity}
+            / {$dataPlaces.capacity}{:else}
+            restantes{/if}
         {:else}
-          Par {author?.fullName ?? authorEmail}
+          {$dataPlaces.capacity === null ? '∞' : $dataPlaces.capacity} places au total
         {/if}
       </div>
     {/if}
-    <div class="title">{ticket.event.title}</div>
-    <div class="ticket-name">
-      {#if cancelled}
-        <em>Place annulée</em>
-      {:else}
-        {ticket.name}
-      {/if}
-    </div>
   </div>
-  <div class="qrcode" class:paid>
-    {#if cancelled}
-      <IconCancelled />
-    {:else if paid}
-      <Qrcode />
-    {:else}
-      <CashClock />
-    {/if}
-  </div>
-</a>
+</div>
 
-<style lang="scss">
-  .billet {
+<style>
+  .ticket {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem;
-    background-color: var(--bg);
-    background-size: cover;
-    border-radius: var(--radius-block);
-    transition: all 0.5s ease;
-
-    --alpha: 0.5;
+    padding: 1rem;
+    color: var(--color);
+    background-color: var(--background, var(--bg2));
+    border: var(--border-block) solid var(--color, transparent);
+    border-radius: 10px;
   }
 
-  .billet.floating {
-    box-shadow: var(--shadow-big);
+  /* .ticket .price {
+    color: var(--color, var(--shy));
+  } */
+
+  .ticket .text {
+    display: flex;
+    flex-direction: column;
   }
 
-  .billet.noimg:not(.floating) {
-    border: var(--border-block) solid var(--border);
+  .ticket .title {
+    display: flex;
+    column-gap: 1ch;
+    align-items: center;
+    font-size: 1.2rem;
+    line-height: 1;
   }
 
-  .billet.noimg:hover,
-  .billet.noimg:focus-visible {
-    --text: var(--hover-text);
-
-    background-color: var(--hover-bg);
-    border-color: var(--hover-border);
+  .ticket .subtitle {
+    font-size: 0.8em;
   }
 
-  .billet:not(.noimg):hover,
-  .billet:not(.noimg):focus-visible {
-    --alpha: 0.6;
-  }
-
-  .overlay-text {
-    box-sizing: border-box;
-    color: var(--text);
-    text-align: left;
-  }
-
-  .qrcode {
-    right: 0;
-    box-sizing: border-box;
-    flex-shrink: 0;
-    font-size: 2rem;
-    color: var(--text);
+  .ticket .places {
+    margin-top: 0.25em;
+    font-size: 0.8rem;
     text-align: right;
   }
 
-  .beneficiary {
-    font-size: 0.8rem;
-  }
-
-  .title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    line-height: 1.1;
-  }
-
-  .ticket-name {
-    font-size: 1rem;
+  .avatars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25ch 0.5ch;
+    align-items: center;
   }
 </style>

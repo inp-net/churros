@@ -1,29 +1,46 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
-import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import {
+  DateTimeScalar,
+  HTMLScalar,
+  PicturedInterface,
+  URLScalar,
+  VisibilityEnum,
+} from '#modules/global';
 import { LogType } from '#modules/logs';
-import { ProfitsBreakdownType } from '#modules/payments';
+import { ProfitsBreakdownType, PromotionTypeEnum } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod } from '@churros/db/prisma';
-import { EventFrequencyType, eventCapacity } from '../index.js';
-import { canEdit, canEditManagers, canSeeEventLogs } from '../utils/index.js';
+import { GraphQLError } from 'graphql';
+import { ShareableInterface } from '../../global/types/shareable.js';
+import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
+import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true, group: true, tickets: true },
+  include: { managers: true, group: true, tickets: true, links: true, reactions: true },
   interfaces: [
     PicturedInterface,
-    //@ts-expect-error dunno why it complainnns
     ReactableInterface,
+    //@ts-expect-error dunno why it complainnns
+    ShareableInterface,
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
     groupId: t.exposeID('groupId'),
+    createdAt: t.expose('createdAt', { type: DateTimeScalar }),
+    updatedAt: t.expose('updatedAt', { type: DateTimeScalar, nullable: true }),
+    // TODO store contactDetails in db instead, that is any link
+    // allow mailto: and tel: links
+    // and derive contactMail, contactPhone and contactURL from that
     contactMail: t.exposeString('contactMail'),
     beneficiary: t.relation('beneficiary', { nullable: true }),
     lydiaAccountId: t.exposeID('lydiaAccountId', { nullable: true }),
     description: t.exposeString('description'),
-    descriptionHtml: t.string({ resolve: async ({ description }) => toHtml(description) }),
+    descriptionHtml: t.field({
+      type: HTMLScalar,
+      resolve: async ({ description }) => toHtml(description),
+    }),
     descriptionPreview: t.string({
       resolve: async ({ description }) =>
         (
@@ -39,21 +56,39 @@ export const EventType = builder.prismaNode('Event', {
       description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
     }),
     title: t.exposeString('title'),
-    startsAt: t.expose('startsAt', { type: DateTimeScalar }),
+    startsAt: t.expose('startsAt', { type: DateTimeScalar, nullable: true }),
     frequency: t.expose('frequency', { type: EventFrequencyType }),
     recurringUntil: t.expose('recurringUntil', { type: DateTimeScalar, nullable: true }),
-    endsAt: t.expose('endsAt', { type: DateTimeScalar }),
+    endsAt: t.expose('endsAt', { type: DateTimeScalar, nullable: true }),
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
-    bannedUsers: t.relation('bannedUsers'),
+    banned: t.relation('bannedUsers'),
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles', {
       query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),
     }),
-    group: t.relation('group'),
+    globalCapacity: t.expose('globalCapacity', {
+      nullable: true,
+      type: CapacityScalar,
+    }),
+    group: t.relation('group', { deprecationReason: 'Use `organizer` instead.' }),
+    organizer: t.relation('group'),
     coOrganizers: t.relation('coOrganizers'),
     links: t.relation('links'),
+    externalTicketing: t.field({
+      type: URLScalar,
+      nullable: true,
+      description:
+        'URL vers une billetterie externe. Null si l\'évènement possède un lien à URL valide, non dynamique, nommé "billetterie" et n\'a pas de billets',
+      resolve({ links, tickets }) {
+        if (tickets.length > 0) return null;
+        const rawURL = links.find((l) => l.name.toLowerCase() === 'billetterie')?.value;
+        if (!rawURL) return null;
+        if (URL.canParse(rawURL)) return new URL(rawURL);
+        return null;
+      },
+    }),
     author: t.relation('author', { nullable: true }),
     pictureFile: t.exposeString('pictureFile'),
     includeInKiosk: t.exposeBoolean('includeInKiosk', {
@@ -62,31 +97,17 @@ export const EventType = builder.prismaNode('Event', {
     showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
       description: 'Vrai si le nombre de places restantes doit être affiché',
     }),
-
-    reacted: t.boolean({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }, { user }) {
-        if (!user) return false;
-        return Boolean(
-          await prisma.reaction.findFirst({
-            where: {
-              eventId: id,
-              emoji,
-              authorId: user.id,
-            },
-          }),
-        );
-      },
-    }),
-    reactions: t.int({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }) {
-        return prisma.reaction.count({
-          where: {
-            eventId: id,
-            emoji,
+    shares: t.int({
+      async resolve({ id }) {
+        const {
+          _count: { sharedBy },
+        } = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          select: {
+            _count: { select: { sharedBy: true } },
           },
         });
+        return sharedBy;
       },
     }),
     myReactions: t.field({
@@ -122,25 +143,26 @@ export const EventType = builder.prismaNode('Event', {
     }),
     capacity: t.int({
       async resolve({ id }) {
-        const tickets = await prisma.ticket.findMany({
-          where: { event: { id } },
-          include: {
-            group: true,
-          },
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          include: eventCapacity.prismaIncludes,
         });
-        const ticketGroups = await prisma.ticketGroup.findMany({
-          where: { event: { id } },
-          include: {
-            tickets: true,
-          },
-        });
-
-        return eventCapacity(tickets, ticketGroups);
+        return eventCapacity(event);
       },
     }),
     canEdit: t.boolean({
       description: "L'utilisateur·ice connecté·e peut modifier cet évènement",
-      resolve: (event, _, { user }) => canEdit(event, user),
+      args: {
+        assert: t.arg.string({
+          required: false,
+          description: "Lève une erreur avec ce message si l'utilisateur·ice n'a pas les droits",
+        }),
+      },
+      resolve: (event, { assert }, { user }) => {
+        const can = canEditEvent(event, user);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
+      },
     }),
     canEditManagers: t.boolean({
       description:
@@ -165,6 +187,17 @@ export const EventType = builder.prismaNode('Event', {
             target: id,
           },
         }),
+    }),
+    applicableOffers: t.field({
+      type: [PromotionTypeEnum],
+      description: 'Les promotions applicables à cet évènement',
+      async resolve({ id }) {
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          include: { applicableOffers: true },
+        });
+        return event.applicableOffers.map((o) => o.type);
+      },
     }),
     profitsBreakdown: t.field({
       type: ProfitsBreakdownType,

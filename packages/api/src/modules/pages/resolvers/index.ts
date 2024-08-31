@@ -3,6 +3,7 @@
  */
 
 export * from './group.page.js';
+export * from './group.pages-count.js';
 export * from './group.pages.js';
 export * from './mutation.add-file-to-page.js';
 export * from './mutation.delete-page.js';

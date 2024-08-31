@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { graphql, type GroupType$options } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
@@ -7,39 +8,17 @@
   import InputSelectOne from '$lib/components/InputSelectOne.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import InputUid from '$lib/components/InputUID.svelte';
-  import Modal from '$lib/components/Modal.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+  import { route } from '$lib/ROUTES';
+  import { toasts } from '$lib/toasts';
 
   const CreateGroup = graphql(`
-    mutation CreateGroup($name: String!, $uid: UID!, $type: GroupType!, $studentAssociation: UID) {
-      upsertGroup(
-        uid: null
-        input: {
-          name: $name
-          uid: $uid
-          type: $type
-          address: ""
-          color: null
-          description: ""
-          links: []
-          longDescription: ""
-          related: []
-          website: ""
-          selfJoinable: true
-          studentAssociation: $studentAssociation
-        }
-      ) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
-        ... on MutationUpsertGroupSuccess {
+    mutation CreateGroup($name: String!, $uid: UID!, $type: GroupType!, $studentAssociation: UID!) {
+      createGroup(name: $name, uid: $uid, type: $type, studentAssociation: $studentAssociation) {
+        ...MutationErrors
+        ... on MutationCreateGroupSuccess {
           data {
             uid
           }
@@ -47,8 +26,6 @@
       }
     }
   `);
-
-  export let element: HTMLDialogElement;
 
   /** The uid of the student association */
   export let studentAssociation: string | null;
@@ -58,20 +35,35 @@
   let uid = '';
   let type: GroupType$options | undefined = undefined;
   let uidUnavailable = false;
+
+  let open: () => void;
+  let implicitClose: () => void;
+
+  $: page.subscribe(({ state }) => {
+    if (state.NAVTOP_CREATING_GROUP) open?.();
+    else implicitClose?.();
+  });
 </script>
 
-<Modal bind:element>
-  <h1>Créer un nouveau groupe</h1>
+<ModalOrDrawer notrigger bind:open bind:implicitClose let:close>
+  <h1 slot="header">Créer un nouveau groupe</h1>
 
   <form
     on:submit|preventDefault={async () => {
+      if (!studentAssociation) {
+        toasts.error(
+          "Tu n'a pas les permissions pour créer un groupe",
+          'Il faut être respo club ou admin sur au moins une AE',
+        );
+        return;
+      }
       if (!type) return;
       const result = await CreateGroup.mutate({ name, uid, type, studentAssociation });
-      if (mutationSucceeded('upsertGroup', result)) {
-        element.close();
-        await goto(`/groups/${result.data.upsertGroup.data.uid}/edit`);
+      if (mutationSucceeded('createGroup', result)) {
+        close();
+        await goto(route('/groups/[uid]/edit', result.data.createGroup.data.uid));
       } else {
-        errors = mutationErrorMessages('upsertGroup', result);
+        errors = mutationErrorMessages('createGroup', result);
       }
     }}
   >
@@ -89,7 +81,7 @@
           name = '';
           uid = '';
           type = undefined;
-          element.close();
+          close();
         }}>Annuler</ButtonSecondary
       >
       <ButtonPrimary disabled={uidUnavailable} submits>Créer</ButtonPrimary>
@@ -105,7 +97,7 @@
       </Alert>
     {/if}
   </form>
-</Modal>
+</ModalOrDrawer>
 
 <style>
   section.submit {

@@ -9,7 +9,7 @@
 
   export let data: PageData;
 
-  let school: School | undefined = data.me?.major?.schools[0];
+  let school: School | undefined = data.me.major?.schools[0];
   let validUntil = addDays(new Date(), 1);
 </script>
 
@@ -31,8 +31,6 @@
     <InputSchools required label="École" bind:school></InputSchools>
     <InputDate time required name="validUntil" bind:value={validUntil} label="Valide jusqu'au"
     ></InputDate>
-    <input type="hidden" name="schoolUid" value={school?.uid} />
-    <input type="hidden" name="token" value={data.token} />
     <section class="submit">
       <ButtonPrimary submits>Créer</ButtonPrimary>
     </section>

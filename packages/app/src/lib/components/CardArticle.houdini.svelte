@@ -6,20 +6,21 @@
     type CardArticle,
     type CardArticle$data,
   } from '$houdini';
+  import { route } from '$lib/ROUTES';
   import { formatEventDates } from '$lib/dates';
   import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
+  import { addReferrer, refroute } from '$lib/navigation';
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import { intlFormatDistance, isFuture, subMinutes } from 'date-fns';
   import IconHeartFilled from '~icons/mdi/heart';
   import IconHeart from '~icons/mdi/heart-outline';
-  import IconInfo from '~icons/mdi/information-outline';
-  import BadgeVisibility from './BadgeVisibility.svelte';
+  import IconHourglassEmpty from '~icons/msl/hourglass-empty';
   import ButtonGhost from './ButtonGhost.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LoadingText from './LoadingText.svelte';
-  import { route } from '$lib/ROUTES';
 
   const ToggleLike = graphql(`
     mutation CardArticle_ToggleLike($articleId: ID!) {
@@ -69,7 +70,6 @@
           frequency
           recurringUntil
         }
-        visibility
       }
     `),
   );
@@ -85,7 +85,6 @@
     group,
     author,
     event,
-    visibility,
     pictureURL,
   } =
     $data ??
@@ -123,7 +122,6 @@
         frequency: PendingValue,
         recurringUntil: PendingValue,
       },
-      visibility: PendingValue,
       pictureURL: PendingValue,
     } as CardArticle$data));
 
@@ -139,22 +137,15 @@
 
   $: authorHref =
     allLoaded(author) && allLoaded(group)
-      ? hideGroup && author
-        ? route('/users/[uid]', author.uid)
-        : route('/groups/[uid]', group.uid)
+      ? route('/[uid=uid]', hideGroup && author ? author.uid : group.uid)
       : '';
   $: notPublishedYet = onceLoaded(publishedAt, isFuture, false);
 </script>
 
 <div class="post-outer" class:future={notPublishedYet}>
-  {#if notPublishedYet}
-    <div class="unpublished warning typo-details">
-      <IconInfo></IconInfo> Ce post n'est pas encore publié
-    </div>
-  {/if}
-  <a {href} class="post-link">
+  <a href={addReferrer(href)} class="post-link">
     <article class="post">
-      <a href={authorHref} class="group-link">
+      <a href={addReferrer(authorHref)} class="group-link">
         {#if authorSrc}
           <img src={authorSrc} alt={loading(group.name, '')} class="group-logo" />
         {:else}
@@ -180,15 +171,18 @@
           {#if !hideGroup || author}
             <span class="separator">·</span>
           {/if}
-          <span class="date">
+          <span
+            class="date"
+            use:tooltip={notPublishedYet ? "Ce post n'est pas encore publié" : undefined}
+          >
+            {#if notPublishedYet}
+              <IconHourglassEmpty></IconHourglassEmpty>
+            {/if}
             {#if loaded(publishedAt)}
               {intlFormatDistance(publishedAt, new Date())}
             {:else}
               <LoadingText>{intlFormatDistance(subMinutes(new Date(), 5), new Date())}</LoadingText>
             {/if}
-          </span>
-          <span class="visibility">
-            <BadgeVisibility {visibility} />
           </span>
         </header>
         <h2 class="title"><LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText></h2>
@@ -197,7 +191,7 @@
         </p>
         {#if event && allLoaded(event)}
           <a
-            href={route('/events/[id]', event.localID)}
+            href={refroute('/events/[id]', event.localID)}
             class="event"
             style:background-image="url({event.pictureURL})"
           >
@@ -265,7 +259,7 @@
   }
 
   a:hover article {
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .post-link {
@@ -275,7 +269,7 @@
   }
 
   .post-outer.future {
-    color: var(--muted-text);
+    color: var(--muted);
   }
 
   .content {
@@ -307,7 +301,7 @@
 
   .group-logo:hover,
   .group-logo:focus-visible {
-    border-color: var(--primary-link);
+    border-color: var(--primary);
   }
 
   header {
@@ -320,19 +314,16 @@
 
   header a:hover,
   header a:focus-visible {
-    color: var(--primary-link);
+    color: var(--primary);
   }
 
   header .group {
     font-weight: bold;
   }
 
-  .visibility {
-    padding: 0.2em 0.7em;
-    margin-left: auto;
-    font-size: 0.7em;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
+  header .date {
+    display: flex;
+    align-items: center;
   }
 
   .image {
@@ -381,10 +372,6 @@
 
   section.likes {
     margin-left: 4rem;
-  }
-
-  .unpublished {
-    margin-left: calc(4rem - 1em - 0.5ch);
   }
 
   .likes .inner {

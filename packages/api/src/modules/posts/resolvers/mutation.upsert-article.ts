@@ -1,11 +1,11 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { DateTimeScalar, UIDScalar, VisibilityEnum } from '#modules/global';
-import { LinkInput } from '#modules/links';
 import { Visibility } from '@churros/db/prisma';
 import { differenceInDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
+import slug from 'slug';
 import { ZodError } from 'zod';
-import { ArticleType, createUid, scheduleNewArticleNotification } from '../index.js';
+import { ArticleType, scheduleNewArticleNotification } from '../index.js';
 import { canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticle', (t) =>
@@ -19,7 +19,6 @@ builder.mutationField('upsertArticle', (t) =>
       title: t.arg.string({ validate: { minLength: 1 } }),
       body: t.arg.string(),
       publishedAt: t.arg({ type: DateTimeScalar, required: false }),
-      links: t.arg({ type: [LinkInput], defaultValue: [] }),
       event: t.arg.id({ required: false }),
       visibility: t.arg({ type: VisibilityEnum }),
     },
@@ -30,9 +29,9 @@ builder.mutationField('upsertArticle', (t) =>
         { message: 'Impossible de créer un post publié dans le passé.' },
       ],
     ],
-    async authScopes(_, { id, group: groupUid }, { user, token, client }) {
+    async authScopes(_, { id, group: groupUid }, { user, group: groupFromToken }) {
       const creating = !id;
-      if (token && !user && client) return client.owner.uid === groupUid;
+      if (groupFromToken) return groupFromToken.uid === groupUid;
 
       if (!user) return false;
       if (user.canEditGroups) return true;
@@ -57,7 +56,7 @@ builder.mutationField('upsertArticle', (t) =>
     async resolve(
       query,
       _,
-      { id, event: eventId, visibility, group: groupUid, title, body, publishedAt, links },
+      { id, event: eventId, visibility, group: groupUid, title, body, publishedAt },
       { user },
     ) {
       eventId = eventId ? ensureGlobalId(eventId, 'Event') : null;
@@ -91,13 +90,11 @@ builder.mutationField('upsertArticle', (t) =>
         where: { id: id ?? '' },
         create: {
           ...data,
-          slug: await createUid({ title, groupId: group.id }),
-          links: { create: links },
+          slug: slug(title),
           event: eventId ? { connect: { id: eventId } } : undefined,
         },
         update: {
           ...data,
-          links: { deleteMany: {}, createMany: { data: links } },
           event: eventId ? { connect: { id: eventId } } : { disconnect: true },
         },
       });

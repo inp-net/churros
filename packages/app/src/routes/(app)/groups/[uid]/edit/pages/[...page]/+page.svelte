@@ -15,15 +15,7 @@
   const Update = graphql(`
     mutation UpdateGroupPage($uid: String!, $page: String!, $title: String!, $body: String!) {
       upsertPage(body: $body, group: $uid, path: $page, title: $title) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
         ... on MutationUpsertPageSuccess {
           data {
             bodyHtml

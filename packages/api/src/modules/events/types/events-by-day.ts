@@ -7,14 +7,20 @@ function notNull<T>(v: T | null): v is T {
   return v !== null;
 }
 
-export type EventsByDay = {
-  events: Array<typeof EventType.$inferType>;
-  date: Date;
-  id: string;
-};
+export type EventsByDay<TEvent extends typeof EventType.$inferType = typeof EventType.$inferType> =
+  {
+    events: Array<TEvent>;
+    date: Date;
+    id: string;
+  };
 
-export function makeEventsByDate(events: EventsByDay['events']): EventsByDay {
-  const date = events[0]!.startsAt;
+export function makeEventsByDate<TEvent extends typeof EventType.$inferType>(
+  events: EventsByDay<TEvent>['events'],
+): EventsByDay {
+  // TODO remove explicit type predicate after upgrading to typescript version idk
+  const date = events.find((e): e is typeof e & { startsAt: Date } =>
+    Boolean(e.startsAt),
+  )!.startsAt;
   return { events, date, id: formatISO(date, { representation: 'date' }) };
 }
 
@@ -47,7 +53,8 @@ export const EventsByDayType = builder.objectRef<EventsByDay>('EventsByDay').imp
     happening: t.field({
       type: [EventType],
       description: 'Évènements qui ont lieu (commencent) à ce jour',
-      resolve: ({ date, events }) => events.filter(({ startsAt }) => isSameDay(startsAt, date)),
+      resolve: ({ date, events }) =>
+        events.filter(({ startsAt }) => startsAt && isSameDay(startsAt, date)),
     }),
     shotgunning: t.field({
       type: [EventType],

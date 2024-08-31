@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
   import IconDelete from '~icons/mdi/backspace-outline';
 
-  export let value: Date | undefined | null;
+  const dispatch = createEventDispatcher<{ blur: Date | null | undefined }>();
+
+  export let value: Date | null | undefined;
   export let time = false;
   export let name: string | undefined = undefined;
   export let initial: Date | undefined = undefined;
@@ -16,6 +19,9 @@
 <InputField {label} {required}>
   <BaseInputText
     bind:element
+    on:blur={() => {
+      dispatch('blur', value);
+    }}
     {placeholder}
     type={time ? 'datetime-local' : 'date'}
     actionIcon={required ? undefined : IconDelete}

@@ -1,0 +1,7 @@
+query PageGroupEditBio($uid: String!) {
+  group(uid: $uid) {
+    canEditDetails(assert: "Tu n'as pas les droits pour modifier la bio du groupe")
+    longDescription
+    longDescriptionHtml
+  }
+}

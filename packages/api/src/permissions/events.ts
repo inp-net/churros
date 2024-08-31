@@ -7,7 +7,7 @@ import * as PrismaTypes from '@churros/db/prisma';
 import { mappedGetAncestors } from 'arborist';
 
 export function prismaQueryVisibleEvents(
-  user: { uid: string } | undefined,
+  user: { uid: string } | undefined | null,
 ): Prisma.EventWhereInput {
   return {
     OR: [
@@ -100,7 +100,9 @@ export function prismaQueryVisibleEvents(
                   some: {
                     OR: [
                       {
-                        beneficiary: user?.uid ?? '',
+                        internalBeneficiary: {
+                          uid: user?.uid,
+                        },
                       },
                       {
                         author: { uid: user?.uid ?? '' },

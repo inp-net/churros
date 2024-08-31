@@ -1,7 +1,6 @@
 import { builder, latest, prisma } from '#lib';
 import { prismaQueryVisibleEvents } from '#permissions';
 import { Visibility, type Prisma } from '@churros/db/prisma';
-import { queryFromInfo } from '@pothos/plugin-prisma';
 import { addDays, endOfDay, formatISO, isAfter, isBefore, startOfDay } from 'date-fns';
 import groupBy from 'lodash.groupby';
 import { findNextRecurringEvent } from '../index.js';
@@ -24,21 +23,22 @@ builder.queryField('eventsByDay', (t) =>
           "N'include seulement les évènements qui veulent être inclus dans l'affichage kiosque",
       }),
     },
-    async resolve(_, { first, before, after, kiosk }, context, info) {
+    async resolve(_, { first, before, after, kiosk }, context) {
       const { user } = context;
 
       before = ensureCorrectDateCursor(before);
       after = ensureCorrectDateCursor(after || new Date());
       const lastDate = addDays(dateFromDateCursor(after), (first ?? 20) - 1);
 
-      const query = queryFromInfo({
-        context,
-        info,
-        paths: [
-          ['edges', 'node', 'events'],
-          ['nodes', 'events'],
-        ],
-      });
+      // TODO figure out why typing of query is { select: undefined } ???
+      // const query = queryFromInfo({
+      //   context,
+      //   info,
+      //   paths: [
+      //     ['edges', 'node', 'events'],
+      //     ['nodes', 'events'],
+      //   ],
+      // });
 
       // get events that start up to `before` or `first` days from `after`, whichever is sooner
       const finishAt =
@@ -56,33 +56,31 @@ builder.queryField('eventsByDay', (t) =>
 
       if (kiosk) constraints.includeInKiosk = true;
 
-      let include: Prisma.EventInclude = {
-        managers: true,
-        group: true,
-        tickets: true,
-      };
-
-      if ('include' in query && query.include) {
-        include = { ...include, ...query.include };
-        if ('managers' in query.include && query.include.managers)
-          include.managers = query.include.managers;
-        if ('group' in query.include && query.include.group) include.group = query.include.group;
-      }
-
       // const reversed = last && !first;
       const reversed = false; // TODO reverse pagination
-      let events = await prisma.event.findMany({
-        ...query,
-        include,
-        where: {
-          AND: [
-            constraints,
-            user ? prismaQueryVisibleEvents(user) : { visibility: Visibility.Public },
-          ],
-        },
-        orderBy: { startsAt: reversed ? 'desc' : 'asc' },
-        take: 1e3, // safeguard
-      });
+      let events = await prisma.event
+        .findMany({
+          include: {
+            managers: true,
+            group: true,
+            tickets: true,
+            links: true,
+            reactions: true,
+          },
+          where: {
+            AND: [
+              constraints,
+              user ? prismaQueryVisibleEvents(user) : { visibility: Visibility.Public },
+            ],
+          },
+          orderBy: { startsAt: reversed ? 'desc' : 'asc' },
+          take: 1e3, // safeguard
+        })
+        .then((events) =>
+          events.filter((e): e is typeof e & { startsAt: Date; endsAt: Date } =>
+            Boolean(e.startsAt && e.endsAt),
+          ),
+        );
 
       // if (reversed) events.reverse();
       events = events.map(findNextRecurringEvent);

@@ -1,0 +1,34 @@
+query PageUserEditFamily($uid: String!) @loading {
+  user(uid: $uid) {
+    uid
+    canEditProfile(assert: "Tu ne peux pas modifier ce profil")
+    godchildren @list(name: "List_Godchildren") {
+      uid
+      ...AvatarUser
+    }
+    godparent {
+      uid
+      ...AvatarUser
+      ...InputPerson @mask_disable
+    }
+    incomingGodparentRequests @list(name: "List_IncomingGodparentRequests") {
+      id
+      createdAt
+      godchild {
+        ...AvatarUser
+      }
+    }
+    familyTree {
+      users {
+        uid
+      }
+    }
+    outgoingGodparentRequests @list(name: "List_OutgoingGodparentRequests") {
+      id
+      createdAt
+      godparent {
+        ...AvatarUser
+      }
+    }
+  }
+}

@@ -1,17 +1,28 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { CommentableInterface } from '#modules/comments';
-import { DateTimeScalar, PicturedInterface, VisibilityEnum } from '#modules/global';
+import {
+  DateTimeScalar,
+  PicturedInterface,
+  ShareableInterface,
+  VisibilityEnum,
+} from '#modules/global';
 import { ReactableInterface } from '#modules/reactions';
 import { canEditArticle } from '../utils/permissions.js';
 
+// TODO rename to Post
 export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
+  include: { reactions: true },
   interfaces: [
     // @ts-expect-error dunno why it complainnns
     CommentableInterface,
     PicturedInterface,
-    // @ts-expect-error dunno why it complainnns
     ReactableInterface,
+    // FIXME: Gives a "not implemented" error
+    // so HasLinks is an enum for now
+    // builder.interfaceRef('HasLinks'),
+    // @ts-expect-error dunno why it complainnns
+    ShareableInterface,
   ],
   fields: (t) => ({
     authorId: t.exposeID('authorId', { nullable: true }),
@@ -50,32 +61,6 @@ export const ArticleType = builder.prismaNode('Article', {
       resolve: ({ authorId, groupId }, _, { user }) =>
         canEditArticle({ authorId, groupId }, { authorId, groupId }, user),
     }),
-    reacted: t.boolean({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }, { user }) {
-        if (!user) return false;
-        return Boolean(
-          await prisma.reaction.findFirst({
-            where: {
-              articleId: id,
-              emoji,
-              authorId: user.id,
-            },
-          }),
-        );
-      },
-    }),
-    reactions: t.int({
-      args: { emoji: t.arg.string() },
-      async resolve({ id }, { emoji }) {
-        return prisma.reaction.count({
-          where: {
-            articleId: id,
-            emoji,
-          },
-        });
-      },
-    }),
     myReactions: t.field({
       type: 'BooleanMap',
       async resolve({ id }, _, { user }) {
@@ -103,6 +88,19 @@ export const ArticleType = builder.prismaNode('Article', {
           (counts, { emoji }) => ({ ...counts, [emoji]: (counts[emoji] ?? 0) + 1 }),
           {},
         );
+      },
+    }),
+    shares: t.int({
+      async resolve({ id }) {
+        const {
+          _count: { sharedBy },
+        } = await prisma.article.findUniqueOrThrow({
+          where: { id },
+          select: {
+            _count: { select: { sharedBy: true } },
+          },
+        });
+        return sharedBy;
       },
     }),
     event: t.relation('event', { nullable: true }),

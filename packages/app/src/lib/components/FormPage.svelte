@@ -6,7 +6,7 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputFile, { withoutFilename } from '$lib/components/InputFile.svelte';
+  import InputFile, { withoutFilename } from '$lib/components/InputFile.old.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
@@ -79,15 +79,7 @@
   const AddFile = graphql(`
     mutation AddFileToPage($id: ID!, $file: File!) {
       addFileToPage(page: $id, file: $file) {
-        ... on Error {
-          message
-        }
-        ... on ZodError {
-          fieldErrors {
-            path
-            message
-          }
-        }
+        ...MutationErrors
         ... on MutationAddFileToPageSuccess {
           data {
             ...FormPage
@@ -278,7 +270,7 @@
                     await RemoveFile.mutate({ id: $data.id, filename: file });
                   }}
                 >
-                  <IconDelete --text="var(--danger-link)"></IconDelete>
+                  <IconDelete --text="var(--danger)"></IconDelete>
                 </ButtonGhost>
                 <ButtonGhost
                   track="insert-file-into-page"

@@ -3,6 +3,7 @@
   import IconReset from '~icons/mdi/reload';
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
+  import { loaded, type MaybeLoading } from '$lib/loading';
   const emit = createEventDispatcher<{
     action: undefined;
     input: Event & { currentTarget: HTMLInputElement & EventTarget };
@@ -12,7 +13,7 @@
   export let value: string | number | Date | null | undefined;
   export let autocomplete: string | undefined = undefined;
   export let name: string | undefined = undefined;
-  export let initial: string | number | Date | null | undefined = undefined;
+  export let initial: MaybeLoading<string | number | Date | null | undefined> = undefined;
   export let unit = '';
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
@@ -115,7 +116,7 @@
   <div class="input-area" bind:this={inputContainer}>
     {#if $$slots.before}
       <div class="left-icon">
-        <slot name="before" />
+        <slot {value} name="before" />
       </div>
     {/if}
     <input
@@ -167,6 +168,7 @@
         class="reset"
         use:tooltip={resettable ? `Revenir à ${JSON.stringify(initial)}` : ''}
         on:click|stopPropagation={() => {
+          if (!loaded(initial)) return;
           value = initial;
           valueString =
             type === 'date' && value instanceof Date
@@ -195,7 +197,7 @@
     flex-direction: column;
     color: var(--text);
     background: var(--bg);
-    border: var(--border-block) solid var(--border);
+    border: var(--border-block) solid;
     border-radius: var(--radius-block);
   }
 
@@ -213,17 +215,17 @@
   .wrapper:focus-within,
   .wrapper:focus-within input {
     color: var(--text);
-    background: var(--hover-bg);
+    background: var(--primary-bg);
   }
 
   .wrapper:hover,
   .wrapper:hover input {
-    border-color: var(--hover-border);
+    border-color: var(--primary);
   }
 
   .wrapper:focus-within,
   .wrapper:focus-within input {
-    border-color: var(--primary-border);
+    border-color: var(--primary);
   }
 
   .wrapper > div {

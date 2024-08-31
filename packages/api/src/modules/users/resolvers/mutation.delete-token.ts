@@ -1,4 +1,4 @@
-import { builder, prisma, purgeUserSessions } from '#lib';
+import { builder, prisma, purgeTokenSession } from '#lib';
 
 import { CredentialType as CredentialPrismaType } from '@churros/db/prisma';
 
@@ -15,9 +15,13 @@ builder.mutationField('deleteToken', (t) =>
       if (credential.type !== CredentialPrismaType.Token) return false;
       return user?.id === credential.userId;
     },
-    async resolve(_, { id }, { user }) {
+    async resolve(_, { id }) {
+      const { value } = await prisma.credential.findUniqueOrThrow({
+        where: { id },
+        select: { value: true },
+      });
       await prisma.credential.delete({ where: { id } });
-      purgeUserSessions(user!.uid);
+      purgeTokenSession(value);
       return true;
     },
   }),

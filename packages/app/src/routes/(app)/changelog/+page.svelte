@@ -7,7 +7,6 @@
   } from '$lib/components/ModalChangelog.svelte';
   import type { PageData } from './$houdini';
   import Alert from '$lib/components/Alert.svelte';
-  import { me } from '$lib/session';
 
   export let data: PageData;
   $: ({ PageChangelog } = data);
@@ -25,7 +24,9 @@
   function changesByCategory(
     version: Omit<(typeof combinedChangelog)[number], 'description'>,
   ): Array<[Category, (typeof combinedChangelog)[number]['changes'][Category]]> {
-    const isDev = $me?.groups.some((g) => g.group.uid === 'devs');
+    // TODO isDev
+    // const isDev = $me?.groups.some((g) => g.group.uid === 'devs');
+    const isDev = false;
     // @ts-expect-error classic case of Object.entries being too dumb. using a "as" cast causes a syntax error for the Svelte parser for some reason
     return Object.entries(version.changes)
       .map(([category, changes]) => [category, category !== 'technical' || isDev ? changes : []])
@@ -147,7 +148,6 @@
   h3 {
     margin: 1rem 0 0.5rem;
     line-height: 0.7;
-    color: var(--link);
   }
 
   h3::after {
@@ -155,7 +155,7 @@
     width: 100%;
     height: 0.2em;
     content: '';
-    background: var(--link);
+    background: currentcolor;
     border-radius: var(--radius-block);
   }
 

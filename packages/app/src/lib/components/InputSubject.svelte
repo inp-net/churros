@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import InputSearchObject from './InputSearchObject.svelte';
-  import { zeus } from '$lib/zeus';
+  import { graphql } from '$houdini';
   import Fuse from 'fuse.js';
+  import { onMount } from 'svelte';
   import InputField from './InputField.svelte';
+  import InputSearchObject from './InputSearchObject.svelte';
 
   type Subject = {
     uid?: string;
     name: string;
     shortName: string;
-    yearTier?: number | undefined;
+    yearTier: number | null;
     forApprentices?: boolean;
     minors: Array<{ name: string; uid: string; shortName: string }>;
     majors: Array<{ name: string; uid: string; shortName: string }>;
   };
-  export let object: Subject | undefined;
+  export let object: Subject | null;
   export let uid: string | undefined;
 
   export let label: string;
@@ -25,26 +25,30 @@
 
   let subjects: Subject[] = [];
   onMount(async () => {
-    ({ subjects } = await $zeus.query({
-      subjects: {
-        uid: true,
-        name: true,
-        shortName: true,
-        yearTier: true,
-        forApprentices: true,
-        majors: {
-          uid: true,
-          name: true,
-          shortName: true,
-        },
-        minors: {
-          uid: true,
-          name: true,
-          shortName: true,
-          yearTier: true,
-        },
-      },
-    }));
+    ({ subjects } = await graphql(`
+      query InputSubject_Subjects {
+        subjects {
+          uid
+          name
+          shortName
+          yearTier
+          forApprentices
+          majors {
+            uid
+            name
+            shortName
+          }
+          minors {
+            uid
+            name
+            shortName
+            yearTier
+          }
+        }
+      }
+    `)
+      .fetch()
+      .then((d) => d.data ?? { subjects: [] }));
   });
 </script>
 

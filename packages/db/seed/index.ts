@@ -1,13 +1,13 @@
 import { fakerFR } from '@faker-js/faker';
 import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
-import { existsSync, readdirSync, statSync } from 'node:fs';
-import { rm } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
 import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
+import { storageRoot } from '../../api/src/lib/storage.js';
 import {
   CredentialType,
   DocumentType,
@@ -27,20 +27,17 @@ const prisma = new PrismaClient();
 const faker = fakerFR;
 faker.seed(5);
 
-const storageRoot = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
-  '../../api/storage/',
-);
+const storageRootDirectory = storageRoot();
 
-console.info(`Cleaning storage root ${storageRoot}`);
-for (const folder of ['events']) {
-  if (!existsSync(path.join(storageRoot, folder))) continue;
-  await Promise.all(
-    readdirSync(path.join(storageRoot, folder))
-      .filter((file) => statSync(path.join(storageRoot, folder, file)).isFile())
-      .map(async (file) => rm(path.join(storageRoot, folder, file))),
-  );
-}
+// console.info(`Cleaning storage root ${storageRootDirectory}`);
+// for (const folder of ['events']) {
+//   if (!existsSync(path.join(storageRootDirectory, folder))) continue;
+//   await Promise.all(
+//     readdirSync(path.join(storageRootDirectory, folder))
+//       .filter((file) => statSync(path.join(storageRootDirectory, folder, file)).isFile())
+//       .map(async (file) => rm(path.join(storageRootDirectory, folder, file))),
+//   );
+// }
 
 async function randomMember(groupId: string) {
   return faker.helpers.arrayElement(
@@ -108,11 +105,14 @@ function randomTime(date: Date, hoursIn: Generator<number>): Date {
   );
 }
 
+function randomImageURL(width: number, height: number, seed: string): string {
+  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
+}
+
 // download a random placeholder image from unsplash with the given width and height
 // return a File object (for use with updatePicture)
 async function downloadRandomImage(width: number, height: number, seed: string): Promise<File> {
-  const url = `https://picsum.photos/seed/${seed}/${width}/${height}`;
-  const response = await fetch(url);
+  const response = await fetch(randomImageURL(width, height, seed));
   const blob = await response.blob();
   return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
 }
@@ -124,7 +124,8 @@ async function downloadRandomPeoplePhoto(): Promise<File> {
   return new File([await response.blob()], 'profile.jpeg', { type: 'image/jpeg' });
 }
 
-const createUid = async ({ firstName, lastName }: { firstName: string; lastName: string }) => {
+const createUid = async ({ firstName, lastName, uid }: { firstName: string; lastName: string, uid?: string }) => {
+  if (uid) return uid
   const toAscii = (x: string) =>
     slug(x.toLocaleLowerCase(), {
       charmap: {
@@ -155,10 +156,10 @@ const createUid = async ({ firstName, lastName }: { firstName: string; lastName:
 const schoolsData: Prisma.SchoolCreateInput[] = [
   {
     name: 'EAU',
-    uid: 'o',
+    uid: 'eau',
     color: '#00ffff',
     description: 'École de l’Eau',
-    address: faker.location.streetAddress(), //generation par faker possible ???
+    address: faker.location.streetAddress(),
   },
   {
     name: 'FEU',
@@ -168,10 +169,16 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     address: faker.location.streetAddress(),
     studentMailDomain: 'etu.inp-n7.fr',
     aliasMailDomains: ['etu.toulouse-inp.fr'],
+    majors: {
+      create: {
+        name: 'Filière unique',
+        uid: 'filiere-feu',
+      },
+    },
   },
   {
     name: 'TERRE',
-    uid: '3',
+    uid: 'terre',
     color: '#5e3f13',
     description: 'École de Terre',
     address: faker.location.streetAddress(),
@@ -179,6 +186,12 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
       faker.internet.domainName,
     ),
+    majors: {
+      create: {
+        name: 'Filière unique TERRE',
+        uid: 'filiere-terre',
+      },
+    },
   },
   {
     name: 'AIR',
@@ -190,6 +203,12 @@ const schoolsData: Prisma.SchoolCreateInput[] = [
     aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
       faker.internet.domainName,
     ),
+    majors: {
+      create: {
+        name: 'Filière unique AIR',
+        uid: 'filiere-air',
+      },
+    },
   },
 ];
 
@@ -237,9 +256,18 @@ const mecaniqueDesFluides = await prisma.major.create({
 const sciencesDuNumerique = await prisma.major.create({
   data: {
     shortName: 'SN',
-    uid: 'sn',
+    uid: 'sdn',
     name: 'Sciences du Numérique',
     schools: { connect: { id: schools[0]!.id } },
+  },
+});
+
+const ir = await prisma.major.create({
+  data: {
+    shortName: 'IR',
+    uid: 'irezo',
+    name: 'Informatique & Réseau',
+    discontinued: true,
   },
 });
 
@@ -327,6 +355,29 @@ for (const [i, name] of tqdm([
           privateToken: 'b',
         },
       },
+      services: {
+        createMany: {
+          data: Array.from({ length: faker.number.int({ min: 3, max: 5 }) }).map(() =>
+            faker.datatype.boolean(0.6)
+              ? {
+                  logo: randomImageURL(400, 400, name),
+                  name: faker.company.name(),
+                  logoSourceType: LogoSourceType.ExternalLink,
+                }
+              : faker.datatype.boolean(0.5)
+                ? {
+                    logo: '',
+                    logoSourceType: LogoSourceType.GroupLogo,
+                    name: faker.company.name(),
+                  }
+                : {
+                    logo: '',
+                    logoSourceType: LogoSourceType.Icon,
+                    name: faker.company.name(),
+                  },
+          ),
+        },
+      },
     },
   });
 }
@@ -362,13 +413,13 @@ for (const asso of studentAssociations) {
         folder: 'groups',
         extension: 'png',
         identifier: uid,
-        root: storageRoot,
+        root: storageRootDirectory,
       });
       await (existsSync(destinationPath)
         ? prisma.group.update({
             where: { id },
             data: {
-              pictureFile: path.relative(storageRoot, destinationPath),
+              pictureFile: path.relative(storageRootDirectory, destinationPath),
             },
           })
         : downloadRandomImage(400, 400, uid)
@@ -380,7 +431,7 @@ for (const asso of studentAssociations) {
                 resource: 'group',
                 file,
                 silent: true,
-                root: storageRoot,
+                root: storageRootDirectory,
               }),
             )
             .catch((error) =>
@@ -414,8 +465,9 @@ const contributionOptions = await prisma.contributionOption.findMany({
 });
 
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
-const usersData = [
+const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
+  { firstName: "Ewen", lastName: "Le Bihan", admin: true, uid: 'lebihae' }, // Pour tester l'oauth
   { firstName: 'Bernard', lastName: 'Tichaut' },
   { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
@@ -441,18 +493,28 @@ const usersData = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  { uid: 'exte', firstName: 'Jaipa', lastName: 'Dékol', minor: {}, major: {} }, // Compte exté
+  {
+    uid: 'valliet',
+    firstName: 'Theodors',
+    lastName: 'Vieux con',
+    major: {
+      connect: {
+        uid: ir.uid,
+      },
+    },
+  },
 ];
 
 //création d'une liste des réseaux sociaux qu'on peut ref sur son profil churros
 const socialMedia = [
-  'Facebook',
-  'Instagram',
-  'Discord',
-  'Twitter',
-  'Linkedin',
-  'Github',
-  'Hackernews',
-  'Anilist',
+  'facebook.com',
+  'instagram.com',
+  'discord.com',
+  'twitter.com',
+  'linkedin.com/in',
+  'github.com',
+  'anilist.co',
 ];
 
 //ajout d'utilisateur aléatoire par Faker
@@ -469,16 +531,16 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
     where: { id: faker.helpers.arrayElement(minors).id },
   });
 
-  const { uid } = await prisma.user.create({
+  const uid = await createUid(data)
+   await prisma.user.create({
     data: {
-      ...data,
-      uid: await createUid(data),
+      uid,
       email: faker.internet.email({ firstName: data.firstName, lastName: data.lastName }),
-      description: faker.lorem.paragraph({ min: 0, max: 50 }),
+      description: faker.lorem.paragraph({ min: 0, max: 5 }),
       links: {
         create: faker.helpers
           .arrayElements(socialMedia, { min: 2, max: 6 })
-          .map((name) => ({ name, value: '#' })),
+          .map((name) => ({ name, value: `https://${name}/${uid}` })),
       },
       contributions:
         faker.number.int({ min: 0, max: 10 }) % 10 === 0 //génération d'une majorité de cotissant
@@ -509,6 +571,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       minor: { connect: { id: minor.id } },
       credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
       canAccessDocuments: true,
+      ...data,
     },
   });
 
@@ -517,33 +580,35 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
       folder: 'users',
       extension: 'jpg',
       identifier: uid,
-      root: storageRoot,
+      root: storageRootDirectory,
     });
 
-    await downloadRandomPeoplePhoto()
-      .then(async (file) =>
-        existsSync(destinationPath)
-          ? prisma.user.update({
-              where: { uid },
-              data: {
-                pictureFile: path.relative(storageRoot, destinationPath),
-              },
-            })
-          : updatePicture({
-              extension: 'jpg',
-              folder: 'users',
-              identifier: uid,
-              resource: 'user',
-              file,
-              silent: true,
-              root: storageRoot,
-            }),
-      )
-      .catch((error) =>
-        console.warn(
-          `Could not download random image: ${error}. This is not critical, seeding will continue`,
-        ),
-      );
+    if (!existsSync(destinationPath)) {
+      await downloadRandomPeoplePhoto()
+        .then(async (file) =>
+          existsSync(destinationPath)
+            ? prisma.user.update({
+                where: { uid },
+                data: {
+                  pictureFile: path.relative(storageRootDirectory, destinationPath),
+                },
+              })
+            : updatePicture({
+                extension: 'jpg',
+                folder: 'users',
+                identifier: uid,
+                resource: 'user',
+                file,
+                silent: true,
+                root: storageRootDirectory,
+              }),
+        )
+        .catch((error) =>
+          console.warn(
+            `Could not download random image: ${error}. This is not critical, seeding will continue`,
+          ),
+        );
+    }
   }
 }
 
@@ -670,10 +735,11 @@ const clubsData = [
 
 console.info('Creating groups');
 for (const [i, group] of tqdm([...clubsData.entries()])) {
-  const { id: groupId, uid } = await prisma.group.create({
+  const uid = slug(group.name)
+  const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
-      uid: slug(group.name),
+      uid, 
       // ensure 3 list groups
       type:
         i < 3
@@ -688,30 +754,11 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
       email: `${slug(group.name)}@list.example.com`,
       website: `https://${slug(group.name)}.example.com`,
       description: `Club ${group.name} de l'école`,
-      longDescription: `# Caeco ambrosia defendite simplicitas aequore caelestibus auro
-
-      Lorem markdownum accessit desperat lumina; hi sed radice Scylla agger. Et ipsa
-      cum **Tereus**, aequore sedet. [Quem qua](/) qui carmine,
-      ore suus, fixa natus lacrimas.
-
-      Perque dederat bracchia tenui Leucothoe in in sequitur fames non hic. Venitque
-      sua anguem [sed](/) supponere sit, fluctus pedibusque ne apros
-      rotis exauditi mater voluistis carinam habet generosam miserrima. Quoquam
-      ulterius quam; pressit mihi germanae faciemque: in certa cruor solacia est caeli
-      suos auras atra!
-
-      > Explorant est illi inhaesuro doloris sed *inmanis* has recessu, quam interdum
-      > hospes. Et huc postquam subdit incertas: echidnae, o cibique spectat sed
-      > diversa. Placuit omnia; flammas Hoc ventis nobis primordia flammis Mavors
-      > dabat horrida conplecti cremantur. A mundus, metu Anius gestare caelatus,
-      > Alpheos est, lecti et?`,
+      longDescription: faker.lorem.paragraphs({ min: 0, max: 5 }),
       studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
       links: {
         createMany: {
-          data: [
-            { name: 'Facebook', value: '#' },
-            { name: 'Instagram', value: '#' },
-          ],
+          data: faker.helpers.arrayElements(socialMedia, {min: 0, max: 6}).map(domain => ({name: domain, value: `https://${domain}/${uid}`})),
         },
       },
     },
@@ -735,7 +782,7 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
               resource: 'group',
               file,
               silent: true,
-              root: storageRoot,
+              root: storageRootDirectory,
             }),
           },
         }),
@@ -1038,7 +1085,7 @@ for (const element of tqdm(selectedClub)) {
               file,
               identifier: id,
               silent: true,
-              root: storageRoot,
+              root: storageRootDirectory,
             }),
           },
         }),
@@ -1060,7 +1107,7 @@ const registration = await prisma.registration.create({
     authorId: faker.helpers.arrayElement(users).id,
     paymentMethod: 'Lydia',
     paid: false,
-    beneficiary: 'annie',
+    externalBeneficiary: 'annie',
   },
 });
 
@@ -1079,7 +1126,9 @@ for (const i of tqdm([...range(0, 100)])) {
       authorEmail: i % 4 === 0 ? 'feur@quoi.com' : undefined,
       paymentMethod: i % 2 === 0 ? 'Lydia' : 'Cash',
       paid: true,
-      beneficiary: i % 4 === 0 ? 'whatcoubeh' : faker.helpers.arrayElement(users).uid,
+      ...(i % 4 === 0
+        ? { externalBeneficiary: 'whatcoubeh' }
+        : { internalBeneficiaryId: faker.helpers.arrayElement(users).id }),
     },
   });
 }
@@ -1118,21 +1167,6 @@ await prisma.barWeek.create({
 
 const thirdPartyAppClub = await prisma.group.findUniqueOrThrow({
   where: { uid: faker.helpers.arrayElement(groups).uid },
-});
-
-await prisma.thirdPartyApp.create({
-  data: {
-    name: 'TVn7',
-    description: 'TVn7',
-    secret: await hash('chipichipi'),
-    id: 'app:chapachapa',
-    active: true,
-    website: 'https://wiki.inpt.fr',
-    allowedRedirectUris: {
-      set: ['https://wiki.inpt.fr', 'http://localhost:5000'],
-    },
-    owner: { connect: { id: thirdPartyAppClub.id } },
-  },
 });
 
 await prisma.shopItem.create({
@@ -1379,10 +1413,50 @@ await Promise.all(
 );
 
 await prisma.blockedUid.createMany({
-  data: [
-    { uid: 'admin' },
-    { uid: 'root' },
-  ],
+  data: [{ uid: 'admin' }, { uid: 'root' }],
+});
+await prisma.user.update({
+  where: { uid: 'versairea' },
+  data: {
+    bookmarks: {
+      create: {
+        path: '/users/alamaternitei',
+      },
+    },
+  },
+});
+
+await prisma.user.update({
+  where: { uid: 'alamaternitei' },
+  data: {
+    bookmarks: {
+      create: {
+        path: '/users/versairea',
+      },
+    },
+  },
+});
+
+await prisma.theme.create({
+  data: {
+    name: '💖 UwU 💖',
+    author: {
+      connect: {
+        uid: randomChoice(groups.map((g) => g.uid)),
+      },
+    },
+    visibility: Visibility.Public,
+    startsAt: new Date(),
+    endsAt: new Date(new Date().setDate(new Date().getDate() + 7)),
+    values: {
+      createMany: {
+        data: [
+          { variable: 'ColorPrimary', value: 'DeepPink' },
+          { variable: 'ColorPrimaryBackground', value: 'LightPink' },
+        ],
+      },
+    },
+  },
 });
 
 exit(0);

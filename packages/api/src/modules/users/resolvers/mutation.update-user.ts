@@ -1,6 +1,5 @@
-import { builder, log, objectValuesFlat, prisma, purgeUserSessions } from '#lib';
+import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
-import { LinkInput } from '#modules/links';
 import { userIsAdminOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { phone as parsePhoneNumber } from 'phone';
@@ -10,6 +9,8 @@ import { UserType, requestEmailChange } from '../index.js';
 builder.mutationField('updateUser', (t) =>
   t.prismaField({
     type: UserType,
+    deprecationReason:
+      'Use `updateUserProfile`, `requestEmailChange` and other `updateUser*` mutations instead',
     errors: {},
     args: {
       uid: t.arg({ type: UIDScalar }),
@@ -25,7 +26,6 @@ builder.mutationField('updateUser', (t) =>
       phone: t.arg.string({ validate: { maxLength: 255 } }),
       nickname: t.arg.string({ validate: { maxLength: 255 } }),
       description: t.arg.string({ validate: { maxLength: 10_000 } }),
-      links: t.arg({ type: [LinkInput] }),
       cededImageRightsToTVn7: t.arg.boolean(),
       apprentice: t.arg.boolean(),
       godparentUid: t.arg.string({
@@ -61,7 +61,6 @@ builder.mutationField('updateUser', (t) =>
         graduationYear,
         nickname,
         description,
-        links,
         address,
         phone,
         birthday,
@@ -132,13 +131,18 @@ builder.mutationField('updateUser', (t) =>
           },
         });
         // Send a validation email
-        await requestEmailChange(email, targetUser.id);
+        await requestEmailChange(
+          {},
+          email,
+          targetUser.id,
+          new URL('/validate-email/[token]', process.env.PUBLIC_FRONTEND_ORIGIN),
+        );
       }
 
       if (!userIsAdmin && changingGraduationYear)
         throw new GraphQLError('Demande au bureau de ton AE pour changer de promo');
 
-      purgeUserSessions(uid);
+      purgeSessionsUser(uid);
       if (
         changingContributesWith &&
         contributesWith &&
@@ -185,7 +189,6 @@ builder.mutationField('updateUser', (t) =>
           lastName: userIsAdmin ? lastName : targetUser.lastName,
           cededImageRightsToTVn7,
           apprentice,
-          links: { deleteMany: {}, createMany: { data: links } },
           otherEmails: { set: otherEmails.filter(Boolean) },
           godparent:
             godparentUid === ''

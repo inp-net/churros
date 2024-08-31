@@ -1,6 +1,7 @@
 import { builder, ensureGlobalId, makeGoogleWalletObject, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
+import { ZodError } from 'zod';
 
 builder.mutationField('createGoogleWalletPass', (t) =>
   t.string({
@@ -8,12 +9,13 @@ builder.mutationField('createGoogleWalletPass', (t) =>
     args: {
       code: t.arg.string({ description: 'Code de la réservation' }),
     },
+    errors: { types: [Error, ZodError] },
     async resolve(_, { code }) {
       const booking = await prisma.registration.findUnique({
         where: {
           id: ensureGlobalId(code.toLowerCase(), 'Registration'),
         },
-        include: { ticket: { include: { event: { include: { group: true } } } }, author: true },
+        include: makeGoogleWalletObject.prismaIncludes,
       });
       if (!booking) throw new GraphQLError('Réservation introuvable');
 
@@ -25,7 +27,7 @@ builder.mutationField('createGoogleWalletPass', (t) =>
         origins: [],
         typ: 'savetowallet',
         payload: {
-          genericObjects: [makeGoogleWalletObject(booking.ticket.event, booking)],
+          genericObjects: [makeGoogleWalletObject(booking)],
         },
       };
 

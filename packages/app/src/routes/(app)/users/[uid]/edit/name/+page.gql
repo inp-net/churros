@@ -1,0 +1,7 @@
+query PageUserEditName($uid: String!) {
+  user(uid: $uid) {
+    canEditProfile(assert: "Tu n'a pas les permissions nécéssaires pour modifier ce profil.")
+    firstName
+    lastName
+  }
+}

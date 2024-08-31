@@ -1,8 +1,6 @@
 import { addDays, formatISO, parseISO, startOfWeek } from 'date-fns';
 import type { PageEventsListVariables } from './$houdini';
 
-export const ssr = true;
-
 export function _weekArg(current: Date, daysOffset: number): string {
   return formatISO(
     addDays(

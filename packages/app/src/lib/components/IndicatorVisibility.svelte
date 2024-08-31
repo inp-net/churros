@@ -8,15 +8,18 @@
   import IconLinkLock from '~icons/mdi/link-lock';
   import IconGlobe from '~icons/mdi/web';
   import { tooltip } from '$lib/tooltip';
+  import { loaded, type MaybeLoading } from '$lib/loading';
 
   export let showTooltip = false;
-  export let visibility: Visibility | Visibility$options | undefined;
+  export let visibility: MaybeLoading<Visibility | Visibility$options | undefined>;
   export let text = false;
 </script>
 
 <span
   class="visibility"
-  use:tooltip={showTooltip && visibility ? DISPLAY_VISIBILITIES[visibility] : undefined}
+  use:tooltip={showTooltip && visibility && loaded(visibility)
+    ? DISPLAY_VISIBILITIES[visibility]
+    : undefined}
 >
   {#if visibility === Visibility.Private}
     <IconLock />
@@ -29,7 +32,7 @@
   {:else if visibility === Visibility.SchoolRestricted}
     <IconSchool></IconSchool>
   {/if}
-  {#if text && visibility}
+  {#if text && visibility && loaded(visibility)}
     {DISPLAY_VISIBILITIES[visibility]}
   {/if}
 </span>

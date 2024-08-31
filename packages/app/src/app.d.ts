@@ -1,22 +1,44 @@
+type NavigationTopState = import('$lib/navigation').NavigationTopState;
+type NavigationTopEventsKey = import('$lib/navigation').NavigationTopActionEvent;
+
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type SessionUserType = import('$lib/session.js').SessionUser;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  type XSSSafeHTMLString = import('ts-opaque').Opaque<string, 'XSSSafeHTMLString'>;
 
   interface Locals {
-    me?: SessionUserType;
     mobile: boolean;
-    token?: string;
   }
 
-  interface PageData {
-    me?: SessionUserType;
-    mobile: boolean;
-    token?: string;
+  interface Metadata {
+    queryTimestamps: {
+      global: number;
+      network: number;
+    };
   }
+
+  interface PageData {}
 
   interface Session {
     token?: string;
   }
+
+  interface PageState extends NavigationTopState {
+    currentTab?: string;
+    bookingTicketId?: string | null;
+  }
+}
+
+declare interface ViewTransition {
+  updateCallbackDone: Promise<void>;
+  ready: Promise<void>;
+  finished: Promise<void>;
+  skipTransition: () => void;
+}
+
+declare interface Document {
+  startViewTransition(updateCallback: () => Promise<void>): ViewTransition;
 }
 
 declare module 'simple-svelte-autocomplete';
@@ -65,6 +87,13 @@ declare namespace svelteHTML {
     'on:pressup'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
+    // FIXME does not work
+    // [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;
+    'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_COPY_ID'?: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_CREATE_POST_ON_EVENT'?: (event: CustomEvent<{}>) => Promise<void> | void;
   }
 }
 

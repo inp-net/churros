@@ -1,8 +1,9 @@
 <script lang="ts">
-  import IconCheck from '~icons/mdi/check';
-  import { type Visibility, zeus } from '$lib/zeus';
-  import InputPickObjects from './InputPickObjects.svelte';
   import type { Visibility$options } from '$houdini';
+  import { zeus } from '$lib/zeus';
+  import IconCheck from '~icons/mdi/check';
+  import InputPickObjects from './InputPickObjects.svelte';
+  import { houdiniVisibility } from '$lib/typing';
 
   type Event = {
     id: string;
@@ -10,7 +11,7 @@
     title: string;
     pictureFile: string;
     startsAt: Date;
-    visibility: Visibility | Visibility$options;
+    visibility: Visibility$options;
   };
   export let groupUid: string;
   export let allow: string[] = [];
@@ -44,7 +45,9 @@
     });
     return searchEvents
       .filter(({ event: { uid } }) => allowed(uid))
-      .map(({ event }) => ({ item: event }));
+      .map(({ event }) => ({
+        item: { ...event, visibility: houdiniVisibility(event.visibility) },
+      }));
   }
 </script>
 
@@ -97,7 +100,7 @@
     text-align: center;
     object-fit: contain;
     background: var(--muted-bg);
-    border: 0 solid var(--primary-border);
+    border: 0 solid var(--primary);
     border-radius: var(--radius-block);
     transition: all 0.25s ease;
   }
@@ -120,7 +123,7 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    color: var(--primary-text);
+    color: var(--primary);
     content: '';
     background: var(--primary-bg);
     border-radius: 50%;

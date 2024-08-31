@@ -1,0 +1,44 @@
+query PageEventDetail($id: LocalID!) @loading {
+  me {
+    ...ModalBookTicketMe
+  }
+  event(id: $id) {
+    id
+    canScanBookings
+    canEdit
+    externalTicketing
+    highlightedBooking: myBookings(count: 1) {
+      ...CardBooking
+    }
+    myBookings {
+      id
+    }
+    organizer {
+      name
+      uid
+      ...AvatarGroup
+    }
+    coOrganizers {
+      name
+      uid
+      ...AvatarGroup
+    }
+    title
+    ...TextEventDates
+    location
+    descriptionHtml
+    tickets {
+      localID
+      ...CardTicket
+      ...CardTicketDetails
+      ...CardTicketPlaces
+      ...ModalBookTicket
+    }
+    ...ButtonLike
+    ...ButtonShare
+    links {
+      rawURL
+      ...PillLink
+    }
+  }
+}

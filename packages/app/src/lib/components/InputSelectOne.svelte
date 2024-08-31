@@ -64,13 +64,15 @@
     overflow: hidden;
     font-size: 1rem;
     font-weight: normal;
-    border-color: var(--border);
+    border-color: var(--fg);
     border-radius: var(--radius-block);
 
     /* using a border creates a weird gap with the overflow-hidden rectangle of selected item if it hits the corner. for some reason the outline is thicker than the border at the same width, so we multiply by 2/3 to roughly get the same appearance */
     outline: calc(2 / 3 * var(--border-block)) solid var(--border);
     outline-offset: calc(-1 * var(--border-block));
 
+    /* targets firefox only */
+    /* stylelint-disable-next-line */
     @-moz-document url-prefix() {
       outline-offset: -1px;
     }
@@ -86,13 +88,13 @@
     align-items: center;
     justify-content: center;
     padding: 0.5rem 1rem;
-    color: var(--text);
+    color: var(--fg);
     cursor: pointer;
     background: var(--bg);
   }
 
   label[aria-current='true'] {
-    color: var(--primary-text);
-    background: var(--primary-bg);
+    color: var(--bg);
+    background: var(--fg);
   }
 </style>

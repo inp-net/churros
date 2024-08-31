@@ -1,0 +1,36 @@
+query LayoutEventEdit($id: LocalID!) {
+  me {
+    canCreateEventsOn {
+      ...PickGroup @mask_disable
+    }
+  }
+  allGroups: groups {
+    ...PickGroup @mask_disable
+  }
+  event(id: $id) {
+    id
+    localID
+    canEdit(assert: "Tu n'a pas les permissions nécéssaires pour modifier cet événement.")
+    organizer {
+      uid
+      name
+      ...AvatarGroup
+    }
+    includeInKiosk
+    title
+    startsAt
+    endsAt
+    ...TextEventDates
+    location
+    visibility
+    applicableOffers
+    coOrganizers {
+      uid
+      name
+      ...AvatarGroup
+    }
+    frequency
+    recurringUntil
+    contactMail
+  }
+}

@@ -5,9 +5,13 @@ import { GroupSearchResultType } from '../index.js';
 builder.queryField('searchGroups', (t) =>
   t.field({
     type: [GroupSearchResultType],
-    args: { q: t.arg.string(), similarityCutoff: t.arg.float({ required: false }) },
+    args: {
+      q: t.arg.string({ required: false }),
+      similarityCutoff: t.arg.float({ required: false }),
+    },
     authScopes: { loggedIn: true },
     async resolve(_, { q, similarityCutoff }) {
+      if (!q) return [];
       return searchGroups(q, similarityCutoff ?? undefined);
     },
   }),

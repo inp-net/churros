@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 
-export function umamiAttributes(event: string, data?: Record<string, number | string>) {
+export function umamiAttributes(event: string | undefined, data?: Record<string, number | string>) {
+  if (!event) return {};
   return {
     'data-umami-event': event,
     ...Object.fromEntries(

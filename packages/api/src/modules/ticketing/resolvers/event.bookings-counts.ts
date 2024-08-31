@@ -18,8 +18,12 @@ builder.prismaObjectField(EventType, 'bookingsCounts', (t) =>
         total: results.filter((r) => !r.cancelledAt).length,
         paid: results.filter((r) => r.ticket.price !== 0 && r.paid && !r.cancelledAt).length,
         verified: results.filter((r) => r.verifiedAt).length,
-        unpaidLydia: results.filter((r) => !r.paid && r.paymentMethod === PaymentMethod.Lydia)
-          .length,
+        unpaidByPaymentMethod: Object.fromEntries(
+          Object.entries(PaymentMethod).map(([_, value]) => [
+            value,
+            results.filter((r) => !r.paid && r.paymentMethod === value && !r.cancelledAt).length,
+          ]),
+        ) as Record<PaymentMethod, number>,
         cancelled: results.filter((r) => r.cancelledAt).length,
       };
     },

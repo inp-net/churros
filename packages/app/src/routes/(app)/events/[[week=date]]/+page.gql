@@ -1,4 +1,5 @@
 query PageEventsList($after: String) {
+  loggedIn
   eventsByDay(first: 7, after: $after) @loading @paginate {
     pageInfo {
       hasNextPage
@@ -9,18 +10,11 @@ query PageEventsList($after: String) {
         date
         happening @loading(count: 2) {
           localID
-          ...CardEvent @loading
+          ...CardEvent
         }
         shotgunning {
-          group {
-            uid
-            name
-            pictureFile
-            pictureFileDark
-          }
           localID
-          title
-          mySoonestShotgunOpensAt
+          ...CardEvent
         }
       }
     }

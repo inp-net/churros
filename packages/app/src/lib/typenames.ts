@@ -1,6 +1,7 @@
 /* @generated from schema by /packages/api/scripts/update-id-prefix-to-typename-map.ts */
 export const ID_PREFIXES_TO_TYPENAMES = {
   u: 'User',
+  bookmark: 'Bookmark',
   godparentreq: 'GodparentRequest',
   candidate: 'UserCandidate',
   passreset: 'PasswordReset',
@@ -12,14 +13,13 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   minor: 'Minor',
   school: 'School',
   credential: 'Credential',
-  token: 'ThirdPartyCredential',
-  app: 'ThirdPartyApp',
   ae: 'StudentAssociation',
   contribution: 'Contribution',
   contributionoption: 'ContributionOption',
   g: 'Group',
   a: 'Article',
   e: 'Event',
+  em: 'EventManager',
   tg: 'TicketGroup',
   t: 'Ticket',
   r: 'Registration',
@@ -49,8 +49,13 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   question: 'Question',
   answer: 'Answer',
   page: 'Page',
+  theme: 'Theme',
+  themeval: 'ThemeValue',
 } as const;
 /* end @generated from schema */
+
+export type IDPrefix = keyof typeof ID_PREFIXES_TO_TYPENAMES;
+export type Typename = (typeof ID_PREFIXES_TO_TYPENAMES)[IDPrefix];
 
 export const TYPENAMES_TO_ID_PREFIXES = Object.fromEntries(
   Object.entries(ID_PREFIXES_TO_TYPENAMES).map(([prefix, typename]) => [typename, prefix]),
@@ -77,4 +82,10 @@ export function ensureIdPrefix(
 ): string {
   if (hasIdPrefix(typename, id)) return id;
   return `${TYPENAMES_TO_ID_PREFIXES[typename]}:${id}`;
+}
+
+export function typenameOfId(id: string): Typename | undefined {
+  const prefix = id.split(':')[0];
+  if (!Object.keys(ID_PREFIXES_TO_TYPENAMES).includes(prefix)) return undefined;
+  return ID_PREFIXES_TO_TYPENAMES[prefix as IDPrefix];
 }

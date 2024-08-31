@@ -36,7 +36,7 @@
         {#each data.quickSignups.nodes ?? [] as { code, validUntil, school } (code)}
           <tr id={code} class:highlighted={$page.url.hash === `#${code}`}>
             <td><a href="#{code}"><code>{code}</code></a></td>
-            <td><AvatarSchool {...school}></AvatarSchool></td>
+            <td><AvatarSchool name {school}></AvatarSchool></td>
             <td
               >{#if validUntil}{formatDateTime(validUntil)}{:else}—{/if}</td
             >
@@ -47,7 +47,6 @@
                     deleteQuickSignup: [{ code }, { __typename: true }],
                   });
                   toasts.success("Lien d'inscription rapide supprimé");
-                  data.quickSignups.nodes = data.quickSignups.nodes.filter((n) => n.code !== code);
                 }}
                 icon={IconDelete}
                 danger>Supprimer</ButtonSecondary
@@ -78,7 +77,7 @@
   }
 
   tr.highlighted {
-    color: var(--primary-text);
+    color: var(--primary);
     background-color: var(--primary-bg);
   }
 

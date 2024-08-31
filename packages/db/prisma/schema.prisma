@@ -30,7 +30,6 @@ model User {
   // email of the user from the school's LDAP
   schoolEmail  String? @db.VarChar(255)
 
-  // Mandatory profile details
   email                        String                @unique @db.VarChar(255)
   otherEmails                  String[]              @db.VarChar(255)
   firstName                    String                @db.VarChar(255)
@@ -53,6 +52,10 @@ model User {
   enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
   latestVersionSeenInChangelog String                @default("0.0.0")
   bot                          Boolean               @default(false)
+  // Not shown on profile, used to autofill Lydia payment request forms
+  lydiaPhone                   String                @default("") @db.VarChar(255)
+  // Prevent these themes from being auto-deployed to the user
+  blockedThemes                Theme[]
 
   // Permissions
   admin              Boolean              @default(false)
@@ -80,27 +83,43 @@ model User {
   verifications              Registration[]             @relation("verifiedBy")
   oppositions                Registration[]             @relation("opposedBy")
   cancellations              Registration[]             @relation("cancelledBy")
+  receivedBookings           Registration[]             @relation("beneficiaryOf")
   documents                  Document[]
   comments                   Comment[]
   bannedFromEvents           Event[]                    @relation("bannedFromEvents")
   reactions                  Reaction[]
-  allowedApps                ThirdPartyApp[]
   shopPayments               ShopPayment[]
   formAnswers                Answer[]
   createdForms               Form[]
   completedForms             Form[]                     @relation("completedForms")
   partiallyCompletedForms    Form[]                     @relation("partiallyCompletedForms")
   adminOfStudentAssociations StudentAssociation[]       @relation("studentAssociationAdmins")
+  bookmarks                  Bookmark[]
+  sharedPosts                Article[]                  @relation("shares")
+  sharedEvents               Event[]                    @relation("shares")
+  seenBookings               Registration[]             @relation("seenBy")
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
   claimedPromotions         PromotionCode[]
-  thirdPartyCredentials     ThirdPartyCredential[]
   formsWithMarkedCheckboxes Form[]                  @relation("formsWithMarkedCheckbox")
   createdPages              Page[]
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
+}
+
+/// A bookmarked page, used to make personal quick access links
+model Bookmark {
+  id        String   @id @default(dbgenerated("nanoid('bookmark:')"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String
+  // The path to the bookmarked page. Up to the frontend's interpretation
+  path      String
+
+  @@unique([userId, path])
 }
 
 /// Requests to become someone's godchild. Gets deleted once the request has been accepted (or denied). godchild is the requester, godparent is the requested.
@@ -120,34 +139,28 @@ model GodparentRequest {
 /// UserCandidates are users in the registration process
 model UserCandidate {
   id        String   @id @default(dbgenerated("nanoid('candidate:')"))
-  uid       String   @default("") @db.VarChar(255)
+  token     String   @unique
   createdAt DateTime @default(now())
 
   email          String  @unique @db.VarChar(255)
-  token          String  @unique
   emailValidated Boolean @default(false)
-
-  schoolServer String? @db.VarChar(255)
-  schoolUid    String? @db.VarChar(255)
-  schoolEmail  String? @unique @db.VarChar(255)
-
+  uid            String  @default("") @db.VarChar(255)
   firstName      String  @default("") @db.VarChar(255)
   lastName       String  @default("") @db.VarChar(255)
+
+  // OMG des mdps en clair!!!!111 suffit de finir l'inscription :)
+  password String @default("") @db.VarChar(255)
+
   majorId        String?
   major          Major?  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   graduationYear Int?
-  password       String  @default("") @db.VarChar(255)
   apprentice     Boolean @default(false)
 
-  address  String    @default("") @db.VarChar(255)
-  birthday DateTime?
-  phone    String    @default("") @db.VarChar(255)
+  birthday               DateTime?
+  cededImageRightsToTVn7 Boolean   @default(false)
 
-  cededImageRightsToTVn7 Boolean      @default(false)
-  usingQuickSignup       QuickSignup? @relation(fields: [quickSignupId], references: [id])
-  quickSignupId          String?
-
-  @@unique([schoolServer, schoolUid])
+  usingQuickSignup QuickSignup? @relation(fields: [quickSignupId], references: [id])
+  quickSignupId    String?
 }
 
 /// A password reset token
@@ -170,6 +183,8 @@ model EmailChange {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId    String
   pending   Boolean   @default(true)
+  // token is not exposed to the API, whereas id has to be
+  token     String    @unique @default(dbgenerated("nanoid('', 30)"))
 }
 
 model QuickSignup {
@@ -236,15 +251,27 @@ model Link {
   subjectId            String?
 
   @@unique([name, userId, studentAssociationId, groupId, articleId, eventId, ticketId, notificationId, subjectId])
+  @@unique([userId, value])
+  @@unique([studentAssociationId, value])
+  @@unique([groupId, value])
+  @@unique([articleId, value])
+  @@unique([eventId, value])
+  @@unique([ticketId, value])
+  @@unique([notificationId, value])
+  @@unique([subjectId, value])
 }
 
 /// A school syllabus
 model Major {
-  id            String  @id @default(dbgenerated("nanoid('major:')"))
-  uid           String  @unique @db.VarChar(255)
-  name          String  @db.VarChar(255)
-  shortName     String  @default("") @db.VarChar(255)
-  ldapSchoolUid String? @db.VarChar(255)
+  id            String   @id @default(dbgenerated("nanoid('major:')"))
+  uid           String   @unique @db.VarChar(255)
+  name          String   @db.VarChar(255)
+  shortName     String   @default("") @db.VarChar(255)
+  ldapSchoolUid String?  @db.VarChar(255)
+  pictureFile   String   @default("") @db.VarChar(255)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  discontinued  Boolean  @default(false)
 
   schools           School[]        @relation("MajorToSchool")
   ldapSchool        School?         @relation("ldapSchool", fields: [ldapSchoolUid], references: [uid], onUpdate: Cascade, onDelete: SetNull)
@@ -291,13 +318,15 @@ model School {
 enum CredentialType {
   Password
   Token
+  GroupAccessToken
   Google // External token, used for google sheets integration (and possibly more in the future)
 }
 
 /// A credential is a way to authenticate a user
 model Credential {
   id        String         @id @default(dbgenerated("nanoid('credential:')"))
-  userId    String
+  userId    String?
+  groupId   String?
   name      String         @default("") @db.VarChar(255)
   type      CredentialType
   value     String         @db.VarChar(255)
@@ -306,66 +335,32 @@ model Credential {
   expiresAt DateTime?
   refresh   String?        @db.VarChar(255)
 
-  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-}
-
-enum ThirdPartyCredentialType {
-  AuthorizationCode
-  AccessToken
-}
-
-/// A way to give Churros API access to third parties
-model ThirdPartyCredential {
-  id        String                   @id @default(dbgenerated("nanoid('token:')"))
-  type      ThirdPartyCredentialType
-  ownerId   String
-  clientId  String
-  client    ThirdPartyApp            @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  owner     User                     @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  expiresAt DateTime?
-  createdAt DateTime                 @default(now())
-  // TODO scopes
-  value     String                   @db.VarChar(255)
-}
-
-/// A third party service.
-model ThirdPartyApp {
-  id                  String                 @id @default(dbgenerated("nanoid('app:', 30)"))
-  createdAt           DateTime               @default(now())
-  updatedAt           DateTime?              @updatedAt
-  ownerId             String
-  owner               Group                  @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  name                String                 @unique @db.VarChar(255) // Names are unique to prevent identity theft
-  description         String                 @default("") @db.VarChar(255)
-  allowedRedirectUris String[]
-  credentials         ThirdPartyCredential[]
-  secret              String
-  website             String
-  faviconUrl          String                 @default("") @db.VarChar(255) // Computed from website if not provided
-  active              Boolean                @default(false)
-  users               User[]
+  user  User?  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group Group? @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 /// There is one student association per school
 model StudentAssociation {
-  id                  String  @id @default(dbgenerated("nanoid('ae:')"))
-  uid                 String? @unique @db.VarChar(255)
-  description         String  @default("") @db.Text
+  id                  String @id @default(dbgenerated("nanoid('ae:')"))
+  uid                 String @unique @db.VarChar(255)
+  description         String @default("") @db.Text
   schoolId            String
-  name                String  @unique @db.VarChar(255)
+  name                String @unique @db.VarChar(255)
   links               Link[]
-  pictureFile         String  @default("") @db.VarChar(255)
-  heroBackgroundFile  String  @default("") @db.VarChar(255) /// Used for the student association's homepage
-  allPrezMailingList  String  @default("") @db.VarChar(255)
-  allTrezMailingList  String  @default("") @db.VarChar(255)
-  allBoardMailingList String  @default("") @db.VarChar(255)
-  internalMailDomain  String  @default("") @db.VarChar(255)
+  pictureFile         String @default("") @db.VarChar(255)
+  heroBackgroundFile  String @default("") @db.VarChar(255) /// Used for the student association's homepage
+  allPrezMailingList  String @default("") @db.VarChar(255)
+  allTrezMailingList  String @default("") @db.VarChar(255)
+  allBoardMailingList String @default("") @db.VarChar(255)
+  internalMailDomain  String @default("") @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   school              School               @relation(fields: [schoolId], references: [id], onUpdate: Cascade, onDelete: Restrict)
   groups              Group[]
+  board               Group?               @relation("studentAssociationBoard", fields: [boardId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  boardId             String?              @unique
   lydiaAccounts       LydiaAccount[]
   contributionOptions ContributionOption[]
   services            Service[]
@@ -402,12 +397,12 @@ model ContributionOption {
 
 /// The different kinds of groups
 enum GroupType {
+  StudentAssociationSection
   Association
   Club
-  Group
-  Integration
-  StudentAssociationSection
   List
+  Integration
+  Group
 }
 
 /// A group is a collection of users
@@ -426,6 +421,9 @@ model Group {
   color                String    @db.VarChar(7)
   selfJoinable         Boolean   @default(false)
   roomIsOpen           Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @default(now()) @updatedAt
+  unlisted             Boolean   @default(false)
 
   address         String @default("") @db.VarChar(255)
   description     String @default("") @db.VarChar(255)
@@ -465,14 +463,17 @@ model Group {
   groupId                String?
   ticketGroupId          String?
   joinedByBookingTickets Ticket[]       @relation("autojoin")
+  themes                 Theme[]
 
   // For ldap
   ldapGidNumber Int @unique @default(autoincrement())
 
   // For full-text search
-  search         Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
-  thirdPartyApps ThirdPartyApp[]
-  forms          Form[]
+  search    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  forms     Form[]
+  boardOf   StudentAssociation?     @relation("studentAssociationBoard")
+  boardOfId String?
+  tokens    Credential[]
 
   @@index([search], type: Gin)
 }
@@ -520,11 +521,11 @@ model Article {
   event     Event?     @relation(fields: [eventId], references: [id])
   eventId   String?
   reactions Reaction[]
+  sharedBy  User[]     @relation("shares")
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
-  @@unique([groupId, slug])
   @@index([search], type: Gin)
 }
 
@@ -537,41 +538,46 @@ enum EventFrequency {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id             String         @id @default(dbgenerated("nanoid('e:')"))
-  authorId       String?
-  groupId        String
-  contactMail    String
-  beneficiary    LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description    String         @db.Text
-  slug           String         @db.VarChar(255)
-  title          String         @db.VarChar(255)
-  startsAt       DateTime
-  endsAt         DateTime
-  notifiedAt     DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location       String         @default("") @db.VarChar(255)
-  visibility     Visibility
-  frequency      EventFrequency @default(Once)
-  recurringUntil DateTime?
-  pictureFile    String         @default("") @db.VarChar(255)
-  showPlacesLeft Boolean        @default(true)
-  managers       EventManager[]
-  author         User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  includeInKiosk Boolean        @default(false)
-  group          Group          @relation(fields: [groupId], references: [id])
-  coOrganizers   Group[]        @relation("coOrganizer")
-  tickets        Ticket[]
-  ticketGroups   TicketGroup[]
-  articles       Article[]
-  lydiaAccountId String?
-  links          Link[]
-  bannedUsers    User[]         @relation("bannedFromEvents")
-  reactions      Reaction[]
-  forms          Form[]
+  id               String         @id @default(dbgenerated("nanoid('e:')"))
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  authorId         String?
+  groupId          String
+  contactMail      String
+  beneficiary      LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
+  description      String         @db.Text
+  slug             String         @db.VarChar(255)
+  title            String         @db.VarChar(255)
+  // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
+  startsAt         DateTime?
+  endsAt           DateTime?
+  globalCapacity   Int?
+  notifiedAt       DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  location         String         @default("") @db.VarChar(255)
+  visibility       Visibility
+  frequency        EventFrequency @default(Once)
+  recurringUntil   DateTime?
+  pictureFile      String         @default("") @db.VarChar(255)
+  showPlacesLeft   Boolean        @default(true)
+  managers         EventManager[]
+  author           User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk   Boolean        @default(false)
+  group            Group          @relation(fields: [groupId], references: [id])
+  coOrganizers     Group[]        @relation("coOrganizer")
+  tickets          Ticket[]
+  ticketGroups     TicketGroup[]
+  articles         Article[]
+  lydiaAccountId   String?
+  links            Link[]
+  bannedUsers      User[]         @relation("bannedFromEvents")
+  reactions        Reaction[]
+  forms            Form[]
+  sharedBy         User[]         @relation("shares")
+  applicableOffers Promotion[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
-  @@unique([groupId, slug])
   @@index([search], type: Gin)
 }
 
@@ -585,6 +591,7 @@ enum Visibility {
 
 /// An event manager is a user that can scan tickets, and may be able to manage the event
 model EventManager {
+  id                     String  @id @default(dbgenerated("nanoid('em:')"))
   eventId                String
   userId                 String
   canVerifyRegistrations Boolean @default(true) // Can scan tickets
@@ -621,7 +628,7 @@ model Ticket {
   opensAt               DateTime?
   closesAt              DateTime?
   price                 Float // in EUR
-  capacity              Int             @default(0) // 0 means unlimited
+  capacity              Int?
   registrations         Registration[]
   links                 Link[]
   allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
@@ -640,27 +647,28 @@ model Ticket {
 
   onlyManagersCanProvide Boolean @default(false)
 
-  event               Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  group               TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  subjectToPromotions Promotion[]
-
-  @@unique([eventId, slug])
+  event       Event        @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  group       TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Promotion   Promotion?   @relation(fields: [promotionId], references: [id])
+  promotionId String?
 }
 
 /// A reservation is a user's registration for a ticket
 model Registration {
-  id            String         @id @default(dbgenerated("nanoid('r:')"))
-  ticketId      String
-  beneficiary   String
-  authorId      String?
-  authorEmail   String         @default("")
-  verifiedById  String?
-  opposedById   String?
-  cancelledById String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  paymentMethod PaymentMethod?
-  paid          Boolean        @default(false)
+  id                    String         @id @default(dbgenerated("nanoid('r:')"))
+  ticketId              String
+  externalBeneficiary   String?
+  internalBeneficiary   User?          @relation(fields: [internalBeneficiaryId], references: [id], onUpdate: Cascade, onDelete: SetNull, name: "beneficiaryOf")
+  internalBeneficiaryId String?
+  authorId              String?
+  authorEmail           String         @default("")
+  verifiedById          String?
+  opposedById           String?
+  cancelledById         String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  paymentMethod         PaymentMethod?
+  paid                  Boolean        @default(false)
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
@@ -672,6 +680,7 @@ model Registration {
   opposedAt         DateTime?
   cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   cancelledAt       DateTime?
+  seenBy            User[]             @relation(name: "seenBy")
   formAnswer        Answer?
 
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -734,6 +743,7 @@ model LydiaTransaction {
   updatedAt                        DateTime      @updatedAt
   contribution                     Contribution? @relation(fields: [studentAssociationContributionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   studentAssociationContributionId String?       @unique
+  paidCallback                     String?
 }
 
 enum PayPalTransactionStatus {
@@ -814,6 +824,7 @@ enum NotificationChannel {
   GroupBoard
   GodparentRequests
   Comments
+  Mandatory
   Other // should't be used too much
 }
 
@@ -975,6 +986,7 @@ model Promotion {
   validOn    Ticket[]
 
   priceOverride Int
+  events        Event[]
 }
 
 model Picture {
@@ -1204,4 +1216,61 @@ model Page {
 // UIDs that should never be considered free
 model BlockedUid {
   uid String @id
+}
+
+model Theme {
+  id         String       @id @default(dbgenerated("nanoid('theme:')"))
+  name       String       @db.VarChar(255)
+  values     ThemeValue[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  visibility Visibility   @default(Private)
+  startsAt   DateTime     @default(now())
+  endsAt     DateTime
+  author     Group?       @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  authorId   String?
+
+  // Auto-change people's theme to this one when it's visible to them
+  autodeploy Boolean @default(false)
+  blockedBy  User[]
+}
+
+enum ThemeVariant {
+  Light
+  Dark
+  // Might add more stuff, like "High contrast light, high contrast dark", etc
+}
+
+enum ThemeVariable {
+  ColorBackground
+  ColorBackground2
+  ColorBackground3
+  ColorBackground4
+  ColorShy
+  ColorMuted
+  ColorForeground
+  ColorPrimary
+  ColorSuccess
+  ColorDanger
+  ColorWarning
+  ColorPrimaryBackground
+  ColorSuccessBackground
+  ColorDangerBackground
+  ColorWarningBackground
+  ImageLogoNavbarTop
+  ImageLogoNavbarSide
+  ImageBackgroundNavbarBottom
+  ImageBackgroundNavbarTop
+  PatternBackground
+}
+
+model ThemeValue {
+  id       String        @id @default(dbgenerated("nanoid('themeval:')"))
+  variable ThemeVariable
+  value    String        @db.VarChar(500)
+  theme    Theme         @relation(fields: [themeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  themeId  String
+  variant  ThemeVariant  @default(Light)
+
+  @@unique([themeId, variant, variable])
 }

@@ -42,7 +42,6 @@ export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSch
       await updateRateLimitHit({
         queryName: info.fieldName,
         queryType: info.parentType.name,
-        token: ctx.token,
         user: ctx.user?.id,
         tryAgainInMs: response.msBeforeNext,
       });

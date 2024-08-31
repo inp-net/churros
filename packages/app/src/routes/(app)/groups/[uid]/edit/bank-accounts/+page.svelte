@@ -9,7 +9,8 @@
 
   export let data: PageData;
 
-  $: ({ group, lydiaAccountsOfGroup } = data);
+  $: ({ group } = data);
+  $: lydiaAccountsOfGroup = group?.lydiaAccounts ?? [];
 
   let loading = false;
   let phone = '';
@@ -43,6 +44,7 @@
 
   const addLydiaAccount = async (name: string, api_token_id: string, api_token: string) => {
     if (loading) return;
+    if (!group) return;
     try {
       loading = true;
       const { upsertLydiaAccount } = await $zeus.mutate({
