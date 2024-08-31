@@ -7,13 +7,6 @@
   before_script:
     - mkdir ~/.docker
     - cp $HARBOR_CONFIG_JSON ~/.docker/config.json
-  script:
-    - |
-      buildctl-daemonless.sh build \
-          --frontend=dockerfile.v0 \
-          --local context=. \
-          --local dockerfile=. \
-          --output type=image,name=$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG,push=true
 
 deploy_prisma:
   extends: .buildkit
@@ -30,8 +23,8 @@ deploy_prisma:
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
-          --local context=$CI_PROJECT_DIR \
-          --local dockerfile=$CI_PROJECT_DIR/Dockerfile \
+          --local context=. \
+          --local dockerfile=. \
           --opt target=sync \
           --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
 
@@ -49,8 +42,8 @@ deploy_api:
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
-          --local context=$CI_PROJECT_DIR \
-          --local dockerfile=$CI_PROJECT_DIR/Dockerfile \
+          --local context=. \
+          --local dockerfile=. \
           --opt target=api \
           --output type=image,name=$HARBOR_REGISTRY_IMAGE/api:v$TAG,push=true
 
@@ -68,10 +61,10 @@ deploy_app:
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
-          --local context=$CI_PROJECT_DIR \
-          --local dockerfile=$CI_PROJECT_DIR/Dockerfile \
+          --local context=. \
+          --local dockerfile=. \
           --opt target=app \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/app:$CI_COMMIT_TAG,push=true
+          --output type=image,name=$HARBOR_REGISTRY_IMAGE/app:v$TAG,push=true
 
 deploy_sync:
   extends: .buildkit
@@ -87,7 +80,7 @@ deploy_sync:
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
-          --local context=$CI_PROJECT_DIR \
-          --local dockerfile=$CI_PROJECT_DIR/Dockerfile \
+          --local context=. \
+          --local dockerfile=. \
           --opt target=sync \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:$CI_COMMIT_TAG,push=true
+          --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
