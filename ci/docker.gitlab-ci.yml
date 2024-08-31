@@ -25,8 +25,9 @@ deploy_prisma:
           --frontend=dockerfile.v0 \
           --local context=. \
           --local dockerfile=. \
-          --opt target=sync \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
+          --opt target=prisma \
+          --output type=image,name=$HARBOR_REGISTRY_IMAGE/prisma:v$TAG,push=true
+    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/prisma:v$TAG"
 
 deploy_api:
   extends: .buildkit
@@ -46,6 +47,7 @@ deploy_api:
           --local dockerfile=. \
           --opt target=api \
           --output type=image,name=$HARBOR_REGISTRY_IMAGE/api:v$TAG,push=true
+    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/api:v$TAG"
 
 deploy_app:
   extends: .buildkit
@@ -65,6 +67,7 @@ deploy_app:
           --local dockerfile=. \
           --opt target=app \
           --output type=image,name=$HARBOR_REGISTRY_IMAGE/app:v$TAG,push=true
+    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/app:v$TAG"
 
 deploy_sync:
   extends: .buildkit
@@ -84,3 +87,4 @@ deploy_sync:
           --local dockerfile=. \
           --opt target=sync \
           --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
+    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/sync:v$TAG"
