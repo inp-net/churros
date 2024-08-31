@@ -1,6 +1,6 @@
-query PageEventsList($after: String) {
+query PageEventsList($first: Int = 7, $after: String) {
   loggedIn
-  eventsByDay(first: 7, after: $after) @loading @paginate {
+  eventsByDay(first: $first, after: $after) @loading @paginate {
     pageInfo {
       hasNextPage
       startCursor
