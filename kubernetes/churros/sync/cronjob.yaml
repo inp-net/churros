@@ -17,7 +17,7 @@ spec:
                 - name: DATABASE_BASE_URL
                   valueFrom:
                     secretKeyRef:
-                      name: postgresql-app
+                      name: churros-postgresql-app
                       key: uri
                 - name: DATABASE_URL
                   value: $(DATABASE_BASE_URL)?pool_timeout=60
