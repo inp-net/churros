@@ -4,10 +4,14 @@ WORKDIR /app
 
 RUN apk add --no-cache git patch
 
-COPY yarn.lock /app/
-COPY .yarnrc.yml /app/
+# Yarn
 COPY .yarn/ /app/.yarn/
+COPY .yarnrc.yml /app/
+COPY yarn.lock /app/
+
+# packages
 COPY package.json /app/
+
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY .env.example /app/.env.example
 COPY .git /app/.git
@@ -17,13 +21,30 @@ COPY scripts/ /app/scripts/
 # Remove unused packages
 RUN rm -rf packages/mock-n7-ldap pack
 RUN rm -rf packages/oauth-client
-RUN rm -rf packages/sync
 
 RUN yarn install
 RUN yarn cp-env
 RUN yarn generate-buildinfo
 
-RUN yarn workspaces foreach -Rt --from '{@churros/api,@churros/app}' run build
+# Build arborist
+RUN yarn workspace arborist build
+
+FROM builder AS builder-api
+
+WORKDIR /app
+RUN yarn workspace @churros/api build
+
+FROM builder AS builder-app
+
+WORKDIR /app
+COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
+RUN yarn workspace @churros/app build
+
+FROM builder AS builder-sync
+
+WORKDIR /app
+RUN yarn workspace @churros/db generate
+RUN yarn workspace @churros/sync build
 
 FROM node:20-alpine AS base
 
@@ -37,21 +58,22 @@ COPY package.json /app/
 # Builded arborist
 COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
 
-
 FROM base AS api
 
 WORKDIR /app
 
-# Prisma migration
-COPY --from=builder /app/packages/db/prisma/ /app/packages/db/prisma/
-COPY --from=builder /app/packages/db/src/ /app/packages/db/src/
-COPY --from=builder /app/packages/db/package.json /app/packages/db/
+ENV NODE_ENV="production"
+
+# Prisma
+COPY --from=builder-api /app/packages/db/prisma/ /app/packages/db/prisma/
+COPY --from=builder-api /app/packages/db/src/ /app/packages/db/src/
+COPY --from=builder-api /app/packages/db/package.json /app/packages/db/
 
 # Builded api
-COPY --from=builder /app/packages/api/build/src/ /app/packages/api/build/src/
-COPY --from=builder /app/packages/api/build/schema.graphql /app/packages/api/build/schema.graphql
-COPY --from=builder /app/packages/api/static/ /app/packages/api/static/
-COPY --from=builder /app/packages/api/package.json /app/packages/api/
+COPY --from=builder-api /app/packages/api/build/src/ /app/packages/api/build/src/
+COPY --from=builder-api /app/packages/api/build/schema.graphql /app/packages/api/build/schema.graphql
+COPY --from=builder-api /app/packages/api/static/ /app/packages/api/static/
+COPY --from=builder-api /app/packages/api/package.json /app/packages/api/
 
 # Install dependencies
 RUN yarn workspaces focus @churros/api --production
@@ -65,14 +87,14 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
-
 FROM base AS app
 
 WORKDIR /app
 
 # Builded app
-COPY --from=builder /app/packages/app/build/ /app/packages/app/build/
-COPY --from=builder /app/packages/app/package.json /app/packages/app/
+ENV NODE_ENV="production"
+COPY --from=builder-app /app/packages/app/build/ /app/packages/app/build/
+COPY --from=builder-app /app/packages/app/package.json /app/packages/app/
 
 # Install dependencies
 RUN yarn workspaces focus @churros/app --production
@@ -83,32 +105,16 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
-FROM node:20-alpine AS builder-sync
-
-RUN apk add --no-cache patch
-
-WORKDIR /app
-COPY .yarn/         /app/.yarn/
-COPY packages/db/   /app/packages/db/
-COPY packages/sync/ /app/packages/sync/
-COPY .yarnrc.yml    /app/
-COPY package.json   /app/
-COPY yarn.lock      /app/
-
-RUN yarn install
-RUN yarn workspace @churros/db generate
-RUN yarn workspace @churros/sync build
-RUN yarn workspaces focus @churros/sync --production
-
-FROM node:20-alpine AS sync
+FROM base AS sync
 
 ENV NODE_ENV="production"
-
-COPY --from=builder-sync /app/node_modules/ /app/node_modules/
-COPY --from=builder-sync /app/packages/sync/build/src/ /app/packages/sync/build/src/
-COPY --from=builder-sync /app/packages/db/package.json /app/packages/db/
 COPY --from=builder-sync /app/packages/db/src/ /app/packages/db/src/
-COPY --from=builder-sync /app/packages/sync/package.json /app/
+COPY --from=builder-sync /app/packages/db/package.json /app/packages/db/
+
+COPY --from=builder-sync /app/packages/sync/build/src/ /app/packages/sync/build/src/
+COPY --from=builder-sync /app/packages/sync/package.json /app/packages/sync/
+
+RUN yarn workspaces focus @churros/sync --production
 
 WORKDIR /app
 
