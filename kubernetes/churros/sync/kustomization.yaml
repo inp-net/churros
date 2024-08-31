@@ -1,0 +1,5 @@
+commonLabels:
+  app: sync
+
+resources:
+- ./cronjob.yaml

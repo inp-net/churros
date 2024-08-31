@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: churros-postgresql
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: churros
+      owner: churros
+  storage:
+    size: 5Gi
+    storageClass: local-ssd
+  resources:
+    requests:
+      memory: '600Mi'
+      cpu: '200m'

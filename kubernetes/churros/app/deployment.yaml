@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churros-app
+spec:
+  replicas: 1
+  template:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: 'kubernetes.io/hostname'
+                labelSelector:
+                  matchLabels:
+                    app: churros-app
+      containers:
+        - image: harbor.k8s.inpt.fr/net7/churros/app:latest
+          imagePullPolicy: IfNotPresent
+          name: app
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            httpGet:
+              scheme: HTTP
+              path: /health
+              port: 3000
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          envFrom:
+            - configMapRef:
+                name: churros-config
