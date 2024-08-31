@@ -3,16 +3,17 @@ kind: Deployment
 metadata:
   name: churros-api
 spec:
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: 'kubernetes.io/hostname'
-            matchLabels:
-              app: api
   template:
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: 'kubernetes.io/hostname'
+                labelSelector:
+                  matchLabels:
+                    app: churros-api
       containers:
         - image: harbor.k8s.inpt.fr/net7/churros/api:latest
           imagePullPolicy: IfNotPresent

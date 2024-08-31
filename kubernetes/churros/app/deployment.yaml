@@ -4,16 +4,17 @@ metadata:
   name: churros-app
 spec:
   replicas: 1
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: 'kubernetes.io/hostname'
-            matchLabels:
-              app: app
   template:
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: 'kubernetes.io/hostname'
+                labelSelector:
+                  matchLabels:
+                    app: churros-app
       containers:
         - image: harbor.k8s.inpt.fr/net7/churros/app:latest
           imagePullPolicy: IfNotPresent
