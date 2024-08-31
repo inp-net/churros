@@ -1,4 +1,5 @@
 resources:
-- api/
-- app/
-- sync/
+  - api/
+  - app/
+  - sync/
+  - ingress.yaml
