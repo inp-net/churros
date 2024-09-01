@@ -1,12 +1,4 @@
-import {
-  builder,
-  ensureGlobalId,
-  freeUidValidator,
-  log,
-  prisma,
-  schoolYearStart,
-  sendMail,
-} from '#lib';
+import { builder, ensureGlobalId, freeUidValidator, log, prisma, sendMail } from '#lib';
 import { Email, UIDScalar, URLScalar } from '#modules/global';
 import { UserCandidateType } from '#modules/users/types';
 import { Prisma } from '@churros/db/prisma';
@@ -54,7 +46,6 @@ builder.mutationField('startSignup', (t) =>
       }),
       graduationYear: t.arg.int({
         description: 'Promo de la personne',
-        validate: { max: schoolYearStart().getFullYear() + 3 },
       }),
       password: t.arg.string({
         description: 'Mot de passe',
