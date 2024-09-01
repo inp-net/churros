@@ -14,6 +14,8 @@ export async function load(event) {
 
   return {
     next:
-      oauthEnabled() && authedVia(event) === 'oauth2' ? oauthLogoutURL().toString() : route('/'),
+      oauthEnabled() && (authedVia(event) === 'oauth2' || authedVia(event) === null)
+        ? oauthLogoutURL().toString()
+        : route('/'),
   };
 }
