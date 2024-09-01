@@ -1,5 +1,12 @@
 # @churros/api
 
+## 2.0.1
+
+### Patch Changes
+
+- 54ec422: fix generated buildinfo version
+- 7888095: Fix some validation bugs around signups
+
 ## 2.0.0
 
 ### Major Changes
