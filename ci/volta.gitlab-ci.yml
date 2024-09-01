@@ -25,13 +25,7 @@ build:
     # prevents branch pipeline when a merge request pipeline will be created, see https://docs.gitlab.com/ee/ci/yaml/workflow.html#switch-between-branch-pipelines-and-merge-request-pipelines
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
       when: never
-    # build on tags on main
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    # also build on tags
-    - if: $CI_COMMIT_TAG
-    # put CI: Skip in commit desc to skip the build
-    - if: '$CI_COMMIT_DESCRIPTION =~ /CI: Skip/i'
-      when: never
   script:
     - yarn prisma generate
     - yarn build
@@ -42,8 +36,9 @@ pages:
   rules:
     # build on tags, but not pre-releases
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
-    # allow manual triggers, via a commit "header"
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_DESCRIPTION =~ /CI: API Docs/i'
+    # allow manual triggers
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
   script:
     - yarn workspace @churros/api install --immutable
     - yarn generate-buildinfo
