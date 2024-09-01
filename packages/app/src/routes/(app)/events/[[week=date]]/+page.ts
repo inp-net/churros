@@ -17,6 +17,7 @@ export const _PageEventsListVariables: PageEventsListVariables = async ({ params
   const week = params.week ? parseISO(params.week) : null;
   if (!week) {
     return {
+      first: 31, // one month of events
       after: formatISO(new Date(), { representation: 'date' }),
     };
   }
