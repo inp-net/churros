@@ -21,7 +21,6 @@
   import { isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { zeus } from '$lib/zeus';
-  import { isFuture } from 'date-fns';
   import IconClose from '~icons/mdi/close';
   import IconSend from '~icons/mdi/send-outline';
   import BadgeVisibility from './BadgeVisibility.svelte';
@@ -29,7 +28,6 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputGroups from './InputGroups.houdini.svelte';
   import InputLongText from './InputLongText.svelte';
-  import InputPillDate from './InputPillDate.svelte';
   import InputVisibility from './InputVisibility.houdini.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import Modal from './ModalDialog.svelte';
@@ -346,16 +344,7 @@
       {/if}
     </p>
   </div>
-  <section class="pills">
-    {#if !$data || !$data.published}
-      <InputPillDate
-        after={new Date()}
-        on:change={({ detail }) => (input.publishedAt = detail ?? new Date())}
-        value={!input.id && isFuture(input.publishedAt) ? input.publishedAt : undefined}
-        >Publier plus tard</InputPillDate
-      >
-    {/if}
-  </section>
+
   <InputLinks label="Liens" bind:value={input.links} />
   {#if serverError}
     <Alert theme="danger"
@@ -466,14 +455,6 @@
   h1 :global(input) {
     font-size: 1.2rem;
     font-weight: bold;
-  }
-
-  .pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    margin: 1rem 0;
   }
 
   .submit {
