@@ -208,8 +208,9 @@ export function canBookTicket(
 
   if (!canSeeAllBookings(ticket.event, user) && user) {
     const bookingsByUser = ticket.registrations.filter((r) => r.authorId === user.id);
-    if (bookingsByUser.length >= ticket.godsonLimit)
+    if (ticket.godsonLimit > 0 && bookingsByUser.length > ticket.godsonLimit) 
       return [false, 'Vous avez atteint la limite de parrainages pour ce billet'];
+    
   }
 
   if (placesLeft(ticket) <= 0) return [false, 'Il n’y a plus de places disponibles'];
