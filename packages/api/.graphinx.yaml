@@ -91,7 +91,6 @@ modules:
       - comments
       - reactions
       - links
-      - oauth
       - announcements
       - payments
       - gitlab
