@@ -45,10 +45,10 @@
     <li>
       <CardService
         service={{
-          name: 'Manage forms',
+          name: "Demandes d'inscriptions",
           logo: 'forms',
           logoSourceType: 'Icon',
-          url: '/forms',
+          url: '/signups',
         }}
       />
     </li>
