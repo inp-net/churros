@@ -1,6 +1,6 @@
 {
   "name": "@churros/api",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "dependencies": {
     "@churros/db": "workspace:^1.0.0",
     "@envelop/core": "^5.0.1",

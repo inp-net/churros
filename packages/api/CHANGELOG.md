@@ -1,5 +1,11 @@
 # @churros/api
 
+## 2.1.1
+
+### Patch Changes
+
+- e9156d7: fix cannot book ticket on event that has a zero godson limit
+
 ## 2.1.0
 
 ### Minor Changes
