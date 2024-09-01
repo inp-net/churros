@@ -3,4 +3,4 @@
 '@churros/api': minor
 ---
 
-fix bugs around signups
+Réglage de bugs autour des inscriptions
