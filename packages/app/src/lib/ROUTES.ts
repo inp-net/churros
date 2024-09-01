@@ -335,6 +335,9 @@ const SERVERS = {
   'GET /groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
     return `/groups/${params.uid}/${params.page?.join('/')}`;
   },
+  'GET /groups/[uid]/handover.pdf': (uid: string | number, params?: {}) => {
+    return `/groups/${uid}/handover.pdf`;
+  },
   'GET /help/prefilled-links': `/help/prefilled-links`,
   'GET /me': `/me`,
   'GET /schools/[uid]': (uid: string | number, params?: {}) => {
@@ -596,6 +599,7 @@ export type KIT_ROUTES = {
     'GET /groups/[uid]': 'uid';
     'GET /groups/[uid].pdf': 'uid';
     'GET /groups/[uid]/[...page]': 'uid' | 'page';
+    'GET /groups/[uid]/handover.pdf': 'uid';
     'GET /help/prefilled-links': never;
     'GET /me': never;
     'GET /schools/[uid]': 'uid';

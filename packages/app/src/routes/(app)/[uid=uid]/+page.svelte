@@ -9,6 +9,7 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { refroute } from '$lib/navigation';
+  import IconHandover from '~icons/msl/assignment-outline';
   import IconBirthday from '~icons/msl/cake-outline';
   import IconPhone from '~icons/msl/call-outline';
   import { default as IconCheck, default as IconOpen } from '~icons/msl/check';
@@ -31,6 +32,7 @@
   import TreePersons from '$lib/components/TreePersons.svelte';
   import { formatDate } from '$lib/dates';
   import { loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
+  import { route } from '$lib/ROUTES';
   import { formatDistanceToNow, isPast, setYear } from 'date-fns';
 
   const formatPhoneNumber = (phone: string) =>
@@ -246,6 +248,21 @@
                 <IconClosed /> Fermé
               {/if}
             </svelte:fragment>
+          </SubmenuItem>
+        {/if}
+        {#if profile.canEditMembers}
+          <SubmenuItem
+            icon={IconHandover}
+            href={route('GET /groups/[uid]/handover.pdf', $page.params.uid)}
+          >
+            Fiche de passation
+            <!-- FIXME download attr doesn't cause a download -->
+            <!-- <ButtonSecondary
+              slot="right"
+              download="Fiche de passation {$page.params.uid}.pdf"
+              href={route('GET /groups/[uid]/handover.pdf', $page.params.uid)}
+              >Télécharger</ButtonSecondary
+            > -->
           </SubmenuItem>
         {/if}
       </Submenu>

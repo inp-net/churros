@@ -49,6 +49,7 @@ query PageProfile($uid: UID!) @loading {
       # tab: info
       roomIsOpen
       canSetGroupRoomOpenState
+      canEditMembers
       address
       color
       email
