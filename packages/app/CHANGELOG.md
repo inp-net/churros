@@ -1,5 +1,12 @@
 # @churros/app
 
+## 2.3.0
+
+### Minor Changes
+
+- 7b4d1d6: fix pickmajor (by hardcoding exclusion of the inp majors group for now), display school of quicksignup first
+- d64bbc9: remove forms, add signups to backrooms
+
 ## 2.2.0
 
 ### Minor Changes

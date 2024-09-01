@@ -1,5 +1,11 @@
 # @churros/api
 
+## 2.1.0
+
+### Minor Changes
+
+- b735292: allow signing up via qrcode even when signups are disabled
+
 ## 2.0.2
 
 ### Patch Changes
