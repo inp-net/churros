@@ -14,10 +14,14 @@
   type Value = $$Generic<multiple extends true ? string[] : string | null>;
   export let title = 'Filières';
 
+  /** UID of school to display first */
+  export let favorSchool: string | null = null;
+
   /** Intitial value only (no 2-way binding, listen to on:finish instead)*/
   export let value: MaybeLoading<Value>;
 
   export let options: Array<PickMajor$data>;
+
   graphql(`
     fragment PickMajor on Major @loading {
       uid
@@ -36,13 +40,21 @@
   // Sort majors by school, and ensure each major that is in multiple schools appears once per school. Return an array of PickMajor$data
   function groupedBySchool(options: Array<PickMajor$data>): Array<PickMajor$data> {
     const majorsBySchool = [] as Array<PickMajor$data>;
-    const allSchoolsUids = new Set(
-      options.flatMap((major) => major.schools.map((school) => school.uid)).filter(loaded),
-    );
+    const allSchoolsUids = [
+      ...new Set(
+        options.flatMap((major) => major.schools.map((school) => school.uid)).filter(loaded),
+      ),
+    ].filter((s) => s !== 'inp'); // FIXME: this is hardcoded for us
+    // Put favorSchool first
+    if (favorSchool) 
+      allSchoolsUids.sort((a, b) => (a === favorSchool ? -1 : b === favorSchool ? 1 : 0));
+    
 
     for (const schoolUid of allSchoolsUids) {
       for (const major of options)
-        if (major.schools.some((school) => school.uid === schoolUid)) majorsBySchool.push(major);
+        {if (major.schools.some((school) => school.uid === schoolUid)) 
+          majorsBySchool.push(major);
+        }
     }
     return majorsBySchool;
   }

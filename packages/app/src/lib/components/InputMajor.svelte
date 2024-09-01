@@ -22,6 +22,7 @@
     initialSchool,
     graphql(`
       fragment InputMajorInitialSchool on School {
+        uid
         name
         pictureURL
         ...AvatarSchool
@@ -88,6 +89,7 @@
         }}
         value={major}
         options={$data.majors}
+        favorSchool={$dataInitialSchool?.uid ?? null}
         let:open
       >
         {#if clearable && major}
