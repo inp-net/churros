@@ -11,6 +11,16 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [2.1.0] - 2024-09-01
+
+### Nouveautés
+
+- Le planning affiche maintenant les évènements jusqu'à 1 mois dans le futur
+
+### Corrections
+
+- Correction d'un bug qui empêchait les inscriptions
+
 ## [2.0.0] - 2024-09-01
 
 ### Nouveautés
