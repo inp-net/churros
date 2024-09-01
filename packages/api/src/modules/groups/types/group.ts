@@ -16,7 +16,10 @@ import {
 } from '../utils/index.js';
 import { prismaOrderGroupMemberships } from '../utils/sort.js';
 
-export const GroupTypePrismaIncludes = requiredPrismaIncludesForPermissions;
+export const GroupTypePrismaIncludes = {
+  ...requiredPrismaIncludesForPermissions,
+  ...canEditGroup.prismaIncludes,
+};
 
 export const GroupType = builder.prismaNode('Group', {
   id: { field: 'id' },
