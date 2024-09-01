@@ -1,5 +1,11 @@
 # @churros/api
 
+## 2.0.2
+
+### Patch Changes
+
+- fcb9951: fix cannot self join or edit group details
+
 ## 2.0.1
 
 ### Patch Changes

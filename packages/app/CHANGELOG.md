@@ -1,5 +1,15 @@
 # @churros/app
 
+## 2.2.0
+
+### Minor Changes
+
+- c540e85: add button to download group handover on group profile
+
+### Patch Changes
+
+- 5647f95: fix cannot logout when logged-in via oauth but authed_via was not set
+
 ## 2.1.0
 
 ### Minor Changes
