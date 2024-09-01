@@ -111,14 +111,17 @@ export function operationSucceeded<SuccessData, CaveatsKeys extends CaveatKey, F
 export function operationErrorMessages<T, CaveatsKeys extends CaveatKey, Fragments, Typename>(
   result: { errors?: Array<{ message: string }> | null },
   operationResult: undefined | OperationResult<T, CaveatsKeys, Fragments, Typename>,
+  recursing = false,
 ): string[] {
   if (operationResult) {
     // @ts-expect-error weird dark magic to get mutation error when it's behind a fragment -- flemme de foutre des @mask_disable partout
     if ('MutationErrors' in (operationResult[' $fragments']?.values ?? {})) {
+      if (recursing) return ['Erreur inconnue'];
+
       const operationResultData = get(
         fragment(operationResult as MutationErrors, new MutationErrorsStore()),
       );
-      return operationErrorMessages(result, operationResultData);
+      return operationErrorMessages(result, operationResultData, true);
     } else {
       return operationResult && 'fieldErrors' in operationResult
         ? operationResult.fieldErrors.map(
