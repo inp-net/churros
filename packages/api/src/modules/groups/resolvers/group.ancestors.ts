@@ -1,8 +1,7 @@
 import { builder, prisma } from '#lib';
 
 import { mappedGetAncestors } from 'arborist';
-import { GroupType } from '../index.js';
-import { requiredPrismaIncludesForPermissions } from '../utils/index.js';
+import { GroupType, GroupTypePrismaIncludes } from '../index.js';
 
 // Because it's too hard for Pothos to correctly type recursive data loading,
 // we declare the field after the type
@@ -18,7 +17,7 @@ builder.objectField(GroupType, 'ancestors', (t) =>
       prisma.group
         // Get all groups in the same family as the current groups
         .findMany({
-          include: requiredPrismaIncludesForPermissions,
+          include: GroupTypePrismaIncludes,
           where: { familyId: { in: ids.map(({ familyId }) => familyId) } },
         })
         // Get the ancestors of each group
