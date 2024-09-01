@@ -1,5 +1,7 @@
 FROM node:20-alpine AS builder
 
+ARG TAG=dev"
+
 WORKDIR /app
 
 RUN apk add --no-cache git patch

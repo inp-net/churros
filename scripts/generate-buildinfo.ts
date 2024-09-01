@@ -37,22 +37,17 @@ async function git(args: string): Promise<string> {
 
 const hash = stub ? 'dev' : await git('rev-parse HEAD').then((hash) => hash.trim());
 const toplevel = await git('rev-parse --show-toplevel');
-const tag = async (pkg: Package) =>
-  stub
-    ? 'dev'
-    : await git(
-        `for-each-ref refs/tags/@churros/${pkg}@* --sort=-v:refname --format=%(refname:short) --count=1`,
-      ).then((tag) => tag.trim().replace(new RegExp(`^@churros/${pkg}@`), ''));
-
 const variables = {
   CURRENT_COMMIT: hash,
   CURRENT_VERSIONS: {
-    api: await tag('api'),
-    app: await tag('app'),
-    sync: await tag('sync'),
-    db: await tag('db'),
+    api: process.env.TAG || 'dev',
+    app: process.env.TAG || 'dev',
+    sync: process.env.TAG || 'dev',
+    db: process.env.TAG || 'dev',
   },
 };
+
+console.info(variables);
 
 console.info(`Build info: ${JSON.stringify(variables)}`);
 console.info(`Injecting into ${targets.join(', ')}`);
