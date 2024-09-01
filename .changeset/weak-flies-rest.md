@@ -1,6 +1,6 @@
 ---
-'@churros/app': minor
-'@churros/api': minor
+'@churros/app': patch
+'@churros/api': patch
 ---
 
-Réglage de bugs autour des inscriptions
+Fix some validation bugs around signups
