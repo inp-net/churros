@@ -78,39 +78,12 @@ builder.mutationField('upsertGroup', (t) =>
       if (!user) return false;
       const creating = !uid;
       if (creating) return canCreateGroup(user, input);
-      const group = await prisma.group.findUnique({
+
+      const group = await prisma.group.findUniqueOrThrow({
         where: { uid },
-        include: {
-          studentAssociation: true,
-          parent: true,
-        },
+        include: canEditGroup.prismaIncludes,
       });
-      if (!group) return false;
-      const newParentGroup = input.parent
-        ? await prisma.group.findUniqueOrThrow({
-            where: { uid: input.parent },
-            include: {
-              studentAssociation: true,
-              parent: true,
-            },
-          })
-        : null;
-
-      let newGroup;
-      if (input?.studentAssociation) {
-        const newStudentAssociation = await prisma.studentAssociation.findUnique({
-          where: { uid: input.studentAssociation },
-          select: { id: true },
-        });
-        newGroup = {
-          studentAssociationId: newStudentAssociation?.id,
-          ...input,
-        };
-      } else {
-        newGroup = input;
-      }
-
-      return canEditGroup(user, group, newGroup, newParentGroup);
+      return canEditGroup(user, group);
     },
     // eslint-disable-next-line complexity
     async resolve(
