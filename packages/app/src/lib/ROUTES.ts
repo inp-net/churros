@@ -322,13 +322,6 @@ const SERVERS = {
   'GET /bookings/[code].pdf': (code: string | number, params?: {}) => {
     return `/bookings/${code}.pdf`;
   },
-  'GET /events/[id]/[slug]/[...path]': (params: {
-    id: string | number;
-    slug: string | number;
-    path: (string | number)[];
-  }) => {
-    return `/events/${params.id}/${params.slug}/${params.path?.join('/')}`;
-  },
   'GET /events/[id]/bookings.csv': (id: string | number, params?: {}) => {
     return `/events/${id}/bookings.csv`;
   },
@@ -598,7 +591,6 @@ export type KIT_ROUTES = {
     'GET /[entity=entity_handle]': 'entity';
     'GET /[uid=uid].png': 'uid';
     'GET /bookings/[code].pdf': 'code';
-    'GET /events/[id]/[slug]/[...path]': 'id' | 'slug' | 'path';
     'GET /events/[id]/bookings.csv': 'id';
     'GET /frappe': never;
     'GET /groups/[uid]': 'uid';
@@ -641,7 +633,5 @@ export type KIT_ROUTES = {
     componentName: never;
     qrcode: never;
     entity: never;
-    slug: never;
-    path: never;
   };
 };
