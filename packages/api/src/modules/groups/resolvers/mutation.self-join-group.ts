@@ -33,8 +33,8 @@ builder.mutationField('selfJoinGroup', (t) =>
       const groupMember = await prisma.groupMember.create({
         ...query,
         data: {
-          member: { connect: { uid } },
-          group: { connect: { uid: me.uid } },
+          member: { connect: { uid: me.uid } },
+          group: { connect: { uid } },
           title: 'Membre', // don't allow people to name themselves "Président", for example.
         },
       });
