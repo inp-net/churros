@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.3.1
+
+### Patch Changes
+
+- 0a2b8da: make welcome page load and fix buttons
+
 ## 2.3.0
 
 ### Minor Changes
