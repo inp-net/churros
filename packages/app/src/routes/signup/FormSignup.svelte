@@ -80,7 +80,7 @@
   const Signup = graphql(`
     mutation SignupViaQRCode(
       $qrcode: String
-      $major: UID!
+      $major: UID
       $graduationYear: Int!
       $email: Email!
       $firstName: String!
@@ -176,6 +176,7 @@
               $page.url,
             ),
             ...args,
+            major: args.major || null,
           }),
           'startSignup',
           '',
