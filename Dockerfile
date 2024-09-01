@@ -1,6 +1,6 @@
 FROM node:20-alpine AS builder
 
-ARG TAG=dev"
+ARG TAG=dev
 
 WORKDIR /app
 
