@@ -121,7 +121,7 @@
     {#if event.links.length > 0}
       <ul class="links nobullet">
         {#each event.links.filter((l) => loading(l.rawURL, null) !== event.externalTicketing?.toString()) as link}
-          <PillLink social {link} />
+          <PillLink {link} />
         {/each}
       </ul>
     {/if}
