@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit';
 
 export async function load(event) {
   const { group } = await graphql(`
-    query PageGroupMembers($uid: String!) {
+    query PageGroupMembers($uid: String!) @blocking {
       group(uid: $uid) {
         id
         uid

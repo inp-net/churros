@@ -45,7 +45,7 @@ export const load: PageLoad = async (event) => {
   // );
 
   const result = await graphql(`
-    query GroupEditMembers($uid: String!) {
+    query GroupEditMembers($uid: String!) @blocking {
       group(uid: $uid) {
         id
         uid
