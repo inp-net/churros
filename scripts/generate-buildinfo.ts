@@ -47,8 +47,6 @@ const variables = {
   },
 };
 
-console.info(variables);
-
 console.info(`Build info: ${JSON.stringify(variables)}`);
 console.info(`Injecting into ${targets.join(', ')}`);
 

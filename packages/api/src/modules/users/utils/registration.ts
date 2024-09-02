@@ -1,4 +1,4 @@
-import { prisma, sendMail } from '#lib';
+import { log, prisma, sendMail } from '#lib';
 import {
   CredentialType,
   type Major,
@@ -8,6 +8,8 @@ import {
   type User,
   type UserCandidate,
 } from '@churros/db/prisma';
+import { upsertLdapUser } from '@inp-net/ldap7/user';
+import omit from 'lodash.omit';
 import { quickSignupIsValidFor } from './quick-signup.js';
 import { isSchoolEmailForMajor, resolveSchoolMail, schoolDetails } from './school.js';
 
@@ -20,7 +22,8 @@ export const saveUser = async (
     lastName,
     majorId,
     graduationYear,
-    password,
+    churrosPassword,
+    ldapPassword,
     birthday,
     apprentice,
     cededImageRightsToTVn7,
@@ -49,7 +52,7 @@ export const saveUser = async (
       cededImageRightsToTVn7,
       apprentice,
       // TODO only store for non-ldap-backed accounts
-      credentials: { create: { type: CredentialType.Password, value: password } },
+      credentials: { create: { type: CredentialType.Password, value: churrosPassword } },
       links: { create: [] },
       canAccessDocuments: Boolean(majorId), // TODO behavior should be different for ensat
     },
@@ -61,6 +64,24 @@ export const saveUser = async (
       },
     },
   });
+
+  try {
+    await upsertLdapUser({
+      uid: uid,
+      firstName: firstName,
+      lastName: lastName,
+      email: [email],
+      password: ldapPassword,
+    });
+  } catch (error) {
+    console.error('Failed to create LDAP user', error);
+    log(
+      'registration',
+      'upsertLdapUser',
+      { error, user: omit(user, 'churrosPassword', 'ldapPassword') },
+      user.id,
+    );
+  }
 
   await prisma.userCandidate.delete({ where: { id } });
 
