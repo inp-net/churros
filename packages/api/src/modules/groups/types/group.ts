@@ -178,8 +178,14 @@ export const GroupType = builder.prismaNode('Group', {
           description: "Lève une erreur avec le message donné si la permission n'est pas accordée",
         }),
       },
-      resolve: async (group, { assert }, { user }) => {
-        const can = canEditGroup(user, group);
+      resolve: async ({ id }, { assert }, { user }) => {
+        const can = canEditGroup(
+          user,
+          await prisma.group.findUniqueOrThrow({
+            where: { id },
+            include: canEditGroup.prismaIncludes,
+          }),
+        );
         if (assert && !can) throw new GraphQLError(assert);
         return can;
       },
