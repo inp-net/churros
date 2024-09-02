@@ -1,5 +1,14 @@
 # @churros/app
 
+## 2.3.2
+
+### Patch Changes
+
+- f4d6f2e: send 404 on /uid.png when picture is not set
+- daf01e1: improve wording on ticket beneficiaries (closes #1077)
+- 5df3d35: image on picture edit forms was stretched
+- 989388c: PillLink on event look like they have social=true (closes #1079)
+
 ## 2.3.1
 
 ### Patch Changes
