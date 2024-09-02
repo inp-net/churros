@@ -25,7 +25,12 @@ builder.mutationField('completeSignup', (t) =>
       const candidate = await prisma.userCandidate.findUniqueOrThrow({
         where: { token },
       });
-      await log('signups', 'complete', { candidate, token }, candidate.id);
+      await log(
+        'signups',
+        'complete',
+        { candidate: omit(candidate, 'churrosPassword', 'ldapPassword'), token },
+        candidate.id,
+      );
       const user = await completeRegistration(
         await prisma.userCandidate.update({
           where: { token },
