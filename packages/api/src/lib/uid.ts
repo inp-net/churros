@@ -21,13 +21,14 @@ export async function uidIsFree(uid: string): Promise<boolean> {
   // estimate about the tables that _should_ in a normal use-case be the least filled to the most filled.
   // counting the total rows before might or might not result in better performance, idk tbh.
   // should be fast anyway because all uids are indexed
-  if (await prisma.school.findUnique({ where: { uid } })) return false;
-  if (await prisma.studentAssociation.findUnique({ where: { uid } })) return false;
-  if (await prisma.major.findUnique({ where: { uid } })) return false;
-  if (await prisma.group.findUnique({ where: { uid } })) return false;
-  if (await prisma.userCandidate.findFirst({ where: { uid } })) return false;
-  if (await prisma.user.findUnique({ where: { uid } })) return false;
-  if (await prisma.blockedUid.findUnique({ where: { uid } })) return false;
+  const clause = { uid: { equals: uid, mode: 'insensitive' } } as const;
+  if (await prisma.school.findFirst({ where: clause })) return false;
+  if (await prisma.studentAssociation.findFirst({ where: clause })) return false;
+  if (await prisma.major.findFirst({ where: clause })) return false;
+  if (await prisma.group.findFirst({ where: clause })) return false;
+  if (await prisma.userCandidate.findFirst({ where: clause })) return false;
+  if (await prisma.user.findFirst({ where: clause })) return false;
+  if (await prisma.blockedUid.findFirst({ where: clause })) return false;
   return true;
 }
 
