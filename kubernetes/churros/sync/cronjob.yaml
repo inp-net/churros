@@ -24,4 +24,6 @@ spec:
               envFrom:
                 - configMapRef:
                     name: churros-config
+                - secretRef:
+                    name: churros-secrets
           restartPolicy: Never
