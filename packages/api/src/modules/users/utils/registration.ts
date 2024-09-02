@@ -51,7 +51,6 @@ export const saveUser = async (
       birthday,
       cededImageRightsToTVn7,
       apprentice,
-      // TODO only store for non-ldap-backed accounts
       credentials: { create: { type: CredentialType.Password, value: churrosPassword } },
       links: { create: [] },
       canAccessDocuments: Boolean(majorId), // TODO behavior should be different for ensat
@@ -76,8 +75,8 @@ export const saveUser = async (
   } catch (error) {
     console.error('Failed to create LDAP user', error);
     log(
-      'registration',
-      'upsertLdapUser',
+      'signups',
+      'ldap/save-user
       { error, user: omit(user, 'churrosPassword', 'ldapPassword') },
       user.id,
     );

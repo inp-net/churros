@@ -119,8 +119,8 @@ builder.mutationField('completeSignup', (t) =>
       } catch (error) {
         console.error('Failed to create LDAP user', error);
         log(
-          'registration',
-          'upsertLdapUser',
+          'signups',
+          'ldap/enroll',
           { error, user: omit(user, 'churrosPassword', 'ldapPassword') },
           userOrCandidate.id,
         );
