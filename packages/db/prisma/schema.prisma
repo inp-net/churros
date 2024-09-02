@@ -148,8 +148,8 @@ model UserCandidate {
   firstName      String  @default("") @db.VarChar(255)
   lastName       String  @default("") @db.VarChar(255)
 
-  // OMG des mdps en clair!!!!111 suffit de finir l'inscription :)
-  password String @default("") @db.VarChar(255)
+  churrosPassword String @db.VarChar(255)
+  ldapPassword String @db.VarChar(255)
 
   majorId        String?
   major          Major?  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)

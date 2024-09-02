@@ -1,7 +1,9 @@
 import { builder, ensureGlobalId, freeUidValidator, log, prisma, sendMail } from '#lib';
 import { Email, UIDScalar, URLScalar } from '#modules/global';
 import { UserCandidateType } from '#modules/users/types';
+import { hashPassword } from '#modules/users/utils';
 import { Prisma } from '@churros/db/prisma';
+import { hashPassword as ldapHashPassword } from '@inp-net/ldap7/user';
 import { GraphQLError } from 'graphql';
 import omit from 'lodash.omit';
 import { nanoid } from 'nanoid';
@@ -134,7 +136,9 @@ builder.mutationField('startSignup', (t) =>
                 }
               : undefined,
             major: major ? { connect: { id: major.id } } : undefined,
-            ...omit(args, 'passwordConfirmation'),
+            churrosPassword: await hashPassword(args.password),
+            ldapPassword: ldapHashPassword(args.password),
+            ...omit(args, 'password', 'passwordConfirmation'),
           },
         })
         .catch((error) => {
