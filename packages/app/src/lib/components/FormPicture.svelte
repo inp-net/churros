@@ -143,6 +143,10 @@
     height: 7rem;
   }
 
+  .preview img {
+    object-fit: cover;
+  }
+
   .preview .no-img {
     display: flex;
     align-items: center;
