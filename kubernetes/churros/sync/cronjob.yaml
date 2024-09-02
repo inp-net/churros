@@ -21,4 +21,7 @@ spec:
                       key: uri
                 - name: DATABASE_URL
                   value: $(DATABASE_BASE_URL)?pool_timeout=60
+              envFrom:
+                - configMapRef:
+                    name: churros-config
           restartPolicy: Never
