@@ -76,7 +76,7 @@ export const saveUser = async (
     console.error('Failed to create LDAP user', error);
     log(
       'signups',
-      'ldap/save-user
+      'ldap/save-user',
       { error, user: omit(user, 'churrosPassword', 'ldapPassword') },
       user.id,
     );
