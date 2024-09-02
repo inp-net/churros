@@ -184,7 +184,7 @@
 
     <section class="info">
       <dl>
-        <dt>Bénéficiaire</dt>
+        <dt>Place pour</dt>
         <dd>
           <BookingBeneficiary {booking} />
         </dd>
