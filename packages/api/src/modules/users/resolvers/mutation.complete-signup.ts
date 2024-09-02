@@ -7,10 +7,12 @@ import {
   type Major,
   type UserCandidate,
 } from '@churros/db/prisma';
+import { upsertLdapUser } from '@inp-net/ldap7/user';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
+import omit from 'lodash.omit';
 import { nanoid } from 'nanoid';
-import { completeRegistration, hashPassword } from '../index.js';
+import { completeRegistration } from '../index.js';
 import { SignupCompletionResultType } from '../types/signup-completion-result.js';
 
 builder.mutationField('completeSignup', (t) =>
@@ -23,13 +25,17 @@ builder.mutationField('completeSignup', (t) =>
       const candidate = await prisma.userCandidate.findUniqueOrThrow({
         where: { token },
       });
-      await log('signups', 'complete', { candidate, token }, candidate.id);
+      await log(
+        'signups',
+        'complete',
+        { candidate: omit(candidate, 'churrosPassword', 'ldapPassword'), token },
+        candidate.id,
+      );
       const user = await completeRegistration(
         await prisma.userCandidate.update({
           where: { token },
           data: {
             emailValidated: true,
-            password: await hashPassword(candidate.password),
           },
           include: {
             major: { include: { schools: true } },
@@ -102,15 +108,23 @@ builder.mutationField('completeSignup', (t) =>
             },
           });
 
-      // TODO set token on response header
-      // TODO: ldap7 support
-      // if (user?.major && user.major.ldapSchool) {
-      //   try {
-      //     await createLdapUser({ ...user, otherEmails: [] }, password);
-      //   } catch (error) {
-      //     console.error(error);
-      //   }
-      // }
+      try {
+        await upsertLdapUser({
+          uid: userOrCandidate.uid,
+          firstName: userOrCandidate.firstName,
+          lastName: userOrCandidate.lastName,
+          email: [userOrCandidate.email],
+          password: 'ldapPassword' in userOrCandidate ? userOrCandidate.ldapPassword : undefined,
+        });
+      } catch (error) {
+        console.error('Failed to create LDAP user', error);
+        log(
+          'signups',
+          'ldap/enroll',
+          { error, user: omit(user, 'churrosPassword', 'ldapPassword') },
+          userOrCandidate.id,
+        );
+      }
 
       return {
         needsManualValidation: needsVerification,

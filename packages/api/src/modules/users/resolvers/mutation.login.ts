@@ -112,7 +112,7 @@ export async function login(
       // }
 
       // eslint-disable-next-line unicorn/no-lonely-if
-      if (await verifyPassword(userCandidate.password, password)) {
+      if (await verifyPassword(userCandidate.churrosPassword, password)) {
         if (needsManualValidation(userCandidate)) {
           await log('login', 'fail-awaiting-validation', {
             uidOrEmail,
