@@ -3,4 +3,4 @@
 '@churros/db': patch
 ---
 
-fix(registration): upsert user in ldap
+fix(signups): upsert user in ldap
