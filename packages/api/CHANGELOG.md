@@ -1,5 +1,14 @@
 # @churros/api
 
+## 2.1.2
+
+### Patch Changes
+
+- bf11f6b: fix(signups): upsert user in ldap
+- 97ca481: prevent case-only uniques in uids
+- Updated dependencies [bf11f6b]
+  - @churros/db@1.0.1
+
 ## 2.1.1
 
 ### Patch Changes
