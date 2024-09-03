@@ -1,5 +1,18 @@
 # @churros/api
 
+## 2.2.0
+
+### Minor Changes
+
+- 682a3b8: feat(contributions): allow marking contributions as paid when we are admin of at least one of the AEs, not all of them
+- 3b34c20: feat(ticketing): add external payment method
+
+### Patch Changes
+
+- d5f68be: fix app crash when handover page are generated for group without president or treasurer
+- Updated dependencies [3b34c20]
+  - @churros/db@1.1.0
+
 ## 2.1.2
 
 ### Patch Changes

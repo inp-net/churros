@@ -1,5 +1,12 @@
 # @churros/app
 
+## 2.4.0
+
+### Minor Changes
+
+- 3b34c20: feat(ticketing): add external payment method
+- bc65f15: feat(bookings): show booking links at the end of the payment journey
+
 ## 2.3.2
 
 ### Patch Changes
