@@ -2307,7 +2307,7 @@ type Mutation {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = ""): Boolean!
+  acknowledgeChangelog(version: String! = "dev"): Boolean!
 
   """
   Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
@@ -4242,6 +4242,11 @@ enum PaymentMethod {
   Check
 
   """
+  Paiement externe à Churros
+  """
+  External
+
+  """
   Lydia
   """
   Lydia
@@ -4338,6 +4343,7 @@ type ProfitsBreakdownByPaymentMethod {
   Card: Float!
   Cash: Float!
   Check: Float!
+  External: Float!
   Lydia: Float!
   Other: Float!
   PayPal: Float!
@@ -4420,7 +4426,7 @@ type Query {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version ().
+    The version to request a changelog for. Defaults to the current version (dev).
     """
     version: String
   ): ChangelogRelease!
@@ -4439,9 +4445,9 @@ type Query {
     sort: SortDirection! = Ascending
 
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version ().
+    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
     """
-    to: String! = ""
+    to: String! = "dev"
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
