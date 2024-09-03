@@ -1,5 +1,11 @@
 # @churros/db
 
+## 1.1.0
+
+### Minor Changes
+
+- 3b34c20: feat(ticketing): add external payment method
+
 ## 1.0.1
 
 ### Patch Changes
