@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { log, prisma } from '#lib';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
 import { api } from './express.js';
@@ -53,6 +53,8 @@ api.get('/print-handover/:uid', async (req, res) => {
       id: true,
     },
   });
+
+  log('groups', 'print-handover', { group, AE }, id);
 
   //récupération de l'ensemble des membres du bureau
   let boardMembersUser = await prisma.user.findMany({
@@ -138,113 +140,117 @@ api.get('/print-handover/:uid', async (req, res) => {
     boardMembers.push({ ...user, ...element });
   }
 
-  const contentPDF = {
-    info: {
-      title: 'Fiche de passation - ' + group?.uid,
-    },
-    content: [
-      {
-        //TODO : Changer l'image en fonction de l'école
-        image: 'static/aen7_black.png',
-        width: 150,
-        margin: [0, 0, 0, 10],
+  try {
+    const contentPDF = {
+      info: {
+        title: 'Fiche de passation - ' + group?.uid,
       },
-      {
-        //info sur l'école, la encore faut les déhardcoder
-        text: [
-          'Association des élèves de l’ENSEEIHT\n',
-          '2 rue Charles Camichel\n',
-          '31071 Toulouse\n',
-          'Tél. : 05 61 58 82 19\n',
-          'E-mail : bde@bde.enseeiht.fr\n',
-        ],
-        margin: [0, 0, 0, 20],
-        lineHeight: 1.4,
-      },
-      {
-        columnGap: 10,
-        columns: [
-          //Tableau de gauche pour les infos sur les membres du bureau
-          {
-            layout: 'noBorders',
-            table: {
-              headerRows: 1,
-              heights: 8,
-              width: [50, 50],
-              body: boardMemberBuildInfo(boardMembers, 0),
-            },
-          },
-          //tableau de droite
-          {
-            layout: 'noBorders',
-            table: {
-              headerRows: 1,
-              heights: 8,
-              width: [70, 70],
-              body: boardMemberBuildInfo(boardMembers, 1),
-            },
-          },
-        ],
-        fontSize: 10,
-      },
-      {
-        text: [
-          'Le·a président·e et trésorier·e signataires sont officiellement responsables du club et du compte bancaire associé',
-        ],
-        margin: [0, 30, 0, 100],
-      },
-      {
-        layout: 'noBorders',
-        table: {
-          body: [
-            [
-              //TODO : Déhardcoder les noms le jour où on aura les infos sur les prez et trésorier AE
-              {
-                text: [
-                  `Le·a président·e de l’AEn7, \n ${studentAssociationPresident?.firstName} ${studentAssociationPresident?.lastName}`,
-                ],
-                alignment: 'center',
-              },
-              {
-                text: [
-                  `Le·a trésorier·e de l’AEn7, \n ${studentAssociationTreasurer?.firstName} ${studentAssociationTreasurer?.lastName}`,
-                ],
-                alignment: 'center',
-              },
-              {
-                text: [
-                  `Le·a président·e du club ${group?.name}, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
-                ],
-                alignment: 'center',
-              },
-              {
-                text: [
-                  `Le·a trésorier·e du club ${group?.name}, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
-                ],
-                alignment: 'center',
-              },
-            ],
-          ],
+      content: [
+        {
+          //TODO : Changer l'image en fonction de l'école
+          image: 'static/aen7_black.png',
+          width: 150,
+          margin: [0, 0, 0, 10],
         },
-        fontSize: 10,
+        {
+          //info sur l'école, la encore faut les déhardcoder
+          text: [
+            'Association des élèves de l’ENSEEIHT\n',
+            '2 rue Charles Camichel\n',
+            '31071 Toulouse\n',
+            'Tél. : 05 61 58 82 19\n',
+            'E-mail : bde@bde.enseeiht.fr\n',
+          ],
+          margin: [0, 0, 0, 20],
+          lineHeight: 1.4,
+        },
+        {
+          columnGap: 10,
+          columns: [
+            //Tableau de gauche pour les infos sur les membres du bureau
+            {
+              layout: 'noBorders',
+              table: {
+                headerRows: 1,
+                heights: 8,
+                width: [50, 50],
+                body: boardMemberBuildInfo(boardMembers, 0),
+              },
+            },
+            //tableau de droite
+            {
+              layout: 'noBorders',
+              table: {
+                headerRows: 1,
+                heights: 8,
+                width: [70, 70],
+                body: boardMemberBuildInfo(boardMembers, 1),
+              },
+            },
+          ],
+          fontSize: 10,
+        },
+        {
+          text: [
+            'Le·a président·e et trésorier·e signataires sont officiellement responsables du club et du compte bancaire associé',
+          ],
+          margin: [0, 30, 0, 100],
+        },
+        {
+          layout: 'noBorders',
+          table: {
+            body: [
+              [
+                //TODO : Déhardcoder les noms le jour où on aura les infos sur les prez et trésorier AE
+                {
+                  text: [
+                    `Le·a président·e de l’AEn7, \n ${studentAssociationPresident?.firstName} ${studentAssociationPresident?.lastName}`,
+                  ],
+                  alignment: 'center',
+                },
+                {
+                  text: [
+                    `Le·a trésorier·e de l’AEn7, \n ${studentAssociationTreasurer?.firstName} ${studentAssociationTreasurer?.lastName}`,
+                  ],
+                  alignment: 'center',
+                },
+                {
+                  text: [
+                    `Le·a président·e du club ${group?.name}, \n ${boardMembers[0]?.firstName} ${boardMembers[0]?.lastName}`,
+                  ],
+                  alignment: 'center',
+                },
+                {
+                  text: [
+                    `Le·a trésorier·e du club ${group?.name}, \n ${boardMembers[1]?.firstName} ${boardMembers[1]?.lastName}`,
+                  ],
+                  alignment: 'center',
+                },
+              ],
+            ],
+          },
+          fontSize: 10,
+        },
+      ],
+      defaultStyle: {
+        font: 'Helvetica',
       },
-    ],
-    defaultStyle: {
-      font: 'Helvetica',
-    },
-  };
+    };
 
-  const printer = new pdfMakePrinter(fonts);
-  // @ts-expect-error pdfmake est typé bizarrement, la génération fonctionne
-  const pdf = printer.createPdfKitDocument(contentPDF);
+    const printer = new pdfMakePrinter(fonts);
+    // @ts-expect-error pdfmake est typé bizarrement, la génération fonctionne
+    const pdf = printer.createPdfKitDocument(contentPDF);
 
-  const filestem = `Fiche passation - ${group?.uid}`;
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
-  pdf.pipe(res);
-  pdf.end();
+    const filestem = `Fiche passation - ${group?.uid}`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `filename="${encodeURIComponent(filestem)}.pdf"`);
+    pdf.pipe(res);
+    pdf.end();
 
-  return pdf;
+    return pdf;
+  } catch {
+    return res.status(500).json({ error: 'Erreur lors de la génération du PDF' });
+  }
 });
 
 const fonts: TFontDictionary = {
