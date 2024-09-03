@@ -62,8 +62,9 @@ export function canMarkContributionAsPaid(
 ) {
   if (!user) return false;
   if (user.admin) return true;
-  // Can only mark contribution as paid if user is student association admin on ALL associations the contribution option pays for
-  return option.paysFor.every((sa) =>
+  // Can only mark contribution as paid if user is student association admin on ONE OF the associations the contribution option pays for
+  // The idea is that if the contribution option exists, there is an agreement between the associations that every admin of the associations is responsible for the contributor status of all associations of the agreement.
+  return option.paysFor.some((sa) =>
     user.adminOfStudentAssociations.some((adminSA) => adminSA.id === sa.id),
   );
 }
