@@ -48,6 +48,7 @@ import IconWebsite from '~icons/mdi/web';
 import IconBankTransfer from '~icons/msl/account-balance-outline';
 import IconCash from '~icons/msl/account-balance-wallet-outline';
 import IconPaymentCheck from '~icons/msl/checkbook-outline';
+import IconExternalPayment from '~icons/msl/conversion-path';
 import IconCreditCard from '~icons/msl/credit-card-outline';
 import LogoFrappe from './components/LogoFrappe.svelte';
 
@@ -61,11 +62,13 @@ export const DISPLAY_PAYMENT_METHODS: Record<PaymentMethod$options, string> = {
   Lydia: 'Lydia',
   Other: 'Autre',
   PayPal: 'PayPal',
+  External: 'Externe à Churros',
 };
 
 export const ORDER_PAYMENT_METHODS: PaymentMethod$options[] = [
   'Lydia',
   'Cash',
+  'External',
   'Card',
   'Check',
   'Transfer',
@@ -188,6 +191,7 @@ export const ICONS_PAYMENT_METHODS: Record<PaymentMethod$options, typeof SvelteC
   Other: IconQuestionMark,
   Transfer: IconBankTransfer,
   PayPal: LogoPaypal,
+  External: IconExternalPayment,
 };
 
 export const DISPLAY_EVENT_FREQUENCY: Record<EventFrequency$options, string> = {

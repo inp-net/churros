@@ -695,6 +695,7 @@ enum PaymentMethod {
   Transfer
   Check
   Cash
+  External
   Other
 }
 

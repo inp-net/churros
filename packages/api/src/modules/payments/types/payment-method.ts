@@ -27,5 +27,8 @@ export const PaymentMethodEnum = builder.enumType(PaymentMethod, {
     Transfer: {
       description: 'Virement',
     },
+    External: {
+      description: 'Paiement externe à Churros',
+    },
   },
 });

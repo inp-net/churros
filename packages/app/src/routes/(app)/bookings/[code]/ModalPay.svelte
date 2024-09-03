@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export type Step = 'method' | 'lydia' | 'lydia-waiting' | 'nonlydia';
+  export type Step = 'method' | 'lydia' | 'lydia-waiting' | 'nonlydia' | 'links';
 </script>
 
 <script lang="ts">
@@ -22,6 +22,7 @@
   import { allLoaded } from '$lib/loading';
   import IconBack from '~icons/msl/arrow-left-alt';
   import IconOpenInNew from '~icons/msl/open-in-new';
+  import PillLink from '$lib/components/PillLink.svelte';
 
   export let me;
   $: dataMe = fragment(
@@ -43,6 +44,9 @@
         ticket {
           price
           allowedPaymentMethods
+          links {
+            ...PillLink
+          }
         }
       }
     `),
@@ -229,6 +233,22 @@
 
       <nav>
         <ButtonSecondary icon={IconBack} on:click={back}>Retour</ButtonSecondary>
+        <ButtonPrimary
+          on:click={() => {
+            if ($data.ticket.links.length > 0) advance('links');
+            else close();
+          }}>OK</ButtonPrimary
+        >
+      </nav>
+    {:else if step === 'links'}
+      <ul class="links">
+        {#each $data.ticket.links as link}
+          <PillLink {link} />
+        {/each}
+      </ul>
+
+      <nav>
+        <ButtonSecondary icon={IconBack} on:click={back}>Retour</ButtonSecondary>
         <ButtonPrimary on:click={close}>OK</ButtonPrimary>
       </nav>
     {/if}
@@ -243,6 +263,14 @@
     align-items: center;
     justify-content: center;
     padding: 3rem 1rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    justify-content: center;
   }
 
   form {
