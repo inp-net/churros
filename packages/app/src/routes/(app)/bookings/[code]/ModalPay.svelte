@@ -150,8 +150,6 @@
         Moyen de paiement
       {:else if step === 'lydia'}
         Paiement par Lydia
-      {:else if step === 'links'}
-        Ça peut être utile
       {:else}
         Paiement
       {/if}
