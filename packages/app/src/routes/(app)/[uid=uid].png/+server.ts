@@ -13,7 +13,7 @@ export async function GET(event) {
   `).fetch({ variables: event.params, event });
 
   if (data?.profile && 'pictureURL' in data.profile && data.profile.pictureURL)
-    redirect(301, data.profile.pictureURL);
+    redirect(302, data.profile.pictureURL);
 
   error(404, { message: 'Profil introuvable' });
 }
