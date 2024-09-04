@@ -3,7 +3,7 @@ import { ColorScalar, DateTimeScalar, Email, HTMLScalar } from '#modules/global'
 import { prismaQueryAccessibleArticles } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { PicturedInterface } from '../../global/types/pictured.js';
-import { canEditGroup, GroupEnumType } from '../index.js';
+import { canEditGroup, GroupEnumType, GroupMemberType } from '../index.js';
 import {
   canChangeGroupStudentAssociation,
   canChangeGroupType,
@@ -77,6 +77,21 @@ export const GroupType = builder.prismaNode('Group', {
       description: "L'utilisateur.ice connecté.e est membre de ce groupe",
       resolve({ id }, _, { user }) {
         return Boolean(user?.groups.some((m) => m.groupId === id));
+      },
+    }),
+    membership: t.prismaField({
+      type: GroupMemberType,
+      nullable: true,
+      description: "L'adhésion de l'utilisateur.ice connecté.e à ce groupe",
+      async resolve(query, { id }, _, { user }) {
+        if (!user) return null;
+        return prisma.groupMember.findFirst({
+          ...query,
+          where: {
+            groupId: id,
+            memberId: user.id,
+          },
+        });
       },
     }),
     // TODO connection
