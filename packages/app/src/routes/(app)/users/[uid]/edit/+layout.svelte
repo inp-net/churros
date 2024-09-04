@@ -76,7 +76,7 @@
           Autres e-mails
         </SubmenuItem>
         <SubmenuItem icon={IconBirthday} label>
-          Date d'anniversaire
+          Date de naissance
           <svelte:fragment slot="right">
             {#if loaded(user.birthday)}
               <InputDate
