@@ -1,7 +1,7 @@
 import { builder, prisma, toHtml } from '#lib';
 import { MajorType } from '#modules/curriculum';
 import { DateTimeScalar } from '#modules/global';
-import { PaymentMethodEnum, priceWithPromotionsApplied as actualPrice } from '#modules/payments';
+import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
 import { canBookTicket, shotgunIsOpen } from '#modules/ticketing/utils';
 import type { Prisma } from '@churros/db/prisma';
@@ -38,10 +38,47 @@ export const TicketType = builder.prismaNode('Ticket', {
       description: 'Si le shotgun du billet est ouvert',
       resolve: shotgunIsOpen,
     }),
-    basePrice: t.exposeFloat('price'),
+    basePrice: t.exposeFloat('minimumPrice', {
+      deprecationReason: 'Use minimumPrice instead',
+    }),
     price: t.float({
+      deprecationReason: 'Use minimumPrice(applyPromotions: true) instead',
       async resolve(ticket, _, { user }) {
-        return actualPrice(ticket, user);
+        return actualPrice(
+          user,
+          await prisma.ticket.findUniqueOrThrow({
+            where: { id: ticket.id },
+            include: actualPrice.prismaIncludes,
+          }),
+          null,
+        );
+      },
+    }),
+    priceIsVariable: t.boolean({
+      description:
+        "Le billet permet de payer un prix choisi par l'utilisateur.ice, entre minimumPrice et maximumPrice",
+      // FIXME: will not work if we one day work with currencies that somehow have more than 2 decimal places
+      resolve: ({ minimumPrice, maximumPrice }) => Math.abs(minimumPrice - maximumPrice) > 0.01,
+    }),
+    maximumPrice: t.exposeFloat('maximumPrice', { description: 'Prix maximum du billet' }),
+    minimumPrice: t.float({
+      description: 'Prix minimum du billet',
+      args: {
+        applyPromotions: t.arg.boolean({
+          defaultValue: true,
+          description:
+            "Calculer le minimum en prenant en compte les promotions applicables pour l'utilisateur.ice. ATTENTION: Certaines promotions sont confidentielles, et donc le prix minimum avec promotions appliquées ne devrait donc pas être affiché sur des pages susceptibles d'être montrées à d'autres (comme une page de QR code servant à se faire scanner son billet, par exemple)",
+        }),
+      },
+      async resolve(ticket, _, { user }) {
+        return actualPrice(
+          user,
+          await prisma.ticket.findUniqueOrThrow({
+            where: { id: ticket.id },
+            include: actualPrice.prismaIncludes,
+          }),
+          null,
+        );
       },
     }),
     capacity: t.exposeInt('capacity', { nullable: true }),

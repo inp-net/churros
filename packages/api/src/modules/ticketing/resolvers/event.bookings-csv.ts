@@ -106,6 +106,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           paymentMethod,
           id,
           externalBeneficiary,
+          wantsToPay,
         }: (typeof registrations)[number],
         benef:
           | undefined
@@ -138,7 +139,8 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           'Filière': benef?.major?.shortName ?? '',
           'Année': benef ? `${yearTier(benef.graduationYear)}A` : '',
           'Promo': benef?.graduationYear.toString() ?? '',
-          'Prix': ticket.price.toString(),
+          // For confidentiality reasons, we won't show actual price paid if it's lower than the minimum (this means the user used a promotion, and some promotions are sensitive information)
+          'Prix': (wantsToPay ?? ticket.minimumPrice).toString(),
           'Code de réservation': localID(id).toUpperCase(),
           'Lien vers la place': bookingURL
             .toString()

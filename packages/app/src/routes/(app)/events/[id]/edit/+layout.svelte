@@ -80,9 +80,8 @@
   function applicableOffers(
     event: LayoutEventEdit$result['event'],
   ): MaybeLoading<PromotionType$options[]> {
-    if (event.applicableOffers.every(loaded)) 
-      return event.applicableOffers;
-    
+    if (event.applicableOffers.every(loaded)) return event.applicableOffers;
+
     return PendingValue;
   }
 </script>

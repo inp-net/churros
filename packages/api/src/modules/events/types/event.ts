@@ -210,7 +210,7 @@ export const EventType = builder.prismaNode('Event', {
           include: { ticket: true },
         });
         const sumUp = (regs: typeof registrations) =>
-          regs.reduce((acc, r) => acc + (r.paid ? r.ticket.price : 0), 0);
+          regs.reduce((acc, r) => acc + (r.paid ? (r.wantsToPay ?? r.ticket.minimumPrice) : 0), 0);
 
         return {
           total: sumUp(registrations),

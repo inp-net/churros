@@ -117,7 +117,8 @@ export function generatePDF(
                     : registration.authorEmail,
                   registration.ticket.event.title + '\n',
                   registration.ticket.name + '\n',
-                  registration.ticket.price + '€\n',
+                  // TODO generate pdf via frontend, use .priceIsVariable, etc.
+                  registration.ticket.minimumPrice + '€\n',
                   registration.paymentMethod
                     ? DISPLAY_PAYMENT_METHODS[
                         registration.paymentMethod as keyof typeof DISPLAY_PAYMENT_METHODS

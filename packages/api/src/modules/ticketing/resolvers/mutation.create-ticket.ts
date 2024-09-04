@@ -39,7 +39,8 @@ builder.mutationField('createTicket', (t) =>
           name: args.name ?? '',
           description: '',
           slug: '',
-          price: 0,
+          minimumPrice: 0,
+          maximumPrice: 0,
           group: args.group
             ? { connect: { id: ensureGlobalId(args.group, 'TicketGroup') } }
             : undefined,

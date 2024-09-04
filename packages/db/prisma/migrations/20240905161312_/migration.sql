@@ -1,3 +1,10 @@
+/*
+  Warnings:
+
+  - Added the required column `maximumPrice` to the `Ticket` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `minimumPrice` to the `Ticket` table without a default value. This is not possible if the table is not empty.
+
+*/
 -- AlterTable
 ALTER TABLE "Announcement" ALTER COLUMN "id" SET DEFAULT nanoid('ann:');
 
@@ -105,7 +112,8 @@ ALTER TABLE "QuickSignup" ALTER COLUMN "id" SET DEFAULT nanoid('quicksignup:', 6
 ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
 
 -- AlterTable
-ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
+ALTER TABLE "Registration" ADD COLUMN     "wantsToPay" DOUBLE PRECISION,
+ALTER COLUMN "id" SET DEFAULT nanoid('r:');
 
 -- AlterTable
 ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:'),
@@ -142,8 +150,10 @@ ALTER TABLE "Theme" ALTER COLUMN "id" SET DEFAULT nanoid('theme:');
 ALTER TABLE "ThemeValue" ALTER COLUMN "id" SET DEFAULT nanoid('themeval:');
 
 -- AlterTable
-ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:'),
-ALTER COLUMN "maximumPrice" DROP DEFAULT;
+ALTER TABLE "Ticket" ADD COLUMN     "maximumPrice" DOUBLE PRECISION NOT NULL,
+ADD COLUMN     "minimumPrice" DOUBLE PRECISION NOT NULL,
+ALTER COLUMN "id" SET DEFAULT nanoid('t:'),
+ALTER COLUMN "price" DROP NOT NULL;
 
 -- AlterTable
 ALTER TABLE "TicketGroup" ALTER COLUMN "id" SET DEFAULT nanoid('tg:');

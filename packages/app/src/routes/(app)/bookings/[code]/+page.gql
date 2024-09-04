@@ -19,14 +19,16 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
     awaitingPayment
     paymentMethod
     createdAt
+    wantsToPay
     qrCode(url: $qrCodeURLTemplate) {
       path
       viewbox
     }
     ticket {
       name
-      price
-      basePrice
+      minimumPrice
+      maximumPrice
+      priceIsVariable
       links {
         url
         text

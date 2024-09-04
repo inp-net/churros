@@ -19,7 +19,17 @@ builder.mutationField('updateTicket', (t) =>
       price: t.arg.float({
         required: false,
         validate: { min: 0 },
-        description: 'Prix en euros du billet',
+        description: 'Prix en euros du billet. Met à jour les prix minimum et maximum',
+      }),
+      minimumPrice: t.arg.float({
+        required: false,
+        validate: { min: 0 },
+        description: 'Prix minimum en euros du billet',
+      }),
+      maximumPrice: t.arg.float({
+        required: false,
+        validate: { min: 0 },
+        description: 'Prix maximum en euros du billet',
       }),
       capacity: t.arg({ required: false, type: CapacityScalar }),
       godsonLimit: t.arg.int({
@@ -70,7 +80,8 @@ builder.mutationField('updateTicket', (t) =>
           opensAt: args.shotgun?.start,
           closesAt: args.shotgun?.end,
           name: args.name ?? undefined,
-          price: args.price ?? undefined,
+          minimumPrice: args.price ?? args.minimumPrice ?? undefined,
+          maximumPrice: args.price ?? args.maximumPrice ?? undefined,
           capacity: args.capacity ? handleUnlimitedCapacity(args.capacity) : undefined,
           godsonLimit: args.godsonLimit ?? undefined,
           allowedPaymentMethods: args.allowedPaymentMethods

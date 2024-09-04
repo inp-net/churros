@@ -1,6 +1,6 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import {
-  priceWithPromotionsApplied as actualPrice,
+  actualPrice,
   payEventRegistrationViaLydia,
   payEventRegistrationViaPaypal,
   PaymentMethodEnum,
@@ -17,6 +17,11 @@ builder.mutationField('payBooking', (t) =>
       code: t.arg.string({ description: 'Code de réservation' }),
       paymentMethod: t.arg({ type: PaymentMethodEnum, required: false }),
       phone: t.arg.string({ required: false }),
+      amount: t.arg.float({
+        required: false,
+        description:
+          "Montant que l'on souhaite payer. Par défaut, le prix du billet. Peut être supérieur si l'on souhaite payer plus",
+      }),
       paidCallback: t.arg.string({
         required: false,
         description:
@@ -30,11 +35,11 @@ builder.mutationField('payBooking', (t) =>
       });
       return canEditBooking(user, booking);
     },
-    async resolve(query, _, { code, paymentMethod, phone, paidCallback }, { user }) {
+    async resolve(query, _, { code, paymentMethod, phone, paidCallback, amount }, { user }) {
       const bookingId = ensureGlobalId(code.toLowerCase(), 'Registration');
       const registration = await prisma.registration.findUnique({
         where: { id: bookingId },
-        include: { ticket: { include: { event: true } } },
+        include: { ticket: { include: actualPrice.prismaIncludes } },
       });
       if (!registration) throw new GraphQLError('Registration not found');
 
@@ -49,7 +54,7 @@ builder.mutationField('payBooking', (t) =>
       if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
         throw new GraphQLError('Phone not found');
 
-      const price = await actualPrice(ticket, user);
+      const price = actualPrice(user, registration.ticket, amount ?? null);
 
       // Process payment
       try {
@@ -64,7 +69,13 @@ builder.mutationField('payBooking', (t) =>
           paidCallback: paidCallback ?? undefined,
         });
 
-        await log('registration', 'pay', { registration, paymentMethod }, bookingId, user);
+        await log(
+          'registration',
+          'pay',
+          { registration, paymentMethod, price, code, paidCallback, amount },
+          bookingId,
+          user,
+        );
       } catch (error) {
         if (error instanceof UnimplementedPaymentMethod) {
           // pass
@@ -76,7 +87,7 @@ builder.mutationField('payBooking', (t) =>
       const result = prisma.registration.update({
         ...query,
         where: { id: bookingId },
-        data: { paymentMethod },
+        data: { paymentMethod, wantsToPay: price },
       });
 
       publish(registration.id, 'updated', registration);

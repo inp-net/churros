@@ -24,7 +24,7 @@
       <slot value={minimum} label={minimumLabel} name="minimum">
         {#if minimumLabel}
           {minimumLabel}
-          <span class="muted">({minimum})</span>
+          <!-- <span class="muted">({minimum})</span> -->
         {:else}
           {minimum}
         {/if}
@@ -34,7 +34,7 @@
       <slot value={maximum} label={maximumLabel} name="maximum">
         {#if maximumLabel}
           {maximumLabel}
-          <span class="muted">({maximum})</span>
+          <!-- <span class="muted">({maximum})</span> -->
         {:else}
           {maximum}
         {/if}
@@ -85,10 +85,13 @@
     gap: 1rem;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+    margin-bottom: -1rem;
   }
 
   .label {
     overflow: hidden;
+    font-size: 1.1em;
     text-overflow: ellipsis;
     white-space: pre;
   }

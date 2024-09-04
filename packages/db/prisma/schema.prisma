@@ -627,6 +627,7 @@ model Ticket {
   description           String          @db.VarChar(255)
   opensAt               DateTime?
   closesAt              DateTime?
+  price                 Float? // TODO remove
   minimumPrice          Float // in EUR
   maximumPrice          Float // in EUR
   capacity              Int?
@@ -670,6 +671,7 @@ model Registration {
   updatedAt             DateTime       @updatedAt
   paymentMethod         PaymentMethod?
   paid                  Boolean        @default(false)
+  wantsToPay            Float?
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?

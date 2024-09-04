@@ -28,11 +28,13 @@ export const UpdateShotgunDates = graphql(`
 `);
 
 export const UpdatePrice = graphql(`
-  mutation UpdateTicketPrice($ticket: LocalID!, $price: Float!) {
-    updateTicket(ticket: $ticket, price: $price) {
+  mutation UpdateTicketPrice($ticket: LocalID!, $minimumPrice: Float, $maximumPrice: Float) {
+    updateTicket(ticket: $ticket, minimumPrice: $minimumPrice, maximumPrice: $maximumPrice) {
       ... on MutationUpdateTicketSuccess {
         data {
-          basePrice
+          minimumPrice
+          maximumPrice
+          priceIsVariable
         }
       }
       ...MutationErrors

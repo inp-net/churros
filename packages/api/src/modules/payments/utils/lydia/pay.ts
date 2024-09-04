@@ -3,8 +3,8 @@ import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@chu
 import { GraphQLError } from 'graphql';
 import {
   LydiaTransactionState,
+  actualPrice,
   checkLydiaTransaction,
-  priceWithPromotionsApplied,
   sendLydiaPaymentRequest,
 } from '../../index.js';
 
@@ -24,8 +24,10 @@ export async function payEventRegistrationViaLydia(
       author: true,
       ticket: {
         include: {
+          ...actualPrice.prismaIncludes,
           event: {
             include: {
+              ...actualPrice.prismaIncludes.event.include,
               beneficiary: true,
             },
           },
@@ -79,7 +81,7 @@ export async function payEventRegistrationViaLydia(
 
   const requestDetails = await sendLydiaPaymentRequest(
     registration.ticket.event.title,
-    await priceWithPromotionsApplied(registration.ticket, registration.author ?? undefined),
+    actualPrice(registration.author, registration.ticket, registration.wantsToPay),
     phone,
     beneficiaryVendorToken,
   );

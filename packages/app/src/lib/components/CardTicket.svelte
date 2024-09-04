@@ -16,7 +16,6 @@
     loaded,
     loading,
     mapAllLoading,
-    mapLoading,
     onceAllLoaded,
     onceLoaded,
     type MaybeLoading,
@@ -75,7 +74,8 @@
         opensAt
         closesAt
         name
-        price
+        minimumPrice(applyPromotions: true)
+        priceIsVariable
         event {
           localID
         }
@@ -160,7 +160,12 @@
           }
         : undefined}
       >Obtenir {#if externalURL}<IconOpenExternal />{/if}{#if $data}<span class="price"
-          ><LoadingText value={mapLoading($data?.price, (p) => `${p}€`)}>...</LoadingText></span
+          ><LoadingText
+            value={mapAllLoading(
+              [$data?.minimumPrice, $data?.priceIsVariable],
+              (min, variable) => `${variable ? '⩾' : ''}${min}€`,
+            )}>...</LoadingText
+          ></span
         >{/if}
     </ButtonSecondary>
     {#if $dataPlaces}

@@ -45,6 +45,10 @@
   import IconHelp from '~icons/msl/help-outline';
   import IconGodson from '~icons/msl/hub-outline';
   // import IconTicketGroup from '~icons/msl/inventory-2-outline';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import IconHeart from '~icons/msl/favorite-outline';
   import IconShotgunOpen from '~icons/msl/lock-open-outline';
   import IconShotgunClose from '~icons/msl/lock-outline';
   import IconAlumni from '~icons/msl/school-outline';
@@ -68,10 +72,12 @@
     UpdateShotgunDates,
   } from './mutations';
   import SubmenuItemBooleanConstraint from './SubmenuItemBooleanConstraint.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let data: PageData;
   $: ({ PageEventEditTicket } = data);
+
+  let priceIsVariable = false;
+  $: priceIsVariable = loading($PageEventEditTicket?.data?.event.ticket?.priceIsVariable, false);
 
   let openGodsonHelp: () => void;
 
@@ -163,12 +169,16 @@
           </SubmenuItem>
         </InputDateTimeRange>
         <SubmenuItem icon={IconPrice} label>
-          Prix
+          {#if priceIsVariable}
+            Prix minimum
+          {:else}
+            Prix
+          {/if}
           <InputText
             label=""
             inputmode="decimal"
             slot="right"
-            value={onceLoaded(event.ticket.basePrice, (x) => x.toString(), '')}
+            value={onceLoaded(event.ticket.minimumPrice, (x) => x.toString(), '')}
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
               if (!event.ticket) return;
@@ -178,7 +188,7 @@
               toasts.mutation(
                 await mutate(UpdatePrice, {
                   ticket: event.ticket.id,
-                  price: coerced,
+                  minimumPrice: coerced,
                 }),
                 'updateTicket',
                 '',
@@ -186,6 +196,55 @@
               );
             }}
           />
+        </SubmenuItem>
+        <SubmenuItem icon={IconHeart} subtext="Permettre de payer plus" label={!priceIsVariable}>
+          {#if priceIsVariable}
+            Prix maximum
+          {:else}
+            Cotisation solidaire
+          {/if}
+          <div class="max-price" slot="right">
+            {#if priceIsVariable}
+              <InputText
+                label=""
+                inputmode="decimal"
+                slot="right"
+                value={onceLoaded(event.ticket.maximumPrice, (x) => x.toString(), '')}
+                on:blur={async ({ currentTarget }) => {
+                  if (!(currentTarget instanceof HTMLInputElement)) return;
+                  if (!event.ticket) return;
+                  const coerced = currentTarget.value ? Number.parseFloat(currentTarget.value) : 0;
+                  if (Number.isNaN(coerced)) toasts.error('Le prix doit être un nombre');
+
+                  toasts.mutation(
+                    await mutate(UpdatePrice, {
+                      ticket: event.ticket.id,
+                      maximumPrice: coerced,
+                    }),
+                    'updateTicket',
+                    '',
+                    'Impossible de changer le prix maximal',
+                  );
+                }}
+              />
+              <p class="typo-details">
+                <ButtonInk
+                  insideProse
+                  on:click={async () => {
+                    priceIsVariable = false;
+                    if (!event.ticket) return;
+                    await mutate(UpdatePrice, {
+                      ticket: event.ticket.id,
+                      maximumPrice: event.ticket.minimumPrice,
+                    });
+                  }}>Désactiver</ButtonInk
+                >
+              </p>
+            {:else}
+              <InputCheckbox label="" value={false} on:change={() => (priceIsVariable = true)}
+              ></InputCheckbox>
+            {/if}
+          </div>
         </SubmenuItem>
         <SubmenuItem label icon={IconCapacity} subtext="Nombre de places max.">
           Capacité
@@ -284,7 +343,7 @@
                 'or',
               ) || 'Aucune'}
             />
-            {#if loading(event.ticket.basePrice, 0) > 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
+            {#if loading(event.ticket.minimumPrice, 0) > 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
               <span
                 class="warning no-payment-method"
                 use:tooltip={"Le billet est payant, mais aucune méthode de paiement n'est autorisée!"}
