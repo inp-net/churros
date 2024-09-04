@@ -301,7 +301,7 @@
         </ButtonSecondary>
       {/if}
     {:else if $data.__typename === 'Group'}
-      {#if $data.canEditDetails}
+      {#if $data.canEditDetails && $data.isMember}
         <ButtonSecondary stretches href={refroute('/groups/[uid]/edit', $page.params.uid)}>
           Modifier
         </ButtonSecondary>
