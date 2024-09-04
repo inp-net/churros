@@ -29,30 +29,28 @@ builder.mutationField('selfJoinGroup', (t) =>
       )
         throw new GraphQLError(`Tu n'es pas cotisant·e pour ${group.studentAssociation?.name}.`);
 
-      purgeSessionsUser(uid);
-      const groupMember = await prisma.groupMember.create({
+      await purgeSessionsUser(me.uid);
+
+      const membership = await prisma.groupMember.upsert({
         ...query,
-        data: {
-          member: { connect: { uid: me.uid } },
-          group: { connect: { uid } },
+        where: {
+          groupId_memberId: {
+            groupId: group.id,
+            memberId: me.id,
+          },
+        },
+        update: { title: 'Membre' },
+        create: {
+          groupId: group.id,
+          memberId: me.id,
           title: 'Membre', // don't allow people to name themselves "Président", for example.
         },
       });
 
-      const { email } = await prisma.user.findUniqueOrThrow({
-        where: { uid },
-        select: { email: true },
-      });
-      await addMemberToGroupMailingList(uid, email);
+      await addMemberToGroupMailingList(uid, me.email);
 
-      await log(
-        'group-member',
-        'create',
-        { message: `${me.uid} a rejoins ${uid}` },
-        groupMember.groupId,
-        me,
-      );
-      return groupMember;
+      await log('group-member', 'self-join', { message: `${me.uid} a rejoins ${uid}` }, uid, me);
+      return membership;
     },
   }),
 );
