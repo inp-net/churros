@@ -89,6 +89,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
         'Promo',
         'Code de réservation',
         'Lien vers la place',
+        'Prix',
       ] as const;
 
       const humanBoolean = (b: boolean) => (b ? 'Oui' : 'Non');
@@ -137,6 +138,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           'Filière': benef?.major?.shortName ?? '',
           'Année': benef ? `${yearTier(benef.graduationYear)}A` : '',
           'Promo': benef?.graduationYear.toString() ?? '',
+          'Prix': ticket.price.toString(),
           'Code de réservation': localID(id).toUpperCase(),
           'Lien vers la place': bookingURL
             .toString()
