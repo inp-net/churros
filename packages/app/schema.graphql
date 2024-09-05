@@ -3700,7 +3700,7 @@ type MutationResetPasswordSuccess {
 union MutationSelfJoinGroupResult = Error | MutationSelfJoinGroupSuccess | ZodError
 
 type MutationSelfJoinGroupSuccess {
-  data: Group!
+  data: GroupMember!
 }
 
 union MutationSetEventApplicableOffersResult =
