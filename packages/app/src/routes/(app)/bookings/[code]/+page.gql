@@ -37,6 +37,7 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
       }
       event {
         localID
+        title
         ...CardEvent
       }
     }

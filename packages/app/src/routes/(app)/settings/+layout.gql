@@ -8,6 +8,7 @@ query LayoutSettings @loading {
   # }
   me: assertMe {
     uid
+    lydiaPhone
     # TODO: enabledNotificationChannels
   }
 }
