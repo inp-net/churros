@@ -383,4 +383,8 @@
   .other-tickets {
     margin-left: auto;
   }
+
+  article.has-image .other-tickets {
+    --fg: white;
+  }
 </style>
