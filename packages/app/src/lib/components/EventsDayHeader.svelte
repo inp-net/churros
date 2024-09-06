@@ -15,7 +15,7 @@
   <div class="day">
     <div class="calendar">
       <div class="weekday">{onceLoaded(day, (d) => format(d, 'E'), '')}</div>
-      <div class="number">{onceLoaded(day, (d) => format(d, 'i'), '')}</div>
+      <div class="number">{onceLoaded(day, (d) => format(d, 'd'), '')}</div>
     </div>
     <div class="relative">{onceLoaded(day, formatDateRelativeSmart, '')}</div>
   </div>
