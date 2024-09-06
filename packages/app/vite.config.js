@@ -1,3 +1,4 @@
+import { sentrySvelteKit } from '@sentry/sveltekit';
 import { sveltekit } from '@sveltejs/kit/vite';
 import houdini from 'houdini/vite';
 import { fileURLToPath } from 'node:url';
@@ -45,6 +46,22 @@ export default mergeConfig(
   defineConfig({
     plugins: [
       houdini(),
+      sentrySvelteKit({
+        sourceMapsUploadOptions: {
+          project: 'app',
+          release: {
+            inject: true,
+            name: process.env.TAG,
+          },
+          unstable_sentryVitePluginOptions: {
+            release: {
+              setCommits: {
+                auto: true,
+              },
+            },
+          },
+        },
+      }),
       sveltekit(),
       kitRoutes({
         format_short: true,

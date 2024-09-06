@@ -11,15 +11,10 @@
 deploy_prisma:
   extends: .buildkit
   stage: deploy
-  needs:
-    - job: build
-      optional: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/db@(\d+\.\d+\.\d+)/
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
   script:
-    - if [ -z "$TAG" ]; then TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/db@//'); fi
+    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/prisma@//')
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
@@ -33,15 +28,10 @@ deploy_prisma:
 deploy_api:
   extends: .buildkit
   stage: deploy
-  needs:
-    - job: build
-      optional: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/api@(\d+\.\d+\.\d+)/
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
   script:
-    - if [ -z "$TAG" ]; then TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/api@//'); fi
+    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/api@//')
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
@@ -55,15 +45,12 @@ deploy_api:
 deploy_app:
   extends: .buildkit
   stage: deploy
-  needs:
-    - job: build
-      optional: true
+  variables:
+    SENTRY_PROJECT: app
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
   script:
-    - if [ -z "$TAG" ]; then TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//'); fi
+    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
@@ -77,15 +64,10 @@ deploy_app:
 deploy_sync:
   extends: .buildkit
   stage: deploy
-  needs:
-    - job: build
-      optional: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/sync@(\d+\.\d+\.\d+)/
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
   script:
-    - if [ -z "$TAG" ]; then TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/sync@//'); fi
+    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/sync@//')
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \

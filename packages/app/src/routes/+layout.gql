@@ -2,6 +2,7 @@ query RootLayout {
   loggedIn
   me {
     ...AnalyticsTrackerUser
+    ...SentryUser @mask_disable
   }
 
   autodeployedTheme {
