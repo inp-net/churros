@@ -1,5 +1,16 @@
 # @churros/api
 
+## 2.3.0
+
+### Minor Changes
+
+- a4871ef: feat: add Group.membership
+
+### Patch Changes
+
+- cf6bee2: fix permissions for modifying and deleting links related to users
+- 0f65a48: fix: could not self-join groups
+
 ## 2.2.0
 
 ### Minor Changes

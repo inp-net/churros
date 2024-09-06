@@ -1,5 +1,13 @@
 # @churros/app
 
+## 2.4.1
+
+### Patch Changes
+
+- 0f65a48: fix: could not self-join groups
+- 992fa2d: fix other ticket link color
+- 6558e15: fix calendar bug showing day of the week (1 - 7) instead of day of the month (1 - 31)
+
 ## 2.4.0
 
 ### Minor Changes
