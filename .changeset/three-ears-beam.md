@@ -2,4 +2,4 @@
 '@churros/app': patch
 ---
 
-Le calendrier affiche maintenant le bon jour dans la vue évent
+fix calendar bug showing day of the week (1 - 7) instead of day of the month (1 - 31)

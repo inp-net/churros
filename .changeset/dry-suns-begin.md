@@ -2,4 +2,4 @@
 '@churros/api': patch
 ---
 
-Correction d'un bug qui empêchait l'édition des liens d'un utilisateur sur son profil
+fix permissions for modifying and deleting links related to users
