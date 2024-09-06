@@ -6,6 +6,7 @@
     "@graphql-tools/utils": "^10.3.4",
     "@iconify-json/logos": "^1.1.44",
     "@paypal/paypal-js": "^8.1.0",
+    "@sentry/sveltekit": "^8.28.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@swc/core": "^1.7.10",
     "@swc/wasm": "^1.7.10",

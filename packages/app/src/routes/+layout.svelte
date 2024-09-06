@@ -13,6 +13,7 @@
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
+  import { setSentryUser } from '$lib/sentry';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -34,6 +35,8 @@
     }
     $theme.id = newTheme.localID;
   }
+
+  $: setSentryUser($RootLayout.data?.me ?? null);
 
   // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);

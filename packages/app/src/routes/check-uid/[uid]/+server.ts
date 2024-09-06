@@ -17,6 +17,7 @@ const additionalReservedUsernames = new Set([
   'check-uid',
   'gdpr',
   'markdown',
+  'sentry-example',
   'signup',
   'announcements',
   'backrooms',

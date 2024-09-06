@@ -28,6 +28,7 @@ build:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
   script:
+    - export SENTRY_AUTH_TOKEN=''
     - yarn prisma generate
     - yarn build
 
