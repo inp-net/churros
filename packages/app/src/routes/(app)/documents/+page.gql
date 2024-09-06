@@ -1,4 +1,4 @@
-query PageDocuments {
+query PageDocuments @blocking {
   schools {
     uid
     name

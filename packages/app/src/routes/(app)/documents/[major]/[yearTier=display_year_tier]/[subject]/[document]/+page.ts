@@ -11,7 +11,7 @@ export const load: PageLoad = async (event) => {
       $subject: String!
       $yearTier: Int!
       $forApprentices: Boolean!
-    ) {
+    ) @blocking {
       me {
         admin
         uid

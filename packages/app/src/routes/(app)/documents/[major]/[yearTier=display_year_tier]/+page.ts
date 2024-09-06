@@ -6,7 +6,8 @@ export const load: PageLoad = async (event) => {
   const yearTier = Number.parseInt(event.params.yearTier.replace(/a(-fis(e|a))?$/, ''), 10);
   const forApprentices = event.params.yearTier.endsWith('a-fisa');
   const { major } = await graphql(`
-    query PageDocumentsMajorYearTier($major: String!, $yearTier: Int!, $forApprentices: Boolean!) {
+    query PageDocumentsMajorYearTier($major: String!, $yearTier: Int!, $forApprentices: Boolean!)
+    @blocking {
       major(uid: $major) {
         name
         shortName

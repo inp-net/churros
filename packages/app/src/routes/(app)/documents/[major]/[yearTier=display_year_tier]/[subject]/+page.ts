@@ -9,7 +9,7 @@ graphql(`
     $subject: String!
     $yearTier: Int!
     $forApprentices: Boolean!
-  ) {
+  ) @blocking {
     major(uid: $major) {
       name
       shortName

@@ -11,7 +11,7 @@ export const load: PageLoad = async (event) => {
       $yearTier: Int!
       $forApprentices: Boolean!
       $subject: String!
-    ) {
+    ) @blocking {
       major(uid: $major) {
         name
         shortName

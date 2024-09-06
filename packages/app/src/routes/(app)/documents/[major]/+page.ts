@@ -4,7 +4,7 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async (event) => {
   const { major } = await graphql(`
-    query PageAppDocumentsMajorPage($major: String!) {
+    query PageAppDocumentsMajorPage($major: String!) @blocking {
       major(uid: $major) {
         name
         shortName
