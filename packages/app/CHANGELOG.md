@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.5.0
+
+### Minor Changes
+
+- 8afacba: feat(app): sentry support
+
 ## 2.4.1
 
 ### Patch Changes
