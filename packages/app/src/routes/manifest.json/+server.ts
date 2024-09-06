@@ -10,7 +10,6 @@ export async function GET() {
     display: 'standalone',
     orientation: 'portrait',
     dir: 'auto',
-    id: 'dev.net7.churros',
     description:
       "La plateforme d'organisation de la vie associative! Suit des clubs, prends ta place sur des évènements,  sauve tes partiels, et bien plus encore!",
     categories: ['events'],
@@ -36,14 +35,6 @@ export async function GET() {
     ],
     theme_color: '#0a5bc5',
     background_color: '#0a5bc5',
-    chrome_settings_overrides: {
-      search_provider: {
-        name: 'Recherche Churros',
-        search_url: 'https://churros.inpt.fr/search/{searchTerms}',
-        keyword: 'chur',
-        favicon_url: 'https://churros.inpt.fr/favicon.ico',
-      },
-    },
     shortcuts: [
       {
         name: 'Évènements',
