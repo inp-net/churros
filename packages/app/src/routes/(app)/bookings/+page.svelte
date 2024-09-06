@@ -11,7 +11,7 @@
 <MaybeError result={$PageMyBookings} let:data={{ me }}>
   <div class="contents">
     <ul class="nobullets bookings" use:infinitescroll={async () => PageMyBookings.loadNextPage()}>
-      {#each me.bookings.edges as { node: booking }}
+      {#each me.bookings.edges as { node: booking } (booking.id)}
         <li class="booking">
           <CardBooking {booking} />
         </li>
