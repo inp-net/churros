@@ -5,42 +5,42 @@
   variables:
     BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
   before_script:
-    - mkdir ~/.docker
-    - cp $HARBOR_CONFIG_JSON ~/.docker/config.json
+  - mkdir ~/.docker
+  - cp $HARBOR_CONFIG_JSON ~/.docker/config.json
 
 deploy_prisma:
   extends: .buildkit
   stage: deploy
   rules:
-    - if: $CI_COMMIT_TAG =~ /^@churros\/db@(\d+\.\d+\.\d+)/
+  - if: $CI_COMMIT_TAG =~ /^@churros\/db@(\d+\.\d+\.\d+)/
   script:
-    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/prisma@//')
-    - |
-      buildctl-daemonless.sh build \
-          --frontend=dockerfile.v0 \
-          --local context=. \
-          --local dockerfile=. \
-          --opt target=prisma \
-          --opt build-arg:TAG=$TAG \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/prisma:v$TAG,push=true
-    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/prisma:v$TAG"
+  - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/db@//')
+  - |
+    buildctl-daemonless.sh build \
+        --frontend=dockerfile.v0 \
+        --local context=. \
+        --local dockerfile=. \
+        --opt target=prisma \
+        --opt build-arg:TAG=$TAG \
+        --output type=image,name=$HARBOR_REGISTRY_IMAGE/prisma:v$TAG,push=true
+  - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/prisma:v$TAG"
 
 deploy_api:
   extends: .buildkit
   stage: deploy
   rules:
-    - if: $CI_COMMIT_TAG =~ /^@churros\/api@(\d+\.\d+\.\d+)/
+  - if: $CI_COMMIT_TAG =~ /^@churros\/api@(\d+\.\d+\.\d+)/
   script:
-    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/api@//')
-    - |
-      buildctl-daemonless.sh build \
-          --frontend=dockerfile.v0 \
-          --local context=. \
-          --local dockerfile=. \
-          --opt target=api \
-          --opt build-arg:TAG=$TAG \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/api:v$TAG,push=true
-    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/api:v$TAG"
+  - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/api@//')
+  - |
+    buildctl-daemonless.sh build \
+        --frontend=dockerfile.v0 \
+        --local context=. \
+        --local dockerfile=. \
+        --opt target=api \
+        --opt build-arg:TAG=$TAG \
+        --output type=image,name=$HARBOR_REGISTRY_IMAGE/api:v$TAG,push=true
+  - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/api:v$TAG"
 
 deploy_app:
   extends: .buildkit
@@ -48,32 +48,32 @@ deploy_app:
   variables:
     SENTRY_PROJECT: app
   rules:
-    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
+  - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
-    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
-    - |
-      buildctl-daemonless.sh build \
-          --frontend=dockerfile.v0 \
-          --local context=. \
-          --local dockerfile=. \
-          --opt target=app \
-          --opt build-arg:TAG=$TAG \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/app:v$TAG,push=true
-    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/app:v$TAG"
+  - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
+  - |
+    buildctl-daemonless.sh build \
+        --frontend=dockerfile.v0 \
+        --local context=. \
+        --local dockerfile=. \
+        --opt target=app \
+        --opt build-arg:TAG=$TAG \
+        --output type=image,name=$HARBOR_REGISTRY_IMAGE/app:v$TAG,push=true
+  - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/app:v$TAG"
 
 deploy_sync:
   extends: .buildkit
   stage: deploy
   rules:
-    - if: $CI_COMMIT_TAG =~ /^@churros\/sync@(\d+\.\d+\.\d+)/
+  - if: $CI_COMMIT_TAG =~ /^@churros\/sync@(\d+\.\d+\.\d+)/
   script:
-    - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/sync@//')
-    - |
-      buildctl-daemonless.sh build \
-          --frontend=dockerfile.v0 \
-          --local context=. \
-          --local dockerfile=. \
-          --opt target=sync \
-          --opt build-arg:TAG=$TAG \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
-    - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/sync:v$TAG"
+  - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/sync@//')
+  - |
+    buildctl-daemonless.sh build \
+        --frontend=dockerfile.v0 \
+        --local context=. \
+        --local dockerfile=. \
+        --opt target=sync \
+        --opt build-arg:TAG=$TAG \
+        --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
+  - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/sync:v$TAG"
