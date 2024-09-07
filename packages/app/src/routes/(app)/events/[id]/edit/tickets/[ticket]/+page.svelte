@@ -188,7 +188,7 @@
               toasts.mutation(
                 await mutate(UpdatePrice, {
                   ticket: event.ticket.id,
-                  minimumPrice: coerced,
+                  [priceIsVariable ? 'minimumPrice' : 'price']: coerced,
                 }),
                 'updateTicket',
                 '',
