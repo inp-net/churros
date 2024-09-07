@@ -59,7 +59,7 @@ export function ticketsByShotgunSorter(a: Ticket, b: Ticket) {
   if (!shotgunIsOpen(a) && shotgunIsOpen(b)) return 1;
 
   // Sort by price when open
-  if (shotgunIsOpen(a) && shotgunIsOpen(b)) return a.price - b.price;
+  if (shotgunIsOpen(a) && shotgunIsOpen(b)) return a.minimumPrice - b.minimumPrice;
 
   // Prioritize tickets that open in the future
   if (isFuture(a.opensAt) && !isFuture(b.opensAt)) return -1;

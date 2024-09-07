@@ -149,7 +149,7 @@ model UserCandidate {
   lastName       String  @default("") @db.VarChar(255)
 
   churrosPassword String @db.VarChar(255)
-  ldapPassword String @db.VarChar(255)
+  ldapPassword    String @db.VarChar(255)
 
   majorId        String?
   major          Major?  @relation(fields: [majorId], references: [id], onUpdate: Cascade, onDelete: Restrict)
@@ -627,7 +627,9 @@ model Ticket {
   description           String          @db.VarChar(255)
   opensAt               DateTime?
   closesAt              DateTime?
-  price                 Float // in EUR
+  price                 Float? // TODO remove
+  minimumPrice          Float // in EUR
+  maximumPrice          Float // in EUR
   capacity              Int?
   registrations         Registration[]
   links                 Link[]
@@ -669,6 +671,7 @@ model Registration {
   updatedAt             DateTime       @updatedAt
   paymentMethod         PaymentMethod?
   paid                  Boolean        @default(false)
+  wantsToPay            Float?
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?

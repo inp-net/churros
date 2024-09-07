@@ -94,6 +94,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
         return !paymentMethod;
       },
     }),
+    wantsToPay: t.exposeFloat('wantsToPay', { nullable: true }),
     ticket: t.relation('ticket'),
     author: t.relation('author', { nullable: true }),
     authorEmail: t.exposeString('authorEmail'),

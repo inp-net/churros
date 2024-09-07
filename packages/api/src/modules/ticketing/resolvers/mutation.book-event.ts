@@ -89,7 +89,8 @@ builder.mutationField('bookEvent', (t) =>
           ticket: { connect: { id } },
           author: user ? { connect: { id: user.id } } : undefined,
           authorEmail: args.authorEmail ?? undefined,
-          paid: actualPrice(user, ticket) === 0,
+          paid:
+            actualPrice(user, ticket, null) === 0 && ticket.maximumPrice === ticket.minimumPrice,
           internalBeneficiary: args.churrosBeneficiary
             ? { connect: { uid: args.churrosBeneficiary } }
             : undefined,

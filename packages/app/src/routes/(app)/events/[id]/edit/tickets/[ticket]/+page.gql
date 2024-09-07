@@ -24,7 +24,9 @@ query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
       name
       opensAt
       closesAt
-      basePrice
+      minimumPrice
+      maximumPrice
+      priceIsVariable
       capacity
       group {
         name

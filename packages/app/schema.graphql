@@ -2675,6 +2675,11 @@ type Mutation {
   ): MutationPaidShopPaymentResult!
   payBooking(
     """
+    Montant que l'on souhaite payer. Par défaut, le prix du billet. Peut être supérieur si l'on souhaite payer plus
+    """
+    amount: Float
+
+    """
     Code de réservation
     """
     code: String!
@@ -3123,10 +3128,20 @@ type Mutation {
     Nombre maximum de parrainages par billet (0 pour désactiver les parrainages)
     """
     godsonLimit: Int
+
+    """
+    Prix maximum en euros du billet
+    """
+    maximumPrice: Float
+
+    """
+    Prix minimum en euros du billet
+    """
+    minimumPrice: Float
     name: String
 
     """
-    Prix en euros du billet
+    Prix en euros du billet. Met à jour les prix minimum et maximum
     """
     price: Float
     shotgun: DateRangeInput
@@ -5645,6 +5660,7 @@ type Registration implements Node {
   verified: Boolean!
   verifiedAt: DateTime
   verifiedBy: User
+  wantsToPay: Float
 }
 
 type RegistrationSearchResult {
@@ -6407,7 +6423,7 @@ A ticket is a way to register for an event. May include a price and conditions.
 type Ticket implements Node {
   allowedPaymentMethods: [PaymentMethod!]!
   autojoinGroups: [Group!]!
-  basePrice: Float!
+  basePrice: Float! @deprecated(reason: "Use minimumPrice instead")
 
   """
   Indique si le billet peut être supprimé avec `deleteTicket(force: false)`
@@ -6443,6 +6459,21 @@ type Ticket implements Node {
   L'identifiant local de la ressource (sans préfixe)
   """
   localID: LocalID!
+
+  """
+  Prix maximum du billet
+  """
+  maximumPrice: Float!
+
+  """
+  Prix minimum du billet
+  """
+  minimumPrice(
+    """
+    Calculer le minimum en prenant en compte les promotions applicables pour l'utilisateur.ice. ATTENTION: Certaines promotions sont confidentielles, et donc le prix minimum avec promotions appliquées ne devrait donc pas être affiché sur des pages susceptibles d'être montrées à d'autres (comme une page de QR code servant à se faire scanner son billet, par exemple)
+    """
+    applyPromotions: Boolean! = true
+  ): Float!
   name: String!
   onlyManagersCanProvide: Boolean!
 
@@ -6473,7 +6504,12 @@ type Ticket implements Node {
   Nombre de places restantes. Null si l'information n'est pas disponible. N'est jamais null quand il n'y a plus de places disponibles (0)
   """
   placesLeft: Int
-  price: Float!
+  price: Float! @deprecated(reason: "Use minimumPrice(applyPromotions: true) instead")
+
+  """
+  Le billet permet de payer un prix choisi par l'utilisateur.ice, entre minimumPrice et maximumPrice
+  """
+  priceIsVariable: Boolean!
   registrations: [Registration!]!
 
   """

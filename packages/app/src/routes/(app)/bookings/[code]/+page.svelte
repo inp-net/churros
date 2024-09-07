@@ -18,6 +18,7 @@
     allLoaded,
     loaded,
     loading,
+    mapAllLoading,
     mapLoading,
     onceAllLoaded,
     onceLoaded,
@@ -32,6 +33,7 @@
   import ModalPay, { type Step } from './ModalPay.svelte';
   import { CancelBooking, CreateGoogleWalletPass, MarkBookingAsPaid } from './mutations';
   import { graphql } from '$houdini';
+  import { formatEUR } from '$lib/display';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
@@ -110,6 +112,7 @@
 </ModalOrDrawer>
 
 <MaybeError result={$PageBooking} let:data={{ booking, me }}>
+  {@const ticket = booking.ticket}
   <ModalPay {booking} {me} bind:open={openPaymentModal} />
   <div class="contents">
     {#if !onceAllLoaded([booking.cancelled, booking.opposed], (cancelled, opposed) => cancelled || opposed, false)}
@@ -155,9 +158,9 @@
       </section>
     {/if}
 
-    {#if booking.ticket.links.length > 0}
+    {#if ticket.links.length > 0}
       <section class="links">
-        {#each booking.ticket.links as link}
+        {#each ticket.links as link}
           <PillLink track="link-from-booking" {link} />
         {/each}
       </section>
@@ -193,16 +196,16 @@
           <BookingAuthor {booking} />
         </dd>
         <dt>Place</dt>
-        <dd><LoadingText value={booking.ticket.name}></LoadingText></dd>
+        <dd><LoadingText value={ticket.name}></LoadingText></dd>
         <dt>Prix</dt>
         <dd>
           <LoadingText
-            value={mapLoading(booking.ticket.basePrice, (price) => {
-              return Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'EUR',
-              }).format(price);
-            })}
+            value={mapAllLoading(
+              [ticket.minimumPrice, ticket.priceIsVariable, booking.wantsToPay],
+              // XXX: EUR is hardcoded for variable prices here
+              (min, variable, wants) =>
+                variable ? `${min} + ${Math.max(0, wants - min)} €` : formatEUR(min),
+            )}
           />
         </dd>
         <dt>Méthode de paiement</dt>
@@ -214,7 +217,7 @@
         </dd>
         <dt>Évènement</dt>
         <dd>
-          <CardEvent showTickets={false} event={booking.ticket.event} />
+          <CardEvent showTickets={false} event={ticket.event} />
         </dd>
         <dt>Date de réservation</dt>
         <dd>

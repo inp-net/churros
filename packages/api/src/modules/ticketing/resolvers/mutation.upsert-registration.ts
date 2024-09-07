@@ -68,7 +68,7 @@ builder.mutationField('upsertRegistration', (t) =>
 
       // Only managers can mark a registration as paid
       if (
-        ticket.price > 0 &&
+        ticket.minimumPrice > 0 &&
         paid &&
         !(user?.admin || userCanManageEvent(ticket.event, user, { canVerifyRegistrations: true }))
       ) {
@@ -248,7 +248,7 @@ builder.mutationField('upsertRegistration', (t) =>
           // eslint-disable-next-line unicorn/no-null
           paymentMethod: paymentMethod ?? null,
           externalBeneficiary: beneficiary ?? '',
-          paid: ticket.price === 0,
+          paid: ticket.minimumPrice === 0,
         },
       });
       await log(

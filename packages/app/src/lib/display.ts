@@ -307,3 +307,10 @@ export const ICONS_SERVICES: Map<string, typeof SvelteComponent<any>> = new Map(
   ['services', IconServices],
   ['forms', IconForms],
 ]);
+
+export function formatEUR(price: number) {
+  return Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+  }).format(price);
+}

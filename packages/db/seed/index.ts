@@ -998,6 +998,11 @@ console.info('Creating events');
 for (const element of tqdm(selectedClub)) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
+  const minimumPrice = faker.number.int({ min: 0, max: 30 });
+  const maximumPrice = faker.datatype.boolean(0.85) ? minimumPrice : faker.number.int({
+    min: minimumPrice + 0.5,
+    max: minimumPrice + 30,
+  })
   const { id } = await prisma.event.create({
     data: {
       contactMail: 'hey@ewen.works',
@@ -1047,7 +1052,8 @@ for (const element of tqdm(selectedClub)) {
               slug: `event-${element!.uid}`,
               name: `Event ${element!.name}`,
               description: 'blablabla ramenez vos culs par pitié je vous en supplie',
-              price: faker.number.int({ min: 0, max: 30 }),
+              minimumPrice,
+              maximumPrice,
               capacity: capacityEvent,
               opensAt: new Date(
                 eventDate.getFullYear(),

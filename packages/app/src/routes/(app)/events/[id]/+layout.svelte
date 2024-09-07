@@ -30,9 +30,8 @@
       event: $page.params.id,
       group: $LayoutEventPage.data?.event.organizer.uid,
     });
-    if (toasts.mutation(result, 'createPost', 'Post créé', 'Impossible de créer un post')) 
+    if (toasts.mutation(result, 'createPost', 'Post créé', 'Impossible de créer un post'))
       await goto(route('/posts/[id]/edit', result.data.createPost.data.localID));
-    
   }}
 />
 

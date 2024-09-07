@@ -139,7 +139,7 @@ export function canMarkBookingAsPaid(
     Prisma.UserGetPayload<{ include: typeof canMarkBookingAsPaid.userPrismaIncludes }>,
   booking: Prisma.RegistrationGetPayload<{ include: typeof canMarkBookingAsPaid.prismaIncludes }>,
 ): boolean {
-  if (actualPrice(user, booking.ticket) === 0) return true;
+  if (actualPrice(user, booking.ticket, null) === 0) return true;
   if (booking.paid) return true;
   return canSeeAllBookings(booking.ticket.event, user);
 }
@@ -196,6 +196,8 @@ export function canBookTicket(
   beneficiary: string | User | null | undefined,
   ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>,
 ): [boolean, string] {
+  if (canSeeAllBookings(ticket.event, user)) return [true, ''];
+
   if (!canSeeTicket(ticket, userAdditionalData))
     return [false, "Vous n'êtes pas autorisé à voir ce billet"];
 
@@ -208,9 +210,8 @@ export function canBookTicket(
 
   if (!canSeeAllBookings(ticket.event, user) && user) {
     const bookingsByUser = ticket.registrations.filter((r) => r.authorId === user.id);
-    if (ticket.godsonLimit > 0 && bookingsByUser.length > ticket.godsonLimit) 
+    if (ticket.godsonLimit > 0 && bookingsByUser.length > ticket.godsonLimit)
       return [false, 'Vous avez atteint la limite de parrainages pour ce billet'];
-    
   }
 
   if (placesLeft(ticket) <= 0) return [false, 'Il n’y a plus de places disponibles'];

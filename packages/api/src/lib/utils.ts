@@ -45,3 +45,7 @@ export function areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
 export function daysToSeconds(days: number): number {
   return days * 24 * 60 * 60;
 }
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}

@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export type Step = 'method' | 'lydia' | 'lydia-waiting' | 'nonlydia' | 'links';
+  export type Step = 'price' | 'method' | 'lydia' | 'lydia-waiting' | 'nonlydia' | 'links';
 </script>
 
 <script lang="ts">
@@ -8,6 +8,7 @@
     fragment,
     graphql,
     type ModalCurrentBookingStep,
+    type PaymentMethod$options,
     type SubmitBookingPayment$input,
   } from '$houdini';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
@@ -17,12 +18,13 @@
   import InputText from '$lib/components/InputText.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
-  import { DISPLAY_PAYMENT_METHODS, ICONS_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, formatEUR, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
-  import { allLoaded } from '$lib/loading';
+  import { allLoaded, loaded } from '$lib/loading';
   import IconBack from '~icons/msl/arrow-left-alt';
   import IconOpenInNew from '~icons/msl/open-in-new';
   import PillLink from '$lib/components/PillLink.svelte';
+  import InputScale from '$lib/components/InputScale.svelte';
 
   export let me;
   $: dataMe = fragment(
@@ -41,8 +43,11 @@
       fragment ModalCurrentBookingStep on Registration @loading {
         paymentMethod
         pendingPayment
+        wantsToPay
         ticket {
-          price
+          actualMinimumPrice: minimumPrice(applyPromotions: true)
+          maximumPrice
+          priceIsVariable
           allowedPaymentMethods
           links {
             ...PillLink
@@ -66,8 +71,15 @@
       $method: PaymentMethod!
       $phone: String
       $callback: String!
+      $amount: Float
     ) {
-      payBooking(code: $code, paymentMethod: $method, phone: $phone, paidCallback: $callback) {
+      payBooking(
+        code: $code
+        paymentMethod: $method
+        phone: $phone
+        paidCallback: $callback
+        amount: $amount
+      ) {
         ... on MutationPayBookingSuccess {
           data {
             ...ModalCurrentBookingStep
@@ -114,6 +126,10 @@
   let rememberPhone = false;
   $: phone ||= $dataMe?.lydiaPhone || '';
 
+  let wantsToPay: number;
+  $: if (loaded($data?.wantsToPay) && allLoaded($data.ticket))
+    wantsToPay ??= $data?.wantsToPay ?? $data?.ticket.actualMinimumPrice;
+
   let dirty = false;
   let historyStack: Array<Step> = ['method'];
   $: step = historyStack.at(-1)!;
@@ -126,16 +142,36 @@
 
   $: if (!dirty && step === 'method' && $data && allLoaded($data)) {
     advance(
-      $data.paymentMethod === 'Lydia'
-        ? $data.pendingPayment
-          ? 'lydia-waiting'
-          : 'lydia'
-        : $data.ticket.allowedPaymentMethods.length === 1
-          ? $data.ticket.allowedPaymentMethods[0] === 'Lydia'
-            ? 'lydia'
-            : 'nonlydia'
-          : 'method',
+      !$data.wantsToPay && $data.ticket.priceIsVariable
+        ? 'price'
+        : $data.paymentMethod === 'Lydia'
+          ? $data.pendingPayment
+            ? 'lydia-waiting'
+            : 'lydia'
+          : $data.ticket.allowedPaymentMethods.length === 1
+            ? $data.ticket.allowedPaymentMethods[0] === 'Lydia'
+              ? 'lydia'
+              : 'nonlydia'
+            : 'method',
     );
+  }
+
+  let chosenMethod: PaymentMethod$options;
+
+  async function doPayStep() {
+    if (chosenMethod === 'Lydia' && $dataMe?.lydiaPhone) {
+      await pay({
+        method: 'Lydia',
+        phone,
+        amount: wantsToPay,
+      });
+      advance('lydia-waiting');
+    } else if (chosenMethod === 'Lydia') {
+      advance('lydia');
+    } else {
+      await pay({ method: chosenMethod, amount: wantsToPay });
+      advance('nonlydia');
+    }
   }
 </script>
 
@@ -146,6 +182,8 @@
         Erreur
       {:else if paymentInProgress}
         Paiement en cours...
+      {:else if step === 'price'}
+        Prix solidaire
       {:else if step === 'method'}
         Moyen de paiement
       {:else if step === 'lydia'}
@@ -171,22 +209,37 @@
       <section class="loading">
         <LoadingChurros />
       </section>
+    {:else if step === 'price'}
+      {#if !allLoaded($data.ticket) || !loaded($data.wantsToPay)}
+        <section class="loading">
+          <LoadingChurros />
+        </section>
+      {:else}
+        <p class="selected-price">
+          {formatEUR(wantsToPay)}
+        </p>
+        <InputScale
+          noHint
+          bind:value={wantsToPay}
+          label=""
+          maximumLabel={formatEUR($data.ticket.maximumPrice)}
+          minimumLabel={formatEUR($data.ticket.actualMinimumPrice)}
+          maximum={$data.ticket.maximumPrice}
+          minimum={$data.ticket.actualMinimumPrice}
+          required
+        />
+        <nav>
+          <ButtonSecondary icon={IconBack} on:click={back}>Retour</ButtonSecondary>
+          <ButtonPrimary on:click={doPayStep}>Payer</ButtonPrimary>
+        </nav>
+      {/if}
     {:else if step === 'method'}
       {#each $data.ticket.allowedPaymentMethods.filter(allLoaded) as method}
         <ButtonSecondary
           on:click={async () => {
-            if (method === 'Lydia' && $dataMe?.lydiaPhone) {
-              await pay({
-                method: 'Lydia',
-                phone,
-              });
-              advance('lydia-waiting');
-            } else if (method === 'Lydia') {
-              advance('lydia');
-            } else {
-              await pay({ method });
-              advance('nonlydia');
-            }
+            chosenMethod = method;
+            if ($data?.ticket.priceIsVariable) advance('price');
+            else await doPayStep();
           }}
           icon={ICONS_PAYMENT_METHODS[method]}>{DISPLAY_PAYMENT_METHODS[method]}</ButtonSecondary
         >
@@ -195,7 +248,7 @@
       <form
         on:submit|preventDefault={async () => {
           if (rememberPhone) await RememberLydiaPhoneNumber.mutate({ phone });
-          await pay({ method: 'Lydia', phone });
+          await pay({ method: 'Lydia', phone, amount: wantsToPay });
           advance('lydia-waiting');
         }}
       >
@@ -293,5 +346,9 @@
   .loading {
     padding: 2rem;
     font-size: 6rem;
+  }
+
+  .selected-price {
+    font-size: 2rem;
   }
 </style>
