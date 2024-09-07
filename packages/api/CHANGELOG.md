@@ -1,5 +1,16 @@
 # @churros/api
 
+## 2.4.0
+
+### Minor Changes
+
+- c3229cc: feat(ticketing): add price to csv exports in bookings (closes #1081)
+
+### Patch Changes
+
+- Updated dependencies [188f34d]
+  - @churros/db@1.2.0
+
 ## 2.3.0
 
 ### Minor Changes
