@@ -216,6 +216,9 @@ export function canBookTicket(
 
   if (placesLeft(ticket) <= 0) return [false, 'Il n’y a plus de places disponibles'];
 
+  if (!canSeeAllBookings(ticket.event, user) && ticket.godsonLimit <= 0 && beneficiary)
+    return [false, "Ce billet n'accepte pas de parrainages"];
+
   if (
     // external beneficiaries can't be meaningfully checked for duplicate bookings
     typeof beneficiary !== 'string' &&
