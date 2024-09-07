@@ -1,5 +1,11 @@
 # @churros/db
 
+## 1.2.0
+
+### Minor Changes
+
+- 188f34d: split price to min/max prices
+
 ## 1.1.0
 
 ### Minor Changes

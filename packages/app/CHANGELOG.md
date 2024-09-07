@@ -1,5 +1,13 @@
 # @churros/app
 
+## 2.5.1
+
+### Patch Changes
+
+- dc84fbe: fix(ticketing): could set godsons even when godson limit was diabled
+- 92167a6: fix(ticketing): variable price input was enabled on price change
+- 12337d6: fix pwa instabillity issues (maybe)
+
 ## 2.5.0
 
 ### Minor Changes
