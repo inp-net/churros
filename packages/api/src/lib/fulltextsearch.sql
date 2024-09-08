@@ -170,14 +170,8 @@ author_graduationYear := (
                 WHERE "User"."id" = NEW."authorId"
             );
             
-ticket_price := (
-                SELECT "price"
-                FROM "Ticket"
-                WHERE "Ticket"."id" = NEW."ticketId"
-            );
-            
 
-    NEW."search" := setweight(to_tsvector('french', coalesce(author_firstName::text, '')), 'A')||setweight(to_tsvector('french', coalesce(author_lastName::text, '')), 'A')||setweight(to_tsvector('french', coalesce(ticket_name::text, '')), 'B')||setweight(to_tsvector('french', coalesce(ticket_description::text, '')), 'C')||setweight(to_tsvector('french', coalesce(author_graduationYear::text, '')), 'C')||setweight(to_tsvector('french', coalesce(ticket_price::text, '')), 'D');
+    NEW."search" := setweight(to_tsvector('french', coalesce(author_firstName::text, '')), 'A')||setweight(to_tsvector('french', coalesce(author_lastName::text, '')), 'A')||setweight(to_tsvector('french', coalesce(ticket_name::text, '')), 'B')||setweight(to_tsvector('french', coalesce(ticket_description::text, '')), 'C')||setweight(to_tsvector('french', coalesce(author_graduationYear::text, '')), 'C');
 
     RETURN NEW;
 END $$ LANGUAGE plpgsql;

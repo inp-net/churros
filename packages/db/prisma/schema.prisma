@@ -670,7 +670,6 @@ model Registration {
   updatedAt             DateTime       @updatedAt
   paymentMethod         PaymentMethod?
   paid                  Boolean        @default(false)
-  price                 Float? // Not used, but prisma.registration.create() fails without it, idk why
   wantsToPay            Float?
 
   lydiaTransaction  LydiaTransaction?
