@@ -56,6 +56,11 @@ builder.mutationField('payBooking', (t) =>
 
       const price = actualPrice(user, registration.ticket, amount ?? null);
 
+      await prisma.registration.update({
+        where: { id: bookingId },
+        data: { wantsToPay: price },
+      });
+
       // Process payment
       try {
         await pay({
@@ -87,7 +92,7 @@ builder.mutationField('payBooking', (t) =>
       const result = prisma.registration.update({
         ...query,
         where: { id: bookingId },
-        data: { paymentMethod, wantsToPay: price },
+        data: { paymentMethod },
       });
 
       publish(registration.id, 'updated', registration);
