@@ -1,3 +1,4 @@
+import { registerAppleWalletPassTemplate } from './lib/apple-wallet.js';
 import { GOOGLE_WALLET_CLASS, registerGoogleWalletClass } from './lib/google-wallet.js';
 import { writeSchema } from './schema.js';
 import { startApiServer } from './server/express.js';
@@ -23,3 +24,5 @@ await writeSchema();
 // await rescheduleNotifications({ dryRun: true });
 const id = await registerGoogleWalletClass(GOOGLE_WALLET_CLASS);
 if (id) console.info(`Registered Google Wallet pass class ${id}`);
+const template = await registerAppleWalletPassTemplate();
+if (template) console.info(`Registered Apple Wallet pass template ${template.passTypeIdentifier}`);
