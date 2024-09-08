@@ -1,6 +1,6 @@
 # @churros/app
 
-## 2.5.1
+## 2.5.1 - [YANKED]
 
 ### Patch Changes
 

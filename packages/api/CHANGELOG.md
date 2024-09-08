@@ -1,6 +1,6 @@
 # @churros/api
 
-## 2.4.0
+## 2.4.0 - [YANKED]
 
 ### Minor Changes
 
