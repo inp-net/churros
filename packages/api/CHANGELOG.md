@@ -1,5 +1,15 @@
 # @churros/api
 
+## 2.4.2
+
+### Patch Changes
+
+- 0a5528f: fix cannot book any event due to obscure prisma error
+- bda5164: minimum price was sent to lydia even when paying more
+- Updated dependencies [01d6cd0]
+- Updated dependencies [2a2cb72]
+  - @churros/db@1.2.2
+
 ## 2.4.1
 
 ### Patch Changes

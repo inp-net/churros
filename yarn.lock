@@ -796,7 +796,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/api@workspace:packages/api"
   dependencies:
-    "@churros/db": "workspace:^1.2.1"
+    "@churros/db": "workspace:^1.2.2"
     "@clack/prompts": "npm:^0.7.0"
     "@envelop/core": "npm:^5.0.1"
     "@graphql-tools/utils": "npm:^10.3.4"
@@ -1058,7 +1058,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^1.0.0, @churros/db@workspace:^1.2.1, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^1.0.0, @churros/db@workspace:^1.2.2, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
