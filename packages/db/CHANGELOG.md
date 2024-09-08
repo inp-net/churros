@@ -1,5 +1,11 @@
 # @churros/db
 
+## 1.2.1
+
+### Patch Changes
+
+- 96e9d1d: fix borked migration
+
 ## 1.2.0 - [YANKED]
 
 ### Minor Changes

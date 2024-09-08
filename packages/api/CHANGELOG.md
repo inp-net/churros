@@ -1,5 +1,13 @@
 # @churros/api
 
+## 2.4.1
+
+### Patch Changes
+
+- 96e9d1d: fix borked migration
+- Updated dependencies [96e9d1d]
+  - @churros/db@1.2.1
+
 ## 2.4.0 - [YANKED]
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.6.0
+
+### Minor Changes
+
+- 96e9d1d: variable prices support
+
 ## 2.5.1 - [YANKED]
 
 ### Patch Changes
