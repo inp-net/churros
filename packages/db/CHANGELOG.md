@@ -1,5 +1,12 @@
 # @churros/db
 
+## 1.2.2
+
+### Patch Changes
+
+- 01d6cd0: add phantom but required Registration.price
+- 2a2cb72: Update fulltextsearch trigger for registration
+
 ## 1.2.1
 
 ### Patch Changes
