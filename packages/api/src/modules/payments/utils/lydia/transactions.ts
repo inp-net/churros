@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { log, prisma } from '#lib';
 import type { LydiaTransaction } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { createHash } from 'node:crypto';
@@ -117,6 +117,8 @@ export async function sendLydiaPaymentRequest(
     confirm_url: LYDIA_WEBHOOK_URL || '',
   };
 
+  await log('lydia', 'request/sending', formParams, phone);
+
   // Send the lydia payment request
   const response = await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/do.json`, {
     method: 'POST',
@@ -128,5 +130,6 @@ export async function sendLydiaPaymentRequest(
     request_id: string;
     request_uuid: string;
   };
+  await log('lydia', 'request/sent', { request_id, request_uuid, formParams }, phone);
   return { requestId: request_id, requestUuid: request_uuid };
 }
