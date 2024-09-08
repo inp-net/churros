@@ -135,6 +135,7 @@
     publishedAt: new Date(),
     title: '',
     visibility: Visibility.Public,
+    event: null,
   };
 
   export let selectedGroup: FormArticleGroups$data | null = null;
@@ -144,6 +145,7 @@
       ...$data,
       links: $data.links.map(({ rawURL, text }) => ({ url: rawURL, text })),
       group: $data.group.uid,
+      event: $data.event ? `e:${$data.event.localID}` : null,
     });
     inputLoaded = true;
   }
@@ -172,6 +174,7 @@
         $publishedAt: DateTime!
         $visibility: Visibility!
         $links: [LinkInput!]!
+        $event: ID
       ) {
         addLinks(id: $id, links: $links, duplicates: Replace) {
           ... on MutationAddLinksSuccess {
@@ -188,6 +191,7 @@
           body: $body
           publishedAt: $publishedAt
           visibility: $visibility
+          event: $event
         ) {
           ...MutationErrors
           ... on MutationUpsertArticleSuccess {
