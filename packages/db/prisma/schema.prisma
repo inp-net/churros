@@ -627,9 +627,8 @@ model Ticket {
   description           String          @db.VarChar(255)
   opensAt               DateTime?
   closesAt              DateTime?
-  price                 Float? // TODO remove
-  minimumPrice          Float // in EUR
-  maximumPrice          Float // in EUR
+  minimumPrice          Float
+  maximumPrice          Float
   capacity              Int?
   registrations         Registration[]
   links                 Link[]

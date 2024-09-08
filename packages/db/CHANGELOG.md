@@ -1,6 +1,6 @@
 # @churros/db
 
-## 1.2.0
+## 1.2.0 - [YANKED]
 
 ### Minor Changes
 
