@@ -1,39 +1,32 @@
-import { builder, prisma } from '#lib';
-
-import { userCanManageEvent } from '#permissions';
+import { builder, ensureGlobalId, prisma } from '#lib';
+import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
+import { LocalID } from '#modules/global';
+import { TicketGroupType } from '#modules/ticketing/types';
 
 builder.mutationField('deleteTicketGroup', (t) =>
-  t.field({
-    type: 'Boolean',
+  t.prismaField({
+    type: TicketGroupType,
+    errors: {},
     args: {
-      id: t.arg.id(),
+      id: t.arg({ type: LocalID }),
     },
     async authScopes(_, { id }, { user }) {
-      // Make sure that the tickets added to that group all exists and are part of events managed by the user
-      const ticketGroup = await prisma.ticketGroup.findFirst({
-        where: { id },
-        include: {
-          event: {
-            include: {
-              managers: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!ticketGroup) return false;
-
-      return userCanManageEvent(ticketGroup.event, user, {
-        canEdit: true,
-      });
+      return canEditEvent(
+        await prisma.ticketGroup
+          .findUniqueOrThrow({
+            where: { id: ensureGlobalId(id, 'TicketGroup') },
+          })
+          .event({
+            include: canEditEventPrismaIncludes,
+          }),
+        user,
+      );
     },
-    async resolve(_, { id }) {
-      await prisma.ticketGroup.delete({ where: { id } });
-      return true;
+    async resolve(query, _, { id }) {
+      return prisma.ticketGroup.delete({
+        ...query,
+        where: { id: ensureGlobalId(id, 'TicketGroup') },
+      });
     },
   }),
 );

@@ -229,3 +229,20 @@ export const UpdateAllowedPaymentMethods = graphql(`
     }
   }
 `);
+
+export const UpdateGroupOfTicket = graphql(`
+  mutation UpdateGroupOfTicket($ticket: LocalID!, $group: LocalID) {
+    setTicketGroup(ticket: $ticket, group: $group) {
+      ...MutationErrors
+      ... on MutationSetTicketGroupSuccess {
+        data {
+          group {
+            name
+            capacity
+            localID
+          }
+        }
+      }
+    }
+  }
+`);

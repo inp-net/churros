@@ -34,8 +34,10 @@
     SetEventShowRemainingPlaces,
     SetEventBeneficiary,
     UnsetEventBeneficiary,
+    CreateTicketGroup,
   } from './mutations';
   import CardTicket from '$lib/components/CardTicket.svelte';
+  import TextTicketGroupSummary from '$lib/components/TextTicketGroupSummary.svelte';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
@@ -165,15 +167,21 @@
               ticket: loading(ticket.localID, ''),
             })}
           >
-            {#if ticket.group && loaded(ticket.group.name)}
-              <LoadingText value={ticket.group.name} />
-              <div class="group-name-separator">
-                <IconChevronRight />
-              </div>
-            {/if}
-            <svelte:element this={ticket.name === '' ? 'em' : 'span'}>
-              <LoadingText value={mapLoading(ticket.name, (name) => name || 'Billet sans nom')} />
-            </svelte:element>
+            <span class="ticket-full-name">
+              {#if ticket.group && loaded(ticket.group.name)}
+                <LoadingText
+                  tag={ticket.group.name ? 'span' : 'em'}
+                  value={ticket.group.name || 'Groupe sans nom'}
+                />
+                <div class="group-name-separator">
+                  <IconChevronRight />
+                </div>
+              {/if}
+              <LoadingText
+                tag={ticket.name ? 'span' : 'em'}
+                value={mapLoading(ticket.name, (name) => name || 'Billet sans nom')}
+              />
+            </span>
             <TextTicketSummary slot="subtext" {ticket} />
           </SubmenuItem>
         {/each}
@@ -223,6 +231,82 @@
         </section>
       {/if}
     </section>
+
+    <section class="groups" id="groups">
+      <header>
+        <h2 class="typo-field-label">Groupes de billets</h2>
+        <ButtonSecondary
+          on:click={async () => {
+            const result = await mutate(CreateTicketGroup, {
+              event: event.id,
+            });
+            if (
+              toasts.mutation(
+                result,
+                'upsertTicketGroup',
+                '',
+                'Impossible de créer le groupe de billet',
+              )
+            ) {
+              await goto(
+                route('/events/[id]/edit/ticket-groups/[group]', {
+                  id: result.data.upsertTicketGroup.data.event.localID,
+                  group: result.data.upsertTicketGroup.data.localID,
+                }),
+              );
+            }
+          }}>Ajouter</ButtonSecondary
+        >
+      </header>
+
+      <Submenu>
+        {#each event.ticketGroups as ticketgroup}
+          <SubmenuItem
+            icon={null}
+            href={route('/events/[id]/edit/ticket-groups/[group]', {
+              id: loading(event.localID, ''),
+              group: loading(ticketgroup.localID, ''),
+            })}
+          >
+            <svelte:element this={ticketgroup.name === '' ? 'em' : 'span'}>
+              <LoadingText
+                value={mapLoading(ticketgroup.name, (name) => name || 'Groupe sans nom')}
+              />
+            </svelte:element>
+            <TextTicketGroupSummary slot="subtext" group={ticketgroup} />
+          </SubmenuItem>
+        {/each}
+        <SubmenuItem
+          icon={null}
+          clickable
+          on:click={async () => {
+            const result = await mutate(CreateTicketGroup, {
+              event: event.id,
+            });
+            if (
+              toasts.mutation(
+                result,
+                'upsertTicketGroup',
+                '',
+                'Impossible de créer un groupe de billet',
+              )
+            ) {
+              await goto(
+                route('/events/[id]/edit/ticket-groups/[group]', {
+                  id: result.data.upsertTicketGroup.data.event.localID,
+                  group: result.data.upsertTicketGroup.data.localID,
+                }),
+              );
+            }
+          }}
+        >
+          Nouveau groupe
+          <div class="icon-add" slot="right">
+            <IconAdd />
+          </div>
+        </SubmenuItem>
+      </Submenu>
+    </section>
   </div>
 </MaybeError>
 
@@ -231,11 +315,18 @@
     padding: 0 1rem;
   }
 
-  .tickets {
+  .ticket-full-name {
+    display: flex;
+    align-items: center;
+  }
+
+  .tickets,
+  .groups {
     margin-top: 2rem;
   }
 
-  .tickets header {
+  .tickets header,
+  .groups header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -243,7 +334,8 @@
     --weight-field-label: 900;
   }
 
-  .tickets em {
+  .tickets :global(em),
+  .groups :global(em) {
     color: var(--muted);
   }
 

@@ -117,7 +117,7 @@ const config = {
       type: 'string',
       marshal: (x) => {
         // Same reasoning as for UID
-        if (!x) return '';
+        if (!x) return x;
         if (!/(\w+:)?\w+/.test(x)) {
           throw new Error(`Identifiant “${x}” invalide`);
         }

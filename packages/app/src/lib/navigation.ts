@@ -456,6 +456,11 @@ export const topnavConfigs: Partial<{
     back: route('/events/[id]/edit', id),
     actions: [],
   }),
+  '/(app)/events/[id]/edit/ticket-groups/[group]': ({ params }) => ({
+    title: 'Groupe de billets',
+    back: route('/events/[id]/edit/tickets', params.id),
+    actions: [],
+  }),
   '/(app)/events/[id]/edit/tickets/[ticket]': ({ params }) => ({
     title: 'Billet',
     back: route('/events/[id]/edit/tickets', params.id),
@@ -463,6 +468,11 @@ export const topnavConfigs: Partial<{
   }),
   '/(app)/events/[id]/edit/tickets/[ticket]/links': ({ params }) => ({
     title: 'Liens du billet',
+    back: route('/events/[id]/edit/tickets/[ticket]', params),
+    actions: [],
+  }),
+  '/(app)/events/[id]/edit/tickets/[ticket]/group': ({ params }) => ({
+    title: 'Groupe du billet',
     back: route('/events/[id]/edit/tickets/[ticket]', params),
     actions: [],
   }),

@@ -44,7 +44,7 @@
   import IconGroupMember from '~icons/msl/group-outline';
   import IconHelp from '~icons/msl/help-outline';
   import IconGodson from '~icons/msl/hub-outline';
-  // import IconTicketGroup from '~icons/msl/inventory-2-outline';
+  import IconTicketGroup from '~icons/msl/inventory-2-outline';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
@@ -352,6 +352,16 @@
               </span>
             {/if}
           </svelte:fragment>
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconTicketGroup}
+          href={route('/events/[id]/edit/tickets/[ticket]/group', {
+            id: $page.params.id,
+            ticket: $page.params.ticket,
+          })}
+          subtext={mapLoading(event.ticket.group, (g) => g?.name ?? 'Aucun groupe')}
+        >
+          Groupe de billet
         </SubmenuItem>
       </Submenu>
       <section class="constraints">
