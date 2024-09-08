@@ -26,6 +26,7 @@
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import CardTicket from './CardTicket.svelte';
+  import { goto } from '$app/navigation';
 
   /**
    * Whether this component should announce a shotgun instead of the event itself
@@ -104,7 +105,14 @@
     );
 </script>
 
-<article class="event" class:mobile class:has-image={Boolean(loading($data?.pictureURL, ''))}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<article
+  on:click={async () => goto(route('/events/[id]', loading($data?.localID, '') ?? ''))}
+  class="event"
+  class:mobile
+  class:has-image={Boolean(loading($data?.pictureURL, ''))}
+>
   {#if $data && loading($data?.pictureURL, '')}
     <img src={loading($data.pictureURL, '')} class="background" alt="" />
   {/if}
@@ -218,6 +226,7 @@
     flex-direction: column;
     gap: 1rem;
     padding: 2rem 1rem;
+    cursor: pointer;
 
     --glimer: var(--primary);
   }
