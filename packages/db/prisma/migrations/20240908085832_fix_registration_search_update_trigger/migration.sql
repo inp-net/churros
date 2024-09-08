@@ -206,4 +206,3 @@ author_graduationYear := (
     RETURN NEW;
 END $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_registration_search_trigger before INSERT OR UPDATE ON "Registration" FOR EACH ROW EXECUTE PROCEDURE update_registration_search();
