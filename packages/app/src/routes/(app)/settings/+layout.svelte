@@ -71,6 +71,7 @@
         <InputText
           label=""
           slot="right"
+          inputmode="tel"
           value={loading(me.lydiaPhone, '')}
           on:blur={async ({ target }) => {
             if (!(target instanceof HTMLInputElement)) return;
