@@ -19,7 +19,7 @@
       const match = site.regex.exec(url.href);
       if (match) {
         return {
-          username: match.groups?.username,
+          username: match[1],
           ...site,
         };
       }

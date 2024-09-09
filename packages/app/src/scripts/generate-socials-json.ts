@@ -118,7 +118,7 @@ function generateSocialSiteData(siteName: string) {
             regex: new RegExp(${JSON.stringify(
               removeWWWandMobile(extraction.url).replace(
                 '{}',
-                `(?<username>${extraction.regexCheck?.replace(/^\^/, '').replace(/\$$/, '') ?? '[\\w_.-]+'})`,
+                `(${extraction.regexCheck?.replace(/^\^/, '').replace(/\$$/, '') ?? '[\\w_.-]+'})`,
               ),
             )}),
             usernameIsValid: ${

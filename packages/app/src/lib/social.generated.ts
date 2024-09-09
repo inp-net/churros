@@ -51,7 +51,7 @@ export const socials = {
     name: 'Behance',
     url: 'https://www.behance.net/{}',
     urlMain: 'https://www.behance.net/',
-    regex: new RegExp('https://behance.net/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://behance.net/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'behance',
     icon: Logobehance,
@@ -60,7 +60,7 @@ export const socials = {
     name: 'BitBucket',
     url: 'https://bitbucket.org/{}/',
     urlMain: 'https://bitbucket.org/',
-    regex: new RegExp('https://bitbucket.org/(?<username>[a-zA-Z0-9-_]{1,30})/'),
+    regex: new RegExp('https://bitbucket.org/([a-zA-Z0-9-_]{1,30})/'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z0-9-_]{1,30}$').test(username);
@@ -75,7 +75,7 @@ export const socials = {
     name: 'Blogger',
     url: 'https://{}.blogspot.com',
     urlMain: 'https://www.blogger.com/',
-    regex: new RegExp('https://(?<username>[a-zA-Z][a-zA-Z0-9_-]*).blogspot.com'),
+    regex: new RegExp('https://([a-zA-Z][a-zA-Z0-9_-]*).blogspot.com'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]*$').test(username);
@@ -90,7 +90,7 @@ export const socials = {
     name: 'Codecademy',
     url: 'https://www.codecademy.com/profiles/{}',
     urlMain: 'https://www.codecademy.com/',
-    regex: new RegExp('https://codecademy.com/profiles/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://codecademy.com/profiles/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'codecademy',
     icon: Logocodecademy,
@@ -99,7 +99,7 @@ export const socials = {
     name: 'Codepen',
     url: 'https://codepen.io/{}',
     urlMain: 'https://codepen.io/',
-    regex: new RegExp('https://codepen.io/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://codepen.io/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'codepen-icon',
     icon: Logocodepen,
@@ -109,7 +109,7 @@ export const socials = {
     url: 'https://profile.codersrank.io/user/{}/',
     urlMain: 'https://codersrank.io/',
     regex: new RegExp(
-      'https://profile.codersrank.io/user/(?<username>[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})/',
+      'https://profile.codersrank.io/user/([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})/',
     ),
     usernameIsValid: (username: string) => {
       try {
@@ -125,7 +125,7 @@ export const socials = {
     name: 'Coderwall',
     url: 'https://coderwall.com/{}',
     urlMain: 'https://coderwall.com',
-    regex: new RegExp('https://coderwall.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://coderwall.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'coderwall',
     icon: Logocoderwall,
@@ -134,7 +134,7 @@ export const socials = {
     name: 'DeviantART',
     url: 'https://{}.deviantart.com',
     urlMain: 'https://deviantart.com',
-    regex: new RegExp('https://(?<username>[a-zA-Z][a-zA-Z0-9_-]*).deviantart.com'),
+    regex: new RegExp('https://([a-zA-Z][a-zA-Z0-9_-]*).deviantart.com'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]*$').test(username);
@@ -158,7 +158,7 @@ export const socials = {
     name: 'Disqus',
     url: 'https://disqus.com/{}',
     urlMain: 'https://disqus.com/',
-    regex: new RegExp('https://disqus.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://disqus.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'disqus',
     icon: Logodisqus,
@@ -167,7 +167,7 @@ export const socials = {
     name: 'Dribbble',
     url: 'https://dribbble.com/{}',
     urlMain: 'https://dribbble.com/',
-    regex: new RegExp('https://dribbble.com/(?<username>[a-zA-Z][a-zA-Z0-9_-]*)'),
+    regex: new RegExp('https://dribbble.com/([a-zA-Z][a-zA-Z0-9_-]*)'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]*$').test(username);
@@ -182,7 +182,7 @@ export const socials = {
     name: 'Flickr',
     url: 'https://www.flickr.com/people/{}',
     urlMain: 'https://www.flickr.com/',
-    regex: new RegExp('https://flickr.com/people/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://flickr.com/people/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'flickr-icon',
     icon: Logoflickr,
@@ -191,9 +191,7 @@ export const socials = {
     name: 'GitHub',
     url: 'https://www.github.com/{}',
     urlMain: 'https://www.github.com/',
-    regex: new RegExp(
-      'https://github.com/(?<username>[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})',
-    ),
+    regex: new RegExp('https://github.com/([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$').test(username);
@@ -208,7 +206,7 @@ export const socials = {
     name: 'GitLab',
     url: 'https://gitlab.com/{}',
     urlMain: 'https://gitlab.com/',
-    regex: new RegExp('https://gitlab.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://gitlab.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'gitlab',
     icon: Logogitlab,
@@ -217,7 +215,7 @@ export const socials = {
     name: 'Gradle',
     url: 'https://plugins.gradle.org/u/{}',
     urlMain: 'https://gradle.org/',
-    regex: new RegExp('https://plugins.gradle.org/u/(?<username>(?!-)[a-zA-Z0-9-]{3,}(?<!-))'),
+    regex: new RegExp('https://plugins.gradle.org/u/((?!-)[a-zA-Z0-9-]{3,}(?<!-))'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^(?!-)[a-zA-Z0-9-]{3,}(?<!-)$').test(username);
@@ -232,7 +230,7 @@ export const socials = {
     name: 'Gravatar',
     url: 'http://en.gravatar.com/{}',
     urlMain: 'http://en.gravatar.com/',
-    regex: new RegExp('http://en.gravatar.com/(?<username>((?!\\.).)*)'),
+    regex: new RegExp('http://en.gravatar.com/(((?!\\.).)*)'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^((?!\\.).)*$').test(username);
@@ -247,7 +245,7 @@ export const socials = {
     name: 'Hashnode',
     url: 'https://hashnode.com/@{}',
     urlMain: 'https://hashnode.com',
-    regex: new RegExp('https://hashnode.com/@(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://hashnode.com/@([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'hashnode-icon',
     icon: Logohashnode,
@@ -256,7 +254,7 @@ export const socials = {
     name: 'IFTTT',
     url: 'https://www.ifttt.com/p/{}',
     urlMain: 'https://www.ifttt.com/',
-    regex: new RegExp('https://ifttt.com/p/(?<username>[A-Za-z0-9]{3,35})'),
+    regex: new RegExp('https://ifttt.com/p/([A-Za-z0-9]{3,35})'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[A-Za-z0-9]{3,35}$').test(username);
@@ -271,7 +269,7 @@ export const socials = {
     name: 'Instagram',
     url: 'https://instagram.com/{}',
     urlMain: 'https://instagram.com/',
-    regex: new RegExp('https://instagram.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://instagram.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'instagram-icon',
     icon: Logoinstagram,
@@ -280,7 +278,7 @@ export const socials = {
     name: 'LinkedIn',
     url: 'https://linkedin.com/in/{}',
     urlMain: 'https://linkedin.com',
-    regex: new RegExp('https://linkedin.com/in/(?<username>[\\w._-]+)'),
+    regex: new RegExp('https://linkedin.com/in/([\\w._-]+)'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[\\w._-]+$').test(username);
@@ -295,7 +293,7 @@ export const socials = {
     name: 'Medium',
     url: 'https://medium.com/@{}',
     urlMain: 'https://medium.com/',
-    regex: new RegExp('https://medium.com/@(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://medium.com/@([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'medium-icon',
     icon: Logomedium,
@@ -304,7 +302,7 @@ export const socials = {
     name: 'Opensource',
     url: 'https://opensource.com/users/{}',
     urlMain: 'https://opensource.com/',
-    regex: new RegExp('https://opensource.com/users/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://opensource.com/users/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'opensource',
     icon: Logoopensource,
@@ -313,7 +311,7 @@ export const socials = {
     name: 'Patreon',
     url: 'https://www.patreon.com/{}',
     urlMain: 'https://www.patreon.com/',
-    regex: new RegExp('https://patreon.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://patreon.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'patreon',
     icon: Logopatreon,
@@ -322,7 +320,7 @@ export const socials = {
     name: 'Periscope',
     url: 'https://www.periscope.tv/{}/',
     urlMain: 'https://www.periscope.tv/',
-    regex: new RegExp('https://periscope.tv/(?<username>[\\w_.-]+)/'),
+    regex: new RegExp('https://periscope.tv/([\\w_.-]+)/'),
     usernameIsValid: () => true,
     iconName: 'periscope',
     icon: Logoperiscope,
@@ -331,7 +329,7 @@ export const socials = {
     name: 'ProductHunt',
     url: 'https://www.producthunt.com/@{}',
     urlMain: 'https://www.producthunt.com/',
-    regex: new RegExp('https://producthunt.com/@(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://producthunt.com/@([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'producthunt',
     icon: Logoproducthunt,
@@ -340,7 +338,7 @@ export const socials = {
     name: 'PyPi',
     url: 'https://pypi.org/user/{}',
     urlMain: 'https://pypi.org',
-    regex: new RegExp('https://pypi.org/user/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://pypi.org/user/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'pypi',
     icon: Logopypi,
@@ -349,7 +347,7 @@ export const socials = {
     name: 'Reddit',
     url: 'https://www.reddit.com/user/{}',
     urlMain: 'https://www.reddit.com/',
-    regex: new RegExp('https://reddit.com/user/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://reddit.com/user/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'reddit-icon',
     icon: Logoreddit,
@@ -358,7 +356,7 @@ export const socials = {
     name: 'RubyGems',
     url: 'https://rubygems.org/profiles/{}',
     urlMain: 'https://rubygems.org/',
-    regex: new RegExp('https://rubygems.org/profiles/(?<username>[a-zA-Z][a-zA-Z0-9_-]{1,40})'),
+    regex: new RegExp('https://rubygems.org/profiles/([a-zA-Z][a-zA-Z0-9_-]{1,40})'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]{1,40}').test(username);
@@ -373,7 +371,7 @@ export const socials = {
     name: 'Scribd',
     url: 'https://www.scribd.com/{}',
     urlMain: 'https://www.scribd.com/',
-    regex: new RegExp('https://scribd.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://scribd.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'scribd-icon',
     icon: Logoscribd,
@@ -382,7 +380,7 @@ export const socials = {
     name: 'Signal',
     url: 'https://community.signalusers.org/u/{}',
     urlMain: 'https://community.signalusers.org',
-    regex: new RegExp('https://community.signalusers.org/u/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://community.signalusers.org/u/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'signal',
     icon: Logosignal,
@@ -391,7 +389,7 @@ export const socials = {
     name: 'Slack',
     url: 'https://{}.slack.com',
     urlMain: 'https://slack.com',
-    regex: new RegExp('https://(?<username>[a-zA-Z][a-zA-Z0-9_-]*).slack.com'),
+    regex: new RegExp('https://([a-zA-Z][a-zA-Z0-9_-]*).slack.com'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]*$').test(username);
@@ -406,7 +404,7 @@ export const socials = {
     name: 'Slides',
     url: 'https://slides.com/{}',
     urlMain: 'https://slides.com/',
-    regex: new RegExp('https://slides.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://slides.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'slides',
     icon: Logoslides,
@@ -415,7 +413,7 @@ export const socials = {
     name: 'SoundCloud',
     url: 'https://soundcloud.com/{}',
     urlMain: 'https://soundcloud.com/',
-    regex: new RegExp('https://soundcloud.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://soundcloud.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'soundcloud',
     icon: Logosoundcloud,
@@ -424,7 +422,7 @@ export const socials = {
     name: 'Spotify',
     url: 'https://open.spotify.com/user/{}',
     urlMain: 'https://open.spotify.com/',
-    regex: new RegExp('https://open.spotify.com/user/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://open.spotify.com/user/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'spotify-icon',
     icon: Logospotify,
@@ -433,7 +431,7 @@ export const socials = {
     name: 'Telegram',
     url: 'https://t.me/{}',
     urlMain: 'https://t.me/',
-    regex: new RegExp('https://t.me/(?<username>\\w{3,32}[^_])'),
+    regex: new RegExp('https://t.me/(\\w{3,32}[^_])'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^\\w{3,32}[^_]$').test(username);
@@ -448,7 +446,7 @@ export const socials = {
     name: 'Trello',
     url: 'https://trello.com/{}',
     urlMain: 'https://trello.com/',
-    regex: new RegExp('https://trello.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://trello.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'trello',
     icon: Logotrello,
@@ -457,7 +455,7 @@ export const socials = {
     name: 'Twitch',
     url: 'https://www.twitch.tv/{}',
     urlMain: 'https://www.twitch.tv/',
-    regex: new RegExp('https://twitch.tv/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://twitch.tv/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'twitch',
     icon: Logotwitch,
@@ -466,7 +464,7 @@ export const socials = {
     name: 'Twitter',
     url: 'https://twitter.com/{}',
     urlMain: 'https://twitter.com/',
-    regex: new RegExp('https://twitter.com/(?<username>\\w{1,15})'),
+    regex: new RegExp('https://twitter.com/(\\w{1,15})'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^\\w{1,15}$').test(username);
@@ -481,7 +479,7 @@ export const socials = {
     name: 'Vimeo',
     url: 'https://vimeo.com/{}',
     urlMain: 'https://vimeo.com/',
-    regex: new RegExp('https://vimeo.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://vimeo.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'vimeo-icon',
     icon: Logovimeo,
@@ -490,7 +488,7 @@ export const socials = {
     name: 'Weebly',
     url: 'https://{}.weebly.com/',
     urlMain: 'https://weebly.com/',
-    regex: new RegExp('https://(?<username>[\\w_.-]+).weebly.com/'),
+    regex: new RegExp('https://([\\w_.-]+).weebly.com/'),
     usernameIsValid: () => true,
     iconName: 'weebly',
     icon: Logoweebly,
@@ -499,7 +497,7 @@ export const socials = {
     name: 'Wix',
     url: 'https://{}.wix.com',
     urlMain: 'https://wix.com/',
-    regex: new RegExp('https://(?<username>[a-zA-Z0-9@_-]).wix.com'),
+    regex: new RegExp('https://([a-zA-Z0-9@_-]).wix.com'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z0-9@_-]$').test(username);
@@ -514,7 +512,7 @@ export const socials = {
     name: 'WordPress',
     url: 'https://{}.wordpress.com/',
     urlMain: 'https://wordpress.com',
-    regex: new RegExp('https://(?<username>[a-zA-Z][a-zA-Z0-9_-]*).wordpress.com/'),
+    regex: new RegExp('https://([a-zA-Z][a-zA-Z0-9_-]*).wordpress.com/'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]*$').test(username);
@@ -529,7 +527,7 @@ export const socials = {
     name: 'YouTube',
     url: 'https://www.youtube.com/@{}',
     urlMain: 'https://www.youtube.com/',
-    regex: new RegExp('https://youtube.com/@(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://youtube.com/@([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'youtube-icon',
     icon: Logoyoutube,
@@ -538,7 +536,7 @@ export const socials = {
     name: 'last.fm',
     url: 'https://last.fm/user/{}',
     urlMain: 'https://last.fm/',
-    regex: new RegExp('https://last.fm/user/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://last.fm/user/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'lastfm',
     icon: Logolastfm,
@@ -547,7 +545,7 @@ export const socials = {
     name: 'npm',
     url: 'https://www.npmjs.com/~{}',
     urlMain: 'https://www.npmjs.com/',
-    regex: new RegExp('https://npmjs.com/~(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://npmjs.com/~([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'npm-icon',
     icon: Logonpm,
@@ -556,7 +554,7 @@ export const socials = {
     name: 'Wakatime',
     url: 'https://wakatime.com/@{}',
     urlMain: 'https://wakatime.com/',
-    regex: new RegExp('https://wakatime.com/@(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://wakatime.com/@([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'wakatime',
     icon: Logowakatime,
@@ -565,7 +563,7 @@ export const socials = {
     name: 'Facebook',
     url: 'https://www.facebook.com/{}',
     urlMain: 'https://facebook.com/',
-    regex: new RegExp('https://facebook.com/(?<username>[\\w_.-]+)'),
+    regex: new RegExp('https://facebook.com/([\\w_.-]+)'),
     usernameIsValid: () => true,
     iconName: 'facebook',
     icon: Logofacebook,
