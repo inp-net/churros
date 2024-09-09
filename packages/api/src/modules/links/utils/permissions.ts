@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
-import { canEditArticle, canEditArticlePrismaIncludes } from '#modules/posts';
+import { canEditArticle } from '#modules/posts';
 import { canEditProfile } from '#modules/users';
 import type { Prisma } from '@churros/db/prisma';
 
@@ -9,7 +9,7 @@ export const MAXIMUM_LINKS = 10;
 export const canEditLinkPrismaIncludes = {
   Event: { include: canEditEventPrismaIncludes },
   Ticket: { include: { event: { include: canEditEventPrismaIncludes } } },
-  Article: { include: canEditArticlePrismaIncludes },
+  Article: { include: canEditArticle.prismaIncludes },
   User: { include: canEditProfile.prismaIncludes },
 } as const satisfies Prisma.LinkInclude;
 

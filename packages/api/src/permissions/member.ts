@@ -75,7 +75,7 @@ export function userIsAdminOf(
 }
 
 /**
- * Check if a user has permission to edit a group
+ * Check if a user is a group editor for the given student association
  *
  * @param user
  * @param studentAssociationId the id of the student association that the group belongs to

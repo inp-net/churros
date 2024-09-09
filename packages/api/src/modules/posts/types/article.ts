@@ -58,8 +58,13 @@ export const ArticleType = builder.prismaNode('Article', {
     canBeEdited: t.boolean({
       description:
         "Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)",
-      resolve: ({ authorId, groupId }, _, { user }) =>
-        canEditArticle({ authorId, groupId }, { authorId, groupId }, user),
+      async resolve({ id }, _, { user }) {
+        const article = await prisma.article.findUniqueOrThrow({
+          where: { id },
+          include: canEditArticle.prismaIncludes,
+        });
+        return canEditArticle(article, article, user);
+      },
     }),
     myReactions: t.field({
       type: 'BooleanMap',

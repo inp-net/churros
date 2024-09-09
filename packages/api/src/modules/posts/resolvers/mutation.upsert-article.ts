@@ -1,5 +1,6 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { DateTimeScalar, UIDScalar, VisibilityEnum } from '#modules/global';
+import { canCreatePostsOn } from '#modules/groups';
 import { Visibility } from '@churros/db/prisma';
 import { differenceInDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
@@ -33,25 +34,28 @@ builder.mutationField('upsertArticle', (t) =>
       const creating = !id;
       if (groupFromToken) return groupFromToken.uid === groupUid;
 
-      if (!user) return false;
-      if (user.canEditGroups) return true;
-
       if (creating) {
-        if (!groupUid) return false;
-        return Boolean(
-          user.groups.some(
-            ({ group, canEditArticles }) => canEditArticles && group.uid === groupUid,
-          ),
-        );
+        const group = await prisma.group.findUnique({
+          where: { uid: groupUid },
+          include: canCreatePostsOn.prismaIncludes,
+        });
+        if (!group) throw new GraphQLError('Groupe non trouvé');
+        return canCreatePostsOn(user, group);
       }
 
-      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
+      const article = await prisma.article.findUniqueOrThrow({
+        where: { id },
+        include: canEditArticle.prismaIncludes,
+      });
       if (!article) throw new GraphQLError('Post non trouvé');
 
-      const group = await prisma.group.findUnique({ where: { uid: groupUid } });
+      const group = await prisma.group.findUnique({
+        where: { uid: groupUid },
+        include: canCreatePostsOn.prismaIncludes,
+      });
       if (!group) throw new GraphQLError('Groupe non trouvé');
 
-      return canEditArticle(article, { authorId: user.id, groupId: group.id }, user);
+      return canEditArticle(article, { authorId: user?.id ?? null, group }, user);
     },
     async resolve(
       query,

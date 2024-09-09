@@ -48,7 +48,7 @@ builder.mutationField('addLinks', (t) =>
         case 'Article': {
           const article = await prisma.article.findUniqueOrThrow({
             where: { id },
-            include: { author: true },
+            include: canEditArticle.prismaIncludes,
           });
           return canEditArticle(article, article, user);
         }
