@@ -1059,7 +1059,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^1.0.0, @churros/db@workspace:^1.2.2, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^1.2.2, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
@@ -1091,7 +1091,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/sync@workspace:packages/sync"
   dependencies:
-    "@churros/db": "workspace:^1.0.0"
+    "@churros/db": "workspace:^1.2.2"
     "@inp-net/ldap7": "npm:^1.0.9"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
