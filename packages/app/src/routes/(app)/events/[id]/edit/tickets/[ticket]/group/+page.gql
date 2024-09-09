@@ -1,0 +1,23 @@
+query PageEventEditGroupOfTicket($id: LocalID!, $ticket: LocalID!) @loading {
+  event(id: $id) {
+    canEdit(assert: "Tu n'a pas les permissions pour modifier cet évènement")
+    ticketGroups {
+      id
+      localID
+      name
+      capacity
+      tickets {
+        name
+      }
+    }
+    ticket(id: $ticket) {
+      id
+      group {
+        id
+        localID
+        name
+        capacity
+      }
+    }
+  }
+}

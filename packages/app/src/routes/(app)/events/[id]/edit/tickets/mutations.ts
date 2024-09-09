@@ -77,3 +77,32 @@ export const UnsetEventBeneficiary = graphql(`
     }
   }
 `);
+
+export const CreateTicketGroup = graphql(`
+  mutation CreateTicketGroup($event: LocalID!) {
+    upsertTicketGroup(event: $event, name: "", capacity: 0) {
+      ...MutationErrors
+      ... on MutationUpsertTicketGroupSuccess {
+        data {
+          localID
+          event {
+            localID
+          }
+        }
+      }
+    }
+  }
+`);
+
+export const DeleteTicketGroup = graphql(`
+  mutation DeleteTicketGroup($id: LocalID!) {
+    deleteTicketGroup(id: $id) {
+      ...MutationErrors
+      ... on MutationDeleteTicketGroupSuccess {
+        data {
+          id
+        }
+      }
+    }
+  }
+`);

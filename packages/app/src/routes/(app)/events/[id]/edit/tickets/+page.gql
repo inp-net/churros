@@ -27,9 +27,9 @@ query PageEditEventTickets($id: LocalID!) @loading {
       ...TextTicketSummary
     }
     ticketGroups @list(name: "List_EditEvent_TicketGroups") {
+      localID
       name
-      ticketsCount
-      capacity
+      ...TextTicketGroupSummary
     }
   }
 }

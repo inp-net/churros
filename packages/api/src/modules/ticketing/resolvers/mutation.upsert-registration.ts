@@ -118,8 +118,12 @@ builder.mutationField('upsertRegistration', (t) =>
         const ticketAndRegistrations = await prisma.ticket.findUnique({
           where: { id: ticketId },
           include: {
-            registrations: { include: { author: true } },
-            group: { include: { tickets: { include: { registrations: true } } } },
+            ...placesLeft.prismaIncludes,
+            registrations: {
+              include: {
+                author: true,
+              },
+            },
           },
         });
 

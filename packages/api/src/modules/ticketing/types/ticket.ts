@@ -1,6 +1,6 @@
-import { builder, prisma, toHtml } from '#lib';
+import { builder, ensureGlobalId, prisma, toHtml } from '#lib';
 import { MajorType } from '#modules/curriculum';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, LocalID } from '#modules/global';
 import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
 import { canBookTicket, shotgunIsOpen } from '#modules/ticketing/utils';
@@ -23,6 +23,19 @@ export const TicketType = builder.prismaNode('Ticket', {
       description: 'Un nom lisible sans espaces, adaptés pour des URLs.',
     }),
     ticketGroupId: t.exposeID('ticketGroupId', { nullable: true }),
+    isInGroup: t.boolean({
+      description: 'Ce billet appartient au groupe de billet donné',
+      args: {
+        id: t.arg({
+          type: LocalID,
+          required: false,
+          description: 'Null pour tester si le billet est dans aucun groupe',
+        }),
+      },
+      async resolve({ ticketGroupId }, { id }) {
+        return id ? ticketGroupId === ensureGlobalId(id, 'TicketGroup') : !ticketGroupId;
+      },
+    }),
     name: t.exposeString('name'),
     fullName: t.string({
       description: "Full name, including the ticket group's name if any",

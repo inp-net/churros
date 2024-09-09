@@ -17,10 +17,7 @@ builder.prismaObjectField(TicketType, 'placesLeft', (t) =>
 
       const ticket = await prisma.ticket.findUnique({
         where: { id },
-        include: {
-          registrations: true,
-          group: { include: { tickets: { include: { registrations: true } } } },
-        },
+        include: placesLeft.prismaIncludes,
       });
       if (!ticket) return 0;
 

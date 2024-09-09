@@ -133,6 +133,12 @@ const PAGES = {
   '/events/[id]/edit/recurrence': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/recurrence`;
   },
+  '/events/[id]/edit/ticket-groups/[group]': (params: {
+    id: string | number;
+    group: string | number;
+  }) => {
+    return `/events/${params.id}/edit/ticket-groups/${params.group}`;
+  },
   '/events/[id]/edit/tickets': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/tickets`;
   },
@@ -141,6 +147,12 @@ const PAGES = {
     ticket: string | number;
   }) => {
     return `/events/${params.id}/edit/tickets/${params.ticket}`;
+  },
+  '/events/[id]/edit/tickets/[ticket]/group': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params.id}/edit/tickets/${params.ticket}/group`;
   },
   '/events/[id]/edit/tickets/[ticket]/links': (params: {
     id: string | number;
@@ -527,8 +539,10 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/links': 'id';
     '/events/[id]/edit/managers': 'id';
     '/events/[id]/edit/recurrence': 'id';
+    '/events/[id]/edit/ticket-groups/[group]': 'id' | 'group';
     '/events/[id]/edit/tickets': 'id';
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/group': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
@@ -627,10 +641,10 @@ export type KIT_ROUTES = {
     subject: never;
     document: never;
     week: never;
+    group: never;
     ticket: never;
     bypass_oauth: never;
     token: never;
-    group: never;
     number: never;
     q: never;
     email: never;

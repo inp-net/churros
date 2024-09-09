@@ -219,6 +219,8 @@ export function canBookTicket(
   if (!canSeeAllBookings(ticket.event, user) && ticket.godsonLimit <= 0 && beneficiary)
     return [false, "Ce billet n'accepte pas de parrainages"];
 
+  if (!user && beneficiary) return [false, 'Connectez-vous pour parrainer'];
+
   if (
     // external beneficiaries can't be meaningfully checked for duplicate bookings
     typeof beneficiary !== 'string' &&
