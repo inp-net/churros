@@ -17,7 +17,7 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { fromYearTier } from '$lib/dates';
-  import { DISPLAY_PAYMENT_METHODS } from '$lib/display';
+  import { DISPLAY_PAYMENT_METHODS, DISPLAY_TICKET_COUNTING_POLICY } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';
   import {
     loaded,
@@ -41,6 +41,7 @@
   import IconPrice from '~icons/msl/euro';
   import IconCapacity from '~icons/msl/file-copy-outline';
   import IconExternalUser from '~icons/msl/globe';
+  import IconCountingPolicy from '~icons/msl/toll-outline';
   import IconGroupMember from '~icons/msl/group-outline';
   import IconHelp from '~icons/msl/help-outline';
   import IconGodson from '~icons/msl/hub-outline';
@@ -362,6 +363,19 @@
           subtext={mapLoading(event.ticket.group, (g) => g?.name ?? 'Aucun groupe')}
         >
           Groupe de billet
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconCountingPolicy}
+          href={route('/events/[id]/edit/tickets/[ticket]/counting', {
+            id: $page.params.id,
+            ticket: $page.params.ticket,
+          })}
+          subtext={mapLoading(
+            event.ticket.countingPolicy,
+            (policy) => DISPLAY_TICKET_COUNTING_POLICY[policy],
+          )}
+        >
+          Décompte des places restantes
         </SubmenuItem>
       </Submenu>
       <section class="constraints">

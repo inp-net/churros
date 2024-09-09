@@ -5,6 +5,7 @@ import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
 import { canBookTicket, shotgunIsOpen } from '#modules/ticketing/utils';
 import type { Prisma } from '@churros/db/prisma';
+import { TicketCountingPolicyEnum } from './ticket-counting-policy.js';
 
 export const TicketTypePrismaIncludes = {
   group: true,
@@ -95,6 +96,9 @@ export const TicketType = builder.prismaNode('Ticket', {
       },
     }),
     capacity: t.exposeInt('capacity', { nullable: true }),
+    countingPolicy: t.expose('countingPolicy', {
+      type: TicketCountingPolicyEnum,
+    }),
     registrations: t.relation('registrations', {
       authScopes: { loggedIn: true },
       query(_, { user }) {

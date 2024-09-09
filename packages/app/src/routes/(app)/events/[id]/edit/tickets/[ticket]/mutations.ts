@@ -246,3 +246,16 @@ export const UpdateGroupOfTicket = graphql(`
     }
   }
 `);
+
+export const SetCountingPolicy = graphql(`
+  mutation SetTicketCountingPolicy($ticket: LocalID!, $policy: TicketCountingPolicy!) {
+    updateTicket(ticket: $ticket, countingPolicy: $policy) {
+      ...MutationErrors
+      ... on MutationUpdateTicketSuccess {
+        data {
+          countingPolicy
+        }
+      }
+    }
+  }
+`);
