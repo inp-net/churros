@@ -4,6 +4,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores';
+  import * as Sentry from '@sentry/sveltekit';
   import {
     fragment,
     graphql,
@@ -106,6 +107,7 @@
     paymentError = mutationSucceeded('payBooking', result)
       ? ''
       : mutationErrorMessages('payBooking', result).join('\n\n');
+    if (paymentError) Sentry.captureMessage(`Booking payment failed with ${paymentError}`, 'error');
     paymentInProgress = false;
   }
 
