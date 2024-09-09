@@ -4,6 +4,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores';
+  import * as Sentry from '@sentry/sveltekit';
   import {
     fragment,
     graphql,
@@ -106,6 +107,7 @@
     paymentError = mutationSucceeded('payBooking', result)
       ? ''
       : mutationErrorMessages('payBooking', result).join('\n\n');
+    if (paymentError) Sentry.captureMessage(`Booking payment failed with ${paymentError}`, 'error');
     paymentInProgress = false;
   }
 
@@ -119,9 +121,9 @@
     }
   }
 
-  function advance(step: Step) {
+  function advance(...step: Step[]) {
     dirty = true;
-    historyStack = [...historyStack, step];
+    historyStack = [...historyStack, ...step];
   }
 
   let paymentInProgress = false;
@@ -167,10 +169,10 @@
     if (chosenMethod === 'Lydia' && $dataMe?.lydiaPhone) {
       await pay({
         method: 'Lydia',
-        phone,
+        phone: $dataMe.lydiaPhone,
         amount: wantsToPay,
       });
-      advance('lydia-waiting');
+      advance('lydia', 'lydia-waiting');
     } else if (chosenMethod === 'Lydia') {
       advance('lydia');
     } else {
@@ -272,6 +274,7 @@
         <p>En attente de Lydia...</p>
       </div>
       <div class="actions">
+        <ButtonSecondary icon={IconBack} on:click={back}>Retour</ButtonSecondary>
         <ButtonSecondary icon={IconOpenInNew} href="https://go.lydia.me"
           >Ouvrir Lydia</ButtonSecondary
         >
