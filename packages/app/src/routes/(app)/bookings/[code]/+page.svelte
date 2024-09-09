@@ -34,6 +34,7 @@
   import { CancelBooking, CreateGoogleWalletPass, MarkBookingAsPaid } from './mutations';
   import { graphql } from '$houdini';
   import { formatEUR } from '$lib/display';
+  import { vibrate } from '$lib/vibration';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
@@ -65,7 +66,7 @@
 
   // Notify when ticket was just scanned
   $: if (initialBookingDataVerified === false && $Updates.data?.booking.verified) {
-    navigator.vibrate(200);
+    vibrate(200);
     toasts.success('Place scannée ^^');
   }
 

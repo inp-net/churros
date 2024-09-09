@@ -1,19 +1,20 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { beforeNavigate } from '$app/navigation';
   import { updated } from '$app/stores';
   import AnalyticsTracker from '$lib/components/AnalyticsTracker.svelte';
-  import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
   import ModalReportIssue from '$lib/components/ModalReportIssue.svelte';
+  import ModalThemeVariables from '$lib/components/ModalThemeVariables.svelte';
   import Toast from '$lib/components/Toast.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
   import { setupIsMobile } from '$lib/mobile';
+  import '$lib/polyfills';
+  import { setSentryUser } from '$lib/sentry';
   import { theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
-  import { setSentryUser } from '$lib/sentry';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -62,28 +63,9 @@
     }, 1000);
   });
 
-  type NProgress = {
-    start: () => void;
-    done: () => void;
-    remove: () => void;
-  };
-
   beforeNavigate(async ({ willUnload, to }) => {
-    const { NProgress } = window as unknown as Window & { NProgress: NProgress };
-
-    NProgress.start();
-
     // See https://kit.svelte.dev/docs/configuration#version
     if ($updated && !willUnload && to?.url) location.href = to.url.href;
-  });
-
-  afterNavigate(async () => {
-    const { NProgress } = window as unknown as Window & { NProgress: NProgress };
-
-    NProgress.done();
-    setTimeout(() => {
-      NProgress.remove();
-    }, 1000);
   });
 
   onMount(() => {
