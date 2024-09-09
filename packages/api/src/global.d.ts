@@ -103,16 +103,7 @@ declare global {
 
       /** express-session secret */
       SESSION_SECRET: string;
-      /** 
-For net7 devs: the final value is in the vault.
-
-To generate this without a Mac:
-1. Generate a CSR and private key: openssl req -nodes -newkey rsa:2048 -keyout private_key.key -out cer_sign_request.csr
-2. Upload the CSR to Apple Developer Console: https://developer.apple.com/account/resources/certificates/add
-3. Download the .cer file from Apple Developer Console: https://developer.apple.com/account/resources/certificates/list
-4. Convert the .cer file to .crt file: openssl x509 -inform der -in certificate.cer -out certificate.crt
-5. Use the .crt with the private key to get a .pfx file: openssl pkcs12 -export -out certificate.pfx -inkey private_key.key -in certificate.crt
-6. Convert the .pfx to a .pem certificate: openssl pkcs12 -in certificate.pfx -out certificate.pem -nodes */
+      /** Contents of the .pem certificate. See .env.example for instructions to get this file */
       APPLE_WALLET_PEM_CERTIFICATE: string;
       /** The private key's optional password. For net7 devs, this is in the vault. */
       APPLE_WALLET_PEM_KEY_PASSWORD: string;
