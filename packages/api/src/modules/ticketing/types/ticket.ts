@@ -105,7 +105,7 @@ export const TicketType = builder.prismaNode('Ticket', {
           where: {
             OR: [
               { author: { uid: user.uid } },
-              { beneficiary: user.uid },
+              { internalBeneficiary: { uid: user.uid } },
               { ticket: { event: { managers: { some: { user: { uid: user.uid } } } } } },
             ],
           },
