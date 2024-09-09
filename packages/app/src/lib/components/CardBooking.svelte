@@ -17,7 +17,7 @@
   /** If non-zero, shows an additional area where the user can go see all their bookings for the event, and displays this count */
   export let hasMoreBookingsCount = 0;
 
-  export let booking: CardBooking;
+  export let booking: CardBooking | null;
   $: data = fragment(
     booking,
     graphql(`
@@ -50,28 +50,30 @@
   bind:this={bookingElement}
   class:kisses-corners={kissingCorners(bookingElement)}
 >
-  <a href={refroute('/bookings/[code]', loading($data.code, ''))}>
-    <article
-      class:floating
-      class="booking"
-      class:has-image={Boolean(loading($data?.ticket.event.pictureURL, ''))}
-    >
-      {#if $data && loading($data?.ticket.event.pictureURL, '')}
-        <img src={loading($data.ticket.event.pictureURL, '')} class="background" alt="" />
-      {/if}
-      <p class="name">
-        <LoadingText value={$data.ticket.event.title} />
-      </p>
-      {#if $data.ticket.name}
-        <p class="ticket">
-          <LoadingText value={$data.ticket.name} />
+  {#if $data}
+    <a href={refroute('/bookings/[code]', loading($data.code, ''))}>
+      <article
+        class:floating
+        class="booking"
+        class:has-image={Boolean(loading($data?.ticket.event.pictureURL, ''))}
+      >
+        {#if $data && loading($data?.ticket.event.pictureURL, '')}
+          <img src={loading($data.ticket.event.pictureURL, '')} class="background" alt="" />
+        {/if}
+        <p class="name">
+          <LoadingText value={$data.ticket.event.title} />
         </p>
-      {/if}
-      <p class="status">
-        <BookingStatus booking={$data} />
-      </p>
-    </article>
-  </a>
+        {#if $data.ticket.name}
+          <p class="ticket">
+            <LoadingText value={$data.ticket.name} />
+          </p>
+        {/if}
+        <p class="status">
+          <BookingStatus booking={$data} />
+        </p>
+      </article>
+    </a>
+  {/if}
   <!-- TODO /events/:id/my-bookings -->
   <!-- {#if hasMoreBookingsCount > 0}
     <a
