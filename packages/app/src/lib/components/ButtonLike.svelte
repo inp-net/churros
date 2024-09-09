@@ -12,7 +12,7 @@
 
   $: ({ RootLayout } = $page.data);
 
-  export let resource: ButtonLike;
+  export let resource: ButtonLike | null;
   $: data = fragment(
     resource,
     graphql(`
@@ -26,7 +26,7 @@
   );
 
   async function toggle(id: string, like: boolean) {
-    if (!loaded($data.likes)) return;
+    if (!$data || !loaded($data.likes)) return;
     const typename = typenameOfId(id);
     return graphql(`
       mutation ToggleLike($id: ID!, $like: Boolean!) {
@@ -57,7 +57,7 @@
   let numbersElement: HTMLElement | null;
   let numbersAnimator: NumberFlip;
 
-  $: if (browser && loaded($data.likes) && numbersElement && !numbersAnimator) {
+  $: if (browser && $data && loaded($data.likes) && numbersElement && !numbersAnimator) {
     numbersAnimator = new NumberFlip({
       rootElement: numbersElement,
       newNumber: $data.likes,
@@ -66,7 +66,7 @@
     });
   }
 
-  $: if (loaded($data.likes))
+  $: if ($data && loaded($data.likes))
     numbersAnimator?.setNumberTo({ newNumber: $data.likes, durationFlip: 50, durationOpacity: 25 });
 </script>
 
@@ -74,6 +74,7 @@
   <button
     disabled={!$RootLayout.data?.loggedIn}
     on:click={async () => {
+      if (!$data) return;
       if (!loaded($data.id) || !loaded($data.liked)) return;
       const result = await toggle($data.id, !$data.liked);
       if (!result) return;
@@ -81,7 +82,7 @@
     }}
   >
     <div class="icon">
-      {#if $data.liked}
+      {#if $data?.liked}
         <IconHeartFilled color="var(--danger)"></IconHeartFilled>
       {:else}
         <IconHeartEmpty></IconHeartEmpty>
@@ -89,7 +90,7 @@
     </div>
     <span class="number-flip" bind:this={numbersElement}>
       <!-- Keep content for SSR, but using this on CSR would prevent the animator from changing the text content first (too much reactivity haha) -->
-      {#if !loaded($data.likes)}…{:else if !browser}{$data.likes}{/if}
+      {#if !$data || !loaded($data.likes)}…{:else if !browser}{$data.likes}{/if}
     </span>
   </button>
 </div>
