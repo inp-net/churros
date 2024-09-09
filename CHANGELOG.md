@@ -11,6 +11,20 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [2.7.0] - 2024-09-10
+
+### Nouveautés
+
+- On peut maintenant ajouter un billet à Apple Wallet!
+- Le numéro de téléphone pour les paiements par Lydia est modifiable depuis les réglages
+- Pour celleux qui crée des évènements: on peut maintenant faire des groupes de billets, et choisir aussi la manière dont sont décomptées les places restantes
+
+### Corrections
+
+- Corrections de plusieurs bugs autour du paiement par Lydia
+- Corrections de quelques bugs qui causaient un plantage de l'application
+- Modifier un post lié à un évènement ne cause plus la perte du lien à l'évènement
+
 ## [2.1.0] - 2024-09-01
 
 ### Nouveautés
