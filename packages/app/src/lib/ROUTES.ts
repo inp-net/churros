@@ -148,6 +148,12 @@ const PAGES = {
   }) => {
     return `/events/${params.id}/edit/tickets/${params.ticket}`;
   },
+  '/events/[id]/edit/tickets/[ticket]/counting': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params.id}/edit/tickets/${params.ticket}/counting`;
+  },
   '/events/[id]/edit/tickets/[ticket]/group': (params: {
     id: string | number;
     ticket: string | number;
@@ -542,6 +548,7 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/ticket-groups/[group]': 'id' | 'group';
     '/events/[id]/edit/tickets': 'id';
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/counting': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/group': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';

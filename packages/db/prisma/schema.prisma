@@ -617,14 +617,20 @@ model TicketGroup {
   @@unique([eventId, name])
 }
 
+/// Decide when to count a ticket as counting towards the capacity 
+enum TicketCountingPolicy {
+  OnBooked // Count when the ticket is booked
+  OnPaid // Count when the ticket is paid
+}
+
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
-  id                    String          @id @default(dbgenerated("nanoid('t:')"))
+  id                    String               @id @default(dbgenerated("nanoid('t:')"))
   slug                  String
   eventId               String
   ticketGroupId         String?
-  name                  String          @db.VarChar(255)
-  description           String          @db.VarChar(255)
+  name                  String               @db.VarChar(255)
+  description           String               @db.VarChar(255)
   opensAt               DateTime?
   closesAt              DateTime?
   minimumPrice          Float
@@ -632,7 +638,8 @@ model Ticket {
   capacity              Int?
   registrations         Registration[]
   links                 Link[]
-  allowedPaymentMethods PaymentMethod[] @default([]) // empty means all
+  allowedPaymentMethods PaymentMethod[]      @default([]) // empty means all
+  countingPolicy        TicketCountingPolicy @default(OnBooked)
 
   // Conditions for that ticket.
   openToPromotions   Int[]    @default([])

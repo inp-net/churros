@@ -138,7 +138,6 @@ author_lastName text := '';
 ticket_name text := '';
 ticket_description text := '';
 author_graduationYear text := '';
-ticket_price text := '';
 BEGIN
     author_firstName := (
                 SELECT "firstName"

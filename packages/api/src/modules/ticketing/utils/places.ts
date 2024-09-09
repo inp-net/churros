@@ -13,8 +13,11 @@ export function placesLeft(
         ticket.group.tickets.reduce(
           (sum, { registrations }) =>
             sum +
-            registrations.filter(
-              ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */,
+            registrations.filter((booking) =>
+              bookingCounts({
+                ...booking,
+                ticket,
+              }),
             ).length,
           0,
         ),
@@ -26,8 +29,11 @@ export function placesLeft(
     placesLeftInTicket = Math.max(
       0,
       handleUnlimited(ticket.capacity) -
-        ticket.registrations.filter(
-          ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */,
+        ticket.registrations.filter((booking) =>
+          bookingCounts({
+            ...booking,
+            ticket,
+          }),
         ).length,
     );
   }
@@ -40,8 +46,11 @@ export function placesLeft(
         ticket.event.tickets.reduce(
           (sum, { registrations }) =>
             sum +
-            registrations.filter(
-              ({ opposedAt, cancelledAt /* , paid */ }) => !cancelledAt && !opposedAt /* && paid */,
+            registrations.filter((booking) =>
+              bookingCounts({
+                ...booking,
+                ticket,
+              }),
             ).length,
           0,
         ),
@@ -72,3 +81,25 @@ placesLeft.prismaIncludes = {
     },
   },
 } as const satisfies Prisma.TicketInclude;
+
+function bookingCounts(
+  booking: Prisma.RegistrationGetPayload<{ include: typeof bookingCounts.prismaIncludes }>,
+) {
+  switch (booking.ticket.countingPolicy) {
+    case 'OnBooked': {
+      return !booking.cancelledAt && !booking.opposedAt;
+    }
+
+    case 'OnPaid': {
+      return booking.paid && !booking.cancelledAt && !booking.opposedAt;
+    }
+
+    default: {
+      throw new Error(`Unexpected ticket counting policy: ${booking.ticket.countingPolicy}`);
+    }
+  }
+}
+
+bookingCounts.prismaIncludes = {
+  ticket: true,
+} as const satisfies Prisma.RegistrationInclude;

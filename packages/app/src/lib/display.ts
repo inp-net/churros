@@ -7,6 +7,7 @@ import {
   type IssueState$options,
   type NotificationChannel$options,
   type PaymentMethod$options,
+  type TicketCountingPolicy$options,
   type Visibility$options,
 } from '$houdini';
 import { NotificationChannel, Visibility } from '$lib/zeus';
@@ -314,3 +315,8 @@ export function formatEUR(price: number) {
     currency: 'EUR',
   }).format(price);
 }
+
+export const DISPLAY_TICKET_COUNTING_POLICY: Record<TicketCountingPolicy$options, string> = {
+  OnBooked: 'Dès la réservation',
+  OnPaid: 'Après le paiement',
+};

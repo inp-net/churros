@@ -476,6 +476,11 @@ export const topnavConfigs: Partial<{
     back: route('/events/[id]/edit/tickets/[ticket]', params),
     actions: [],
   }),
+  '/(app)/events/[id]/edit/tickets/[ticket]/counting': ({ params }) => ({
+    title: 'Comptage des places',
+    back: route('/events/[id]/edit/tickets/[ticket]', params),
+    actions: [],
+  }),
   '/(app)/events/[id]/edit/tickets/[ticket]/payment': ({ params }) => ({
     title: 'Moyens de paiement',
     back: route('/events/[id]/edit/tickets/[ticket]', params),

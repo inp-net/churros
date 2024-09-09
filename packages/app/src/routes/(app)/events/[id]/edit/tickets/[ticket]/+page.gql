@@ -51,6 +51,7 @@ query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
       }
       openToPromotions
       onlyManagersCanProvide
+      countingPolicy
     }
   }
 }

@@ -6,6 +6,7 @@ import { TicketType } from '#modules/ticketing/types';
 import { handleUnlimitedCapacity } from '#modules/ticketing/utils';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
+import { TicketCountingPolicyEnum } from '../types/ticket-counting-policy.js';
 
 builder.mutationField('updateTicket', (t) =>
   t.prismaField({
@@ -40,6 +41,10 @@ builder.mutationField('updateTicket', (t) =>
         required: false,
         type: [PaymentMethodEnum],
         description: 'Moyens de paiement acceptés pour ce billet',
+      }),
+      countingPolicy: t.arg({
+        type: TicketCountingPolicyEnum,
+        defaultValue: 'OnBooked',
       }),
     },
     async authScopes(_, { ticket: ticketId }, { user }) {
@@ -87,6 +92,7 @@ builder.mutationField('updateTicket', (t) =>
           allowedPaymentMethods: args.allowedPaymentMethods
             ? { set: args.allowedPaymentMethods }
             : undefined,
+          countingPolicy: args.countingPolicy,
         },
       });
     },

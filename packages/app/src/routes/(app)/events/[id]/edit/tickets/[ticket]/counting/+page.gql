@@ -1,0 +1,7 @@
+query PageEventEditTicketCountingPolicy($id: LocalID!, $ticket: LocalID!) @loading {
+  event(id: $id) {
+    ticket(id: $ticket) {
+      countingPolicy
+    }
+  }
+}

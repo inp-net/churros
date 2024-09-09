@@ -3151,6 +3151,7 @@ type Mutation {
     """
     allowedPaymentMethods: [PaymentMethod!]
     capacity: Capacity
+    countingPolicy: TicketCountingPolicy! = OnBooked
 
     """
     Nombre maximum de parrainages par billet (0 pour désactiver les parrainages)
@@ -6496,6 +6497,7 @@ type Ticket implements Node {
   ): String
   capacity: Int
   closesAt: DateTime
+  countingPolicy: TicketCountingPolicy!
   description: String!
   descriptionHtml: String!
   event: Event!
@@ -6633,6 +6635,21 @@ input TicketConstraintsInput {
   Cotisant·e·s de l'AE du groupe organisateur de l'évènement
   """
   studentAssociationContributors: BooleanConstraint
+}
+
+"""
+Politique de comptage des places pour un billet. Permet de décider quand est-ce que l'on compte un billet dans le calcul des places restantes
+"""
+enum TicketCountingPolicy {
+  """
+  On compte le billet dès qu'il est réservé
+  """
+  OnBooked
+
+  """
+  On compte le billet seulement une fois payé
+  """
+  OnPaid
 }
 
 """
