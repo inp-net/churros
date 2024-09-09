@@ -12,6 +12,7 @@
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
+  import '$lib/polyfills';
   import type { LayoutData } from './$houdini';
   import { setSentryUser } from '$lib/sentry';
 
