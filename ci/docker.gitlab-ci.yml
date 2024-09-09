@@ -38,7 +38,7 @@ deploy_api:
         --local context=. \
         --local dockerfile=. \
         --opt target=api \
-        --opt build-arg:TAG=$TAG \
+        --secret id=SENTRY_AUTH_TOKEN \
         --output type=image,name=$HARBOR_REGISTRY_IMAGE/api:v$TAG,push=true
   - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/api:v$TAG"
 
@@ -58,6 +58,7 @@ deploy_app:
         --local dockerfile=. \
         --opt target=app \
         --opt build-arg:TAG=$TAG \
+        --secret id=SENTRY_AUTH_TOKEN \
         --output type=image,name=$HARBOR_REGISTRY_IMAGE/app:v$TAG,push=true
   - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/app:v$TAG"
 
@@ -75,5 +76,6 @@ deploy_sync:
         --local dockerfile=. \
         --opt target=sync \
         --opt build-arg:TAG=$TAG \
+        --secret id=SENTRY_AUTH_TOKEN \
         --output type=image,name=$HARBOR_REGISTRY_IMAGE/sync:v$TAG,push=true
   - echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/sync:v$TAG"
