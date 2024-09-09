@@ -3,7 +3,7 @@
   "type": "module",
   "devDependencies": {
     "@changesets/changelog-git": "^0.2.0",
-    "@changesets/cli": "^2.27.7",
+    "@changesets/cli": "^2.27.8",
     "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@types/lodash": "^4.17.7",
