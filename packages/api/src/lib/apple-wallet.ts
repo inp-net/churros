@@ -32,10 +32,10 @@ export async function registerAppleWalletPassTemplate() {
     organizationName: 'net7', // TODO: dehardcode?
     logoText: 'Churros',
   });
-  await template.images.add('logo', 'static/apple-wallet-assets/logo@160px.png');
-  await template.images.add('logo', 'static/apple-wallet-assets/logo.png', '2x');
-  await template.images.add('icon', 'static/apple-wallet-assets/logo-masked@160px.png');
-  await template.images.add('icon', 'static/apple-wallet-assets/logo-masked.png', '2x');
+  await template.images.add('logo', 'static/apple-wallet-assets/logo-color@128px.png');
+  await template.images.add('logo', 'static/apple-wallet-assets/logo-color@256px.png', '2x');
+  await template.images.add('icon', 'static/apple-wallet-assets/logo-black@128px.png');
+  await template.images.add('icon', 'static/apple-wallet-assets/logo-black-thin@256px.png', '2x');
   await writePemCertificate('apple-wallet-cert.pem');
   if (!existsSync('apple-wallet-cert.pem')) {
     console.warn(
