@@ -35,19 +35,25 @@ git clone https://git.inpt.fr/inp-net/churros.git
 yarn install
 ```
 
-3. Build le projet
+3. Générer Prisma
+
+```
+yarn prisma generate
+```
+
+4. Build le projet
 
 ```
 yarn build
 ```
 
-4. Initialiser la base de données
+5. Initialiser la base de données
 
 ```
 yarn reset
 ```
 
-5. Démarrer les serveurs de développement
+6. Démarrer les serveurs de développement
 
 - ```
   yarn dev
@@ -130,3 +136,26 @@ Même si l'anglais est préférable, vous pouvez écrire les messages de commits
 - Évitez d'avoir le mot "type" dans le nom d'un type (API) ou d'une table ou enum (Prisma)
 - Ne pas utiliser le nom de variable "path" quand on travaille sur des chemins de fichiers, car on utilise déjà `path` pour le module `path` de NodeJS
 - Pour les fonctions utilitaires de [lodash](https://lodash.com/docs/4.17.15), préférer installer séparément les bibliothèques `lodash.*` (ex. `lodash.omit`) plutôt que d'installer `lodash` en entier
+
+### Changelogs
+
+Pour vos MRs, vous pouvez toucher à `/CHANGELOG.md`: cela créera une popup à la prochaine version avec vos changements dedans. C'est pratique pour annoncer des gros changements mais c'est à utiliser avec parcimonie. Mais il faut par contre faire un yarn changeset et choisir:
+
+- quels paquets votre MR impacte (ce sera la plupart du temps @churros/app et/ou @churros/api, et parfois @churros/db quand vous touchez au schéma prisma)
+- quels niveau de changement de version sur chacun des paquets votre mr demande.
+  ya 3 niveaux: patch, minor et major
+
+`major` ce sera quasiment jamais pour l'app, ça veut dire "breaking changes", i.e. le passage à la nouvelle version casse du code existant. Ça peut être plus souvent le cas pour l'api par contre (par exemple, quand on enlève un champ d'un type ou qu'on modifie les arguments d'une query ou mutation)
+
+`minor` c'est pour toute amélioration (nouvelle feature, amélioration de l'apparence, etc) qui est plus que la résolution d'un bug
+`patch` c'est les résolutions debugs
+
+les 3 niveaux correspondent à respectivement X, Y et Z dans les numéros de versions: X.Y.Z
+
+#### Exemples :
+
+- si vous faites un bug fix sur le css, c'est patch sur `@churros/app`
+
+- si vous rajoutez une nouvelle feature avec de nouvelles mutations etc, c'est minor sur `@churros/app, /api et /db`
+
+- si vous rendez l'api incompatible avec les versions précedantes, c'est `major` sur `@churros/api` (on essayera de pas trop le faire, ou plutôt de prévenir quelques versions avant, parce qu'on peut marquer des champs ou arguments comme dépréciés en GraphQL)
