@@ -1,5 +1,6 @@
 import { fakerFR } from '@faker-js/faker';
 import { format } from 'date-fns';
+import {Redis} from 'ioredis'
 import dichotomid from 'dichotomid';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -38,6 +39,18 @@ const storageRootDirectory = storageRoot();
 //       .map(async (file) => rm(path.join(storageRootDirectory, folder, file))),
 //   );
 // }
+
+console.info("Clearing redis cache")
+const redis = new Redis({
+  host: new URL(process.env['REDIS_URL'] || 'redis://localhost:6379').hostname,
+  port: Number.parseInt(new URL(process.env['REDIS_URL'] || 'redis://localhost:6379').port),
+})
+await redis.keys('*').then(keys => {
+  const pipeline = redis.pipeline()
+  keys.forEach(key => pipeline.del(key))
+  pipeline.exec()
+  console.info(`Deleted ${keys.length} keys`)
+})
 
 async function randomMember(groupId: string) {
   return faker.helpers.arrayElement(

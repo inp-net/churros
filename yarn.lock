@@ -1067,6 +1067,7 @@ __metadata:
     "@pothos/plugin-prisma": "npm:^4.2.1"
     "@prisma/client": "npm:^5.18.0"
     graphql: "npm:^16.9.0"
+    ioredis: "npm:^5.4.1"
     npm-run-all2: "npm:^6.2.2"
     prisma: "npm:^5.18.0"
     typescript: "npm:^5.5.4"
