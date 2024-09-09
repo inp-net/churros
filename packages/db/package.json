@@ -21,6 +21,7 @@
     "@pothos/plugin-prisma": "^4.2.1",
     "@prisma/client": "^5.18.0",
     "graphql": "^16.9.0",
+    "ioredis": "^5.4.1",
     "npm-run-all2": "^6.2.2",
     "typescript": "^5.5.4"
   },
