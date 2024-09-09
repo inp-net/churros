@@ -2,6 +2,9 @@
 '@churros/app': patch
 ---
 
+fix(app): remove global top progress bar (closes #1123)
+fix(app): don't crash when trying mutation with invalid date
+fix(app): accept null for data on CardBooking
 fix(ticketing/scan): surface error when camera not found on event scanning view (closes #1127)
 fix(app): check for navigator.vibrate support everywhere (closes #1121)
 fix(app): polyfill URL.canParse and Array#toReversed
