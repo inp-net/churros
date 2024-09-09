@@ -80,7 +80,11 @@ const config = {
       // turn the value into something the API can use
       marshal(date) {
         if (typeof date === 'string') return date;
-        return date && date.toISOString();
+        try {
+          return date && date.toISOString();
+        } catch {
+          return null;
+        }
       },
     },
     Counts: {
