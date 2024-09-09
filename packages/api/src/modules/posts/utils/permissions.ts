@@ -21,7 +21,7 @@ export function canEditArticle(
   // No editing authorless articles, except for people above
   if (!oldArticle.authorId) return false;
   // Same for changing the author, except when it's the user themselves
-  if (oldArticle.authorId !== newArticle.authorId && !newArticle.authorId === user.id) return false;
+  if (oldArticle.authorId !== newArticle.authorId && newArticle.authorId !== user.id) return false;
 
   // Changing the group of an article
   if (newArticle.group && oldArticle.groupId !== newArticle.group?.id) {
