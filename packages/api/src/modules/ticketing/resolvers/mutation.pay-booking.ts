@@ -41,7 +41,7 @@ builder.mutationField('payBooking', (t) =>
         where: { id: bookingId },
         include: { ticket: { include: actualPrice.prismaIncludes } },
       });
-      if (!registration) throw new GraphQLError('Registration not found');
+      if (!registration) throw new GraphQLError('Réservation introuvable');
 
       if (registration.paid) throw new GraphQLError('Tu as déjà payé cette réservation');
 
@@ -49,10 +49,12 @@ builder.mutationField('payBooking', (t) =>
         where: { id: registration.ticket.id },
         include: { event: { include: { beneficiary: true } } },
       });
-      if (!ticket) throw new GraphQLError('Ticket not found');
-      if (!paymentMethod) throw new GraphQLError('Payment method not found');
+      if (!ticket) throw new GraphQLError('Billet introuvable');
+      if (!paymentMethod) throw new GraphQLError('Moyen de paiement non choisi');
+
+      phone ||= user?.lydiaPhone;
       if (!phone && paymentMethod === PaymentMethodPrisma.Lydia)
-        throw new GraphQLError('Phone not found');
+        throw new GraphQLError('Numéro de téléphone manquant');
 
       const price = actualPrice(user, registration.ticket, amount ?? null);
 
