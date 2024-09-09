@@ -63,7 +63,7 @@
               if (!(currentTarget instanceof HTMLInputElement)) return;
               if (!group) return;
               const coerced = currentTarget.value ? Number.parseFloat(currentTarget.value) : 0;
-              if (Number.isNaN(coerced)) toasts.error('Le prix doit être un nombre');
+              if (Number.isNaN(coerced)) toasts.error('Le nombre de places doit être un nombre');
 
               await mutateAndToast(
                 UpdateTicketGroup,
