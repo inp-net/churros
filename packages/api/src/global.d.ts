@@ -103,6 +103,13 @@ declare global {
 
       /** express-session secret */
       SESSION_SECRET: string;
+      /** Contents of the .pem certificate. See .env.example for instructions to get this file */
+      APPLE_WALLET_PEM_CERTIFICATE: string;
+      /** The private key's optional password. For net7 devs, this is in the vault. */
+      APPLE_WALLET_PEM_KEY_PASSWORD: string;
+      APPLE_WALLET_PASS_TYPE_ID: string;
+      /** Get it from https://developer.apple.com/account */
+      APPLE_WALLET_TEAM_ID: string;
     }
   }
 
