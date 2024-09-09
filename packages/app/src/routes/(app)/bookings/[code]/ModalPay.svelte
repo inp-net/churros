@@ -119,9 +119,9 @@
     }
   }
 
-  function advance(step: Step) {
+  function advance(...step: Step[]) {
     dirty = true;
-    historyStack = [...historyStack, step];
+    historyStack = [...historyStack, ...step];
   }
 
   let paymentInProgress = false;
@@ -170,7 +170,7 @@
         phone,
         amount: wantsToPay,
       });
-      advance('lydia-waiting');
+      advance('lydia', 'lydia-waiting');
     } else if (chosenMethod === 'Lydia') {
       advance('lydia');
     } else {
@@ -272,6 +272,7 @@
         <p>En attente de Lydia...</p>
       </div>
       <div class="actions">
+        <ButtonSecondary icon={IconBack} on:click={back}>Retour</ButtonSecondary>
         <ButtonSecondary icon={IconOpenInNew} href="https://go.lydia.me"
           >Ouvrir Lydia</ButtonSecondary
         >
