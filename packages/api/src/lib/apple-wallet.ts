@@ -1,6 +1,6 @@
 import type { Prisma } from '@churros/db/prisma';
 import { Template } from '@startse/pass-js';
-import { addDays, subMinutes } from 'date-fns';
+import { addDays, format, subMinutes } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -96,8 +96,8 @@ export async function createAppleWalletPass(
         .toFile(storagePath(picfile2x));
     }
 
-    pass.images.add('strip', storagePath(picfile1x), '1x');
-    pass.images.add('strip', storagePath(picfile2x), '2x');
+    pass.images.add('thumbnail', storagePath(picfile1x), '1x');
+    pass.images.add('thumbnail', storagePath(picfile2x), '2x');
   }
 
   pass.backFields.add({
@@ -111,36 +111,12 @@ export async function createAppleWalletPass(
     label: 'Évènement',
     value: booking.ticket.event.title,
   });
-  pass.secondaryFields.add({
-    key: 'start',
-    label: 'Début',
+  pass.auxiliaryFields.add({
+    key: 'date',
+    label: 'Date',
     value: booking.ticket.event.startsAt,
     dateStyle: 'PKDateStyleShort',
   });
-  pass.secondaryFields.add({
-    key: 'end',
-    label: 'Fin',
-    value: booking.ticket.event.endsAt,
-    dateStyle: 'PKDateStyleShort',
-  });
-  pass.auxiliaryFields.add({
-    key: 'location',
-    label: 'Lieu',
-    value: booking.ticket.event.location,
-  });
-  pass.backFields.add({
-    key: 'booked-at',
-    label: 'Réservé le',
-    value: booking.createdAt,
-    dateStyle: 'PKDateStyleFull',
-  });
-  if (booking.ticket.name || booking.ticket.event._count.tickets > 1) {
-    pass.headerFields.add({
-      key: 'ticket-name',
-      label: 'Billet',
-      value: booking.ticket.name || 'Normal',
-    });
-  }
 
   const beneficiaryDisplay = booking.internalBeneficiary
     ? fullName(booking.internalBeneficiary)
@@ -154,12 +130,66 @@ export async function createAppleWalletPass(
         )
       : null;
 
-  pass.headerFields.add({
+  pass.secondaryFields.add({
     key: 'beneficiary',
     label: 'Pour',
     value: beneficiaryDisplay,
     attributedValue: `<a href=${beneficiaryURL}>${beneficiaryDisplay}</a>`,
   });
+  pass.secondaryFields.add({
+    key: 'start-at',
+    label: 'Début',
+    value: format(booking.ticket.event.startsAt, 'HH:mm'),
+  });
+  pass.secondaryFields.add({
+    key: 'end-at',
+    label: 'Fin',
+    value: format(booking.ticket.event.endsAt, 'HH:mm'),
+  });
+  pass.auxiliaryFields.add({
+    key: 'location',
+    label: 'Lieu',
+    value: booking.ticket.event.location,
+  });
+  pass.backFields.add({
+    key: 'booked-at',
+    label: 'Réservé le',
+    value: booking.createdAt,
+    dateStyle: 'PKDateStyleLong',
+  });
+  pass.backFields.add({
+    key: 'organizers',
+    label: 'Organisé par',
+    value:
+      booking.ticket.event.group.name +
+      (booking.ticket.event.coOrganizers.length > 0
+        ? ` avec ${booking.ticket.event.coOrganizers.map((c) => c.name).join(', ')}`
+        : ''),
+  });
+  pass.backFields.add({
+    key: 'contact',
+    label: "Contact de l'organisation",
+    value: booking.ticket.event.contactMail,
+    attributedValue: `<a href="mailto:${booking.ticket.event.contactMail}">${booking.ticket.event.contactMail}</a>`,
+  });
+  pass.backFields.add({
+    key: 'booked-time',
+    label: 'Réservé à',
+    value: format(booking.createdAt, 'HH:mm'),
+  });
+  pass.backFields.add({
+    key: 'platform',
+    label: 'Acheté sur',
+    value: new URL(process.env.PUBLIC_FRONTEND_ORIGIN).hostname,
+  });
+  if (booking.ticket.name || booking.ticket.event._count.tickets > 1) {
+    pass.headerFields.add({
+      key: 'ticket-name',
+      label: 'Billet',
+      value: booking.ticket.name || 'Normal',
+    });
+  }
+
   return pass;
 }
 
@@ -170,6 +200,8 @@ createAppleWalletPass.prismaIncludes = {
     include: {
       event: {
         include: {
+          group: true,
+          coOrganizers: true,
           _count: {
             select: {
               tickets: true,
