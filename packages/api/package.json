@@ -1,8 +1,8 @@
 {
   "name": "@churros/api",
-  "version": "2.4.2",
+  "version": "3.0.0",
   "dependencies": {
-    "@churros/db": "workspace:^1.2.2",
+    "@churros/db": "workspace:^1.3.0",
     "@envelop/core": "^5.0.1",
     "@graphql-tools/utils": "^10.3.4",
     "@graphql-yoga/node": "^3.9.1",

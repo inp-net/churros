@@ -1,5 +1,25 @@
 # @churros/api
 
+## 3.0.0
+
+### Major Changes
+
+- 975b061: make saveLydiaPhone return a mutation result instead of the user directly
+
+### Minor Changes
+
+- 8fef930: implement ticket counting policies
+- 86f8a45: add "add to apple wallet" support for bookings
+- 687fb54: fix Ticket.registrations
+- 34a50bd: add mutations to move a ticket to a group
+
+### Patch Changes
+
+- d645d37: anyone could edit a post
+- a9bbdbb: fix(ticketing): global event capacity was not taken into account
+- Updated dependencies [8fef930]
+  - @churros/db@1.3.0
+
 ## 2.4.2
 
 ### Patch Changes
