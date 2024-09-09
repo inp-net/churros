@@ -25,6 +25,17 @@ export const CreateGoogleWalletPass = graphql(`
   }
 `);
 
+export const CreateAppleWalletPass = graphql(`
+  mutation CreateAppleWalletPass($code: String!) {
+    createAppleWalletPass(code: $code) {
+      ...MutationErrors
+      ... on MutationCreateAppleWalletPassSuccess {
+        data
+      }
+    }
+  }
+`);
+
 export const MarkBookingAsPaid = graphql(`
   mutation MarkBookingAsPaid($code: String!) {
     markBookingAsPaid(code: $code) {

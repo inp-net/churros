@@ -22,6 +22,7 @@
     "@pothos/plugin-with-input": "^4.1.0",
     "@pothos/plugin-zod": "^4.1.0",
     "@prisma/client": "^5.18.0",
+    "@startse/pass-js": "^7.1.2",
     "@types/is-plain-object": "^2.0.4",
     "@types/qrcode": "^1.5.5",
     "@zxcvbn-ts/core": "^3.0.4",

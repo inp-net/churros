@@ -46,3 +46,4 @@ buildinfo.ts
 packages/api/static/CHANGELOG.md
 wiki/
 .env.bak
+packages/api/apple-wallet-cert.pem

@@ -1,8 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { graphql } from '$houdini';
   import BookingAuthor from '$lib/components/BookingAuthor.svelte';
   import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
+  import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
+  import ButtonAddToAppleWallet from '$lib/components/ButtonAddToAppleWallet.svelte';
   import ButtonAddToGoogleWallet from '$lib/components/ButtonAddToGoogleWallet.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -11,8 +14,8 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
-  import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
   import { formatDateTime } from '$lib/dates';
+  import { formatEUR } from '$lib/display';
   import {
     LoadingText,
     allLoaded,
@@ -31,10 +34,13 @@
   import IconDownload from '~icons/msl/download';
   import type { PageData } from './$houdini';
   import ModalPay, { type Step } from './ModalPay.svelte';
-  import { CancelBooking, CreateGoogleWalletPass, MarkBookingAsPaid } from './mutations';
-  import { graphql } from '$houdini';
-  import { formatEUR } from '$lib/display';
   import { vibrate } from '$lib/vibration';
+  import {
+    CancelBooking,
+    CreateAppleWalletPass,
+    CreateGoogleWalletPass,
+    MarkBookingAsPaid,
+  } from './mutations';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
@@ -144,22 +150,6 @@
           href={route('GET /bookings/[code].pdf', loading(booking.code, ''))}
           icon={IconDownload}>PDF</ButtonSecondary
         >
-        <ButtonAddToGoogleWallet
-          on:click={async () => {
-            const result = await mutate(CreateGoogleWalletPass, {
-              code: booking.code,
-            });
-            if (
-              toasts.mutation(
-                result,
-                'createGoogleWalletPass',
-                'Pass ajouté à Google Wallet',
-                "Impossible d'ajouter le pass à Google Wallet",
-              )
-            )
-              window.location.href = result.data.createGoogleWalletPass.data;
-          }}
-        />
       </section>
     {/if}
 
@@ -188,6 +178,41 @@
           {/if}
         </div>
       {/if}
+    </section>
+
+    <section class="wallets">
+      <ButtonAddToGoogleWallet
+        on:click={async () => {
+          const result = await mutate(CreateGoogleWalletPass, {
+            code: booking.code,
+          });
+          if (
+            toasts.mutation(
+              result,
+              'createGoogleWalletPass',
+              '',
+              "Impossible d'ajouter le pass à Google Wallet",
+            )
+          )
+            window.location.href = result.data.createGoogleWalletPass.data;
+        }}
+      />
+      <ButtonAddToAppleWallet
+        on:click={async () => {
+          const result = await mutate(CreateAppleWalletPass, {
+            code: booking.code,
+          });
+          if (
+            toasts.mutation(
+              result,
+              'createAppleWalletPass',
+              '',
+              "Impossible d'ajouter le pass à Apple Wallet",
+            )
+          )
+            window.location.href = result.data.createAppleWalletPass.data;
+        }}
+      />
     </section>
 
     <section class="info">
@@ -273,7 +298,8 @@
     border-radius: var(--radius-block);
   }
 
-  section.action-buttons {
+  section.action-buttons,
+  section.wallets {
     display: flex;
     flex-wrap: wrap;
 

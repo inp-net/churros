@@ -19,6 +19,7 @@ export * from './event.update-ticket-constraints.js';
 export * from './mutation.book-event.js';
 export * from './mutation.cancel-booking.js';
 export * from './mutation.check-if-booking-is-paid.js';
+export * from './mutation.create-apple-wallet-pass.js';
 export * from './mutation.create-google-wallet-pass.js';
 export * from './mutation.create-ticket.js';
 export * from './mutation.delete-ticket-group.js';
