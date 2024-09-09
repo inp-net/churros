@@ -32,13 +32,14 @@
   class:tall
   on:close={(e) => {
     if (element.classList.contains('closing')) return;
+    if (!(e.currentTarget instanceof HTMLDialogElement)) return;
 
     // FIXME preventDefault() has no effect somehow
     e.preventDefault();
-    element.classList.add('closing');
+    e.currentTarget.classList.add('closing');
     setTimeout(() => {
-      element.close();
-      element.classList.remove('closing');
+      e.currentTarget.close();
+      e.currentTarget.classList.remove('closing');
     }, 200);
   }}
   data-theme={$theme.id}
