@@ -85,7 +85,12 @@
     });
   }
 
-  $: if (scanner && browser && videoElement && $PageEventScanBookings.data?.event) scanner.start();
+  $: if (scanner && browser && videoElement && $PageEventScanBookings.data?.event) {
+    scanner.start().catch((error) => {
+      console.error('Error starting scanner', error);
+      toasts.error('Impossible de démarrer le scan, vérifie que Churros a bien accès à ta caméra');
+    });
+  }
 
   onDestroy(() => {
     scanner?.stop();
