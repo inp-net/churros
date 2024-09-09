@@ -19,6 +19,7 @@
   import IconClose from '~icons/msl/close';
   import IconOpposed from '~icons/msl/front-hand-outline';
   import IconRepeatOff from '~icons/msl/repeat-rounded';
+  import { vibrate } from '$lib/vibration';
 
   const VIBRATION_PATTERNS: Record<RegistrationVerificationState$options, number[]> = {
     Ok: [100],
@@ -29,7 +30,7 @@
     OtherEvent: [50, 50, 50, 50],
   };
 
-  $: if (navigator.vibrate && result) navigator.vibrate(VIBRATION_PATTERNS[result.state]);
+  $: if (result) vibrate(VIBRATION_PATTERNS[result.state]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const STATE_TO_ICON: Record<RegistrationVerificationState$options, typeof SvelteComponent<any>> =
