@@ -456,6 +456,7 @@ CTAA7F5RGov2NqQAAAAASUVORK5CYII="
 
 <style>
   button {
+    color: black;
     background: transparent;
     border: none;
   }
