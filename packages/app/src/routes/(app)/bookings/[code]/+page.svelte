@@ -190,7 +190,7 @@
             toasts.mutation(
               result,
               'createGoogleWalletPass',
-              'Pass ajouté à Google Wallet',
+              '',
               "Impossible d'ajouter le pass à Google Wallet",
             )
           )
@@ -206,7 +206,7 @@
             toasts.mutation(
               result,
               'createAppleWalletPass',
-              'Pass ajouté à Apple Wallet',
+              '',
               "Impossible d'ajouter le pass à Apple Wallet",
             )
           )
