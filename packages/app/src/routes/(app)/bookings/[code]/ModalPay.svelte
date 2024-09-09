@@ -167,7 +167,7 @@
     if (chosenMethod === 'Lydia' && $dataMe?.lydiaPhone) {
       await pay({
         method: 'Lydia',
-        phone,
+        phone: $dataMe.lydiaPhone,
         amount: wantsToPay,
       });
       advance('lydia', 'lydia-waiting');
