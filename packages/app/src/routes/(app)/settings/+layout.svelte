@@ -12,6 +12,7 @@
   import { theme } from '$lib/theme';
   import IconTrash from '~icons/msl/delete-outline';
   import IconDebug from '~icons/msl/code';
+  import IconLydia from '$lib/components/IconLydia.svelte';
   import IconPersonalData from '~icons/msl/download';
   import IconNotification from '~icons/msl/notifications-outline';
   import IconTheme from '~icons/msl/palette-outline';
@@ -19,6 +20,22 @@
   import type { LayoutData } from './$houdini';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { debugging } from '$lib/debugging';
+  import InputText from '$lib/components/InputText.svelte';
+  import { mutateAndToast } from '$lib/mutations';
+  import { graphql } from '$houdini';
+
+  const UpdateLydiaPhone = graphql(`
+    mutation UpdateLydiaPhone($lydiaPhone: String!) {
+      saveLydiaPhoneNumber(phoneNumber: $lydiaPhone) {
+        ...MutationErrors
+        ... on MutationSaveLydiaPhoneNumberSuccess {
+          data {
+            lydiaPhone
+          }
+        }
+      }
+    }
+  `);
 
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
@@ -47,6 +64,25 @@
       </SubmenuItem>
       <SubmenuItem icon={IconNotification} href={refroute('/notifications')}>
         Notifications
+      </SubmenuItem>
+      <SubmenuItem icon={IconLydia} subtext="N'apparaît pas sur le profil" label>
+        Numéro de tel. pour Lydia
+
+        <InputText
+          label=""
+          slot="right"
+          value={loading(me.lydiaPhone, '')}
+          on:blur={async ({ target }) => {
+            if (!(target instanceof HTMLInputElement)) return;
+            await mutateAndToast(
+              UpdateLydiaPhone,
+              { lydiaPhone: target.value },
+              {
+                error: 'Impossible de mettre à jour le num Lydia',
+              },
+            );
+          }}
+        />
       </SubmenuItem>
       <SubmenuItem icon={IconPersonalData}>
         Mes données personnelles

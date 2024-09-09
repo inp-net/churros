@@ -60,7 +60,12 @@
   const RememberLydiaPhoneNumber = graphql(`
     mutation RememberLydiaPhoneNumber($phone: String!) {
       saveLydiaPhoneNumber(phoneNumber: $phone) {
-        lydiaPhone
+        ...MutationErrors
+        ... on MutationSaveLydiaPhoneNumberSuccess {
+          data {
+            lydiaPhone
+          }
+        }
       }
     }
   `);

@@ -4,6 +4,7 @@ import { UserType } from '#modules/users/types';
 builder.mutationField('saveLydiaPhoneNumber', (t) =>
   t.prismaField({
     type: UserType,
+    errors: {},
     description: "Sauvegarder le numéro de téléphone pour les paiements Lydia de l'utilisateur.ice",
     args: {
       phoneNumber: t.arg.string(),

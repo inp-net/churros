@@ -135,7 +135,11 @@
           <!-- TODO: valider, ouvre modal avec <ScanResult> dedans -->
         {/if}
         <ButtonSecondary
-          data-sveltekit-reload
+          download={onceAllLoaded(
+            [booking.code, booking.ticket.event.title],
+            (code, title) => `${title} - ${code}.pdf`,
+            'Réservations.pdf',
+          )}
           href={route('GET /bookings/[code].pdf', loading(booking.code, ''))}
           icon={IconDownload}>PDF</ButtonSecondary
         >
