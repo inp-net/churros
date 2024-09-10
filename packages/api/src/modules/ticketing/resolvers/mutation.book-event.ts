@@ -59,6 +59,7 @@ builder.mutationField('bookEvent', (t) =>
             })
           : args.beneficiary,
         ticket,
+        true,
       );
 
       if (!can && whynot) {

@@ -7,8 +7,7 @@ export async function log(
   target?: string | null,
   user?: { uid: string } | null,
 ) {
-  // eslint-disable-next-line no-console
-  console.log(`<${area}> ${action} ${target ? `on ${target}: ` : ''}${JSON.stringify(message)}`);
+  console.info(`<${area}> ${action} ${target ? `on ${target}: ` : ''}${JSON.stringify(message)}`);
   await prisma.logEntry.create({
     data: {
       area,

@@ -1,4 +1,4 @@
-import type { Context } from '#lib';
+import { log, type Context } from '#lib';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
@@ -195,31 +195,61 @@ export function canBookTicket(
   }>,
   beneficiary: string | User | null | undefined,
   ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>,
+  debug?: boolean,
 ): [boolean, string] {
-  if (canSeeAllBookings(ticket.event, user)) return [true, ''];
+  const dret = <T extends [boolean, string]>(ret: T, data: unknown) => {
+    if (debug) void log('ticketing', 'debug/can-book-ticket', { ret, data }, ticket.id, user);
+    return ret;
+  };
+  const d = (data: unknown) => {
+    if (debug) void log('ticketing', 'debug/can-book-ticket', { data }, ticket.id, user);
+  };
+
+  if (canSeeAllBookings(ticket.event, user)) 
+    return dret([true, ''], { why: 'canSeeAllBookings' });
+  
+
+  d({ canSeeAllBookings: false });
 
   if (!canSeeTicket(ticket, userAdditionalData))
-    return [false, "Vous n'êtes pas autorisé à voir ce billet"];
+    return dret([false, "Vous n'êtes pas autorisé à voir ce billet"], {});
+
+  d({ canSeeTicket: true });
 
   if (ticket.opensAt && isFuture(ticket.opensAt))
-    return [false, "Le shotgun n'est pas encore ouvert"];
+    return dret([false, "Le shotgun n'est pas encore ouvert"], {});
+
+  d({ shotgunPastOpened: true });
+
   if (ticket.closesAt && isPast(ticket.closesAt)) return [false, 'Le shotgun est fermé'];
 
+  d({ shotgunPastClosed: true });
+
   if (ticket.onlyManagersCanProvide && !canSeeAllBookings(ticket.event, user))
-    return [false, 'Seul un·e manager peut faire une réservation pour ce billet'];
+    return dret([false, 'Seul un·e manager peut faire une réservation pour ce billet'], {});
+
+  d({ managersOnlyCheck: true });
 
   if (!canSeeAllBookings(ticket.event, user) && user) {
     const bookingsByUser = ticket.registrations.filter((r) => r.authorId === user.id);
     if (ticket.godsonLimit > 0 && bookingsByUser.length > ticket.godsonLimit)
-      return [false, 'Vous avez atteint la limite de parrainages pour ce billet'];
+      return dret([false, 'Vous avez atteint la limite de parrainages pour ce billet'], {});
   }
 
-  if (placesLeft(ticket) <= 0) return [false, 'Il n’y a plus de places disponibles'];
+  d({ godsonlimitCheck: true });
+
+  if (placesLeft(ticket) <= 0) return dret([false, 'Il n’y a plus de places disponibles'], {});
+
+  d({ placesLeftCheck: true });
 
   if (!canSeeAllBookings(ticket.event, user) && ticket.godsonLimit <= 0 && beneficiary)
-    return [false, "Ce billet n'accepte pas de parrainages"];
+    return dret([false, "Ce billet n'accepte pas de parrainages"], {});
 
-  if (!user && beneficiary) return [false, 'Connectez-vous pour parrainer'];
+  d({ godsonEnabledCheck: true });
+
+  if (!user && beneficiary) return dret([false, 'Connectez-vous pour parrainer'], {});
+
+  d({ godsonLoggedInCheck: true });
 
   if (
     // external beneficiaries can't be meaningfully checked for duplicate bookings
@@ -230,13 +260,18 @@ export function canBookTicket(
       ticket.event.tickets.flatMap((t) => t.registrations),
     )
   ) {
-    return [
-      false,
-      beneficiary
-        ? "Cette personne est déjà inscrite à l'évènement"
-        : 'Vous avez déjà réservé une place pour cet événement',
-    ];
+    return dret(
+      [
+        false,
+        beneficiary
+          ? "Cette personne est déjà inscrite à l'évènement"
+          : 'Vous avez déjà réservé une place pour cet événement',
+      ],
+      {},
+    );
   }
+
+  d({ alreadyBookedCheck: true });
 
   return [true, ''];
 }
