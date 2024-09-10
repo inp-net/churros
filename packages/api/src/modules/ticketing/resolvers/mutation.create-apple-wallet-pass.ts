@@ -8,8 +8,8 @@ import {
   prisma,
   storageRoot,
 } from '#lib';
-import { mkdir, writeFile } from 'node:fs/promises';
 import { GraphQLError } from 'graphql';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path/posix';
 
 builder.mutationField('createAppleWalletPass', (t) =>
@@ -21,9 +21,8 @@ builder.mutationField('createAppleWalletPass', (t) =>
       code: t.arg.string({ description: 'Code de la réservation' }),
     },
     async resolve(_, { code }, { user }) {
-      if (!canCreateAppleWalletPasses()) 
+      if (!canCreateAppleWalletPasses())
         throw new GraphQLError("L'intégration Apple Wallet est désactivée.");
-      
 
       const booking = await prisma.registration.findFirstOrThrow({
         where: {
@@ -37,11 +36,16 @@ builder.mutationField('createAppleWalletPass', (t) =>
       await mkdir(path.join(storageRoot(), 'passes/apple'), {
         recursive: true,
       });
-      await writeFile(
-        path.join(storageRoot(), destination),
-        await createAppleWalletPass(booking).then((pass) => pass.asBuffer()),
-      );
-      return new URL(destination, process.env.PUBLIC_STORAGE_URL).toString();
+      try {
+        await writeFile(
+          path.join(storageRoot(), destination),
+          await createAppleWalletPass(booking).then((pass) => pass.asBuffer()),
+        );
+        return new URL(destination, process.env.PUBLIC_STORAGE_URL).toString();
+      } catch (error) {
+        await log('bookings', 'create-pass/apple/error', { booking, error }, booking.id, user);
+        throw new GraphQLError('Une erreur est survenue pendant la création du pass');
+      }
     },
   }),
 );
