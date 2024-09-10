@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.8.0
+
+### Minor Changes
+
+- 4175768: allow filtering through logs via get params, see commit for more info and https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search
+
 ## 2.7.0
 
 ### Minor Changes

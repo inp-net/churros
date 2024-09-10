@@ -1,5 +1,15 @@
 # @churros/api
 
+## 3.1.0
+
+### Minor Changes
+
+- 4175768: allow filtering through logs via get params, see commit for more info and https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search
+
+### Patch Changes
+
+- ddf3dc0: add debug logs to canBookEvent calculation
+
 ## 3.0.1
 
 ### Patch Changes
