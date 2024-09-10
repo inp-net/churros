@@ -89,10 +89,10 @@ export async function createAppleWalletPass(
       );
       await mkdir(storagePath('passes/apple'), { recursive: true });
       await sharp(storagePath(booking.ticket.event.pictureFile))
-        .resize(160)
+        .resize(80)
         .toFile(storagePath(picfile1x));
       await sharp(storagePath(booking.ticket.event.pictureFile))
-        .resize(320)
+        .resize(160)
         .toFile(storagePath(picfile2x));
     }
 
