@@ -1,5 +1,11 @@
 # @churros/api
 
+## 3.0.1
+
+### Patch Changes
+
+- b4bccf3: Fix crashes when trying to create apple wallet cards on events with pictures
+
 ## 3.0.0
 
 ### Major Changes
