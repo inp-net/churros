@@ -80,8 +80,8 @@ export async function createAppleWalletPass(
   });
   const storagePath = (filename: string) => path.join(storageRoot(), filename);
   if (booking.ticket.event.pictureFile) {
-    const picfile1x = `passes/apple/${localID(booking.id)}-logo@1x.png`;
-    const picfile2x = `passes/apple/${localID(booking.id)}-logo@2x.png`;
+    const picfile1x = `passes/apple/${localID(booking.ticket.event.id)}-logo@1x.png`;
+    const picfile2x = `passes/apple/${localID(booking.ticket.event.id)}-logo@2x.png`;
 
     if ([picfile1x, picfile2x].some((f) => !existsSync(storagePath(f)))) {
       console.info(
