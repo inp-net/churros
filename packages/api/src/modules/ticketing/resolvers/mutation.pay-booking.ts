@@ -79,7 +79,7 @@ builder.mutationField('payBooking', (t) =>
         await log(
           'registration',
           'pay',
-          { registration, paymentMethod, price, code, paidCallback, amount },
+          { registration, paymentMethod, price, code, paidCallback, amount, phone },
           bookingId,
           user,
         );
