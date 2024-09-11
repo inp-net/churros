@@ -4,6 +4,8 @@ import type { ClientPlugin } from '$houdini';
 import { HoudiniClient, subscription } from '$houdini';
 import { API_URL } from '$lib/env';
 import { redirectToLogin } from '$lib/session';
+import { Capacitor } from '@capacitor/core';
+import { parse } from 'cookie';
 import { createClient } from 'graphql-ws';
 
 // XXX: must be the same as in the API
@@ -84,6 +86,15 @@ export default new HoudiniClient({
   url: API_URL,
   plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
+    if (Capacitor.getPlatform() !== 'web') {
+      return {
+        headers: {
+          Authorization: parse(document.cookie).token
+            ? `Bearer ${parse(document.cookie).token}`
+            : '',
+        },
+      };
+    }
     return {
       credentials: 'include',
       headers: {

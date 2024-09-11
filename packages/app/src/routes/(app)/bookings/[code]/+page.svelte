@@ -30,11 +30,11 @@
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
+  import { vibrate } from '$lib/vibration';
   import IconCancel from '~icons/msl/block';
   import IconDownload from '~icons/msl/download';
   import type { PageData } from './$houdini';
   import ModalPay, { type Step } from './ModalPay.svelte';
-  import { vibrate } from '$lib/vibration';
   import {
     CancelBooking,
     CreateAppleWalletPass,
