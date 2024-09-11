@@ -110,6 +110,8 @@ declare global {
       APPLE_WALLET_PASS_TYPE_ID: string;
       /** Get it from https://developer.apple.com/account */
       APPLE_WALLET_TEAM_ID: string;
+      PUBLIC_API_ORIGIN_ANDROID: string;
+      PUBLIC_API_ORIGIN_WEB: string;
     }
   }
 
