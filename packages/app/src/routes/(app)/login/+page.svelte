@@ -1,16 +1,22 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
   import { route } from '$lib/ROUTES';
+  import { saveSessionToken } from '$lib/session';
   import IconEye from '~icons/mdi/eye';
   import IconEyeOff from '~icons/mdi/eye-off';
-  import type { ActionData } from './$types';
+  import { Login } from './mutations';
 
-  export let form: ActionData;
   let showingPassword = false;
+
+  let password: string;
+  let email: string;
+  let serverError = '';
 
   $: migratingPassword = $page.url.searchParams.has('migrate');
 </script>
@@ -19,17 +25,39 @@
   {#if migratingPassword}Migration{:else}Connexion{/if}
 </h1>
 
-<form title="Se connecter" method="post">
+<form
+  title="Se connecter"
+  on:submit|preventDefault={async () => {
+    const result = await Login.mutate({ emailOrUid: email, password });
+
+    if (mutationSucceeded('login', result)) {
+      await saveSessionToken(null, result.data.login.data);
+      await goto(
+        `${route('/login/done')}?${new URLSearchParams({
+          from: $page.url.searchParams.get('from') ?? '/',
+        })}`,
+      );
+    } else {
+      serverError = mutationErrorMessages('login', result).join('\n');
+    }
+  }}
+>
   {#if $page.url.searchParams.get('why') === 'unauthorized'}
     <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 
-  <Alert theme="danger" closed={form?.serverErrors === undefined || form.serverErrors.length === 0}>
-    {form?.serverErrors?.join(' ')}
+  <Alert theme="danger" closed={!serverError}>
+    {serverError}
   </Alert>
-  <InputText value="" name="email" required label="Adresse e-mail ou nom d'utilisateur" autofocus />
   <InputText
-    value=""
+    bind:value={email}
+    name="email"
+    required
+    label="Adresse e-mail ou nom d'utilisateur"
+    autofocus
+  />
+  <InputText
+    bind:value={password}
     required
     name="password"
     type={showingPassword ? 'text' : 'password'}
