@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/public';
+import { AUTH_URL } from '$lib/env';
 import type { Cookies } from '@sveltejs/kit';
 
 export function oauthEnabled(): boolean {
@@ -12,13 +13,13 @@ export function oauthLoginBypassed(event: { url: URL }): boolean {
 }
 
 export function oauthInitiateLoginURL(event: { url: URL }): URL {
-  const url = new URL(env.PUBLIC_API_AUTH_URL + '/oauth2');
+  const url = new URL(AUTH_URL + '/oauth2');
   url.searchParams.set('from', event.url.searchParams.get('from') ?? '/');
   return url;
 }
 
 export function oauthLogoutURL(): URL {
-  return new URL(env.PUBLIC_API_AUTH_URL + '/logout');
+  return new URL(AUTH_URL + '/logout');
 }
 
 export function authedVia(event: { cookies: Cookies }): 'oauth2' | 'token' | null {
