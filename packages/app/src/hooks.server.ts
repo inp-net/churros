@@ -1,8 +1,10 @@
 import { env } from '$env/dynamic/public';
 import { setSession } from '$houdini';
 import { CURRENT_VERSION } from '$lib/buildinfo';
+import { API_URL } from '$lib/env';
 import { inferIsMobile } from '$lib/mobile';
 import { aled } from '$lib/session';
+import { Capacitor } from '@capacitor/core';
 import * as Sentry from '@sentry/sveltekit';
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
@@ -33,10 +35,9 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 });
 
 export const handleFetch: HandleFetch = async ({ request, fetch }) => {
-  const apiUrl = process.env.PUBLIC_API_URL as unknown as string;
-  if (request.url.startsWith(apiUrl)) {
+  if (request.url.startsWith(API_URL) && Capacitor.getPlatform() === 'web') {
     request = new Request(
-      request.url.replace(apiUrl, process.env.PRIVATE_API_URL as unknown as string),
+      request.url.replace(API_URL, process.env.PRIVATE_API_URL as unknown as string),
       request,
     );
   }
@@ -55,4 +56,5 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
 
 export const handleError: HandleServerError = Sentry.handleErrorWithSentry(({ error }) => {
   console.error(error);
+  console.error('Stacktrace: ', new Error().stack);
 });

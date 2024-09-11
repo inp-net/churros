@@ -4,6 +4,7 @@ const config = {
   plugins: {
     'houdini-svelte': {
       client: './src/lib/client',
+      static: true
     },
   },
   defaultCachePolicy: 'CacheAndNetwork',
