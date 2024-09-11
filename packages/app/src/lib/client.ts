@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { ClientPlugin } from '$houdini';
 import { HoudiniClient, subscription } from '$houdini';
+import { API_URL } from '$lib/env';
 import { redirectToLogin } from '$lib/session';
 import { createClient } from 'graphql-ws';
 
@@ -42,7 +43,7 @@ const logger: ClientPlugin = () => ({
     next(ctx);
   },
   beforeNetwork(ctx, { next }) {
-    console.info(`${ctx.name}: Hitting network`);
+    console.info(`${ctx.name}: Hitting network @ ${API_URL}`);
     if (ctx.metadata?.queryTimestamps) ctx.metadata.queryTimestamps.network = Date.now();
 
     next(ctx);
@@ -80,7 +81,7 @@ const subscriptionPlugin = subscription(({ session }) =>
 );
 
 export default new HoudiniClient({
-  url: env.PUBLIC_API_URL,
+  url: API_URL,
   plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
     return {

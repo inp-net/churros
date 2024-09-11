@@ -19,6 +19,7 @@ import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
 import { derived } from 'svelte/store';
 import { aled } from './session';
+import { API_URL } from '$lib/env';
 
 export * from '../zeus/index.js';
 
@@ -78,7 +79,7 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    const response = await fetch(new URL(env.PUBLIC_API_URL), {
+    const response = await fetch(new URL(API_URL), {
       body,
       method: 'POST',
       headers,
