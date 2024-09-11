@@ -399,9 +399,7 @@ const SERVERS = {
 /**
  * ACTIONS
  */
-const ACTIONS = {
-  'default /login': `/login`,
-};
+const ACTIONS = {};
 
 /**
  * LINKS
@@ -655,7 +653,7 @@ export type KIT_ROUTES = {
     'GET /manifest.json': never;
     'POST /markdown': never;
   };
-  ACTIONS: { 'default /login': never };
+  ACTIONS: Record<string, never>;
   LINKS: Record<string, never>;
   Params: {
     uid: never;

@@ -26,15 +26,16 @@
     onceAllLoaded,
     onceLoaded,
   } from '$lib/loading';
-  import { mutate } from '$lib/mutations';
+  import { mutate, mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
+  import { vibrate } from '$lib/vibration';
+  import { onMount } from 'svelte';
   import IconCancel from '~icons/msl/block';
   import IconDownload from '~icons/msl/download';
   import type { PageData } from './$houdini';
   import ModalPay, { type Step } from './ModalPay.svelte';
-  import { vibrate } from '$lib/vibration';
   import {
     CancelBooking,
     CreateAppleWalletPass,
@@ -53,6 +54,31 @@
       undefined,
     );
   }
+
+  onMount(async () => {
+    const Check = graphql(`
+      mutation CheckIfBookingIsPaid($code: String!) {
+        checkIfBookingIsPaid(code: $code) {
+          ...MutationErrors
+          ... on MutationCheckIfBookingIsPaidSuccess {
+            data {
+              paid
+            }
+          }
+        }
+      }
+    `);
+    await mutateAndToast(
+      Check,
+      {
+        code: $page.params.code,
+      },
+      {
+        success: 'Ta place a bien été marquée comme payée',
+        error: 'Impossible de vérifier si la place est payée',
+      },
+    );
+  });
 
   const Updates = graphql(`
     subscription BookingPageUpdates($code: String!) {
