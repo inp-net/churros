@@ -1,4 +1,4 @@
-import { prisma, publish } from '#lib';
+import { inDevelopment, prisma, publish } from '#lib';
 
 export async function log(
   area: string,
@@ -7,7 +7,9 @@ export async function log(
   target?: string | null,
   user?: { uid: string } | null,
 ) {
-  console.info(`<${area}> ${action} ${target ? `on ${target}: ` : ''}${JSON.stringify(message)}`);
+  console.info(
+    `<${area}> ${action} ${target ? `on ${target}: ` : ''}${JSON.stringify(message, null, inDevelopment() ? 2 : undefined)}`,
+  );
   await prisma.logEntry.create({
     data: {
       area,
