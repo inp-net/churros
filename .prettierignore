@@ -9,3 +9,6 @@ packages/app/$houdini/
 *.mjml
 packages/db/
 !packages/db/**/*.prisma
+
+packages/app/android/
+packages/app/ios/
