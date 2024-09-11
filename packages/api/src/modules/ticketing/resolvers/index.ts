@@ -22,6 +22,7 @@ export * from './mutation.check-if-booking-is-paid.js';
 export * from './mutation.create-apple-wallet-pass.js';
 export * from './mutation.create-google-wallet-pass.js';
 export * from './mutation.create-ticket.js';
+export * from './mutation.deduplicate-bookings.js';
 export * from './mutation.delete-ticket-group.js';
 export * from './mutation.delete-ticket.js';
 export * from './mutation.mark-booking-as-paid.js';
