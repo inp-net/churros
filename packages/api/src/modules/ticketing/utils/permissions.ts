@@ -2,7 +2,7 @@ import { log, type Context } from '#lib';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
-import type { Prisma, Registration, User } from '@churros/db/prisma';
+import type { Prisma, User } from '@churros/db/prisma';
 import { isFuture, isPast } from 'date-fns';
 
 export const canScanBookingsPrismaIncludes = {
@@ -162,23 +162,40 @@ canMarkBookingAsPaid.userPrismaIncludes = {} as const satisfies Prisma.UserInclu
 export function userIsBookedToEvent(
   user: User | null,
   event: Prisma.EventGetPayload<{ include: typeof userIsBookedToEvent.prismaIncludes }>,
-  bookings: Registration[],
+  debug?: boolean,
 ) {
   // TODO figure sth out???
   if (!user) return false;
-  return event.tickets.some((ticket) => {
-    // TODO check beneficiaries
-    return bookings.some(
-      (booking) =>
-        !(booking.cancelledAt || booking.cancelledById) &&
-        booking.ticketId === ticket.id &&
-        booking.authorId === user.id,
+  const registrationsForUser = event.tickets.flatMap((ticket) =>
+    ticket.registrations.filter((reg) => {
+      // Ignore cancelled registrations
+      if (reg.cancelledAt) return false;
+      // If the registration has an internal beneficiary, check that it's the user
+      if (reg.internalBeneficiaryId) 
+        return reg.internalBeneficiaryId === user.id;
+      
+      // Otherwise, the registration is for the author, check that it's the user
+      return reg.authorId === user.id;
+    }),
+  );
+  if (debug) {
+    void log(
+      'ticketing',
+      'debug/user-is-booked-to-event',
+      { registrationsForUser },
+      event.id,
+      user,
     );
-  });
+  }
+  return registrationsForUser.length > 0;
 }
 
 userIsBookedToEvent.prismaIncludes = {
-  tickets: true,
+  tickets: {
+    include: {
+      registrations: true,
+    },
+  },
 } as const satisfies Prisma.EventInclude;
 
 /**
@@ -205,9 +222,7 @@ export function canBookTicket(
     if (debug) void log('ticketing', 'debug/can-book-ticket', { data }, ticket.id, user);
   };
 
-  if (canSeeAllBookings(ticket.event, user)) 
-    return dret([true, ''], { why: 'canSeeAllBookings' });
-  
+  if (canSeeAllBookings(ticket.event, user)) return dret([true, ''], { why: 'canSeeAllBookings' });
 
   d({ canSeeAllBookings: false });
 
@@ -254,11 +269,7 @@ export function canBookTicket(
   if (
     // external beneficiaries can't be meaningfully checked for duplicate bookings
     typeof beneficiary !== 'string' &&
-    userIsBookedToEvent(
-      beneficiary ?? user ?? null,
-      ticket.event,
-      ticket.event.tickets.flatMap((t) => t.registrations),
-    )
+    userIsBookedToEvent(beneficiary ?? user ?? null, ticket.event, debug)
   ) {
     return dret(
       [
