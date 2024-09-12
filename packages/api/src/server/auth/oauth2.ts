@@ -1,4 +1,5 @@
-import { getSessionUser } from '#lib';
+import { getSessionUser, prisma } from '#lib';
+import { nanoid } from 'nanoid';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
 import { api } from '../express.js';
@@ -52,6 +53,10 @@ oauth2Strategy.userProfile = async function (
 
 passport.use(oauth2Strategy);
 
+function forwardSearchParams(params: URLSearchParams, keys: string[]): URLSearchParams {
+  return new URLSearchParams(Array.from(params.entries()).filter(([key]) => keys.includes(key)));
+}
+
 api.get('/auth/oauth2', (req, res, next) => {
   // Thanks express
   const searchParams = new URL(`http://localhost${req.url}`).searchParams;
@@ -59,7 +64,7 @@ api.get('/auth/oauth2', (req, res, next) => {
   passport.authenticate('oauth2', {
     // @ts-expect-error undocumented option
     callbackURL: new URL(
-      `/auth/oauth2/callback?${new URLSearchParams({ from: searchParams.get('from') ?? '' })}`,
+      `/auth/oauth2/callback?${forwardSearchParams(searchParams, ['from', 'include_token_in_url', 'protocol'])}`,
       process.env.PUBLIC_API_URL,
     ).toString(),
   })(req, res, next);
@@ -67,15 +72,32 @@ api.get('/auth/oauth2', (req, res, next) => {
 api.get(
   '/auth/oauth2/callback',
   passport.authenticate('oauth2', { failureRedirect: '/login' }),
-  function (req, res) {
+  async function (req, res) {
     // Thanks express
     const searchParams = new URL(`http://localhost${req.url}`).searchParams;
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
+    const outputParams = new URLSearchParams({
+      from: searchParams.get('from') ?? '/',
+      token:
+        searchParams.get('include_token_in_url') === '1'
+          ? await prisma.credential
+              .create({
+                data: {
+                  type: 'Token',
+                  value: nanoid(30),
+                  user: {
+                    connect: {
+                      uid: req.user?.user?.uid,
+                    },
+                  },
+                },
+              })
+              .then((cred) => cred.value)
+          : '',
+    });
     res.redirect(
-      `${new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN)}?${new URLSearchParams({
-        from: searchParams.get('from') ?? '/',
-      })}`,
+      `${searchParams.has('protocol') ? `${searchParams.get('protocol')}//login/done` : new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN)}?${outputParams}`,
     );
   },
 );

@@ -4,8 +4,10 @@
   "dependencies": {
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.1",
     "@capacitor/core": "^6.1.2",
     "@capacitor/ios": "^6.1.2",
+    "@capgo/inappbrowser": "^6.6.8",
     "@carbon/charts-svelte": "^1.19.2",
     "@iconify-json/logos": "^1.1.44",
     "@paypal/paypal-js": "^8.1.0",
@@ -122,7 +124,8 @@
     "preview": "vite preview",
     "format-at": "prettier --write",
     "start": "node ./build/index.js",
-    "zeus": "zeus ./schema.graphql ./src --es --subscriptions"
+    "zeus": "zeus ./schema.graphql ./src --es --subscriptions",
+    "build:android": "yarn generate && vite build && yarn cap run android"
   },
   "type": "module",
   "volta": {

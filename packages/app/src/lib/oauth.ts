@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { AUTH_URL } from '$lib/env';
+import { Capacitor } from '@capacitor/core';
 import type { Cookies } from '@sveltejs/kit';
 
 export function oauthEnabled(): boolean {
@@ -15,6 +16,10 @@ export function oauthLoginBypassed(event: { url: URL }): boolean {
 export function oauthInitiateLoginURL(event: { url: URL }): URL {
   const url = new URL(AUTH_URL + '/oauth2');
   url.searchParams.set('from', event.url.searchParams.get('from') ?? '/');
+  if (Capacitor.isNativePlatform()) {
+    url.searchParams.set('protocol', 'app.churros:');
+    url.searchParams.set('include_token_in_url', '1');
+  }
   return url;
 }
 
