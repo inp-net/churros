@@ -7,6 +7,7 @@
     "@capacitor/app": "^6.0.1",
     "@capacitor/core": "^6.1.2",
     "@capacitor/ios": "^6.1.2",
+    "@capacitor/preferences": "^6.0.2",
     "@capgo/inappbrowser": "^6.6.8",
     "@carbon/charts-svelte": "^1.19.2",
     "@iconify-json/logos": "^1.1.44",
