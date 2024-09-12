@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { InAppBrowser } from '@capgo/inappbrowser';
 import { redirect } from '@sveltejs/kit';
+import { addYears } from 'date-fns';
 
 export async function load(event) {
   if (oauthEnabled() && !oauthLoginBypassed(event)) {
