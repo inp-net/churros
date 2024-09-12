@@ -1,17 +1,21 @@
 import { graphql } from '$houdini';
 import { authedVia, oauthEnabled, oauthLogoutURL } from '$lib/oauth';
 import { route } from '$lib/ROUTES.js';
+import { serialize } from 'cookie';
 
-export async function load(event) {
-  const authMethod = await authedVia(event);
+export async function load() {
+  const authMethod = await authedVia(document.cookie);
 
   if (authMethod === 'token') {
     await graphql(`
       mutation Logout {
         logout
       }
-    `).mutate(null, { event });
-    event.cookies.delete('token', { path: '/' });
+    `).mutate(null);
+    document.cookie = serialize('token', '', {
+      expires: new Date(0),
+      path: '/',
+    });
   }
 
   return {
