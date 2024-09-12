@@ -3,7 +3,9 @@ import { authedVia, oauthEnabled, oauthLogoutURL } from '$lib/oauth';
 import { route } from '$lib/ROUTES.js';
 
 export async function load(event) {
-  if (authedVia(event) === 'token') {
+  const authMethod = await authedVia(event);
+
+  if (authMethod === 'token') {
     await graphql(`
       mutation Logout {
         logout
@@ -14,7 +16,7 @@ export async function load(event) {
 
   return {
     next:
-      oauthEnabled() && (authedVia(event) === 'oauth2' || authedVia(event) === null)
+      oauthEnabled() && (authMethod === 'oauth2' || authMethod === null)
         ? oauthLogoutURL().toString()
         : route('/'),
   };

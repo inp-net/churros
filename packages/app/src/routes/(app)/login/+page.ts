@@ -1,9 +1,9 @@
 import { goto } from '$app/navigation';
 import { oauthEnabled, oauthInitiateLoginURL, oauthLoginBypassed } from '$lib/oauth';
-import { Capacitor, CapacitorCookies } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import { InAppBrowser } from '@capgo/inappbrowser';
 import { redirect } from '@sveltejs/kit';
-import { addYears } from 'date-fns';
 
 export async function load(event) {
   if (oauthEnabled() && !oauthLoginBypassed(event)) {
@@ -11,18 +11,20 @@ export async function load(event) {
       await InAppBrowser.addListener('urlChangeEvent', async (event) => {
         const url = new URL(event.url);
         if (url.protocol === 'app.churros:') {
-          await CapacitorCookies.setCookie({
+          await Preferences.set({
             key: 'authed_via',
             value: 'oauth2',
-            expires: addYears(new Date(), 1).toISOString(),
-            path: '/',
           });
-          await CapacitorCookies.setCookie({
-            key: 'token',
-            value: url.searchParams.get('token') ?? '',
-            expires: addYears(new Date(), 1).toISOString(),
-            path: '/',
-          });
+          const token = url.searchParams.get('token');
+          if (token) {
+            await Preferences.set({
+              key: 'token',
+              value: token,
+            });
+          } else {
+            await Preferences.remove({ key: 'token' });
+            await Preferences.remove({ key: 'authed_via' });
+          }
           await InAppBrowser.close();
           await goto('/login/done');
         }

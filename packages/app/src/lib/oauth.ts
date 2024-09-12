@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/public';
 import { AUTH_URL } from '$lib/env';
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import type { Cookies } from '@sveltejs/kit';
 
 export function oauthEnabled(): boolean {
@@ -28,7 +29,16 @@ export function oauthLogoutURL(): URL {
   return new URL(AUTH_URL + '/logout');
 }
 
-export function authedVia(event: { cookies: Cookies }): 'oauth2' | 'token' | null {
+export async function authedVia(event: { cookies: Cookies }): Promise<'oauth2' | 'token' | null> {
+  if (Capacitor.isNativePlatform()) {
+    return Preferences.get({
+      key: 'authed_via',
+    }).then(({ value }) => {
+      if (value === 'oauth2') return 'oauth2';
+      if (value === 'token') return 'token';
+      return null;
+    });
+  }
   if (event.cookies.get('authed_via') === 'oauth2') return 'oauth2';
 
   if (event.cookies.get('token')) return 'token';
