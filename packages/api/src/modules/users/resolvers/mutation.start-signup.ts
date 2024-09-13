@@ -1,7 +1,7 @@
-import { builder, ensureGlobalId, freeUidValidator, log, prisma, sendMail } from '#lib';
+import { builder, ensureGlobalId, log, prisma, sendMail } from '#lib';
 import { Email, UIDScalar, URLScalar } from '#modules/global';
 import { UserCandidateType } from '#modules/users/types';
-import { hashPassword } from '#modules/users/utils';
+import { createUid, hashPassword } from '#modules/users/utils';
 import { Prisma } from '@churros/db/prisma';
 import { hashPassword as ldapHashPassword } from '@inp-net/ldap7/user';
 import { GraphQLError } from 'graphql';
@@ -33,10 +33,6 @@ builder.mutationField('startSignup', (t) =>
         required: false,
         type: UIDScalar,
         description: 'Filière à laquelle la personne se déclare étudiant.e',
-      }),
-      uid: t.arg({
-        type: UIDScalar,
-        validate: [...freeUidValidator],
       }),
       firstName: t.arg.string({
         description: 'Prénom',
@@ -117,10 +113,12 @@ builder.mutationField('startSignup', (t) =>
         }
       }
 
+      const uid = await createUid({ firstName: args.firstName, lastName: args.lastName });
+
       await log(
         'signups',
         'start',
-        { args, quickSignupCode, quickSignup, major, mailVerificationCallbackURL },
+        { uid, args, quickSignupCode, quickSignup, major, mailVerificationCallbackURL },
         args.email,
         user,
       );
@@ -129,6 +127,7 @@ builder.mutationField('startSignup', (t) =>
         .create({
           ...query,
           data: {
+            uid,
             token: nanoid(),
             usingQuickSignup: quickSignup
               ? {
@@ -154,7 +153,7 @@ builder.mutationField('startSignup', (t) =>
         'signup-verify-mail',
         args.email,
         {
-          username: args.uid,
+          username: uid,
           url: mailVerificationCallbackURL.toString().replaceAll('[token]', candidate.token),
         },
         {},
