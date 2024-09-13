@@ -40,25 +40,25 @@ yarn install
 cp .env.example .env
 ```
 
-3. Générer Prisma
+4. Générer Prisma
 
 ```
 yarn prisma generate
 ```
 
-4. Build le projet
+5. Build le projet
 
 ```
 yarn build
 ```
 
-5. Initialiser la base de données
+6. Initialiser la base de données
 
 ```
 yarn reset
 ```
 
-6. Démarrer les serveurs de développement
+7. Démarrer les serveurs de développement
 
 - ```
   yarn dev
