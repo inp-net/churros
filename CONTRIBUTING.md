@@ -35,6 +35,11 @@ git clone https://git.inpt.fr/inp-net/churros.git
 yarn install
 ```
 
+3. Ajouter les variables d'environnement
+```
+cp .env.example .env
+```
+
 3. Générer Prisma
 
 ```
