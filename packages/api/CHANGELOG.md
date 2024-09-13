@@ -1,5 +1,11 @@
 # @churros/api
 
+## 3.1.1
+
+### Patch Changes
+
+- 26f4a09: fix(registration): do not allow custom username
+
 ## 3.1.0
 
 ### Minor Changes
