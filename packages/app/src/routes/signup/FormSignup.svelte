@@ -16,7 +16,6 @@
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
   import { fragment, graphql, type FormSignup, type FormSignupQuickSignup } from '$houdini';
-  import InputUID from '$lib/components/InputUID.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputMajor from '$lib/components/InputMajor.svelte';
@@ -59,24 +58,6 @@
     `),
   );
 
-  const SuggestedUid = graphql(`
-    query SuggestedUserUid($firstName: String!, $lastName: String!) {
-      suggestedUid(firstName: $firstName, lastName: $lastName)
-    }
-  `);
-
-  async function suggestUid() {
-    if (!args.username && args.firstName && args.lastName) {
-      const { data } = await SuggestedUid.fetch({
-        variables: {
-          firstName: args.firstName,
-          lastName: args.lastName,
-        },
-      });
-      args.username ||= data?.suggestedUid ?? '';
-    }
-  }
-
   const Signup = graphql(`
     mutation SignupViaQRCode(
       $qrcode: String
@@ -85,7 +66,6 @@
       $email: Email!
       $firstName: String!
       $lastName: String!
-      $username: UID!
       $password: String!
       $passwordConfirmation: String!
       $mailVerificationCallbackURL: URL!
@@ -97,7 +77,6 @@
         lastName: $lastName
         mailVerificationCallbackURL: $mailVerificationCallbackURL
         major: $major
-        uid: $username
         quickSignupCode: $qrcode
         password: $password
         passwordConfirmation: $passwordConfirmation
@@ -231,10 +210,9 @@
       bind:value={args.email}
     />
     <div class="side-by-side">
-      <InputText on:blur={suggestUid} bind:value={args.firstName} required label="Prénom" />
-      <InputText on:blur={suggestUid} bind:value={args.lastName} required label="Nom de famille" />
+      <InputText bind:value={args.firstName} required label="Prénom" />
+      <InputText bind:value={args.lastName} required label="Nom de famille" />
     </div>
-    <InputUID label="Un ptit pseudo" bind:value={args.username} />
     <InputPassword label="Un mot de passe" bind:value={args.password} />
     <InputPassword
       hint=""
