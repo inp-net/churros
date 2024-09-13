@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.8.1
+
+### Patch Changes
+
+- 26f4a09: fix(registration): do not allow custom username
+
 ## 2.8.0
 
 ### Minor Changes
