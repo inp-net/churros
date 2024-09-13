@@ -224,15 +224,23 @@ const quickActionAdd = {
 } satisfies NavigationQuickAction;
 
 const rootPagesActions = [
-  {
-    icon: IconNotifications,
-    label: 'Notifications',
-    href: route('/notifications'),
+  async () => {
+    const me = browser ? await navtopPermissions() : null;
+    return {
+      icon: IconNotifications,
+      label: 'Notifications',
+      href: route('/notifications'),
+      hidden: !me,
+    };
   },
-  {
-    icon: IconCog,
-    label: 'Paramètres',
-    href: route('/settings'),
+  async () => {
+    const me = browser ? await navtopPermissions() : null;
+    return {
+      icon: IconCog,
+      label: 'Paramètres',
+      href: route('/settings'),
+      hidden: !me,
+    };
   },
   {
     icon: IconGift,
@@ -253,12 +261,16 @@ const rootPagesActions = [
       hidden: !me?.admin && !me?.studentAssociationAdmin,
     };
   },
-  {
-    icon: IconLogout,
-    label: 'Se déconnecter',
-    async do() {
-      await goto(route('/logout'));
-    },
+  async () => {
+    const me = browser ? await navtopPermissions() : null;
+    return {
+      icon: IconLogout,
+      label: 'Se déconnecter',
+      async do() {
+        await goto(route('/logout'));
+      },
+      hidden: !me,
+    };
   },
 ] as Array<NavigationContext['actions'][number]>;
 
