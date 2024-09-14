@@ -68,7 +68,7 @@
             Rendre exté
           </ButtonSecondary>
         </InputMajor>
-        {#if graduationYear}
+        {#if majorUid !== ''}
           <InputNumber
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
