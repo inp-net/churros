@@ -1,5 +1,12 @@
 # @churros/app
 
+## 2.8.2
+
+### Patch Changes
+
+- 3f7d732: fix: diplay correct root actions when not connected
+- 69f6446: fix: hide graduation year if not in major
+
 ## 2.8.1
 
 ### Patch Changes
