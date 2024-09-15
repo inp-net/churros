@@ -1,5 +1,11 @@
 # @churros/sync
 
+## 1.71.3
+
+### Patch Changes
+
+- d772236: chore: bump ldap7 to v1.0.12
+
 ## 1.71.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @churros/api
 
+## 3.1.3
+
+### Patch Changes
+
+- d772236: chore: bump ldap7 to v1.0.12
+
 ## 3.1.2
 
 ### Patch Changes
