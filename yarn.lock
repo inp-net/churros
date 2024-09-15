@@ -790,7 +790,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10.3.4"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.1"
-    "@inp-net/ldap7": "npm:^1.0.11"
+    "@inp-net/ldap7": "npm:^1.0.12"
     "@orangeopensource/hurl": "npm:^4.3.2"
     "@pothos/core": "npm:4.2.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
@@ -1047,7 +1047,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^1.2.2, @churros/db@workspace:^1.3.0, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^, @churros/db@workspace:^1.3.0, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
@@ -1079,8 +1079,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/sync@workspace:packages/sync"
   dependencies:
-    "@churros/db": "workspace:^1.2.2"
-    "@inp-net/ldap7": "npm:^1.0.11"
+    "@churros/db": "workspace:^"
+    "@inp-net/ldap7": "npm:^1.0.12"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
     "@tsconfig/strictest": "npm:^2.0.5"
@@ -2651,15 +2651,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@inp-net/ldap7@npm:^1.0.11":
-  version: 1.0.11
-  resolution: "@inp-net/ldap7@npm:1.0.11"
+"@inp-net/ldap7@npm:^1.0.12":
+  version: 1.0.12
+  resolution: "@inp-net/ldap7@npm:1.0.12"
   dependencies:
     latinize: "npm:^2.0.0"
     ldapts: "npm:^7.2.0"
     tslog: "npm:^4.9.3"
     unixcrypt: "npm:^2.0.0"
-  checksum: 10c0/57fe28044482c41fb5217608dd01722f10a9238fbb2e6f190ceca0294b95147aa95e359786aed0764b076e5affeefc9dff64b3f0cc246b0efabaad99db3af7ec
+  checksum: 10c0/f52577850e004d93048bf14d31bc802579bd0bc78ae6a98fb3ec16a66149b6a64347b9520e6f952136545a5754f28612fc058fb4425f389b0f44e4202a1ff416
   languageName: node
   linkType: hard
 
