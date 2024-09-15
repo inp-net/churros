@@ -790,7 +790,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10.3.4"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.1"
-    "@inp-net/ldap7": "npm:^1.0.9"
+    "@inp-net/ldap7": "npm:^1.0.10"
     "@orangeopensource/hurl": "npm:^4.3.2"
     "@pothos/core": "npm:4.2.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
@@ -1080,7 +1080,7 @@ __metadata:
   resolution: "@churros/sync@workspace:packages/sync"
   dependencies:
     "@churros/db": "workspace:^1.2.2"
-    "@inp-net/ldap7": "npm:^1.0.9"
+    "@inp-net/ldap7": "npm:^1.0.10"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
     "@tsconfig/strictest": "npm:^2.0.5"
@@ -2651,15 +2651,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@inp-net/ldap7@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "@inp-net/ldap7@npm:1.0.9"
+"@inp-net/ldap7@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@inp-net/ldap7@npm:1.0.10"
   dependencies:
     latinize: "npm:^2.0.0"
-    ldapts: "npm:^7.1.1"
+    ldapts: "npm:^7.2.0"
     tslog: "npm:^4.9.3"
     unixcrypt: "npm:^2.0.0"
-  checksum: 10c0/3fb81ce12f965d49f0269c15a29f5239e62bc266852c6f5311cee1a891f3f9833eefc4ea5db879e4f1c636f34457fdde569fa8071f8300cb6d63a0883c2358e4
+  checksum: 10c0/caf95f082431abae48e42ea59da33b073bd913f4ded5ea79db237dd8146badfb678a09a704f6e38782955443d5a3f3e5460a4b355076fcf0b59246d0adcadb02
   languageName: node
   linkType: hard
 
@@ -8389,6 +8389,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debug@npm:~4.3.7":
+  version: 4.3.7
+  resolution: "debug@npm:4.3.7"
+  dependencies:
+    ms: "npm:^2.1.3"
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 10c0/1471db19c3b06d485a622d62f65947a19a23fbd0dd73f7fd3eafb697eec5360cde447fb075919987899b1a2096e85d35d4eb5a4de09a57600ac9cf7e6c8e768b
+  languageName: node
+  linkType: hard
+
 "decamelize@npm:^1.2.0":
   version: 1.2.0
   resolution: "decamelize@npm:1.2.0"
@@ -12471,17 +12483,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ldapts@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "ldapts@npm:7.1.1"
+"ldapts@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "ldapts@npm:7.2.0"
   dependencies:
     "@types/asn1": "npm:>=0.2.4"
     asn1: "npm:~0.2.6"
-    debug: "npm:~4.3.6"
+    debug: "npm:~4.3.7"
     strict-event-emitter-types: "npm:~2.0.0"
     uuid: "npm:~10.0.0"
     whatwg-url: "npm:~14.0.0"
-  checksum: 10c0/785ad0c77ca8fdcd637ab34020e9ba5c6d2fa0431c9dcb7ccc32d963a55173fbb8061cc1091d6a1da782e81cb05fedd18df282bbf102c3d7fbc2f417ff01429b
+  checksum: 10c0/54c64f672394b37dffc15079ded4a8bb5398722fa2735a61bd816e15aa5577876e039701164b5d14b091ec744fe61c83e86a20b69c2d3b7ff6e18ec651962e31
   languageName: node
   linkType: hard
 
@@ -14544,7 +14556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.3, ms@npm:^2.1.1":
+"ms@npm:2.1.3, ms@npm:^2.1.1, ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: 10c0/d924b57e7312b3b63ad21fc5b3dc0af5e78d61a1fc7cfb5457edaf26326bf62be5307cc87ffb6862ef1c2b33b0233cdb5d4f01c4c958cc0d660948b65a287a48

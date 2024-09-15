@@ -3,7 +3,7 @@
   "version": "1.71.1",
   "dependencies": {
     "@churros/db": "workspace:^1.2.2",
-    "@inp-net/ldap7": "^1.0.9",
+    "@inp-net/ldap7": "^1.0.10",
     "tslog": "^4.9.3"
   },
   "devDependencies": {
