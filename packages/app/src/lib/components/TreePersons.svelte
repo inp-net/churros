@@ -17,6 +17,7 @@
           nesting
           users {
             uid
+            fullName
             pictureURL
           }
         }
@@ -29,11 +30,10 @@
   function renderTree(wrapper: HTMLDivElement, container: HTMLDivElement, nesting: Nesting) {
     const nodes: Array<{ data: { id: string; name: string } }> = [];
     const edges: Array<{ data: { source: string; target: string } }> = [];
-    // let style = new StyleSheet();
 
     function fillTree([parent, children]: Nesting) {
-      // const user = $data.familyTree.users.find((u) => u.uid === parent);
-      nodes.push({ data: { id: parent, name: parent } });
+      const user = $data.familyTree.users.find((u) => u.uid === parent);
+      nodes.push({ data: { id: parent, name: user.fullName } });
       for (const [child, subchildren] of children) {
         edges.push({ data: { source: parent, target: child } });
         fillTree([child, subchildren]);
@@ -42,18 +42,34 @@
 
     fillTree(nesting);
 
-    // style.selector('#' + uid).css({
-    //   'background-image': '/annuaire/photo/' + uid,
-    // });
-
-    // if (myuid === uid) {
-    //   style.selector('#' + uid).css({
-    //     'border-color': '#ee0808',
-    //   });
-    // } else if (searchuid === uid) {
-    //   style.selector('#' + uid).css({
-    //     'border-color': '#1ade0d',
-    //   });
+    const style = cytoscape
+      .stylesheet()
+      .selector('node')
+      .style({
+        'background-image': (node) => `/${node.data('id')}.png`,
+        'background-fit': 'cover',
+        'border-color': (node) =>
+          node.data('id') === user.isMe
+            ? '#ee0808'
+            : node.data('id') === user.uid
+              ? '#1ade0d'
+              : '#11f',
+        'border-width': '3px',
+        'border-opacity': 0.8,
+        'label': 'data(name)',
+        'text-valign': 'bottom',
+        'text-halign': 'center',
+        'width': '50px',
+        'height': '50px',
+      })
+      .selector('edge')
+      .css({
+        'curve-style': 'bezier',
+        'width': 6,
+        'target-arrow-shape': 'triangle',
+        'line-color': '#aaa',
+        'target-arrow-color': '#aaa',
+      });
 
     const cy = cytoscape({
       container,
@@ -65,7 +81,7 @@
         nodes: nodes,
         edges: edges,
       },
-
+      style,
       layout: {
         name: 'breadthfirst',
         directed: true,
@@ -98,7 +114,13 @@
     });
   }
 
-  $: if (browser && wrapperElement && containerElement && loaded($data.familyTree.nesting))
+  $: if (
+    browser &&
+    wrapperElement &&
+    containerElement &&
+    loaded($data.familyTree.nesting) &&
+    loaded($data.familyTree.users)
+  )
     renderTree(wrapperElement, containerElement, JSON.parse($data.familyTree.nesting));
 </script>
 
