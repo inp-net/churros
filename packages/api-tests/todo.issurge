@@ -1,0 +1,2 @@
+~tests ~api
+    api-tests: prod mode to not write data but still check stuff like dataleaks every day

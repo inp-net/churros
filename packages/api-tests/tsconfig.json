@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "@tsconfig/esm/tsconfig",
+    "@tsconfig/node18/tsconfig",
+    "@tsconfig/strictest/tsconfig"
+  ],
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "ignoreDeprecations": "5.0",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./build",
+    "rootDir": ".",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "inlineSourceMap": true,
+    "strict": true,
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "./schema.graphql",
+        "tadaOutputLocation": "./src/graphql-env.d.ts"
+      }
+    ]
+  }
+}
