@@ -388,6 +388,26 @@ export const topnavConfigs: Partial<{
     actions: [commonActions.delete, commonActions.pin],
     back: route('/posts/[id]/edit/body', id),
   }),
+  '/(app)/posts/[id]/edit/event': ({ params: { id } }) => ({
+    title: 'Évènement lié au post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
+  '/(app)/posts/[id]/edit/links': ({ params: { id } }) => ({
+    title: 'Liens du post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
+  '/(app)/posts/[id]/edit/picture': ({ params: { id } }) => ({
+    title: 'Image du post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
+  '/(app)/posts/[id]/edit/visibility': ({ params: { id } }) => ({
+    title: 'Visibilité du post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
   '/(app)/events/[[week=date]]': {
     quickAction: {
       icon: IconWallet,

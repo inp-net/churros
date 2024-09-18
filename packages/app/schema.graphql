@@ -544,6 +544,11 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
+  canBeEdited: Boolean! @deprecated(reason: "Use canEdit instead.")
+
+  """
+  Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
+  """
   canEdit(assert: String): Boolean!
   comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
   createdAt: DateTime!

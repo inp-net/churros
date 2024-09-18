@@ -46,19 +46,20 @@
   }
 
   label {
+    outline: 0 solid var(--primary);
+    border-radius: var(--radius-block);
+    padding: 1rem 2rem;
+    background-color: var(--bg2);
     display: flex;
     flex-direction: column;
-    padding: 1rem 2rem;
     cursor: pointer;
-    background-color: var(--bg2);
-    border-radius: var(--radius-block);
-    outline: 0 solid var(--primary);
+
     transition: all 100ms ease;
   }
 
   label.selected {
-    background-color: var(--primary-bg);
     outline-width: calc(3 * var(--border-block));
+    background-color: var(--primary-bg);
   }
 
   label:not(.selected):hover,
@@ -69,13 +70,13 @@
   label .metadata {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 1rem;
     align-items: center;
+    column-gap: 1rem;
   }
 
   label .metadata > div {
     display: flex;
-    gap: 0.5rem;
     align-items: center;
+    gap: 0.5rem;
   }
 </style>
