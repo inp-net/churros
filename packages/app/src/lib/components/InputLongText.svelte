@@ -29,7 +29,7 @@
   export let maxlength: number | undefined = undefined;
 </script>
 
-{#if rich && label}
+{#if rich}
   <ModalMarkdownHelp bind:open={openMarkdownHelp}></ModalMarkdownHelp>
 {/if}
 
@@ -57,8 +57,14 @@
   />
 
   {#if maxlength}
-    <div class="count">
+    <div class="bottom-hint">
       {valueLength} / {maxlength}
+    </div>
+  {:else if rich && !label}
+    <div class="bottom-hint">
+      Syntaxe Markdown supportée <ButtonInk insideProse on:click={openMarkdownHelp}
+        >en savoir plus</ButtonInk
+      >
     </div>
   {/if}
 </InputField>
@@ -81,8 +87,10 @@
     border-color: var(--primary);
   }
 
-  .count {
-    float: right;
+  .bottom-hint {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
     padding: 0 0.6667rem;
     color: var(--muted);
   }

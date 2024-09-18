@@ -68,7 +68,7 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
 };
 
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'POST'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
@@ -183,7 +183,7 @@ const quickActionAdd = {
       return {
         icon: IconPost,
         label: 'Post',
-        href: route('/posts/create'),
+        do: () => navtopPushState('NAVTOP_CREATING_POST'),
         disabled: !me?.admin && !me?.canCreatePostsOn.length,
       };
     },
@@ -357,14 +357,34 @@ export const topnavConfigs: Partial<{
   '/(app)/posts/[id]': ({ params: { id } }) => ({
     actions: [
       commonActions.delete,
-      { ...commonActions.edit, href: route('/posts/[id]/edit', id) },
+      { ...commonActions.edit, href: route('/posts/[id]/edit/body', id) },
       commonActions.pin,
     ],
     title: 'Post',
   }),
-  '/(app)/posts/[id]/edit': () => ({
+  '/(app)/posts/[id]/edit/body': () => ({
     actions: [commonActions.delete, commonActions.pin],
     title: 'Modifier le post',
+  }),
+  '/(app)/posts/[id]/edit/event': ({ params: { id } }) => ({
+    title: 'Évènement lié au post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
+  '/(app)/posts/[id]/edit/links': ({ params: { id } }) => ({
+    title: 'Liens du post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
+  '/(app)/posts/[id]/edit/picture': ({ params: { id } }) => ({
+    title: 'Image du post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
+  }),
+  '/(app)/posts/[id]/edit/visibility': ({ params: { id } }) => ({
+    title: 'Visibilité du post',
+    actions: [commonActions.delete, commonActions.pin],
+    back: route('/posts/[id]', id),
   }),
   '/(app)/events/[[week=date]]': {
     quickAction: {

@@ -94,6 +94,22 @@
     }
   `);
 
+  const CreatePost = graphql(`
+    mutation CreatePost($group: UID!, $event: LocalID) {
+      upsertArticle: upsertArticleV2(
+        group: $group
+        input: { title: "", body: "", visibility: Private, event: $event }
+      ) {
+        ...MutationErrors
+        ... on MutationUpsertArticleV2Success {
+          data {
+            localID
+          }
+        }
+      }
+    }
+  `);
+
   const navtop = writable<NavigationContext>({
     actions: [],
     title: null,
@@ -138,6 +154,25 @@
         await goto(route('/events/[id]/edit', result.data.createEvent.data.localID));
     }}
     options={$AppLayout.data.me.canCreateEventsOn}
+  ></PickGroup>
+
+  <PickGroup
+    statebound="NAVTOP_CREATING_POST"
+    notrigger
+    value={$AppLayout.data.me.canCreatePostsOn.at(0)?.uid}
+    on:finish={async ({ detail }) => {
+      const result = await mutate(CreatePost, { group: detail });
+      if (
+        toasts.mutation(
+          result,
+          'upsertArticle',
+          'Évènement créé',
+          `Impossible de créer un évènement pour ${detail}`,
+        )
+      )
+        await goto(route('/posts/[id]/edit', result.data.upsertArticle.data.localID));
+    }}
+    options={$AppLayout.data.me.canCreatePostsOn}
   ></PickGroup>
 {/if}
 

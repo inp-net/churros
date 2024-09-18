@@ -20,6 +20,7 @@
   import type { PageData } from './$houdini';
   import ModalBookTicket from './ModalBookTicket.svelte';
   import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
+  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);
@@ -155,6 +156,15 @@
       <ButtonLike resource={event} />
       <ButtonShare resource={event} />
     </section>
+
+    {#if event.posts.length > 0}
+      <section class="articles">
+        <h2>Actus</h2>
+        {#each event.posts as article}
+          <CardArticle hideEvent {article} />
+        {/each}
+      </section>
+    {/if}
   </div>
 </MaybeError>
 
@@ -257,5 +267,11 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .articles {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 </style>

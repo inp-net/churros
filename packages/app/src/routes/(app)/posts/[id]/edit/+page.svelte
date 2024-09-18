@@ -1,27 +1,9 @@
 <script lang="ts">
-  import FormArticle from '$lib/components/FormArticle.houdini.svelte';
-  import MaybeError from '$lib/components/MaybeError.svelte';
-  import { loaded, type MaybeLoading } from '$lib/loading';
-  import type { PageData } from './$houdini';
+  import { afterNavigate, replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { route } from '$lib/ROUTES';
 
-  export let data: PageData;
-  $: ({ PagePostEdit } = data);
-
-  function groupIsLoaded<T extends { id: MaybeLoading<string> }>(
-    group: T,
-  ): group is T & { id: string } {
-    return loaded(group.id);
-  }
+  afterNavigate(() => {
+    replaceState(route('/posts/[id]/edit/body', $page.params.id), {});
+  });
 </script>
-
-<div class="content">
-  <MaybeError result={$PagePostEdit} let:data={{ article, me }}>
-    <FormArticle
-      {article}
-      groups={me.canCreatePostsOn.filter(groupIsLoaded)}
-      selectedGroup={me.canCreatePostsOn
-        .filter(groupIsLoaded)
-        .find((g) => g.uid === article.group.uid)}
-    />
-  </MaybeError>
-</div>
