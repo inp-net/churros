@@ -14,8 +14,8 @@ pages: ./docs
 static: ./docs
 
 environment:
-  PUBLIC_API_URL: https://churros.app/graphql
-  PUBLIC_API_WEBSOCKET_URL: wss://churros.app/graphql
+  PUBLIC_API_URL: https://churros.inpt.fr/graphql
+  PUBLIC_API_WEBSOCKET_URL: wss://churros.inpt.fr/graphql
   CURRENT_COMMIT: dev
   CURRENT_VERSION: dev
   CURRENT_COMMIT_SHORT: dev
