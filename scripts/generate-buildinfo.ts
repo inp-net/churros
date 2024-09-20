@@ -56,12 +56,18 @@ const graphinxConfigPath = path.join(toplevel.trim(), 'packages/api/.graphinx.ya
 await writeFile(
   graphinxConfigPath,
   (await readFile(graphinxConfigPath, 'utf-8'))
-    .replace(/^(\s*)CURRENT_COMMIT: .+$/m, `$1CURRENT_COMMIT: ${variables.CURRENT_COMMIT}`)
+    .replace(
+      /^(\s*)CURRENT_COMMIT: .+$/m,
+      `$1CURRENT_COMMIT: ${JSON.stringify(variables.CURRENT_COMMIT)}`,
+    )
     .replace(
       /^(\s*)CURRENT_COMMIT_SHORT: .+$/m,
-      `$1CURRENT_COMMIT_SHORT: ${variables.CURRENT_COMMIT.slice(0, 7)}`,
+      `$1CURRENT_COMMIT_SHORT: ${JSON.stringify(variables.CURRENT_COMMIT.slice(0, 7))}`,
     )
-    .replace(/^(\s*)CURRENT_VERSION: .+$/m, `$1CURRENT_VERSION: ${variables.CURRENT_VERSIONS.api}`),
+    .replace(
+      /^(\s*)CURRENT_VERSION: .+$/m,
+      `$1CURRENT_VERSION: ${JSON.stringify(variables.CURRENT_VERSIONS.api)}`,
+    ),
 );
 
 function singlequotes(literal: string): string {
