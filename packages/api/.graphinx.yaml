@@ -114,15 +114,15 @@ description: |
 
   On peut faire des requêtes GraphQL avec n'importe quel client HTTP. Prenons par exemple la requête suivante:
 
-  <pre>
+  ```
   HTTP/1.1 POST %$PUBLIC_API_URL%
 
   Content-Type: application/json
 
-  {`{
+  {
     "query": "query { group(uid: \"devs\") { parent { name } } }"
-  }`}
-  </pre>
+  }
+  ```
 
   Cette requête récupère le nom du parent du groupe `devs`. On peut voir que la requête est composée
   de deux parties:
