@@ -32,7 +32,7 @@ build:
     - yarn prisma generate
     - yarn build
 
-deploy_docs:
+pages:
   stage: deploy
   extends: .volta
   rules:
