@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, graphinx, log, prisma } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { GroupType } from '#modules/groups/types';
 import { canSetGroupJoinPolicy } from '#modules/groups/utils';
@@ -12,6 +12,7 @@ builder.mutationField('setGroupJoinPolicy', (t) =>
       uid: t.arg({ type: UIDScalar }),
       policy: t.arg({
         type: builder.enumType('GroupJoinPolicy', {
+          ...graphinx('groups'),
           values: {
             Open: { value: 'Open', description: 'Tout le monde peut rejoindre le groupe' },
             Closed: {
