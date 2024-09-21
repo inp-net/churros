@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, localID, prisma } from '#lib';
+import { builder, ensureGlobalId, graphinx, localID, prisma } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
 import { GraphQLError } from 'graphql';
@@ -7,6 +7,7 @@ import { ArticleType } from '../index.js';
 
 builder.queryField('articleID', (t) =>
   t.field({
+    ...graphinx('posts'),
     type: LocalID,
     nullable: true,
     description:

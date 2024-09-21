@@ -1,11 +1,19 @@
 import { MapperKind, getDirective, mapSchema, type Maybe } from '@graphql-tools/utils';
 import { formatDuration, intervalToDuration, type Locale } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
-import { GraphQLError, GraphQLObjectType, type GraphQLSchema } from 'graphql';
 import {
+  DirectiveLocation,
+  GraphQLDirective,
+  GraphQLError,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  type GraphQLSchema,
+} from 'graphql';
+import {
+  rateLimitDirective as _rateLimitDirective,
   defaultKeyGenerator,
   defaultOnLimit,
-  rateLimitDirective,
 } from 'graphql-rate-limit-directive';
 import type { Context } from './context.js';
 import { updateRateLimitHit } from './prometheus.js';
@@ -17,6 +25,15 @@ export type RateLimitDirective = {
     duration: number;
   };
 };
+
+export const rateLimitDirective = new GraphQLDirective({
+  name: 'rateLimit',
+  locations: [DirectiveLocation.OBJECT, DirectiveLocation.FIELD_DEFINITION],
+  args: {
+    limit: { type: new GraphQLNonNull(GraphQLInt) },
+    duration: { type: new GraphQLNonNull(GraphQLInt) },
+  },
+});
 
 export const DEFAULT_RATE_LIMITS = {
   Query: {
@@ -34,7 +51,7 @@ export const DEFAULT_RATE_LIMITS = {
 } as const;
 
 export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSchema {
-  const { rateLimitDirectiveTransformer: transformer } = rateLimitDirective({
+  const { rateLimitDirectiveTransformer: transformer } = _rateLimitDirective({
     keyGenerator: (dargs, src, args, ctx: Context, info) => {
       return `${ctx.user?.uid}:${defaultKeyGenerator(dargs, src, args, ctx, info)}`;
     },

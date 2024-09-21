@@ -1,51 +1,106 @@
-_Traduit avec ChatGPT psk j'avais la flemme. Voir README_EN.md pour l'original._
+## Prise en main
 
-# API Churros
+L'API de Churros est un API [GraphQL](https://graphql.org/). Pour en savoir plus sur GraphQL, vous
+pouvez consulter [la documentation officielle](https://graphql.org/learn/). Mais pour faire simple,
+GraphQL est un langage de requête qui permet de récupérer des données depuis un serveur. Il permet
+de récupérer uniquement les données dont on a besoin, et de les récupérer en une seule requête.
 
-## Site de documentation
+### L'explorateur interactif
 
-Consultez [api-docs.churros.inpt.fr](https://api-docs.churros.inpt.fr), ou <http://localhost:5178> après avoir exécuté `yarn dev` à la racine du projet.
+Avant de se lancer dans l'utilisation programmatique de l'API, il peut être pratique d'en faire un tour d'horizon avec un _playground_ interactif, disponible en accédant à [%$PUBLIC_API_URL_DISPLAY%](%$PUBLIC_API_URL%) depuis son navigateur.
 
-## Architecture
+### Une première requête
 
-- **build/** : les fichiers compilés, générés par `yarn build`
-- **prisma/**
-  - **migrations/** : [les migrations de la base de données](https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate); les migrations permettent des modifications incrémentielles du schéma de la base de données
-  - **schema.prisma** : le schéma Prisma qui décrit la structure de la base de données
-- **src/**
-  - **lib/** : fonctions partagées par la plupart des modules
-  - **server/** : fonctions qui définissent de nouvelles routes et/ou de nouveaux endpoints
-  - **modules/_name_** : modules qui définissent le schéma GraphQL. Le nom est en "kebab-case" (appelé "kebab-case").
-    - **types/** : types GraphQL (scalaires, énumérations, objets d'entrée, objets, interfaces, unions, etc.)
-      - **index.ts** : exporte tous les types (générés en exécutant `yarn barrelize`)
-      - _exemple-type.ts_ : définit un type nommé `ExampleType`
-    - **resolvers/** : résolveurs GraphQL (requêtes, mutations, abonnements et champs)
-      - **index.ts** : exporte tous les résolveurs (générés en exécutant `yarn barrelize`)
-      - _query.example.ts_ : définit une requête nommée `example`
-      - _mutation.example.ts_ : définit une mutation nommée `example`
-      - _subscription.example.ts_ : définit un abonnement nommé `example`
-      - _example-type.example-field.ts_ : définit un champ nommé `exampleField` sur le type `ExampleType` (qui peut être défini en dehors de ce module, et importé avec `#modules/module-name`)
-    - **index.ts** : exporte tous les types et résolveurs (générés en exécutant `yarn barrelize`)
-  - **index.ts** : démarre le serveur
-  - **schema.ts** : importe tous les modules pour construire le schéma (_n'oubliez pas d'importer votre nouveau module ici!_)
+On peut faire des requêtes GraphQL avec n'importe quel client HTTP. Prenons par exemple la requête suivante:
 
-### Importation de types et de code depuis d'autres modules
+```
+HTTP/1.1 POST %$PUBLIC_API_URL%
 
-Utilisez `import { ... } from '#modules/module-name'` pour importer des types et des fonctions utilitaires depuis un autre module nommé `module-name`.
+Content-Type: application/json
 
-- Ne créez jamais de dépendances circulaires entre les modules. Vous pouvez vérifier les dépendances en exécutant `scripts/modules-import-graph.py` (cela nécessite Python 3.11+ avec le package `networkx` installé, et la commande `dot` du package `graphviz` si vous souhaitez générer une image du graphe des dépendances).
+{
+  "query": "query { group(uid: \"devs\") { parent { name } } }"
+}
+```
 
-- Le module `global` peut être importé par n'importe quel module et n'importe aucun module lui-même. Il contient des types ubiquitaires tels que le scalaire `DateTime`.
+Cette requête récupère le nom du parent du groupe `devs`. On peut voir que la requête est composée
+de deux parties:
 
-#### Graphe des dépendances entre les modules
+- `query`: C'est le type de requête. Ici, c'est une requête de type `query`, qui permet de récupérer
+  des données. Il existe aussi `mutation`, pour modifier, créer ou supprimer des données; et `subscription`, pour s'abonner à des données qui peuvent changer en temps réel (via des [_WebSockets_](/websockets))
 
-![](./scripts/modules-import-graph.png)
+- `{ group(uid: "devs") { parent { name } } }`: C'est la requête en elle-même. Ici, on demande le
+  nom du parent du groupe `devs`. On peut voir que la requête est composée de plusieurs parties:
 
-### Ajout d'un nouveau module
+  - `group(uid: "devs")`: C'est la racine de la requête. Ici, on demande le groupe `devs`. On peut
+    voir que l'on peut passer des arguments à la racine de la requête. Ici, on passe l'argument
+    `uid` avec la valeur `"devs"`. On peut voir que l'on peut récupérer plusieurs champs à la racine
+    de la requête. Ici, on récupère le champ `parent`.
 
-Un module est une collection d'un ou plusieurs types (et de leurs résolveurs associés) si étroitement liés que leur code ne peut pas être séparé de manière significative en modules distincts.
+  - `parent { name }`: C'est le champ que l'on veut récupérer. Ici, on veut récupérer le champ `name`
+    du parent du groupe `devs`.
 
-1. Définissez la ou les tables de base de données nécessaires (et les énumérations) dans `prisma/schema.prisma`
-   1. Assurez-vous que la ligne immédiatement après la déclaration du modèle (`model MyName {`) définit l'identifiant de la ressource
-   1. Utilisez `@default(dbgenerated("nanoid('prefix:')"))` pour définir la valeur par défaut de l'identifiant, où `prefix` est un court préfixe correspondant au nom de votre ressource en tant que valeur par défaut de l'identifiant
-   1. Exécutez `node scripts/update-id-prefix-to-typename-map.js` pour mettre à jour la carte du préfixe d'identifiant vers le nom du type dans `src/lib/builder`
+On aura donc la réponse suivante:
+
+```json
+{
+  "data": {
+    "group": {
+      "parent": {
+        "name": "net7"
+      }
+    }
+  }
+}
+```
+
+On remarque que la réponse est structurée de la même manière que la requête.
+
+### S'authentifier
+
+La plupart des _queries_ et _mutations_ nécessitent d'être authentifié.
+
+Il y a deux moyens d'authentification:
+
+1. En se connectant avec un compte utilisateur par son mot de passe directement (déconseillé): Voir la [mutation `login`](/users#mutation/login)
+2. Avec une application créée sur Churros (recommandé): Voir la documentation sur l'[OAuth](/oauth)
+
+Dans les deux cas, on obtient un token d'authentification. Ce token est à fournir à chaque requête dans le header `Authorization` de la requête HTTP:
+
+```
+Authorization: Bearer <token>
+```
+
+où `<token>` est le token d'authentification.
+
+## Types spéciaux
+
+### `Result<T>`
+
+Ce type représente une réponse de l'API qui pourrait être une erreur. C'est un union constitué de:
+
+- `QueryNomDeLaQuerySuccess`: si la requête réussie. Contient un champ `data` qui contient les données de la requête
+- `Error`: si la requête échoue. Contient un champ `message` de type `String` qui contient le message d'erreur.
+- Potentiellement d'autres types d'erreur (par exemple pour la mutation [`authorize`](/oauth#mutation/authorize))
+
+### `Connection<T>`
+
+Ces types représentent des réponses paginées de l'API: en effet, il est irréaliste de vouloir renvoyer d'un coup un très grand nombre d'objets, donc l'API n'envoie que les _n_ premiers objets, et fourni un moyen d'avoir accès aux objets suivants si l'on souhaite avoir la liste complète.
+
+Dans l'API GraphQL, ces type/Resuls portent comme nom `QueryNomDeLaQueryConnection`, et sont composés de:
+
+- `pageInfo`: informations sur la page courante:
+  - `hasNextPage`: `true` si il y a une page suivante, `false` sinon
+  - `hasPreviousPage`: `true` si il y a une page précédente, `false` sinon
+  - `startCursor`: le curseur du premier élément de la page courante
+  - `endCursor`: le curseur du dernier élément de la page courante
+- `nodes`: la liste des éléments demandés, de type `T`
+- `edges`: une liste d'objets contenant:
+  - `node`: élément de type `T`
+  - `cursor`: le curseur de l'élément
+
+Pour récupérer la page suivante, il suffit de ré-appeler la _query_ renvoyant la Connection en question, en fournissant comme argument `after` le champ `endCursor` de la page courante. Par exemple, pour récupérer la page suivante de la liste des groupes:
+
+#### En savoir plus
+
+Ce type permet enfait l'implémentation du standard [GraphQL Cursor Connections](https://relay.dev/graphql/connections.htm).

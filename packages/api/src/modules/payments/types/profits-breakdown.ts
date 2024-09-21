@@ -1,4 +1,4 @@
-import { builder } from '#lib';
+import { builder, graphinx } from '#lib';
 
 import { PaymentMethod } from '@churros/db/prisma';
 
@@ -33,6 +33,7 @@ export const ProfitsBreakdownType = builder
         type: builder
           .objectRef<Record<PaymentMethod, number>>('ProfitsBreakdownByPaymentMethod')
           .implement({
+            ...graphinx('payments'),
             fields: (t) =>
               Object.fromEntries(
                 Object.entries(PaymentMethod).map(([_, p]) => [p, t.exposeFloat(p)]),
@@ -42,6 +43,7 @@ export const ProfitsBreakdownType = builder
       byTicket: t.expose('byTicket', {
         type: [
           builder.objectRef<{ id: string; amount: number }>('ProfitsBreakdownByTicket').implement({
+            ...graphinx('payments'),
             fields: (t) => ({
               id: t.exposeID('id'),
               amount: t.exposeFloat('amount'),

@@ -1,4 +1,4 @@
-import type { Context, RateLimitDirective } from '#lib';
+import type { Context, GraphinxDirective, RateLimitDirective } from '#lib';
 import {
   authScopes,
   context,
@@ -116,6 +116,7 @@ export interface PothosTypes {
   };
   Directives: {
     rateLimit: RateLimitDirective;
+    graphinx: GraphinxDirective;
   };
 }
 

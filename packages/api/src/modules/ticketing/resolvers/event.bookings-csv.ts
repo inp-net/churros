@@ -1,4 +1,4 @@
-import { builder, localID, prisma, yearTier } from '#lib';
+import { builder, graphinx, localID, prisma, yearTier } from '#lib';
 import { EventType } from '#modules/events';
 import { URLScalar } from '#modules/global';
 import { canSeeAllBookings } from '#modules/ticketing/utils';
@@ -19,6 +19,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       dialect: t.arg({
         defaultValue: 'Standard',
         type: builder.enumType('CsvDialect', {
+          ...graphinx('ticketing'),
           description: 'Le dialecte CSV à utiliser',
           values: {
             Standard: {

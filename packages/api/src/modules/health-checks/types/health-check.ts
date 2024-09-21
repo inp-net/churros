@@ -1,4 +1,4 @@
-import { builder } from '#lib';
+import { builder, graphinx } from '#lib';
 
 export type HealthCheck = {
   redis: { publish: boolean; subscribe: boolean };
@@ -12,6 +12,7 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
   fields: (t) => ({
     redis: t.field({
       type: builder.objectRef<HealthCheck['redis']>('RedisHealthCheck').implement({
+        ...graphinx('health-checks'),
         fields: (t) => ({
           subscribe: t.boolean({
             description: 'Whether the Redis subscriber client is ready',
@@ -27,6 +28,7 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
     }),
     database: t.field({
       type: builder.objectRef<HealthCheck['database']>('DatabaseHealthCheck').implement({
+        ...graphinx('health-checks'),
         fields: (t) => ({
           prisma: t.boolean({
             resolve: ({ prisma }) => prisma,
@@ -37,6 +39,7 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
     }),
     ldap: t.field({
       type: builder.objectRef<HealthCheck['ldap']>('LdapHealthCheck').implement({
+        ...graphinx('health-checks'),
         fields: (t) => ({
           school: t.boolean({
             description: 'Whether the LDAP school client is ready',
@@ -52,6 +55,7 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
     }),
     mail: t.field({
       type: builder.objectRef<HealthCheck['mail']>('MailHealthCheck').implement({
+        ...graphinx('health-checks'),
         fields: (t) => ({
           smtp: t.boolean({
             description: 'Whether the SMTP client is ready',
