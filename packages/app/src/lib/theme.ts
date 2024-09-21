@@ -27,11 +27,11 @@ export const THEME_CSS_VARIABLE_NAMES: Record<ThemeVariable$options, string> = {
 
 /** Current theme, as a writable store. */
 export const theme = writable<{
-  id: string | 'default';
+  id: string | 'system';
   variant: 'light' | 'dark' | 'auto';
 }>(
   {
-    id: 'default',
+    id: 'system',
     variant: 'auto',
   },
   (set) => {
@@ -46,7 +46,7 @@ export const theme = writable<{
     // Try to load the theme from localStorage
     set({
       // Invalid theme IDs will resolve to the default theme (as the CSS for the default theme just doesn't have the [data-theme=...] selector)
-      id: localStorage.getItem('theme') ?? 'default',
+      id: localStorage.getItem('theme') ?? 'system',
       variant: variant as 'light' | 'dark' | 'auto',
     });
   },
