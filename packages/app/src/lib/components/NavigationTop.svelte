@@ -170,7 +170,7 @@
   }
 
   .logo {
-    max-width: 33vw;
+    max-width: 130px;
     height: 2rem;
     overflow: visible;
   }
