@@ -204,11 +204,11 @@
           </div>
           <div class="badges">
             {#if loading($data.bot, false)}
-              <Badge icon={IconBotAccount} title="Compte d'automatisation"></Badge>
+              <Badge icon={IconBotAccount} title="Compte d'automatisation">Bot</Badge>
             {/if}
             <!-- TODO differentiate tech admins from AE admins, say which AE they are admins of -->
             {#if loading($data.admin, false) || loading($data.studentAssociationAdmin, false)}
-              <Badge icon={IconAdmin} title="Administrateur.ice" />
+              <Badge icon={IconAdmin} title="Administrateur.ice">Admin</Badge>
             {/if}
           </div>
         {:else if $data.__typename === 'Group'}
