@@ -52,8 +52,10 @@ export const CreateTicket = graphql(`
           localID
           event {
             localID
+            tickets {
+              id
+            }
           }
-          ...List_EditEvent_Tickets_insert
         }
       }
       ...MutationErrors
