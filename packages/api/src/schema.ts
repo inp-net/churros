@@ -1,10 +1,9 @@
 import { builder, graphinxDirective, rateLimitDirective } from '#lib';
 import { addTypes, printSchemaWithDirectives } from '@graphql-tools/utils';
 import { writeFile } from 'node:fs/promises';
-import * as path from 'node:path';
+import path from 'node:path';
 
 import '#modules/announcements';
-import '#modules/bar-weeks';
 import '#modules/changelogs';
 import '#modules/comments';
 import '#modules/curriculum';
