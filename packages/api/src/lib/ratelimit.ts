@@ -1,3 +1,4 @@
+import { log } from '#lib';
 import { MapperKind, getDirective, mapSchema, type Maybe } from '@graphql-tools/utils';
 import { formatDuration, intervalToDuration, type Locale } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
@@ -16,7 +17,6 @@ import {
   defaultOnLimit,
 } from 'graphql-rate-limit-directive';
 import type { Context } from './context.js';
-import { updateRateLimitHit } from './prometheus.js';
 
 export type RateLimitDirective = {
   locations: 'OBJECT' | 'FIELD_DEFINITION';
@@ -56,12 +56,17 @@ export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSch
       return `${ctx.user?.uid}:${defaultKeyGenerator(dargs, src, args, ctx, info)}`;
     },
     async onLimit(response, dargs, src, args, ctx, info) {
-      await updateRateLimitHit({
-        queryName: info.fieldName,
-        queryType: info.parentType.name,
-        user: ctx.user?.id,
-        tryAgainInMs: response.msBeforeNext,
-      });
+      await log(
+        'rate-limit',
+        'hit',
+        {
+          queryName: info.fieldName,
+          queryType: info.parentType.name,
+          tryAgainInMs: response.msBeforeNext,
+        },
+        null,
+        ctx.user,
+      );
       try {
         defaultOnLimit(response, dargs, src, args, ctx, info);
       } catch (error) {

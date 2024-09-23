@@ -810,6 +810,7 @@ __metadata:
     "@churros/db": "workspace:^2.0.0"
     "@clack/prompts": "npm:^0.7.0"
     "@envelop/core": "npm:^5.0.2"
+    "@envelop/prometheus": "npm:^11.0.0"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.1"
@@ -1461,6 +1462,30 @@ __metadata:
     "@envelop/types": "npm:5.0.0"
     tslib: "npm:^2.5.0"
   checksum: 10c0/ef671cf79b40c4ca387b80012f01e54896de7c933bbdd6b905ce09058ff52554116c54da98d1a1226f67a3bc169a0b115c895c01b7daa9d73f2777a692b9f41f
+  languageName: node
+  linkType: hard
+
+"@envelop/on-resolve@npm:^4.1.0":
+  version: 4.1.1
+  resolution: "@envelop/on-resolve@npm:4.1.1"
+  peerDependencies:
+    "@envelop/core": ^5.0.2
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10c0/6e680028db9c6514bd536695d04b40a95a5ebb6ae434429552e1479f77ce4d75786c90df8f7fa3444999412a1be6314e15506e6dc56623781c269e5cdc3aef97
+  languageName: node
+  linkType: hard
+
+"@envelop/prometheus@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "@envelop/prometheus@npm:11.0.0"
+  dependencies:
+    "@envelop/on-resolve": "npm:^4.1.0"
+    tslib: "npm:^2.5.0"
+  peerDependencies:
+    "@envelop/core": ^5.0.1
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    prom-client: ^15.0.0
+  checksum: 10c0/8ffba9060740f6bfb873beb84a9011236ac3161ae41de5545bb048bd16bb54e1d22bf984c45d1db47d1b99c623d981af0c311ea9a75c950f92cf9eb1c9420429
   languageName: node
   linkType: hard
 

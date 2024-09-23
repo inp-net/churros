@@ -6,6 +6,7 @@
     "@clack/prompts": "^0.7.0",
     "@envelop/core": "^5.0.2",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
+    "@envelop/prometheus": "^11.0.0",
     "@graphql-yoga/node": "^3.9.1",
     "@graphql-yoga/redis-event-target": "^3.0.1",
     "@inp-net/ldap7": "^1.0.12",
