@@ -1,5 +1,6 @@
 import { context, customErrorMap, inDevelopment } from '#lib';
 import { Prisma } from '@churros/db/prisma';
+import { usePrometheus } from '@envelop/prometheus';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
 import { createFetch } from '@whatwg-node/fetch';
 import { useTrimInputs } from 'envelop-trim-inputs';
@@ -22,7 +23,20 @@ const yoga = createYoga<{
   // CORS are handled below, disable Yoga's default CORS settings
   cors: false,
   context,
-  plugins: [useTrimInputs()],
+  plugins: [
+    useTrimInputs(),
+    usePrometheus({
+      metrics: {
+        graphql_envelop_deprecated_field: true,
+        graphql_envelop_request_duration: true,
+        graphql_envelop_request_time_summary: true,
+        graphql_envelop_request: true,
+        graphql_envelop_phase_parse: true,
+        graphql_envelop_phase_execute: true,
+        graphql_envelop_error_result: true,
+      },
+    }),
+  ],
   graphiql: {
     title: 'Churros API',
     subscriptionsProtocol: 'WS',
