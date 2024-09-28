@@ -2,7 +2,8 @@
   import { page } from '$app/stores';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import CardSubject from '$lib/components/CardSubject.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import groupBy from 'lodash.groupby';
   import IconLink from '~icons/mdi/link';
   import WipMigrationNotice from '../WIPMigrationNotice.svelte';
@@ -44,59 +45,20 @@
 
 <WipMigrationNotice></WipMigrationNotice>
 
-<!-- TODO -->
-<!-- {#if displayPreferredMinor && $me?.minor}
-  <div class="minor-anchor" id={$me.minor.uid}></div>
-  <h2>
-    {$me.minor.name}
-    <a href="#{$me.minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a>
-  </h2>
-  <ul class="nobullet">
-    {#each subjectsOfMinorByUnit($me.minor) as [unitShortName, subjects] (unitShortName)}
-      {@const { unit } = subjects[0]}
-      {#if unit}
-        <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
-      {/if}
-      {#each subjects as subject (subject.uid)}
-        <li>
-          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
-        </li>
-      {/each}
-    {:else}
-      <li class="empty muted">Aucune matière dans ta filière??? Contactes net7.</li>
-    {/each}
-  </ul>
-  <hr />
-{:else if !$me?.external && (!$me?.minor || $me?.major?.uid !== data.major.uid) && browser && localStorage.getItem('ignoreDefineYourMinor') !== 'true'}
-  <div class="define-your-minor">
-    <p class="muted">
-      Marre de scroll pour avoir son parcours? Définis ton parcours dans <a href="/me"
-        >ton&nbsp;profil</a
-      >
-    </p>
-    <ButtonSecondary
-      on:click={() => {
-        localStorage.setItem('ignoreDefineYourMinor', 'true');
-      }}>Ignorer</ButtonSecondary
-    >
-  </div>
-  <hr />
-{/if} -->
-
 {#if subjectsOfMinor(undefined).length > 0}
-  <ul class="nobullet minorless-subjects">
-    {#each subjectsOfMinorByUnit(undefined) as [unitShortName, subjectsOfUnit] (unitShortName)}
-      {@const { unit } = subjectsOfUnit[0]}
-      {#if unit}
-        <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
-      {/if}
+  {#each subjectsOfMinorByUnit(undefined) as [unitShortName, subjectsOfUnit] (unitShortName)}
+    {@const { unit } = subjectsOfUnit[0]}
+    {#if unit}
+      <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
+    {/if}
+    <Submenu>
       {#each subjectsOfUnit as subject (subject.id)}
-        <li>
-          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
-        </li>
+        <SubmenuItem href="./{subject.uid}" icon={null}>
+          {subject.name}
+        </SubmenuItem>
       {/each}
-    {/each}
-  </ul>
+    </Submenu>
+  {/each}
 {/if}
 
 <!-- {#each minors.filter((m) => m.uid !== $me?.minor?.uid) as minor} -->
@@ -106,19 +68,19 @@
     <h2>{minor.name} <a href="#{minor.uid}" class="jump-to-anchor"><IconLink></IconLink></a></h2>
   {/if}
 
-  <ul class="nobullet">
-    {#each subjectsOfMinorByUnit(minor) as [unitShortName, subjectsOfUnit] (unitShortName)}
-      {@const { unit } = subjectsOfUnit[0]}
-      {#if unit}
-        <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
-      {/if}
+  {#each subjectsOfMinorByUnit(minor) as [unitShortName, subjectsOfUnit] (unitShortName)}
+    {@const { unit } = subjectsOfUnit[0]}
+    {#if unit}
+      <h3 class="typo-field-label">{unit.shortName || unit.name}</h3>
+    {/if}
+    <Submenu>
       {#each subjectsOfUnit as subject (subject.id)}
-        <li>
-          <CardSubject href="./{subject.uid}" {...subject} unit={undefined}></CardSubject>
-        </li>
+        <SubmenuItem href="./{subject.uid}" icon={null}>
+          {subject.name}
+        </SubmenuItem>
       {/each}
-    {/each}
-  </ul>
+    </Submenu>
+  {/each}
 {/each}
 
 <style lang="scss">
@@ -138,37 +100,10 @@
     margin-top: 1rem;
   }
 
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  // .define-your-minor {
-  //   width: 100%;
-  //   padding: 1rem;
-  //   margin-top: 2rem;
-  //   text-align: center;
-  //   border: var(--border-block) dashed;
-  //   border-radius: var(--radius-block);
-
-  //   p {
-  //     margin-bottom: 0.5rem;
-  //   }
-  // }
-
-  .minorless-subjects {
-    margin-top: 2rem;
-  }
-
   .minor-anchor {
     position: relative;
     top: 0;
     display: block;
     visibility: hidden;
   }
-
-  // hr {
-  //   margin: 3rem auto;
-  // }
 </style>
