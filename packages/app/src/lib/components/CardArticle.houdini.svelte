@@ -329,7 +329,7 @@
 
   .image {
     width: 100%;
-    max-height: 33vh;
+    height: calc(clamp(5rem, 33vh, 10rem));
     margin: 0.5rem 0;
     overflow: hidden;
     object-fit: cover;
