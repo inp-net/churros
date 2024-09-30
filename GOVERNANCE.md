@@ -70,7 +70,7 @@ Tout _maintainer_ n'ayant pas effectué de commit depuis plus d'un an se voit re
 #### Responsabilités
 
 - Garder les dépenances à jour via une MR `chore(deps): upgrade dependencies` de temps en temps (une fois par mois)
-
+- Garder à jour la documentation, autant externe (de l'API) qu'interne (wiki du projet et CONTRIBUTING.md)
 
 ## Fermeture de MRs
 
