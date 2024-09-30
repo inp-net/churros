@@ -1,5 +1,5 @@
-query PageLogs($user: UID, $message: String, $area: String) {
-  logs(first: 50, user: $user, message: $message, area: $area) @paginate {
+query PageLogs($user: UID, $message: String, $area: String, $action: String) {
+  logs(first: 50, user: $user, message: $message, area: $area, action: $action) @paginate {
     edges {
       node {
         id

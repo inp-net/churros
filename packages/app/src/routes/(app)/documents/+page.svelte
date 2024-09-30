@@ -1,6 +1,7 @@
 <script lang="ts">
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import CardMajor from '$lib/components/CardMajor.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -27,23 +28,17 @@
     {:else}
       <pre>{schoolUid}</pre>
     {/if}
-    <ul class="nobullet">
+    <Submenu>
       {#each majorsOfSchool as major}
-        <li>
-          <CardMajor href="./{major.uid}" {...major}></CardMajor>
-        </li>
+        <SubmenuItem href="./{major.uid}" icon={null}>
+          {major.name || major.fullName}</SubmenuItem
+        >
       {/each}
-    </ul>
+    </Submenu>
   </section>
 {/each}
 
 <style>
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
   h2 {
     margin-top: 1.5rem;
     margin-bottom: 1em;

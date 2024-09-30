@@ -1,13 +1,15 @@
 <script lang="ts">
-  import type { PageData } from './$types';
+  import { page } from '$app/stores';
   import Breadcrumb from '$lib/components/Breadcrumb.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import { page } from '$app/stores';
-  import CardDocument from '$lib/components/CardDocument.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { DISPLAY_DOCUMENT_TYPES, ICONS_DOCUMENT_TYPES, ORDER_DOCUMENT_TYPES } from '$lib/display';
   import { DocumentType } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import WipMigrationNotice from '../../WIPMigrationNotice.svelte';
+  import type { PageData } from './$types';
+  import IconCheck from '~icons/msl/check';
 
   export let data: PageData;
 
@@ -59,23 +61,24 @@
         <svelte:component this={ICONS_DOCUMENT_TYPES.get(type)}></svelte:component>
         {DISPLAY_DOCUMENT_TYPES.get(type)}
       </h2>
-      <ul class="nobullet">
+      <Submenu>
         {#each documents as { solutionPaths, uid, ...rest }}
-          <li>
-            <CardDocument
-              href="./{uid}"
-              hasSolution={documentTypesWithSolutions.has(type)
-                ? solutionPaths.length > 0
-                : undefined}
-              {...rest}
-            ></CardDocument>
-          </li>
+          <SubmenuItem href="./{uid}" icon={null}>
+            <span class="has-solution" slot="subtext" class:success={solutionPaths.length > 0}>
+              {#if documentTypesWithSolutions.has(type) && solutionPaths.length > 0}
+                <span class="icon">
+                  <IconCheck />
+                </span>
+                Corrigé disponible
+              {/if}
+            </span>
+            {rest.title}
+          </SubmenuItem>
         {/each}
-        <li class="new">
-          <CardDocument createdAt={new Date()} add href="./create?type={type}" title="Ajouter"
-          ></CardDocument>
-        </li>
-      </ul>
+        <SubmenuItem href="./create?type={type}" icon={null} subtext="Contribues à la Frappe ;)">
+          Ajouter
+        </SubmenuItem>
+      </Submenu>
     </section>
   {/each}
 {:else}
@@ -101,6 +104,15 @@
     max-height: 100%;
     margin-top: 2rem;
     text-align: center;
+  }
+
+  .has-solution {
+    display: flex;
+    align-items: center;
+  }
+
+  .has-solution .icon {
+    font-size: 1.2em;
   }
 
   section.links {

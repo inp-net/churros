@@ -1949,6 +1949,11 @@ type Mutation {
     name: String
     shotgun: DateRangeInput!
   ): MutationCreateTicketResult!
+
+  """
+  Dédoublonne les réservations. Renvoie les réservations supprimées.
+  """
+  deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
   deleteAnnouncement(id: ID!): Boolean!
   deleteArticle(id: ID!): Boolean!
   deleteArticlePicture(id: ID!): Boolean!
@@ -2639,6 +2644,12 @@ union MutationCreateTicketResult = Error | MutationCreateTicketSuccess | ZodErro
 
 type MutationCreateTicketSuccess {
   data: Ticket!
+}
+
+union MutationDeduplicateBookingsResult = Error | MutationDeduplicateBookingsSuccess | ZodError
+
+type MutationDeduplicateBookingsSuccess {
+  data: Int!
 }
 
 union MutationDeleteContributionResult = Error | MutationDeleteContributionSuccess | ZodError
@@ -3537,6 +3548,10 @@ type Query {
     assert: String
   ): Boolean!
   logs(
+    """
+    Filtrer par action
+    """
+    action: String
     after: String
 
     """Filtrer par zone"""
