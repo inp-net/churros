@@ -6,6 +6,23 @@
 
 Vote dont plus des deux tiers du corps votant est favorable
 
+### Fonctionnalité majeure
+
+Fonctionnalité dont l'implémentation demande un travail conséquent, c'est-à-dire au moins l'un des points suivants:
+
+- Un nouveau module dans l'API GraphQL
+- Une modification du layout principal (`/` ou `/(app)`) de l'interface
+- Un changement dans le Wiki du projet sur l'architecture du code
+- Un bump major de la version du paquet de la base de données
+
+Exemples:
+
+- Provider OAuth2
+- La Frappe
+- UI v2
+- Formulaires
+- Shops
+
 ## Rôles
 
 ### Releasers
@@ -62,7 +79,11 @@ Les comptes rendus des réunions de bureau de net7 sont également partagés dan
 
 ## Travail en collaboration
 
-Effectuer des réunions hebdomadaire si votre edt le permet, afin de garder les troupes motivées et que la base de code évolue. Ces temps permettent de parler des problèmes, des priorités, de regarder les MRs et surtout de coder à plusieurs.
+Effectuer des réunions hebdomadaire si l'EDT le permet, afin de garder les troupes motivées et que la base de code évolue. Ces temps permettent de parler des problèmes, des priorités, de regarder les MRs et surtout de coder à plusieurs.
+
+## Décisions majeures d'ajout ou de suppression de fonctionnalités
+
+Avant de commencer une MR sur une fonctionnalité demandant un travail conséquent, ou la suppression d'une _fonctionnalité majeure_ existante, procéder à un vote des maintainers.
 
 ## Ne jamais oublier l'objectif initial de Churros
 
