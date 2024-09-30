@@ -2,7 +2,7 @@
   import type { PagePostEditLinkedEvent_Event$data } from '$houdini';
   import HtmlContent from '$lib/components/HTMLContent.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
-  import { type MaybeLoading, loading, LoadingText, mapLoading } from '$lib/loading';
+  import { type DeepMaybeLoading, type MaybeLoading, loading, LoadingText, mapLoading } from '$lib/loading';
   import { xss } from '$lib/xss';
   import { createEventDispatcher } from 'svelte';
   import IconDates from '~icons/msl/calendar-month-outline';
@@ -10,7 +10,7 @@
 
   const dispatch = createEventDispatcher<{ select: string | null }>();
 
-  export let event: PagePostEditLinkedEvent_Event$data;
+  export let event: DeepMaybeLoading<PagePostEditLinkedEvent_Event$data>;
   export let selected: MaybeLoading<boolean> = false
 </script>
 
@@ -46,20 +46,19 @@
   }
 
   label {
-    outline: 0 solid var(--primary);
-    border-radius: var(--radius-block);
-    padding: 1rem 2rem;
-    background-color: var(--bg2);
     display: flex;
     flex-direction: column;
+    padding: 1rem 2rem;
     cursor: pointer;
-
+    background-color: var(--bg2);
+    border-radius: var(--radius-block);
+    outline: 0 solid var(--primary);
     transition: all 100ms ease;
   }
 
   label.selected {
-    outline-width: calc(3 * var(--border-block));
     background-color: var(--primary-bg);
+    outline-width: calc(3 * var(--border-block));
   }
 
   label:not(.selected):hover,
@@ -70,13 +69,13 @@
   label .metadata {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     column-gap: 1rem;
+    align-items: center;
   }
 
   label .metadata > div {
     display: flex;
-    align-items: center;
     gap: 0.5rem;
+    align-items: center;
   }
 </style>

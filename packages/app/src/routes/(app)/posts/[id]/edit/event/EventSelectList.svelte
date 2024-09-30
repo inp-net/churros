@@ -1,12 +1,11 @@
 <script lang="ts">
   import type { PagePostEditLinkedEvent_Event$data } from '$houdini';
-  import { loading, mapAllLoading, type MaybeLoading } from '$lib/loading';
+  import { loading, mapAllLoading, type DeepMaybeLoading } from '$lib/loading';
   import { nanoid } from 'nanoid';
-  import { createEventDispatcher } from 'svelte';
   import EventSelectItem from './EventSelectItem.svelte';
 
-  export let current: PagePostEditLinkedEvent_Event$data | null;
-  export let events: Array<PagePostEditLinkedEvent_Event$data>;
+  export let current: DeepMaybeLoading<PagePostEditLinkedEvent_Event$data> | null;
+  export let events: Array<DeepMaybeLoading<PagePostEditLinkedEvent_Event$data>>;
 </script>
 
 <fieldset>
