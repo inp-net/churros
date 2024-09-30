@@ -17,7 +17,6 @@
   import IconSend from '~icons/msl/send-outline';
   import { ChangePostVisibility } from '../mutations';
   import type { PageData } from './$houdini';
-  import { isToday } from 'date-fns';
 
   export let data: PageData;
   $: ({ PagePostEditVisibility } = data);
@@ -26,7 +25,7 @@
   $: if ($PagePostEditVisibility.data && loaded($PagePostEditVisibility.data.post.visibility))
     visibility ??= $PagePostEditVisibility.data?.post.visibility;
 
-  let NotificationsSendCount = new NotificationsSendCountForPostStore();
+  const NotificationsSendCount = new NotificationsSendCountForPostStore();
 
   let openModalWarnNotifications: () => void;
 
@@ -40,7 +39,7 @@
 
 <MaybeError result={$PagePostEditVisibility} let:data={{ post }}>
   <ModalOrDrawer bind:open={openModalWarnNotifications} let:close>
-    <div class="modal-content">
+    <div class="notifications-warning-modal-content">
       <h1>Sûr·e de toi?</h1>
       <p>
         Tu t'apprêtes à envoyer une notification à <strong
@@ -149,11 +148,26 @@
     font-size: 0.8rem;
   }
 
+  .notifications-warning-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .notifications-warning-modal-content .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
   .notifications {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     gap: 0.5em;
+    align-items: center;
     line-height: 1;
   }
 
