@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Accéder à un fichier sur un document de la Frappe affichait un message "No Group Found". C'est réglé!
+
 ## [2.7.0] - 2024-09-10
 
 ### Nouveautés

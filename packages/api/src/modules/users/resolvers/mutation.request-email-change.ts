@@ -19,8 +19,11 @@ builder.mutationField('requestEmailChange', (t) =>
     authScopes: { loggedIn: true },
     async resolve(query, _, { email, callbackURL }, { user }) {
       if (!user) throw new GraphQLError('Not logged in');
+      const subject = await prisma.user.findUniqueOrThrow({
+        where: { email },
+      });
       await log('users', 'request-email-change', { email, callbackURL }, user.id, user);
-      return requestEmailChange(query, email, user.id, callbackURL);
+      return requestEmailChange(query, email, subject.id, callbackURL);
     },
   }),
 );

@@ -18,19 +18,24 @@ builder.queryField('logs', (t) =>
         description: 'Filtrer par zone',
         required: false,
       }),
+      action: t.arg.string({
+        description: 'Filtrer par action',
+        required: false,
+      }),
       message: t.arg.string({
         description: "Filtrer dans le message de l'entrée de log",
         required: false,
       }),
     },
     authScopes: { admin: true },
-    async resolve(query, _, { user, area, message }, { user: me }) {
+    async resolve(query, _, { user, area, message, action }, { user: me }) {
       if (!me) throw new GraphQLError('User not found');
       return prisma.logEntry.findMany({
         ...query,
         where: {
           user: user ? { uid: user } : undefined,
           area: area ? { search: area } : undefined,
+          action: action ? { search: action } : undefined,
           message: message ? { search: message } : undefined,
         },
         include: {

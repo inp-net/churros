@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fragment, graphql, type ThemeVariant$options } from '$houdini';
+  import { fragment, graphql, type FormPicture, type ThemeVariant$options } from '$houdini';
   import { loaded, loading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
@@ -12,7 +12,7 @@
 
   export let variant: ThemeVariant$options = 'Light';
 
-  export let resource;
+  export let resource: FormPicture | null;
   $: data = fragment(
     resource,
     graphql(`
@@ -30,7 +30,7 @@
     `),
   );
 
-  $: pictureURL = variant === 'Light' ? $data.lightURL : $data.darkURL;
+  $: pictureURL = (variant === 'Light' ? $data?.lightURL : $data?.darkURL) ?? '';
 
   const Update = graphql(`
     mutation UpdatePicture($resource: ID!, $file: File!, $variant: ThemeVariant!) {
@@ -62,6 +62,7 @@
   `);
 
   async function deletePicture() {
+    if (!$data) return;
     const result = await mutate(Delete, { resource: $data.id, variant });
     toasts.mutation(result, 'setPicture', 'Image supprimée', "Impossible de supprimer l'image");
   }
@@ -72,9 +73,9 @@
 <InputFile
   bind:openPicker
   accept="image/jpeg,image/png,image/webp"
-  data-typename={loading($data.__typename, '')}
+  data-typename={loading($data?.__typename, '')}
   on:change={async ({ detail: file }) => {
-    if (!loaded($data.id)) return;
+    if (!loaded($data?.id)) return;
     if (!file) return;
     const result = await Update.mutate({ resource: $data.id, file, variant });
     toasts.mutation(
@@ -85,23 +86,23 @@
     );
   }}
 >
-  <div class="preview" data-typename={loading($data.__typename, '')}>
-    {#if loading($data.__typename, '') === 'Event'}
+  <div class="preview" data-typename={loading($data?.__typename, '')}>
+    {#if loading($data?.__typename, '') === 'Event'}
       <CardEvent event={$data} />
-    {:else if loaded($data.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
+    {:else if loaded($data?.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
       <button use:tooltip={'Supprimer'} class="delete" on:click={deletePicture}
         ><IconDelete></IconDelete></button
       >
       <img src={$data.lightURL} alt={$data.pictureAltText} />
-    {:else if loaded($data.darkURL) && loaded($data.pictureAltText) && !$data.lightURL}
+    {:else if loaded($data?.darkURL) && loaded($data.pictureAltText) && !$data.lightURL}
       <div class="no-img">
         <IconAccount />
       </div>
     {/if}
   </div>
   <section class="actions">
-    {#if loading($data.__typename, '') === 'Event'}
-      {#if loaded(pictureURL) && loaded($data.pictureAltText) && pictureURL}
+    {#if loading($data?.__typename, '') === 'Event'}
+      {#if loaded(pictureURL) && loaded($data?.pictureAltText) && pictureURL}
         <ButtonInk on:click={openPicker}>Changer</ButtonInk>
         <ButtonInk danger on:click={deletePicture}>Supprimer</ButtonInk>
       {:else}
@@ -109,13 +110,13 @@
       {/if}
     {:else}
       <ButtonInk on:click={openPicker}>
-        {#if loaded(pictureURL) && loaded($data.pictureAltText) && pictureURL}
+        {#if loaded(pictureURL) && loaded($data?.pictureAltText) && pictureURL}
           {#if loading($data.__typename, '') === 'Group'}
             Modifier
           {:else}
             Modifier la photo
           {/if}
-        {:else if loading($data.__typename, '') === 'Group'}
+        {:else if loading($data?.__typename, '') === 'Group'}
           Ajouter
         {:else}
           Ajouter une photo
