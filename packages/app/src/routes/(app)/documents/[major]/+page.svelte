@@ -1,10 +1,11 @@
 <script lang="ts">
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-  import type { PageData } from './$types';
-  import CardMajor from '$lib/components/CardMajor.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import { page } from '$app/stores';
+  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import type { PageData } from './$types';
   import WipMigrationNotice from './WIPMigrationNotice.svelte';
 
   export let data: PageData;
@@ -38,32 +39,20 @@
 
   <section class="fise">
     <h2 class="typo-field-label">Étudiants</h2>
-    <ul class="nobullet">
-      <li>
-        <CardMajor name="FISE" shortName="1A" href="./1a-fise" />
-      </li>
-      <li>
-        <CardMajor name="FISE" shortName="2A" href="./2a-fise" />
-      </li>
-      <li>
-        <CardMajor name="3A" href="./3a" />
-      </li>
-    </ul>
+    <Submenu>
+      <SubmenuItem icon={null} subtext="FISE" href="./1a-fise">1A</SubmenuItem>
+      <SubmenuItem icon={null} subtext="FISE" href="./2a-fise">2A</SubmenuItem>
+      <SubmenuItem icon={null} href="./3a">3A</SubmenuItem>
+    </Submenu>
   </section>
 
   <section class="fisa">
     <h2 class="typo-field-label">Apprentis</h2>
-    <ul class="nobullet">
-      <li>
-        <CardMajor name="FISA" shortName="1A" href="./1a-fisa" />
-      </li>
-      <li>
-        <CardMajor name="FISA" shortName="2A" href="./2a-fisa" />
-      </li>
-      <li>
-        <CardMajor name="3A" href="./3a" />
-      </li>
-    </ul>
+    <Submenu>
+      <SubmenuItem icon={null} subtext="FISA" href="./1a-fisa">1A</SubmenuItem>
+      <SubmenuItem icon={null} subtext="FISA" href="./2a-fisa">2A</SubmenuItem>
+      <SubmenuItem icon={null} href="./3a">3A</SubmenuItem>
+    </Submenu>
   </section>
 {/if}
 
@@ -74,12 +63,6 @@
     gap: 1rem;
     align-items: center;
     justify-content: center;
-  }
-
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
   }
 
   h2:not(.migration-notice) {

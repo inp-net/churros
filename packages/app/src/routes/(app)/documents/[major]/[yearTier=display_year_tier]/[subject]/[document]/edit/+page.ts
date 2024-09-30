@@ -42,7 +42,7 @@ export const load: PageLoad = async (event) => {
   if (!major || !subject) error(404, { message: 'Filière ou matière non trouvée' });
 
   const { document } = await graphql(`
-    query PageDocumentEdit_Document($subject: ID!, $document: String!) {
+    query PageDocumentEdit_Document($subject: ID!, $document: String!) @blocking {
       document(subject: $subject, slug: $document) {
         title
         id

@@ -5,7 +5,7 @@ query PageDocuments @blocking {
     majors {
       id
       name
-      shortName
+      fullName
       uid
     }
   }

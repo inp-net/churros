@@ -71,7 +71,6 @@
     flex-wrap: wrap;
     gap: 0.25em;
     align-items: center;
-    color: var(--success);
   }
 
   .has-solution :global(svg) {
