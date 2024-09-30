@@ -17,7 +17,6 @@
   import IconSend from '~icons/msl/send-outline';
   import { ChangePostVisibility } from '../mutations';
   import type { PageData } from './$houdini';
-  import { isToday } from 'date-fns';
 
   export let data: PageData;
   $: ({ PagePostEditVisibility } = data);
