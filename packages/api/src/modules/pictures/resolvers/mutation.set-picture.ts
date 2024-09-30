@@ -1,4 +1,12 @@
-import { builder, prisma, removePicture, splitID, updatePicture } from '#lib';
+import {
+  builder,
+  localID,
+  prisma,
+  removePicture,
+  splitID,
+  updatePicture,
+  type Context,
+} from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { FileScalar, PicturedInterface } from '#modules/global/types';
 import { canEditGroup } from '#modules/groups';
@@ -72,66 +80,35 @@ builder.mutationField('setPicture', (t) =>
       }
     },
     async resolve(_, { resource, variant, file }, context, info) {
-      const { user } = context;
-      const [typename, localid] = splitID(resource);
+      const [typename] = splitID(resource);
       const queryFor = <T extends string>(typeName: T) =>
         queryFromInfo({ context, info, typeName });
       switch (typename) {
         case 'Event': {
-          if (file) {
-            await updatePicture({
-              resource: 'event',
-              folder: 'events',
-              extension: 'png',
-              file,
-              identifier: localid,
-            });
-          } else {
-            const { alreadyDeleted } = await removePicture({
-              user,
-              resourceId: resource,
-              resourceType: 'event',
-            });
-            if (alreadyDeleted) context.caveats.unshift("L'image a déjà été supprimée");
-          }
+          await setPicture(file, {
+            globalId: resource,
+            resource: 'event',
+            folder: 'events',
+            ...context,
+          });
           return prisma.event.findUniqueOrThrow({ ...queryFor('Event'), where: { id: resource } });
         }
         case 'User': {
-          if (file) {
-            await updatePicture({
-              resource: 'user',
-              folder: 'users',
-              extension: 'png',
-              file,
-              identifier: localid,
-            });
-          } else {
-            const { alreadyDeleted } = await removePicture({
-              user,
-              resourceId: resource,
-              resourceType: 'user',
-            });
-            if (alreadyDeleted) context.caveats.unshift("L'image a déjà été supprimée");
-          }
+          await setPicture(file, {
+            globalId: resource,
+            resource: 'user',
+            folder: 'users',
+            ...context,
+          });
           return prisma.user.findUniqueOrThrow({ ...queryFor('User'), where: { id: resource } });
         }
         case 'Group': {
-          if (file) {
-            await updatePicture({
-              resource: 'group',
-              folder: path.join('groups', variant.toLowerCase()),
-              extension: 'png',
-              file,
-              identifier: localid,
-            });
-          } else {
-            const { alreadyDeleted } = await removePicture({
-              user,
-              resourceId: resource,
-              resourceType: 'group',
-            });
-            if (alreadyDeleted) context.caveats.unshift("L'image a déjà été supprimée");
-          }
+          await setPicture(file, {
+            globalId: resource,
+            resource: 'group',
+            folder: path.join('groups', variant.toLowerCase()),
+            ...context,
+          });
           return prisma.group.findUniqueOrThrow({ ...queryFor('Group'), where: { id: resource } });
         }
         default: {
@@ -142,3 +119,34 @@ builder.mutationField('setPicture', (t) =>
     },
   }),
 );
+
+async function setPicture(
+  file: File | null | undefined,
+  opts: {
+    identifier?: string;
+    globalId: string;
+    resource: Parameters<typeof updatePicture>[0]['resource'] &
+      Parameters<typeof removePicture>[0]['resourceType'];
+    folder: string;
+    extension?: Parameters<typeof updatePicture>[0]['extension'];
+    user: Context['user'];
+    caveats: Context['caveats'];
+  },
+) {
+  if (file) {
+    await updatePicture({
+      resource: opts.resource,
+      folder: opts.folder,
+      extension: opts.extension ?? 'png',
+      file,
+      identifier: opts.identifier ?? localID(opts.globalId),
+    });
+  } else {
+    const { alreadyDeleted } = await removePicture({
+      user: opts.user,
+      resourceId: opts.globalId,
+      resourceType: opts.resource,
+    });
+    if (alreadyDeleted) opts.caveats.unshift("L'image a déjà été supprimée");
+  }
+}
