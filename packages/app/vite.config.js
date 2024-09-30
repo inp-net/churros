@@ -32,6 +32,7 @@ export const commonConfig = defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        api: 'moden-compiler',
         additionalData: `@use "${fileURLToPath(
           new URL('src/design/variables.scss', import.meta.url),
         )}" as *;`,
