@@ -10,6 +10,7 @@ import {
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { FileScalar, PicturedInterface } from '#modules/global/types';
 import { canEditGroup } from '#modules/groups';
+import { canEditArticle } from '#modules/posts';
 import { ThemeVariantType } from '#modules/themes';
 import { canEditProfile } from '#modules/users';
 import { ThemeVariant } from '@churros/db/prisma';
@@ -73,6 +74,13 @@ builder.mutationField('setPicture', (t) =>
           });
           return canEditGroup(user, group);
         }
+        case 'Article': {
+          const article = await prisma.article.findUniqueOrThrow({
+            where: { id: resource },
+            include: canEditArticle.prismaIncludes,
+          });
+          return canEditArticle(article, { authorId: null, group: null }, user);
+        }
         default: {
           // TODO
           return false;
@@ -110,6 +118,18 @@ builder.mutationField('setPicture', (t) =>
             ...context,
           });
           return prisma.group.findUniqueOrThrow({ ...queryFor('Group'), where: { id: resource } });
+        }
+        case 'Article': {
+          await setPicture(file, {
+            globalId: resource,
+            resource: 'article',
+            folder: 'articles',
+            ...context,
+          });
+          return prisma.article.findUniqueOrThrow({
+            ...queryFor('Article'),
+            where: { id: resource },
+          });
         }
         default: {
           // TODO
