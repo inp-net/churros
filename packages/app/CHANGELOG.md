@@ -1,5 +1,23 @@
 # @churros/app
 
+## 2.9.0
+
+### Minor Changes
+
+- 6815750: allow filtering logs by action
+
+### Patch Changes
+
+- 6815750: fix(frappe): document links triggered client-side navigation when api and app are on the same domain (closes #1162)
+  fix(frappe): data was sometimes loaded too late, resulting in a 404
+  fix(frappe): no solutions available indicator was green
+  fix(email changes): create request for target email's user, not logged in user
+  fix(ticketing): duplication de billet lors de la création (closes #1150)
+  fix(profile): add text to profile badges (closes #1091)
+  fix(app): churro à la place de churros sur petit ecran (closes #1155)
+  fix(profile): crash sometimes when getting to page (see #1157)
+- 6815750: fix(registration): do not allow custom username
+
 ## 2.8.2
 
 ### Patch Changes
