@@ -361,30 +361,32 @@ export const topnavConfigs: Partial<{
       commonActions.pin,
     ],
     title: 'Post',
+    back: route('/'),
   }),
-  '/(app)/posts/[id]/edit/body': () => ({
+  '/(app)/posts/[id]/edit/body': ({ params: { id } }) => ({
     actions: [commonActions.delete, commonActions.pin],
     title: 'Modifier le post',
+    back: route('/posts/[id]', id),
   }),
   '/(app)/posts/[id]/edit/event': ({ params: { id } }) => ({
     title: 'Évènement lié au post',
     actions: [commonActions.delete, commonActions.pin],
-    back: route('/posts/[id]', id),
+    back: route('/posts/[id]/edit/body', id),
   }),
   '/(app)/posts/[id]/edit/links': ({ params: { id } }) => ({
     title: 'Liens du post',
     actions: [commonActions.delete, commonActions.pin],
-    back: route('/posts/[id]', id),
+    back: route('/posts/[id]/edit/body', id),
   }),
   '/(app)/posts/[id]/edit/picture': ({ params: { id } }) => ({
     title: 'Image du post',
     actions: [commonActions.delete, commonActions.pin],
-    back: route('/posts/[id]', id),
+    back: route('/posts/[id]/edit/body', id),
   }),
   '/(app)/posts/[id]/edit/visibility': ({ params: { id } }) => ({
     title: 'Visibilité du post',
     actions: [commonActions.delete, commonActions.pin],
-    back: route('/posts/[id]', id),
+    back: route('/posts/[id]/edit/body', id),
   }),
   '/(app)/events/[[week=date]]': {
     quickAction: {

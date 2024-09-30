@@ -170,7 +170,7 @@
           `Impossible de créer un évènement pour ${detail}`,
         )
       )
-        await goto(route('/posts/[id]/edit', result.data.upsertArticle.data.localID));
+        await goto(route('/posts/[id]/edit/body', result.data.upsertArticle.data.localID));
     }}
     options={$AppLayout.data.me.canCreatePostsOn}
   ></PickGroup>
