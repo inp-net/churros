@@ -1,18 +1,15 @@
 <script lang="ts">
-  import type { PageData } from './$houdini';
-  import { page } from '$app/stores';
-  import MaybeError from '$lib/components/MaybeError.svelte';
-  import { route } from '$lib/ROUTES';
-  import { refroute } from '$lib/navigation';
-  import { mutate } from '$lib/mutations';
-  import { onceLoaded, mapLoading, LoadingText, loading } from '$lib/loading';
-  import HTMLContent from '$lib/components/HTMLContent.svelte';
-  import PillLink from '$lib/components/PillLink.svelte';
-  import CardEvent from '$lib/components/CardEvent.svelte';
+  import AreaComments from '$lib/components/AreaComments.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
-  import AreaComments from '$lib/components/AreaComments.houdini.svelte';
+  import CardEvent from '$lib/components/CardEvent.svelte';
+  import HTMLContent from '$lib/components/HTMLContent.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import PillLink from '$lib/components/PillLink.svelte';
+  import { LoadingText, loading } from '$lib/loading';
+  import { Lightbox } from 'svelte-lightbox';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
@@ -44,7 +41,9 @@
 
     {#if post.pictureURL}
       <section class="picture">
-        <img src={loading(post.pictureURL, '')} alt={loading(post.title, '')} />
+        <Lightbox transitionDuration={50}>
+          <img src={loading(post.pictureURL, '')} alt={loading(post.title, '')} />
+        </Lightbox>
       </section>
     {/if}
 
@@ -82,10 +81,12 @@
     display: flex;
     flex-direction: column;
   }
+
   header .title {
     font-size: 1.5rem;
     line-height: 1;
   }
+
   header .organizers {
     display: flex;
     gap: 0.5rem;
@@ -94,6 +95,17 @@
     font-size: 1.2em;
 
     --avatar-size: 2rem;
+  }
+
+  .picture {
+    max-height: 33vh;
+    overflow: hidden;
+    border-radius: var(--radius-block);
+  }
+
+  .picture img {
+    width: 100%;
+    object-fit: cover;
   }
 
   .links {
