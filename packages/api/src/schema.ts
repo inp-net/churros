@@ -26,6 +26,7 @@ import '#modules/posts';
 import '#modules/profiles';
 import '#modules/reactions';
 import '#modules/schools';
+import '#modules/search';
 import '#modules/services';
 import '#modules/shop';
 import '#modules/student-associations';

@@ -63,6 +63,8 @@
     "./src/modules/reactions/utils",
     "./src/modules/schools/resolvers",
     "./src/modules/schools/types",
+    "./src/modules/search/resolvers",
+    "./src/modules/search/types",
     "./src/modules/services/resolvers",
     "./src/modules/services/types",
     "./src/modules/shop/resolvers",

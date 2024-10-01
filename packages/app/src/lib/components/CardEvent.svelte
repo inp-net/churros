@@ -14,7 +14,7 @@
   } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { refroute } from '$lib/navigation';
-  import { route } from '$lib/ROUTES';
+  import { route as _route } from '$lib/ROUTES';
   import { format, isWithinInterval } from 'date-fns';
   import { onMount } from 'svelte';
   import IconDates from '~icons/msl/calendar-today-outline';
@@ -32,6 +32,13 @@
    * Whether this component should announce a shotgun instead of the event itself
    */
   export let shotgun = false;
+
+  /**
+   * Whether to add a ?from= query parameter to the event link
+   */
+  export let referrer = false;
+  $: route = referrer ? refroute : _route;
+
   $: ({ RootLayout } = $page.data);
   $: loggedIn = Boolean($RootLayout?.data?.loggedIn);
 

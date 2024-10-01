@@ -600,7 +600,7 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   visibility: Visibility!
 }
 
-type ArticleSearchResultType {
+type ArticleSearchResult {
   article: Article!
   highlightedTitle: String!
   id: ID!
@@ -1230,6 +1230,14 @@ enum EventManagerPowerLevel {
   EditPermissions
   ReadOnly
   ScanTickets
+}
+
+type EventSearchResult {
+  event: Event!
+  highlightedTitle: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
 }
 
 type EventsByDay {

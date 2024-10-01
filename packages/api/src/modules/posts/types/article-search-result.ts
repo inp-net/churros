@@ -2,10 +2,8 @@ import { builder, type SearchResult } from '#lib';
 
 import type { Article } from '@churros/db/prisma';
 
-// TODO rename to article-search-result
-
 export const ArticleSearchResultType = builder
-  .objectRef<SearchResult<{ article: Article }, ['body', 'title']>>('ArticleSearchResultType')
+  .objectRef<SearchResult<{ article: Article }, ['body', 'title']>>('ArticleSearchResult')
   .implement({
     fields: (t) => ({
       article: t.prismaField({

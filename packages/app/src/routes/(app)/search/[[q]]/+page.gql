@@ -1,23 +1,47 @@
-query PageSearch($q: String) {
-  searchUsers(q: $q) {
-    similarity
-    rank
-    user {
-      uid
-      firstName
-      lastName
-      pictureFile
-      fullName
+query PageSearch($q: String) @loading {
+  # for now, only groups and users
+  search(q: $q, only: [Users, Groups, Events, Articles]) @loading(count: 5) {
+    __typename
+    ... on ArticleSearchResult {
+      article {
+        localID
+        pictureURL
+        event {
+          pictureURL
+        }
+        group {
+          ...AvatarGroup
+        }
+      }
+      highlightedTitle
     }
-  }
-  searchGroups(q: $q) {
-    similarity
-    rank
-    group {
-      uid
-      name
-      pictureFile
-      pictureFileDark
+    ... on DocumentSearchResult {
+      document {
+        id
+        title
+      }
+    }
+    ... on EventSearchResult {
+      event {
+        localID
+        pictureURL
+        startsAt
+      }
+      highlightedTitle
+    }
+    ... on GroupSearchResult {
+      group {
+        name
+        uid
+        ...AvatarGroup
+      }
+    }
+    ... on UserSearchResult {
+      user {
+        fullName
+        uid
+        ...AvatarUser
+      }
     }
   }
 }
