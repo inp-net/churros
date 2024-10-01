@@ -9,7 +9,8 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { formatDateRelativeSmart } from '$lib/dates';
   import { allLoaded, loaded, loading, mapLoading } from '$lib/loading';
-  import { refroute } from '$lib/navigation';
+  import { addReferrer } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
   import { debounce } from 'lodash';
   import IconSearch from '~icons/msl/search';
   import type { PageData } from './$houdini';
@@ -36,19 +37,39 @@
     if (!allLoaded(result)) return '';
     switch (result.__typename) {
       case 'ArticleSearchResult': {
-        return refroute('/posts/[id]', result.article.localID);
+        return addReferrer(
+          route('/posts/[id]', result.article.localID),
+          route('/search', {
+            q,
+          }),
+        );
       }
 
       case 'EventSearchResult': {
-        return refroute('/events/[id]', result.event.localID);
+        return addReferrer(
+          route('/events/[id]', result.event.localID),
+          route('/search', {
+            q,
+          }),
+        );
       }
 
       case 'GroupSearchResult': {
-        return refroute('/[uid=uid]', result.group.uid);
+        return addReferrer(
+          route('/[uid=uid]', result.group.uid),
+          route('/search', {
+            q,
+          }),
+        );
       }
 
       case 'UserSearchResult': {
-        return refroute('/[uid=uid]', result.user.uid);
+        return addReferrer(
+          route('/[uid=uid]', result.user.uid),
+          route('/search', {
+            q,
+          }),
+        );
       }
 
       case 'DocumentSearchResult': {
