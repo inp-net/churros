@@ -23,6 +23,7 @@
   import IconTheme from '~icons/msl/palette-outline';
   import IconProfile from '~icons/msl/person-outline';
   import type { LayoutData } from './$houdini';
+  import { theme } from '$lib/theme';
 
   const UpdateLydiaPhone = graphql(`
     mutation UpdateLydiaPhone($lydiaPhone: String!) {
@@ -44,7 +45,7 @@
   // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
-<MaybeError result={$LayoutSettings} let:data={{ me }}>
+<MaybeError result={$LayoutSettings} let:data={{ me, themes }}>
   <Split mobilePart={$page.route.id === '/(app)/settings' ? 'left' : 'right'}>
     <div class="contents" slot="left">
       <Submenu>
@@ -53,7 +54,7 @@
         </SubmenuItem>
         <SubmenuItem
           icon={IconTheme}
-          subtext="Réglage par appareil"
+          subtext={themes.find((t) => t.localID === $theme.id)?.name ?? 'Par défaut'}
           href={route('/settings/theme')}
         >
           Thème
