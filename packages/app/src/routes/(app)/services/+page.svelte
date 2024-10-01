@@ -18,15 +18,13 @@
 </MaybeError>
 
 <style>
-  .contents {
-    padding: 0 1rem;
-  }
-
   ul {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 6rem);
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     grid-auto-rows: 1fr;
-    gap: 1rem;
-    justify-content: center;
+
+    /* Used to prevent double borders on cards, see https://stackoverflow.com/a/66458873 */
+    gap: var(--border-block);
+    width: 100%;
   }
 </style>

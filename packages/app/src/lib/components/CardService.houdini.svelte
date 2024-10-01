@@ -52,17 +52,6 @@
           <AvatarSchool notooltip school={$data.owner} />
         {/if}
       </div>
-      {#if $data.logoSourceType !== 'GroupLogo'}
-        <div class="owner-avatar">
-          {#if $data.owner.__typename === 'Group'}
-            <AvatarGroup group={$data.owner} />
-          {:else if $data.owner.__typename === 'StudentAssociation'}
-            <AvatarStudentAssociation studentAssociation={$data.owner} />
-          {:else if $data.owner.__typename === 'School'}
-            <AvatarSchool school={$data.owner} />
-          {/if}
-        </div>
-      {/if}
     </div>
     <div class="text">
       <div class="name">
@@ -72,29 +61,49 @@
         <LoadingText value={$data.description} />
       </p>
     </div>
+    {#if $data.logoSourceType !== 'GroupLogo'}
+      <div class="owner-avatar">
+        {#if $data.owner.__typename === 'Group'}
+          <AvatarGroup group={$data.owner} />
+        {:else if $data.owner.__typename === 'StudentAssociation'}
+          <AvatarStudentAssociation studentAssociation={$data.owner} />
+        {:else if $data.owner.__typename === 'School'}
+          <AvatarSchool school={$data.owner} />
+        {/if}
+      </div>
+    {/if}
   </a>
 {/if}
 
 <style>
   a {
-    --default-card-service-size: 5rem;
+    --default-card-service-size: 4rem;
 
+    position: relative;
     display: flex;
     flex-direction: column;
     row-gap: 0.5em;
-    width: var(--card-service-size, var(--default-card-service-size));
+    width: 100%;
+    aspect-ratio: 1/1;
+    padding: 1rem;
     overflow: hidden;
+    outline: var(--border-block) solid var(--bg4);
+    transition: background 0.2s ease;
   }
 
-  .name,
-  .description {
-    text-align: center;
+  a:hover,
+  a:focus-visible {
+    background: var(--bg2);
   }
 
   .text {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: end;
+  }
+
+  .name {
+    line-height: 1.1;
   }
 
   .description {
@@ -103,31 +112,28 @@
   }
 
   .card-service {
-    position: relative;
-    height: var(--card-service-size, var(--default-card-service-size));
+    height: 100%;
   }
 
-  .service-avatar.uses-icon {
+  .service-avatar {
+    --avatar-size: var(--card-service-size, var(--default-card-service-size));
+
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
     font-size: calc(var(--avatar-size) * 0.6);
-    border: var(--border-block) solid;
-    border-radius: 1000px;
   }
 
   .owner-avatar {
     position: absolute;
-    right: 0;
-    bottom: 0;
+    top: 0.75rem;
+    right: 0.75rem;
     z-index: 1;
+    display: flex;
+    align-items: end;
 
-    --avatar-size: calc(var(--card-service-size, var(--default-card-service-size)) / 3);
+    --avatar-size: calc(var(--card-service-size, var(--default-card-service-size)) / 2);
     --avatar-border: var(--border-block) solid;
-  }
-
-  .service-avatar {
-    --avatar-size: var(--card-service-size, var(--default-card-service-size));
   }
 </style>
