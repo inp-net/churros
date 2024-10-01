@@ -12,7 +12,9 @@
   import { addReferrer } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { debounce } from 'lodash';
+  import IconEvent from '~icons/msl/event-outline';
   import IconSearch from '~icons/msl/search';
+  import IconPost from '~icons/msl/text-ad-outline';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
@@ -135,8 +137,15 @@
               <LoadingText class="muted" value={mapLoading(result.group.uid, (uid) => `@${uid}`)} />
             </div>
           {:else if result.__typename === 'EventSearchResult'}
+            {@const pictureURL = loading(result.event.pictureURL, '')}
             <div class="pic">
-              <img src={loading(result.event.pictureURL, '')} alt="" />
+              {#if pictureURL}
+                <img src={pictureURL} alt="" />
+              {:else}
+                <div class="fallback-icon">
+                  <IconEvent />
+                </div>
+              {/if}
             </div>
             <div class="name">
               {#if !loaded(result.highlightedTitle)}
@@ -151,14 +160,18 @@
               />
             </div>
           {:else if result.__typename === 'ArticleSearchResult'}
+            {@const pictureURL = loading(
+              result.article.pictureURL || result.article.event?.pictureURL || '',
+              '',
+            )}
             <div class="pic">
-              <img
-                src={loading(
-                  result.article.pictureURL || result.article.event?.pictureURL || '',
-                  '',
-                )}
-                alt=""
-              />
+              {#if pictureURL}
+                <img src={pictureURL} alt="" />
+              {:else}
+                <div class="fallback-icon">
+                  <IconPost />
+                </div>
+              {/if}
             </div>
             <div class="name">
               {#if !loaded(result.highlightedTitle)}
@@ -224,6 +237,7 @@
   .pic {
     display: flex;
     align-items: center;
+    justify-content: center;
 
     --avatar-size: 3em;
 
@@ -238,6 +252,11 @@
     object-position: center;
     background-color: var(--bg2);
     border-radius: var(--radius-block);
+  }
+
+  .pic .fallback-icon {
+    font-size: 2.5em;
+    line-height: 1;
   }
 
   .name {
