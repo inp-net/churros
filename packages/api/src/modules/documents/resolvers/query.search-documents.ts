@@ -1,5 +1,4 @@
-import { builder, fullTextSearch, prisma, yearTier } from '#lib';
-
+import { builder, fullTextSearch, prisma } from '#lib';
 import { DocumentSearchResultType } from '../index.js';
 
 builder.queryField('searchDocuments', (t) =>
@@ -32,8 +31,10 @@ export async function searchDocuments(
       prisma.document.findMany({
         where: {
           subject: {
-            // eslint-disable-next-line unicorn/no-null
-            ...(filters.yearTier ? { OR: [{ yearTier }, { yearTier: null }] } : {}),
+            ...(filters.yearTier
+              ? // eslint-disable-next-line unicorn/no-null
+                { OR: [{ yearTier: filters.yearTier }, { yearTier: null }] }
+              : {}),
             forApprentices: filters.forApprentices,
             majors: filters.majorUid
               ? {
