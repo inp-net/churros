@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pushState } from '$app/navigation';
+  import { replaceState } from '$app/navigation';
   import { page } from '$app/stores';
   import { PendingValue, type PageSearch$result } from '$houdini';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
@@ -10,23 +10,27 @@
   import { formatDateRelativeSmart } from '$lib/dates';
   import { allLoaded, loaded, loading, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
+  import { debounce } from 'lodash';
   import IconSearch from '~icons/msl/search';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PageSearch } = data);
 
-  $: initialQ = $page.params.q ?? '';
-  let q = initialQ;
+  let q = '';
+  $: q ||= $page.params.q || '';
 
-  const submitSearchQuery = async () => {
+  const submitSearchQuery = async (q: string) => {
     // Works in dev but not in prod 🤡
     // cache.markStale('UserSearchResult');
     // cache.markStale('GroupSearchResult');
     await PageSearch.fetch({ variables: { q } });
-    pushState(`/search/${encodeURIComponent(q)}`, {});
+    replaceState(route('/search', { q }), {});
     // window.location.href = `/search/${encodeURIComponent(q)}`;
   };
+
+  const debouncedSubmitQuery = debounce(submitSearchQuery, 500, { leading: true, trailing: true });
+  $: debouncedSubmitQuery(q);
 
   function searchResultHref(result: PageSearch$result['search'][number]) {
     if (!allLoaded(result)) return '';
@@ -54,10 +58,10 @@
   }
 </script>
 
-<form class="query" method="get" on:submit|preventDefault={submitSearchQuery}>
+<form class="query" method="get" on:submit|preventDefault={async () => submitSearchQuery(q)}>
   <BaseInputText
     actionIcon={IconSearch}
-    on:action={submitSearchQuery}
+    on:action={async () => submitSearchQuery(q)}
     type="text"
     placeholder="Rechercher"
     bind:value={q}
@@ -68,8 +72,8 @@
 <MaybeError result={$PageSearch} let:data={{ search }}>
   <div class="content">
     <p class="muted results-count">
-      {#if !initialQ}
-        Pas de question, pas de réponse
+      {#if !q}
+        Recherche des gens, des groupes, des évènements…
       {:else if search.length === 0}
         Aucun résultat
       {:else}
