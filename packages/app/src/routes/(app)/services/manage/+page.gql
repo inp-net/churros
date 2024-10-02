@@ -4,6 +4,7 @@ query PageServicesManage @loading {
     canCreateServices
   }
   services(mine: false) {
+    id
     localID
     name
     url

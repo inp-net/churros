@@ -1,0 +1,51 @@
+query PageServicesEdit($id: LocalID!) @loading {
+  groups {
+    ...PickGroup @mask_disable
+  }
+  studentAssociations {
+    ...PickStudentAssociation @mask_disable
+  }
+  schools {
+    ...PickSchool @mask_disable
+  }
+
+  service(id: $id) {
+    id
+    localID
+    name
+    url
+    description
+    logo
+    logoSourceType
+    importance
+    owner {
+      __typename
+      ... on StudentAssociation {
+        ...AvatarStudentAssociation
+      }
+      ... on Group {
+        ...AvatarGroup
+      }
+      ... on School {
+        ...AvatarSchool
+      }
+    }
+    group {
+      id
+      uid
+      name
+      pictureFile
+      pictureFileDark
+    }
+    studentAssociation {
+      id
+      uid
+      name
+    }
+    school {
+      id
+      uid
+      name
+    }
+  }
+}

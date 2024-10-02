@@ -8,6 +8,7 @@ builder.mutationField('upsertService', (t) =>
   t.prismaField({
     type: ServiceType,
     errors: {},
+    deprecationReason: "Use 'upsertServiceV2' instead",
     args: {
       id: t.arg({ type: LocalID, required: false }),
       name: t.arg.string(),

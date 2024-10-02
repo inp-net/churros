@@ -1,6 +1,7 @@
 export function longpress(node: HTMLElement, threshold = 500) {
-  const handle_mousedown = () => {
+  const handle_mousedown = (e: Event) => {
     const timeout = setTimeout(() => {
+      e.preventDefault();
       node.dispatchEvent(new CustomEvent('longpress'));
     }, threshold);
 

@@ -49,9 +49,8 @@
       const result = await mutate(CreateService, {
         studentAssociationUID: detail,
       });
-      if (toasts.mutation(result, 'upsertService', '', 'Impossible de créer un service')) 
+      if (toasts.mutation(result, 'upsertService', '', 'Impossible de créer un service'))
         await goto(refroute('/services/[id]/edit', result.data.upsertService.data.localID));
-      
     }}
     statebound="NAVTOP_CREATING_SERVICE"
   ></PickStudentAssociation>
@@ -78,11 +77,23 @@
           <LoadingText value={service.name} />
           <span slot="subtext">
             {#if service.owner.__typename === 'Group'}
-              <AvatarGroup name group={service.owner} />
+              <AvatarGroup
+                href={route('/services/[id]/edit', loading(service.localID, ''))}
+                name
+                group={service.owner}
+              />
             {:else if service.owner.__typename === 'StudentAssociation'}
-              <AvatarStudentAssociation name studentAssociation={service.owner} />
+              <AvatarStudentAssociation
+                href={route('/services/[id]/edit', loading(service.localID, ''))}
+                name
+                studentAssociation={service.owner}
+              />
             {:else if service.owner.__typename === 'School'}
-              <AvatarSchool name school={service.owner} />
+              <AvatarSchool
+                href={route('/services/[id]/edit', loading(service.localID, ''))}
+                name
+                school={service.owner}
+              />
             {/if}
           </span>
         </SubmenuItem>
