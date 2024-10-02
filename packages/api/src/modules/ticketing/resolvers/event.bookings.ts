@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, prisma } from '#lib';
+import { builder, ensureGlobalId, graphinx, prisma } from '#lib';
 import { EventType } from '#modules/events';
 import { RegistrationType, canSeeAllBookings } from '#modules/ticketing';
 import type { Prisma } from '@churros/db/prisma';
@@ -11,6 +11,7 @@ builder.prismaObjectField(EventType, 'bookings', (t) =>
       only: t.arg({
         description: "Ne montre que les réservations d'un certain statut",
         type: builder.enumType('BookingState', {
+          ...graphinx('ticketing'),
           values: {
             Paid: { value: 'Paid', description: 'Payée' },
             Verified: { value: 'Verified', description: 'Scannée' },
