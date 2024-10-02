@@ -4284,7 +4284,7 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   school(uid: String!): School!
   schoolGroups: [SchoolGroup!]!
   schools: [School!]!
-  searchArticles(groupUid: String, q: String!): [ArticleSearchResultType!]!
+  searchArticles(groupUid: String, q: String!): [ArticleSearchResult!]!
   searchDocuments(
     forApprentices: Boolean!
     majorUid: String!
