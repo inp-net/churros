@@ -33,7 +33,7 @@
   import { formatDate } from '$lib/dates';
   import { loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
   import { route } from '$lib/ROUTES';
-  import { formatDistanceToNow, isPast, setYear } from 'date-fns';
+  import { formatDistanceToNow, isPast, isToday, setYear } from 'date-fns';
 
   const formatPhoneNumber = (phone: string) =>
     phone
@@ -44,6 +44,10 @@
     const thisYear = new Date().getFullYear();
     const nextBirthday = setYear(birthdate, thisYear);
     return isPast(nextBirthday) ? setYear(birthdate, thisYear + 1) : nextBirthday;
+  }
+
+  function isBirthdayToday(birthdate: Date) {
+    return isToday(setYear(birthdate, new Date().getFullYear()));
   }
 
   const MarkRoomOpen = graphql(`
@@ -125,15 +129,21 @@
           </SubmenuItem>
         {/if}
         {#if profile.birthday}
-          <SubmenuItem
-            icon={IconBirthday}
-            subtext={mapLoading(profile.birthday, (date) =>
-              formatDistanceToNow(nextBirthdayAt(date), {
-                addSuffix: true,
-                includeSeconds: false,
-              }),
-            )}
-          >
+          <SubmenuItem icon={IconBirthday}>
+            <span
+              slot="subtext"
+              class="birthday-distance"
+              class:today={isBirthdayToday(profile.birthday)}
+            >
+              {mapLoading(profile.birthday, (date) =>
+                isToday(setYear(date, new Date().getFullYear()))
+                  ? "Aujourd'hui !"
+                  : formatDistanceToNow(nextBirthdayAt(date), {
+                      addSuffix: true,
+                      includeSeconds: false,
+                    }),
+              )}
+            </span>
             <LoadingText value={mapLoading(profile.birthday, formatDate)} />
           </SubmenuItem>
         {/if}
@@ -354,5 +364,19 @@
   .see-more-button {
     display: flex;
     justify-content: center;
+  }
+
+  .birthday-distance.today {
+    background: linear-gradient(-45deg, #ffb347, #fc3, #ff6f61, #fc3, #ffb347);
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: textgradient 1s linear infinite;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes textgradient {
+    to {
+      background-position: 200% center;
+    }
   }
 </style>
