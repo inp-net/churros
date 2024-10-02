@@ -4,7 +4,7 @@ import { fullName } from '#modules/users';
 import groupBy from 'lodash.groupby';
 import uniqBy from 'lodash.uniqby';
 import { answerToString } from '../index.js';
-import { AnswersExportFormats, AnswersExportFormatsType } from '../types/answers-export-format.js';
+import { AnswersExportFormats, AnswersExportFormatsType } from '../types/answers-export-formats.js';
 import { FormType } from '../types/form.js';
 import { canSeeAllAnswers } from '../utils/permissions.js';
 

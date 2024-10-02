@@ -1,4 +1,4 @@
-import { builder, freeUidValidator, log, prisma, purgeSessionsUser } from '#lib';
+import { builder, freeUidValidator, graphinx, log, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { getDescendants, hasCycle } from 'arborist';
 import { GraphQLError } from 'graphql';
@@ -20,6 +20,7 @@ import { canCreateGroup, canEditGroup } from '../utils/index.js';
  */
 
 const UpsertGroupInput = builder.inputType('UpsertGroupInput', {
+  ...graphinx('groups'),
   fields: (t) => ({
     uid: t.field({
       required: false,

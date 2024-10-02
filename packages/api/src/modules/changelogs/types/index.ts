@@ -4,4 +4,4 @@
 
 export * from './changelog-release.js';
 export * from './release-change.js';
-export * from './release-changes-map.js';
+export * from './release-changes-maps.js';

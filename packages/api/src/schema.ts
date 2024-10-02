@@ -1,8 +1,7 @@
-import { builder } from '#lib';
-import { printSchema } from 'graphql';
+import { builder, graphinxDirective, rateLimitDirective } from '#lib';
+import { addTypes, printSchemaWithDirectives } from '@graphql-tools/utils';
 import { writeFile } from 'node:fs/promises';
 import * as path from 'node:path';
-import { rateLimitDirectiveTransformer } from './lib/ratelimit.js';
 
 import '#modules/announcements';
 import '#modules/bar-weeks';
@@ -34,16 +33,18 @@ import '#modules/themes';
 import '#modules/ticketing';
 import '#modules/users';
 
-export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
+// export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
+export const schema = addTypes(builder.toSchema({}), [graphinxDirective, rateLimitDirective]);
 
 export async function writeSchema() {
   await writeFile(
     new URL('build/schema.graphql', `file:///${process.cwd()}/`),
-    printSchema(schema),
+    // printSchema(schema),
+    printSchemaWithDirectives(schema),
   );
   try {
     const here = path.dirname(new URL(import.meta.url).pathname);
-    await writeFile(path.join(here, '../../app/schema.graphql'), printSchema(schema));
+    await writeFile(path.join(here, '../../app/schema.graphql'), printSchemaWithDirectives(schema));
   } catch {
     console.warn('Could not write schema to app directory, this is fine in production');
   }

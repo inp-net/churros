@@ -15,6 +15,7 @@ export * from './gat-session.js';
 export * from './global-id.js';
 export * from './google-wallet.js';
 export * from './google.js';
+export * from './graphinx.js';
 export * from './ldap-school.js';
 export * from './logger.js';
 export * from './mail.js';
