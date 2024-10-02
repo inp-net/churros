@@ -1,8 +1,9 @@
-import { builder } from '#lib';
+import { builder, prisma } from '#lib';
 import { GroupTypePrismaIncludes } from '#modules/groups';
 import { StudentAssociationPrismaIncludes } from '#modules/student-associations';
 import { GraphQLError } from 'graphql';
 import { LogoSourceTypeEnum, ServiceOwnerType } from '../index.js';
+import { canEditService } from '../utils/permissions.js';
 
 export const ServiceTypePrismaIncludes = {
   group: {
@@ -40,5 +41,15 @@ export const ServiceType = builder.prismaNode('Service', {
       },
     }),
     importance: t.exposeInt('importance'),
+    canEdit: t.boolean({
+      description: 'On peut éditer ce service',
+      async resolve({ id }, _, { user }) {
+        const service = await prisma.service.findUniqueOrThrow({
+          where: { id },
+          include: canEditService.prismaIncludes,
+        });
+        return canEditService(user, service);
+      },
+    }),
   }),
 });

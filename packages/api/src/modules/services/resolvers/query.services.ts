@@ -13,33 +13,39 @@ builder.queryField('services', (t) =>
     async resolve(query, _, { mine }, { user }) {
       const services = await prisma.service.findMany({
         ...query,
-        where:
-          mine && user
-            ? {
-                OR: [
-                  {
-                    studentAssociation: {
-                      school: {
-                        uid: {
-                          in: user.major?.schools.map((school) => school.uid),
+        where: mine
+          ? {
+              AND: [
+                { name: { not: '' } },
+                user
+                  ? {
+                      OR: [
+                        {
+                          studentAssociation: {
+                            school: {
+                              uid: {
+                                in: user.major?.schools.map((school) => school.uid),
+                              },
+                            },
+                          },
                         },
-                      },
+                        {
+                          school: {
+                            uid: { in: user.major?.schools.map((school) => school.uid) },
+                          },
+                        },
+                      ],
+                    }
+                  : {
+                      OR: [
+                        { group: { isNot: null } },
+                        { studentAssociation: { isNot: null } },
+                        { school: { isNot: null } },
+                      ],
                     },
-                  },
-                  {
-                    school: {
-                      uid: { in: user.major?.schools.map((school) => school.uid) },
-                    },
-                  },
-                ],
-              }
-            : {
-                OR: [
-                  { group: { isNot: null } },
-                  { studentAssociation: { isNot: null } },
-                  { school: { isNot: null } },
-                ],
-              },
+              ],
+            }
+          : {},
         include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });

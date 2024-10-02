@@ -68,7 +68,7 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
 };
 
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'SERVICE'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
@@ -348,12 +348,33 @@ export const topnavConfigs: Partial<{
       },
       {
         icon: IconPen,
-        label: 'Modifier…',
-        href: route('/backrooms/services'),
+        label: 'Gérer…',
+        href: route('/services/manage'),
       },
       ...rootPagesActions,
     ],
   },
+  '/(app)/services/manage': () => ({
+    title: 'Gérer les services',
+    back: route('/services'),
+    quickAction: {
+      icon: IconAdd,
+      label: 'Nouveau service',
+      do() {
+        navtopPushState('NAVTOP_CREATING_SERVICE');
+      },
+    },
+    actions: [],
+  }),
+  '/(app)/services/[id]/edit': () => ({
+    title: 'Modifier un service',
+    back: route('/services/manage'),
+    actions: [
+      {
+        ...commonActions.delete,
+      },
+    ],
+  }),
   '/(app)/posts/[id]': ({ params: { id } }) => ({
     actions: [
       commonActions.delete,

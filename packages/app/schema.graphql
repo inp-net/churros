@@ -1950,9 +1950,7 @@ type Mutation {
     shotgun: DateRangeInput!
   ): MutationCreateTicketResult!
 
-  """
-  Dédoublonne les réservations. Renvoie les réservations supprimées.
-  """
+  """Dédoublonne les réservations. Renvoie les réservations supprimées."""
   deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
   deleteAnnouncement(id: ID!): Boolean!
   deleteArticle(id: ID!): Boolean!
@@ -2000,6 +1998,9 @@ type Mutation {
   deleteQuickSignup(code: String!): QuickSignup!
   deleteReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID): Boolean!
   deleteSchoolPicture(id: String!): String!
+
+  """Supprime un service"""
+  deleteService(id: LocalID!): MutationDeleteServiceResult!
   deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
   deleteShopOption(optionIds: [String!]!): Boolean!
   deleteTicket(
@@ -2495,7 +2496,7 @@ type Mutation {
   upsertQuestion(input: MutationUpsertQuestionInput!): Question!
   upsertReaction(articleId: ID, commentId: ID, documentId: ID, emoji: String!, eventId: ID, id: ID): Int! @deprecated(reason: "Use 'react' instead")
   upsertRegistration(authorEmail: String, beneficiary: String, id: ID, paid: Boolean!, paymentMethod: PaymentMethod, ticketId: ID!): MutationUpsertRegistrationResult! @deprecated(reason: "Use bookEvent instead")
-  upsertService(description: String!, groupUid: String, id: ID, importance: Int = 0, logo: String!, logoSourceType: LogoSourceType!, name: String!, schoolUid: String, studentAssociationUid: String, url: String!): MutationUpsertServiceResult!
+  upsertService(description: String!, groupUid: String, id: LocalID, importance: Int = 0, logo: String!, logoSourceType: LogoSourceType!, name: String!, schoolUid: String, studentAssociationUid: String, url: String!): MutationUpsertServiceResult!
   upsertShopItem(description: String!, endsAt: DateTime, groupUid: String!, id: ID, lydiaAccounId: String, max: Int!, name: String!, paymentMethods: [PaymentMethod!]!, price: Float!, startsAt: DateTime, stock: Int!, visibility: Visibility!): MutationUpsertShopItemResult!
   upsertShopOptions(itemOptions: [ShopItemOptionInput!]!, shopItemId: String!): Boolean!
   upsertShopPayment(answers: [String!]!, id: ID, paymentMethod: String, phone: String, quantity: Int!, shopItemId: String!, userUid: String!): MutationUpsertShopPaymentResult!
@@ -2691,6 +2692,12 @@ union MutationDeletePageResult = Error | MutationDeletePageSuccess | ZodError
 
 type MutationDeletePageSuccess {
   data: Page!
+}
+
+union MutationDeleteServiceResult = Error | MutationDeleteServiceSuccess | ZodError
+
+type MutationDeleteServiceSuccess {
+  data: Service!
 }
 
 union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess | ZodError
@@ -3548,9 +3555,7 @@ type Query {
     assert: String
   ): Boolean!
   logs(
-    """
-    Filtrer par action
-    """
+    """Filtrer par action"""
     action: String
     after: String
 
@@ -4564,6 +4569,8 @@ input SchoolInput {
 
 """A service"""
 type Service implements Node {
+  """On peut éditer ce service"""
+  canEdit: Boolean!
   description: String!
   group: Group @deprecated(reason: "Use `owner` instead")
   id: ID!
@@ -4701,6 +4708,11 @@ type StudentAssociation implements Pictured {
     """
     type: GroupType
   ): Boolean!
+
+  """
+  Si l'utilisateur·ice courant·e peut créer des services rattachés à cette AE
+  """
+  canCreateServices: Boolean!
 
   """L'utilisateur.ice connecét.e peut modifier les infos de cette AE"""
   canEditDetails: Boolean!

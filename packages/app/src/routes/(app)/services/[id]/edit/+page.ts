@@ -3,9 +3,10 @@ import { error } from '@sveltejs/kit';
 
 export async function load(event) {
   const { service } = await graphql(`
-    query PageServicesEdit($id: LocalID!) {
+    query PageServicesEdit($id: LocalID!) @blocking {
       service(id: $id) {
         id
+        localID
         name
         url
         description

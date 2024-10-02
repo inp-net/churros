@@ -1,0 +1,26 @@
+query PageServicesManage @loading {
+  studentAssociations {
+    ...PickStudentAssociation @mask_disable
+    canCreateServices
+  }
+  services(mine: false) {
+    localID
+    name
+    url
+    description
+    logo
+    logoSourceType
+    owner {
+      __typename
+      ... on Group {
+        ...AvatarGroup
+      }
+      ... on StudentAssociation {
+        ...AvatarStudentAssociation
+      }
+      ... on School {
+        ...AvatarSchool
+      }
+    }
+  }
+}

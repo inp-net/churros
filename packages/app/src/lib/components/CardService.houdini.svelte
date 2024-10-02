@@ -7,6 +7,11 @@
   import IconServiceFallback from '~icons/msl/widgets-outline';
   import Avatar from './Avatar.svelte';
   import AvatarGroup from './AvatarGroup.houdini.svelte';
+  import { longpress } from '$lib/longpress';
+  import { goto } from '$app/navigation';
+  import { refroute } from '$lib/navigation';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import IconEdit from '~icons/msl/edit-outline';
 
   export let service: CardService | null;
   $: data = fragment(
@@ -14,10 +19,12 @@
     graphql(`
       fragment CardService on Service @loading {
         description
+        localID
         url
         name
         logo
         logoSourceType
+        canEdit
         owner {
           __typename
           ... on Group {
@@ -36,9 +43,20 @@
 </script>
 
 {#if $data}
-  <a href={loading($data.url, '')}>
+  <a
+    class:editable={loading($data.canEdit, false)}
+    href={loading($data.url, '')}
+    use:longpress
+    on:longpress={async () => {
+      if ($data.canEdit) goto(refroute('/services/[id]/edit', loading($data.localID, '')));
+    }}
+  >
     <div class="card-service">
-      <div class="service-avatar" class:uses-icon={$data.logoSourceType === 'Icon'}>
+      <div
+        class="service-avatar"
+        class:uses-icon={$data.logoSourceType === 'Icon'}
+        data-logo-source-type={loading($data.logoSourceType, '')}
+      >
         {#if $data.logoSourceType === 'Icon' && loaded($data.logo)}
           <svelte:component this={ICONS_SERVICES.get($data.logo) ?? IconServiceFallback}
           ></svelte:component>
@@ -61,6 +79,13 @@
         <LoadingText value={$data.description} />
       </p>
     </div>
+    {#if loading($data.canEdit, false)}
+      <div class="edit-action">
+        <ButtonGhost href={refroute('/services/[id]/edit', loading($data.localID, ''))}
+          ><IconEdit /></ButtonGhost
+        >
+      </div>
+    {/if}
     {#if $data.logoSourceType !== 'GroupLogo'}
       <div class="owner-avatar">
         {#if $data.owner.__typename === 'Group'}
@@ -96,6 +121,23 @@
     background: var(--bg2);
   }
 
+  .edit-action {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: none;
+    font-size: 1.2em;
+    background-color: var(--bg);
+    border: var(--border-block) solid var(--fg);
+    border-radius: 10000px;
+  }
+
+  a.editable:hover .edit-action,
+  a.editable:focus-visible .edit-action {
+    display: block;
+  }
+
   .text {
     display: flex;
     flex-direction: column;
@@ -125,6 +167,11 @@
     font-size: calc(var(--avatar-size) * 0.6);
   }
 
+  .service-avatar[data-logo-source-type$='Link'] {
+    --avatar-radius: var(--radius-block);
+    --avatar-background: transparent;
+  }
+
   .owner-avatar {
     position: absolute;
     top: 0.75rem;
@@ -135,5 +182,10 @@
 
     --avatar-size: calc(var(--card-service-size, var(--default-card-service-size)) / 2);
     --avatar-border: var(--border-block) solid;
+  }
+
+  a.editable:hover .owner-avatar,
+  a.editable:focus-visible .owner-avatar {
+    display: none;
   }
 </style>

@@ -1,13 +1,15 @@
-import { builder, log, prisma } from '#lib';
+import { builder, ensureGlobalId, log, prisma } from '#lib';
+import { LocalID } from '#modules/global';
 import { GraphQLError } from 'graphql';
 import { LogoSourceTypeEnum, ServiceType } from '../index.js';
+import { canCreateServicesOnStudentAssociation, canEditService } from '../utils/permissions.js';
 
 builder.mutationField('upsertService', (t) =>
   t.prismaField({
     type: ServiceType,
     errors: {},
     args: {
-      id: t.arg.id({ required: false }),
+      id: t.arg({ type: LocalID, required: false }),
       name: t.arg.string(),
       url: t.arg.string(),
       description: t.arg.string(),
@@ -18,14 +20,35 @@ builder.mutationField('upsertService', (t) =>
       studentAssociationUid: t.arg.string({ required: false }),
       importance: t.arg.int({ required: false, defaultValue: 0, validate: { min: 0 } }),
     },
-    authScopes(_, {}, { user }) {
+    async authScopes(_, { id, studentAssociationUid }, { user }) {
+      if (id) {
+        const service = await prisma.service.findUniqueOrThrow({
+          where: {
+            id: ensureGlobalId(id, 'Service'),
+          },
+          include: canEditService.prismaIncludes,
+        });
+        return canEditService(user, service);
+      }
+
+      if (studentAssociationUid) {
+        const studentAssociation = await prisma.studentAssociation.findUniqueOrThrow({
+          where: {
+            uid: studentAssociationUid,
+          },
+          include: canCreateServicesOnStudentAssociation.prismaIncludes,
+        });
+        return canCreateServicesOnStudentAssociation(user, studentAssociation);
+      }
+
+      // TODO allow non admins to create new services that are linked to groups only?
       return Boolean(user?.admin);
     },
     async resolve(
       query,
       _,
       {
-        id,
+        id: localID,
         name,
         url,
         description,
@@ -38,6 +61,7 @@ builder.mutationField('upsertService', (t) =>
       },
       { user },
     ) {
+      const id = localID ? ensureGlobalId(localID, 'Service') : undefined;
       if (!user?.admin) throw new GraphQLError('Unauthorized');
       const service = await prisma.service.upsert({
         ...query,
@@ -70,13 +94,7 @@ builder.mutationField('upsertService', (t) =>
         },
       });
 
-      await log(
-        'service',
-        'create',
-        { message: `Service ${service.id} created: ${service.name}` },
-        service.id,
-        user,
-      );
+      await log('service', 'create', { service }, service.id, user);
 
       return service;
     },

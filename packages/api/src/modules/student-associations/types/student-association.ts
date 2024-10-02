@@ -7,6 +7,7 @@ import {
   userContributesTo,
 } from '#modules/student-associations/utils';
 import type { Prisma } from '@churros/db/prisma';
+import { canCreateServicesOnStudentAssociation } from '../../services/utils/permissions.js';
 
 export const StudentAssociationPrismaIncludes = {
   contributionOptions: true,
@@ -217,6 +218,12 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
             type,
           }),
         );
+      },
+    }),
+    canCreateServices: t.boolean({
+      description: "Si l'utilisateur·ice courant·e peut créer des services rattachés à cette AE",
+      resolve: async (studentAssociation, _, { user }) => {
+        return canCreateServicesOnStudentAssociation(user, studentAssociation);
       },
     }),
   }),
