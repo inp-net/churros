@@ -2923,7 +2923,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
 
   """Crée ou met à jour un post"""
-  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult!
+  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
 
   """Crée ou met à jour un post"""
   upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!

@@ -14,6 +14,7 @@ builder.mutationField('upsertArticle', (t) =>
     type: ArticleType,
     description: 'Crée ou met à jour un post',
     errors: { types: [Error, ZodError] },
+    deprecationReason: 'Use upsertArticleV2 instead',
     args: {
       id: t.arg.id({ required: false }),
       group: t.arg({ type: UIDScalar }),
