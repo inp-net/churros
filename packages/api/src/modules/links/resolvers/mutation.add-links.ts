@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, log, prisma, splitID } from '#lib';
+import { builder, ensureGlobalId, graphinx, log, prisma, splitID } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { canEditGroup, GroupTypePrismaIncludes } from '#modules/groups';
 import { LinkInput, MAXIMUM_LINKS } from '#modules/links';
@@ -24,6 +24,7 @@ builder.mutationField('addLinks', (t) =>
       }),
       duplicates: t.arg({
         type: builder.enumType('DuplicateLinksAction', {
+          ...graphinx('links'),
           values: {
             Skip: { value: 'Skip', description: 'Ne pas ajouter' },
             Replace: { value: 'Replace', description: "Remplacer l'ancien lien" },

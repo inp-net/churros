@@ -1,0 +1,30 @@
+diff --git a/cjs/print-schema-with-directives.js b/cjs/print-schema-with-directives.js
+index ab6e49befb5e6006d1980a1bb421fa499bf16da5..3fd81f45cbb48da1a5498ca7c4d2b2506c14c3e4 100644
+--- a/cjs/print-schema-with-directives.js
++++ b/cjs/print-schema-with-directives.js
+@@ -172,7 +172,9 @@ function getDirectiveNodes(entity, schema, pathToDirectivesInExtensions) {
+     if (specifiedByDirectiveNode != null) {
+         directiveNodesBesidesDeprecatedAndSpecifiedBy.push(specifiedByDirectiveNode);
+     }
+-    return directiveNodesBesidesDeprecatedAndSpecifiedBy;
++    return directiveNodesBesidesDeprecatedAndSpecifiedBy.filter(
++        directive => !/^\d+$/.test(directive.name.value),
++    );
+ }
+ exports.getDirectiveNodes = getDirectiveNodes;
+ function astFromArg(arg, schema, pathToDirectivesInExtensions) {
+diff --git a/esm/print-schema-with-directives.js b/esm/print-schema-with-directives.js
+index 4dde1bd40664efdc5c07b98a779f801d1174db25..ffd8c35bc6912e21d4de27d52e0f82aaca3ff602 100644
+--- a/esm/print-schema-with-directives.js
++++ b/esm/print-schema-with-directives.js
+@@ -165,7 +165,9 @@ export function getDirectiveNodes(entity, schema, pathToDirectivesInExtensions)
+     if (specifiedByDirectiveNode != null) {
+         directiveNodesBesidesDeprecatedAndSpecifiedBy.push(specifiedByDirectiveNode);
+     }
+-    return directiveNodesBesidesDeprecatedAndSpecifiedBy;
++    return directiveNodesBesidesDeprecatedAndSpecifiedBy.filter(
++        directive => !/^\d+$/.test(directive.name.value)
++    );
+ }
+ export function astFromArg(arg, schema, pathToDirectivesInExtensions) {
+     return {

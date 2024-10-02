@@ -1,4 +1,4 @@
-import { builder, CURRENT_COMMIT, CURRENT_VERSION } from '#lib';
+import { builder, CURRENT_COMMIT, CURRENT_VERSION, graphinx } from '#lib';
 
 type BuildInfo = {
   commit: string;
@@ -6,6 +6,7 @@ type BuildInfo = {
 };
 
 export const BuildInfoType = builder.objectRef<BuildInfo>('BuildInfo').implement({
+  ...graphinx('global'),
   fields: (t) => ({
     commit: t.exposeString('commit', { description: "Le hash du commit utilisé pour build l'API" }),
     version: t.exposeString('version', {

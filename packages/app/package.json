@@ -1,9 +1,9 @@
 {
   "name": "@churros/app",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "dependencies": {
     "@carbon/charts-svelte": "^1.19.2",
-    "@graphql-tools/utils": "^10.3.4",
+    "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@iconify-json/logos": "^1.1.44",
     "@paypal/paypal-js": "^8.1.0",
     "@sentry/sveltekit": "^8.28.0",
