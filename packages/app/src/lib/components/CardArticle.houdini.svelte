@@ -126,6 +126,7 @@
     } as CardArticle$data));
 
   export let hideGroup = false;
+  export let hideEvent = false;
   export let href: string | undefined = undefined;
   $: href ??= loaded(localID) ? route('/posts/[id]', localID) : undefined;
 
@@ -189,7 +190,7 @@
         <p class="description">
           <LoadingText value={bodyPreview} lines={3} />
         </p>
-        {#if event && allLoaded(event)}
+        {#if !hideEvent && event && allLoaded(event)}
           <a
             href={refroute('/events/[id]', event.localID)}
             class="event"
@@ -328,7 +329,7 @@
 
   .image {
     width: 100%;
-    max-height: 33vh;
+    height: calc(clamp(5rem, 33vh, 10rem));
     margin: 0.5rem 0;
     overflow: hidden;
     object-fit: cover;

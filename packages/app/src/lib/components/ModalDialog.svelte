@@ -38,8 +38,8 @@
     e.preventDefault();
     e.currentTarget.classList.add('closing');
     setTimeout(() => {
-      e.currentTarget.close();
-      e.currentTarget.classList.remove('closing');
+      e.currentTarget?.close();
+      e.currentTarget?.classList.remove('closing');
     }, 200);
   }}
   data-theme={$theme.id}

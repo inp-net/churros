@@ -40,5 +40,8 @@ query PageEventDetail($id: LocalID!) @loading {
       rawURL
       ...PillLink
     }
+    posts: articles @loading(count: 0) {
+      ...CardArticle
+    }
   }
 }

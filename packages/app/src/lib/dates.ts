@@ -1,4 +1,4 @@
-import type { EventFrequency$options } from '$houdini';
+import { type EventFrequency$options, type TextEventDates$data } from '$houdini';
 import { EventFrequency } from '$lib/zeus';
 import {
   differenceInDays,
@@ -132,11 +132,7 @@ export function formatEventDates({
   endsAt,
   recurringUntil,
   defaultText = '(Dates non définies)',
-}: {
-  frequency: EventFrequency | EventFrequency$options;
-  startsAt: Date | null;
-  endsAt: Date | null;
-  recurringUntil?: Date | undefined | null;
+}: TextEventDates$data & {
   defaultText?: string;
 }): string {
   if (!startsAt || !endsAt) return defaultText;

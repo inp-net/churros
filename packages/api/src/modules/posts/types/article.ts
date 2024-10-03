@@ -2,11 +2,13 @@ import { builder, htmlToText, prisma, toHtml } from '#lib';
 import { CommentableInterface } from '#modules/comments';
 import {
   DateTimeScalar,
+  HTMLScalar,
   PicturedInterface,
   ShareableInterface,
   VisibilityEnum,
 } from '#modules/global';
 import { ReactableInterface } from '#modules/reactions';
+import { GraphQLError } from 'graphql';
 import { canEditArticle } from '../utils/permissions.js';
 
 // TODO rename to Post
@@ -36,7 +38,17 @@ export const ArticleType = builder.prismaNode('Article', {
     }),
     title: t.exposeString('title'),
     body: t.exposeString('body'),
-    bodyHtml: t.string({ resolve: async ({ body }) => toHtml(body) }),
+    bodyHtml: t.string({
+      resolve: async ({ body }) => toHtml(body),
+      deprecationReason:
+        'Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too.',
+    }),
+    bodyHtmlSafe: t.field({
+      type: HTMLScalar,
+      async resolve({ body }) {
+        return toHtml(body);
+      },
+    }),
     bodyPreview: t.string({
       async resolve({ body }) {
         const fullText =
@@ -55,7 +67,25 @@ export const ArticleType = builder.prismaNode('Article', {
     author: t.relation('author', { nullable: true }),
     group: t.relation('group'),
     links: t.relation('links'),
+    canEdit: t.boolean({
+      description:
+        "Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)",
+      args: {
+        assert: t.arg.string({ required: false }),
+      },
+      async resolve({ id }, { assert }, { user }) {
+        const article = await prisma.article.findUniqueOrThrow({
+          where: { id },
+          include: canEditArticle.prismaIncludes,
+        });
+        const can = canEditArticle(article, article, user);
+
+        if (!can && assert) throw new GraphQLError(assert);
+        return can;
+      },
+    }),
     canBeEdited: t.boolean({
+      deprecationReason: 'Use canEdit instead.',
       description:
         "Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)",
       async resolve({ id }, _, { user }) {
