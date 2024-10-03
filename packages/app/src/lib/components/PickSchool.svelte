@@ -42,7 +42,7 @@
   let:open
 >
   <div class="option" class:selected slot="option" let:selected let:option>
-    <AvatarSchool {selected} href="" studentAssociation={option} />
+    <AvatarSchool {selected} href="" school={option} />
     <span class="name">
       <LoadingText value={option.name} />
     </span>
