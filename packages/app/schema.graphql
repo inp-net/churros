@@ -533,12 +533,18 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
   body: String!
-  bodyHtml: String!
+  bodyHtml: String! @deprecated(reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too.")
+  bodyHtmlSafe: HTML!
   bodyPreview: String!
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
-  canBeEdited: Boolean!
+  canBeEdited: Boolean! @deprecated(reason: "Use canEdit instead.")
+
+  """
+  Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
+  """
+  canEdit(assert: String): Boolean!
   comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
   createdAt: DateTime!
   event: Event
@@ -2165,6 +2171,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Changer le groupe organisateur (principal) de l'événement
   """
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
+
+  """Mettre à jour le groupe d'un article"""
+  changePostOwner(group: UID!, post: LocalID!): MutationChangePostOwnerResult!
   checkIfBookingIsPaid(code: String!): Boolean!
   claimPromotionCode(code: String!): Boolean!
   completeSignup(token: String!): SignupCompletionResult!
@@ -2708,6 +2717,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     path: String!
   ): Bookmark
+
+  """Détacher un post de son événement"""
+  unlinkEventFromPost(post: LocalID!): MutationUnlinkEventFromPostResult!
   unreact(
     emoji: String!
     """
@@ -2907,33 +2919,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   updateUserProfile(profile: UserProfileInput!, uid: UID!): MutationUpdateUserProfileResult!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
-  upsertAnnouncement(
-    body: String!
-    endsAt: DateTime!
-    id: ID
-    startsAt: DateTime!
-    title: String!
-    warning: Boolean!
-  ): MutationUpsertAnnouncementResult!
-  """
-  Crée ou met à jour un post
-  """
-  upsertArticle(
-    body: String!
-    event: ID
-    group: UID!
-    id: ID
-    publishedAt: DateTime
-    title: String!
-    visibility: Visibility!
-  ): MutationUpsertArticleResult!
-  upsertBarWeek(
-    description: String!
-    endsAt: DateTime!
-    groupsUids: [String!]!
-    id: ID
-    startsAt: DateTime!
-  ): MutationUpsertBarWeekResult!
+  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
+
+  """Crée ou met à jour un post"""
+  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
+
+  """Crée ou met à jour un post"""
+  upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!
+  upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(
     description: String!
@@ -3176,6 +3169,12 @@ union MutationChangeEventOrganizerResult = Error | MutationChangeEventOrganizerS
 
 type MutationChangeEventOrganizerSuccess {
   data: Event!
+}
+
+union MutationChangePostOwnerResult = Error | MutationChangePostOwnerSuccess | ZodError
+
+type MutationChangePostOwnerSuccess {
+  data: Article!
 }
 
 union MutationContributeResult = Error | MutationContributeSuccess | ZodError
@@ -3506,10 +3505,13 @@ type MutationUnbanFromEventSuccess {
   data: Event!
 }
 
-union MutationUnsubscribeFromNotificationsResult =
-  | Error
-  | MutationUnsubscribeFromNotificationsSuccess
-  | ZodError
+union MutationUnlinkEventFromPostResult = Error | MutationUnlinkEventFromPostSuccess | ZodError
+
+type MutationUnlinkEventFromPostSuccess {
+  data: Article!
+}
+
+union MutationUnsubscribeFromNotificationsResult = Error | MutationUnsubscribeFromNotificationsSuccess | ZodError
 
 type MutationUnsubscribeFromNotificationsSuccess {
   data: NotificationSubscription!
@@ -3597,6 +3599,12 @@ type MutationUpsertAnnouncementSuccess {
 union MutationUpsertArticleResult = Error | MutationUpsertArticleSuccess | ZodError
 
 type MutationUpsertArticleSuccess {
+  data: Article!
+}
+
+union MutationUpsertArticleV2Result = Error | MutationUpsertArticleV2Success | ZodError
+
+type MutationUpsertArticleV2Success {
   data: Article!
 }
 
@@ -4000,6 +4008,14 @@ interface Pictured {
 Entier positif
 """
 scalar PositiveInt
+
+input PostInput {
+  body: String
+  event: LocalID
+  publishedAt: DateTime
+  title: String
+  visibility: Visibility
+}
 
 """
 Resource possédant un '@' (uid) et pouvant raisonnablement posséder une page de profil, avec nom, photo, bio/description...

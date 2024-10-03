@@ -234,6 +234,21 @@ const PAGES = {
   '/posts/[id]/edit': (id: string | number, params?: {}) => {
     return `/posts/${id}/edit`;
   },
+  '/posts/[id]/edit/body': (id: string | number, params?: {}) => {
+    return `/posts/${id}/edit/body`;
+  },
+  '/posts/[id]/edit/event': (id: string | number, params?: {}) => {
+    return `/posts/${id}/edit/event`;
+  },
+  '/posts/[id]/edit/links': (id: string | number, params?: {}) => {
+    return `/posts/${id}/edit/links`;
+  },
+  '/posts/[id]/edit/picture': (id: string | number, params?: {}) => {
+    return `/posts/${id}/edit/picture`;
+  },
+  '/posts/[id]/edit/visibility': (id: string | number, params?: {}) => {
+    return `/posts/${id}/edit/visibility`;
+  },
   '/quick-signups/create': `/quick-signups/create`,
   '/quick-signups/manage': `/quick-signups/manage`,
   '/quick-signups/qr/[code]': (code: string | number, params?: {}) => {
@@ -575,6 +590,11 @@ export type KIT_ROUTES = {
     '/posts/create': 'group';
     '/posts/[id]': 'id';
     '/posts/[id]/edit': 'id';
+    '/posts/[id]/edit/body': 'id';
+    '/posts/[id]/edit/event': 'id';
+    '/posts/[id]/edit/links': 'id';
+    '/posts/[id]/edit/picture': 'id';
+    '/posts/[id]/edit/visibility': 'id';
     '/quick-signups/create': never;
     '/quick-signups/manage': never;
     '/quick-signups/qr/[code]': 'code';

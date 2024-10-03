@@ -8,16 +8,12 @@
 </script>
 
 <ModalOrDrawer tall bind:open let:close>
-  <div class="content">
-    <h1>
-      Aide sur Markdown
+  <h1 slot="header">
+    Aide sur Markdown
 
-      <ButtonGhost
-        on:click={() => {
-          close();
-        }}><IconClose /></ButtonGhost
-      >
-    </h1>
+    <ButtonGhost on:click={close}><IconClose /></ButtonGhost>
+  </h1>
+  <div class="content">
     <div class="side-by-side muted legend">
       <span>Écris…</span>
       <span>Pour obtenir…</span>
@@ -25,13 +21,13 @@
     <!-- <h2>Gras, italique, etc.</h2> -->
     <div class="side-by-side">
       <code class="markdown-code">**gras**</code>
-      <span><strong>gras</strong></span>
+      <span data-user-html><strong>gras</strong></span>
       <code class="markdown-code">_italique_</code>
-      <span><em>italique</em></span>
+      <span data-user-html><em>italique</em></span>
       <code class="markdown-code">`code`</code>
-      <span><code>code</code></span>
+      <span data-user-html><code>code</code></span>
       <code class="markdown-code" use:tooltip={'Syntaxe LaTeX'}>${`\\frac{2}{\\pi}`}$</code>
-      <span class="katex" use:tooltip={'Syntaxe LaTeX'}>
+      <span data-user-html class="katex" use:tooltip={'Syntaxe LaTeX'}>
         <span class="katex-mathml"
           ><math xmlns="http://www.w3.org/1998/Math/MathML"
             ><semantics
@@ -84,11 +80,11 @@
     <!-- <h2>Titres</h2> -->
     <div class="side-by-side">
       <code class="markdown-code"># Titre</code>
-      <span><h3>Titre</h3></span>
+      <span data-user-html><h3>Titre</h3></span>
       <code class="markdown-code">## Sous-titre</code>
-      <span><h4>Sous-titre</h4></span>
+      <span data-user-html><h4>Sous-titre</h4></span>
       <code class="markdown-code">### Sous-sous titre</code>
-      <span><h5>Sous-sous titre</h5></span>
+      <span data-user-html><h5>Sous-sous titre</h5></span>
     </div>
     <!-- <h2>Listes</h2> -->
     <div class="side-by-side">
@@ -97,7 +93,7 @@
 - Deux
 - Trois
         </pre>
-      <div>
+      <div data-user-html>
         <ul>
           <li>Un</li>
           <li>Deux</li>
@@ -109,7 +105,7 @@
 1. Deux
 6. Trois
         </pre>
-      <div>
+      <div data-user-html>
         <ol>
           <li>Un</li>
           <li>Deux</li>
