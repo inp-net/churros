@@ -504,7 +504,7 @@ model Article {
   id          String     @id @default(dbgenerated("nanoid('a:')"))
   authorId    String?
   groupId     String
-  slug        String     @db.VarChar(255)
+  slug        String     @db.VarChar(255) // TODO remove
   title       String     @db.VarChar(255)
   body        String     @db.Text
   published   Boolean    @default(false)

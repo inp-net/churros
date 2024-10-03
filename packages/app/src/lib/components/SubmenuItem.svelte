@@ -31,6 +31,13 @@
    * If the string specified here is used as the hash in the URL, the item will be highlighted as active.
    */
   export let anchor: `#${string}` | undefined = undefined;
+
+  function compareHrefs(a: string, b: string) {
+    return (
+      new URL(a, $page.url).href.replace(/\/$/, '') ===
+      new URL(b, $page.url).href.replace(/\/$/, '')
+    );
+  }
 </script>
 
 <svelte:element
@@ -41,6 +48,7 @@
   tabindex="-1"
   id={anchor}
   class:highlighted={anchor === $page.url.hash}
+  class:current={href && compareHrefs(href, $page.url.href)}
   class="submenu-item"
 >
   <div class="left">
@@ -84,6 +92,11 @@
     min-height: 70px; /* XXX: hardcoded from getting the computed height for a simple item */
     padding: 1rem 0.7rem;
     overflow: hidden;
+  }
+
+  .submenu-item.current {
+    color: var(--primary);
+    background-color: var(--bg2);
   }
 
   .submenu-item.highlighted {

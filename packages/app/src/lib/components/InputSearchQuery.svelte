@@ -4,12 +4,20 @@
   import IconClear from '~icons/msl/close';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import { debounce } from 'lodash';
 
   export let autofocus = false;
   export let q: string | null;
-  const emit = createEventDispatcher<{ search: string | null }>();
+  const emit = createEventDispatcher<{ search: string | null; debouncedInput: string | null }>();
   export let placeholder = 'Recherche…';
   export let searching = false;
+
+  const dispatchInputEvent = (value: string | null) => {
+    emit('debouncedInput', value);
+  };
+
+  const debouncedDispatchInputEvent = debounce(dispatchInputEvent, 300);
+  $: debouncedDispatchInputEvent(q);
 </script>
 
 <form class="query" method="get" on:submit|preventDefault={() => emit('search', q)}>

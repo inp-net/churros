@@ -95,8 +95,8 @@ export const ORDER_VISIBILITIES: Visibility[] = [
 
 export const DISPLAY_VISIBILITIES: Record<Visibility$options, string> = {
   Public: 'Public',
-  GroupRestricted: 'Groupe',
   SchoolRestricted: 'École',
+  GroupRestricted: 'Groupe',
   Unlisted: 'Non répertorié',
   Private: 'Privé',
 };

@@ -1,0 +1,7 @@
+query PagePostEditLinks($id: LocalID!) {
+    post: article(id: $id) {
+        id
+        canEdit(assert: "Tu n'a pas les droits pour modifier ce post")
+        ...AreaEditLinks
+    }
+}
