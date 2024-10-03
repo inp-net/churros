@@ -606,7 +606,7 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   visibility: Visibility!
 }
 
-type ArticleSearchResultType {
+type ArticleSearchResult {
   article: Article!
   highlightedTitle: String!
   id: ID!
@@ -984,14 +984,6 @@ interface ErrorInterface {
   message: String!
 }
 
-type EvenSearchResult {
-  event: Event!
-  highlightedTitle: String!
-  id: ID!
-  rank: Float
-  similarity: Float!
-}
-
 """
 An event is a date, time and place, as well as an optional ticket
 """
@@ -1236,6 +1228,14 @@ enum EventManagerPowerLevel {
   EditPermissions
   ReadOnly
   ScanTickets
+}
+
+type EventSearchResult {
+  event: Event!
+  highlightedTitle: String!
+  id: ID!
+  rank: Float
+  similarity: Float!
 }
 
 type EventsByDay {
@@ -2292,7 +2292,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     name: String
     shotgun: DateRangeInput!
   ): MutationCreateTicketResult!
-
   """
   Dédoublonne les réservations. Renvoie les réservations supprimées.
   """
@@ -4292,14 +4291,27 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   school(uid: String!): School!
   schoolGroups: [SchoolGroup!]!
   schools: [School!]!
-  searchArticles(groupUid: String, q: String!): [ArticleSearchResultType!]!
+  """
+  Rechercher des ressources (personnes, groupes, événements, articles…)
+  """
+  search(
+    """
+    Ne rechercher que certaines ressources
+    """
+    only: [SearchableResources!]
+    """
+    Le texte de recherche
+    """
+    q: String
+  ): [SearchResult!]!
+  searchArticles(groupUid: String, q: String!): [ArticleSearchResult!]!
   searchDocuments(
     forApprentices: Boolean!
     majorUid: String!
     q: String!
     yearTier: Int!
   ): [DocumentSearchResult!]!
-  searchEvents(groupUid: String, q: String!): [EvenSearchResult!]!
+  searchEvents(groupUid: String, q: String!): [EventSearchResult!]!
   """
   Recherche des formulaires
   """
@@ -5371,6 +5383,36 @@ input SchoolInput {
   color: String!
   id: ID
   name: String!
+}
+
+union SearchResult =
+  | ArticleSearchResult
+  | DocumentSearchResult
+  | EventSearchResult
+  | GroupSearchResult
+  | UserSearchResult
+
+enum SearchableResources {
+  """
+  Posts
+  """
+  Articles
+  """
+  Documents
+  """
+  Documents
+  """
+  Événements
+  """
+  Events
+  """
+  Groupes
+  """
+  Groups
+  """
+  Utilisateur·ices
+  """
+  Users
 }
 
 """

@@ -127,8 +127,14 @@
 
   export let hideGroup = false;
   export let hideEvent = false;
+
+  /**
+   * Whether to add a ?from= query parameter to the post link
+   */
+  export let referrer = false;
+
   export let href: string | undefined = undefined;
-  $: href ??= loaded(localID) ? route('/posts/[id]', localID) : undefined;
+  $: href ??= loaded(localID) ? (referrer ? refroute : route)('/posts/[id]', localID) : undefined;
 
   $: authorSrc = hideGroup
     ? allLoaded(author) && author

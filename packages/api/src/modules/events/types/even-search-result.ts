@@ -3,7 +3,7 @@ import { builder, type SearchResult } from '#lib';
 import type { Event } from '@churros/db/prisma';
 
 export const EventSearchResultType = builder
-  .objectRef<SearchResult<{ event: Event }, ['description', 'title']>>('EvenSearchResult')
+  .objectRef<SearchResult<{ event: Event }, ['description', 'title']>>('EventSearchResult')
   .implement({
     fields: (t) => ({
       event: t.prismaField({
