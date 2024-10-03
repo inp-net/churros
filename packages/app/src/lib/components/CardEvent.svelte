@@ -45,7 +45,6 @@
   const mobile = isMobile();
 
   export let showTickets = true;
-  export let referrer = false;
 
   export let event: CardEvent | null;
   $: data = fragment(
