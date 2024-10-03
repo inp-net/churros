@@ -13,7 +13,7 @@
   import { route } from '$lib/ROUTES';
   import { debounce } from 'lodash';
   import IconEvent from '~icons/msl/event-outline';
-  import IconSearch from '~icons/msl/search';
+  import IconClear from '~icons/msl/close';
   import IconPost from '~icons/msl/text-ad-outline';
   import type { PageData } from './$houdini';
   import { debugging } from '$lib/debugging';
@@ -107,9 +107,12 @@
 
 <form class="query" method="get" on:submit|preventDefault={async () => submitSearchQuery(q)}>
   <BaseInputText
-    actionIcon={IconSearch}
-    on:action={async () => submitSearchQuery(q)}
-    type="text"
+    actionIcon={q ? IconClear : undefined}
+    on:action={() => {
+      q = '';
+      submitSearchQuery('');
+    }}
+    type="search"
     placeholder="Rechercher"
     bind:value={q}
     autofocus
