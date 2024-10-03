@@ -1,0 +1,14 @@
+query PagePostEditLinkedEvent($id: LocalID!) @loading {
+  post: article(id: $id) {
+    event {
+      ...PagePostEditLinkedEvent_Event @mask_disable
+    }
+    group {
+      events(first: 10) @loading(count: 5) {
+        nodes {
+          ...PagePostEditLinkedEvent_Event @mask_disable
+        }
+      }
+    }
+  }
+}

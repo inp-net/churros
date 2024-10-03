@@ -1,0 +1,8 @@
+query PagePostEditPicture($id: LocalID!) @loading {
+  post: article(id: $id) {
+    event {
+      id
+    }
+    ...FormPicture
+  }
+}
