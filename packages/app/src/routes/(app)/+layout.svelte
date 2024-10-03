@@ -29,6 +29,7 @@
   import type { PageData } from './$houdini';
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import { allLoaded } from '$lib/loading';
+  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
 
   onNavigate(setupViewTransition);
 
@@ -232,7 +233,9 @@
   </div>
 
   <aside class="right">
-    {#if $AppLayout.data?.me}
+    {#if $RootLayout.data?.feur}
+      <ThemesEditorSidebar theme={$RootLayout.data?.feur} />
+    {:else if $AppLayout.data?.me}
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
       </section>

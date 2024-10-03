@@ -15,6 +15,7 @@
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
+  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -110,31 +111,32 @@
   <AnalyticsTracker user={$RootLayout.data?.me ?? null} />
 </svelte:head>
 
-<div data-vaul-drawer-wrapper="">
-  {#if browser}
-    <section class="toasts">
-      {#each $toasts as toast (toast.id)}
-        <Toast
-          on:action={async () => {
-            if (toast.callbacks.action) await toast.callbacks.action(toast);
-          }}
-          action={toast.labels.action}
-          closeLabel={toast.labels.close}
-          {...toast}
-        ></Toast>
-      {/each}
-    </section>
-  {/if}
 
-  {#if $themeDebugger}
-    <ModalThemeVariables />
-  {/if}
 
-  <ModalReportIssue bind:open={openIssueReport} />
+  <div data-vaul-drawer-wrapper="">
+    {#if browser}
+      <section class="toasts">
+        {#each $toasts as toast (toast.id)}
+          <Toast
+            on:action={async () => {
+              if (toast.callbacks.action) await toast.callbacks.action(toast);
+            }}
+            action={toast.labels.action}
+            closeLabel={toast.labels.close}
+            {...toast}
+          ></Toast>
+        {/each}
+      </section>
+    {/if}
 
-  <slot />
-</div>
+    {#if $themeDebugger}
+      <ModalThemeVariables />
+    {/if}
 
+    <ModalReportIssue bind:open={openIssueReport} />
+
+    <slot />
+  </div>
 <style lang="scss">
   section.toasts {
     position: fixed;

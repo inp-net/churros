@@ -9,4 +9,8 @@ query RootLayout {
     localID
     name
   }
+
+  feur: theme(id: "ea1vjivkqxegobuy") {
+    ...ThemesEditorSidebar
+  }
 }
