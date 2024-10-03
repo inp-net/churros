@@ -2,4 +2,4 @@
 '@churros/app': minor
 ---
 
-improve services page UI
+improve services UI
