@@ -19,7 +19,7 @@ builder.mutationField('setThemeValue', (t) =>
     },
     async authScopes(_, { theme: themeId }, { user }) {
       const theme = await prisma.theme.findUnique({
-        where: { id: themeId },
+        where: { id: ensureGlobalId(themeId, 'Theme') },
         include: { author: true },
       });
       if (!theme) throw new GraphQLError('Thème introuvable');

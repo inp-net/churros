@@ -8,4 +8,6 @@ export * from './mutation.set-theme-value.js';
 export * from './mutation.set-theme-visibility.js';
 export * from './mutation.upsert-theme.js';
 export * from './query.autodeployed-theme.js';
+export * from './query.theme.js';
 export * from './query.themes.js';
+export * from './user.can-create-themes-on.js';

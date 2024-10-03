@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { fragment, graphql, type ThemePreviewCard } from '$houdini';
+  import { cache, fragment, graphql, RootLayoutStore, type ThemePreviewCard } from '$houdini';
   import Badge from '$lib/components/Badge.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { allLoaded, loaded, loading } from '$lib/loading';
-  import { theme as currentTheme, isDark, THEME_CSS_VARIABLE_NAMES } from '$lib/theme';
+  import {
+    theme as currentTheme,
+    editingTheme,
+    isDark,
+    THEME_CSS_VARIABLE_NAMES,
+  } from '$lib/theme';
   import IconFeur from '~icons/msl/home-outline';
 
   export let theme: ThemePreviewCard | null;
@@ -17,6 +23,7 @@
         id
         localID
         name
+        canEdit
         lightValues: values(variant: Light) {
           value
           variable
@@ -75,6 +82,29 @@
   </div>
   <header>
     <h2><LoadingText value={$data?.name ?? 'Par défaut'}></LoadingText></h2>
+    {#if $data?.canEdit}
+      <ButtonSecondary
+        on:click={async () => {
+          if (!$data || !loaded($data?.id)) return;
+          $editingTheme =
+            $editingTheme?.id === $data.id
+              ? null
+              : {
+                  id: $data.id,
+                  variant: $currentTheme.variant,
+                };
+          if ($editingTheme) {
+            $currentTheme.id = $editingTheme.id;
+          }
+        }}
+      >
+        {#if $editingTheme?.id === $data.id}
+          Terminé
+        {:else}
+          Modifier
+        {/if}
+      </ButtonSecondary>
+    {/if}
   </header>
 </label>
 

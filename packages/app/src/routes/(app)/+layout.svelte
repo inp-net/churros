@@ -18,7 +18,7 @@
   import { addReferrer, refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
-  import { isDark } from '$lib/theme';
+  import { editingTheme, isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
   import { setContext } from 'svelte';
@@ -29,6 +29,7 @@
   import type { PageData } from './$houdini';
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import { allLoaded } from '$lib/loading';
+  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
 
   onNavigate(setupViewTransition);
 
@@ -122,6 +123,8 @@
 
   let openChangelog: () => void;
   $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) openChangelog?.();
+
+  $: console.log({ t: $RootLayout });
 </script>
 
 {#if $AppLayout.data?.combinedChangelog}
@@ -232,7 +235,9 @@
   </div>
 
   <aside class="right">
-    {#if $AppLayout.data?.me}
+    {#if $RootLayout.data?.editingTheme && $editingTheme}
+      <ThemesEditorSidebar theme={$RootLayout.data?.editingTheme} />
+    {:else if $AppLayout.data?.me}
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
       </section>

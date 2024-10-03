@@ -1,4 +1,4 @@
-query RootLayout {
+query RootLayout($editingTheme: LocalID!) {
   loggedIn
   me {
     ...AnalyticsTrackerUser
@@ -8,5 +8,9 @@ query RootLayout {
   autodeployedTheme {
     localID
     name
+  }
+
+  editingTheme: theme(id: $editingTheme) {
+    ...ThemesEditorSidebar
   }
 }

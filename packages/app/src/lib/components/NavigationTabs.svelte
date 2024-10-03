@@ -6,26 +6,32 @@
   const dispatch = createEventDispatcher<{ click: TabName }>();
 
   type TabName = $$Generic<string>;
-  export let tabs: Array<{ name: TabName; href: string; active?: boolean }> = [];
+  export let tabs: Array<{ name: TabName; href?: string; active?: boolean }> = [];
   const pagestate = $page.state;
 
   export let isActive:
     | undefined
-    | ((tab: { i: number; name: TabName; href: string }) => boolean) = ({ href }) =>
-    $page.state.currentTab === href ||
-    $page.url.hash === href ||
-    (href === '#' && $page.url.hash === '') ||
-    new URL(href, $page.url).searchParams.get('tab') === $page.url.searchParams.get('tab');
+    | ((tab: { i: number; name: TabName; href?: string; active?: boolean }) => boolean) = ({
+    href,
+    active,
+  }) =>
+    active ||
+    (href
+      ? $page.state.currentTab === href ||
+        $page.url.hash === href ||
+        (href === '#' && $page.url.hash === '') ||
+        new URL(href, $page.url).searchParams.get('tab') === $page.url.searchParams.get('tab')
+      : false);
 
   $: activeTab = (_pagestate: typeof $page) =>
     [...tabs.entries()].find(
       ([i, { href, name, active }]) => active || isActive?.({ i, name, href }) || href === '.',
-    )?.[1].href;
+    )?.[1].name;
 
-  function onTabClick(name: TabName, href: string): undefined | ((event: MouseEvent) => void) {
+  function onTabClick(name: TabName, href?: string): undefined | ((event: MouseEvent) => void) {
     return (event: MouseEvent) => {
       dispatch('click', name);
-      if (!href.startsWith('#')) return;
+      if (!href || !href.startsWith('#')) return;
       event.preventDefault();
       pushState(href, { ...pagestate, currentTab: href });
     };
@@ -34,13 +40,13 @@
 
 <ul {...$$restProps} style:--tab-count={tabs.length}>
   {#each tabs as { href, name, active }}
-    <li class:active={activeTab($page) === href}>
+    <li class:active={activeTab($page) === name}>
       <svelte:element
-        this={href.startsWith('#') ? 'span' : 'a'}
+        this={href && href.startsWith('#') ? 'span' : 'a'}
         role="tab"
         tabindex="0"
         class="tab-link"
-        href={href.startsWith('#') ? undefined : href}
+        href={href && href.startsWith('#') ? undefined : href}
         on:click={onTabClick(name, href)}
       >
         <slot name="tab" tab={name} {href} {active}>{name}</slot>

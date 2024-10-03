@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { type ThemeVariable$options } from '$houdini';
+import { syncToLocalStorage } from 'svelte-store2storage';
 import { writable } from 'svelte/store';
 
 export const THEME_CSS_VARIABLE_NAMES: Record<ThemeVariable$options, string> = {
@@ -51,6 +52,13 @@ export const theme = writable<{
     });
   },
 );
+
+export const editingTheme = writable<{
+  id: string;
+  variant: 'light' | 'dark' | 'auto';
+} | null>(null);
+
+if (browser) syncToLocalStorage(editingTheme, 'editingTheme');
 
 export const isDark = writable(false);
 
