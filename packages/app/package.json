@@ -1,6 +1,6 @@
 {
   "name": "@churros/app",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "dependencies": {
     "@carbon/charts-svelte": "^1.19.2",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",

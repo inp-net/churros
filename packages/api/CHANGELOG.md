@@ -1,5 +1,12 @@
 # @churros/api
 
+## 3.3.0
+
+### Minor Changes
+
+- 452566a: rework posts UI
+- a6d103c: add mixed search
+
 ## 3.2.0
 
 ### Minor Changes

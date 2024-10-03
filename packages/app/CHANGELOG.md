@@ -1,5 +1,14 @@
 # @churros/app
 
+## 2.10.0
+
+### Minor Changes
+
+- 1a22e09: make login/done prettier
+- 452566a: rework posts UI
+- a6d103c: add mixed search
+- a99043a: specialcase birthday when it's today
+
 ## 2.9.0
 
 ### Minor Changes
