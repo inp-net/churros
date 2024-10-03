@@ -33,6 +33,7 @@
       href={href ?? onceLoaded($data.uid, (uid) => refroute('/[uid=uid]', uid), '')}
     >
       <Avatar
+        {...$$restProps}
         --avatar-radius="0.25em"
         src={$data.pictureURL}
         help={notooltip ? '' : $data.name}
@@ -43,6 +44,7 @@
     </a>
   {:else}
     <Avatar
+      {...$$restProps}
       --avatar-radius="0.25em"
       src={$data.pictureURL}
       help={notooltip ? '' : $data.name}
