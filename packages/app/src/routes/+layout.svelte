@@ -10,11 +10,12 @@
   import { setupIsMobile } from '$lib/mobile';
   import '$lib/polyfills';
   import { setSentryUser } from '$lib/sentry';
-  import { theme } from '$lib/theme.js';
+  import { editingTheme, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
+  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -38,6 +39,9 @@
   }
 
   $: setSentryUser($RootLayout.data?.me ?? null);
+
+  $: if (browser && $editingTheme)
+    RootLayout.fetch({ variables: { editingTheme: $editingTheme.id } });
 
   // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);

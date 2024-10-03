@@ -1153,8 +1153,8 @@ model Theme {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   visibility Visibility   @default(Private)
-  startsAt   DateTime     @default(now())
-  endsAt     DateTime
+  startsAt   DateTime?     @default(now())
+  endsAt     DateTime?
   author     Group?       @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   authorId   String?
 

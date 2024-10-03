@@ -3143,12 +3143,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Créer ou modifier un thème
   """
   upsertTheme(
-    autodeploy: Boolean!
-    endsAt: DateTime!
+    autodeploy: Boolean
+    endsAt: DateTime
     group: UID!
     id: LocalID
     name: String!
-    startsAt: DateTime!
+    """
+    Quand on crée un nouveau thème, remplir toutes les variables avec des valeurs par défaut
+    """
+    prefill: Boolean! = false
+    startsAt: DateTime
   ): MutationUpsertThemeResult!
   upsertTicketGroup(
     capacity: Int
@@ -4453,6 +4457,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     lastName: String!
   ): String!
+  """
+  Récupérer un thème par son ID
+  """
+  theme(id: LocalID!): Theme
   themes(
     """
     Récupérer tous les thèmes auquel ont a accès, même ceux qui sont passés
@@ -5885,14 +5893,14 @@ type Theme implements Node {
   """
   canEdit: Boolean!
   createdAt: DateTime!
-  endsAt: DateTime!
+  endsAt: DateTime
   id: ID!
   """
   L'identifiant local de la ressource (sans préfixe)
   """
   localID: LocalID!
   name: String!
-  startsAt: DateTime!
+  startsAt: DateTime
   updatedAt: DateTime!
   values(
     """
@@ -6307,6 +6315,10 @@ type User implements Node & Pictured {
   Groupes sur lesquels l'utilisateur·ice peut créer des posts
   """
   canCreatePostsOn: [Group!]!
+  """
+  Groupes sur lesquels l'utilisateur·ice peut créer des thèmes
+  """
+  canCreateThemesOn: [Group!]!
   """
   Vrai si cette personne peut éditer le groupe donné
   """

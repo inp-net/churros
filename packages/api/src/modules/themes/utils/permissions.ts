@@ -1,7 +1,6 @@
 import type { Context } from '#lib';
-import { userIsOnGroupBoard } from '#modules/groups';
 import { userIsMemberOf, userIsPartOfStudentAssociation } from '#permissions';
-import { Visibility, type Group, type Theme } from '@churros/db/prisma';
+import { Prisma, Visibility, type Group, type Theme } from '@churros/db/prisma';
 import { isWithinInterval } from 'date-fns';
 
 export function canCreateThemes(
@@ -9,6 +8,7 @@ export function canCreateThemes(
   group: Group,
   level: 'can' | 'want' = 'can',
 ): boolean {
+  console.log(group.uid, 'cancreate', level);
   if (!user) return false;
   if (level === 'can' && user.admin) return true;
   if (
@@ -16,16 +16,32 @@ export function canCreateThemes(
     user.adminOfStudentAssociations.some((s) => s.id === group.studentAssociationId)
   )
     return true;
-  if (userIsOnGroupBoard(user, group)) return true;
-  if (user.groups.some((g) => g.groupId === group.id && g.isDeveloper)) return true;
-  return false;
+  // if (userIsOnGroupBoard(user, group)) return true;
+  // if (user.groups.some((g) => g.groupId === group.id && g.isDeveloper)) return true;
+  console.log(
+    group.uid,
+    'ingroup?',
+    user.groups.some((g) => g.groupId === group.id),
+    user.groups.map((g) => g.groupId),
+  );
+  return user.groups.some((g) => g.groupId === group.id);
 }
+
+export const canCreateThemesPrismaQuery = (user: { id: string }) =>
+  ({
+    members: {
+      some: {
+        memberId: user.id,
+      },
+    },
+  }) as const satisfies Prisma.GroupWhereInput;
 
 export function canEditTheme(
   user: Context['user'],
   theme: Theme & { author: Group | null },
   level: 'can' | 'want' = 'can',
 ) {
+  console.log(theme.name, 'canedit', level);
   if (!theme.author) return Boolean(user?.admin);
   return canCreateThemes(user, theme.author, level);
 }
@@ -53,7 +69,10 @@ export function canListTheme(
   // If you can't see the theme, you can't list it
   if (!canSeeTheme(user, theme)) return false;
   // Everyone that can see a temporary theme that is active can list it
+  console.log(theme.name, 'notnotcansee');
   if (
+    theme.startsAt &&
+    theme.endsAt &&
     isWithinInterval(new Date(), {
       start: theme.startsAt,
       end: theme.endsAt,
@@ -61,6 +80,7 @@ export function canListTheme(
     canSeeTheme(user, theme)
   )
     return true;
+  console.log(theme.name, 'notcansee');
   // If the theme isn't active yet, only ones that can edit it can list it
   return canEditTheme(user, theme, level);
 }

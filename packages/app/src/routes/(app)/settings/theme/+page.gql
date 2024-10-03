@@ -3,4 +3,10 @@ query PageSettingsTheme @loading {
     localID
     ...ThemePreviewCard
   }
+
+  me {
+    canCreateThemesOn {
+      ...PickGroup @mask_disable
+    }
+  }
 }
