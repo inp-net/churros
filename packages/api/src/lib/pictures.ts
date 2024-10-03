@@ -108,7 +108,7 @@ export async function updatePicture({
   root?: string;
 }): Promise<string> {
   if (!root) {
-    // Doing this here because @churros/db cannot import from this but needs that function for the seeding script
+    // Doing this here because @churros/db cannot import from storage.js but needs the updatePicture function to run the seeding script, so we explicitly pass the storage root as an argument when calling updatePicture from the seeding script
     const { storageRoot } = await import('./storage.js');
     root = storageRoot();
   }
@@ -273,6 +273,7 @@ export async function removePicture({
   user: Context['user'];
   /** The *global* ID */
   resourceId: string;
+  /** Has to be a valid prisma table (we should be able to call prisma[resourceType].update) */
   resourceType: 'user' | 'group' | 'event' | 'article' | 'school' | 'studentAssociation';
 }): Promise<{ alreadyDeleted: boolean; pictureFile: string }> {
   await log('pictures', 'delete-picture', {}, resourceId, user);

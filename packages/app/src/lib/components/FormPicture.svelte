@@ -9,6 +9,7 @@
   import ButtonInk from './ButtonInk.svelte';
   import CardEvent from './CardEvent.svelte';
   import InputFile from './InputFile.svelte';
+  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
 
   export let variant: ThemeVariant$options = 'Light';
 
@@ -25,6 +26,9 @@
         hasSeparateDarkPicture
         ... on Event {
           ...CardEvent
+        }
+        ... on Article {
+          ...CardArticle
         }
       }
     `),
@@ -68,12 +72,13 @@
   }
 
   let openPicker: () => void;
+  $: typename = loading($data?.__typename, '');
 </script>
 
 <InputFile
   bind:openPicker
   accept="image/jpeg,image/png,image/webp"
-  data-typename={loading($data?.__typename, '')}
+  data-typename={typename}
   on:change={async ({ detail: file }) => {
     if (!loaded($data?.id)) return;
     if (!file) return;
@@ -86,9 +91,11 @@
     );
   }}
 >
-  <div class="preview" data-typename={loading($data?.__typename, '')}>
-    {#if loading($data?.__typename, '') === 'Event'}
+  <div class="preview" data-typename={typename}>
+    {#if typename === 'Event'}
       <CardEvent event={$data} />
+    {:else if typename === 'Article'}
+      <CardArticle hideEvent article={$data} />
     {:else if loaded($data?.lightURL) && loaded($data.pictureAltText) && $data.lightURL}
       <button use:tooltip={'Supprimer'} class="delete" on:click={deletePicture}
         ><IconDelete></IconDelete></button
@@ -101,22 +108,28 @@
     {/if}
   </div>
   <section class="actions">
-    {#if loading($data?.__typename, '') === 'Event'}
+    {#if ['Event', 'Article'].includes(typename)}
       {#if loaded(pictureURL) && loaded($data?.pictureAltText) && pictureURL}
         <ButtonInk on:click={openPicker}>Changer</ButtonInk>
         <ButtonInk danger on:click={deletePicture}>Supprimer</ButtonInk>
       {:else}
-        <ButtonInk on:click={openPicker}>Ajouter une image de fond</ButtonInk>
+        <ButtonInk on:click={openPicker}>
+          {#if typename === 'Event'}
+            Ajouter une image de fond
+          {:else}
+            Ajouter une image
+          {/if}
+        </ButtonInk>
       {/if}
     {:else}
       <ButtonInk on:click={openPicker}>
         {#if loaded(pictureURL) && loaded($data?.pictureAltText) && pictureURL}
-          {#if loading($data.__typename, '') === 'Group'}
+          {#if typename === 'Group'}
             Modifier
           {:else}
             Modifier la photo
           {/if}
-        {:else if loading($data?.__typename, '') === 'Group'}
+        {:else if typename === 'Group'}
           Ajouter
         {:else}
           Ajouter une photo

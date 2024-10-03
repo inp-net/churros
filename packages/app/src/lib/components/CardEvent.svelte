@@ -38,6 +38,7 @@
   const mobile = isMobile();
 
   export let showTickets = true;
+  export let referrer = false;
 
   export let event: CardEvent | null;
   $: data = fragment(
@@ -108,7 +109,8 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <article
-  on:click={async () => goto(route('/events/[id]', loading($data?.localID, '') ?? ''))}
+  on:click={async () =>
+    goto((referrer ? refroute : route)('/events/[id]', loading($data?.localID, '') ?? ''))}
   class="event"
   class:mobile
   class:has-image={Boolean(loading($data?.pictureURL, ''))}

@@ -1,0 +1,30 @@
+query LayoutPostEdit($id: LocalID!) @loading {
+  me {
+    canCreatePostsOn {
+      ...PickGroup @mask_disable
+    }
+  }
+
+  post: article(id: $id) {
+    id
+    localID
+    canEdit(assert: "Tu n'a pas les permissions nécéssaires pour modifier ce post.")
+    group {
+      uid
+      name
+      ...AvatarGroup
+    }
+    visibility
+    title
+    bodyHtml: bodyHtmlSafe
+    body
+    event {
+      localID
+      id
+      title
+    }
+    links {
+        id
+    }
+  }
+}
