@@ -11,7 +11,7 @@ export const DocumentSearchResultType = builder
         resolve: (_, { document }) => document,
       }),
       id: t.exposeID('id'),
-      rank: t.expose('rank', { type: 'Int', nullable: true }),
+      rank: t.exposeFloat('rank', { nullable: true }),
       similarity: t.exposeFloat('similarity'),
     }),
   });
