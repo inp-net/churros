@@ -13,7 +13,7 @@ import { get, writable, type Writable } from 'svelte/store';
  * @param callback a function to call when the scroll position is within `threshold` elements from the end.
  */
 export function onReachingEndSoon(
-  callback: () => Promise<void>,
+  callback: () => Promise<unknown>,
   scrollableArea: HTMLElement,
   scrollableElementSelector: string,
   threshold = 3,
@@ -80,13 +80,13 @@ export function onReachingEndSoon(
 
 export const infinitescroll = (
   container: HTMLElement,
-  callback: undefined | (() => Promise<void>),
+  callback: undefined | (() => Promise<unknown>),
 ) => {
   if (!callback) return;
   const disconnect = onReachingEndSoon(callback, container, ':scope > *');
 
   return {
-    update(_callback: () => Promise<void>) {
+    update(_callback: () => Promise<unknown>) {
       // TODO
     },
     destroy: () => disconnect(),

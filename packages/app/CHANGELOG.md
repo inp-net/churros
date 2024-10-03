@@ -1,5 +1,28 @@
 # @churros/app
 
+## 2.11.0
+
+### Minor Changes
+
+- ba3c0cd: Feat: family tree
+
+## 2.10.1
+
+### Patch Changes
+
+- 3cff84f: chore(deps): upgrade dependencies
+- Updated dependencies [3cff84f]
+  - arborist@0.1.1
+
+## 2.10.0
+
+### Minor Changes
+
+- 1a22e09: make login/done prettier
+- 452566a: rework posts UI
+- a6d103c: add mixed search
+- a99043a: specialcase birthday when it's today
+
 ## 2.9.0
 
 ### Minor Changes
