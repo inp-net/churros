@@ -3,4 +3,4 @@
 '@churros/app': minor
 ---
 
-rework UI
+rework posts UI
