@@ -36,9 +36,20 @@ builder.queryField('search', (t) =>
       ]);
       if (results.some((r) => r.status !== 'fulfilled'))
         throw new GraphQLError("Une erreur s'est produite lors de la recherche.");
+
+      // Prefer user and group results by bumping their ranks
+      // rank ∈ [0, 1], so bumping to 0.5 kinda ensures only _really_ relevant posts or events are shown before all user and group results
+      function bumpRanks(res: ((typeof results)[number] & { status: 'fulfilled' })['value']) {
+        return res.map((result) => {
+          if ('user' in result) result.rank += 0.4;
+          if ('group' in result) result.rank += 0.5;
+          return result;
+        });
+      }
+
       const mixed = results.flatMap(
         (r) =>
-          (r.status === 'fulfilled' ? r.value : []) as Array<
+          (r.status === 'fulfilled' ? bumpRanks(r.value) : []) as Array<
             SearchResult<{ group: Group } | { user: User }, ['description']>
           >,
       );
