@@ -1,5 +1,13 @@
 # @churros/app
 
+## 2.10.1
+
+### Patch Changes
+
+- 3cff84f: chore(deps): upgrade dependencies
+- Updated dependencies [3cff84f]
+  - arborist@0.1.1
+
 ## 2.10.0
 
 ### Minor Changes

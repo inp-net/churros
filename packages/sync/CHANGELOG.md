@@ -1,5 +1,13 @@
 # @churros/sync
 
+## 1.71.4
+
+### Patch Changes
+
+- 3cff84f: chore(deps): upgrade dependencies
+- Updated dependencies [3cff84f]
+  - @churros/db@1.3.1
+
 ## 1.71.3
 
 ### Patch Changes
