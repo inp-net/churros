@@ -394,6 +394,7 @@ const SERVERS = {
   'GET /gdpr': `/gdpr`,
   'GET /manifest.json': `/manifest.json`,
   'POST /markdown': `/markdown`,
+  'GET /robots.txt': `/robots.txt`,
 };
 
 /**
@@ -654,6 +655,7 @@ export type KIT_ROUTES = {
     'GET /gdpr': never;
     'GET /manifest.json': never;
     'POST /markdown': never;
+    'GET /robots.txt': never;
   };
   ACTIONS: { 'default /login': never };
   LINKS: Record<string, never>;
