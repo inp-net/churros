@@ -3,8 +3,9 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql, type TreePersons } from '$houdini';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
-  import { allLoaded } from '$lib/loading';
+  import { allLoaded, loading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
   import cytoscape from 'cytoscape';
   type Nesting = [string, Nesting[]];
 
@@ -13,6 +14,7 @@
     user,
     graphql(`
       fragment TreePersons on User @loading {
+        uid
         familyTree {
           nesting
           users {
@@ -32,8 +34,9 @@
     const edges: Array<{ data: { source: string; target: string } }> = [];
 
     function fillTree([parent, children]: Nesting) {
-      const user = $data.familyTree.users.find((u) => u.uid === parent);
-      nodes.push({ data: { id: parent, name: user.fullName } });
+      if (!$data) return;
+      const user = $data.familyTree.users.find((u) => u.uid === parent)!;
+      nodes.push({ data: { id: parent, name: loading(user?.fullName, '') } });
       for (const [child, subchildren] of children) {
         edges.push({ data: { source: parent, target: child } });
         fillTree([child, subchildren]);
@@ -43,13 +46,16 @@
     fillTree(nesting);
 
     const style = cytoscape
+      // @ts-expect-error typing of cytoscape sucks
       .stylesheet()
       .selector('node')
       .style({
-        'background-image': (node) => `/${node.data('id')}.png`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        'background-image': (node: any) => route('GET /[uid=uid].png', node.data('id')),
         'background-fit': 'cover',
-        'border-color': (node) =>
-          node.data('id') === user.uid
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        'border-color': (node: any) =>
+          node.data('id') === $data?.uid
             ? getComputedStyle(document.documentElement).getPropertyValue('--success')
             : getComputedStyle(document.documentElement).getPropertyValue('--primary'),
         'border-width': '2px',
@@ -103,7 +109,7 @@
 
     cy.on('click', 'node', async (el) => {
       const uid = el.target.data('id');
-      if (uid === user?.uid) return;
+      if (uid === $data?.uid) return;
       await goto(
         refroute('/[uid=uid]', uid, {
           tab: 'family',
@@ -112,8 +118,9 @@
     });
   }
 
-  $: if (browser && wrapperElement && containerElement && allLoaded($data))
+  $: if (browser && wrapperElement && containerElement && allLoaded($data) && $data) 
     renderTree(wrapperElement, containerElement, JSON.parse($data.familyTree.nesting));
+  
 </script>
 
 {#if allLoaded($data)}
