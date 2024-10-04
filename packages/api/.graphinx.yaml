@@ -17,9 +17,9 @@ description: ./README.md
 environment:
   PUBLIC_API_URL: https://churros.inpt.fr/graphql
   PUBLIC_API_WEBSOCKET_URL: wss://churros.inpt.fr/graphql
-  CURRENT_COMMIT: dev
-  CURRENT_VERSION: dev
-  CURRENT_COMMIT_SHORT: dev
+  CURRENT_COMMIT: '72ad22314b5c607b60a9011f8884de8a929c28fd'
+  CURRENT_VERSION: 'dev'
+  CURRENT_COMMIT_SHORT: '72ad223'
   PUBLIC_AUTH_TYPE: UserPassword # available: OAuth (PKCE flow), OpenID, UserPassword, Token, None (default)
   PUBLIC_AUTH_HEADER: Bearer # available: Bearer (for all AUTH_TYPEs), Basic (for UserPassword, takes the base64 of the form `username:password`), plain (for all types, just puts the token as is)
   PUBLIC_AUTH_QUERY: |
