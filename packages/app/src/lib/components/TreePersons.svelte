@@ -14,7 +14,7 @@
     graphql(`
       fragment TreePersons on User @loading {
         familyTree {
-          nestingTreePersons
+          nesting
           users {
             uid
             fullName
