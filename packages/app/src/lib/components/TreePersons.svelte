@@ -1,20 +1,20 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { fragment, graphql } from '$houdini';
+  import { fragment, graphql, type TreePersons } from '$houdini';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
-  import { allLoaded, loaded } from '$lib/loading';
+  import { allLoaded } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import cytoscape from 'cytoscape';
-
   type Nesting = [string, Nesting[]];
-  export let user;
+
+  export let user: TreePersons | null = null;
   $: data = fragment(
     user,
     graphql(`
       fragment TreePersons on User @loading {
         familyTree {
-          nesting
+          nestingTreePersons
           users {
             uid
             fullName
@@ -49,16 +49,15 @@
         'background-image': (node) => `/${node.data('id')}.png`,
         'background-fit': 'cover',
         'border-color': (node) =>
-          node.data('id') === user.isMe
-            ? '#ee0808'
-            : node.data('id') === user.uid
-              ? '#1ade0d'
-              : '#11f',
-        'border-width': '3px',
+          node.data('id') === user.uid
+            ? getComputedStyle(document.documentElement).getPropertyValue('--success')
+            : getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+        'border-width': '2px',
         'border-opacity': 0.8,
         'label': 'data(name)',
         'text-valign': 'bottom',
         'text-halign': 'center',
+        'color': getComputedStyle(document.documentElement).getPropertyValue('--text'),
         'width': '50px',
         'height': '50px',
       })
@@ -103,9 +102,8 @@
     cy.center();
 
     cy.on('click', 'node', async (el) => {
-      if (!(el.target instanceof HTMLElement)) return;
-      const uid = el.target.dataset.uid;
-      if (!uid) return;
+      const uid = el.target.data('id');
+      if (uid === user?.uid) return;
       await goto(
         refroute('/[uid=uid]', uid, {
           tab: 'family',
@@ -114,13 +112,7 @@
     });
   }
 
-  $: if (
-    browser &&
-    wrapperElement &&
-    containerElement &&
-    loaded($data.familyTree.nesting) &&
-    loaded($data.familyTree.users)
-  )
+  $: if (browser && wrapperElement && containerElement && allLoaded($data))
     renderTree(wrapperElement, containerElement, JSON.parse($data.familyTree.nesting));
 </script>
 

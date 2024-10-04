@@ -2,7 +2,6 @@ query PageProfile($uid: UID!) @loading {
   profile(uid: $uid) {
     ... on User {
       id
-      uid
       isMe
 
       # tab: groups
@@ -30,8 +29,6 @@ query PageProfile($uid: UID!) @loading {
       familyTree {
         nesting
         users {
-          uid
-          fullName
           ...AvatarUser
         }
       }
