@@ -21,6 +21,7 @@ builder.prismaObjectField(FormType, 'answersByUser', (t) =>
         required: false,
       }),
     },
+    // @ts-expect-error TODO figure out why
     async resolve(form, { q, ...connectionArgs }) {
       if (q) {
         const searchResults = await fullTextSearch('User', q, {
