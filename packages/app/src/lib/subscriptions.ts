@@ -1,9 +1,10 @@
 import { page } from '$app/stores';
 import { env } from '$env/dynamic/public';
-import type { MaybePromise } from '@sveltejs/kit';
 import { createClient } from 'graphql-ws';
 import { derived } from 'svelte/store';
 import { chain, scalars, type ValueTypes } from './zeus';
+
+type MaybePromise<T> = T | Promise<T>;
 
 const subscriptionsClient = (token: string | undefined, websocketClient?: unknown) =>
   createClient({

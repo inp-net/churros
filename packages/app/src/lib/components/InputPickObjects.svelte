@@ -1,6 +1,4 @@
 <script lang="ts">
-  import type { MaybePromise } from '@sveltejs/kit';
-
   import Fuse from 'fuse.js';
   import ButtonGhost from './ButtonGhost.svelte';
   import IconSearch from '~icons/mdi/magnify';
@@ -8,6 +6,8 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import Modal from './ModalDialog.svelte';
   import InputText from './InputText.svelte';
+
+  type MaybePromise<T> = T | Promise<T>;
 
   type T = $$Generic<{ id: string }>;
   type K = $$Generic<keyof T>;
