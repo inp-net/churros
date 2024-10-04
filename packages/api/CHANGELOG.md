@@ -1,5 +1,14 @@
 # @churros/api
 
+## 3.3.1
+
+### Patch Changes
+
+- 3cff84f: chore(deps): upgrade dependencies
+- Updated dependencies [3cff84f]
+  - arborist@0.1.1
+  - @churros/db@1.3.1
+
 ## 3.3.0
 
 ### Minor Changes
