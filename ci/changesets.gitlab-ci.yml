@@ -31,4 +31,8 @@ release:
     INPUT_VERSION: '/bin/sh scripts/update-versions.sh'
     INPUT_PUBLISH: 'changeset tag'
   script:
+    # we need to create a symlink to node_modules to avoid the error
+    # about changesets changelog plugin not found.
+    # See: https://github.com/changesets/changesets/issues/945
+    - ln -s /usr/local/lib/node_modules/ node_modules
     - changesets-gitlab
