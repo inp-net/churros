@@ -61,7 +61,7 @@
     "candidaterelease": "release-it --preRelease=rc",
     "generate-buildinfo": "yarn tsx scripts/generate-buildinfo.ts",
     "sync-with-example-dotenv": "yarn tsx scripts/sync-with-example-dotenv.ts && yarn cp-env",
-    "update-versions": "changeset version && yarn install",
+    "update-versions": "changeset version && yarn install --mode update-lockfile",
     "deps": "yarn workspaces foreach --all run npm-upgrade"
   },
   "volta": {
