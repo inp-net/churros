@@ -26,12 +26,7 @@ query PageProfile($uid: UID!) @loading {
       }
 
       # tab: family
-      familyTree {
-        nesting
-        users {
-          ...AvatarUser
-        }
-      }
+      ...TreePersons
     }
 
     ... on Group {
