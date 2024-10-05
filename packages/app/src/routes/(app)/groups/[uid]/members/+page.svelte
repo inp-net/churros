@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { pushState } from '$app/navigation';
+  import { page } from '$app/stores';
   import GroupMember from '$lib/components/GroupMember.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
@@ -9,10 +11,17 @@
   import { tooltip } from '$lib/tooltip';
   import { withPrevious } from '$lib/typing';
   import type { PageData } from './$houdini';
+  import ModalGroupMemberDetails from './ModalGroupMemberDetails.svelte';
 
   export let data: PageData;
   $: ({ PageGroupMembers } = data);
+
+  $: editingMember = $PageGroupMembers.data?.group.members.edges.find(
+    (e) => e.node.user.uid === $page.state.EDITING_GROUP_MEMBER,
+  )?.node;
 </script>
+
+<ModalGroupMemberDetails membership={editingMember ?? null} />
 
 <MaybeError result={$PageGroupMembers} let:data={{ group }}>
   <div class="content">
@@ -42,7 +51,16 @@
               </h2>
             {/if}
           {/if}
-          <GroupMember side="user" {membership} />
+          <GroupMember
+            on:click={() => {
+              if (!loaded(membership.user.uid)) return;
+              pushState('', {
+                EDITING_GROUP_MEMBER: membership.user.uid,
+              });
+            }}
+            side="user"
+            {membership}
+          />
         {/each}
       </Submenu>
     </div>

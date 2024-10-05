@@ -85,7 +85,11 @@
     {#if profile.__typename === 'User' && tab === 'groups'}
       <Submenu>
         {#each profile.memberOf as membership}
-          <GroupMember side="group" {membership}></GroupMember>
+          <GroupMember
+            href={refroute('/[uid=uid]', loading(membership.group.uid, ''))}
+            side="group"
+            {membership}
+          ></GroupMember>
         {/each}
       </Submenu>
     {:else if profile.__typename === 'User' && tab === 'infos'}
@@ -190,7 +194,11 @@
     {:else if profile.__typename === 'Group' && tab === 'members'}
       <Submenu>
         {#each profile.boardMembers as membership}
-          <GroupMember side="user" {membership}></GroupMember>
+          <GroupMember
+            href={refroute('/[uid=uid]', loading(membership.user.uid, ''))}
+            side="user"
+            {membership}
+          ></GroupMember>
         {/each}
       </Submenu>
       <section class="see-more-button">

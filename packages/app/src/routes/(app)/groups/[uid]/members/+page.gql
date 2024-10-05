@@ -9,7 +9,11 @@ query PageGroupMembers($uid: String!) @loading {
     members(first: 30, boardFirst: false) @loading(count: 30) @paginate {
       edges {
         node {
+          user {
+            uid
+          }
           createdAt
+          ...ModalGroupMemberDetails
           ...GroupMember
         }
       }

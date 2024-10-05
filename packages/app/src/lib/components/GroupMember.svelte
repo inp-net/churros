@@ -6,7 +6,6 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { allLoaded, mapAllLoading } from '$lib/loading';
-  import { refroute } from '$lib/navigation';
 
   /**
    * 'group' to show the group name (to be used on a user's profile, for example)
@@ -14,12 +13,7 @@
    */
   export let side: 'group' | 'user' = 'user';
 
-  /**
-   * By default, depends on side: it links to the group (for side='user') or to the user (for side='group')
-   */
   export let href: string | undefined = undefined;
-  $: if ($data && allLoaded($data))
-    href ??= refroute('/[uid=uid]', side === 'group' ? $data.group.uid : $data.user.uid);
 
   export let membership: GroupMember | null;
   $: data = fragment(
@@ -50,7 +44,7 @@
   );
 </script>
 
-<SubmenuItem overflow icon={null} {href} subtext={$data?.title}>
+<SubmenuItem overflow icon={null} clickable={!href} {href} on:click subtext={$data?.title}>
   <div class="picture" slot="icon">
     <span class="rolemojis">
       <LoadingText value={$data?.roleEmojis ?? ''} />

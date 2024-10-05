@@ -1784,6 +1784,10 @@ enum GroupJoinPolicy @graphinx(module: "groups") {
 The intermediate model between users and groups
 """
 type GroupMember {
+  """
+  On a le droit de modifier ce membre
+  """
+  canBeEdited: Boolean!
   canEditArticles: Boolean!
   canEditMembers: Boolean!
   canScanEvents: Boolean!

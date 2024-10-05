@@ -67,15 +67,21 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
   window.dispatchEvent(new CustomEvent(eventID));
 };
 
+export type ModalStateKeys = `EDITING_GROUP_MEMBER`;
+
 export type NavigationTopStateKeys =
   `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'POST'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
-function navtopPushState(key: NavigationTopStateKeys) {
+export type ModalState = {
+  EDITING_GROUP_MEMBER?: string;
+};
+
+function navtopPushState(key: NavigationTopStateKeys | ModalStateKeys) {
   pushState('', {
     [key]: true,
-  } satisfies NavigationTopState);
+  } satisfies NavigationTopState & ModalState);
 }
 
 async function navtopPermissions() {
