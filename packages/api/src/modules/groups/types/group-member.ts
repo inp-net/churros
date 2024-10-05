@@ -27,9 +27,26 @@ export const GroupMemberType = builder.prismaObject('GroupMember', {
         return onBoard(roles) || canScanEvents;
       },
     }),
+    onBoard: t.boolean({
+      resolve({ ...roles }) {
+        return onBoard(roles);
+      },
+    }),
+    roleEmojis: t.string({
+      description: 'Les emojis correspondant aux rôles du membre',
+      resolve({ president, treasurer, vicePresident, secretary }) {
+        let out = '';
+        if (president) out += '👑';
+        if (treasurer) out += '💰';
+        if (vicePresident) out += '🌟';
+        if (secretary) out += '📝';
+        return out;
+      },
+    }),
     isDeveloper: t.exposeBoolean('isDeveloper'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
-    member: t.relation('member'),
+    member: t.relation('member', { deprecationReason: 'Utiliser `user`' }),
+    user: t.relation('member'),
     group: t.relation('group'),
   }),
 });

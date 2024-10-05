@@ -1,0 +1,18 @@
+query PageGroupMembers($uid: String!) @loading {
+  group(uid: $uid) {
+    id
+    uid
+    name
+    canEditDetails
+    canEditMembers
+    membersCount
+    members(first: 30, boardFirst: false) @loading(count: 30) @paginate {
+      edges {
+        node {
+          createdAt
+          ...GroupMember
+        }
+      }
+    }
+  }
+}

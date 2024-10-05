@@ -587,6 +587,16 @@ export const topnavConfigs: Partial<{
     back: route('/users/[uid]/edit', uid),
     actions: [],
   }),
+  '/(app)/groups/[uid]/members': ({ params: { uid } }) => ({
+    title: `Membres de ${uid}`,
+    back: route('/[uid=uid]', uid),
+    quickAction: {
+      icon: IconCog,
+      href: route('/groups/[uid]/edit/members', uid),
+      label: 'Gérer',
+    },
+    actions: [],
+  }),
   '/(app)/groups/[uid]/edit': ({ params: { uid } }) => ({
     title: `Modifier ${uid}`,
     back: route('/[uid=uid]', uid),

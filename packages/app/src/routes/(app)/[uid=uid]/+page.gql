@@ -6,11 +6,7 @@ query PageProfile($uid: UID!) @loading {
 
       # tab: groups
       memberOf: groups {
-        group {
-          ...AvatarGroup
-        }
-        ...MemberRoleEmoji
-        title
+        ...GroupMember
       }
 
       # tab: infos
@@ -39,11 +35,7 @@ query PageProfile($uid: UID!) @loading {
       # tab: members
       membersCount
       boardMembers {
-        title
-        member {
-          ...AvatarUser
-        }
-        ...MemberRoleEmoji
+        ...GroupMember
       }
 
       # tab: info

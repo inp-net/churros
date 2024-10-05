@@ -10,6 +10,7 @@ import { canEditGroupMembers, GroupMemberType } from '../index.js';
 builder.mutationField('upsertGroupMember', (t) =>
   t.prismaField({
     type: GroupMemberType,
+    deprecationReason: 'Utiliser `updateGroupMember` et `addGroupMemberV2` à la place',
     args: {
       memberId: t.arg.id(),
       groupId: t.arg.id(),

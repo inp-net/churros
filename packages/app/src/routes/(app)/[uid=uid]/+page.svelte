@@ -5,7 +5,6 @@
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import MemberRoleEmoji from '$lib/components/MemberRoleEmoji.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { refroute } from '$lib/navigation';
@@ -25,9 +24,9 @@
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import { colorName } from '$lib/colors';
-  import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import GroupMember from '$lib/components/GroupMember.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import TreePersons from '$lib/components/TreePersons.svelte';
   import { formatDate } from '$lib/dates';
@@ -84,19 +83,11 @@
 <MaybeError result={$PageProfile} let:data={{ profile }}>
   <div class="contents">
     {#if profile.__typename === 'User' && tab === 'groups'}
-      <ul class="avatars">
+      <Submenu>
         {#each profile.memberOf as membership}
-          <li>
-            <div class="left">
-              <AvatarGroup name group={membership.group} />
-            </div>
-            <div class="right">
-              <LoadingText value={membership.title} />
-              <MemberRoleEmoji {membership} />
-            </div>
-          </li>
+          <GroupMember side="group" {membership}></GroupMember>
         {/each}
-      </ul>
+      </Submenu>
     {:else if profile.__typename === 'User' && tab === 'infos'}
       <Submenu>
         {#if profile.phone}
@@ -197,19 +188,11 @@
     {:else if profile.__typename === 'User' && tab === 'family'}
       <TreePersons user={profile} />
     {:else if profile.__typename === 'Group' && tab === 'members'}
-      <ul class="avatars">
+      <Submenu>
         {#each profile.boardMembers as membership}
-          <li>
-            <div class="left">
-              <AvatarUser name user={membership.member} />
-            </div>
-            <div class="right">
-              <LoadingText value={membership.title} />
-              <MemberRoleEmoji {membership} />
-            </div>
-          </li>
+          <GroupMember side="user" {membership}></GroupMember>
         {/each}
-      </ul>
+      </Submenu>
       <section class="see-more-button">
         <ButtonInk href={refroute('/groups/[uid]/members', $page.params.uid)}
           >Voir les <LoadingText value={profile.membersCount}>...</LoadingText> membres</ButtonInk

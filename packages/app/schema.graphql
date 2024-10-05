@@ -533,14 +533,16 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
   body: String!
-  bodyHtml: String! @deprecated(reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too.")
+  bodyHtml: String!
+    @deprecated(
+      reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too."
+    )
   bodyHtmlSafe: HTML!
   bodyPreview: String!
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
   canBeEdited: Boolean! @deprecated(reason: "Use canEdit instead.")
-
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
@@ -1655,7 +1657,19 @@ type Group implements Node & Pictured {
   """
   lydiaAccounts: [LydiaAccount!]!
   mailingList: String!
-  members: [GroupMember!]!
+  """
+  Les membres du groupe, triés par date d'adhésion
+  """
+  members(
+    after: String
+    before: String
+    """
+    Renvoyer d'abord les membres du bureau
+    """
+    boardFirst: Boolean! = true
+    first: Int
+    last: Int
+  ): GroupMembersConnection!
   """
   Nombre de membres
   """
@@ -1777,13 +1791,41 @@ type GroupMember {
   group: Group!
   groupId: ID!
   isDeveloper: Boolean!
-  member: User!
+  member: User! @deprecated(reason: "Utiliser `user`")
   memberId: ID!
+  onBoard: Boolean!
   president: Boolean!
+  """
+  Les emojis correspondant aux rôles du membre
+  """
+  roleEmojis: String!
   secretary: Boolean!
   title: String!
   treasurer: Boolean!
+  user: User!
   vicePresident: Boolean!
+}
+
+input GroupMemberInput {
+  canEditArticles: Boolean
+  canEditMembers: Boolean
+  canScanEvents: Boolean
+  president: Boolean
+  secretary: Boolean
+  title: String
+  treasurer: Boolean
+  vicePresident: Boolean
+}
+
+type GroupMembersConnection {
+  edges: [GroupMembersConnectionEdge!]!
+  nodes: [GroupMember!]!
+  pageInfo: PageInfo!
+}
+
+type GroupMembersConnectionEdge {
+  cursor: String!
+  node: GroupMember!
 }
 
 """
@@ -2082,6 +2124,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   addFileToPage(file: File!, page: ID!): MutationAddFileToPageResult!
   addGroupMember(groupUid: String!, title: String!, uid: String!): MutationAddGroupMemberResult!
+    @deprecated(reason: "Utiliser `addGroupMemberV2` à la place")
+  """
+  Ajouter quelqu'un à un groupe
+  """
+  addGroupMemberV2(
+    group: UID!
+    title: String! = "Membre"
+    user: UID!
+  ): MutationAddGroupMemberV2Result!
   """
   Ajouter des liens à une ressource implémentant `HasLinks`
   """
@@ -2171,8 +2222,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Changer le groupe organisateur (principal) de l'événement
   """
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
-
-  """Mettre à jour le groupe d'un article"""
+  """
+  Mettre à jour le groupe d'un article
+  """
   changePostOwner(group: UID!, post: LocalID!): MutationChangePostOwnerResult!
   checkIfBookingIsPaid(code: String!): Boolean!
   claimPromotionCode(code: String!): Boolean!
@@ -2717,8 +2769,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     path: String!
   ): Bookmark
-
-  """Détacher un post de son événement"""
+  """
+  Détacher un post de son événement
+  """
   unlinkEventFromPost(post: LocalID!): MutationUnlinkEventFromPostResult!
   unreact(
     emoji: String!
@@ -2782,6 +2835,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     recurringUntil: DateTime
   ): MutationUpdateEventRecurrenceResult!
+  """
+  Mettre à jour un membre d'un groupe
+  """
+  updateGroupMember(
+    group: UID!
+    input: GroupMemberInput!
+    user: UID!
+  ): MutationUpdateGroupMemberResult!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
     @deprecated(reason: "Use setPicture instead")
   """
@@ -2919,14 +2980,37 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   updateUserProfile(profile: UserProfileInput!, uid: UID!): MutationUpdateUserProfileResult!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
-  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
-
-  """Crée ou met à jour un post"""
-  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
-
-  """Crée ou met à jour un post"""
+  upsertAnnouncement(
+    body: String!
+    endsAt: DateTime!
+    id: ID
+    startsAt: DateTime!
+    title: String!
+    warning: Boolean!
+  ): MutationUpsertAnnouncementResult!
+  """
+  Crée ou met à jour un post
+  """
+  upsertArticle(
+    body: String!
+    event: ID
+    group: UID!
+    id: ID
+    publishedAt: DateTime
+    title: String!
+    visibility: Visibility!
+  ): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
+  """
+  Crée ou met à jour un post
+  """
   upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!
-  upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
+  upsertBarWeek(
+    description: String!
+    endsAt: DateTime!
+    groupsUids: [String!]!
+    id: ID
+    startsAt: DateTime!
+  ): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(
     description: String!
@@ -2971,6 +3055,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     treasurer: Boolean!
     vicePresident: Boolean!
   ): GroupMember!
+    @deprecated(reason: "Utiliser `updateGroupMember` et `addGroupMemberV2` à la place")
   upsertLydiaAccount(
     groupUid: String!
     id: ID
@@ -3114,6 +3199,12 @@ type MutationAddFileToPageSuccess {
 union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess | ZodError
 
 type MutationAddGroupMemberSuccess {
+  data: GroupMember!
+}
+
+union MutationAddGroupMemberV2Result = Error | MutationAddGroupMemberV2Success | ZodError
+
+type MutationAddGroupMemberV2Success {
   data: GroupMember!
 }
 
@@ -3511,7 +3602,10 @@ type MutationUnlinkEventFromPostSuccess {
   data: Article!
 }
 
-union MutationUnsubscribeFromNotificationsResult = Error | MutationUnsubscribeFromNotificationsSuccess | ZodError
+union MutationUnsubscribeFromNotificationsResult =
+  | Error
+  | MutationUnsubscribeFromNotificationsSuccess
+  | ZodError
 
 type MutationUnsubscribeFromNotificationsSuccess {
   data: NotificationSubscription!
@@ -3527,6 +3621,12 @@ union MutationUpdateEventResult = Error | MutationUpdateEventSuccess | ZodError
 
 type MutationUpdateEventSuccess {
   data: Event!
+}
+
+union MutationUpdateGroupMemberResult = Error | MutationUpdateGroupMemberSuccess | ZodError
+
+type MutationUpdateGroupMemberSuccess {
+  data: GroupMember!
 }
 
 union MutationUpdateGroupProfileResult = Error | MutationUpdateGroupProfileSuccess | ZodError

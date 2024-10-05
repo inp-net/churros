@@ -54,28 +54,30 @@ export const load: PageLoad = async (event) => {
           name
         }
         members {
-          memberId
-          createdAt
-          member {
-            uid
-            firstName
-            lastName
-            pictureFile
-            fullName
-            yearTier
-            contributesTo {
+          nodes {
+            memberId
+            createdAt
+            member {
               uid
+              firstName
+              lastName
+              pictureFile
+              fullName
+              yearTier
+              contributesTo {
+                uid
+              }
             }
+            title
+            president
+            treasurer
+            secretary
+            vicePresident
+            canEditMembers
+            canEditArticles
+            canScanEvents
+            isDeveloper
           }
-          title
-          president
-          treasurer
-          secretary
-          vicePresident
-          canEditMembers
-          canEditArticles
-          canScanEvents
-          isDeveloper
         }
       }
     }

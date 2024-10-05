@@ -4,6 +4,7 @@
 
 export * from './group.ancestors.js';
 export * from './group.members.js';
+export * from './mutation.add-group-member-v2.js';
 export * from './mutation.add-group-member.js';
 export * from './mutation.create-group-access-token.js';
 export * from './mutation.create-group.js';
@@ -16,6 +17,7 @@ export * from './mutation.set-group-join-policy.js';
 export * from './mutation.set-group-student-association.js';
 export * from './mutation.set-group-type.js';
 export * from './mutation.set-parent-group.js';
+export * from './mutation.update-group-member.js';
 export * from './mutation.update-group-picture.js';
 export * from './mutation.update-group-profile.js';
 export * from './mutation.upsert-group-member.js';

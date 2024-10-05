@@ -1,89 +1,56 @@
 <script lang="ts">
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { roleEmojis } from '$lib/permissions';
-  import { byMemberGroupTitleImportance } from '$lib/sorting';
-  import groupBy from 'lodash.groupby';
-  import IconGear from '~icons/mdi/gear-outline';
-  import type { PageData } from './$types';
+  import GroupMember from '$lib/components/GroupMember.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import { schoolYearRangeOf } from '$lib/dates';
+  import { loaded } from '$lib/loading';
+  import { infinitescroll } from '$lib/scroll';
+  import { tooltip } from '$lib/tooltip';
+  import { withPrevious } from '$lib/typing';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
-
-  $: ({
-    group: { name, members },
-    group,
-  } = data);
+  $: ({ PageGroupMembers } = data);
 </script>
 
-<div class="content">
-  <h1>
-    <ButtonBack />
-
-    {members.length} membre{members.length > 2 ? 's' : ''} de {name}
-
-    {#if group.canEditMembers}
-      <div class="title-actions">
-        <ButtonSecondary href="../edit/members" icon={IconGear}>Gérer</ButtonSecondary>
-      </div>
-    {/if}
-  </h1>
-
-  {#each Object.entries(groupBy(members, ({ member: { graduationYear } }) => `Promo ${graduationYear}`)).sort( ([a, _], [b, _2]) => b.localeCompare(a), ) as [year, membersOfYear]}
-    <section class="year">
-      <h2>
-        {year}
-        <span class="count">({membersOfYear.length})</span>
-      </h2>
-
-      <ul class="nobullet">
-        {#each membersOfYear.sort(byMemberGroupTitleImportance) as { title, member, ...permissions } (member.uid)}
-          <li>
-            <span class="emojis">{roleEmojis(permissions)}</span>
-            <AvatarPerson href="/users/{member.uid}" {...member} role={title} />
-          </li>
+<MaybeError result={$PageGroupMembers} let:data={{ group }}>
+  <div class="content">
+    <p class="count">
+      <LoadingText value={group.membersCount} /> membres
+    </p>
+    <div
+      class="infinite-scroll-wrapper"
+      use:infinitescroll={async () => {
+        await PageGroupMembers.loadNextPage();
+      }}
+    >
+      <Submenu>
+        {#each withPrevious(group.members.edges.map((e) => e.node)) as [membership, previous]}
+          {#if loaded(membership.createdAt) && (!previous || loaded(previous.createdAt))}
+            {@const joinedRange = schoolYearRangeOf(membership.createdAt)}
+            {@const previousJoinedRange =
+              previous && loaded(previous.createdAt)
+                ? schoolYearRangeOf(previous.createdAt)
+                : undefined}
+            {#if !previousJoinedRange || joinedRange[0] !== previousJoinedRange[0]}
+              <h2
+                class="joined-year"
+                use:tooltip={`A rejoint dans l'année scolaire ${joinedRange.join('–')}`}
+              >
+                {joinedRange.join('–')}
+              </h2>
+            {/if}
+          {/if}
+          <GroupMember side="user" {membership} />
         {/each}
-      </ul>
-    </section>
-  {/each}
-</div>
+      </Submenu>
+    </div>
+  </div>
+</MaybeError>
 
 <style>
-  h1 {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
   .content {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1rem;
-    max-width: 1000px;
-    padding: 0 1rem;
-    margin: 0 auto;
-  }
-
-  .title-actions {
-    margin-left: 1rem;
-  }
-
-  .count {
-    position: relative;
-    bottom: 2px;
-    font-size: 0.8em;
-    font-weight: 400;
-  }
-
-  .nobullet li {
-    display: grid;
-    grid-template-columns: 1.6rem 1fr;
-    align-items: center;
-  }
-
-  .nobullet li .emojis {
-    font-size: 1.2rem;
+    padding: 1rem;
   }
 </style>
