@@ -1794,6 +1794,7 @@ type GroupMember {
   createdAt: DateTime!
   group: Group!
   groupId: ID!
+  groupUid: UID!
   isDeveloper: Boolean!
   member: User! @deprecated(reason: "Utiliser `user`")
   memberId: ID!
@@ -1807,6 +1808,7 @@ type GroupMember {
   title: String!
   treasurer: Boolean!
   user: User!
+  userUid: UID!
   vicePresident: Boolean!
 }
 
@@ -1814,6 +1816,7 @@ input GroupMemberInput {
   canEditArticles: Boolean
   canEditMembers: Boolean
   canScanEvents: Boolean
+  createdAt: DateTime
   president: Boolean
   secretary: Boolean
   title: String
@@ -2373,7 +2376,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deleteGodparent(child: UID!, parent: UID!): MutationDeleteGodparentResult!
   deleteGroup(uid: String!): Boolean!
-  deleteGroupMember(groupId: ID!, memberId: ID!): Boolean!
+  deleteGroupMember(group: UID!, user: UID!): MutationDeleteGroupMemberResult!
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
     @deprecated(reason: "Use setPicture instead")
   deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
@@ -3366,6 +3369,12 @@ type MutationDeleteGodparentSuccess {
   data: User!
 }
 
+union MutationDeleteGroupMemberResult = Error | MutationDeleteGroupMemberSuccess | ZodError
+
+type MutationDeleteGroupMemberSuccess {
+  data: GroupMember!
+}
+
 union MutationDeleteLinkResult = Error | MutationDeleteLinkSuccess | ZodError
 
 type MutationDeleteLinkSuccess {
@@ -4281,6 +4290,7 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   godparentRequest(id: ID!): GodparentRequest!
   godparentRequests: [GodparentRequest!]!
   group(uid: String!): Group!
+  groupMember(group: UID!, user: UID!): GroupMember
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
   groups(
     types: [GroupType!]

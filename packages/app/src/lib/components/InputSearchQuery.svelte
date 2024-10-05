@@ -42,3 +42,19 @@
     </svelte:fragment>
   </BaseInputText>
 </form>
+
+<style lang="scss">
+  form.query {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 1rem;
+    margin-bottom: 1rem;
+
+    > :global(.base-input) {
+      width: 100%;
+    }
+  }
+</style>

@@ -2,6 +2,8 @@ import { builder, log, prisma } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { GroupMemberType } from '#modules/groups/types';
 import { canEditGroupMembers } from '#modules/groups/utils';
+import { Prisma } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
 
 builder.mutationField('addGroupMemberV2', (t) =>
   t.prismaField({
@@ -25,14 +27,22 @@ builder.mutationField('addGroupMemberV2', (t) =>
         where: { uid: groupUid },
       });
       await log('memberships', 'add', { groupUid, targetUserUid, title }, group.id, me);
-      return prisma.groupMember.create({
-        ...query,
-        data: {
-          group: { connect: { uid: groupUid } },
-          member: { connect: { uid: targetUserUid } },
-          title,
-        },
-      });
+      return prisma.groupMember
+        .create({
+          ...query,
+          data: {
+            group: { connect: { uid: groupUid } },
+            member: { connect: { uid: targetUserUid } },
+            title,
+          },
+        })
+        .catch((error) => {
+          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') 
+            throw new GraphQLError(`${targetUserUid} est déjà membre de ${groupUid}`);
+          
+
+          throw error;
+        });
     },
   }),
 );

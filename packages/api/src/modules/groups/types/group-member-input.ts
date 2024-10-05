@@ -1,4 +1,5 @@
 import { builder } from '#lib';
+import { DateTimeScalar } from '#modules/global';
 
 export const GroupMemberInput = builder.inputType('GroupMemberInput', {
   fields: (t) => ({
@@ -10,5 +11,6 @@ export const GroupMemberInput = builder.inputType('GroupMemberInput', {
     canEditMembers: t.boolean({ required: false }),
     canEditArticles: t.boolean({ required: false }),
     canScanEvents: t.boolean({ required: false }),
+    createdAt: t.field({ type: DateTimeScalar, required: false }),
   }),
 });

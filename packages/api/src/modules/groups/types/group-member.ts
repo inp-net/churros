@@ -1,13 +1,22 @@
 import { builder, prisma } from '#lib';
-import { DateTimeScalar } from '#modules/global';
+import { DateTimeScalar, UIDScalar } from '#modules/global';
 import { canEditGroupMembers } from '#modules/groups/utils';
 import { onBoard } from '#permissions';
 // TODO maybe rename membership ?
 
 export const GroupMemberType = builder.prismaObject('GroupMember', {
+  include: { member: true, group: true },
   fields: (t) => ({
     memberId: t.exposeID('memberId'),
+    userUid: t.field({
+      type: UIDScalar,
+      resolve: ({ member }) => member.uid,
+    }),
     groupId: t.exposeID('groupId'),
+    groupUid: t.field({
+      type: UIDScalar,
+      resolve: ({ group }) => group.uid,
+    }),
     title: t.string({ resolve: ({ title }) => title || 'Membre' }),
     president: t.exposeBoolean('president'),
     treasurer: t.exposeBoolean('treasurer'),

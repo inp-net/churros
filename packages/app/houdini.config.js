@@ -43,6 +43,13 @@ const config = {
         arguments: ({ uid }) => ({ uid }),
       },
     },
+    GroupMember: {
+      keys: ['userUid', 'groupUid'],
+      resolve: {
+        queryField: 'groupMember',
+        arguments: ({ userUid, groupUid }) => ({ user: userUid, group: groupUid }),
+      },
+    },
     PagesEdge: {
       keys: ['cursor'],
     },

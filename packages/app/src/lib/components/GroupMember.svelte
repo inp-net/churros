@@ -14,6 +14,10 @@
   export let side: 'group' | 'user' = 'user';
 
   export let href: string | undefined = undefined;
+  /**
+   * Show a chevron icon on the right side of the item, see SubmenuItem.svelte
+   */
+  export let chevron = false;
 
   export let membership: GroupMember | null;
   $: data = fragment(
@@ -44,7 +48,15 @@
   );
 </script>
 
-<SubmenuItem overflow icon={null} clickable={!href} {href} on:click subtext={$data?.title}>
+<SubmenuItem
+  {chevron}
+  overflow
+  icon={null}
+  clickable={!href}
+  {href}
+  on:click
+  subtext={$data?.title}
+>
   <div class="picture" slot="icon">
     <span class="rolemojis">
       <LoadingText value={$data?.roleEmojis ?? ''} />

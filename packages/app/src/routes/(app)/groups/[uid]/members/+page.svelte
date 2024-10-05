@@ -4,14 +4,19 @@
   import GroupMember from '$lib/components/GroupMember.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import ModalSearchUser from '$lib/components/ModalSearchUser.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { schoolYearRangeOf } from '$lib/dates';
   import { loaded } from '$lib/loading';
+  import { mutateAndToast } from '$lib/mutations';
   import { infinitescroll } from '$lib/scroll';
   import { tooltip } from '$lib/tooltip';
   import { withPrevious } from '$lib/typing';
+  import IconAdd from '~icons/msl/add';
   import type { PageData } from './$houdini';
   import ModalGroupMemberDetails from './ModalGroupMemberDetails.svelte';
+  import { AddGroupMember } from './mutations';
 
   export let data: PageData;
   $: ({ PageGroupMembers } = data);
@@ -21,9 +26,26 @@
   )?.node;
 </script>
 
-<ModalGroupMemberDetails membership={editingMember ?? null} />
+<ModalGroupMemberDetails
+  on:removeFromGroup={async () => {
+    PageGroupMembers.fetch({ variables: { uid: $page.params.uid } });
+  }}
+  membership={editingMember ?? null}
+/>
 
 <MaybeError result={$PageGroupMembers} let:data={{ group }}>
+  <ModalSearchUser
+    queryPlaceholder="Ajouter un membre"
+    statebound="NAVTOP_CREATING_GROUP_MEMBER"
+    on:pick={async ({ detail }) => {
+      await mutateAndToast(AddGroupMember, {
+        group: group.uid,
+        user: detail,
+      });
+      await PageGroupMembers.fetch({ variables: { uid: $page.params.uid } });
+    }}
+  />
+
   <div class="content">
     <p class="count">
       <LoadingText value={group.membersCount} /> membres
@@ -35,6 +57,17 @@
       }}
     >
       <Submenu>
+        <SubmenuItem
+          icon={IconAdd}
+          clickable
+          on:click={() => {
+            pushState('', {
+              NAVTOP_CREATING_GROUP_MEMBER: true,
+            });
+          }}
+        >
+          Ajouter un membre
+        </SubmenuItem>
         {#each withPrevious(group.members.edges.map((e) => e.node)) as [membership, previous]}
           {#if loaded(membership.createdAt) && (!previous || loaded(previous.createdAt))}
             {@const joinedRange = schoolYearRangeOf(membership.createdAt)}

@@ -22,6 +22,7 @@ export * from './mutation.update-group-picture.js';
 export * from './mutation.update-group-profile.js';
 export * from './mutation.upsert-group-member.js';
 export * from './mutation.upsert-group.js';
+export * from './query.group-member.js';
 export * from './query.group-members-csv.js';
 export * from './query.group.js';
 export * from './query.groups.js';

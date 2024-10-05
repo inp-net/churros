@@ -70,7 +70,7 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
 export type ModalStateKeys = `EDITING_GROUP_MEMBER`;
 
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'POST'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'POST' | 'GROUP_MEMBER'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 

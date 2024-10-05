@@ -20,7 +20,7 @@
   import IconAddress from '~icons/msl/map-outline';
   import IconOtherEmails from '~icons/msl/stacked-email-outline';
   import type { PageData } from './$houdini';
-  // import IconStudent
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import { colorName } from '$lib/colors';
@@ -86,7 +86,14 @@
       <Submenu>
         {#each profile.memberOf as membership}
           <GroupMember
-            href={refroute('/[uid=uid]', loading(membership.group.uid, ''))}
+            chevron
+            on:click={async () => {
+              await goto(refroute('/groups/[uid]/members', loading(membership.group.uid, '')), {
+                state: {
+                  EDITING_GROUP_MEMBER: $page.params.uid,
+                },
+              });
+            }}
             side="group"
             {membership}
           ></GroupMember>
@@ -195,7 +202,14 @@
       <Submenu>
         {#each profile.boardMembers as membership}
           <GroupMember
-            href={refroute('/[uid=uid]', loading(membership.user.uid, ''))}
+            chevron
+            on:click={async () => {
+              await goto(refroute('/groups/[uid]/members', $page.params.uid), {
+                state: {
+                  EDITING_GROUP_MEMBER: loading(membership.user.uid, ''),
+                },
+              });
+            }}
             side="user"
             {membership}
           ></GroupMember>
