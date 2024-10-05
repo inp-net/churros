@@ -28,7 +28,7 @@ release:
     INPUT_TITLE: 'chore: version packages'
     INPUT_COMMIT: 'chore: version packages'
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-    INPUT_VERSION: 'changeset version && yarn install --mode update-lockfile'
+    INPUT_VERSION: '/bin/sh scripts/update-versions.sh'
     INPUT_PUBLISH: 'changeset tag'
   script:
     - changesets-gitlab
