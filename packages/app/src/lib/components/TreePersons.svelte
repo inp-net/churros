@@ -56,13 +56,14 @@
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         'border-color': (node: any) =>
           node.data('id') === $data?.uid
-            ? getComputedStyle(document.documentElement).getPropertyValue('--success')
-            : getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+            ? getComputedStyle(document.documentElement).getPropertyValue('--primary')
+            : getComputedStyle(document.documentElement).getPropertyValue('--shy'),
         'border-width': '2px',
         'border-opacity': 0.8,
         'label': 'data(name)',
         'text-valign': 'bottom',
         'text-halign': 'center',
+        'text-margin-y': '5px',
         'color': getComputedStyle(document.documentElement).getPropertyValue('--text'),
         'width': '50px',
         'height': '50px',
@@ -70,7 +71,7 @@
       .selector('edge')
       .css({
         'curve-style': 'bezier',
-        'width': 6,
+        'width': 3,
         'target-arrow-shape': 'triangle',
         'line-color': '#aaa',
         'target-arrow-color': '#aaa',
@@ -118,9 +119,8 @@
     });
   }
 
-  $: if (browser && wrapperElement && containerElement && allLoaded($data) && $data) 
+  $: if (browser && wrapperElement && containerElement && allLoaded($data) && $data)
     renderTree(wrapperElement, containerElement, JSON.parse($data.familyTree.nesting));
-  
 </script>
 
 {#if allLoaded($data)}
