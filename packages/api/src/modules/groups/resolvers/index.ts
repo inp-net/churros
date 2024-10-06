@@ -4,6 +4,7 @@
 
 export * from './group.ancestors.js';
 export * from './group.members.js';
+export * from './group.search-members.js';
 export * from './mutation.add-group-member-v2.js';
 export * from './mutation.add-group-member.js';
 export * from './mutation.create-group-access-token.js';
@@ -27,6 +28,7 @@ export * from './query.group-members-csv.js';
 export * from './query.group.js';
 export * from './query.groups.js';
 export * from './query.search-groups.js';
+export * from './user.can-add-members-to.js';
 export * from './user.can-create-events-on.js';
 export * from './user.can-create-posts-on.js';
 export * from './user.groups.js';

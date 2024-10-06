@@ -1736,6 +1736,10 @@ type Group implements Node & Pictured {
   Family root, only created for performance reasons
   """
   root: Group
+  """
+  Recherche des membres du groupe
+  """
+  searchMembers(q: String!): [GroupMemberSearchResult!]!
   secretaries: [GroupMember!]!
   selfJoinable: Boolean!
   services: [Service!]!
@@ -1822,6 +1826,12 @@ input GroupMemberInput {
   title: String
   treasurer: Boolean
   vicePresident: Boolean
+}
+
+type GroupMemberSearchResult {
+  membership: GroupMember!
+  rank: Float
+  similarity: Float!
 }
 
 type GroupMembersConnection {
@@ -6326,6 +6336,10 @@ type User implements Node & Pictured {
   """
   bot: Boolean!
   canAccessDocuments: Boolean!
+  """
+  Groupes auxquels l'utilisateur·ice peut ajouter des membres
+  """
+  canAddMembersTo: [Group!]!
   canBeEdited: Boolean!
   """
   Les AEs pour lesquelles la personne peut cotiser

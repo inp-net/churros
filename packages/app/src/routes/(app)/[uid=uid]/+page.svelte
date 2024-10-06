@@ -1,13 +1,28 @@
 <script lang="ts">
+  import { goto, pushState } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { graphql } from '$houdini';
+  import { colorName } from '$lib/colors';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
-  import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
+  import ButtonCopyToClipboard, {
+    copyToClipboard,
+  } from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import GroupMember from '$lib/components/GroupMember.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import TreePersons from '$lib/components/TreePersons.svelte';
+  import { formatDate } from '$lib/dates';
+  import { loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
   import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
+  import { formatDistanceToNow, isPast, isToday, setYear } from 'date-fns';
+  import IconAdd from '~icons/msl/add';
   import IconHandover from '~icons/msl/assignment-outline';
   import IconBirthday from '~icons/msl/cake-outline';
   import IconPhone from '~icons/msl/call-outline';
@@ -20,19 +35,6 @@
   import IconAddress from '~icons/msl/map-outline';
   import IconOtherEmails from '~icons/msl/stacked-email-outline';
   import type { PageData } from './$houdini';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { graphql } from '$houdini';
-  import { colorName } from '$lib/colors';
-  import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import GroupMember from '$lib/components/GroupMember.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import TreePersons from '$lib/components/TreePersons.svelte';
-  import { formatDate } from '$lib/dates';
-  import { loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
-  import { route } from '$lib/ROUTES';
-  import { formatDistanceToNow, isPast, isToday, setYear } from 'date-fns';
 
   const formatPhoneNumber = (phone: string) =>
     phone
@@ -98,6 +100,15 @@
             {membership}
           ></GroupMember>
         {/each}
+        <SubmenuItem
+          icon={IconAdd}
+          clickable
+          on:click={() => {
+            pushState('', {
+              NAVTOP_CREATING_GROUP_MEMBER: true,
+            });
+          }}>Ajouter à…</SubmenuItem
+        >
       </Submenu>
     {:else if profile.__typename === 'User' && tab === 'infos'}
       <Submenu>

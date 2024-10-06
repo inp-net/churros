@@ -17,6 +17,9 @@
   import type { PageData } from './$houdini';
   import ModalGroupMemberDetails from './ModalGroupMemberDetails.svelte';
   import { AddGroupMember } from './mutations';
+  import { queryParam } from 'sveltekit-search-params';
+  import { graphql } from '$houdini';
+  import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
 
   export let data: PageData;
   $: ({ PageGroupMembers } = data);
@@ -24,6 +27,25 @@
   $: editingMember = $PageGroupMembers.data?.group.members.edges.find(
     (e) => e.node.user.uid === $page.state.EDITING_GROUP_MEMBER,
   )?.node;
+
+  const searchQuery = queryParam('q');
+
+  const SearchResults = graphql(`
+    query PageGroupMembersSearchUsers($group: String!, $q: String!) {
+      group(uid: $group) {
+        searchMembers(q: $q) {
+          membership {
+            user {
+              uid
+            }
+            createdAt
+            ...ModalGroupMemberDetails
+            ...GroupMember
+          }
+        }
+      }
+    }
+  `);
 </script>
 
 <ModalGroupMemberDetails
@@ -47,8 +69,28 @@
   />
 
   <div class="content">
+    <search>
+      <InputSearchQuery
+        placeholder="Rechercher un membre"
+        q={$searchQuery}
+        on:debouncedInput={async ({ detail }) => {
+          if (detail)
+            {await SearchResults.fetch({
+              variables: {
+                group: $page.params.uid,
+                q: detail,
+              },
+            });}
+          $searchQuery = detail;
+        }}
+      />
+    </search>
     <p class="count">
-      <LoadingText value={group.membersCount} /> membres
+      {#if $searchQuery}
+        <LoadingText value={$SearchResults.data?.group.searchMembers.length} /> résultats
+      {:else}
+        <LoadingText value={group.membersCount} /> membres
+      {/if}
     </p>
     <div
       class="infinite-scroll-wrapper"
@@ -68,7 +110,7 @@
         >
           Ajouter un membre
         </SubmenuItem>
-        {#each withPrevious(group.members.edges.map((e) => e.node)) as [membership, previous]}
+        {#each withPrevious($searchQuery && $SearchResults.data ? $SearchResults.data?.group.searchMembers.map((r) => r.membership) : group.members.edges.map((e) => e.node)) as [membership, previous]}
           {#if loaded(membership.createdAt) && (!previous || loaded(previous.createdAt))}
             {@const joinedRange = schoolYearRangeOf(membership.createdAt)}
             {@const previousJoinedRange =

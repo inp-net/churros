@@ -1,3 +1,15 @@
+<!-- 
+
+@component
+A clearable search input with search-specific stuff, that stretches to take the entire parent's width.
+
+## Events
+
+- **debouncedInput**: emits the input value on each character typed, but guaranteed to never be fired more than once every 300ms, except when clearing the input or submitting.
+- **search**: emits the input value on submit.
+
+-->
+
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import IconSearch from '~icons/msl/search';
@@ -20,13 +32,21 @@
   $: debouncedDispatchInputEvent(q);
 </script>
 
-<form class="query" method="get" on:submit|preventDefault={() => emit('search', q)}>
+<form
+  class="query"
+  method="get"
+  on:submit|preventDefault={() => {
+    emit('debouncedInput', q);
+    emit('search', q);
+  }}
+>
   <slot />
   <BaseInputText
     actionIcon={q ? IconClear : undefined}
     on:action={() => {
       q = '';
       emit('search', q);
+      emit('debouncedInput', q);
     }}
     type="text"
     {placeholder}

@@ -96,6 +96,22 @@ type RecursivelyPartialize<T, K extends string> = Omit<T, K> & {
   [P in K & keyof T]?: undefined | null | RecursivelyPartialize<NonNullable<T[P]>, K>;
 };
 
+export function prismaQueryCanEditGroupMembersOf(user: { id: string }): Prisma.GroupWhereInput {
+  return {
+    OR: [
+      { studentAssociation: { admins: { some: { id: user.id } } } },
+      {
+        members: {
+          some: {
+            memberId: user.id,
+            OR: [prismaQueryOnClubBoard(), { canEditMembers: true }, { member: { admin: true } }],
+          },
+        },
+      },
+    ],
+  };
+}
+
 export function canEditGroupMembers(
   user: Context['user'],
   group: RecursivelyPartialize<
