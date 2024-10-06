@@ -24,6 +24,7 @@ import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
+import IconAddBulk from '~icons/msl/library-add-outline';
 import IconLogout from '~icons/msl/logout';
 import {
   default as IconNotifications,
@@ -597,11 +598,17 @@ export const topnavConfigs: Partial<{
     title: `Membres de ${uid}`,
     back: route('/[uid=uid]', uid),
     quickAction: {
-      icon: IconCog,
-      href: route('/groups/[uid]/edit/members', uid),
-      label: 'Gérer',
+      icon: IconAdd,
+      do: () => navtopPushState('NAVTOP_CREATING_GROUP_MEMBER'),
+      label: 'Ajouter',
     },
-    actions: [],
+    actions: [
+      {
+        icon: IconAddBulk,
+        href: route('/groups/[uid]/edit/members/bulk', uid),
+        label: 'Ajouter en masse',
+      },
+    ],
   }),
   '/(app)/groups/[uid]/edit': ({ params: { uid } }) => ({
     title: `Modifier ${uid}`,
@@ -625,12 +632,7 @@ export const topnavConfigs: Partial<{
   }),
   '/(app)/groups/[uid]/edit/members/bulk': ({ params: { uid } }) => ({
     title: 'Ajout en masse de membres',
-    back: route('/groups/[uid]/edit/members', uid),
-    actions: [],
-  }),
-  '/(app)/groups/[uid]/edit/members': ({ params: { uid } }) => ({
-    title: 'Gérer les membres',
-    back: route('/groups/[uid]/edit', uid),
+    back: route('/groups/[uid]/members', uid),
     actions: [],
   }),
   '/(app)/groups/[uid]/edit/pages/[...page]': ({ params: { uid, page } }) => ({
