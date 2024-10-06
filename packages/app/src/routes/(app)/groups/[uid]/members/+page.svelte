@@ -14,12 +14,14 @@
   import { tooltip } from '$lib/tooltip';
   import { withPrevious } from '$lib/typing';
   import IconAdd from '~icons/msl/add';
+  import IconAddBulk from '~icons/msl/library-add-outline';
   import type { PageData } from './$houdini';
   import ModalGroupMemberDetails from './ModalGroupMemberDetails.svelte';
   import { AddGroupMember } from './mutations';
   import { queryParam } from 'sveltekit-search-params';
   import { graphql } from '$houdini';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
+  import { refroute } from '$lib/navigation';
 
   export let data: PageData;
   $: ({ PageGroupMembers } = data);
@@ -74,13 +76,14 @@
         placeholder="Rechercher un membre"
         q={$searchQuery}
         on:debouncedInput={async ({ detail }) => {
-          if (detail)
-            {await SearchResults.fetch({
+          if (detail) {
+            await SearchResults.fetch({
               variables: {
                 group: $page.params.uid,
                 q: detail,
               },
-            });}
+            });
+          }
           $searchQuery = detail;
         }}
       />
@@ -109,6 +112,13 @@
           }}
         >
           Ajouter un membre
+        </SubmenuItem>
+        <SubmenuItem
+          icon={IconAddBulk}
+          href={refroute('/groups/[uid]/edit/members/bulk', $page.params.uid)}
+          subtext="Pour ajouter pleins de gens d'un coup"
+        >
+          Ajouter en masse
         </SubmenuItem>
         {#each withPrevious($searchQuery && $SearchResults.data ? $SearchResults.data?.group.searchMembers.map((r) => r.membership) : group.members.edges.map((e) => e.node)) as [membership, previous]}
           {#if loaded(membership.createdAt) && (!previous || loaded(previous.createdAt))}
