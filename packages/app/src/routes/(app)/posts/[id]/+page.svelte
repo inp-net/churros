@@ -10,24 +10,6 @@
   import { LoadingText, loading } from '$lib/loading';
   import { Lightbox } from 'svelte-lightbox';
   import type { PageData } from './$houdini';
-  import { page } from '$app/stores';
-  import MaybeError from '$lib/components/MaybeError.svelte';
-  import { route } from '$lib/ROUTES';
-  import { refroute } from '$lib/navigation';
-  import { mutate } from '$lib/mutations';
-  import { onceLoaded, mapLoading, LoadingText, loading } from '$lib/loading';
-  import HTMLContent from '$lib/components/HTMLContent.svelte';
-  import PillLink from '$lib/components/PillLink.svelte';
-  import CardEvent from '$lib/components/CardEvent.svelte';
-  import ButtonLike from '$lib/components/ButtonLike.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import CardEvent from '$lib/components/CardEvent.svelte';
-  import HTMLContent from '$lib/components/HTMLContent.svelte';
-  import MaybeError from '$lib/components/MaybeError.svelte';
-  import PillLink from '$lib/components/PillLink.svelte';
-  import { LoadingText, loading } from '$lib/loading';
-  import { Lightbox } from 'svelte-lightbox';
-  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
