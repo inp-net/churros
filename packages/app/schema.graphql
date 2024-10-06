@@ -533,19 +533,16 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
   body: String!
-  bodyHtml: String! @deprecated(reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too.")
+  bodyHtml: String!
+    @deprecated(
+      reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too."
+    )
   bodyHtmlSafe: HTML!
   bodyPreview: String!
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
   canBeEdited: Boolean! @deprecated(reason: "Use canEdit instead.")
-
-  """
-  Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
-  """
-  canBeEdited: Boolean! @deprecated(reason: "Use canEdit instead.")
-
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
@@ -2176,8 +2173,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Changer le groupe organisateur (principal) de l'événement
   """
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
-
-  """Mettre à jour le groupe d'un article"""
+  """
+  Mettre à jour le groupe d'un article
+  """
   changePostOwner(group: UID!, post: LocalID!): MutationChangePostOwnerResult!
   checkIfBookingIsPaid(code: String!): Boolean!
   claimPromotionCode(code: String!): Boolean!
@@ -2722,8 +2720,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     path: String!
   ): Bookmark
-
-  """Détacher un post de son événement"""
+  """
+  Détacher un post de son événement
+  """
   unlinkEventFromPost(post: LocalID!): MutationUnlinkEventFromPostResult!
   unreact(
     emoji: String!
@@ -2924,14 +2923,37 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   updateUserProfile(profile: UserProfileInput!, uid: UID!): MutationUpdateUserProfileResult!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
-  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
-
-  """Crée ou met à jour un post"""
-  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
-
-  """Crée ou met à jour un post"""
+  upsertAnnouncement(
+    body: String!
+    endsAt: DateTime!
+    id: ID
+    startsAt: DateTime!
+    title: String!
+    warning: Boolean!
+  ): MutationUpsertAnnouncementResult!
+  """
+  Crée ou met à jour un post
+  """
+  upsertArticle(
+    body: String!
+    event: ID
+    group: UID!
+    id: ID
+    publishedAt: DateTime
+    title: String!
+    visibility: Visibility!
+  ): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
+  """
+  Crée ou met à jour un post
+  """
   upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!
-  upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
+  upsertBarWeek(
+    description: String!
+    endsAt: DateTime!
+    groupsUids: [String!]!
+    id: ID
+    startsAt: DateTime!
+  ): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(
     description: String!
@@ -3516,7 +3538,10 @@ type MutationUnlinkEventFromPostSuccess {
   data: Article!
 }
 
-union MutationUnsubscribeFromNotificationsResult = Error | MutationUnsubscribeFromNotificationsSuccess | ZodError
+union MutationUnsubscribeFromNotificationsResult =
+  | Error
+  | MutationUnsubscribeFromNotificationsSuccess
+  | ZodError
 
 type MutationUnsubscribeFromNotificationsSuccess {
   data: NotificationSubscription!
