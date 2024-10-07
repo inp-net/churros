@@ -43,7 +43,7 @@ Possède les droits suivants:
 
 ### Developers
 
-N'importe qui ayant un commit qui existe sur main et dont le droit n'a pas été explicitement révoqué par un _releaser_
+N'importe qui ayant un commit qui existe sur main et dont le droit n'a pas été explicitement révoqué par un membre de la _Core Team_
 
 ## Obtention de rôles
 
