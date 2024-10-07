@@ -264,6 +264,7 @@ const PAGES = {
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
+  '/settings/theme': `/settings/theme`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -599,6 +600,7 @@ export type KIT_ROUTES = {
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;
+    '/settings/theme': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';

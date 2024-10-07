@@ -99,6 +99,7 @@
       });
     }
   });
+
   let openIssueReport: () => void;
 </script>
 
@@ -161,5 +162,8 @@
   [data-vaul-drawer-wrapper] {
     position: relative;
     background-color: var(--bg);
+    background-image: var(--bg-pattern);
+    background-attachment: fixed;
+    transition: ease 1s background-image;
   }
 </style>
