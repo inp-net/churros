@@ -1,5 +1,6 @@
 import { builder, graphinxDirective, rateLimitDirective } from '#lib';
 import { addTypes, printSchemaWithDirectives } from '@graphql-tools/utils';
+import { execa } from 'execa';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -45,6 +46,7 @@ export async function writeSchema() {
   try {
     const here = path.dirname(new URL(import.meta.url).pathname);
     await writeFile(path.join(here, '../../app/schema.graphql'), printSchemaWithDirectives(schema));
+    await execa('yarn', ['prettier', '--write', path.join(here, '../../app/schema.graphql')]);
   } catch {
     console.warn('Could not write schema to app directory, this is fine in production');
   }

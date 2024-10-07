@@ -1,10 +1,6 @@
 /** @type {import("houdini").ConfigFile} */
 const config = {
   schemaPath: 'schema.graphql',
-  // apiUrl: 'env:PUBLIC_API_URL',
-  watchSchema: {
-    url: 'env:PUBLIC_API_URL',
-  },
   plugins: {
     'houdini-svelte': {
       client: './src/lib/client',
@@ -45,6 +41,13 @@ const config = {
       resolve: {
         queryField: 'group',
         arguments: ({ uid }) => ({ uid }),
+      },
+    },
+    GroupMember: {
+      keys: ['userUid', 'groupUid'],
+      resolve: {
+        queryField: 'groupMember',
+        arguments: ({ userUid, groupUid }) => ({ user: userUid, group: groupUid }),
       },
     },
     PagesEdge: {

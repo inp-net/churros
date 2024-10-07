@@ -24,6 +24,7 @@ import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
 import IconGroup from '~icons/msl/group-outline';
 import IconInformation from '~icons/msl/info-outline';
+import IconAddBulk from '~icons/msl/library-add-outline';
 import IconLogout from '~icons/msl/logout';
 import {
   default as IconNotifications,
@@ -67,15 +68,21 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
   window.dispatchEvent(new CustomEvent(eventID));
 };
 
+export type ModalStateKeys = `EDITING_GROUP_MEMBER`;
+
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'POST'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'POST' | 'GROUP_MEMBER'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
-function navtopPushState(key: NavigationTopStateKeys) {
+export type ModalState = {
+  EDITING_GROUP_MEMBER?: string;
+};
+
+function navtopPushState(key: NavigationTopStateKeys | ModalStateKeys) {
   pushState('', {
     [key]: true,
-  } satisfies NavigationTopState);
+  } satisfies NavigationTopState & ModalState);
 }
 
 async function navtopPermissions() {
@@ -587,6 +594,22 @@ export const topnavConfigs: Partial<{
     back: route('/users/[uid]/edit', uid),
     actions: [],
   }),
+  '/(app)/groups/[uid]/members': ({ params: { uid } }) => ({
+    title: `Membres de ${uid}`,
+    back: route('/[uid=uid]', uid),
+    quickAction: {
+      icon: IconAdd,
+      do: () => navtopPushState('NAVTOP_CREATING_GROUP_MEMBER'),
+      label: 'Ajouter',
+    },
+    actions: [
+      {
+        icon: IconAddBulk,
+        href: route('/groups/[uid]/edit/members/bulk', uid),
+        label: 'Ajouter en masse',
+      },
+    ],
+  }),
   '/(app)/groups/[uid]/edit': ({ params: { uid } }) => ({
     title: `Modifier ${uid}`,
     back: route('/[uid=uid]', uid),
@@ -609,12 +632,7 @@ export const topnavConfigs: Partial<{
   }),
   '/(app)/groups/[uid]/edit/members/bulk': ({ params: { uid } }) => ({
     title: 'Ajout en masse de membres',
-    back: route('/groups/[uid]/edit/members', uid),
-    actions: [],
-  }),
-  '/(app)/groups/[uid]/edit/members': ({ params: { uid } }) => ({
-    title: 'Gérer les membres',
-    back: route('/groups/[uid]/edit', uid),
+    back: route('/groups/[uid]/members', uid),
     actions: [],
   }),
   '/(app)/groups/[uid]/edit/pages/[...page]': ({ params: { uid, page } }) => ({

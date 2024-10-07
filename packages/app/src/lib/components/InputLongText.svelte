@@ -35,7 +35,9 @@
 
 <InputField {label} {required} {hint}>
   <p class="markdown-help" slot="hint">
-    {#if rich && label}
+    {#if hint}
+      {hint}
+    {:else if rich && label}
       Syntaxe Markdown supportée <ButtonInk insideProse on:click={openMarkdownHelp}
         >en savoir plus</ButtonInk
       >

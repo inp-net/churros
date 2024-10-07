@@ -10,6 +10,9 @@
 
   export let subtext: MaybeLoading<string> = '';
 
+  /** Whether to allow overflows, could be useful when the icon slot requires so. */
+  export let overflow = false;
+
   /** Whether to show a right chevron icon on the right side of the item. Useful to indicate that the item leads to another page. Defaults to true if href is set. */
   export let chevron: boolean | undefined = undefined;
   $: chevron ??= Boolean(href);
@@ -51,7 +54,7 @@
   class:current={href && compareHrefs(href, $page.url.href)}
   class="submenu-item"
 >
-  <div class="left">
+  <div class="left" class:allow-overflow={overflow}>
     <div class="icon">
       {#if icon}
         <svelte:component this={icon}></svelte:component>
@@ -115,6 +118,10 @@
     gap: 0.5rem;
     align-items: center;
     overflow: hidden;
+  }
+
+  .submenu-item .left.allow-overflow {
+    overflow: visible;
   }
 
   .icon {
