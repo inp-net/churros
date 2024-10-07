@@ -454,7 +454,6 @@ model Group {
   coOrganizedEvents      Event[]            @relation("coOrganizer")
   lyiaAccounts           LydiaAccount[]
   tickets                Ticket[]           @relation("openTo")
-  barWeeks               BarWeek[]
   services               Service[]
   shopItems              ShopItem[]
   restrictedFormSections FormSection[]      @relation("restrictedTo")
@@ -777,16 +776,6 @@ model PaypalTransaction {
   orderId   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-/// A bar week is a week during which some groups takeover the bar staff
-model BarWeek {
-  id          String   @id @default(dbgenerated("nanoid('barweek:')"))
-  slug        String
-  groups      Group[]
-  startsAt    DateTime
-  endsAt      DateTime
-  description String   @default("") @db.VarChar(255)
 }
 
 /// A NotificationSubscription stores a user's subscription to push notifications on a user agent

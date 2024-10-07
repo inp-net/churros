@@ -5,7 +5,6 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import '#modules/announcements';
-import '#modules/bar-weeks';
 import '#modules/changelogs';
 import '#modules/comments';
 import '#modules/curriculum';
