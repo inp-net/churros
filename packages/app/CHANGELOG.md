@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.11.0
+
+### Minor Changes
+
+- ba3c0cd: Feat: family tree
+
 ## 2.10.1
 
 ### Patch Changes

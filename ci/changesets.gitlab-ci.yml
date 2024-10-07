@@ -1,13 +1,6 @@
 .changesets:
-  image: debian:12
+  image: harbor.k8s.inpt.fr/net7_public/changeset-gitlab
   before_script:
-    - apt-get update && apt-get install -y curl git jq moreutils
-    - export VOLTA_HOME=/root/.volta
-    - export PATH=$VOLTA_HOME/bin:$PATH
-    - curl https://get.volta.sh | bash -s -- --skip-setup
-    - yarn config set enableGlobalCache false
-    - yarn config set enableImmutableInstalls true
-    - yarn install
     - export GITLAB_TOKEN=$CHANGESETS_TOKEN
     - |
       cat << EOF > "$HOME/.npmrc"
@@ -24,7 +17,7 @@ comment:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
-    - yarn changesets-gitlab comment
+    - changesets-gitlab comment
 
 release:
   extends: .changesets
@@ -35,7 +28,7 @@ release:
     INPUT_TITLE: 'chore: version packages'
     INPUT_COMMIT: 'chore: version packages'
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-    INPUT_VERSION: 'yarn update-versions'
-    INPUT_PUBLISH: 'yarn changeset tag'
+    INPUT_VERSION: '/bin/sh scripts/update-versions.sh'
+    INPUT_PUBLISH: 'changeset tag'
   script:
-    - yarn changesets-gitlab
+    - changesets-gitlab
