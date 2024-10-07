@@ -620,27 +620,6 @@ type AwaitingValidationError {
   message: String!
 }
 
-"""
-A bar week is a week during which some groups takeover the bar staff
-"""
-type BarWeek implements Node {
-  description: String!
-  descriptionHtml: String!
-  endsAt: DateTime!
-  groups: [Group!]!
-  id: ID!
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
-  localID: LocalID!
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
-  slug: String!
-  startsAt: DateTime!
-  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
-}
-
 enum BookingState @graphinx(module: "ticketing") {
   """
   Payée
@@ -2302,7 +2281,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteAnnouncement(id: ID!): Boolean!
   deleteArticle(id: ID!): Boolean!
   deleteArticlePicture(id: ID!): Boolean!
-  deleteBarWeek(id: ID!): Boolean!
   deleteComment(id: ID!): Comment!
   """
   Supprimer une cotisation
@@ -2947,13 +2925,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Crée ou met à jour un post
   """
   upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!
-  upsertBarWeek(
-    description: String!
-    endsAt: DateTime!
-    groupsUids: [String!]!
-    id: ID
-    startsAt: DateTime!
-  ): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(
     description: String!
@@ -3638,12 +3609,6 @@ type MutationUpsertArticleV2Success {
   data: Article!
 }
 
-union MutationUpsertBarWeekResult = Error | MutationUpsertBarWeekSuccess | ZodError
-
-type MutationUpsertBarWeekSuccess {
-  data: BarWeek!
-}
-
 union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess | ZodError
 
 type MutationUpsertDocumentSuccess {
@@ -4112,9 +4077,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   Récupérer le thème qui est actuellement choisi pour un déploiement automatique: le thème de l'utilisateur·ice doit être changé à celui-ci, si iel n'a pas explicitement demandé à ne pas utiliser ce thème
   """
   autodeployedTheme: Theme
-  barWeek(slug: String!): BarWeek!
-  barWeekNow(now: DateTime!): BarWeek
-  barWeeks: [BarWeek!]!
   birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
   """
   Récupère une réservation par son code
