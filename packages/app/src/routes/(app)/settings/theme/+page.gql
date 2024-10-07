@@ -1,0 +1,6 @@
+query PageSettingsTheme @loading {
+  themes {
+    localID
+    ...ThemePreviewCard
+  }
+}
