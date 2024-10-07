@@ -41,7 +41,6 @@ const PAGES = {
   },
   '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
-  '/bar-weeks': `/bar-weeks`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
   '/bookings/[code]': (code: string | number, params?: {}) => {
@@ -520,7 +519,6 @@ export type KIT_ROUTES = {
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
     '/backrooms': never;
-    '/bar-weeks': never;
     '/birthdays': never;
     '/bookings': never;
     '/bookings/[code]': 'code';

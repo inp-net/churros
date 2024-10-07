@@ -27,7 +27,6 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   lydia: 'LydiaAccount',
   lydiapayment: 'LydiaTransaction',
   paypalpayment: 'PaypalTransaction',
-  barweek: 'BarWeek',
   notifsub: 'NotificationSubscription',
   notif: 'Notification',
   ann: 'Announcement',
