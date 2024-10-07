@@ -25,7 +25,7 @@ Exemples:
 
 ## Rôles
 
-### Releasers
+### Core Team (Owner)
 
 Possède les droits suivants:
 
@@ -47,15 +47,17 @@ N'importe qui ayant un commit qui existe sur main et dont le droit n'a pas été
 
 ## Obtention de rôles
 
-### Releaser
+### Core Team
 
 #### Bureau de net7
 
-Le bureau en fonction de net7 doit nommer un _releaser_. Le choix est voté en réunion de bureau. L'ancien _releaser_ perd son rôle suite à la nomination du suivant.
+Le bureau en fonction de net7 doit nommer 3 personnes qui assurerons le rôle de Core Team. Le choix est voté en réunion de bureau. 
+Au moins un membre de la Core Team doit être un membre du bureau de net7 afin d'assurer la bonne communication entre la _Core Team_ et le bureau de net7.
 
 #### Destitution
 
-Tout _maintainer_ peut démarrer une procédure de destitution du _releaser_ actuel. La décision est prise par vote à _majorité qualifiée_ des _maintainers_ actuels.
+- Tout _maintainer_ peut démarrer une procédure de destitution de la _Core Team_ actuel. La décision est prise par vote à _majorité qualifiée_ des _maintainers_ actuels.
+- Le bureau de net7 peut decider a tout moment de réélire 
 
 ### Maintainers
 
@@ -80,7 +82,7 @@ Fermer une MR revient à refuser l'implémentation actuelle dans son intégralit
 
 Tout _developer_ est invité à rejoindre une conversation servant à la communication du projet. Cette conversation doit aussi être le lieu des votes. Ceci permet à tout _developer_ de participer à l'argumentation d'un vote et à observer les résultats de votes.
 
-Les comptes rendus des réunions de bureau de net7 sont également partagés dans cette conversation, si ils mentionnent Churros. Le reste des informations peut être laissé tel quel ou censuré. En particulier, les resultats de vote d'élection de _releaser_ doivent figurer dans les comptes rendus.
+Les comptes rendus des réunions de bureau de net7 sont également partagés dans cette conversation, si ils mentionnent Churros. Le reste des informations peut être laissé tel quel ou censuré. En particulier, les resultats de vote d'élection de la _Core Team_ doivent figurer dans les comptes rendus.
 
 ## Travail en collaboration
 
