@@ -349,6 +349,7 @@
     display: flex;
     flex-direction: column;
     max-width: var(--scrollable-content-width, 700px);
+    background-color: var(--bg);
   }
 
   .layout .nav-bottom {
@@ -398,6 +399,7 @@
     position: sticky;
     top: 0;
     z-index: 20;
+    background: var(--bg);
   }
 
   @media (max-width: 900px) {

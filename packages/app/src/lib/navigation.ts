@@ -334,6 +334,11 @@ export const topnavConfigs: Partial<{
     back: route('/'),
     actions: [],
   },
+  '/(app)/settings/theme': {
+    title: 'Thème',
+    back: route('/settings'),
+    actions: [],
+  },
   '/(app)/notifications': {
     title: 'Notifications',
     back: route('/'),
