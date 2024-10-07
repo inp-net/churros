@@ -94,11 +94,26 @@ export const GroupType = builder.prismaNode('Group', {
         });
       },
     }),
-    // TODO connection
-    members: t.relation('members', {
-      query: {
-        orderBy: prismaOrderGroupMemberships,
+    members: t.relatedConnection('members', {
+      cursor: 'groupId_memberId',
+      description: "Les membres du groupe, triés par date d'adhésion",
+      args: {
+        boardFirst: t.arg.boolean({
+          defaultValue: true,
+          description: "Renvoyer d'abord les membres du bureau",
+        }),
       },
+      query: ({ boardFirst }) => ({
+        orderBy: boardFirst
+          ? [
+              { president: 'desc' },
+              { vicePresident: 'desc' },
+              { treasurer: 'desc' },
+              { secretary: 'desc' },
+              { createdAt: 'desc' },
+            ]
+          : { createdAt: 'desc' },
+      }),
     }),
     membersCount: t.int({
       description: 'Nombre de membres',

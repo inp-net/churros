@@ -1,5 +1,8 @@
 type NavigationTopState = import('$lib/navigation').NavigationTopState;
 type NavigationTopEventsKey = import('$lib/navigation').NavigationTopActionEvent;
+type ModalState = import('$lib/navigation').ModalState;
+
+type NavtopAndModalState = ModalState & NavigationTopState;
 
 declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -18,13 +21,13 @@ declare namespace App {
     };
   }
 
-  interface PageData {}
+  // interface PageData {}
 
   interface Session {
     token?: string;
   }
 
-  interface PageState extends NavigationTopState {
+  interface PageState extends NavtopAndModalState {
     currentTab?: string;
     bookingTicketId?: string | null;
   }
@@ -91,10 +94,10 @@ declare namespace svelteHTML {
     // FIXME does not work
     // [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
     'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;
-    'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_COPY_ID'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<{}>) => Promise<void> | void;
-    'on:NAVTOP_CREATE_POST_ON_EVENT'?: (event: CustomEvent<{}>) => Promise<void> | void;
+    'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<undefined>) => Promise<void> | void;
+    'on:NAVTOP_COPY_ID'?: (event: CustomEvent<undefined>) => Promise<void> | void;
+    'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<undefined>) => Promise<void> | void;
+    'on:NAVTOP_CREATE_POST_ON_EVENT'?: (event: CustomEvent<undefined>) => Promise<void> | void;
   }
 }
 
