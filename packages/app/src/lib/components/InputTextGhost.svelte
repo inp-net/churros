@@ -7,6 +7,8 @@
   /** Shown to screen readers only, or via a tooltip when value is empty */
   export let label: string;
 
+  export let readonly = false;
+
   type Type = $$Generic<string>;
   type Value = $$Generic<Type extends 'date' ? Date | null : string>;
 
@@ -42,6 +44,7 @@
   <input
     {type}
     {...$$restProps}
+    readonly={readonly ? true : undefined}
     on:focus={() => {
       dispatch('focus', _value);
     }}
@@ -90,6 +93,10 @@
 
     /*  FIXME: does not work. instead, make a second line and transition it in with a scale transform */
     transition: all 250ms ease;
+  }
+
+  input:read-only + .underline {
+    opacity: 0;
   }
 
   input:not(:placeholder-shown) + .underline line {
