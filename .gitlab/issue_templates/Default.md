@@ -3,7 +3,7 @@
 
 # Description
 <!--
-Une description claire et concise de l'anomalie rencontrée.
+Une description claire et concise du problème rencontré.
 Ajoutez si possible des copies d'écran si cela peut aider à expliquer le problème.
 -->
 
