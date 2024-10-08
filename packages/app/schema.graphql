@@ -4044,7 +4044,6 @@ enum PaymentMethod {
   Paiement externe à Churros
   """
   External
-  HelloAsso
   """
   Lydia
   """
@@ -4142,7 +4141,6 @@ type ProfitsBreakdownByPaymentMethod @graphinx(module: "payments") {
   Cash: Float!
   Check: Float!
   External: Float!
-  HelloAsso: Float!
   Lydia: Float!
   Other: Float!
   PayPal: Float!
