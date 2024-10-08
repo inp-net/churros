@@ -74,6 +74,12 @@ Tout _maintainer_ n'ayant pas effectué de commit depuis plus d'un an se voit re
 - Garder les dépenances à jour via une MR `chore(deps): upgrade dependencies` de temps en temps (une fois par mois)
 - Garder à jour la documentation, autant externe (de l'API) qu'interne (wiki du projet et CONTRIBUTING.md)
 
+## Modifications de ce fichier
+
+Toute modification de ce fichier doit être proposée puis votée à _majorité qualifiée_ des _maintainers_ actuels (avec droit de veto par la _Core Team_).
+
+La proposition de modification doit être faite sous forme d'une merge request, afin que l'ensemble des changements apportés soit clairement compréhensible.
+
 ## Fermeture de MRs
 
 Fermer une MR revient à refuser l'implémentation actuelle dans son intégralité. Si l'on souhaite signaler que la feature n'est pas prioritaire et sera merge plus tard, il vaut mieux ajouter le tag `later` à la MR et informer lea _developer_ de la raison de la décision.
