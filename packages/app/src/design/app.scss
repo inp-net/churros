@@ -257,3 +257,8 @@ button {
     animation: none !important;
   }
 }
+
+.svelte-lightbox-overlay {
+  background-color: rgba(0 0 0 / 80%) !important;
+  backdrop-filter: blur(4px);
+}
