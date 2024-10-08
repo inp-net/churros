@@ -26,13 +26,12 @@ export function canEditService(
 ) {
   if (!user) return false;
   if (user.admin) return true;
-  if (service.studentAssociation) 
+  if (service.studentAssociation)
     return canCreateServicesOnStudentAssociation(user, service.studentAssociation);
-  
+
   if (service.group) {
     if (canCreateServicesOnStudentAssociation(user, service.group.studentAssociation)) return true;
     if (canEditGroup(user, service.group)) return true;
-    return false;
   }
   return false;
 }

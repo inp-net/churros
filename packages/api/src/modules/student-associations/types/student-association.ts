@@ -1,13 +1,13 @@
 import { builder, fromYearTier, prisma, toHtml } from '#lib';
 import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
 import { GroupEnumType, GroupType, canCreateGroup } from '#modules/groups';
+import { canCreateServicesOnStudentAssociation } from '#modules/services';
 import {
   canContributeTo,
   canEditDetails,
   userContributesTo,
 } from '#modules/student-associations/utils';
 import type { Prisma } from '@churros/db/prisma';
-import { canCreateServicesOnStudentAssociation } from '../../services/utils/permissions.js';
 
 export const StudentAssociationPrismaIncludes = {
   contributionOptions: true,
@@ -57,24 +57,6 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
         return groups;
       },
     }),
-    // groups: t.relation('groups', {
-    //   args: {
-    //     types: t.arg({ type: [GroupEnumType], required: false }),
-    //   },
-    //   query: ({ types }) =>
-    //     types
-    //       ? {
-    //           where: {
-    //             type: {
-    //                in: (() => {
-    //                  console.log({ types });
-    //                  return types;
-    //                })(),
-    //             },
-    //           },
-    //         }
-    //       : {},
-    // }),
     contributionOptions: t.relation('contributionOptions'),
     canEditDetails: t.boolean({
       description: "L'utilisateur.ice connecét.e peut modifier les infos de cette AE",
