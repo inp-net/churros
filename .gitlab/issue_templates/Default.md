@@ -4,7 +4,7 @@
 # Description
 <!--
 Une description claire et concise du problème rencontré.
-Ajoutez si possible des copies d'écran si cela peut aider à expliquer le problème.
+Ajoutez si possible des copies d'écran si cela peut aider à l'expliquer.
 -->
 
 # Comportement attendu/souhaité
