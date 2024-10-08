@@ -2,4 +2,4 @@
 '@churros/api': minor
 ---
 
-search: bump ranks of group and users in Query.search
+search: allow bumping result ranks depending on their resource type in Query.search, see the PUBLIC_GLOBAL_SEARCH_BUMPS env var.
