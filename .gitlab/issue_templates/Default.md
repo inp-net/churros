@@ -14,7 +14,7 @@ Une description claire et concise du comportement que vous vous attendiez à ren
 
 # Comment reproduire l'anomalie
 <!-- Si applicable (bug) :
-Dans quelles conditions se produit l'anomalie : sur un ordinateur de bureau ou sur mobile ? Avec quel système d'exploitation ? Quel navigateur et version ?
+Dans quelles conditions se produit le bug : sur un ordinateur de bureau ou sur mobile ? Avec quel système d'exploitation ? Quel navigateur et version ?
 Étapes pour reproduire le comportement :
 
     1. Se rendre sur ...
