@@ -51,7 +51,7 @@ N'importe qui ayant un commit qui existe sur main et dont le droit n'a pas été
 
 #### Bureau de net7
 
-Le bureau en fonction de net7 doit nommer 3 personnes qui assurerons le rôle de Core Team. Le choix est voté en réunion de bureau pour une année scolaire. 
+Le bureau en fonction de net7 doit nommer 3 personnes qui assurerons le rôle de Core Team. Il y a (minimum) 2 élections par année scolaire. Le choix est voté en réunion de bureau. 
 Au moins un membre de la Core Team doit être un membre du bureau de net7 afin d'assurer la bonne communication entre la _Core Team_ et le bureau de net7.
 
 #### Destitution
