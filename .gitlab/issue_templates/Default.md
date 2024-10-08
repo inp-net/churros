@@ -29,4 +29,4 @@ Ajoutez des copies d'écran si nécessaire.
 <!-- Optionnel : Suggestions pour corriger cette anomalie. -->
 
 # Complément de contexte
-<!-- Optionnel : Ajoutez toute information qui vous semblerait utile pour nous aider à cerner cette anomalie. -->
+<!-- Optionnel : Ajoutez toute information qui vous semblerait utile pour nous aider à cerner le bug / comprendre l'intérêt de la fonctionnalité ou amélioration proposée. -->
