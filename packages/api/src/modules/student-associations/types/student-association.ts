@@ -1,7 +1,6 @@
 import { builder, fromYearTier, prisma, toHtml } from '#lib';
 import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
 import { GroupEnumType, GroupType, canCreateGroup } from '#modules/groups';
-import { canCreateServicesOnStudentAssociation } from '#modules/services';
 import {
   canContributeTo,
   canEditDetails,
@@ -200,12 +199,6 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
             type,
           }),
         );
-      },
-    }),
-    canCreateServices: t.boolean({
-      description: "Si l'utilisateur·ice courant·e peut créer des services rattachés à cette AE",
-      resolve: async (studentAssociation, _, { user }) => {
-        return canCreateServicesOnStudentAssociation(user, studentAssociation);
       },
     }),
   }),

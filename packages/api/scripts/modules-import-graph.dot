@@ -25,9 +25,12 @@ strict digraph ImportGraph {
     "payments" -> "groups";
     "pictures" -> "events";
     "pictures" -> "groups";
+    "pictures" -> "posts";
     "pictures" -> "themes";
     "pictures" -> "users";
     "posts" -> "comments";
+    "posts" -> "events";
+    "posts" -> "groups";
     "posts" -> "notifications";
     "posts" -> "reactions";
     "profiles" -> "curriculum";
@@ -36,6 +39,11 @@ strict digraph ImportGraph {
     "profiles" -> "student-associations";
     "profiles" -> "users";
     "schools" -> "curriculum";
+    "search" -> "documents";
+    "search" -> "events";
+    "search" -> "groups";
+    "search" -> "posts";
+    "search" -> "users";
     "services" -> "groups";
     "services" -> "schools";
     "services" -> "student-associations";
@@ -51,4 +59,5 @@ strict digraph ImportGraph {
     "ticketing" -> "schools";
     "ticketing" -> "users";
     "users" -> "notifications";
+    "users" -> "posts";
 }
