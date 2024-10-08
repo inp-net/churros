@@ -1,6 +1,4 @@
 import { registerAppleWalletPassTemplate } from './lib/apple-wallet.js';
-import { zodValidateEnv } from 'zod-validate-env';
-import { environmentSchema } from './lib/env.js';
 import { GOOGLE_WALLET_CLASS, registerGoogleWalletClass } from './lib/google-wallet.js';
 import { writeSchema } from './schema.js';
 import { startApiServer } from './server/express.js';
@@ -8,8 +6,8 @@ import { lydiaWebhook } from './server/lydia.js';
 import { maintenance } from './server/maintenance.js';
 import { prometheusServer } from './server/prometheus.js';
 
-zodValidateEnv({ schema: environmentSchema });
-
+// Validates env variables before doing anything else
+import './lib/env.js';
 startApiServer();
 
 lydiaWebhook.listen(4001, () => {

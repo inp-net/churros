@@ -153,7 +153,9 @@ export const environmentSchema = z.object({
   ),
 });
 
+console.info('Validating environment variables...');
 export const ENV = environmentSchema.parse(process.env);
+console.info('Environment variables seem valid.');
 
 function uri(...protocols: string[]) {
   return z
