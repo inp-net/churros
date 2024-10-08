@@ -111,8 +111,7 @@
     "web-push": "^3.6.7",
     "ws": "^8.18.0",
     "zod": "^3.23.8",
-    "zod-i18n-map": "^2.27.0",
-    "zod-validate-env": "^0.0.1"
+    "zod-i18n-map": "^2.27.0"
   },
   "devDependencies": {
     "@clack/prompts": "^0.7.0",

@@ -144,7 +144,9 @@ export const environmentSchema = z.object({
   MAILMAN_API_TOKEN: z.string().optional().describe('Mailman API token.'),
 });
 
+console.info('Validating environment variables...');
 export const ENV = environmentSchema.parse(process.env);
+console.info('Environment variables seem valid.');
 
 function uri(...protocols: string[]) {
   return z
