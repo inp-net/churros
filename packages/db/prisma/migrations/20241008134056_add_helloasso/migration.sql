@@ -11,7 +11,7 @@ ALTER TABLE "Answer" ALTER COLUMN "id" SET DEFAULT nanoid('answer:');
 ALTER TABLE "Article" ALTER COLUMN "id" SET DEFAULT nanoid('a:');
 
 -- AlterTable
-ALTER TABLE "BarWeek" ALTER COLUMN "id" SET DEFAULT nanoid('barweek:');
+ALTER TABLE "Bookmark" ALTER COLUMN "id" SET DEFAULT nanoid('bookmark:');
 
 -- AlterTable
 ALTER TABLE "Comment" ALTER COLUMN "id" SET DEFAULT nanoid('comment:');
@@ -29,11 +29,15 @@ ALTER TABLE "Credential" ALTER COLUMN "id" SET DEFAULT nanoid('credential:');
 ALTER TABLE "Document" ALTER COLUMN "id" SET DEFAULT nanoid('doc:');
 
 -- AlterTable
-ALTER TABLE "EmailChange" ALTER COLUMN "id" SET DEFAULT nanoid('emailchange:');
+ALTER TABLE "EmailChange" ALTER COLUMN "id" SET DEFAULT nanoid('emailchange:'),
+ALTER COLUMN "token" SET DEFAULT nanoid('', 30);
 
 -- AlterTable
 ALTER TABLE "Event" ADD COLUMN     "helloAssoEventSlug" VARCHAR(255) NOT NULL DEFAULT '',
 ALTER COLUMN "id" SET DEFAULT nanoid('e:');
+
+-- AlterTable
+ALTER TABLE "EventManager" ALTER COLUMN "id" SET DEFAULT nanoid('em:');
 
 -- AlterTable
 ALTER TABLE "Form" ALTER COLUMN "id" SET DEFAULT nanoid('form:');
@@ -75,6 +79,9 @@ ALTER TABLE "Notification" ALTER COLUMN "id" SET DEFAULT nanoid('notif:');
 ALTER TABLE "NotificationSubscription" ALTER COLUMN "id" SET DEFAULT nanoid('notifsub:');
 
 -- AlterTable
+ALTER TABLE "Page" ALTER COLUMN "id" SET DEFAULT nanoid('page:');
+
+-- AlterTable
 ALTER TABLE "PasswordReset" ALTER COLUMN "id" SET DEFAULT nanoid('passreset:');
 
 -- AlterTable
@@ -91,6 +98,9 @@ ALTER TABLE "PromotionCode" ALTER COLUMN "id" SET DEFAULT nanoid('promocode:');
 
 -- AlterTable
 ALTER TABLE "Question" ALTER COLUMN "id" SET DEFAULT nanoid('question:');
+
+-- AlterTable
+ALTER TABLE "QuickSignup" ALTER COLUMN "id" SET DEFAULT nanoid('quicksignup:', 6);
 
 -- AlterTable
 ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
@@ -127,10 +137,10 @@ ALTER TABLE "Subject" ALTER COLUMN "id" SET DEFAULT nanoid('subj:');
 ALTER TABLE "TeachingUnit" ALTER COLUMN "id" SET DEFAULT nanoid('ue:');
 
 -- AlterTable
-ALTER TABLE "ThirdPartyApp" ALTER COLUMN "id" SET DEFAULT nanoid('app:', 30);
+ALTER TABLE "Theme" ALTER COLUMN "id" SET DEFAULT nanoid('theme:');
 
 -- AlterTable
-ALTER TABLE "ThirdPartyCredential" ALTER COLUMN "id" SET DEFAULT nanoid('token:');
+ALTER TABLE "ThemeValue" ALTER COLUMN "id" SET DEFAULT nanoid('themeval:');
 
 -- AlterTable
 ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
