@@ -3,4 +3,4 @@
 '@churros/app': minor
 ---
 
-rework UI
+feat(profile): enlarge picture on click 
