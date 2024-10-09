@@ -7,8 +7,6 @@
     "./src/lib",
     "./src/modules/announcements/resolvers",
     "./src/modules/announcements/types",
-    "./src/modules/bar-weeks/resolvers",
-    "./src/modules/bar-weeks/types",
     "./src/modules/changelogs/resolvers",
     "./src/modules/changelogs/types",
     "./src/modules/changelogs/utils",

@@ -320,3 +320,12 @@ export const DISPLAY_TICKET_COUNTING_POLICY: Record<TicketCountingPolicy$options
   OnBooked: 'Dès la réservation',
   OnPaid: 'Après le paiement',
 };
+
+export const DISPLAY_GROUP_MEMBER_PERMISSIONS: Record<
+  'canScanEvents' | 'canEditArticles' | 'canEditMembers',
+  string
+> = {
+  canEditArticles: 'Gestion des posts et évènements',
+  canEditMembers: 'Gestion des membres',
+  canScanEvents: 'Scan de billets',
+};

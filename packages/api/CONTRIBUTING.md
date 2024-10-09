@@ -31,7 +31,7 @@ See [api-docs.churros.inpt.fr](https://api-docs.churros.inpt.fr), or <http://loc
 
 Use `import { ... } from '#modules/module-name'` to import types and utility functions from another module named `module-name`.
 
-- Never create circular dependencies between modules. You can check for dependencies by running `scripts/modules-import-graph.py` (this requires Python 3.11+ with the `networkx` package installed, and the `dot` command from the `graphviz` package if you want to generate an image of the dependency graph).
+- Never create circular dependencies between modules. You can check for dependencies by running `yarn modules-import-graph` in the api package. It'll warn you about any circular dependencies, and update the import graph shown below
 
 - The `global` module can be imported by any module and never imports any module itself. It contains ubiquitous types such as the `DateTime` scalar.
 

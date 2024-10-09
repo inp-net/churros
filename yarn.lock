@@ -2675,16 +2675,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inp-net/churros-client@workspace:packages/oauth-client":
-  version: 0.0.0-use.local
-  resolution: "@inp-net/churros-client@workspace:packages/oauth-client"
-  dependencies:
-    tsc: "npm:^2.0.4"
-    tsx: "npm:^4.19.1"
-    typescript: "npm:^5.6.2"
-  languageName: unknown
-  linkType: soft
-
 "@inp-net/ldap7@npm:^1.0.12":
   version: 1.0.12
   resolution: "@inp-net/ldap7@npm:1.0.12"
@@ -21303,15 +21293,6 @@ __metadata:
   version: 0.8.6
   resolution: "ts-tqdm@npm:0.8.6"
   checksum: 10c0/f91574e4ee71a007987bcdbb21036c76499f2141c2190e0c1100bbc7e0908862935bb43762e7df2ab13e2838cba8bd371e5601aa5468098f3872dcea3fe54a0a
-  languageName: node
-  linkType: hard
-
-"tsc@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "tsc@npm:2.0.4"
-  bin:
-    tsc: bin/tsc
-  checksum: 10c0/4651d344891d995e62ab7ca64ce0a8597bbdc2d392886c9956d15caab4dc9bfe86e759d3385b3f97c49fb5294194a161d6812673e3f51e46357c82482f32c3ab
   languageName: node
   linkType: hard
 

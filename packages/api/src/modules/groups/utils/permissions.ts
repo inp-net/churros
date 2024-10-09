@@ -77,9 +77,47 @@ export function userIsOnGroupBoard(user: Context['user'], group: { uid: string }
   );
 }
 
+/** Recursively makes keys K optional in object type T.
+ *
+ * For example:
+ * ```ts
+ * RecursivelyPartialize<
+ *    { name: string; parent: { name: string; parent: { name: string } } },
+ *    'parent'
+ * >
+ * ```
+ *
+ * Becomes:
+ * ```ts
+ * { name: string; parent?: null | undefined | { name: string; parent?: null | undefined | { name: string } } }
+ * ```
+ */
+type RecursivelyPartialize<T, K extends string> = Omit<T, K> & {
+  [P in K & keyof T]?: undefined | null | RecursivelyPartialize<NonNullable<T[P]>, K>;
+};
+
+export function prismaQueryCanEditGroupMembersOf(user: { id: string }): Prisma.GroupWhereInput {
+  return {
+    OR: [
+      { studentAssociation: { admins: { some: { id: user.id } } } },
+      {
+        members: {
+          some: {
+            memberId: user.id,
+            OR: [prismaQueryOnClubBoard(), { canEditMembers: true }, { member: { admin: true } }],
+          },
+        },
+      },
+    ],
+  };
+}
+
 export function canEditGroupMembers(
   user: Context['user'],
-  group: Prisma.GroupGetPayload<{ include: typeof canEditGroupMembers.prismaIncludes }>,
+  group: RecursivelyPartialize<
+    Prisma.GroupGetPayload<{ include: typeof canEditGroupMembers.prismaIncludes }>,
+    'parent'
+  >,
 ) {
   if (!user) return false;
   if (user.admin) return true;
@@ -88,11 +126,22 @@ export function canEditGroupMembers(
   if (userIsOnGroupBoard(user, group)) return true;
   if (group.members.some((member) => member.memberId === user.id && member.canEditMembers))
     return true;
+  if (group.parent) return canEditGroupMembers(user, group.parent);
   return false;
 }
 
 canEditGroupMembers.prismaIncludes = {
   members: true,
+  parent: {
+    include: {
+      members: true,
+      parent: {
+        include: {
+          members: true,
+        },
+      },
+    },
+  },
 } as const satisfies Prisma.GroupInclude;
 
 /** Allows passing to function either only the groups' uids or IDs */

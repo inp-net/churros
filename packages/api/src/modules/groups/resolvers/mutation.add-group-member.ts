@@ -11,6 +11,7 @@ import { GroupMemberType, membersNeedToPayForTheStudentAssociation } from '../in
 builder.mutationField('addGroupMember', (t) =>
   t.prismaField({
     type: GroupMemberType,
+    deprecationReason: 'Utiliser `addGroupMemberV2` à la place',
     errors: {},
     args: {
       groupUid: t.arg.string(),

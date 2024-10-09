@@ -110,6 +110,9 @@ declare global {
       APPLE_WALLET_PASS_TYPE_ID: string;
       /** Get it from https://developer.apple.com/account */
       APPLE_WALLET_TEAM_ID: string;
+
+      /** Additive modifiers for favoring some types in global search results. */
+      PUBLIC_GLOBAL_SEARCH_BUMPS: string;
     }
   }
 

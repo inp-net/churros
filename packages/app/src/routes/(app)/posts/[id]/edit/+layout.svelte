@@ -20,9 +20,9 @@
   import IconParagraph from '~icons/msl/text-ad-outline';
   import IconVisibility from '~icons/msl/visibility-outline';
   import type { PageData } from './$houdini';
-  import { ChangeGroup, ChangeTitle } from './mutations';
+  import { ChangeBody, ChangeGroup, ChangeTitle } from './mutations';
 
-  let mobile = isMobile();
+  const mobile = isMobile();
 
   export let data: PageData;
   $: ({ LayoutPostEdit } = data);
@@ -70,7 +70,19 @@
       </div>
       {#if mobile}
         <div class="contents">
-          <InputLongText rows={10} rich label="" value={loading(post.body, 'Chargement…')} />
+          <InputLongText
+            rows={10}
+            rich
+            label=""
+            value={loading(post.body, 'Chargement…')}
+            on:blur={async ({ currentTarget }) => {
+              if (!(currentTarget instanceof HTMLTextAreaElement)) return;
+              await mutateAndToast(ChangeBody, {
+                post: $page.params.id,
+                body: currentTarget.value,
+              });
+            }}
+          />
         </div>
       {/if}
       <Submenu>
@@ -132,8 +144,8 @@
   }
 
   .contents {
-    margin-bottom: 4rem;
     padding: 0 1rem;
+    margin-bottom: 4rem;
   }
 
   .avatar {

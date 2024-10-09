@@ -1171,19 +1171,6 @@ await prisma.ticket.update({
   },
 });
 
-const clubForBarWeek = faker.helpers.arrayElement(groups);
-await prisma.barWeek.create({
-  data: {
-    endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-    startsAt: new Date(),
-    slug: `${clubForBarWeek.name}-2023`,
-    description: `Semaine de bar de ${clubForBarWeek.name}!`,
-    groups: {
-      connect: [{ uid: clubForBarWeek.uid }],
-    },
-  },
-});
-
 const thirdPartyAppClub = await prisma.group.findUniqueOrThrow({
   where: { uid: faker.helpers.arrayElement(groups).uid },
 });

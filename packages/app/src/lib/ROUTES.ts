@@ -42,7 +42,6 @@ const PAGES = {
   '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
   '/backrooms/services': `/backrooms/services`,
-  '/bar-weeks': `/bar-weeks`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
   '/bookings/[code]': (code: string | number, params?: {}) => {
@@ -189,9 +188,6 @@ const PAGES = {
   },
   '/groups/[uid]/edit/links': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/links`;
-  },
-  '/groups/[uid]/edit/members': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/edit/members`;
   },
   '/groups/[uid]/edit/members/bulk': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/members/bulk`;
@@ -523,7 +519,6 @@ export type KIT_ROUTES = {
     '/announcements/create': never;
     '/backrooms': never;
     '/backrooms/services': never;
-    '/bar-weeks': never;
     '/birthdays': never;
     '/bookings': never;
     '/bookings/[code]': 'code';
@@ -574,7 +569,6 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/bank-accounts': 'uid';
     '/groups/[uid]/edit/bio': 'uid';
     '/groups/[uid]/edit/links': 'uid';
-    '/groups/[uid]/edit/members': 'uid';
     '/groups/[uid]/edit/members/bulk': 'uid';
     '/groups/[uid]/edit/pages': 'uid';
     '/groups/[uid]/edit/pages/[...page]': 'uid' | 'page';
