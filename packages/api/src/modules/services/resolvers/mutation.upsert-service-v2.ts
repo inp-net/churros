@@ -50,6 +50,7 @@ builder.mutationField('upsertServiceV2', (t) =>
               ? { connect: { uid: input.studentAssociation } }
               : undefined,
             school: input.school ? { connect: { uid: input.school } } : undefined,
+            hidden: input.hide ?? (input.name ? false : true),
           },
         });
       }
@@ -84,6 +85,7 @@ builder.mutationField('upsertServiceV2', (t) =>
             : input.school
               ? { connect: { uid: input.school } }
               : undefined,
+          hidden: input.hide ?? undefined,
         },
       });
     },

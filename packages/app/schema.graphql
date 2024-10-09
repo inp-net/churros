@@ -5531,6 +5531,10 @@ type Service implements Node {
   canEdit: Boolean!
   description: String!
   group: Group @deprecated(reason: "Use `owner` instead")
+  """
+  Le service n'est pas affiché sur le site
+  """
+  hidden: Boolean!
   id: ID!
   importance: Int!
   """
@@ -5549,6 +5553,9 @@ type Service implements Node {
 input ServiceInput {
   description: String
   group: UID
+  """
+  Masquer le service. Vaut par défaut `true` lorsque l'on crée un nouveau service sans lui donner de nom, sinon `false`.
+  """
   hide: Boolean
   iconURL: LooseURL
   importance: Int

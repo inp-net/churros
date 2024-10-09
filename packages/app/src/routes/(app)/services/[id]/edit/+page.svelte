@@ -16,7 +16,7 @@
   import PickStudentAssociation from '$lib/components/PickStudentAssociation.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
-  import { loaded, loading } from '$lib/loading';
+  import { loaded, loading, mapLoading } from '$lib/loading';
   import { mutate, mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
@@ -26,6 +26,8 @@
   import IconLogo from '~icons/msl/image-outline';
   import IconUnlink from '~icons/msl/link-off';
   import IconOrder from '~icons/msl/reorder';
+  import IconVisible from '~icons/msl/visibility-outline';
+  import IconHidden from '~icons/msl/visibility-off-outline';
   import IconSchool from '~icons/msl/school-outline';
   import type { PageData } from './$houdini';
   import {
@@ -37,12 +39,14 @@
     UnlinkServiceSchool,
     UnlinkServiceStudentAssociation,
     UpdateServiceDescription,
+    UpdateServiceHidden,
     UpdateServiceImportance,
     UpdateServiceLogo,
     UpdateServiceName,
     UpdateServiceURL,
   } from './mutations';
   import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputToggle from '$lib/components/InputToggle.svelte';
 
   export let data: PageData;
   $: ({ PageServicesEdit } = data);
@@ -139,6 +143,23 @@
     </section>
     <div class="details">
       <Submenu>
+        <SubmenuItem
+          icon={loading(service.hidden, false) ? IconHidden : IconVisible}
+          label
+          subtext={mapLoading(service.hidden, (hidden) => (hidden ? 'Caché' : 'Affiché'))}
+        >
+          Visibilité
+          <InputToggle
+            slot="right"
+            value={!loading(service.hidden, false)}
+            on:update={({ detail }) => {
+              mutateAndToast(UpdateServiceHidden, {
+                id: $page.params.id,
+                hidden: !detail,
+              });
+            }}
+          ></InputToggle>
+        </SubmenuItem>
         <SubmenuItem icon={IconLogo} label>
           <InputText
             value={loading(service.logo, '')}
@@ -146,12 +167,14 @@
             placeholder="https://example.com/logo.png"
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
-              await (currentTarget.value ? mutateAndToast(UpdateServiceLogo, {
-                  id: $page.params.id,
-                  logo: currentTarget.value,
-                }) : mutateAndToast(RemoveServiceLogo, {
-                  id: $page.params.id,
-                }));
+              await (currentTarget.value
+                ? mutateAndToast(UpdateServiceLogo, {
+                    id: $page.params.id,
+                    logo: currentTarget.value,
+                  })
+                : mutateAndToast(RemoveServiceLogo, {
+                    id: $page.params.id,
+                  }));
             }}
           />
           <div class="preview" slot="right">

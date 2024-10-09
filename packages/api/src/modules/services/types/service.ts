@@ -41,6 +41,9 @@ export const ServiceType = builder.prismaNode('Service', {
       },
     }),
     importance: t.exposeInt('importance'),
+    hidden: t.exposeBoolean('hidden', {
+      description: "Le service n'est pas affiché sur le site",
+    }),
     canEdit: t.boolean({
       description: 'On peut éditer ce service',
       async resolve({ id }, _, { user }) {

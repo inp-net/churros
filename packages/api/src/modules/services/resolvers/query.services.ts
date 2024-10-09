@@ -16,7 +16,7 @@ builder.queryField('services', (t) =>
         where: mine
           ? {
               AND: [
-                { name: { not: '' } },
+                { hidden: false },
                 user
                   ? {
                       OR: [

@@ -11,10 +11,12 @@
   import { LoadingText, loading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
+  import IconHidden from '~icons/msl/visibility-off-outline';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import IconAdd from '~icons/msl/add';
   import type { PageData } from './$houdini';
+  import { tooltip } from '$lib/tooltip';
 
   export let data: PageData;
   $: ({ PageServicesManage } = data);
@@ -74,7 +76,14 @@
             class="service-icon"
             slot="icon"
           />
-          <LoadingText value={service.name} />
+          <span class="name">
+            {#if loading(service.hidden, false)}
+              <span class="hidden-icon" use:tooltip={'Caché de la liste des services'}>
+                <IconHidden />
+              </span>
+            {/if}
+            <LoadingText value={service.name} />
+          </span>
           <span slot="subtext">
             {#if service.owner.__typename === 'Group'}
               <AvatarGroup

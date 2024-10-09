@@ -316,3 +316,17 @@ export const UpdateServiceImportance = graphql(`
     }
   }
 `);
+
+export const UpdateServiceHidden = graphql(`
+  mutation UpdateServiceHidden($id: LocalID!, $hidden: Boolean!) {
+    upsertServiceV2(id: $id, input: { hide: $hidden }) {
+      ...MutationErrors
+      ... on MutationUpsertServiceV2Success {
+        data {
+          id
+          hidden
+        }
+      }
+    }
+  }
+`);

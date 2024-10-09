@@ -11,6 +11,7 @@ query PageServicesEdit($id: LocalID!) @loading {
 
   service(id: $id) {
     id
+    hidden
     localID
     name
     url
