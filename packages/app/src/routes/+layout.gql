@@ -1,4 +1,4 @@
-query RootLayout {
+query RootLayout($editingTheme: LocalID!) {
   loggedIn
   me {
     ...AnalyticsTrackerUser
@@ -10,7 +10,7 @@ query RootLayout {
     name
   }
 
-  feur: theme(id: "ea1vjivkqxegobuy") {
+  editingTheme: theme(id: $editingTheme) {
     ...ThemesEditorSidebar
   }
 }

@@ -2,6 +2,7 @@
   import {
     fragment,
     graphql,
+    UpdateThemValueStore,
     type ThemesEditorSidebar,
     type ThemeVariable$options,
     type ThemeVariant$options,
@@ -11,6 +12,8 @@
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { DISPLAY_THEME_VARIABLE, DISPLAY_THEME_VARIANT } from '$lib/display';
+  import { loaded } from '$lib/loading';
+  import { mutate, mutateAndToast } from '$lib/mutations';
   import { THEME_CSS_VARIABLE_NAMES } from '$lib/theme';
   import { tooltip } from '$lib/tooltip';
   import { onMount } from 'svelte';
@@ -21,6 +24,7 @@
     graphql(`
       fragment ThemesEditorSidebar on Theme @loading {
         name
+        localID
         author {
           ...AvatarGroup
         }
@@ -75,12 +79,32 @@
     };
   }
 
+  function colorValues(values: Record<ThemeVariable$options, string>) {
+    return Object.entries(values).filter(([v]) => v.startsWith('Color')) as Array<
+      [ThemeVariable$options & `Color${string}`, string]
+    >;
+  }
+
   let selectedVariant: ThemeVariant$options = 'Light';
 
   $: values = actualValues();
   onMount(() => {
     values = actualValues();
   });
+
+  const UpdateValue = graphql(`
+    mutation UpdateThemValue(
+      $theme: LocalID!
+      $variant: ThemeVariant!
+      $variable: ThemeVariable!
+      $value: String!
+    ) {
+      setThemeValue(theme: $theme, variant: $variant, variable: $variable, value: $value) {
+        id
+        ...ThemesEditorSidebar
+      }
+    }
+  `);
 </script>
 
 <article class="sidebar">
@@ -106,13 +130,28 @@
         </svelte:fragment>
       </NavigationTabs>
     </header>
-    {#each Object.entries(values[selectedVariant]).filter( ([v]) => v.startsWith('Color'), ) as [variable, value]}
+    {#each colorValues(values[selectedVariant]) as [variable, value]}
       <label
         class="swatch"
         use:tooltip={`${variable}: ${DISPLAY_THEME_VARIABLE[variable]}`}
         style:background-color={value}
       >
-        <input type="color" name="" id="" {value} />
+        <input
+          type="color"
+          name=""
+          id=""
+          {value}
+          on:input={async ({ currentTarget }) => {
+            if (!(currentTarget instanceof HTMLInputElement)) return;
+            if (!$data) return;
+            await mutate(UpdateValue, {
+              theme: $data.localID,
+              value: currentTarget.value,
+              variant: selectedVariant,
+              variable: variable,
+            });
+          }}
+        />
       </label>
     {/each}
   </section>

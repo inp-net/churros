@@ -330,6 +330,8 @@ export const DISPLAY_GROUP_MEMBER_PERMISSIONS: Record<
   canEditArticles: 'Gestion des posts et évènements',
   canEditMembers: 'Gestion des membres',
   canScanEvents: 'Scan de billets',
+};
+
 export const DISPLAY_THEME_VARIANT: Record<ThemeVariant$options, string> = {
   Dark: 'Sombre',
   Light: 'Clair',

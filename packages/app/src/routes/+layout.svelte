@@ -10,7 +10,7 @@
   import { setupIsMobile } from '$lib/mobile';
   import '$lib/polyfills';
   import { setSentryUser } from '$lib/sentry';
-  import { theme } from '$lib/theme.js';
+  import { editingTheme, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
@@ -39,6 +39,9 @@
   }
 
   $: setSentryUser($RootLayout.data?.me ?? null);
+
+  $: if (browser && $editingTheme)
+    RootLayout.fetch({ variables: { editingTheme: $editingTheme.id } });
 
   // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);
@@ -111,32 +114,31 @@
   <AnalyticsTracker user={$RootLayout.data?.me ?? null} />
 </svelte:head>
 
+<div data-vaul-drawer-wrapper="">
+  {#if browser}
+    <section class="toasts">
+      {#each $toasts as toast (toast.id)}
+        <Toast
+          on:action={async () => {
+            if (toast.callbacks.action) await toast.callbacks.action(toast);
+          }}
+          action={toast.labels.action}
+          closeLabel={toast.labels.close}
+          {...toast}
+        ></Toast>
+      {/each}
+    </section>
+  {/if}
 
+  {#if $themeDebugger}
+    <ModalThemeVariables />
+  {/if}
 
-  <div data-vaul-drawer-wrapper="">
-    {#if browser}
-      <section class="toasts">
-        {#each $toasts as toast (toast.id)}
-          <Toast
-            on:action={async () => {
-              if (toast.callbacks.action) await toast.callbacks.action(toast);
-            }}
-            action={toast.labels.action}
-            closeLabel={toast.labels.close}
-            {...toast}
-          ></Toast>
-        {/each}
-      </section>
-    {/if}
+  <ModalReportIssue bind:open={openIssueReport} />
 
-    {#if $themeDebugger}
-      <ModalThemeVariables />
-    {/if}
+  <slot />
+</div>
 
-    <ModalReportIssue bind:open={openIssueReport} />
-
-    <slot />
-  </div>
 <style lang="scss">
   section.toasts {
     position: fixed;
