@@ -12,6 +12,7 @@
   import IconCheck from '~icons/msl/check';
   import IconClose from '~icons/msl/close';
   import type { PageData } from './$houdini';
+  import InputPickUser from '$lib/components/InputPickUser.svelte';
 
   export let data: PageData;
   $: ({ PageUserEditFamily } = data);
@@ -85,19 +86,9 @@
 
 <MaybeError result={$PageUserEditFamily} let:data={{ user }}>
   <div class="contents">
-    <h2>Parrainages</h2>
-    {#if !allLoaded(user.godparent) || !allLoaded(user.familyTree.users)}
-      <LoadingChurros />
-    {:else}
-      <InputPerson
-        label="Parrain/Marraine"
-        except={user.familyTree.users.map((u) => u.uid)}
-        user={user.godparent}
-        bind:uid={godparentUid}
-      />
-    {/if}
     <section class="send-request">
       <div class="actions">
+        <InputPickUser label="Parrain / marraine…" bind:uid={godparentUid}></InputPickUser>
         <ButtonSecondary
           disabled={!godparentUid || godparentUid === user.godparent?.uid}
           on:click={async () => {
