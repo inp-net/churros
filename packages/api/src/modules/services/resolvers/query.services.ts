@@ -1,4 +1,5 @@
 import { builder, prisma, TYPENAMES_TO_ID_PREFIXES } from '#lib';
+import type { Prisma } from '@churros/db/prisma';
 import { ServiceType, ServiceTypePrismaIncludes } from '../index.js';
 // TODO split into  group.services, student-association.services, school.services and query.all-services for admins
 
@@ -11,44 +12,44 @@ builder.queryField('services', (t) =>
       }),
     },
     async resolve(query, _, { mine }, { user }) {
+      const loggedInQuery = {
+        OR: [
+          {
+            studentAssociation: {
+              school: {
+                uid: {
+                  in: user?.major?.schools.map((school) => school.uid),
+                },
+              },
+            },
+          },
+          {
+            school: {
+              uid: { in: user?.major?.schools.map((school) => school.uid) },
+            },
+          },
+        ],
+      } satisfies Prisma.ServiceWhereInput;
+
+      const loggedOutQuery = {
+        OR: [
+          { group: { isNot: null } },
+          { studentAssociation: { isNot: null } },
+          { school: { isNot: null } },
+        ],
+      } satisfies Prisma.ServiceWhereInput;
+
       const services = await prisma.service.findMany({
         ...query,
         where: mine
           ? {
-              AND: [
-                { hidden: false },
-                user
-                  ? {
-                      OR: [
-                        {
-                          studentAssociation: {
-                            school: {
-                              uid: {
-                                in: user.major?.schools.map((school) => school.uid),
-                              },
-                            },
-                          },
-                        },
-                        {
-                          school: {
-                            uid: { in: user.major?.schools.map((school) => school.uid) },
-                          },
-                        },
-                      ],
-                    }
-                  : {
-                      OR: [
-                        { group: { isNot: null } },
-                        { studentAssociation: { isNot: null } },
-                        { school: { isNot: null } },
-                      ],
-                    },
-              ],
+              AND: [{ hidden: false }, user ? loggedInQuery : loggedOutQuery],
             }
           : {},
         include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
+
       if (mine && user) {
         // Sort pinned services first
         const pinnedServices = await prisma.bookmark.findMany({
@@ -67,6 +68,7 @@ builder.queryField('services', (t) =>
           return 0;
         });
       }
+
       return services;
     },
   }),
