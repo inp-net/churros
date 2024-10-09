@@ -12,40 +12,34 @@ builder.queryField('services', (t) =>
       }),
     },
     async resolve(query, _, { mine }, { user }) {
-      const loggedInQuery = {
-        OR: [
-          {
-            studentAssociation: {
-              school: {
-                uid: {
-                  in: user?.major?.schools.map((school) => school.uid),
-                },
-              },
-            },
-          },
-          {
-            school: {
-              uid: { in: user?.major?.schools.map((school) => school.uid) },
-            },
-          },
-        ],
-      } satisfies Prisma.ServiceWhereInput;
+      let where: Prisma.ServiceWhereInput = {};
 
-      const loggedOutQuery = {
-        OR: [
-          { group: { isNot: null } },
-          { studentAssociation: { isNot: null } },
-          { school: { isNot: null } },
-        ],
-      } satisfies Prisma.ServiceWhereInput;
+      if (mine && user?.major) {
+        const isUserSchool = {
+          school: { uid: { in: user.major.schools.map((school) => school.uid) } },
+        } as const;
+
+        where = {
+          hidden: false,
+          // Include services from the user's school and from student associations of the user's school
+          OR: [{ studentAssociation: isUserSchool }, isUserSchool],
+        };
+      } else if (mine) {
+        where = {
+          hidden: false,
+          OR: [
+            { group: { isNot: null } },
+            { studentAssociation: { isNot: null } },
+            { school: { isNot: null } },
+          ],
+        };
+      } else {
+        where = {};
+      }
 
       const services = await prisma.service.findMany({
         ...query,
-        where: mine
-          ? {
-              AND: [{ hidden: false }, user ? loggedInQuery : loggedOutQuery],
-            }
-          : {},
+        where,
         include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
