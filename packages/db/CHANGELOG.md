@@ -1,5 +1,20 @@
 # @churros/db
 
+## 2.0.0
+
+### Major Changes
+
+- 2360071: remove bar weeks
+
+### Minor Changes
+
+- 51dec97: allow specifying groups to apply promotions on by default, add mutation to generate simpps code, fix price display on ticket page
+- 51dec97: Add Promotion.validByDefaultOn to specify groups to which to add applicable promotions by default
+
+### Patch Changes
+
+- 620291b: add `hidden` on `Service` to remove services from the user-facing list
+
 ## 1.3.1
 
 ### Patch Changes

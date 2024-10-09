@@ -56,24 +56,6 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
         return groups;
       },
     }),
-    // groups: t.relation('groups', {
-    //   args: {
-    //     types: t.arg({ type: [GroupEnumType], required: false }),
-    //   },
-    //   query: ({ types }) =>
-    //     types
-    //       ? {
-    //           where: {
-    //             type: {
-    //                in: (() => {
-    //                  console.log({ types });
-    //                  return types;
-    //                })(),
-    //             },
-    //           },
-    //         }
-    //       : {},
-    // }),
     contributionOptions: t.relation('contributionOptions'),
     canEditDetails: t.boolean({
       description: "L'utilisateur.ice connecét.e peut modifier les infos de cette AE",

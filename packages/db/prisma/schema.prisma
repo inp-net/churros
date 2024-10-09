@@ -220,6 +220,7 @@ model Service {
   groupId              String?
   group                Group?              @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   importance           Int                 @default(0)
+  hidden               Boolean             @default(false)
 
   @@unique([schoolId, studentAssociationId, groupId, url])
   @@unique([schoolId, studentAssociationId, groupId, name])
@@ -454,16 +455,16 @@ model Group {
   coOrganizedEvents      Event[]            @relation("coOrganizer")
   lyiaAccounts           LydiaAccount[]
   tickets                Ticket[]           @relation("openTo")
-  barWeeks               BarWeek[]
   services               Service[]
   shopItems              ShopItem[]
   restrictedFormSections FormSection[]      @relation("restrictedTo")
 
-  notifications          Notification[]
-  groupId                String?
-  ticketGroupId          String?
-  joinedByBookingTickets Ticket[]       @relation("autojoin")
-  themes                 Theme[]
+  notifications           Notification[]
+  groupId                 String?
+  ticketGroupId           String?
+  joinedByBookingTickets  Ticket[]       @relation("autojoin")
+  themes                  Theme[]
+  defaultApplicableOffers Promotion[]    @relation("defaultApplicableOffers")
 
   // For ldap
   ldapGidNumber Int @unique @default(autoincrement())
@@ -478,7 +479,7 @@ model Group {
   @@index([search], type: Gin)
 }
 
-/// The intermediate model between users and groups
+/// The intermediate model between users
 model GroupMember {
   groupId         String
   memberId        String
@@ -779,16 +780,6 @@ model PaypalTransaction {
   updatedAt DateTime @updatedAt
 }
 
-/// A bar week is a week during which some groups takeover the bar staff
-model BarWeek {
-  id          String   @id @default(dbgenerated("nanoid('barweek:')"))
-  slug        String
-  groups      Group[]
-  startsAt    DateTime
-  endsAt      DateTime
-  description String   @default("") @db.VarChar(255)
-}
-
 /// A NotificationSubscription stores a user's subscription to push notifications on a user agent
 model NotificationSubscription {
   id            String         @id @default(dbgenerated("nanoid('notifsub:')"))
@@ -987,13 +978,14 @@ model PromotionCode {
 }
 
 model Promotion {
-  id         String          @id @default(dbgenerated("nanoid('promo:')"))
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  validUntil DateTime?
-  type       PromotionType
-  codes      PromotionCode[]
-  validOn    Ticket[]
+  id               String          @id @default(dbgenerated("nanoid('promo:')"))
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  validUntil       DateTime?
+  type             PromotionType
+  codes            PromotionCode[]
+  validOn          Ticket[]
+  validByDefaultOn Group[]         @relation("defaultApplicableOffers")
 
   priceOverride Int
   events        Event[]

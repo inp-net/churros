@@ -30,7 +30,6 @@
   import IconGroupType from '~icons/msl/category-outline';
   import IconUnlisted from '~icons/msl/disabled-visible';
   import IconPages from '~icons/msl/draft-outline';
-  import IconMembers from '~icons/msl/group-outline';
   import IconParentGroup from '~icons/msl/group-work-outline';
   import IconAddress from '~icons/msl/home-outline';
   import IconRelatedGroups from '~icons/msl/hub-outline';
@@ -106,16 +105,6 @@
         </SubmenuItem>
         <SubmenuItem href={route('/groups/[uid]/edit/links', $page.params.uid)} icon={IconLinks}>
           Liens sur le profil
-        </SubmenuItem>
-        <SubmenuItem
-          icon={IconMembers}
-          href={route('/groups/[uid]/edit/members', $page.params.uid)}
-          subtext={mapAllLoading(
-            [group.activeMembersCount, group.membersCount],
-            (act, all) => `${act} actif·ve·s, ${all} au total`,
-          )}
-        >
-          Membres
         </SubmenuItem>
         <SubmenuItem
           subtext={mapLoading(group.pagesCount, (count) =>

@@ -8,6 +8,7 @@
   import InputStudentAssociations, {
     type StudentAssociation,
   } from '$lib/components/InputStudentAssociations.svelte';
+  import { refroute } from '$lib/navigation';
 
   let kioskReloadStudentAssociation: StudentAssociation | undefined = undefined;
 
@@ -38,7 +39,7 @@
           name: 'Manage Services',
           logo: 'services',
           logoSourceType: 'Icon',
-          url: '/backrooms/services',
+          url: refroute('/services/manage'),
         }}
       />
     </li>

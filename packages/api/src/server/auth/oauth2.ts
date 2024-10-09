@@ -1,4 +1,5 @@
-import { getSessionUser } from '#lib';
+import { getSessionUser, prisma } from '#lib';
+import { nanoid } from 'nanoid';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
 import { api } from '../express.js';
@@ -52,6 +53,10 @@ oauth2Strategy.userProfile = async function (
 
 passport.use(oauth2Strategy);
 
+function forwardSearchParams(params: URLSearchParams, keys: string[]): URLSearchParams {
+  return new URLSearchParams(Array.from(params.entries()).filter(([key]) => keys.includes(key)));
+}
+
 api.get('/auth/oauth2', (req, res, next) => {
   // Thanks express
   const searchParams = new URL(`http://localhost${req.url}`).searchParams;
@@ -59,7 +64,7 @@ api.get('/auth/oauth2', (req, res, next) => {
   passport.authenticate('oauth2', {
     // @ts-expect-error undocumented option
     callbackURL: new URL(
-      `/auth/oauth2/callback?${new URLSearchParams({ from: searchParams.get('from') ?? '' })}`,
+      `/auth/oauth2/callback?${forwardSearchParams(searchParams, ['from', 'native'])}`,
       process.env.PUBLIC_API_URL,
     ).toString(),
   })(req, res, next);
@@ -67,15 +72,45 @@ api.get('/auth/oauth2', (req, res, next) => {
 api.get(
   '/auth/oauth2/callback',
   passport.authenticate('oauth2', { failureRedirect: '/login' }),
-  function (req, res) {
+  async function (req, res) {
     // Thanks express
     const searchParams = new URL(`http://localhost${req.url}`).searchParams;
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
-    res.redirect(
-      `${new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN)}?${new URLSearchParams({
-        from: searchParams.get('from') ?? '/',
-      })}`,
-    );
+
+    // ?native=1 is used to create a local token instead of setting a HttpOnly cookie,
+    // since native apps don't support them.
+    let token: string | undefined;
+    if (searchParams.get('native') === '1') {
+      token = await prisma.credential
+        .create({
+          data: {
+            type: 'Token',
+            value: nanoid(30),
+            user: {
+              connect: {
+                uid: req.user?.user?.uid,
+              },
+            },
+          },
+        })
+        .then((cred) => cred.value);
+    }
+
+    const outputParams = new URLSearchParams({
+      from: searchParams.get('from') ?? '/',
+      token: token ?? '',
+    });
+
+    let redirectURL: string;
+    if (searchParams.get('native') === '1') {
+      // Native app logins get redirected to the app via a custom URL scheme whose name is the package ID
+      redirectURL = `${process.env.PUBLIC_APP_PACKAGE_ID}://login/done?${outputParams}`;
+    } else {
+      // Web logins get redirected to the frontend
+      redirectURL = new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN).toString();
+    }
+
+    res.redirect(redirectURL);
   },
 );

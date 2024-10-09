@@ -4,3 +4,4 @@
 
 export * from './article-search-result.js';
 export * from './article.js';
+export * from './post-input.js';

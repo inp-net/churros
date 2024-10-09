@@ -20,6 +20,7 @@
 
 {#if $data}
   <Avatar
+    {...$$restProps}
     --avatar-radius="0.25em"
     src={$data.pictureURL}
     href={mapLoading($data.uid, (uid) => route('/[uid=uid]', uid))}

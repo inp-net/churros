@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import type { MaybeLoading } from '$lib/loading';
+  import { tooltip } from '$lib/tooltip';
   import type { SvelteComponent } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
 
@@ -9,6 +10,9 @@
   export let icon: typeof SvelteComponent<any> | null;
 
   export let subtext: MaybeLoading<string> = '';
+
+  /** Whether to allow overflows, could be useful when the icon slot requires so. */
+  export let overflow = false;
 
   /** Whether to show a right chevron icon on the right side of the item. Useful to indicate that the item leads to another page. Defaults to true if href is set. */
   export let chevron: boolean | undefined = undefined;
@@ -26,6 +30,11 @@
    * Make the wrapper element a label
    */
   export let label = false;
+
+  /**
+   * Add a tooltip
+   */
+  export let help = '';
 
   /**
    * If the string specified here is used as the hash in the URL, the item will be highlighted as active.
@@ -50,8 +59,9 @@
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
   class="submenu-item"
+  use:tooltip={help}
 >
-  <div class="left">
+  <div class="left" class:allow-overflow={overflow}>
     <div class="icon">
       {#if icon}
         <svelte:component this={icon}></svelte:component>
@@ -114,7 +124,12 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    width: 100%;
     overflow: hidden;
+  }
+
+  .submenu-item .left.allow-overflow {
+    overflow: visible;
   }
 
   .icon {
@@ -128,6 +143,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%;
     overflow: hidden;
     text-align: left;
   }

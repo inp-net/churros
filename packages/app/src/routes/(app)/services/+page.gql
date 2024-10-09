@@ -1,5 +1,5 @@
-query PageServices {
-  services(mine: true) {
+query PageServices @loading {
+  services(mine: true) @loading(count: 10) {
     ...CardService
   }
 }

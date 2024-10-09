@@ -170,15 +170,15 @@
       {#if !$data || !loaded($data.__typename)}
         <Avatar help="" href="" alt="" src={PendingValue} />
       {:else if $data.__typename === 'User'}
-        <AvatarUser user={$data} />
+        <AvatarUser enlarge user={$data} />
       {:else if $data.__typename === 'Group'}
-        <AvatarGroup group={$data} />
+        <AvatarGroup enlarge group={$data} />
       {:else if $data.__typename === 'StudentAssociation'}
-        <AvatarStudentAssociation studentAssociation={$data} />
+        <AvatarStudentAssociation enlarge studentAssociation={$data} />
       {:else if $data.__typename === 'Major'}
-        <AvatarMajor major={$data}></AvatarMajor>
+        <AvatarMajor enlarge major={$data}></AvatarMajor>
       {:else if $data.__typename === 'School'}
-        <AvatarSchool school={$data} />
+        <AvatarSchool enlarge school={$data} />
       {/if}
     </div>
     <div class="text">

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { AddGroupMemberStore, LayoutProfileStore, PageProfileStore } from '$houdini';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import PickGroup from '$lib/components/PickGroup.svelte';
+  import { mutateAndToast } from '$lib/mutations';
   import { route } from '$lib/ROUTES';
   import type { PageData } from './$houdini';
   import Header from './Header.svelte';
@@ -11,6 +14,30 @@
 </script>
 
 <MaybeError result={$LayoutProfile} let:data={{ profile, me }}>
+  {#if me}
+    <PickGroup
+      title="Ajouter à"
+      value={null}
+      statebound="NAVTOP_CREATING_GROUP_MEMBER"
+      options={me.canAddMembersTo}
+      on:finish={async ({ detail }) => {
+        await mutateAndToast(
+          new AddGroupMemberStore(),
+          {
+            group: detail,
+            user: $page.params.uid,
+          },
+          {
+            success: `${$page.params.uid} ajouté à ${detail}`,
+            error: `Impossible d'ajouter ${$page.params.uid} à ${detail}`,
+          },
+        );
+        await new LayoutProfileStore().fetch({ variables: { uid: $page.params.uid } });
+        await new PageProfileStore().fetch({ variables: { uid: $page.params.uid } });
+      }}
+    ></PickGroup>
+  {/if}
+
   <div class="contents">
     <Header {me} {profile} />
 

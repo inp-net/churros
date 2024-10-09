@@ -4,8 +4,11 @@ import {
   PinDisplayEventStore,
   PinDisplayPostStore,
   PinDisplayProfilePageStore,
+  PinDisplayServiceStore,
 } from '$houdini';
+import { route } from '$lib/ROUTES';
 import { isDark } from '$lib/theme';
+import { TYPENAMES_TO_ID_PREFIXES } from '$lib/typenames';
 import type { Page } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import IconMajor from '~icons/msl/account-tree-outline';
@@ -16,6 +19,7 @@ import IconStudentAssociation from '~icons/msl/group-work-outline';
 import IconUser from '~icons/msl/person-outline';
 import IconSchool from '~icons/msl/school-outline';
 import IconPost from '~icons/msl/text-ad-outline';
+import IconService from '~icons/msl/widgets-outline';
 
 graphql(`
   query PinDisplayPost($postId: LocalID!) @cache(policy: CacheOrNetwork) {
@@ -66,6 +70,16 @@ graphql(`
   }
 `);
 
+graphql(`
+  query PinDisplayService($serviceId: LocalID!) @cache(policy: CacheOrNetwork) {
+    service(id: $serviceId) {
+      name
+      logo
+      logoSourceType
+    }
+  }
+`);
+
 /**
  * Compute additional information to use when displaying a pinned page.
  */
@@ -78,6 +92,23 @@ export async function pinDisplay(path: string) {
     };
   }
   try {
+    if (
+      path.split(':').filter(Boolean).length === 2 &&
+      path.startsWith(TYPENAMES_TO_ID_PREFIXES.Service)
+    ) {
+      const service = await new PinDisplayServiceStore()
+        .fetch({ variables: { serviceId: path } })
+        .then((r) => r.data?.service);
+      return {
+        title: service?.name ?? 'Service',
+        icon:
+          (service?.logo
+            ? service.logoSourceType === 'ExternalLink'
+              ? service.logo
+              : route('GET /[uid=uid].png', service.logo)
+            : IconService) || IconService,
+      };
+    }
     if (path.split('/').filter(Boolean).length === 1 && /^[\w-]+$/.test(path.split('/')[1])) {
       const uid = path.split('/')[1];
       const fallbackIcons = {

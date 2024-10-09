@@ -84,8 +84,8 @@ export function formatDateRelativeSmart(date: Date | string) {
   return formatDate(date);
 }
 
-export function schoolYearStart(): Date {
-  const now = new Date();
+export function schoolYearStart(now?: Date): Date {
+  now ??= new Date();
   const thisYearSeptemberFirst = new Date(now.getFullYear(), 8, 1);
   if (now > thisYearSeptemberFirst) return thisYearSeptemberFirst;
 
@@ -106,6 +106,10 @@ export function yearRangeUpTo(end: number, length: number): number[] {
   for (let i = end - length; i < end; i++) result.push(i);
 
   return result;
+}
+
+export function schoolYearRangeOf(date: Date): [number, number] {
+  return [schoolYearStart(date).getFullYear(), schoolYearStart(date).getFullYear() + 1];
 }
 
 export function closestMonday(date: Date): Date {

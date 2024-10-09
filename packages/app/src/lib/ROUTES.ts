@@ -41,8 +41,6 @@ const PAGES = {
   },
   '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
-  '/backrooms/services': `/backrooms/services`,
-  '/bar-weeks': `/bar-weeks`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
   '/bookings/[code]': (code: string | number, params?: {}) => {
@@ -190,9 +188,6 @@ const PAGES = {
   '/groups/[uid]/edit/links': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/links`;
   },
-  '/groups/[uid]/edit/members': (uid: string | number, params?: {}) => {
-    return `/groups/${uid}/edit/members`;
-  },
   '/groups/[uid]/edit/members/bulk': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/members/bulk`;
   },
@@ -265,7 +260,7 @@ const PAGES = {
   '/services/[id]/edit': (id: string | number, params?: {}) => {
     return `/services/${id}/edit`;
   },
-  '/services/create': `/services/create`,
+  '/services/manage': `/services/manage`,
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
@@ -522,8 +517,6 @@ export type KIT_ROUTES = {
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
     '/backrooms': never;
-    '/backrooms/services': never;
-    '/bar-weeks': never;
     '/birthdays': never;
     '/bookings': never;
     '/bookings/[code]': 'code';
@@ -574,7 +567,6 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/bank-accounts': 'uid';
     '/groups/[uid]/edit/bio': 'uid';
     '/groups/[uid]/edit/links': 'uid';
-    '/groups/[uid]/edit/members': 'uid';
     '/groups/[uid]/edit/members/bulk': 'uid';
     '/groups/[uid]/edit/pages': 'uid';
     '/groups/[uid]/edit/pages/[...page]': 'uid' | 'page';
@@ -604,7 +596,7 @@ export type KIT_ROUTES = {
     '/search': 'q';
     '/services': never;
     '/services/[id]/edit': 'id';
-    '/services/create': never;
+    '/services/manage': never;
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;

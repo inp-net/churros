@@ -232,9 +232,7 @@
           <LoadingText
             value={mapAllLoading(
               [ticket.minimumPrice, ticket.priceIsVariable, booking.wantsToPay],
-              // XXX: EUR is hardcoded for variable prices here
-              (min, variable, wants) =>
-                variable ? `${min} + ${Math.max(0, wants - min)} €` : formatEUR(min),
+              (min, variable, wants) => formatEUR(variable ? min + Math.max(0, wants - min) : min),
             )}
           />
         </dd>

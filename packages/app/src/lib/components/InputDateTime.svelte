@@ -16,6 +16,8 @@
 
   export let variant: 'ghost' | 'box';
 
+  export let readonly = false;
+
   const dispatch = createEventDispatcher<{
     blur: ValueDetail;
     clear: ValueDetail;
@@ -79,6 +81,7 @@
           }}
           id="{name}-date"
           {required}
+          {readonly}
           type="date"
           placeholder="Date"
           label="Date"
@@ -95,6 +98,7 @@
           }}
           id="{name}-date"
           {required}
+          {readonly}
           type="date"
           placeholder="Date"
           label=""
@@ -114,6 +118,7 @@
           }}
           id="{name}-time"
           {required}
+          {readonly}
           placeholder="Heure"
           label="Heure"
           type="time"
@@ -130,6 +135,7 @@
           }}
           id="{name}-time"
           {required}
+          {readonly}
           placeholder="Heure"
           label=""
           type="time"
@@ -137,7 +143,7 @@
         />
       {/if}
     </label>
-    {#if !required}
+    {#if !required && !readonly}
       <ButtonGhost
         on:click={() => {
           _valueDate = null;

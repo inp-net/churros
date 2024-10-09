@@ -84,7 +84,7 @@ export const TicketType = builder.prismaNode('Ticket', {
             "Calculer le minimum en prenant en compte les promotions applicables pour l'utilisateur.ice. ATTENTION: Certaines promotions sont confidentielles, et donc le prix minimum avec promotions appliquées ne devrait donc pas être affiché sur des pages susceptibles d'être montrées à d'autres (comme une page de QR code servant à se faire scanner son billet, par exemple)",
         }),
       },
-      async resolve(ticket, _, { user }) {
+      async resolve(ticket, { applyPromotions }, { user }) {
         return actualPrice(
           user,
           await prisma.ticket.findUniqueOrThrow({
@@ -92,6 +92,7 @@ export const TicketType = builder.prismaNode('Ticket', {
             include: actualPrice.prismaIncludes,
           }),
           null,
+          !applyPromotions,
         );
       },
     }),

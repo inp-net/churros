@@ -262,7 +262,7 @@ export const UserType = builder.prismaNode('User', {
           description: 'Ne renvoyer que les demandes en attente (mail envoyé mais non confirmé)',
         }),
       },
-      authScopes: { $granted: 'me' },
+      authScopes: { $granted: 'me', admin: true, studentAssociationAdmin: true },
       query({ pending }) {
         return {
           where: {

@@ -1,12 +1,11 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import IconCheck from '~icons/mdi/check';
-  import IconError from '~icons/mdi/close';
-  import IconLoading from '~icons/mdi/loading';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';
   import { zeus } from '$lib/zeus';
+  import IconCheck from '~icons/mdi/check';
+  import IconError from '~icons/mdi/close';
+  import IconLoading from '~icons/mdi/loading';
 
   enum State {
     Adding,
@@ -120,10 +119,6 @@
 </script>
 
 <div class="content">
-  <h1>
-    <ButtonBack></ButtonBack>
-    Ajouter des membres en masse
-  </h1>
   <form on:submit|preventDefault={addMembers}>
     <InputLongText
       bind:value={membersToAdd}
@@ -175,9 +170,7 @@
 
 <style>
   .content {
-    max-width: 1000px;
     padding: 0 1rem;
-    margin: 0 auto;
   }
 
   form {
@@ -185,6 +178,10 @@
     flex-direction: column;
     gap: 1rem;
     align-items: center;
+  }
+
+  form :global(.field) {
+    width: 100%;
   }
 
   .results ul {

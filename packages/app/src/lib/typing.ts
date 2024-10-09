@@ -55,3 +55,12 @@ export type VariableFunctionFixed<Params extends Record<string, string>, Input> 
 export function entries<K extends string | number, V>(obj: Record<K, V>): [K, V][] {
   return Object.entries(obj) as [K, V][];
 }
+
+// Turn an iterable into a interator that has access to the previous value
+export function* withPrevious<T>(iterable: Iterable<T>): Generator<[T, T | undefined]> {
+  let previous: T | undefined = undefined;
+  for (const current of iterable) {
+    yield [current, previous];
+    previous = current;
+  }
+}

@@ -4,4 +4,5 @@
 
 export * from './lydia/index.js';
 export * from './paypal/index.js';
+export * from './permissions.js';
 export * from './promotions.js';
