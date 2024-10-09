@@ -22,17 +22,10 @@
   $: ({ PageServicesManage } = data);
 
   const CreateService = graphql(`
-    mutation CreateService($studentAssociationUID: String!) {
-      upsertService(
-        description: ""
-        logo: ""
-        logoSourceType: ExternalLink
-        name: ""
-        studentAssociationUid: $studentAssociationUID
-        url: ""
-      ) {
+    mutation CreateService($studentAssociationUID: UID!) {
+      upsertServiceV2(input: { studentAssociation: $studentAssociationUID }) {
         ...MutationErrors
-        ... on MutationUpsertServiceSuccess {
+        ... on MutationUpsertServiceV2Success {
           data {
             localID
           }
@@ -51,8 +44,8 @@
       const result = await mutate(CreateService, {
         studentAssociationUID: detail,
       });
-      if (toasts.mutation(result, 'upsertService', '', 'Impossible de créer un service'))
-        await goto(refroute('/services/[id]/edit', result.data.upsertService.data.localID));
+      if (toasts.mutation(result, 'upsertServiceV2', '', 'Impossible de créer un service'))
+        await goto(refroute('/services/[id]/edit', result.data.upsertServiceV2.data.localID));
     }}
     statebound="NAVTOP_CREATING_SERVICE"
   ></PickStudentAssociation>
