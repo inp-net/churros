@@ -5545,6 +5545,10 @@ type Service implements Node {
   logoSourceType: LogoSourceType!
   name: String!
   owner: ServiceOwner!
+  """
+  Le service a été épinglé par l'utilisateur·ice connecté·e. Pour gérer cela, créer ou enlever un `Bookmark` avec pour `path` l'`id` (avec préfixe) du service.
+  """
+  pinned: Boolean!
   school: School @deprecated(reason: "Use `owner` instead")
   studentAssociation: StudentAssociation @deprecated(reason: "Use `owner` instead")
   url: String!

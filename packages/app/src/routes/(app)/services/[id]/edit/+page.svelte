@@ -151,7 +151,7 @@
           Visibilité
           <InputToggle
             slot="right"
-            value={!loading(service.hidden, false)}
+            value={mapLoading(service.hidden, (h) => !h)}
             on:update={({ detail }) => {
               mutateAndToast(UpdateServiceHidden, {
                 id: $page.params.id,

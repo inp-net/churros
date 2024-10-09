@@ -2,7 +2,7 @@ import { builder, prisma } from '#lib';
 import { GroupTypePrismaIncludes } from '#modules/groups';
 import { StudentAssociationPrismaIncludes } from '#modules/student-associations';
 import { GraphQLError } from 'graphql';
-import { LogoSourceTypeEnum, ServiceOwnerType } from '../index.js';
+import { LogoSourceTypeEnum, serviceIsPinnedByUser, ServiceOwnerType } from '../index.js';
 import { canEditService } from '../utils/permissions.js';
 
 export const ServiceTypePrismaIncludes = {
@@ -30,6 +30,13 @@ export const ServiceType = builder.prismaNode('Service', {
     studentAssociation: t.relation('studentAssociation', {
       nullable: true,
       deprecationReason: 'Use `owner` instead',
+    }),
+    pinned: t.boolean({
+      description:
+        "Le service a été épinglé par l'utilisateur·ice connecté·e. Pour gérer cela, créer ou enlever un `Bookmark` avec pour `path` l'`id` (avec préfixe) du service.",
+      async resolve(service, _, { user }) {
+        return serviceIsPinnedByUser(service, user);
+      },
     }),
     owner: t.field({
       type: ServiceOwnerType,

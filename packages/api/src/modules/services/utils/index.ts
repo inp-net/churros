@@ -3,3 +3,4 @@
  */
 
 export * from './permissions.js';
+export * from './pins.js';

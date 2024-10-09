@@ -1,4 +1,4 @@
-import { builder, prisma } from '#lib';
+import { builder, prisma, TYPENAMES_TO_ID_PREFIXES } from '#lib';
 import { ServiceType, ServiceTypePrismaIncludes } from '../index.js';
 // TODO split into  group.services, student-association.services, school.services and query.all-services for admins
 
@@ -49,6 +49,24 @@ builder.queryField('services', (t) =>
         include: ServiceTypePrismaIncludes,
         orderBy: [{ importance: 'desc' }, { name: 'asc' }],
       });
+      if (mine && user) {
+        // Sort pinned services first
+        const pinnedServices = await prisma.bookmark.findMany({
+          where: {
+            userId: user.id,
+            path: { startsWith: TYPENAMES_TO_ID_PREFIXES.Service },
+          },
+          select: { path: true },
+        });
+
+        return services.toSorted((a, b) => {
+          const aIsPinned = pinnedServices.some((pinned) => pinned.path === a.id);
+          const bIsPinned = pinnedServices.some((pinned) => pinned.path === b.id);
+          if (aIsPinned && !bIsPinned) return -1;
+          if (!aIsPinned && bIsPinned) return 1;
+          return 0;
+        });
+      }
       return services;
     },
   }),

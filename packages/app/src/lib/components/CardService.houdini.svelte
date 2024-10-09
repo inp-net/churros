@@ -2,16 +2,18 @@
   import { fragment, graphql, type CardService } from '$houdini';
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import { ICONS_SERVICES } from '$lib/display';
   import { loaded, loading, LoadingText } from '$lib/loading';
+  import { refroute } from '$lib/navigation';
+  import IconEdit from '~icons/msl/edit-outline';
+  import IconPinned from '~icons/msl/push-pin-outline';
   import IconServiceFallback from '~icons/msl/widgets-outline';
   import Avatar from './Avatar.svelte';
   import AvatarGroup from './AvatarGroup.houdini.svelte';
-  import { longpress } from '$lib/longpress';
-  import { goto } from '$app/navigation';
-  import { refroute } from '$lib/navigation';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import IconEdit from '~icons/msl/edit-outline';
+
+  /** Causes the list of services to re-shuffle when we pin/unpin a service */
+  export let reloadListOnPinChange = false;
 
   export let service: CardService | null;
   $: data = fragment(
@@ -19,6 +21,8 @@
     graphql(`
       fragment CardService on Service @loading {
         description
+        id
+        pinned
         localID
         url
         name
@@ -40,15 +44,47 @@
       }
     `),
   );
+
+  const ToggleBookmarkService = graphql(`
+    mutation BookmarkService($path: String!, $pin: Boolean!) {
+      bookmark(path: $path) @include(if: $pin) {
+        localID
+        path
+      }
+      unbookmark(path: $path) @skip(if: $pin) {
+        localID @Bookmark_delete
+        path
+      }
+    }
+  `);
+
+  const UpdatePinnedStatus = graphql(`
+    query UpdatePinnedStatus($service: LocalID!, $reloadList: Boolean!) {
+      # refresh this service
+      service(id: $service) {
+        id
+        pinned
+      }
+      # refresh the list (causes content to re-reflow)
+      services(mine: true) @include(if: $reloadList) {
+        id
+      }
+    }
+  `);
 </script>
 
 {#if $data}
   <a
     class:editable={loading($data.canEdit, false)}
     href={loading($data.url, '')}
-    use:longpress
-    on:longpress={async () => {
-      if ($data.canEdit) goto(refroute('/services/[id]/edit', loading($data.localID, '')));
+    on:contextmenu|preventDefault={async () => {
+      await ToggleBookmarkService.mutate({
+        path: loading($data.id, ''),
+        pin: !$data.pinned,
+      });
+      await UpdatePinnedStatus.fetch({
+        variables: { service: loading($data.localID, ''), reloadList: reloadListOnPinChange },
+      });
     }}
   >
     <div class="card-service">
@@ -86,6 +122,9 @@
         >
       </div>
     {/if}
+    <div class="pin-icon" class:active={loading($data.pinned, false)}>
+      <IconPinned />
+    </div>
     {#if $data.logoSourceType !== 'GroupLogo'}
       <div class="owner-avatar">
         {#if $data.owner.__typename === 'Group'}
@@ -131,6 +170,22 @@
     background-color: var(--bg);
     border: var(--border-block) solid var(--fg);
     border-radius: 10000px;
+  }
+
+  .pin-icon {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 2;
+    font-size: 1.2em;
+    opacity: 0;
+    transition: all 200ms ease;
+    scale: 0.75;
+  }
+
+  .pin-icon.active {
+    opacity: 1;
+    scale: 1;
   }
 
   a.editable:hover .edit-action,
