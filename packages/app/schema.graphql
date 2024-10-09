@@ -533,14 +533,16 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
   body: String!
-  bodyHtml: String! @deprecated(reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too.")
+  bodyHtml: String!
+    @deprecated(
+      reason: "Use bodyHtmlSafe. bodyHtmlSafe will eventually be renamed to bodyHtml too."
+    )
   bodyHtmlSafe: HTML!
   bodyPreview: String!
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
   canBeEdited: Boolean! @deprecated(reason: "Use canEdit instead.")
-
   """
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
@@ -616,27 +618,6 @@ type ArticleSearchResult {
 
 type AwaitingValidationError {
   message: String!
-}
-
-"""
-A bar week is a week during which some groups takeover the bar staff
-"""
-type BarWeek implements Node {
-  description: String!
-  descriptionHtml: String!
-  endsAt: DateTime!
-  groups: [Group!]!
-  id: ID!
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
-  localID: LocalID!
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
-  slug: String!
-  startsAt: DateTime!
-  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
 }
 
 enum BookingState @graphinx(module: "ticketing") {
@@ -917,7 +898,7 @@ type Document implements Commentable & Node & Reactable {
 type DocumentSearchResult {
   document: Document!
   id: ID!
-  rank: Int
+  rank: Float
   similarity: Float!
 }
 
@@ -1253,6 +1234,37 @@ type EventsByDay {
 type FamilyTree {
   nesting: String!
   users: [User!]!
+}
+
+type FeaturesHealthCheck @graphinx(module: "health-checks") {
+  """
+  Whether Apple Wallet integration is configured
+  """
+  appleWallet: Boolean!
+  """
+  Whether the GitLab API is configured
+  """
+  gitlab: Boolean!
+  """
+  Whether Google APIs are configured
+  """
+  googleAPIs: Boolean!
+  """
+  Whether Google Wallet integration is configured
+  """
+  googleWallet: Boolean!
+  """
+  Whether Mailman automation is configured
+  """
+  mailman: Boolean!
+  """
+  Whether OAuth login is configured
+  """
+  oauth: Boolean!
+  """
+  Whether the Prometheus pushgateway is configured
+  """
+  prometheus: Boolean!
 }
 
 scalar File
@@ -1655,7 +1667,19 @@ type Group implements Node & Pictured {
   """
   lydiaAccounts: [LydiaAccount!]!
   mailingList: String!
-  members: [GroupMember!]!
+  """
+  Les membres du groupe, triés par date d'adhésion
+  """
+  members(
+    after: String
+    before: String
+    """
+    Renvoyer d'abord les membres du bureau
+    """
+    boardFirst: Boolean! = true
+    first: Int
+    last: Int
+  ): GroupMembersConnection!
   """
   Nombre de membres
   """
@@ -1722,15 +1746,13 @@ type Group implements Node & Pictured {
   Family root, only created for performance reasons
   """
   root: Group
+  """
+  Recherche des membres du groupe
+  """
+  searchMembers(q: String!): [GroupMemberSearchResult!]!
   secretaries: [GroupMember!]!
   selfJoinable: Boolean!
   services: [Service!]!
-  """
-  Article de la boutique du groupe
-  """
-  shopItem(id: LocalID!): ShopItem
-  shopItems(after: String, before: String, first: Int, last: Int): GroupShopItemsConnection!
-  shopOrders: [ShopPayment!]!
   shortDescription: String!
   studentAssociation: StudentAssociation!
   treasurers: [GroupMember!]!
@@ -1767,23 +1789,64 @@ enum GroupJoinPolicy @graphinx(module: "groups") {
 }
 
 """
-The intermediate model between users and groups
+The intermediate model between users
 """
 type GroupMember {
+  """
+  On a le droit de modifier ce membre
+  """
+  canBeEdited: Boolean!
   canEditArticles: Boolean!
   canEditMembers: Boolean!
   canScanEvents: Boolean!
   createdAt: DateTime!
   group: Group!
   groupId: ID!
+  groupUid: UID!
   isDeveloper: Boolean!
-  member: User!
+  member: User! @deprecated(reason: "Utiliser `user`")
   memberId: ID!
+  onBoard: Boolean!
   president: Boolean!
+  """
+  Les emojis correspondant aux rôles du membre
+  """
+  roleEmojis: String!
   secretary: Boolean!
   title: String!
   treasurer: Boolean!
+  user: User!
+  userUid: UID!
   vicePresident: Boolean!
+}
+
+input GroupMemberInput {
+  canEditArticles: Boolean
+  canEditMembers: Boolean
+  canScanEvents: Boolean
+  createdAt: DateTime
+  president: Boolean
+  secretary: Boolean
+  title: String
+  treasurer: Boolean
+  vicePresident: Boolean
+}
+
+type GroupMemberSearchResult {
+  membership: GroupMember!
+  rank: Float
+  similarity: Float!
+}
+
+type GroupMembersConnection {
+  edges: [GroupMembersConnectionEdge!]!
+  nodes: [GroupMember!]!
+  pageInfo: PageInfo!
+}
+
+type GroupMembersConnectionEdge {
+  cursor: String!
+  node: GroupMember!
 }
 
 """
@@ -1815,17 +1878,6 @@ type GroupSearchResult {
   similarity: Float!
 }
 
-type GroupShopItemsConnection {
-  edges: [GroupShopItemsConnectionEdge!]!
-  nodes: [ShopItem!]!
-  pageInfo: PageInfo!
-}
-
-type GroupShopItemsConnectionEdge {
-  cursor: String!
-  node: ShopItem!
-}
-
 enum GroupType {
   Association
   Club
@@ -1844,6 +1896,7 @@ Results of a health self-check
 """
 type HealthCheck {
   database: DatabaseHealthCheck!
+  features: FeaturesHealthCheck!
   ldap: LdapHealthCheck!
   mail: MailHealthCheck!
   redis: RedisHealthCheck!
@@ -1903,9 +1956,9 @@ type LdapHealthCheck @graphinx(module: "health-checks") {
   """
   internal: Boolean!
   """
-  Whether the LDAP school client is ready
+  Whether the LDAP school client is ready. Null when no LDAP_SCHOOL has been configured.
   """
-  school: Boolean!
+  school: Boolean
 }
 
 """
@@ -1973,6 +2026,7 @@ A Lydia account
 """
 type LydiaAccount implements Node {
   events: [Event!]!
+  eventsCount: Int!
   group: Group
   groupId: ID
   id: ID!
@@ -1987,9 +2041,9 @@ type LydiaAccount implements Node {
 
 type MailHealthCheck @graphinx(module: "health-checks") {
   """
-  Whether the SMTP client is ready
+  Whether the SMTP client is ready. Null if no SMTP_URL is configured.
   """
-  smtp: Boolean!
+  smtp: Boolean
 }
 
 """
@@ -2082,6 +2136,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   addFileToPage(file: File!, page: ID!): MutationAddFileToPageResult!
   addGroupMember(groupUid: String!, title: String!, uid: String!): MutationAddGroupMemberResult!
+    @deprecated(reason: "Utiliser `addGroupMemberV2` à la place")
+  """
+  Ajouter quelqu'un à un groupe
+  """
+  addGroupMemberV2(
+    group: UID!
+    title: String! = "Membre"
+    user: UID!
+  ): MutationAddGroupMemberV2Result!
   """
   Ajouter des liens à une ressource implémentant `HasLinks`
   """
@@ -2171,10 +2234,11 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Changer le groupe organisateur (principal) de l'événement
   """
   changeEventOrganizer(group: UID!, id: LocalID!): MutationChangeEventOrganizerResult!
-
-  """Mettre à jour le groupe d'un article"""
+  """
+  Mettre à jour le groupe d'un article
+  """
   changePostOwner(group: UID!, post: LocalID!): MutationChangePostOwnerResult!
-  checkIfBookingIsPaid(code: String!): Boolean!
+  checkIfBookingIsPaid(code: String!): MutationCheckIfBookingIsPaidResult!
   claimPromotionCode(code: String!): Boolean!
   completeSignup(token: String!): SignupCompletionResult!
   contribute(optionId: ID!, phone: String!): MutationContributeResult!
@@ -2281,6 +2345,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     validUntil: DateTime!
   ): QuickSignup!
   """
+  Générer des codes de promotion pour une promotion
+  """
+  createSpecialOfferCodes(
+    """
+    Nombre de codes à générer. Maximum: 500
+    """
+    amount: Int!
+    specialOffer: LocalID!
+  ): MutationCreateSpecialOfferCodesResult!
+  """
   Créer un nouveau billet sur un évènement existant
   """
   createTicket(
@@ -2299,7 +2373,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteAnnouncement(id: ID!): Boolean!
   deleteArticle(id: ID!): Boolean!
   deleteArticlePicture(id: ID!): Boolean!
-  deleteBarWeek(id: ID!): Boolean!
   deleteComment(id: ID!): Comment!
   """
   Supprimer une cotisation
@@ -2317,14 +2390,17 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deleteGodparent(child: UID!, parent: UID!): MutationDeleteGodparentResult!
   deleteGroup(uid: String!): Boolean!
-  deleteGroupMember(groupId: ID!, memberId: ID!): Boolean!
+  deleteGroupMember(group: UID!, user: UID!): MutationDeleteGroupMemberResult!
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
     @deprecated(reason: "Use setPicture instead")
-  deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
   """
   Supprimer un lien existant
   """
   deleteLink(id: LocalID!): MutationDeleteLinkResult!
+  """
+  Supprimer l'enregistrement d'uncompte Lydia sur un groupe (ne supprime pas le compte Lydia Pro sur Lydia)
+  """
+  deleteLydiaAccount(id: LocalID!): MutationDeleteLydiaAccountResult!
   """
   Supprime une page existante. On peut renseigner l'identifiant de la page ou son chemin ainsi que son groupe ou AE d'appartenance.
   """
@@ -2355,8 +2431,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     eventId: ID
   ): Boolean!
   deleteSchoolPicture(id: String!): String!
-  deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
-  deleteShopOption(optionIds: [String!]!): Boolean!
+  """
+  Supprime un service
+  """
+  deleteService(id: LocalID!): MutationDeleteServiceResult!
   deleteTicket(
     """
     Supprimer le billet même s'il existe des réservations
@@ -2417,11 +2495,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   ): MutationMarkContributionAsPaidResult!
   mergeDocuments(from: [ID!]!, into: ID!): Document!
   opposeRegistration(id: ID!): MutationOpposeRegistrationResult!
-  paidShopPayment(
-    paymentMethod: PaymentMethod
-    phone: String
-    shopPaymentId: ID!
-  ): MutationPaidShopPaymentResult!
   payBooking(
     """
     Montant que l'on souhaite payer. Par défaut, le prix du billet. Peut être supérieur si l'on souhaite payer plus
@@ -2717,8 +2790,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     path: String!
   ): Bookmark
-
-  """Détacher un post de son événement"""
+  """
+  Détacher un post de son événement
+  """
   unlinkEventFromPost(post: LocalID!): MutationUnlinkEventFromPostResult!
   unreact(
     emoji: String!
@@ -2782,13 +2856,20 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     recurringUntil: DateTime
   ): MutationUpdateEventRecurrenceResult!
+  """
+  Mettre à jour un membre d'un groupe
+  """
+  updateGroupMember(
+    group: UID!
+    input: GroupMemberInput!
+    user: UID!
+  ): MutationUpdateGroupMemberResult!
   updateGroupPicture(dark: Boolean!, file: File!, uid: String!): String!
     @deprecated(reason: "Use setPicture instead")
   """
   Mettre à jour le profil d'un groupe
   """
   updateGroupProfile(profile: GroupProfileInput!, uid: UID!): MutationUpdateGroupProfileResult!
-  updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
   """
   Mettre à jour un lien existant
   """
@@ -2919,14 +3000,30 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   updateUserProfile(profile: UserProfileInput!, uid: UID!): MutationUpdateUserProfileResult!
   uploadDocumentFile(documentId: ID!, file: File!, solution: Boolean!): String!
-  upsertAnnouncement(body: String!, endsAt: DateTime!, id: ID, startsAt: DateTime!, title: String!, warning: Boolean!): MutationUpsertAnnouncementResult!
-
-  """Crée ou met à jour un post"""
-  upsertArticle(body: String!, event: ID, group: UID!, id: ID, publishedAt: DateTime, title: String!, visibility: Visibility!): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
-
-  """Crée ou met à jour un post"""
+  upsertAnnouncement(
+    body: String!
+    endsAt: DateTime!
+    id: ID
+    startsAt: DateTime!
+    title: String!
+    warning: Boolean!
+  ): MutationUpsertAnnouncementResult!
+  """
+  Crée ou met à jour un post
+  """
+  upsertArticle(
+    body: String!
+    event: ID
+    group: UID!
+    id: ID
+    publishedAt: DateTime
+    title: String!
+    visibility: Visibility!
+  ): MutationUpsertArticleResult! @deprecated(reason: "Use upsertArticleV2 instead")
+  """
+  Crée ou met à jour un post
+  """
   upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!
-  upsertBarWeek(description: String!, endsAt: DateTime!, groupsUids: [String!]!, id: ID, startsAt: DateTime!): MutationUpsertBarWeekResult!
   upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(
     description: String!
@@ -2971,13 +3068,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     treasurer: Boolean!
     vicePresident: Boolean!
   ): GroupMember!
+    @deprecated(reason: "Utiliser `updateGroupMember` et `addGroupMemberV2` à la place")
   upsertLydiaAccount(
     groupUid: String!
     id: ID
     name: String!
     privateToken: String!
     vendorToken: String!
-  ): LydiaAccount!
+  ): MutationUpsertLydiaAccountResult!
   upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]!
     @deprecated(reason: "Use 'upsertEventManager' and 'removeEventManager' instead")
   """
@@ -3028,7 +3126,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   upsertService(
     description: String!
     groupUid: String
-    id: ID
+    id: LocalID
     importance: Int = 0
     logo: String!
     logoSourceType: LogoSourceType!
@@ -3036,31 +3134,11 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     schoolUid: String
     studentAssociationUid: String
     url: String!
-  ): MutationUpsertServiceResult!
-  upsertShopItem(
-    description: String!
-    endsAt: DateTime
-    groupUid: String!
-    id: ID
-    lydiaAccounId: String
-    max: Int!
-    name: String!
-    paymentMethods: [PaymentMethod!]!
-    price: Float!
-    startsAt: DateTime
-    stock: Int!
-    visibility: Visibility!
-  ): MutationUpsertShopItemResult!
-  upsertShopOptions(itemOptions: [ShopItemOptionInput!]!, shopItemId: String!): Boolean!
-  upsertShopPayment(
-    answers: [String!]!
-    id: ID
-    paymentMethod: String
-    phone: String
-    quantity: Int!
-    shopItemId: String!
-    userUid: String!
-  ): MutationUpsertShopPaymentResult!
+  ): MutationUpsertServiceResult! @deprecated(reason: "Use 'upsertServiceV2' instead")
+  """
+  Create or update a service
+  """
+  upsertServiceV2(id: LocalID, input: ServiceInput!): MutationUpsertServiceV2Result!
   """
   Créer ou modifier un thème
   """
@@ -3114,6 +3192,12 @@ type MutationAddFileToPageSuccess {
 union MutationAddGroupMemberResult = Error | MutationAddGroupMemberSuccess | ZodError
 
 type MutationAddGroupMemberSuccess {
+  data: GroupMember!
+}
+
+union MutationAddGroupMemberV2Result = Error | MutationAddGroupMemberV2Success | ZodError
+
+type MutationAddGroupMemberV2Success {
   data: GroupMember!
 }
 
@@ -3177,6 +3261,12 @@ type MutationChangePostOwnerSuccess {
   data: Article!
 }
 
+union MutationCheckIfBookingIsPaidResult = Error | MutationCheckIfBookingIsPaidSuccess | ZodError
+
+type MutationCheckIfBookingIsPaidSuccess {
+  data: Registration!
+}
+
 union MutationContributeResult = Error | MutationContributeSuccess | ZodError
 
 type MutationContributeSuccess {
@@ -3231,6 +3321,16 @@ type MutationCreatePostSuccess {
   data: Article!
 }
 
+union MutationCreateSpecialOfferCodesResult =
+  | Error
+  | MutationCreateSpecialOfferCodesSuccess
+  | SomeNotCreatedError
+  | ZodError
+
+type MutationCreateSpecialOfferCodesSuccess {
+  data: [String!]!
+}
+
 union MutationCreateTicketResult = Error | MutationCreateTicketSuccess | ZodError
 
 type MutationCreateTicketSuccess {
@@ -3271,10 +3371,22 @@ type MutationDeleteGodparentSuccess {
   data: User!
 }
 
+union MutationDeleteGroupMemberResult = Error | MutationDeleteGroupMemberSuccess | ZodError
+
+type MutationDeleteGroupMemberSuccess {
+  data: GroupMember!
+}
+
 union MutationDeleteLinkResult = Error | MutationDeleteLinkSuccess | ZodError
 
 type MutationDeleteLinkSuccess {
   data: Link!
+}
+
+union MutationDeleteLydiaAccountResult = Error | MutationDeleteLydiaAccountSuccess | ZodError
+
+type MutationDeleteLydiaAccountSuccess {
+  data: LydiaAccount!
 }
 
 union MutationDeletePageResult = Error | MutationDeletePageSuccess | ZodError
@@ -3283,10 +3395,10 @@ type MutationDeletePageSuccess {
   data: Page!
 }
 
-union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess | ZodError
+union MutationDeleteServiceResult = Error | MutationDeleteServiceSuccess | ZodError
 
-type MutationDeleteShopItemSuccess {
-  data: Boolean!
+type MutationDeleteServiceSuccess {
+  data: Service!
 }
 
 union MutationDeleteTicketGroupResult = Error | MutationDeleteTicketGroupSuccess | ZodError
@@ -3345,12 +3457,6 @@ union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSucce
 
 type MutationOpposeRegistrationSuccess {
   data: Boolean!
-}
-
-union MutationPaidShopPaymentResult = Error | MutationPaidShopPaymentSuccess | ZodError
-
-type MutationPaidShopPaymentSuccess {
-  data: ShopPayment!
 }
 
 union MutationPayBookingResult = Error | MutationPayBookingSuccess | ZodError
@@ -3511,7 +3617,10 @@ type MutationUnlinkEventFromPostSuccess {
   data: Article!
 }
 
-union MutationUnsubscribeFromNotificationsResult = Error | MutationUnsubscribeFromNotificationsSuccess | ZodError
+union MutationUnsubscribeFromNotificationsResult =
+  | Error
+  | MutationUnsubscribeFromNotificationsSuccess
+  | ZodError
 
 type MutationUnsubscribeFromNotificationsSuccess {
   data: NotificationSubscription!
@@ -3527,6 +3636,12 @@ union MutationUpdateEventResult = Error | MutationUpdateEventSuccess | ZodError
 
 type MutationUpdateEventSuccess {
   data: Event!
+}
+
+union MutationUpdateGroupMemberResult = Error | MutationUpdateGroupMemberSuccess | ZodError
+
+type MutationUpdateGroupMemberSuccess {
+  data: GroupMember!
 }
 
 union MutationUpdateGroupProfileResult = Error | MutationUpdateGroupProfileSuccess | ZodError
@@ -3608,12 +3723,6 @@ type MutationUpsertArticleV2Success {
   data: Article!
 }
 
-union MutationUpsertBarWeekResult = Error | MutationUpsertBarWeekSuccess | ZodError
-
-type MutationUpsertBarWeekSuccess {
-  data: BarWeek!
-}
-
 union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess | ZodError
 
 type MutationUpsertDocumentSuccess {
@@ -3678,6 +3787,12 @@ type MutationUpsertGroupSuccess {
   data: Group!
 }
 
+union MutationUpsertLydiaAccountResult = Error | MutationUpsertLydiaAccountSuccess | ZodError
+
+type MutationUpsertLydiaAccountSuccess {
+  data: LydiaAccount!
+}
+
 union MutationUpsertPageResult = Error | MutationUpsertPageSuccess | ZodError
 
 type MutationUpsertPageSuccess {
@@ -3740,16 +3855,10 @@ type MutationUpsertServiceSuccess {
   data: Service!
 }
 
-union MutationUpsertShopItemResult = Error | MutationUpsertShopItemSuccess | ZodError
+union MutationUpsertServiceV2Result = Error | MutationUpsertServiceV2Success | ZodError
 
-type MutationUpsertShopItemSuccess {
-  data: ShopItem!
-}
-
-union MutationUpsertShopPaymentResult = Error | MutationUpsertShopPaymentSuccess | ZodError
-
-type MutationUpsertShopPaymentSuccess {
-  data: ShopPayment!
+type MutationUpsertServiceV2Success {
+  data: Service!
 }
 
 union MutationUpsertThemeResult = Error | MutationUpsertThemeSuccess | ZodError
@@ -3959,12 +4068,6 @@ Numéro de téléphone, au format international (E.164, avec préfixes “+”),
 """
 scalar PhoneNumber
 
-type Picture {
-  id: ID!
-  path: String!
-  position: Int!
-}
-
 """
 Une ressource qui possède une image associée
 """
@@ -4082,9 +4185,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   Récupérer le thème qui est actuellement choisi pour un déploiement automatique: le thème de l'utilisateur·ice doit être changé à celui-ci, si iel n'a pas explicitement demandé à ne pas utiliser ce thème
   """
   autodeployedTheme: Theme
-  barWeek(slug: String!): BarWeek!
-  barWeekNow(now: DateTime!): BarWeek
-  barWeeks: [BarWeek!]!
   birthdays(activeOnly: Boolean, now: DateTime, width: Int): [User!]!
   """
   Récupère une réservation par son code
@@ -4177,6 +4277,7 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   godparentRequest(id: ID!): GodparentRequest!
   godparentRequests: [GodparentRequest!]!
   group(uid: String!): Group!
+  groupMember(group: UID!, user: UID!): GroupMember
   groupMembersCsv(groupUid: String!): QueryGroupMembersCsvResult!
   groups(
     types: [GroupType!]
@@ -4331,8 +4432,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     mine: Boolean!
   ): [Service!]!
-  shopItem(slug: String!): ShopItem!
-  shopPayments(item: ID!): [ShopPayment!]!
+  """
+  Identifiants des différentes promotions existantes
+  """
+  specialOffers: [String!]!
   studentAssociation(uid: String!): StudentAssociation!
   studentAssociations(canContributeOnly: Boolean): [StudentAssociation!]!
   subject(forApprentices: Boolean!, slug: String!, yearTier: Int!): Subject!
@@ -5419,8 +5522,16 @@ enum SearchableResources {
 A service
 """
 type Service implements Node {
+  """
+  L’utilisateur·ice peut modifier le service
+  """
+  canEdit: Boolean!
   description: String!
   group: Group @deprecated(reason: "Use `owner` instead")
+  """
+  Le service n'est pas affiché sur le site
+  """
+  hidden: Boolean!
   id: ID!
   importance: Int!
   """
@@ -5431,9 +5542,32 @@ type Service implements Node {
   logoSourceType: LogoSourceType!
   name: String!
   owner: ServiceOwner!
+  """
+  Le service a été épinglé par l'utilisateur·ice connecté·e. Pour gérer cela, créer ou enlever un `Bookmark` avec pour `path` l'`id` (avec préfixe) du service.
+  """
+  pinned: Boolean!
   school: School @deprecated(reason: "Use `owner` instead")
   studentAssociation: StudentAssociation @deprecated(reason: "Use `owner` instead")
   url: String!
+}
+
+input ServiceInput {
+  description: String
+  group: UID
+  """
+  Masquer le service. Vaut par défaut `true` lorsque l'on crée un nouveau service sans lui donner de nom, sinon `false`.
+  """
+  hide: Boolean
+  iconURL: LooseURL
+  importance: Int
+  name: String
+  removeIcon: Boolean
+  school: UID
+  studentAssociation: UID
+  unlinkGroup: Boolean
+  unlinkSchool: Boolean
+  unlinkStudentAssociation: Boolean
+  url: LooseURL
 }
 
 """
@@ -5450,74 +5584,6 @@ interface Shareable {
   Nombre de partages
   """
   shares: Int!
-}
-
-type ShopItem implements Node {
-  createdAt: DateTime!
-  description: String!
-  descriptionHtml: String!
-  endsAt: DateTime
-  group: Group!
-  id: ID!
-  itemOptions: [ShopItemOption!]!
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
-  localID: LocalID!
-  lydiaAccount: LydiaAccount
-  max: Int!
-  name: String!
-  paymentMethods: [PaymentMethod!]!
-  pictures: [Picture!]!
-  price: Float!
-  shopPayments: [ShopPayment!]!
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
-  slug: String!
-  startsAt: DateTime
-  stock: Int!
-  stockLeft: Int!
-  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
-  updatedAt: DateTime!
-  visibility: Visibility!
-}
-
-type ShopItemAnswer {
-  id: ID!
-  options: [String!]!
-  shopPayment: ShopPayment!
-  shopPaymentId: String!
-}
-
-type ShopItemOption {
-  id: ID!
-  name: String!
-  options: [String!]!
-  otherToggle: Boolean!
-  required: Boolean!
-  shopItem: ShopItem!
-}
-
-input ShopItemOptionInput {
-  id: String!
-  name: String!
-  options: [String!]!
-  otherToggle: Boolean!
-  required: Boolean!
-}
-
-type ShopPayment {
-  createdAt: DateTime!
-  id: ID!
-  paid: Boolean!
-  paymentMethod: PaymentMethod!
-  quantity: Int!
-  shopItem: ShopItem!
-  shopItemAnswer: ShopItemAnswer
-  totalPrice: Float!
-  updatedAt: DateTime!
-  user: User!
 }
 
 """
@@ -5537,6 +5603,10 @@ type SignupCompletionResult {
   Token utilisable pour connecter la personne immédiatement suite à l'inscription
   """
   token: Credential
+}
+
+type SomeNotCreatedError {
+  message: String!
 }
 
 enum SortDirection {
@@ -5575,6 +5645,10 @@ type StudentAssociation implements Pictured {
     """
     type: GroupType
   ): Boolean!
+  """
+  Si l'utilisateur·ice courant·e peut créer des services rattachés à cette AE
+  """
+  canCreateServices: Boolean!
   """
   L'utilisateur.ice connecét.e peut modifier les infos de cette AE
   """
@@ -6212,6 +6286,10 @@ type User implements Node & Pictured {
   """
   bot: Boolean!
   canAccessDocuments: Boolean!
+  """
+  Groupes auxquels l'utilisateur·ice peut ajouter des membres
+  """
+  canAddMembersTo: [Group!]!
   canBeEdited: Boolean!
   """
   Les AEs pour lesquelles la personne peut cotiser

@@ -23,6 +23,8 @@
   export let closeKeyboardOnEnter = false;
   export let element: HTMLInputElement | undefined = undefined;
   export let focused = false;
+  export let readonly = false;
+  export let help = '';
 
   // TODO use (HTMLInputElement).valueAsDate instead
   function stringifyValue(val: typeof value, type: string): string {
@@ -123,6 +125,7 @@
       bind:this={element}
       class:danger={errored}
       class:focused
+      use:tooltip={help}
       on:change
       on:blur
       on:focusout
@@ -138,6 +141,7 @@
       {name}
       value={stringifyValue(value, type)}
       required={required || undefined}
+      readonly={readonly || undefined}
       {autocomplete}
       {placeholder}
       {...$$restProps}

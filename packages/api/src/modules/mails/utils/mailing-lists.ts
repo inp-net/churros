@@ -1,8 +1,8 @@
-import { prisma } from '#lib';
+import { ENV, prisma } from '#lib';
 import { GroupType } from '@churros/db/prisma';
 
-const apiUrl = process.env.MAILMAN_API_URL as unknown as string;
-const apiToken = process.env.MAILMAN_API_TOKEN as unknown as string;
+const apiUrl = ENV.MAILMAN_API_URL;
+const apiToken = ENV.MAILMAN_API_TOKEN;
 
 export async function removeMemberFromGroupMailingList(groupId: string, email: string) {
   const { mailingList } = await prisma.group.findUniqueOrThrow({
@@ -16,6 +16,10 @@ export async function removeMemberFromGroupMailingList(groupId: string, email: s
 }
 
 async function removeMemberFromMailingList(mailing: string, email: string) {
+  if (!apiUrl || !apiToken) {
+    console.warn('Mailman API not configured, skipping mailing list removal');
+    return;
+  }
   const endpoint = `${apiUrl}/${mailing}/member/${email}`;
   await fetch(endpoint, {
     method: 'DELETE',
@@ -130,6 +134,10 @@ export async function addMemberToGroupMailingList(groupId: string, email: string
 }
 
 async function addMemberToMailingList(mailingId: string, email: string) {
+  if (!apiUrl || !apiToken) {
+    console.warn('Mailman API not configured, skipping mailing list addition');
+    return;
+  }
   const endpoint = `${apiUrl}/${mailingId}/member`;
   await fetch(endpoint, {
     method: 'POST',

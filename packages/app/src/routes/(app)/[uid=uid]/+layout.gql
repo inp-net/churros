@@ -1,6 +1,9 @@
 query LayoutProfile($uid: UID!) @loading {
   me {
     ...ProfileHeader_Me
+    canAddMembersTo {
+      ...PickGroup @mask_disable
+    }
   }
   profile(uid: $uid) {
     __typename

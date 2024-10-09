@@ -32,6 +32,10 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-throw-literal': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
+    '@typescript-eslint/no-empty-object-type': [
+      'error',
+      { allowInterfaces: 'with-single-extends' },
+    ],
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
@@ -55,6 +59,7 @@ module.exports = {
     'unicorn/no-empty-file': 'off', // TODO reenable before merging to main
     'unicorn/no-array-callback-reference': 'off',
     'unicorn/prefer-spread': process.argv.includes('--fix') ? 'off' : 'warn',
+    'unicorn/prefer-ternary': process.argv.includes('--fix') ? 'off' : 'warn',
   },
   overrides: [
     {

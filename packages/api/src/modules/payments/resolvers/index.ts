@@ -4,8 +4,11 @@
 
 export * from './group.lydia-accounts.js';
 export * from './mutation.claim-promotion-code.js';
+export * from './mutation.create-special-offer-codes.js';
+export * from './mutation.delete-lydia-account.js';
 export * from './mutation.finish-paypal-registration-payment.js';
 export * from './mutation.upsert-lydia-account.js';
 export * from './query.lydia-account.js';
 export * from './query.lydia-accounts-of-group.js';
 export * from './query.lydia-accounts.js';
+export * from './query.special-offers.js';

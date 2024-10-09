@@ -13,6 +13,8 @@ query PageSearch($q: String) @loading {
           ...AvatarGroup
         }
       }
+      rank
+      similarity
       highlightedTitle
     }
     ... on DocumentSearchResult {
@@ -20,6 +22,8 @@ query PageSearch($q: String) @loading {
         id
         title
       }
+      rank
+      similarity
     }
     ... on EventSearchResult {
       event {
@@ -27,6 +31,8 @@ query PageSearch($q: String) @loading {
         pictureURL
         startsAt
       }
+      rank
+      similarity
       highlightedTitle
     }
     ... on GroupSearchResult {
@@ -35,6 +41,8 @@ query PageSearch($q: String) @loading {
         uid
         ...AvatarGroup
       }
+      rank
+      similarity
     }
     ... on UserSearchResult {
       user {
@@ -42,6 +50,8 @@ query PageSearch($q: String) @loading {
         uid
         ...AvatarUser
       }
+      rank
+      similarity
     }
   }
 }

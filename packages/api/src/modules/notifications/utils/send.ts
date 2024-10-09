@@ -1,11 +1,22 @@
-import { prisma } from '#lib';
-
+import { ENV, prisma } from '#lib';
 import { serverCanSendNotificationToUser } from '#permissions';
-import { Prisma, type NotificationSubscription, type User } from '@churros/db/prisma';
+import { type NotificationSubscription, type User } from '@churros/db/prisma';
 import type { MaybePromise } from '@pothos/core';
+import firebase from 'firebase-admin';
+import { FirebaseMessagingError } from 'firebase-admin/messaging';
 import webpush, { WebPushError } from 'web-push';
 import type { PushNotification } from './push-notification.js';
 import { setVapidDetails } from './vapid.js';
+
+const firebaseApp = ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY
+  ? firebase.initializeApp({
+      credential: firebase.credential.cert({
+        clientEmail: ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY.client_email,
+        privateKey: ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY.private_key,
+        projectId: ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY.project_id,
+      }),
+    })
+  : undefined;
 
 export async function notifyInBulk<U extends User>(
   jobId: string,
@@ -33,13 +44,10 @@ export async function notify<U extends User>(
 ): Promise<NotificationSubscription[]> {
   // IMPORTANT, sets the VAPID keys for webpush
   setVapidDetails();
+
   const subscriptions = await prisma.notificationSubscription.findMany({
     where: {
-      owner: {
-        id: {
-          in: users.map(({ id }) => id),
-        },
-      },
+      ownerId: { in: users.map(({ id }) => id) },
     },
     include: {
       owner: true,
@@ -50,106 +58,167 @@ export async function notify<U extends User>(
 
   await Promise.all(
     subscriptions.map(async (subscription) => {
-      const { endpoint, authKey, p256dhKey, id } = subscription;
       const owner = users.find(({ id }) => id === subscription.owner.id);
       if (!owner) return;
+
       let notif = typeof notification === 'function' ? await notification(owner) : notification;
+
       notif = {
         badge: '/logo-masked.png',
         ...notif,
+        data: {
+          ...notif.data,
+          subscriptionName: subscription.name,
+        },
       };
-      notif.data.subscriptionName = subscription.name;
+
       if (!serverCanSendNotificationToUser(subscription.owner, notif.data.channel)) {
         console.info(
-          `[${notif.data.channel} on ${notif.data.group ?? 'global'} @ ${
-            owner.id
-          }] Skipping since user has disabled ${notif.data.channel} notifications`,
+          logsPrefix(subscription, notif),
+          `Skipping since user has disabled ${notif.data.channel} notifications`,
         );
         return;
       }
 
       try {
-        await webpush.sendNotification(
-          {
-            endpoint,
-            keys: {
-              auth: authKey,
-              p256dh: p256dhKey,
-            },
-          },
-          JSON.stringify(notif),
-          {
-            vapidDetails: {
-              subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
-              publicKey: process.env.PUBLIC_VAPID_KEY,
-              privateKey: process.env.VAPID_PRIVATE_KEY,
-            },
-          },
-        );
-        await prisma.notification.create({
-          data: {
-            subscription: {
-              connect: {
-                id,
-              },
-            },
-            timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
-            actions: {
-              createMany: {
-                data: (notif.actions ?? [])
-                  .filter(({ action }) => /^https?:\/\//.test(action))
-                  .map(({ action, title }) => ({
-                    value: action,
-                    name: title,
-                  })),
-              },
-            },
-            title: notif.title,
-            body: notif.body,
-            imageFile: notif.image,
-            vibrate: notif.vibrate,
-            goto: notif.data.goto,
-            channel: notif.data.channel,
-            ...(notif.data.group ? { group: { connect: { uid: notif.data.group } } } : {}),
-          },
-        });
+        await sendNotification(subscription, notif);
+        await storeSentNotificationInDatabase(subscription, notif);
         sentSubscriptions.push(subscription);
       } catch (error: unknown) {
-        if (error instanceof WebPushError) {
-          console.error(
-            `[${notif.data.channel} on ${notif.data.group ?? 'global'} @ ${
-              owner.id
-            }] ${error.body.trim()}`,
-          );
-        }
-
-        if (
-          error instanceof WebPushError &&
-          error.body.trim() === 'push subscription has unsubscribed or expired.'
-        ) {
-          await prisma.notificationSubscription
-            .delete({
-              where: {
-                endpoint,
-              },
-            })
-            .catch((error) => {
-              if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-                // Subscription was deleted in the meantime, nothing to worry about
-              } else {
-                throw error;
-              }
-            });
-        }
+        if (isSubscriptionExpiredError(error)) await deleteSubscription(subscription.endpoint);
+        else console.error(logsPrefix(subscription, notif), error);
       }
 
       console.info(
-        `[${notif.tag ?? '(untagged)'}] notification sent to ${
-          subscription.owner.uid
-        } with data ${JSON.stringify(notif)} (sub ${id} @ ${endpoint})`,
+        logsPrefix(subscription, notif),
+        `notification sent with data ${JSON.stringify(notif)}`,
       );
     }),
   );
 
   return sentSubscriptions;
+}
+
+async function sendNotification(sub: NotificationSubscription, notification: PushNotification) {
+  return isWebPushEndpoint(sub.endpoint)
+    ? sendWebPushNotification(sub, notification)
+    : sendNativePushNotification(sub, notification);
+}
+
+/**
+ * WebPush endpoints are URLs, while native push endpoints are just formatted as `apns://TOKEN` or `firebase://TOKEN`.
+ * @param endpoint the endpoint to test
+ * @returns true if the endpoint corresponds to a web push endpoint
+ */
+function isWebPushEndpoint(endpoint: string) {
+  return /^https?:/.test(endpoint);
+}
+
+async function sendWebPushNotification(
+  sub: NotificationSubscription,
+  notification: PushNotification,
+) {
+  await webpush.sendNotification(
+    {
+      endpoint: sub.endpoint,
+      keys: {
+        auth: sub.authKey,
+        p256dh: sub.p256dhKey,
+      },
+    },
+    JSON.stringify(notification),
+    {
+      vapidDetails: {
+        subject: `mailto:${ENV.PUBLIC_CONTACT_EMAIL}`,
+        publicKey: ENV.PUBLIC_VAPID_KEY,
+        privateKey: ENV.VAPID_PRIVATE_KEY,
+      },
+    },
+  );
+}
+
+async function sendNativePushNotification(
+  sub: NotificationSubscription,
+  notification: PushNotification,
+) {
+  const token = sub.endpoint.replace(/^\w+:\/\//, '');
+  if (!firebaseApp) throw new MissingFirebaseCredentialsError();
+  await firebaseApp.messaging().send({
+    token,
+    data: {
+      original: JSON.stringify(notification),
+    },
+    android: {
+      restrictedPackageName: ENV.PUBLIC_APP_PACKAGE_ID,
+      notification: {
+        vibrateTimingsMillis: notification.vibrate,
+        eventTimestamp: notification.timestamp ? new Date(notification.timestamp) : undefined,
+        clickAction: notification.actions?.[0]?.title,
+      },
+    },
+    notification: {
+      title: notification.title,
+      body: notification.body,
+      imageUrl: notification.image,
+    },
+  });
+}
+
+async function storeSentNotificationInDatabase(
+  sub: NotificationSubscription,
+  notification: PushNotification,
+) {
+  await prisma.notification.create({
+    data: {
+      subscription: {
+        connect: {
+          id: sub.id,
+        },
+      },
+      timestamp: notification.timestamp ? new Date(notification.timestamp) : new Date(),
+      actions: {
+        createMany: {
+          data: (notification.actions ?? [])
+            .filter(({ action }) => /^https?:\/\//.test(action))
+            .map(({ action, title }) => ({
+              value: action,
+              name: title,
+            })),
+        },
+      },
+      title: notification.title,
+      body: notification.body,
+      imageFile: notification.image,
+      vibrate: notification.vibrate,
+      goto: notification.data.goto,
+      channel: notification.data.channel,
+      ...(notification.data.group ? { group: { connect: { uid: notification.data.group } } } : {}),
+    },
+  });
+}
+
+function logsPrefix(sub: NotificationSubscription, notif: PushNotification) {
+  return `[${notif.data.channel} on ${notif.data.group ?? 'global'} for ${sub.ownerId} @ ${sub.endpoint}]`;
+}
+
+function isSubscriptionExpiredError(
+  error: unknown,
+): error is WebPushError | FirebaseMessagingError {
+  return (
+    (error instanceof WebPushError &&
+      error.body.trim() === 'push subscription has unsubscribed or expired.') ||
+    (error instanceof FirebaseMessagingError &&
+      error.code === 'messaging/registration-token-not-registered')
+  );
+}
+
+async function deleteSubscription(endpoint: string) {
+  // Use deleteMany so that if the endpoint is not found, it doesn't cause an error
+  await prisma.notificationSubscription.deleteMany({ where: { endpoint } });
+}
+
+class MissingFirebaseCredentialsError extends Error {
+  constructor() {
+    super('Missing firebase admin credentials');
+  }
 }

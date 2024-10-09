@@ -1,5 +1,28 @@
 # @churros/app
 
+## 2.12.1
+
+### Patch Changes
+
+- 3d36801: fix(app): buttons could not be clicked on on mobile
+
+## 2.12.0
+
+### Minor Changes
+
+- 620291b: improve services UI
+- 4f8eb7d: rework group members UI
+- d95e254: feat(profile): enlarge picture on click
+- 51dec97: add link to code claim page on settings
+- db1451e: feat(search): implement showing rank & similarity values in debug mode
+
+### Patch Changes
+
+- f03b7cf: fix(posts): le body d'un post n'est jamais sauvegardé (closes #1175)
+- 5e5ba2c: fix(app): can't clear search field (closes #1171)
+- 94d5197: fix(lydia): registering new accounts did not work
+- ff2d33e: Change type of Mutation.checkIfBookingIsPaid to Result<Registration> instead of Boolean
+
 ## 2.11.0
 
 ### Minor Changes

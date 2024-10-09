@@ -1,9 +1,9 @@
-import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
+import { builder, ENV, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 import { DateTimeScalar, UIDScalar } from '#modules/global';
+import { requestEmailChange, UserType } from '#modules/users';
 import { userIsAdminOf } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { phone as parsePhoneNumber } from 'phone';
-import { UserType, requestEmailChange } from '../index.js';
 
 /** Updates a user. */
 builder.mutationField('updateUser', (t) =>
@@ -135,7 +135,7 @@ builder.mutationField('updateUser', (t) =>
           {},
           email,
           targetUser.id,
-          new URL('/validate-email/[token]', process.env.PUBLIC_FRONTEND_ORIGIN),
+          new URL('/validate-email/[token]', ENV.PUBLIC_FRONTEND_ORIGIN),
         );
       }
 

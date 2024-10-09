@@ -1,3 +1,4 @@
+import { ENV } from '#lib';
 import * as argon2 from 'argon2';
 
 export async function verifyPassword(hash: string, password: string): Promise<boolean> {
@@ -11,6 +12,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyMasterKey(password: string): Promise<boolean> {
-  if (!process.env.MASTER_PASSWORD_HASH) return false;
-  return verifyPassword(process.env.MASTER_PASSWORD_HASH, password);
+  const masterHash = ENV.MASTER_PASSWORD_HASH;
+  if (!masterHash) return false;
+  return verifyPassword(masterHash, password);
 }

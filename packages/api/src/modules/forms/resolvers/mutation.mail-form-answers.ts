@@ -1,6 +1,6 @@
-import { builder, formatDateTime, localID, prisma, sendMail } from '#lib';
+import { builder, ENV, formatDateTime, localID, prisma, sendMail } from '#lib';
+import { answerToString } from '#modules/forms';
 import { GraphQLError } from 'graphql';
-import { answerToString } from '../utils/answers.js';
 
 builder.mutationField('mailFormAnswers', (t) =>
   t.string({
@@ -52,7 +52,7 @@ builder.mutationField('mailFormAnswers', (t) =>
           formId: form.id,
           linkToAnswers: new URL(
             `/forms/${localID(form.id)}/answer`,
-            process.env.PUBLIC_FRONTEND_ORIGIN,
+            ENV.PUBLIC_FRONTEND_ORIGIN,
           ).toString(),
         },
         {},

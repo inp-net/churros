@@ -59,7 +59,6 @@ modules:
     - posts
     - events
     - ticketing
-    - shop
     - forms
     - documents
     - themes
@@ -67,7 +66,6 @@ modules:
     - profiles
     - notifications
     - services
-    - bar-weeks
     - student-associations
     - pages
     - schools

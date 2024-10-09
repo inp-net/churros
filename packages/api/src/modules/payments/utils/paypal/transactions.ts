@@ -1,20 +1,19 @@
+import { ENV } from '#lib';
 import { PayPalTransactionStatus } from '@churros/db/prisma';
 
-const { PUBLIC_PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PUBLIC_PAYPAL_API_BASE_URL } = process.env;
-
 async function accessToken() {
-  const response = await fetch(new URL(`/v1/oauth2/token`, PUBLIC_PAYPAL_API_BASE_URL), {
+  const response = await fetch(new URL(`/v1/oauth2/token`, ENV.PUBLIC_PAYPAL_API_BASE_URL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': `Basic ${Buffer.from(
-        `${PUBLIC_PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`,
+        `${ENV.PUBLIC_PAYPAL_CLIENT_ID}:${ENV.PAYPAL_CLIENT_SECRET}`,
       ).toString('base64')}`,
     },
     body: 'grant_type=client_credentials',
   }).catch((error) => {
     console.error(
-      `Error while getting paypal access token: ${error}, secret=${PAYPAL_CLIENT_SECRET} && id=${PUBLIC_PAYPAL_CLIENT_ID}`,
+      `Error while getting paypal access token: ${error}, secret=${ENV.PAYPAL_CLIENT_SECRET} && id=${ENV.PUBLIC_PAYPAL_CLIENT_ID}`,
     );
     throw error;
   });
@@ -28,9 +27,9 @@ export async function initiatePaypalPayment(
   referenceId: string,
 ): Promise<string> {
   console.info(
-    `Initiating paypal payment with ref ${referenceId}, baseurl ${PUBLIC_PAYPAL_API_BASE_URL}`,
+    `Initiating paypal payment with ref ${referenceId}, baseurl ${ENV.PUBLIC_PAYPAL_API_BASE_URL}`,
   );
-  const response = await fetch(new URL('/v2/checkout/orders', PUBLIC_PAYPAL_API_BASE_URL), {
+  const response = await fetch(new URL('/v2/checkout/orders', ENV.PUBLIC_PAYPAL_API_BASE_URL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -68,7 +67,7 @@ export async function initiatePaypalPayment(
 
 export async function finishPaypalPayment(orderId: string) {
   const response = await fetch(
-    new URL(`/v2/checkout/orders/${orderId}/capture`, PUBLIC_PAYPAL_API_BASE_URL),
+    new URL(`/v2/checkout/orders/${orderId}/capture`, ENV.PUBLIC_PAYPAL_API_BASE_URL),
     {
       method: 'POST',
       headers: {
@@ -117,7 +116,7 @@ export async function checkPaypalPayment(
   orderId: string,
 ): Promise<{ paid: boolean; status: PayPalTransactionStatus }> {
   const response = await fetch(
-    new URL(`/v2/checkout/orders/${orderId}`, PUBLIC_PAYPAL_API_BASE_URL),
+    new URL(`/v2/checkout/orders/${orderId}`, ENV.PUBLIC_PAYPAL_API_BASE_URL),
     {
       method: 'GET',
       headers: {

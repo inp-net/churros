@@ -1,7 +1,7 @@
 <script lang="ts">
   import { umamiAttributes } from '$lib/analytics';
   import { tooltip } from '$lib/tooltip';
-  import type { SvelteComponent } from 'svelte';
+  import { type SvelteComponent } from 'svelte';
   import IconSpinner from '~icons/mdi/loading';
 
   export let track = '';
@@ -53,6 +53,7 @@
   on:click
   role="button"
   {tabindex}
+  on:contextmenu
 >
   <div class="loading" class:visible={loading}>
     <IconSpinner />

@@ -48,10 +48,13 @@ if (keysNotInExample.length > 0) {
   console.info('Adding the following to .env.example:');
   console.info(quoteblock(dotenv.serialize(toAddToExample).trim()));
   fs.writeFileSync(examplePath, dotenv.serialize({ ...example, ...toAddToExample }));
-  console.info(bold('Remember to also update packages/api/src/global.d.ts, add the following:'));
+  console.info(bold('Remember to also update packages/api/src/env.ts, add the following:'));
   console.info(
     Object.entries(toAddToExample)
-      .map(([key, { description }]) => `/** ${description} */\n${key}: string;`)
+      .map(
+        ([key, { description }]) =>
+          `${key}: z.string()/* refine the schema here if relevant */.describe('${description}'),`,
+      )
       .join('\n'),
   );
 }

@@ -23,13 +23,6 @@
       }
     `),
   );
-
-  let loginLongpressTimeout: number;
-  function setLongpressTimeout() {
-    loginLongpressTimeout = setTimeout(() => {
-      goto(route('/login', { bypass_oauth: '1' }));
-    }, 3000) as unknown as number;
-  }
 </script>
 
 <nav>
@@ -77,15 +70,6 @@
       on:contextmenu={(e) => {
         e?.preventDefault();
         goto(route('/login', { bypass_oauth: '1' }));
-      }}
-      on:touchstart={(e) => {
-        e?.preventDefault();
-        setLongpressTimeout();
-      }}
-      on:touchmove={(e) => {
-        e?.preventDefault();
-        clearTimeout(loginLongpressTimeout);
-        setLongpressTimeout();
       }}
       noClientSideNavigation
       href={route('/login')}>Connexion</ButtonSecondary

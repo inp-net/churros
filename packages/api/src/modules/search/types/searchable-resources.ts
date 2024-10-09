@@ -1,4 +1,4 @@
-import { builder } from '#lib';
+import { builder, environmentSchema } from '#lib';
 
 export const SearchableResourcesEnum = builder.enumType('SearchableResources', {
   values: {
@@ -22,5 +22,12 @@ export const SearchableResourcesEnum = builder.enumType('SearchableResources', {
       description: 'Documents',
       value: 'Documents',
     },
-  },
+  } satisfies Record<
+    // Ensures that we update the definition of the PUBLIC_GLOBAL_SEARCH_BUMPS environment variable when adding a new value
+    keyof NonNullable<typeof environmentSchema._type.PUBLIC_GLOBAL_SEARCH_BUMPS>,
+    {
+      description: string;
+      value: string;
+    }
+  >,
 });
