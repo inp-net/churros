@@ -52,7 +52,7 @@ export const ServiceType = builder.prismaNode('Service', {
       description: "Le service n'est pas affiché sur le site",
     }),
     canEdit: t.boolean({
-      description: 'On peut éditer ce service',
+      description: 'L’utilisateur·ice peut modifier le service',
       async resolve({ id }, _, { user }) {
         const service = await prisma.service.findUniqueOrThrow({
           where: { id },
