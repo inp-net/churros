@@ -898,7 +898,7 @@ type Document implements Commentable & Node & Reactable {
 type DocumentSearchResult {
   document: Document!
   id: ID!
-  rank: Int
+  rank: Float
   similarity: Float!
 }
 

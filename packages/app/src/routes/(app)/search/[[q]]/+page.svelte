@@ -8,14 +8,15 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { formatDateRelativeSmart } from '$lib/dates';
-  import { allLoaded, loaded, loading, mapLoading } from '$lib/loading';
+  import { allLoaded, loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
   import { addReferrer } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { debounce } from 'lodash';
   import IconEvent from '~icons/msl/event-outline';
-  import IconSearch from '~icons/msl/search';
+  import IconClear from '~icons/msl/close';
   import IconPost from '~icons/msl/text-ad-outline';
   import type { PageData } from './$houdini';
+  import { debugging } from '$lib/debugging';
 
   export let data: PageData;
   $: ({ PageSearch } = data);
@@ -79,13 +80,39 @@
       }
     }
   }
+
+  function debugInfo(result: { rank: number | null; similarity: number }): string {
+    return Object.entries({
+      rnk: onceLoaded(
+        result.rank,
+        new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 5,
+          maximumFractionDigits: 5,
+        }).format,
+        '…',
+      ),
+      sim: onceLoaded(
+        result.similarity,
+        new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 5,
+          maximumFractionDigits: 5,
+        }).format,
+        '…',
+      ),
+    })
+      .map(([k, v]) => `${k}=${v}`)
+      .join(' ');
+  }
 </script>
 
 <form class="query" method="get" on:submit|preventDefault={async () => submitSearchQuery(q)}>
   <BaseInputText
-    actionIcon={IconSearch}
-    on:action={async () => submitSearchQuery(q)}
-    type="text"
+    actionIcon={q ? IconClear : undefined}
+    on:action={() => {
+      q = '';
+      submitSearchQuery('');
+    }}
+    type="search"
     placeholder="Rechercher"
     bind:value={q}
     autofocus
@@ -126,7 +153,14 @@
             </div>
             <div class="name">
               <LoadingText value={result.user.fullName} />
-              <LoadingText class="muted" value={mapLoading(result.user.uid, (uid) => `@${uid}`)} />
+              {#if $debugging}
+                <code class="debuginfo">{debugInfo(result)}</code>
+              {:else}
+                <LoadingText
+                  class="muted"
+                  value={mapLoading(result.user.uid, (uid) => `@${uid}`)}
+                />
+              {/if}
             </div>
           {:else if result.__typename === 'GroupSearchResult'}
             <div class="pic">
@@ -134,7 +168,14 @@
             </div>
             <div class="name">
               <LoadingText value={result.group.name} />
-              <LoadingText class="muted" value={mapLoading(result.group.uid, (uid) => `@${uid}`)} />
+              {#if $debugging}
+                <code class="debuginfo">{debugInfo(result)}</code>
+              {:else}
+                <LoadingText
+                  class="muted"
+                  value={mapLoading(result.group.uid, (uid) => `@${uid}`)}
+                />
+              {/if}
             </div>
           {:else if result.__typename === 'EventSearchResult'}
             {@const pictureURL = loading(result.event.pictureURL, '')}
@@ -154,10 +195,15 @@
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                 <span>{@html result.highlightedTitle}</span>
               {/if}
-              <LoadingText
-                class="muted"
-                value={mapLoading(result.event.startsAt, formatDateRelativeSmart)}
-              />
+
+              {#if $debugging}
+                <code class="debuginfo">{debugInfo(result)}</code>
+              {:else}
+                <LoadingText
+                  class="muted"
+                  value={mapLoading(result.event.startsAt, formatDateRelativeSmart)}
+                />
+              {/if}
             </div>
           {:else if result.__typename === 'ArticleSearchResult'}
             {@const pictureURL = loading(
@@ -180,7 +226,11 @@
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                 <span>{@html result.highlightedTitle}</span>
               {/if}
-              <span>Post de <AvatarGroup name group={result.article.group} /></span>
+              {#if $debugging}
+                <code class="debuginfo">{debugInfo(result)}</code>
+              {:else}
+                <span>Post de <AvatarGroup name group={result.article.group} /></span>
+              {/if}
             </div>
             <!-- {:else if result.__typename === 'DocumentSearchResult'}
               <a href="TODO">
