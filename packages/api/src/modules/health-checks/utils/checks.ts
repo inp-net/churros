@@ -28,10 +28,12 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
       .catch(() => false),
   },
   mail: {
-    smtp: await createTransport(ENV.SMTP_URL)
-      .verify()
-      .then(() => true)
-      .catch(() => false),
+    smtp: ENV.SMTP_URL
+      ? await createTransport(ENV.SMTP_URL)
+          .verify()
+          .then(() => true)
+          .catch(() => false)
+      : null,
   },
   ldap: {
     internal: await new Promise<boolean>((resolve) => {
@@ -87,5 +89,21 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
           // eslint-disable-next-line unicorn/no-await-expression-member
           .every(Boolean)
       : null,
+  },
+  features: {
+    prometheus: Boolean(ENV.PROMETHEUS_URL),
+    gitlab: Boolean(ENV.GITLAB_SUDO_TOKEN && ENV.GITLAB_PROJECT_ID),
+    masterPassword: Boolean(ENV.MASTER_PASSWORD_HASH),
+    googleAPIs: Boolean(ENV.PUBLIC_GOOGLE_CLIENT_ID && ENV.GOOGLE_CLIENT_SECRET),
+    googleWallet: Boolean(ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV.GOOGLE_WALLET_ISSUER_KEY),
+    appleWallet: Boolean(ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV.GOOGLE_WALLET_ISSUER_KEY),
+    oauth: Boolean(
+      ENV.PUBLIC_OAUTH_AUTHORIZE_URL &&
+        ENV.PUBLIC_OAUTH_TOKEN_URL &&
+        ENV.PUBLIC_OAUTH_CLIENT_ID &&
+        ENV.OAUTH_CLIENT_SECRET &&
+        ENV.PUBLIC_OAUTH_SCOPES,
+    ),
+    mailman: Boolean(ENV.MAILMAN_API_URL && ENV.MAILMAN_API_TOKEN),
   },
 });

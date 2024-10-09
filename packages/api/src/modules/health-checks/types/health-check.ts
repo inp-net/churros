@@ -4,7 +4,17 @@ export type HealthCheck = {
   redis: { publish: boolean; subscribe: boolean };
   database: { prisma: boolean };
   ldap: { school: boolean | null; internal: boolean };
-  mail: { smtp: boolean };
+  mail: { smtp: boolean | null };
+  features: {
+    prometheus: boolean;
+    gitlab: boolean;
+    masterPassword: boolean;
+    googleAPIs: boolean;
+    googleWallet: boolean;
+    appleWallet: boolean;
+    oauth: boolean;
+    mailman: boolean;
+  };
 };
 
 export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').implement({
@@ -60,12 +70,55 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
         ...graphinx('health-checks'),
         fields: (t) => ({
           smtp: t.boolean({
-            description: 'Whether the SMTP client is ready',
+            description: 'Whether the SMTP client is ready. Null if no SMTP_URL is configured.',
+            nullable: true,
             resolve: ({ smtp }) => smtp,
           }),
         }),
       }),
       resolve: ({ mail }) => mail,
+    }),
+    features: t.field({
+      type: builder.objectRef<HealthCheck['features']>('FeaturesHealthCheck').implement({
+        ...graphinx('health-checks'),
+        fields: (t) => ({
+          prometheus: t.boolean({
+            description: 'Whether the Prometheus pushgateway is configured',
+            resolve: ({ prometheus }) => prometheus,
+          }),
+          gitlab: t.boolean({
+            description: 'Whether the GitLab API is configured',
+            resolve: ({ gitlab }) => gitlab,
+          }),
+          masterPassword: t.boolean({
+            description: 'Whether a master password is configured',
+            authScopes: { admin: true },
+            resolve: ({ masterPassword }) => masterPassword,
+          }),
+          googleAPIs: t.boolean({
+            description: 'Whether Google APIs are configured',
+            resolve: ({ googleAPIs }) => googleAPIs,
+          }),
+          googleWallet: t.boolean({
+            description: 'Whether Google Wallet integration is configured',
+            resolve: ({ googleWallet }) => googleWallet,
+          }),
+          appleWallet: t.boolean({
+            description: 'Whether Apple Wallet integration is configured',
+            resolve: ({ appleWallet }) => appleWallet,
+          }),
+          oauth: t.boolean({
+            description: 'Whether OAuth login is configured',
+            resolve: ({ oauth }) => oauth,
+          }),
+          mailman: t.boolean({
+            description: 'Whether Mailman automation is configured',
+            authScopes: { admin: true, studentAssociationAdmin: true },
+            resolve: ({ mailman }) => mailman,
+          }),
+        }),
+      }),
+      resolve: ({ features }) => features,
     }),
   }),
 });
