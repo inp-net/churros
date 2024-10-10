@@ -1,5 +1,15 @@
 # @churros/db
 
+## 2.0.0
+
+### Major Changes
+
+- 2360071: remove bar weeks
+
+### Patch Changes
+
+- 620291b: add `hidden` on `Service` to remove services from the user-facing list
+
 ## 1.3.1
 
 ### Patch Changes

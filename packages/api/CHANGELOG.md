@@ -1,5 +1,25 @@
 # @churros/api
 
+## 4.0.0
+
+### Major Changes
+
+- 2360071: remove bar weeks
+
+### Minor Changes
+
+- 4f8eb7d: rework group members UI
+- d95e254: feat(profile): enlarge picture on click
+- 620291b: add Mutation.upsertServiceV2, deprecate Mutation.upsertService
+- fc2c196: search: allow bumping result ranks depending on their resource type in Query.search, see the PUBLIC_GLOBAL_SEARCH_BUMPS env var.
+
+### Patch Changes
+
+- fd2d1b9: fix(members): purge user session cache when changing memberships
+- Updated dependencies [620291b]
+- Updated dependencies [2360071]
+  - @churros/db@2.0.0
+
 ## 3.3.1
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @churros/app
 
+## 2.12.0
+
+### Minor Changes
+
+- 620291b: improve services UI
+- 4f8eb7d: rework group members UI
+- d95e254: feat(profile): enlarge picture on click
+- db1451e: feat(search): implement showing rank & similarity values in debug mode
+
+### Patch Changes
+
+- f03b7cf: fix(posts): le body d'un post n'est jamais sauvegardé (closes #1175)
+- 5e5ba2c: fix(app): can't clear search field (closes #1171)
+
 ## 2.11.0
 
 ### Minor Changes
