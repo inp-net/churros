@@ -16,6 +16,7 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
   export let label: string;
+  export let help = '';
 
   export let min: number | undefined = undefined;
   export let max: number | undefined = undefined;
@@ -30,6 +31,7 @@
     on:change
     on:blur
     on:action
+    {help}
     {autocomplete}
     {name}
     {unit}

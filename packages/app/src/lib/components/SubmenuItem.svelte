@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import type { MaybeLoading } from '$lib/loading';
+  import { tooltip } from '$lib/tooltip';
   import type { SvelteComponent } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
 
@@ -31,6 +32,11 @@
   export let label = false;
 
   /**
+   * Add a tooltip
+   */
+  export let help = '';
+
+  /**
    * If the string specified here is used as the hash in the URL, the item will be highlighted as active.
    */
   export let anchor: `#${string}` | undefined = undefined;
@@ -53,6 +59,7 @@
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
   class="submenu-item"
+  use:tooltip={help}
 >
   <div class="left" class:allow-overflow={overflow}>
     <div class="icon">
@@ -117,6 +124,7 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    width: 100%;
     overflow: hidden;
   }
 
@@ -135,6 +143,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%;
     overflow: hidden;
     text-align: left;
   }

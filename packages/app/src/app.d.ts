@@ -90,6 +90,7 @@ declare namespace svelteHTML {
     'on:pressup'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressdown'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
     'on:pressmove'?: (event: CustomEvent<{ event: PointerEvent; pointersCount: number }>) => void;
+    'on:longpress'?: (event: CustomEvent<{}>) => void;
     // FIXME does not work
     // [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
     'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;

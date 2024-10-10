@@ -1,8 +1,9 @@
-import { builder } from '#lib';
+import { builder, prisma } from '#lib';
 import { GroupTypePrismaIncludes } from '#modules/groups';
 import { StudentAssociationPrismaIncludes } from '#modules/student-associations';
 import { GraphQLError } from 'graphql';
-import { LogoSourceTypeEnum, ServiceOwnerType } from '../index.js';
+import { LogoSourceTypeEnum, serviceIsPinnedByUser, ServiceOwnerType } from '../index.js';
+import { canEditService } from '../utils/permissions.js';
 
 export const ServiceTypePrismaIncludes = {
   group: {
@@ -30,6 +31,13 @@ export const ServiceType = builder.prismaNode('Service', {
       nullable: true,
       deprecationReason: 'Use `owner` instead',
     }),
+    pinned: t.boolean({
+      description:
+        "Le service a été épinglé par l'utilisateur·ice connecté·e. Pour gérer cela, créer ou enlever un `Bookmark` avec pour `path` l'`id` (avec préfixe) du service.",
+      async resolve(service, _, { user }) {
+        return serviceIsPinnedByUser(service, user);
+      },
+    }),
     owner: t.field({
       type: ServiceOwnerType,
       resolve: ({ group, studentAssociation, school, name, id }) => {
@@ -40,5 +48,18 @@ export const ServiceType = builder.prismaNode('Service', {
       },
     }),
     importance: t.exposeInt('importance'),
+    hidden: t.exposeBoolean('hidden', {
+      description: "Le service n'est pas affiché sur le site",
+    }),
+    canEdit: t.boolean({
+      description: 'L’utilisateur·ice peut modifier le service',
+      async resolve({ id }, _, { user }) {
+        const service = await prisma.service.findUniqueOrThrow({
+          where: { id },
+          include: canEditService.prismaIncludes,
+        });
+        return canEditService(user, service);
+      },
+    }),
   }),
 });
