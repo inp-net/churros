@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { GroupMemberType } from '#modules/groups/types';
 import { canEditGroupMembers } from '#modules/groups/utils';
@@ -29,7 +29,7 @@ builder.mutationField('updateGroupMember', (t) =>
         where: { uid: targetUserUid },
       });
       await log('memberships', 'update', { groupUid, targetUserUid, input }, group.id, me);
-      return prisma.groupMember.update({
+      const member = await prisma.groupMember.update({
         ...query,
         where: {
           groupId_memberId: {
@@ -48,6 +48,8 @@ builder.mutationField('updateGroupMember', (t) =>
           canScanEvents: input.canScanEvents ?? undefined,
         },
       });
+      await purgeSessionsUser(targetUserUid);
+      return member;
     },
   }),
 );
