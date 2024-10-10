@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { GroupMemberType } from '#modules/groups/types';
 import { canEditGroupMembers } from '#modules/groups/utils';
@@ -27,7 +27,7 @@ builder.mutationField('addGroupMemberV2', (t) =>
         where: { uid: groupUid },
       });
       await log('memberships', 'add', { groupUid, targetUserUid, title }, group.id, me);
-      return prisma.groupMember
+      const member = await prisma.groupMember
         .create({
           ...query,
           data: {
@@ -37,12 +37,14 @@ builder.mutationField('addGroupMemberV2', (t) =>
           },
         })
         .catch((error) => {
-          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') 
+          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')
             throw new GraphQLError(`${targetUserUid} est déjà membre de ${groupUid}`);
-          
 
           throw error;
         });
+
+      await purgeSessionsUser(targetUserUid);
+      return member;
     },
   }),
 );
