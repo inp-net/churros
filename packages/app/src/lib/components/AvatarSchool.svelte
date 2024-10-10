@@ -11,6 +11,8 @@
   /** Include school name next to picture */
   export let name = false;
 
+  export let href: string | undefined = undefined;
+
   export let school: AvatarSchool | null;
   $: data = fragment(
     school,
@@ -26,7 +28,10 @@
 
 {#if $data}
   {#if name}
-    <a class="avatar-school" href={onceLoaded($data.uid, (uid) => refroute('/[uid=uid]', uid), '')}>
+    <a
+      class="avatar-school"
+      href={href ?? onceLoaded($data.uid, (uid) => refroute('/[uid=uid]', uid), '')}
+    >
       <Avatar
         {...$$restProps}
         --avatar-radius="0.25em"
@@ -43,7 +48,7 @@
       --avatar-radius="0.25em"
       src={$data.pictureURL}
       help={notooltip ? '' : $data.name}
-      href={mapLoading($data.uid, (uid) => route('/[uid=uid]', uid))}
+      href={href ?? mapLoading($data.uid, (uid) => route('/[uid=uid]', uid))}
       alt={mapLoading($data.name, (name) => `Logo de ${name}`)}
     />
   {/if}

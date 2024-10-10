@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto, pushState } from '$app/navigation';
   import { DeletePageStore, fragment, graphql, type ModalDeleteCustomPage } from '$houdini';
   import ModalConfirmDelete from '$lib/components/ModalConfirmDelete.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
@@ -26,7 +26,11 @@
   $: resourceUid = ((isLinkedToGroup ? $data?.group!.uid : $data?.studentAssociation!.uid) ??
     '') as MaybeLoading<string>;
 
-  export let openDeletionConfirmation: () => void;
+  export const openDeletionConfirmation = () => {
+    pushState('', {
+      NAVTOP_DELETING: true,
+    });
+  };
 </script>
 
 {#if $data && loaded($data.id) && loaded($data.path)}
@@ -44,7 +48,6 @@
         `/${isLinkedToGroup ? 'groups' : 'student-associations'}/${resourceUid}/edit/pages`,
       );
     }}
-    bind:open={openDeletionConfirmation}
     typeToConfirm={$data.path}
   ></ModalConfirmDelete>
 {/if}

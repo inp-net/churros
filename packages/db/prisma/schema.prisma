@@ -220,6 +220,7 @@ model Service {
   groupId              String?
   group                Group?              @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   importance           Int                 @default(0)
+  hidden               Boolean             @default(false)
 
   @@unique([schoolId, studentAssociationId, groupId, url])
   @@unique([schoolId, studentAssociationId, groupId, name])

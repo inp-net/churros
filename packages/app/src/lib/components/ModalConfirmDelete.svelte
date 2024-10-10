@@ -1,35 +1,36 @@
 <script lang="ts">
-  import Modal from './ModalDialog.svelte';
-  import InputText from './InputText.svelte';
+  import { page } from '$app/stores';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import { createEventDispatcher } from 'svelte';
   import ButtonPrimary from './ButtonPrimary.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
-  import { createEventDispatcher } from 'svelte';
+  import InputText from './InputText.svelte';
 
   const dispatch = createEventDispatcher<{ confirm: undefined }>();
 
-  let element: HTMLDialogElement;
-
-  export const open = () => element.showModal();
+  let open: () => void;
   export let typeToConfirm = '';
   export let confirmationTyped = '';
+
+  $: if ($page.state.NAVTOP_DELETING && open) open();
 </script>
 
-<Modal bind:element>
-  <h1>Es-tu sur·e</h1>
+<ModalOrDrawer bind:open let:close>
+  <h1 slot="header">Es-tu sur·e</h1>
   <p>La suppression est définitive</p>
   {#if typeToConfirm}
     <p>Tapes <strong>{typeToConfirm}</strong> pour confirmer</p>
     <InputText label="" bind:value={confirmationTyped}></InputText>
   {/if}
   <section class="confirm">
-    <ButtonSecondary on:click={() => element.close()}>Annuler</ButtonSecondary>
+    <ButtonSecondary on:click={() => close()}>Annuler</ButtonSecondary>
     <ButtonPrimary
       on:click={() => {
-        element.close();
+        close();
         dispatch('confirm');
       }}
       disabled={Boolean(typeToConfirm) && typeToConfirm.trim() !== confirmationTyped.trim()}
       >Supprimer</ButtonPrimary
     >
   </section>
-</Modal>
+</ModalOrDrawer>

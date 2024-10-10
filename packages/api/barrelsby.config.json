@@ -65,6 +65,7 @@
     "./src/modules/search/types",
     "./src/modules/services/resolvers",
     "./src/modules/services/types",
+    "./src/modules/services/utils",
     "./src/modules/shop/resolvers",
     "./src/modules/shop/types",
     "./src/modules/shop/utils",

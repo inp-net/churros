@@ -41,7 +41,6 @@ const PAGES = {
   },
   '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
-  '/backrooms/services': `/backrooms/services`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
   '/bookings/[code]': (code: string | number, params?: {}) => {
@@ -261,7 +260,7 @@ const PAGES = {
   '/services/[id]/edit': (id: string | number, params?: {}) => {
     return `/services/${id}/edit`;
   },
-  '/services/create': `/services/create`,
+  '/services/manage': `/services/manage`,
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
@@ -517,7 +516,6 @@ export type KIT_ROUTES = {
     '/announcements/[id]/edit': 'id';
     '/announcements/create': never;
     '/backrooms': never;
-    '/backrooms/services': never;
     '/birthdays': never;
     '/bookings': never;
     '/bookings/[code]': 'code';
@@ -597,7 +595,7 @@ export type KIT_ROUTES = {
     '/search': 'q';
     '/services': never;
     '/services/[id]/edit': 'id';
-    '/services/create': never;
+    '/services/manage': never;
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;

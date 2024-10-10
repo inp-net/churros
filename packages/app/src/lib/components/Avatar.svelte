@@ -88,6 +88,6 @@
     text-align: center;
     object-fit: cover;
     object-position: center;
-    background: var(--bg2);
+    background: var(--avatar-background, var(--bg2));
   }
 </style>

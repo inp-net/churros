@@ -2402,6 +2402,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     eventId: ID
   ): Boolean!
   deleteSchoolPicture(id: String!): String!
+  """
+  Supprime un service
+  """
+  deleteService(id: LocalID!): MutationDeleteServiceResult!
   deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
   deleteShopOption(optionIds: [String!]!): Boolean!
   deleteTicket(
@@ -3101,7 +3105,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   upsertService(
     description: String!
     groupUid: String
-    id: ID
+    id: LocalID
     importance: Int = 0
     logo: String!
     logoSourceType: LogoSourceType!
@@ -3109,7 +3113,11 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     schoolUid: String
     studentAssociationUid: String
     url: String!
-  ): MutationUpsertServiceResult!
+  ): MutationUpsertServiceResult! @deprecated(reason: "Use 'upsertServiceV2' instead")
+  """
+  Create or update a service
+  """
+  upsertServiceV2(id: LocalID, input: ServiceInput!): MutationUpsertServiceV2Result!
   upsertShopItem(
     description: String!
     endsAt: DateTime
@@ -3366,6 +3374,12 @@ union MutationDeletePageResult = Error | MutationDeletePageSuccess | ZodError
 
 type MutationDeletePageSuccess {
   data: Page!
+}
+
+union MutationDeleteServiceResult = Error | MutationDeleteServiceSuccess | ZodError
+
+type MutationDeleteServiceSuccess {
+  data: Service!
 }
 
 union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess | ZodError
@@ -3825,6 +3839,12 @@ type MutationUpsertRegistrationSuccess {
 union MutationUpsertServiceResult = Error | MutationUpsertServiceSuccess | ZodError
 
 type MutationUpsertServiceSuccess {
+  data: Service!
+}
+
+union MutationUpsertServiceV2Result = Error | MutationUpsertServiceV2Success | ZodError
+
+type MutationUpsertServiceV2Success {
   data: Service!
 }
 
@@ -5505,8 +5525,16 @@ enum SearchableResources {
 A service
 """
 type Service implements Node {
+  """
+  On peut éditer ce service
+  """
+  canEdit: Boolean!
   description: String!
   group: Group @deprecated(reason: "Use `owner` instead")
+  """
+  Le service n'est pas affiché sur le site
+  """
+  hidden: Boolean!
   id: ID!
   importance: Int!
   """
@@ -5517,9 +5545,32 @@ type Service implements Node {
   logoSourceType: LogoSourceType!
   name: String!
   owner: ServiceOwner!
+  """
+  Le service a été épinglé par l'utilisateur·ice connecté·e. Pour gérer cela, créer ou enlever un `Bookmark` avec pour `path` l'`id` (avec préfixe) du service.
+  """
+  pinned: Boolean!
   school: School @deprecated(reason: "Use `owner` instead")
   studentAssociation: StudentAssociation @deprecated(reason: "Use `owner` instead")
   url: String!
+}
+
+input ServiceInput {
+  description: String
+  group: UID
+  """
+  Masquer le service. Vaut par défaut `true` lorsque l'on crée un nouveau service sans lui donner de nom, sinon `false`.
+  """
+  hide: Boolean
+  iconURL: LooseURL
+  importance: Int
+  name: String
+  removeIcon: Boolean
+  school: UID
+  studentAssociation: UID
+  unlinkGroup: Boolean
+  unlinkSchool: Boolean
+  unlinkStudentAssociation: Boolean
+  url: LooseURL
 }
 
 """
@@ -5661,6 +5712,10 @@ type StudentAssociation implements Pictured {
     """
     type: GroupType
   ): Boolean!
+  """
+  Si l'utilisateur·ice courant·e peut créer des services rattachés à cette AE
+  """
+  canCreateServices: Boolean!
   """
   L'utilisateur.ice connecét.e peut modifier les infos de cette AE
   """
