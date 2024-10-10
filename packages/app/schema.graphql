@@ -3138,12 +3138,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Créer ou modifier un thème
   """
   upsertTheme(
-    autodeploy: Boolean!
-    endsAt: DateTime!
+    autodeploy: Boolean
+    endsAt: DateTime
     group: UID!
     id: LocalID
     name: String!
-    startsAt: DateTime!
+    """
+    Quand on crée un nouveau thème, remplir toutes les variables avec des valeurs par défaut
+    """
+    prefill: Boolean! = false
+    startsAt: DateTime
   ): MutationUpsertThemeResult!
   upsertTicketGroup(
     capacity: Int
@@ -6323,6 +6327,10 @@ type User implements Node & Pictured {
   Groupes sur lesquels l'utilisateur·ice peut créer des posts
   """
   canCreatePostsOn: [Group!]!
+  """
+  Groupes sur lesquels l'utilisateur·ice peut créer des thèmes
+  """
+  canCreateThemesOn: [Group!]!
   """
   Vrai si cette personne peut éditer le groupe donné
   """

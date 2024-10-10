@@ -93,6 +93,9 @@
                   id: $data.id,
                   variant: $currentTheme.variant,
                 };
+          if ($editingTheme) {
+            $currentTheme.id = $editingTheme.id;
+          }
         }}
       >
         {#if $editingTheme?.id === $data.id}

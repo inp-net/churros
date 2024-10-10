@@ -3,6 +3,7 @@
  */
 
 export * from './group-member-input.js';
+export * from './group-member-search-result.js';
 export * from './group-member.js';
 export * from './group-profile-input.js';
 export * from './group-search-result.js';

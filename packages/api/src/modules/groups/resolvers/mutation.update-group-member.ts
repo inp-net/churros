@@ -1,4 +1,4 @@
-import { builder, log, prisma } from '#lib';
+import { builder, log, prisma, purgeSessionsUser, purgeTokenSession } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { GroupMemberType } from '#modules/groups/types';
 import { canEditGroupMembers } from '#modules/groups/utils';
@@ -29,6 +29,7 @@ builder.mutationField('updateGroupMember', (t) =>
         where: { uid: targetUserUid },
       });
       await log('memberships', 'update', { groupUid, targetUserUid, input }, group.id, me);
+      await purgeSessionsUser(targetUserUid);
       return prisma.groupMember.update({
         ...query,
         where: {

@@ -2,19 +2,16 @@
   import {
     fragment,
     graphql,
-    UpdateThemValueStore,
     type ThemesEditorSidebar,
     type ThemeVariable$options,
     type ThemeVariant$options,
   } from '$houdini';
-  import InputColor from '$lib/components/InputColor.svelte';
-  import InputRadios from '$lib/components/InputRadios.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { DISPLAY_THEME_VARIABLE, DISPLAY_THEME_VARIANT } from '$lib/display';
-  import { loaded } from '$lib/loading';
   import { mutate, mutateAndToast } from '$lib/mutations';
-  import { THEME_CSS_VARIABLE_NAMES } from '$lib/theme';
+  import { THEME_CSS_VARIABLE_NAMES, isDark } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import { onMount } from 'svelte';
 
@@ -26,6 +23,7 @@
         name
         localID
         author {
+          uid
           ...AvatarGroup
         }
         darkValues: values(variant: Dark) {
@@ -69,11 +67,11 @@
   function actualValues() {
     return {
       Dark: {
-        ...baseValues('Light', baseValuesGetter),
+        ...baseValues('Dark', baseValuesGetter),
         ...Object.fromEntries($data?.darkValues.map((v) => [v.variable, v.value]) ?? []),
       },
       Light: {
-        ...baseValues('Dark', baseValuesGetter),
+        ...baseValues('Light', baseValuesGetter),
         ...Object.fromEntries($data?.lightValues.map((v) => [v.variable, v.value]) ?? []),
       },
     };
@@ -85,7 +83,8 @@
     >;
   }
 
-  let selectedVariant: ThemeVariant$options = 'Light';
+  let selectedVariant: ThemeVariant$options | undefined;
+  $: selectedVariant ??= $isDark ? 'Dark' : 'Light';
 
   $: values = actualValues();
   onMount(() => {
@@ -105,13 +104,39 @@
       }
     }
   `);
+
+  const UpdateName = graphql(`
+    mutation UpdateThemeName($theme: LocalID!, $name: String!, $author: UID!) {
+      upsertTheme(id: $theme, name: $name, group: $author) {
+        ...MutationErrors
+        ... on MutationUpsertThemeSuccess {
+          data {
+            name
+          }
+        }
+      }
+    }
+  `);
 </script>
 
 <article class="sidebar">
   <h2>Modifier un thème</h2>
 
   <section class="infos">
-    <InputTextGhost placeholder="Nom du thème" label="Nom du thème" value={$data?.name} />
+    <InputTextGhost
+      placeholder="Nom du thème"
+      label="Nom du thème"
+      value={$data?.name}
+      on:blur={async ({ detail }) => {
+        if (!$data) return;
+        if (!$data.author) return;
+        await mutateAndToast(UpdateName, {
+          theme: $data.localID,
+          author: $data.author.uid,
+          name: detail,
+        });
+      }}
+    />
   </section>
 
   <section class="colors">
@@ -130,10 +155,11 @@
         </svelte:fragment>
       </NavigationTabs>
     </header>
-    {#each colorValues(values[selectedVariant]) as [variable, value]}
+    {#each colorValues(values[selectedVariant ?? 'Light']) as [variable, value]}
       <label
         class="swatch"
-        use:tooltip={`${variable}: ${DISPLAY_THEME_VARIABLE[variable]}`}
+        use:tooltip={`${variable}: ${DISPLAY_THEME_VARIABLE[variable]}<br>
+        <em><code>${value}</code></em>`}
         style:background-color={value}
       >
         <input
@@ -144,12 +170,24 @@
           on:input={async ({ currentTarget }) => {
             if (!(currentTarget instanceof HTMLInputElement)) return;
             if (!$data) return;
-            await mutate(UpdateValue, {
+            const result = await mutate(UpdateValue, {
               theme: $data.localID,
               value: currentTarget.value,
               variant: selectedVariant,
               variable: variable,
             });
+            if (!result || result.errors) {
+              toasts.error(
+                'Impossible de mettre à jour la valeur',
+                result?.errors?.map((e) => e.message).join(', ') ?? '',
+              );
+              return;
+            }
+            document.documentElement.style.setProperty(
+              `--${THEME_CSS_VARIABLE_NAMES[variable]}`,
+              currentTarget.value,
+            );
+            values[selectedVariant ?? 'Light'][variable] = currentTarget.value;
           }}
         />
       </label>
