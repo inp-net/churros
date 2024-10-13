@@ -4,13 +4,16 @@ import {
   checkLydiaTransaction,
   checkPaypalPayment,
 } from '#modules/payments';
+import { RegistrationType } from '#modules/ticketing/types';
 
 builder.mutationField('checkIfBookingIsPaid', (t) =>
-  t.boolean({
+  t.prismaField({
+    type: RegistrationType,
+    errors: {},
     args: {
       code: t.arg.string(),
     },
-    async resolve(_, { code }) {
+    async resolve(query, _, { code }) {
       const registration = await prisma.registration.findFirstOrThrow({
         where: {
           id: ensureGlobalId(code.toLowerCase(), 'Registration'),
@@ -33,13 +36,13 @@ builder.mutationField('checkIfBookingIsPaid', (t) =>
             },
             registration.id,
           );
-          await prisma.registration.update({
+          return prisma.registration.update({
+            ...query,
             where: { id: registration.id },
             data: {
               paid: true,
             },
           });
-          return true;
         }
       } else if (!registration.paid && registration.paypalTransaction?.orderId) {
         const { paid, status } = await checkPaypalPayment(registration.paypalTransaction.orderId);
@@ -66,10 +69,20 @@ builder.mutationField('checkIfBookingIsPaid', (t) =>
           data: { status },
         });
 
-        return paid;
+        return prisma.registration.findFirstOrThrow({
+          ...query,
+          where: {
+            id: registration.id,
+          },
+        });
       }
 
-      return false;
+      return prisma.registration.findFirstOrThrow({
+        ...query,
+        where: {
+          id: registration.id,
+        },
+      });
     },
   }),
 );

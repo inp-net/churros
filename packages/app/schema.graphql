@@ -2222,7 +2222,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Mettre à jour le groupe d'un article
   """
   changePostOwner(group: UID!, post: LocalID!): MutationChangePostOwnerResult!
-  checkIfBookingIsPaid(code: String!): Boolean!
+  checkIfBookingIsPaid(code: String!): MutationCheckIfBookingIsPaidResult!
   claimPromotionCode(code: String!): Boolean!
   completeSignup(token: String!): SignupCompletionResult!
   contribute(optionId: ID!, phone: String!): MutationContributeResult!
@@ -3272,6 +3272,12 @@ union MutationChangePostOwnerResult = Error | MutationChangePostOwnerSuccess | Z
 
 type MutationChangePostOwnerSuccess {
   data: Article!
+}
+
+union MutationCheckIfBookingIsPaidResult = Error | MutationCheckIfBookingIsPaidSuccess | ZodError
+
+type MutationCheckIfBookingIsPaidSuccess {
+  data: Registration!
 }
 
 union MutationContributeResult = Error | MutationContributeSuccess | ZodError
