@@ -11,12 +11,16 @@
     subscribeToNotifications,
     unsubscribeFromNotifications,
   } from '$lib/notifications';
-  import { zeus } from '$lib/zeus';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PageNotificationsInitial } = data);
-  let subscription: PushSubscription | null;
+
+  const TestNotifications = graphql(`
+    mutation TestNotifications($endpoint: String!) {
+      testNotification(subscriptionEndpoint: $endpoint)
+    }
+  `);
 
   const Notifications = graphql(`
     query PageNotifications($endpoint: ID!) {
@@ -48,15 +52,23 @@
 
   let loading = false;
   let unsupported = false;
+
+  async function checkAndLoadNotifications(subs: Parameters<typeof checkIfSubscribed>[0]) {
+    const check = await checkIfSubscribed(subs);
+    if (!check) return { endpoint: undefined };
+
+    await Notifications.fetch({ variables: { endpoint: check.endpoint } });
+    return { endpoint: check.endpoint };
+  }
 </script>
 
 <MaybeError result={$PageNotificationsInitial} let:data={{ notificationSubscriptions }}>
-  {#await checkIfSubscribed(notificationSubscriptions)}
+  {#await checkAndLoadNotifications(notificationSubscriptions)}
     <h1>
       <LoadingChurros />
     </h1>
-  {:then subscribed}
-    {#if !subscribed}
+  {:then { endpoint }}
+    {#if !endpoint}
       <div class="content disabled">
         <p>Tu n'a pas activé les notifications</p>
         <ButtonPrimary
@@ -65,11 +77,8 @@
             loading = true;
             try {
               const status = await subscribeToNotifications();
-              if (status === 'unsupported') 
-                unsupported = true;
-               else if (status === 'ok') 
-                await PageNotificationsInitial.fetch();
-              
+              if (status === 'unsupported') unsupported = true;
+              else if (status === 'ok') await PageNotificationsInitial.fetch();
             } finally {
               loading = false;
             }
@@ -80,7 +89,7 @@
       </div>
     {:else}
       <MaybeError result={$Notifications} let:data>
-        <div class="content subscribed" class:subscribed>
+        <div class="content subscribed" class:subscribed={Boolean(endpoint)}>
           {#if unsupported}
             <h1>Navigateur non supporté.</h1>
             <p>Ce navigateur ne supporte pas les notifcations Web Push.</p>
@@ -102,17 +111,13 @@
                 <ButtonSecondary
                   danger
                   on:click={async () => {
-                    if (subscription) {
-                      await $zeus.mutate({
-                        testNotification: [{ subscriptionEndpoint: subscription.endpoint }, true],
-                      });
-                    }
+                    if (endpoint) await TestNotifications.mutate({ endpoint });
                   }}>Tester</ButtonSecondary
                 >
               </div>
             </h1>
 
-            {#if subscribed}
+            {#if endpoint}
               <ul class="notifications nobullet">
                 {#each data.notifications.edges.map(({ node }) => node) as { id, ...notif } (id)}
                   <li>

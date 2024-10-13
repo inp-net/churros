@@ -16,24 +16,22 @@ graphql(`
   }
 `);
 
-export async function checkIfSubscribed(
-  subscriptions: NotificationsSubscribedCheck$data[],
-): Promise<boolean> {
+export async function checkIfSubscribed(subscriptions: NotificationsSubscribedCheck$data[]) {
   const ok = await requestPermissions();
-  if (!ok) return false;
+  if (!ok) return;
 
   if (Capacitor.isNativePlatform()) {
     return await Preferences.get({ key: 'notificationToken' }).then(({ value }) =>
       value
-        ? Boolean(subscriptions.some(({ endpoint }) => endpoint === endpointFromToken(value)))
-        : false,
+        ? subscriptions.find(({ endpoint }) => endpoint === endpointFromToken(value))
+        : undefined,
     );
   } else {
-    if (Notification.permission !== 'granted') return false;
+    if (Notification.permission !== 'granted') return;
 
     const sw = await navigator.serviceWorker.ready;
     const subscription = await sw.pushManager.getSubscription();
-    return Boolean(subscriptions.some(({ endpoint }) => endpoint === subscription?.endpoint));
+    return subscriptions.find(({ endpoint }) => endpoint === subscription?.endpoint);
   }
 }
 
