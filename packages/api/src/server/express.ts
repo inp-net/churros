@@ -22,9 +22,7 @@ api.use(
   // Allow any origin, this is a public API :)
   cors({
     credentials: true,
-    origin(_, callback) {
-      callback(null, true);
-    },
+    origin: true,
   }),
   // Set basic security headers
   helmet({
