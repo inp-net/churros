@@ -1,0 +1,9 @@
+version: 3
+
+endpoints:
+  - name: api
+    upstream:
+      url: 4000
+  - name: web
+    upstream:
+      url: 5173
