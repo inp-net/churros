@@ -458,6 +458,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor/push-notifications@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@capacitor/push-notifications@npm:6.0.2"
+  peerDependencies:
+    "@capacitor/core": ^6.0.0
+  checksum: 10c0/f423877536932ca58ff0b5d3a06b30c0bd160cbd96cf4a8765b83c8d39f0475b6d914c88aa7bac4a5336a4fa3f48cecbe57b0b4b2ad41046fb6b892ee9326c45
+  languageName: node
+  linkType: hard
+
 "@capgo/inappbrowser@npm:^6.6.8":
   version: 6.6.8
   resolution: "@capgo/inappbrowser@npm:6.6.8"
@@ -1063,6 +1072,7 @@ __metadata:
     "@capacitor/core": "npm:^6.1.2"
     "@capacitor/ios": "npm:^6.1.2"
     "@capacitor/preferences": "npm:^6.0.2"
+    "@capacitor/push-notifications": "npm:^6.0.2"
     "@capgo/inappbrowser": "npm:^6.6.8"
     "@carbon/charts-svelte": "npm:^1.19.2"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
