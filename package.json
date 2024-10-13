@@ -63,7 +63,8 @@
     "generate-buildinfo": "yarn tsx scripts/generate-buildinfo.ts",
     "sync-with-example-dotenv": "yarn tsx scripts/sync-with-example-dotenv.ts && yarn cp-env",
     "update-versions": "changeset version && yarn install --mode update-lockfile",
-    "deps": "yarn workspaces foreach --all run npm-upgrade"
+    "deps": "yarn workspaces foreach --all run npm-upgrade",
+    "ngrok": "ngrok start --all --config $HOME/.config/ngrok/ngrok.yml,.ngrok.yaml"
   },
   "volta": {
     "node": "20.6.1",
