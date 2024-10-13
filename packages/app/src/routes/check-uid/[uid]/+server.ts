@@ -20,7 +20,6 @@ const additionalReservedUsernames = new Set([
   'signup',
   'announcements',
   'backrooms',
-  'bar-weeks',
   'birthdays',
   'bookings',
   'changelog',
