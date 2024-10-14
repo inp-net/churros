@@ -1,9 +1,9 @@
 import { prisma } from '#lib';
 import { serverCanSendNotificationToUser } from '#permissions';
 import { Prisma, type NotificationSubscription, type User } from '@churros/db/prisma';
-import { FirebaseError } from '@firebase/util';
 import type { MaybePromise } from '@pothos/core';
 import firebase from 'firebase-admin';
+import { FirebaseMessagingError } from 'firebase-admin/messaging';
 import webpush, { WebPushError } from 'web-push';
 import type { PushNotification } from './push-notification.js';
 import { setVapidDetails } from './vapid.js';
@@ -123,7 +123,7 @@ export async function notify<U extends User>(
         } else if (
           (error instanceof WebPushError &&
             error.body.trim() === 'push subscription has unsubscribed or expired.') ||
-          (error instanceof FirebaseError &&
+          (error instanceof FirebaseMessagingError &&
             error.code === 'messaging/registration-token-not-registered')
         ) {
           await prisma.notificationSubscription
