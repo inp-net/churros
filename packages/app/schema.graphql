@@ -1764,7 +1764,7 @@ enum GroupJoinPolicy @graphinx(module: "groups") {
 }
 
 """
-The intermediate model between users and groups
+The intermediate model between users
 """
 type GroupMember {
   """
@@ -5526,7 +5526,7 @@ A service
 """
 type Service implements Node {
   """
-  On peut éditer ce service
+  L’utilisateur·ice peut modifier le service
   """
   canEdit: Boolean!
   description: String!
