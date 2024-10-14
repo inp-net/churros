@@ -8,18 +8,21 @@ import webpush, { WebPushError } from 'web-push';
 import type { PushNotification } from './push-notification.js';
 import { setVapidDetails } from './vapid.js';
 
-const firebaseApp = firebase.initializeApp({
-  credential: firebase.credential.cert(
-    await new Promise((resolve) => {
-      try {
-        resolve(JSON.parse(process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY));
-      } catch (error) {
-        console.error(`Invalid firebase admin credentials: ${error}`);
-        resolve({});
-      }
-    }),
-  ),
+/*                  ↓ Vivement churros/churros!165 lol */
+const fireAppCreds: object | null = await new Promise((resolve) => {
+  try {
+    resolve(JSON.parse(process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY));
+  } catch (error) {
+    console.error(`Invalid firebase admin credentials: ${error}`);
+    resolve(null);
+  }
 });
+
+const firebaseApp = fireAppCreds
+  ? firebase.initializeApp({
+      credential: firebase.credential.cert(fireAppCreds),
+    })
+  : undefined;
 
 export async function notifyInBulk<U extends User>(
   jobId: string,
@@ -114,11 +117,11 @@ export async function notify<U extends User>(
         });
         sentSubscriptions.push(subscription);
       } catch (error: unknown) {
-        if (error instanceof WebPushError) {
+        if (error instanceof WebPushError || error instanceof MissingFirebaseCredentialsError) {
           console.error(
             `[${notif.data.channel} on ${notif.data.group ?? 'global'} @ ${
               owner.id
-            }] ${error.body.trim()}`,
+            }] ${error instanceof WebPushError ? error.body.trim() : error.message}`,
           );
         } else if (
           (error instanceof WebPushError &&
@@ -176,6 +179,7 @@ async function sendNotification(sub: NotificationSubscription, notification: Pus
     );
   } else {
     const token = sub.endpoint.replace(/^\w+:\/\//, '');
+    if (!firebaseApp) throw new MissingFirebaseCredentialsError();
     await firebaseApp.messaging().send({
       token,
       data: {
@@ -195,5 +199,11 @@ async function sendNotification(sub: NotificationSubscription, notification: Pus
         imageUrl: notification.image,
       },
     });
+  }
+}
+
+class MissingFirebaseCredentialsError extends Error {
+  constructor() {
+    super('Missing firebase admin credentials');
   }
 }
