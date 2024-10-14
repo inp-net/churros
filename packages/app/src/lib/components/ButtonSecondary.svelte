@@ -1,10 +1,8 @@
 <script lang="ts">
   import { umamiAttributes } from '$lib/analytics';
   import { tooltip } from '$lib/tooltip';
-  import { createEventDispatcher, type SvelteComponent } from 'svelte';
+  import { type SvelteComponent } from 'svelte';
   import IconSpinner from '~icons/mdi/loading';
-
-  const dispatch = createEventDispatcher<{ longpress: undefined }>();
 
   export let track = '';
   export let trackData: Record<string, string | number> = {};
@@ -28,13 +26,6 @@
   export let highlighted = false;
   export let stretches = false;
   export let noClientSideNavigation = false;
-
-  let longpressTimeout: number;
-  function setLongpressTimeout() {
-    longpressTimeout = setTimeout(() => {
-      dispatch('longpress');
-    }, 3000) as unknown as number;
-  }
 </script>
 
 <svelte:element
@@ -63,19 +54,6 @@
   role="button"
   {tabindex}
   on:contextmenu
-  on:pointerdown|preventDefault={() => {
-    setLongpressTimeout();
-  }}
-  on:pointerup|preventDefault={() => {
-    clearTimeout(longpressTimeout);
-  }}
-  on:touchstart|preventDefault={() => {
-    setLongpressTimeout();
-  }}
-  on:touchmove|preventDefault={() => {
-    clearTimeout(longpressTimeout);
-    setLongpressTimeout();
-  }}
 >
   <div class="loading" class:visible={loading}>
     <IconSpinner />
