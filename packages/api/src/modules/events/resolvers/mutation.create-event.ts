@@ -31,6 +31,15 @@ builder.mutationField('createEvent', (t) =>
       if (!user) throw new UnauthorizedError();
       await log('events', 'create', { group: groupUid, title, dates }, groupUid, user);
       const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
+      const defaultApplicableOffers = await prisma.promotion.findMany({
+        where: {
+          validByDefaultOn: {
+            some: {
+              id: group.id,
+            },
+          },
+        },
+      });
       return prisma.event.create({
         ...query,
         data: {
@@ -50,6 +59,9 @@ builder.mutationField('createEvent', (t) =>
               canEditPermissions: true,
               canVerifyRegistrations: true,
             },
+          },
+          applicableOffers: {
+            connect: defaultApplicableOffers.map((offer) => ({ id: offer.id })),
           },
         },
       });

@@ -1,7 +1,7 @@
 import { fakerFR } from '@faker-js/faker';
 import { format } from 'date-fns';
-import {Redis} from 'ioredis'
 import dichotomid from 'dichotomid';
+import { Redis } from 'ioredis';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { exit } from 'node:process';
@@ -1464,5 +1464,17 @@ await prisma.theme.create({
     },
   },
 });
+
+await prisma.promotion.create({
+  data: {
+    priceOverride: 1,
+    type: 'SIMPPS',
+    validByDefaultOn: {
+      connect: {
+        uid: 'art'
+      }
+    }
+  }
+})
 
 exit(0);

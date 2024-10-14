@@ -459,11 +459,12 @@ model Group {
   shopItems              ShopItem[]
   restrictedFormSections FormSection[]      @relation("restrictedTo")
 
-  notifications          Notification[]
-  groupId                String?
-  ticketGroupId          String?
-  joinedByBookingTickets Ticket[]       @relation("autojoin")
-  themes                 Theme[]
+  notifications           Notification[]
+  groupId                 String?
+  ticketGroupId           String?
+  joinedByBookingTickets  Ticket[]       @relation("autojoin")
+  themes                  Theme[]
+  defaultApplicableOffers Promotion[]    @relation("defaultApplicableOffers")
 
   // For ldap
   ldapGidNumber Int @unique @default(autoincrement())
@@ -478,7 +479,7 @@ model Group {
   @@index([search], type: Gin)
 }
 
-/// The intermediate model between users and groups
+/// The intermediate model between users
 model GroupMember {
   groupId         String
   memberId        String
@@ -977,13 +978,14 @@ model PromotionCode {
 }
 
 model Promotion {
-  id         String          @id @default(dbgenerated("nanoid('promo:')"))
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  validUntil DateTime?
-  type       PromotionType
-  codes      PromotionCode[]
-  validOn    Ticket[]
+  id               String          @id @default(dbgenerated("nanoid('promo:')"))
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  validUntil       DateTime?
+  type             PromotionType
+  codes            PromotionCode[]
+  validOn          Ticket[]
+  validByDefaultOn Group[]         @relation("defaultApplicableOffers")
 
   priceOverride Int
   events        Event[]

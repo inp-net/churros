@@ -329,6 +329,11 @@ export const topnavConfigs: Partial<{
     quickAction: quickActionAdd,
     actions: rootPagesActions,
   },
+  '/(app)/claim-code/[code]': {
+    title: `Réclamation d'un code`,
+    back: route('/claim-code'),
+    actions: [],
+  },
   '/(app)/settings': {
     title: 'Réglages',
     back: route('/'),

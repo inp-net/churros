@@ -17,6 +17,7 @@
   import IconNotification from '~icons/msl/notifications-outline';
   import IconTheme from '~icons/msl/palette-outline';
   import IconProfile from '~icons/msl/person-outline';
+  import IconSpecialOffer from '~icons/msl/percent';
   import type { LayoutData } from './$houdini';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import { debugging } from '$lib/debugging';
@@ -84,6 +85,9 @@
             );
           }}
         />
+      </SubmenuItem>
+      <SubmenuItem icon={IconSpecialOffer} href={refroute('/claim-code')}>
+        Réclamer un code de promotion
       </SubmenuItem>
       <SubmenuItem icon={IconPersonalData}>
         Mes données personnelles

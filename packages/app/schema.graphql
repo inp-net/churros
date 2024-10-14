@@ -2329,6 +2329,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     validUntil: DateTime!
   ): QuickSignup!
   """
+  Générer des codes de promotion pour une promotion
+  """
+  createSpecialOfferCodes(
+    """
+    Nombre de codes à générer. Maximum: 500
+    """
+    amount: Int!
+    specialOffer: LocalID!
+  ): MutationCreateSpecialOfferCodesResult!
+  """
   Créer un nouveau billet sur un évènement existant
   """
   createTicket(
@@ -3316,6 +3326,16 @@ union MutationCreatePostResult = Error | MutationCreatePostSuccess | ZodError
 
 type MutationCreatePostSuccess {
   data: Article!
+}
+
+union MutationCreateSpecialOfferCodesResult =
+  | Error
+  | MutationCreateSpecialOfferCodesSuccess
+  | SomeNotCreatedError
+  | ZodError
+
+type MutationCreateSpecialOfferCodesSuccess {
+  data: [String!]!
 }
 
 union MutationCreateTicketResult = Error | MutationCreateTicketSuccess | ZodError
@@ -4439,6 +4459,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   ): [Service!]!
   shopItem(slug: String!): ShopItem!
   shopPayments(item: ID!): [ShopPayment!]!
+  """
+  Identifiants des différentes promotions existantes
+  """
+  specialOffers: [String!]!
   studentAssociation(uid: String!): StudentAssociation!
   studentAssociations(canContributeOnly: Boolean): [StudentAssociation!]!
   subject(forApprentices: Boolean!, slug: String!, yearTier: Int!): Subject!
@@ -5526,7 +5550,7 @@ A service
 """
 type Service implements Node {
   """
-  On peut éditer ce service
+  L’utilisateur·ice peut modifier le service
   """
   canEdit: Boolean!
   description: String!
@@ -5674,6 +5698,10 @@ type SignupCompletionResult {
   Token utilisable pour connecter la personne immédiatement suite à l'inscription
   """
   token: Credential
+}
+
+type SomeNotCreatedError {
+  message: String!
 }
 
 enum SortDirection {

@@ -6,6 +6,8 @@ import { isPast } from 'date-fns';
  * Returns the actual price of the ticket for a user, taking into account any promotions they have claimed.
  * @param user the user that wants to pay the ticket
  * @param ticket the ticket to pay for
+ * @param amount the amount the user wants to pay. If null, the minimum price is used.
+ * @param hidePromotions don't take into account promotions
  * @returns the price the user has to pay
  */
 export function actualPrice(
@@ -14,16 +16,19 @@ export function actualPrice(
     include: typeof actualPrice.prismaIncludes;
   }>,
   amount: number | null,
+  hidePromotions = false,
 ) {
   if (!user) return clamp(amount ?? ticket.minimumPrice, ticket.minimumPrice, ticket.maximumPrice);
 
-  const offer = ticket.event.applicableOffers.find((offer) => {
-    // Promotion is expired
-    if (offer.validUntil && isPast(offer.validUntil)) return false;
-    // Not claimed by user
-    if (!offer.codes.some((code) => code.claimedById === user.id)) return false;
-    return true;
-  });
+  const offer = hidePromotions
+    ? null
+    : ticket.event.applicableOffers.find((offer) => {
+        // Promotion is expired
+        if (offer.validUntil && isPast(offer.validUntil)) return false;
+        // Not claimed by user
+        if (!offer.codes.some((code) => code.claimedById === user.id)) return false;
+        return true;
+      });
 
   const actualMinimum = Math.min(offer?.priceOverride ?? ticket.minimumPrice, ticket.minimumPrice);
 
