@@ -4,6 +4,7 @@
   "dependencies": {
     "@churros/db": "workspace:^1.3.1",
     "@envelop/core": "^5.0.2",
+    "@firebase/util": "^1.10.0",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@graphql-yoga/node": "^3.9.1",
     "@graphql-yoga/redis-event-target": "^3.0.1",
@@ -44,6 +45,7 @@
     "express": "^4.21.0",
     "express-session": "^1.18.0",
     "extract-files": "^13.0.0",
+    "firebase-admin": "^12.6.0",
     "glob": "^11.0.0",
     "google-auth-library": "^9.14.1",
     "googleapis": "105.0.0",

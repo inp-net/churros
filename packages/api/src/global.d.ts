@@ -113,6 +113,10 @@ declare global {
 
       /** Additive modifiers for favoring some types in global search results. */
       PUBLIC_GLOBAL_SEARCH_BUMPS: string;
+      PUBLIC_API_ORIGIN_ANDROID: string;
+      PUBLIC_API_ORIGIN_WEB: string;
+      FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY: string;
+      PUBLIC_APP_PACKAGE_ID: string;
     }
   }
 
