@@ -59,5 +59,4 @@ strict digraph ImportGraph {
     "ticketing" -> "schools";
     "ticketing" -> "users";
     "users" -> "notifications";
-    "users" -> "posts";
 }

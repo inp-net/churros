@@ -5,7 +5,6 @@
 export * from './mutation.accept-registration.js';
 export * from './mutation.answer-godparent-request.js';
 export * from './mutation.bookmark.js';
-export * from './mutation.change-post-owner.js';
 export * from './mutation.complete-signup.js';
 export * from './mutation.create-bot.js';
 export * from './mutation.create-password-reset.js';
