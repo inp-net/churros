@@ -1,4 +1,7 @@
+import chalk from 'chalk';
+import getByPath from 'lodash.get';
 import { z } from 'zod';
+import { isValidJSON } from './utils.js';
 
 /**
  * Returns true if the server is running in development mode.
@@ -159,25 +162,47 @@ export const ENV = await environmentSchema
   .catch((error) => {
     if (!(error instanceof z.ZodError)) throw error;
 
-    console.error('Some environment variables are invalid:');
-    for (const { path, message } of error.issues) {
-      const variable = path[0]?.toString() as keyof typeof environmentSchema.shape;
-      if (!variable) 
-        console.error(path.length > 0 ? `${path.join('.')}:` : '', message);
-      
-
-      const description = environmentSchema.shape[variable].description;
-      console.error(
-        [
-          '',
-          description,
-          `${path.join('.')}: ${message}`,
-          `(Current value is ${JSON.stringify(process.env[variable])})`,
-        ].join('\n'),
-      );
-    }
+    console.error(chalk.red('Some environment variables are invalid:'));
+    formatZodErrors(error);
     throw new Error('Invalid environment variables.');
   });
+
+function formatZodErrors(error: z.ZodError<unknown>) {
+  for (const { path, message } of error.issues) {
+    const variable = path[0]?.toString() as keyof typeof environmentSchema.shape;
+    const value = process.env[variable];
+    const description = environmentSchema.shape[variable]?.description;
+
+    if (path.length !== 1) {
+      console.error(
+        formatZodIssue(
+          description,
+          path.join('.'),
+          message,
+          path.length === 1 || !isValidJSON(value)
+            ? value
+            : getByPath(JSON.parse(value), path.slice(1)),
+        ),
+      );
+      continue;
+    }
+
+    console.error(formatZodIssue(description, variable, message, value));
+  }
+}
+
+function formatZodIssue(
+  description: string | undefined,
+  path: string,
+  message: string,
+  value: string,
+) {
+  return [
+    description ? chalk.dim(`\n# ${description}`) : '',
+    `${chalk.bold.cyan(path)}: ${message}`,
+    `Current value: ${chalk.green(JSON.stringify(value))}`,
+  ].join('\n');
+}
 
 async function getEnvironmentValues() {
   // Wait for env vars to be loaded
