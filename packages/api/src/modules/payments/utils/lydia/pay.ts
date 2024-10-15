@@ -1,12 +1,7 @@
 import { log, prisma } from '#lib';
 import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
-import {
-  LydiaTransactionState,
-  actualPrice,
-  checkLydiaTransaction,
-  sendLydiaPaymentRequest,
-} from '../../index.js';
+import { actualPrice, checkLydiaTransaction, sendLydiaPaymentRequest } from '../../index.js';
 
 // Get the Lydia API URL from the environment
 const { PUBLIC_LYDIA_API_URL } = process.env;
@@ -42,8 +37,8 @@ export async function payEventRegistrationViaLydia(
 
   // Check if transaction was already paid for, in that case mark registration as paid
   if (registration.lydiaTransaction?.requestId && registration.lydiaTransaction.requestUuid) {
-    const state = await checkLydiaTransaction(registration.lydiaTransaction);
-    if (state === LydiaTransactionState.Paid) {
+    const { paid } = await checkLydiaTransaction(registration.lydiaTransaction);
+    if (paid) {
       await log(
         'lydia',
         'fallback mark as paid',
@@ -118,8 +113,8 @@ export async function payShopPaymentViaLydia(
   if (!shopPayment.shopItem.lydiaAccount) throw new Error('Lydia account not found');
   // Check if transaction was already paid for, in that case mark registration as paid
   if (shopPayment.lydiaTransaction?.requestId && shopPayment.lydiaTransaction.requestUuid) {
-    const state = await checkLydiaTransaction(shopPayment.lydiaTransaction);
-    if (state === LydiaTransactionState.Paid) {
+    const { paid } = await checkLydiaTransaction(shopPayment.lydiaTransaction);
+    if (paid) {
       await log(
         'lydia',
         'fallback mark as paid',

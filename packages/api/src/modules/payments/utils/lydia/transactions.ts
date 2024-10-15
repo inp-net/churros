@@ -92,13 +92,15 @@ export async function checkLydiaTransaction(transaction: LydiaTransaction) {
     state: '0' | '1' | '5' | '6' | '-1';
   };
 
-  return {
+  const state = {
     '0': LydiaTransactionState.Pending,
     '1': LydiaTransactionState.Paid,
     '5': LydiaTransactionState.Refused,
     '6': LydiaTransactionState.OwnerCancelled,
     '-1': LydiaTransactionState.Error,
   }[response.state];
+
+  return { state, paid: state === LydiaTransactionState.Paid };
 }
 
 export async function sendLydiaPaymentRequest(
