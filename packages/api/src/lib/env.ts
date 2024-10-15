@@ -154,8 +154,38 @@ export const environmentSchema = z.object({
 });
 
 console.info('Validating environment variables...');
-export const ENV = environmentSchema.parse(process.env);
-console.info('Environment variables seem valid.');
+export const ENV = await environmentSchema
+  .parseAsync(await getEnvironmentValues())
+  .catch((error) => {
+    if (!(error instanceof z.ZodError)) throw error;
+
+    console.error('Some environment variables are invalid:');
+    for (const { path, message } of error.issues) {
+      const variable = path[0]?.toString() as keyof typeof environmentSchema.shape;
+      if (!variable) 
+        console.error(path.length > 0 ? `${path.join('.')}:` : '', message);
+      
+
+      const description = environmentSchema.shape[variable].description;
+      console.error(
+        [
+          '',
+          description,
+          `${path.join('.')}: ${message}`,
+          `(Current value is ${JSON.stringify(process.env[variable])})`,
+        ].join('\n'),
+      );
+    }
+    throw new Error('Invalid environment variables.');
+  });
+
+async function getEnvironmentValues() {
+  // Wait for env vars to be loaded
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  return Object.fromEntries(
+    Object.keys(environmentSchema.shape).map((variable) => [variable, process.env[variable]]),
+  );
+}
 
 function uri(...protocols: string[]) {
   return z
