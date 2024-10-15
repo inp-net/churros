@@ -1,4 +1,4 @@
-import { ENV, log } from '#lib';
+import { log } from '#lib';
 import { GraphQLError } from 'graphql';
 import Handlebars from 'handlebars';
 import { htmlToText } from 'html-to-text';
@@ -15,6 +15,7 @@ import {
   type MailRequiredContentIDs,
   type MailTemplate,
 } from '../mail-templates/props.js';
+import { ENV } from './env.js';
 
 const compiledTemplates = await precompileTemplates();
 

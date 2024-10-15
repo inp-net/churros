@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
-import { ENV, fromYearTier } from '#lib';
+import { fromYearTier } from '#lib';
 import bunyan from 'bunyan';
 import ldap from 'ldapjs';
+import { ENV } from './env.js';
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 

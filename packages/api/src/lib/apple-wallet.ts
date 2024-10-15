@@ -1,4 +1,3 @@
-import { ENV } from '#lib';
 import type { Prisma } from '@churros/db/prisma';
 import { Template } from '@startse/pass-js';
 import { addDays, format, subMinutes } from 'date-fns';
@@ -7,6 +6,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path/posix';
 import sharp from 'sharp';
+import { ENV } from './env.js';
 import { localID } from './global-id.js';
 import { storageRoot } from './storage.js';
 

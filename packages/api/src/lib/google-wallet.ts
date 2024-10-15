@@ -1,7 +1,7 @@
-import { ENV } from '#lib';
 import { fullName } from '#modules/users';
 import type { Prisma } from '@churros/db/prisma';
 import { GoogleAuth } from 'google-auth-library';
+import { ENV } from './env.js';
 import { localID } from './global-id.js';
 
 const baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
