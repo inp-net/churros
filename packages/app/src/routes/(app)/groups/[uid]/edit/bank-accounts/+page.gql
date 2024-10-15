@@ -1,0 +1,12 @@
+query PageGroupEditBankAccounts($uid: String!) @loading {
+  group(uid: $uid) {
+    uid
+    canEditLydiaAccounts(
+      assert: "Tu n'as pas les droits pour modifier les comptes Lydia de ce groupe"
+    )
+    lydiaAccounts {
+      id
+      name
+    }
+  }
+}
