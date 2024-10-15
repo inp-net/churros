@@ -64,7 +64,7 @@ api.get('/auth/oauth2', (req, res, next) => {
   passport.authenticate('oauth2', {
     // @ts-expect-error undocumented option
     callbackURL: new URL(
-      `/auth/oauth2/callback?${forwardSearchParams(searchParams, ['from', 'include_token_in_url', 'protocol'])}`,
+      `/auth/oauth2/callback?${forwardSearchParams(searchParams, ['from', 'native'])}`,
       process.env.PUBLIC_API_URL,
     ).toString(),
   })(req, res, next);
@@ -77,27 +77,40 @@ api.get(
     const searchParams = new URL(`http://localhost${req.url}`).searchParams;
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
+
+    // ?native=1 is used to create a local token instead of setting a HttpOnly cookie,
+    // since native apps don't support them.
+    let token: string | undefined;
+    if (searchParams.get('native') === '1') {
+      token = await prisma.credential
+        .create({
+          data: {
+            type: 'Token',
+            value: nanoid(30),
+            user: {
+              connect: {
+                uid: req.user?.user?.uid,
+              },
+            },
+          },
+        })
+        .then((cred) => cred.value);
+    }
+
     const outputParams = new URLSearchParams({
       from: searchParams.get('from') ?? '/',
-      token:
-        searchParams.get('include_token_in_url') === '1'
-          ? await prisma.credential
-              .create({
-                data: {
-                  type: 'Token',
-                  value: nanoid(30),
-                  user: {
-                    connect: {
-                      uid: req.user?.user?.uid,
-                    },
-                  },
-                },
-              })
-              .then((cred) => cred.value)
-          : '',
+      token: token ?? '',
     });
-    res.redirect(
-      `${searchParams.has('protocol') ? `${searchParams.get('protocol')}//login/done` : new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN)}?${outputParams}`,
-    );
+
+    let redirectURL: string;
+    if (searchParams.get('native') === '1') {
+      // Native app logins get redirected to the app via a custom URL scheme whose name is the package ID
+      redirectURL = `${process.env.PUBLIC_APP_PACKAGE_ID}://login/done?${outputParams}`;
+    } else {
+      // Web logins get redirected to the frontend
+      redirectURL = new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN).toString();
+    }
+
+    res.redirect(redirectURL);
   },
 );
