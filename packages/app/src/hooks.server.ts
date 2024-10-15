@@ -4,7 +4,7 @@ import { CURRENT_VERSION } from '$lib/buildinfo';
 import { inferIsMobile } from '$lib/mobile';
 import { aled } from '$lib/session';
 import * as Sentry from '@sentry/sveltekit';
-import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
+import { text, type Handle, type HandleFetch, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import * as cookie from 'cookie';
 
@@ -29,7 +29,33 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 
   setSession(event, { token });
 
-  return resolve(event);
+  const response = await resolve(event);
+
+  if (response.url === '' && response.headers.get('content-type') === 'text/html') {
+    return text(
+      await response
+        .clone()
+        .text()
+        .then((text) =>
+          text
+            .replace(
+              '%comment_start_if_splash_disabled%',
+              env.PUBLIC_DISABLE_SPLASH_SCREEN === 'true' ? '<!--' : '',
+            )
+            .replace(
+              '%comment_end_if_splash_disabled%',
+              env.PUBLIC_DISABLE_SPLASH_SCREEN === 'true' ? '-->' : '',
+            ),
+        ),
+      {
+        headers: response.headers,
+        status: response.status,
+        statusText: response.statusText,
+      },
+    );
+  }
+
+  return response;
 });
 
 export const handleFetch: HandleFetch = async ({ request, fetch }) => {
