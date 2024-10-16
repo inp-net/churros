@@ -1,13 +1,7 @@
+import { ENV, prisma, publishClient, schoolLdapSettings, subscribeClient } from '#lib';
 import { Client } from '@inp-net/ldap7';
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
-import {
-  ENV,
-  prisma,
-  publishClient,
-  schoolLdapSettings,
-  subscribeClient,
-} from '../../../lib/index.js';
 import type { HealthCheck } from '../types/index.js';
 
 const SMTP_URL = ENV.SMTP_URL;

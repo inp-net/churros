@@ -1,11 +1,11 @@
 import { builder, ENV, log, prisma, publish, sendMail } from '#lib';
 import { PaymentMethodEnum } from '#modules/payments';
+import { canSeeTicket, placesLeft, RegistrationType } from '#modules/ticketing';
 import { getUserWithContributesTo, userCanAccessEvent, userCanManageEvent } from '#permissions';
 import { PrismaClientKnownRequestError } from '@churros/db/prisma/runtime/library';
 import { isFuture, isPast } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import * as qrcode from 'qrcode';
-import { canSeeTicket, placesLeft, RegistrationType } from '../index.js';
 
 // TODO remove, not used by @churros/app anymore
 builder.mutationField('upsertRegistration', (t) =>

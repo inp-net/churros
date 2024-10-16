@@ -146,14 +146,6 @@ export const environmentSchema = z.object({
   ),
 });
 
-// async function getEnvironmentValues() {
-//   // Wait for env vars to be loaded
-//   await new Promise((resolve) => setTimeout(resolve, 50));
-//   return Object.fromEntries(
-//     Object.keys(environmentSchema.shape).map((variable) => [variable, process.env[variable]]),
-//   );
-// }
-
 function uri(...protocols: string[]) {
   return z
     .string()

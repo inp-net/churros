@@ -97,49 +97,33 @@ export async function login(
       },
     });
 
-    if (userCandidate) {
-      // Potential security risk, disabled for now
-      // if (!userCandidate.emailValidated) {
-      //   await log('login', 'fail', {
-      //     uidOrEmail,
-      //     err: "user's email is not validated yet",
-      //     userCandidate,
-      //   });
+    if (userCandidate && (await verifyPassword(userCandidate.churrosPassword, password))) {
+      if (needsManualValidation(userCandidate)) {
+        await log('login', 'fail-awaiting-validation', {
+          uidOrEmail,
+          err: 'user is awaiting validation',
+          userCandidate,
+        });
 
-      //   throw new Error(
-      //     `Ton adresse email n'est pas encore validée. Vérifie ta boîte mail (${userCandidate.email}), tu a du recevoir un mail de ${ENV.PUBLIC_SUPPORT_EMAIL}.`,
-      //   );
-      // }
+        throw new AwaitingValidationError();
+      } else {
+        await log('login', 'fail-stuck-in-limbo', {
+          uidOrEmail,
+          err: 'user does not need manual validation but no user was created from the userCandidate',
+          userCandidate,
+        });
 
-      // eslint-disable-next-line unicorn/no-lonely-if
-      if (await verifyPassword(userCandidate.churrosPassword, password)) {
-        if (needsManualValidation(userCandidate)) {
-          await log('login', 'fail-awaiting-validation', {
-            uidOrEmail,
-            err: 'user is awaiting validation',
-            userCandidate,
-          });
+        await notify(await prisma.user.findMany({ where: { admin: true } }), {
+          title: `${userCandidate.email} est bloqué dans une étape intermédiaire`,
+          body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
+          data: {
+            channel: NotificationChannel.Other,
+            goto: `/signups/edit/${userCandidate.email}`,
+            group: undefined,
+          },
+        });
 
-          throw new AwaitingValidationError();
-        } else {
-          await log('login', 'fail-stuck-in-limbo', {
-            uidOrEmail,
-            err: 'user does not need manual validation but no user was created from the userCandidate',
-            userCandidate,
-          });
-
-          await notify(await prisma.user.findMany({ where: { admin: true } }), {
-            title: `${userCandidate.email} est bloqué dans une étape intermédiaire`,
-            body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
-            data: {
-              channel: NotificationChannel.Other,
-              goto: `/signups/edit/${userCandidate.email}`,
-              group: undefined,
-            },
-          });
-
-          throw new GraphQLError("Ton compte n'est pas encore prêt. Réessaie plus tard.");
-        }
+        throw new GraphQLError("Ton compte n'est pas encore prêt. Réessaie plus tard.");
       }
     }
 

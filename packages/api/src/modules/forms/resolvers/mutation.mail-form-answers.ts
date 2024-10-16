@@ -1,6 +1,6 @@
 import { builder, ENV, formatDateTime, localID, prisma, sendMail } from '#lib';
+import { answerToString } from '#modules/forms';
 import { GraphQLError } from 'graphql';
-import { answerToString } from '../utils/answers.js';
 
 builder.mutationField('mailFormAnswers', (t) =>
   t.string({

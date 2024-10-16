@@ -1,7 +1,6 @@
 import { builder, ENV, log, prisma, sendMail } from '#lib';
-import { emailLoginPrismaClauses } from '#modules/users/utils';
+import { emailLoginPrismaClauses, PASSWORD_RESET_EXPIRES_AFTER } from '#modules/users/utils';
 import { addSeconds } from 'date-fns';
-import { PASSWORD_RESET_EXPIRES_AFTER } from '../utils/password-resets.js';
 
 // TODO rename to request-password-reset
 builder.mutationField('createPasswordReset', (t) =>
