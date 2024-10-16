@@ -67,7 +67,6 @@ modules:
     - profiles
     - notifications
     - services
-    - bar-weeks
     - student-associations
     - pages
     - schools
