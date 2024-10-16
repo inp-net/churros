@@ -1,5 +1,31 @@
 # @churros/api
 
+## 4.0.0
+
+### Major Changes
+
+- 2360071: remove bar weeks
+- ff2d33e: Change type of Mutation.checkIfBookingIsPaid to Result<Registration> instead of Boolean
+
+### Minor Changes
+
+- 51dec97: allow specifying groups to apply promotions on by default, add mutation to generate simpps code, fix price display on ticket page
+- 4f8eb7d: rework group members UI
+- d95e254: feat(profile): enlarge picture on click
+- ff2d33e: Allow creating a token after OAuth2 login process for use in contexts that don't support HttpOnly cookies (such as native apps)
+- 620291b: add Mutation.upsertServiceV2, deprecate Mutation.upsertService
+- fc2c196: search: allow bumping result ranks depending on their resource type in Query.search, see the PUBLIC_GLOBAL_SEARCH_BUMPS env var.
+- ff2d33e: Allow pushing notifications through Firebase FCM -- set the NotificationSubscription endpoint to `apns://APNS TOKEN HERE` or `firebase://ANDROID FIREBASE TOKEN HERE`, and fill out the related env variables
+
+### Patch Changes
+
+- fd2d1b9: fix(members): purge user session cache when changing memberships
+- Updated dependencies [51dec97]
+- Updated dependencies [620291b]
+- Updated dependencies [51dec97]
+- Updated dependencies [2360071]
+  - @churros/db@2.0.0
+
 ## 3.3.1
 
 ### Patch Changes
