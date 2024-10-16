@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-import getByPath from 'lodash.get';
 import { z } from 'zod';
 
 export const environmentSchema = z.object({
@@ -148,63 +146,6 @@ export const environmentSchema = z.object({
   ),
 });
 
-let _parsedEnv: z.infer<typeof environmentSchema> | undefined;
-
-export const ENV = new Proxy<NonNullable<typeof _parsedEnv>>({} as NonNullable<typeof _parsedEnv>, {
-  get(_target, property: keyof typeof environmentSchema.shape) {
-    if (_parsedEnv) return _parsedEnv[property];
-
-    try {
-      console.info('Validating environment variables...');
-      _parsedEnv = environmentSchema.parse(process.env);
-      return _parsedEnv[property];
-    } catch (error) {
-      if (!(error instanceof z.ZodError)) throw error;
-
-      console.error(chalk.red('Some environment variables are invalid:'));
-      formatZodErrors(error);
-      throw new Error('Invalid environment variables.');
-    }
-  },
-});
-
-function formatZodErrors(error: z.ZodError<unknown>) {
-  for (const { path, message } of error.issues) {
-    const variable = path[0]?.toString() as keyof typeof environmentSchema.shape;
-    const value = process.env[variable];
-    const description = environmentSchema.shape[variable]?.description;
-
-    if (path.length !== 1) {
-      console.error(
-        formatZodIssue(
-          description,
-          path.join('.'),
-          message,
-          path.length === 1 || !isValidJSON(value)
-            ? value
-            : getByPath(JSON.parse(value), path.slice(1)),
-        ),
-      );
-      continue;
-    }
-
-    console.error(formatZodIssue(description, variable, message, value));
-  }
-}
-
-function formatZodIssue(
-  description: string | undefined,
-  path: string,
-  message: string,
-  value: string | undefined,
-) {
-  return [
-    description ? chalk.dim(`\n# ${description}`) : '',
-    `${chalk.bold.cyan(path)}: ${message}`,
-    `Current value: ${chalk.green(JSON.stringify(value))}`,
-  ].join('\n');
-}
-
 // async function getEnvironmentValues() {
 //   // Wait for env vars to be loaded
 //   await new Promise((resolve) => setTimeout(resolve, 50));
@@ -275,14 +216,4 @@ function optionaljsonobject<Shape extends z.ZodRawShape, Params extends z.RawCre
       }
     })
     .pipe(z.object(shape, params).or(z.undefined()));
-}
-
-function isValidJSON(str: string | undefined): str is string {
-  if (!str) return false;
-  try {
-    JSON.parse(str);
-    return true;
-  } catch {
-    return false;
-  }
 }

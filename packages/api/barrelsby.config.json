@@ -4,6 +4,7 @@
   "singleQuotes": true,
   "delete": true,
   "directory": [
+    "./src/lib",
     "./src/modules/announcements/resolvers",
     "./src/modules/announcements/types",
     "./src/modules/changelogs/resolvers",

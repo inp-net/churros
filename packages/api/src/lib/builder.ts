@@ -1,5 +1,6 @@
 import type { Context, GraphinxDirective, RateLimitDirective } from '#lib';
 import {
+  ENV,
   authScopes,
   context,
   decodeGlobalID,
@@ -26,7 +27,6 @@ import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
 import { default as parseUserAgent } from 'ua-parser-js';
 import { ZodError } from 'zod';
-import { ENV } from '../env.js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
