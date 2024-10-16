@@ -2397,6 +2397,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deleteLink(id: LocalID!): MutationDeleteLinkResult!
   """
+  Supprimer l'enregistrement d'uncompte Lydia sur un groupe (ne supprime pas le compte Lydia Pro sur Lydia)
+  """
+  deleteLydiaAccount(id: LocalID!): MutationDeleteLydiaAccountResult!
+  """
   Supprime une page existante. On peut renseigner l'identifiant de la page ou son chemin ainsi que son groupe ou AE d'appartenance.
   """
   deletePage(
@@ -3376,6 +3380,12 @@ union MutationDeleteLinkResult = Error | MutationDeleteLinkSuccess | ZodError
 
 type MutationDeleteLinkSuccess {
   data: Link!
+}
+
+union MutationDeleteLydiaAccountResult = Error | MutationDeleteLydiaAccountSuccess | ZodError
+
+type MutationDeleteLydiaAccountSuccess {
+  data: LydiaAccount!
 }
 
 union MutationDeletePageResult = Error | MutationDeletePageSuccess | ZodError
