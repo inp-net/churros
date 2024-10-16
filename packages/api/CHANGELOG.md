@@ -1,5 +1,11 @@
 # @churros/api
 
+## 4.0.1
+
+### Patch Changes
+
+- cc5b1b6: fix dev deps
+
 ## 4.0.0
 
 ### Major Changes
