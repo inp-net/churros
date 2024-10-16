@@ -26,7 +26,7 @@ import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
 import { default as parseUserAgent } from 'ua-parser-js';
 import { ZodError } from 'zod';
-import { ENV } from './env.js';
+import { ENV } from '../env.js';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
@@ -216,7 +216,7 @@ builder.mutationType({
 
 builder.subscriptionType({
   description: `Permet de faire des requêtes de données temps-réel, via des _websockets_.
-L'endpoint pour le temps réel est \`${ENV.PUBLIC_API_WEBSOCKET_URL}\`. 
+L'endpoint pour le temps réel est \`${ENV().PUBLIC_API_WEBSOCKET_URL}\`. 
 
 Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-guild.dev/graphql/ws/get-started#use-the-client)`,
   directives: {

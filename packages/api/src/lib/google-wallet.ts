@@ -30,7 +30,7 @@ export function makeGoogleWalletObject(
     classId: GOOGLE_WALLET_CLASS.id,
     logo: {
       sourceUri: {
-        uri: noLocalhostURL('android-chrome-512x512.png', ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
+        uri: noLocalhostURL('android-chrome-512x512.png', ENV().PUBLIC_FRONTEND_ORIGIN).toString(),
       },
       contentDescription: {
         defaultValue: {
@@ -93,8 +93,8 @@ export function makeGoogleWalletObject(
     heroImage: {
       sourceUri: {
         uri: event.pictureFile
-          ? noLocalhostURL(event.pictureFile, ENV.PUBLIC_STORAGE_URL).toString()
-          : noLocalhostURL('android-chrome-512x512.png', ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
+          ? noLocalhostURL(event.pictureFile, ENV().PUBLIC_STORAGE_URL).toString()
+          : noLocalhostURL('android-chrome-512x512.png', ENV().PUBLIC_FRONTEND_ORIGIN).toString(),
       },
       contentDescription: {
         defaultValue: {
@@ -121,7 +121,7 @@ makeGoogleWalletObject.prismaIncludes = {
 } as const satisfies Prisma.RegistrationInclude;
 
 export const GOOGLE_WALLET_CLASS = {
-  id: `${ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID}.churros_event`,
+  id: `${ENV().PUBLIC_GOOGLE_WALLET_ISSUER_ID}.churros_event`,
   classTemplateInfo: {
     cardTemplateOverride: {
       cardRowTemplateInfos: [
@@ -175,14 +175,14 @@ export const GOOGLE_WALLET_CLASS = {
 };
 
 export async function registerGoogleWalletClass(data: typeof GOOGLE_WALLET_CLASS): Promise<string> {
-  if (!ENV.GOOGLE_WALLET_ISSUER_KEY) {
+  if (!ENV().GOOGLE_WALLET_ISSUER_KEY) {
     console.warn(
       'No GOOGLE_WALLET_ISSUER_KEY set in environment variables, not registering Google Wallet class.',
     );
     return '';
   }
   const httpClient = new GoogleAuth({
-    credentials: ENV.GOOGLE_WALLET_ISSUER_KEY,
+    credentials: ENV().GOOGLE_WALLET_ISSUER_KEY,
     scopes: 'https://www.googleapis.com/auth/wallet_object.issuer',
   });
   try {

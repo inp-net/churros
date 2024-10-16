@@ -10,6 +10,8 @@ import {
 } from '../../../lib/index.js';
 import type { HealthCheck } from '../types/index.js';
 
+const SMTP_URL = ENV().SMTP_URL;
+
 export const checkHealth = async (): Promise<HealthCheck> => ({
   redis: {
     publish: await publishClient
@@ -28,8 +30,8 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
       .catch(() => false),
   },
   mail: {
-    smtp: ENV.SMTP_URL
-      ? await createTransport(ENV.SMTP_URL)
+    smtp: SMTP_URL
+      ? await createTransport(SMTP_URL)
           .verify()
           .then(() => true)
           .catch(() => false)
@@ -43,11 +45,11 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
         client
           .setup(
             {
-              url: ENV.LDAP_URL,
+              url: ENV().LDAP_URL,
             },
-            ENV.LDAP_BIND_DN,
-            ENV.LDAP_BIND_PASSWORD,
-            ENV.LDAP_BASE_DN,
+            ENV().LDAP_BIND_DN,
+            ENV().LDAP_BIND_PASSWORD,
+            ENV().LDAP_BASE_DN,
           )
           .catch(() => resolve(false))
           .then(() => resolve(true));
@@ -91,19 +93,19 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
       : null,
   },
   features: {
-    prometheus: Boolean(ENV.PROMETHEUS_URL),
-    gitlab: Boolean(ENV.GITLAB_SUDO_TOKEN && ENV.GITLAB_PROJECT_ID),
-    masterPassword: Boolean(ENV.MASTER_PASSWORD_HASH),
-    googleAPIs: Boolean(ENV.PUBLIC_GOOGLE_CLIENT_ID && ENV.GOOGLE_CLIENT_SECRET),
-    googleWallet: Boolean(ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV.GOOGLE_WALLET_ISSUER_KEY),
-    appleWallet: Boolean(ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV.GOOGLE_WALLET_ISSUER_KEY),
+    prometheus: Boolean(ENV().PROMETHEUS_URL),
+    gitlab: Boolean(ENV().GITLAB_SUDO_TOKEN && ENV().GITLAB_PROJECT_ID),
+    masterPassword: Boolean(ENV().MASTER_PASSWORD_HASH),
+    googleAPIs: Boolean(ENV().PUBLIC_GOOGLE_CLIENT_ID && ENV().GOOGLE_CLIENT_SECRET),
+    googleWallet: Boolean(ENV().PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV().GOOGLE_WALLET_ISSUER_KEY),
+    appleWallet: Boolean(ENV().PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV().GOOGLE_WALLET_ISSUER_KEY),
     oauth: Boolean(
-      ENV.PUBLIC_OAUTH_AUTHORIZE_URL &&
-        ENV.PUBLIC_OAUTH_TOKEN_URL &&
-        ENV.PUBLIC_OAUTH_CLIENT_ID &&
-        ENV.OAUTH_CLIENT_SECRET &&
-        ENV.PUBLIC_OAUTH_SCOPES,
+      ENV().PUBLIC_OAUTH_AUTHORIZE_URL &&
+        ENV().PUBLIC_OAUTH_TOKEN_URL &&
+        ENV().PUBLIC_OAUTH_CLIENT_ID &&
+        ENV().OAUTH_CLIENT_SECRET &&
+        ENV().PUBLIC_OAUTH_SCOPES,
     ),
-    mailman: Boolean(ENV.MAILMAN_API_URL && ENV.MAILMAN_API_TOKEN),
+    mailman: Boolean(ENV().MAILMAN_API_URL && ENV().MAILMAN_API_TOKEN),
   },
 });

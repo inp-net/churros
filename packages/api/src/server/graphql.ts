@@ -109,7 +109,7 @@ api.get('/', (req, res) => {
 <body>
   <h1>Churros API</h1>
   <p>Bienvenue ${user?.firstName ?? ''} sur l'API de Churros.</p>
-  <p><strong><a href="${new URL(ENV.PUBLIC_FRONTEND_ORIGIN).toString()}">
+  <p><strong><a href="${new URL(ENV().PUBLIC_FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>
   <p><a href="https://git.inpt.fr/inp-net/churros">Code source</a></p>

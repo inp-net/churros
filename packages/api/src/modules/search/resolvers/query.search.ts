@@ -8,7 +8,7 @@ import { searchUsers } from '#modules/users';
 import type { Group, User } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 
-const rankBumps = ENV.PUBLIC_GLOBAL_SEARCH_BUMPS;
+const rankBumps = ENV().PUBLIC_GLOBAL_SEARCH_BUMPS;
 
 builder.queryField('search', (t) =>
   t.field({

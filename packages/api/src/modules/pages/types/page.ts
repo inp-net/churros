@@ -49,7 +49,7 @@ export const PageType = builder.prismaObject('Page', {
       description: 'URLs vers les fichiers inclus sur la page.',
       resolve: async ({ files }) =>
         files.map((file) => {
-          const result = new URL(ENV.PUBLIC_STORAGE_URL);
+          const result = new URL(ENV().PUBLIC_STORAGE_URL);
           result.pathname = path.join(result.pathname, file);
           return result.toString();
         }),

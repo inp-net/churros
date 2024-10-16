@@ -1,8 +1,8 @@
 import { ENV, prisma } from '#lib';
 import { GroupType } from '@churros/db/prisma';
 
-const apiUrl = ENV.MAILMAN_API_URL;
-const apiToken = ENV.MAILMAN_API_TOKEN;
+const apiUrl = ENV().MAILMAN_API_URL;
+const apiToken = ENV().MAILMAN_API_TOKEN;
 
 export async function removeMemberFromGroupMailingList(groupId: string, email: string) {
   const { mailingList } = await prisma.group.findUniqueOrThrow({

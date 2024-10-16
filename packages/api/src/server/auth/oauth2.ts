@@ -8,12 +8,12 @@ import { AUTHED_VIA_COOKIE_NAME, AuthedViaCookie } from './constants.js';
 const oauth2Strategy = new OAuth2Strategy(
   {
     // TODO: _actually_ support not configuring PUBLIC_OAUTH_*
-    authorizationURL: ENV.PUBLIC_OAUTH_AUTHORIZE_URL ?? '',
-    tokenURL: ENV.PUBLIC_OAUTH_TOKEN_URL ?? '',
-    clientID: ENV.PUBLIC_OAUTH_CLIENT_ID ?? '',
-    clientSecret: ENV.OAUTH_CLIENT_SECRET ?? '',
+    authorizationURL: ENV().PUBLIC_OAUTH_AUTHORIZE_URL ?? '',
+    tokenURL: ENV().PUBLIC_OAUTH_TOKEN_URL ?? '',
+    clientID: ENV().PUBLIC_OAUTH_CLIENT_ID ?? '',
+    clientSecret: ENV().OAUTH_CLIENT_SECRET ?? '',
     callbackURL: '/auth/oauth2/callback',
-    scope: ENV.PUBLIC_OAUTH_SCOPES ?? [],
+    scope: ENV().PUBLIC_OAUTH_SCOPES ?? [],
   },
   async function (
     _accessToken: string,
@@ -22,12 +22,13 @@ const oauth2Strategy = new OAuth2Strategy(
     cb: VerifyCallback,
   ) {
     try {
-      if (!ENV.OAUTH_UID_KEY) {
+      const uidKey = ENV().OAUTH_UID_KEY;
+      if (!uidKey) {
         cb('OAUTH_UID_KEY is not set', false);
         return;
       }
 
-      const userSession = await getSessionUser(profile[ENV.OAUTH_UID_KEY] as string);
+      const userSession = await getSessionUser(profile[uidKey] as string);
 
       if (!userSession) {
         cb('This account is not linked to any user', false);
@@ -45,12 +46,13 @@ oauth2Strategy.userProfile = async function (
   accessToken: string,
   done: (error: unknown, profile: unknown) => void,
 ) {
-  if (!ENV.PUBLIC_OAUTH_USER_INFO_URL) {
+  const userinfoUrl = ENV().PUBLIC_OAUTH_USER_INFO_URL;
+  if (!userinfoUrl) {
     done('PUBLIC_OAUTH_USER_INFO_URL is not set', {});
     return;
   }
   try {
-    const res = await fetch(ENV.PUBLIC_OAUTH_USER_INFO_URL, {
+    const res = await fetch(userinfoUrl, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

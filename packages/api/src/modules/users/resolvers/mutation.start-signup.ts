@@ -79,11 +79,11 @@ builder.mutationField('startSignup', (t) =>
       if (
         !user?.admin &&
         !user?.adminOfStudentAssociations.length &&
-        ENV.PUBLIC_DEACTIVATE_SIGNUPS === 'true' &&
+        ENV().PUBLIC_DEACTIVATE_SIGNUPS === 'true' &&
         !quickSignupCode
       ) {
         throw new GraphQLError(
-          ENV.PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE || 'Les inscriptions sont désactivées.',
+          ENV().PUBLIC_DEACTIVATE_SIGNUPS_MESSAGE || 'Les inscriptions sont désactivées.',
         );
       }
 

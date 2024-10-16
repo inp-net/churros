@@ -25,7 +25,7 @@ builder.queryField('groups', (t) =>
                   school: {
                     OR: [
                       { id: { in: user?.major?.schools.map(({ id }) => id) ?? [] } },
-                      { uid: ENV.PUBLIC_SCHOOL_UID },
+                      { uid: ENV().PUBLIC_SCHOOL_UID },
                     ],
                   },
                 },

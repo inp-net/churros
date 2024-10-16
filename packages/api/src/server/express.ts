@@ -40,7 +40,7 @@ api.use(
 
 export async function startApiServer() {
   // load passport strategies
-  if (ENV.PUBLIC_OAUTH_ENABLED.trim() === '1') {
+  if (ENV().PUBLIC_OAUTH_ENABLED.trim() === '1') {
     import('./auth/oauth2.js');
     import('./auth/logout.js');
   }

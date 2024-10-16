@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { environmentSchema } from './lib/env.js';
+import { environmentSchema } from './env.js';
 
 declare global {
   namespace NodeJS {

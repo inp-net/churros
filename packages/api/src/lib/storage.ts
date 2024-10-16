@@ -10,5 +10,5 @@ function gitRoot() {
 export function storageRoot() {
   return inDevelopment()
     ? path.join(gitRoot(), 'packages/api/storage')
-    : fileURLToPath(new URL(ENV.STORAGE));
+    : fileURLToPath(new URL(ENV().STORAGE));
 }
