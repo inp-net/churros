@@ -1,0 +1,36 @@
+.build:
+  stage: build
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: ['sh', '-c']
+  variables:
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+    # Default parameters
+    TAG: export TAG=latest-$(date +%Y%m%d%H%m)
+    DEPLOY: 'false'
+  before_script:
+    - mkdir ~/.docker
+    - cp $HARBOR_CONFIG_JSON ~/.docker/config.json
+  script:
+    - eval $TAG
+    - |
+      buildctl-daemonless.sh build \
+          --frontend=dockerfile.v0 \
+          --local context=. \
+          --local dockerfile=. \
+          --opt target=$TARGET \
+          --opt build-arg:TAG=$TAG \
+          --secret id=SENTRY_AUTH_TOKEN \
+          --output type=image,name=$HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
+    - |
+      if [ "$DEPLOY" == "true" ]; then \
+        echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG"; \
+      else \
+        echo "Successfully built $HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG"; \
+      fi
+
+include:
+  - ci/build/api.gitlab-ci.yml
+  - ci/build/app.gitlab-ci.yml
+  - ci/build/db.gitlab-ci.yml
+  - ci/build/sync.gitlab-ci.yml
