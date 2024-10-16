@@ -1,5 +1,11 @@
 # @churros/app
 
+## 2.12.1
+
+### Patch Changes
+
+- 3d36801: fix(app): buttons could not be clicked on on mobile
+
 ## 2.12.0
 
 ### Minor Changes
