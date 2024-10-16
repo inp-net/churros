@@ -1,6 +1,6 @@
 import { prisma } from '#lib';
 import { serverCanSendNotificationToUser } from '#permissions';
-import { Prisma, type NotificationSubscription, type User } from '@churros/db/prisma';
+import { type NotificationSubscription, type User } from '@churros/db/prisma';
 import type { MaybePromise } from '@pothos/core';
 import firebase from 'firebase-admin';
 import { FirebaseMessagingError } from 'firebase-admin/messaging';
@@ -91,11 +91,8 @@ export async function notify<U extends User>(
         await storeSentNotificationInDatabase(subscription, notif);
         sentSubscriptions.push(subscription);
       } catch (error: unknown) {
-        if (isSubscriptionExpiredError(error)) 
-          await deleteSubscription(subscription.endpoint);
-         else 
-          console.error(logsPrefix(subscription, notif), error);
-        
+        if (isSubscriptionExpiredError(error)) await deleteSubscription(subscription.endpoint);
+        else console.error(logsPrefix(subscription, notif), error);
       }
 
       console.info(
@@ -109,7 +106,9 @@ export async function notify<U extends User>(
 }
 
 async function sendNotification(sub: NotificationSubscription, notification: PushNotification) {
-  return isWebPushEndpoint(sub.endpoint) ? sendWebPushNotification(sub, notification) : sendNativePushNotification(sub, notification);
+  return isWebPushEndpoint(sub.endpoint)
+    ? sendWebPushNotification(sub, notification)
+    : sendNativePushNotification(sub, notification);
 }
 
 /**
@@ -220,13 +219,8 @@ function isSubscriptionExpiredError(
 }
 
 async function deleteSubscription(endpoint: string) {
-  await prisma.notificationSubscription.delete({ where: { endpoint } }).catch((error) => {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-      // Subscription was deleted in the meantime, nothing to worry about
-    } else {
-      throw error;
-    }
-  });
+  // Use deleteMany so that if the endpoint is not found, it doesn't cause an error
+  await prisma.notificationSubscription.deleteMany({ where: { endpoint } });
 }
 
 class MissingFirebaseCredentialsError extends Error {
