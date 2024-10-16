@@ -89,7 +89,6 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
   features: {
     prometheus: Boolean(ENV.PROMETHEUS_URL),
     gitlab: Boolean(ENV.GITLAB_SUDO_TOKEN && ENV.GITLAB_PROJECT_ID),
-    masterPassword: Boolean(ENV.MASTER_PASSWORD_HASH),
     googleAPIs: Boolean(ENV.PUBLIC_GOOGLE_CLIENT_ID && ENV.GOOGLE_CLIENT_SECRET),
     googleWallet: Boolean(ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV.GOOGLE_WALLET_ISSUER_KEY),
     appleWallet: Boolean(ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID && ENV.GOOGLE_WALLET_ISSUER_KEY),

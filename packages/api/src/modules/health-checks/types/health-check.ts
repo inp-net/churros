@@ -8,7 +8,6 @@ export type HealthCheck = {
   features: {
     prometheus: boolean;
     gitlab: boolean;
-    masterPassword: boolean;
     googleAPIs: boolean;
     googleWallet: boolean;
     appleWallet: boolean;
@@ -89,11 +88,6 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
           gitlab: t.boolean({
             description: 'Whether the GitLab API is configured',
             resolve: ({ gitlab }) => gitlab,
-          }),
-          masterPassword: t.boolean({
-            description: 'Whether a master password is configured',
-            authScopes: { admin: true },
-            resolve: ({ masterPassword }) => masterPassword,
           }),
           googleAPIs: t.boolean({
             description: 'Whether Google APIs are configured',

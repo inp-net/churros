@@ -1258,10 +1258,6 @@ type FeaturesHealthCheck @graphinx(module: "health-checks") {
   """
   mailman: Boolean!
   """
-  Whether a master password is configured
-  """
-  masterPassword: Boolean!
-  """
   Whether OAuth login is configured
   """
   oauth: Boolean!
