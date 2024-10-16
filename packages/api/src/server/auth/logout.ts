@@ -7,7 +7,7 @@ api.get('/auth/logout', (req, res, next) => {
     if (error) return next(error);
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, '', { httpOnly: false, secure: false });
-    res.redirect(ENV().PUBLIC_OAUTH_LOGOUT_URL ?? ENV().PUBLIC_FRONTEND_ORIGIN);
+    res.redirect(ENV.PUBLIC_OAUTH_LOGOUT_URL ?? ENV.PUBLIC_FRONTEND_ORIGIN);
   });
 });
 

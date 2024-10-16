@@ -30,7 +30,7 @@ const redisStore = new RedisStore({
 
 export default session({
   store: redisStore,
-  secret: ENV().SESSION_SECRET,
+  secret: ENV.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {

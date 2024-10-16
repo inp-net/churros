@@ -12,7 +12,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyMasterKey(password: string): Promise<boolean> {
-  const masterHash = ENV().MASTER_PASSWORD_HASH;
+  const masterHash = ENV.MASTER_PASSWORD_HASH;
   if (!masterHash) return false;
   return verifyPassword(masterHash, password);
 }

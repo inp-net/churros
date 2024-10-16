@@ -150,20 +150,23 @@ export const environmentSchema = z.object({
 
 let _parsedEnv: z.infer<typeof environmentSchema> | undefined;
 
-export function ENV(): z.infer<typeof environmentSchema> {
-  if (_parsedEnv) return _parsedEnv;
+export const ENV = new Proxy<NonNullable<typeof _parsedEnv>>({} as NonNullable<typeof _parsedEnv>, {
+  get(_target, property: keyof typeof environmentSchema.shape) {
+    if (_parsedEnv) return _parsedEnv[property];
 
-  try {
-    console.info('Validating environment variables...');
-    return (_parsedEnv = environmentSchema.parse(process.env));
-  } catch (error) {
-    if (!(error instanceof z.ZodError)) throw error;
+    try {
+      console.info('Validating environment variables...');
+      _parsedEnv = environmentSchema.parse(process.env);
+      return _parsedEnv[property];
+    } catch (error) {
+      if (!(error instanceof z.ZodError)) throw error;
 
-    console.error(chalk.red('Some environment variables are invalid:'));
-    formatZodErrors(error);
-    throw new Error('Invalid environment variables.');
-  }
-}
+      console.error(chalk.red('Some environment variables are invalid:'));
+      formatZodErrors(error);
+      throw new Error('Invalid environment variables.');
+    }
+  },
+});
 
 function formatZodErrors(error: z.ZodError<unknown>) {
   for (const { path, message } of error.issues) {

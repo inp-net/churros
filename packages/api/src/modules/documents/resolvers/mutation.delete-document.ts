@@ -37,13 +37,11 @@ builder.mutationField('deleteDocument', (t) =>
       await prisma.comment.deleteMany({ where: { documentId: id } });
       // Delete all files on disk
       await Promise.all(
-        paths.map(
-          async (filepath) => await rm(path.join(new URL(ENV().STORAGE).pathname, filepath)),
-        ),
+        paths.map(async (filepath) => await rm(path.join(new URL(ENV.STORAGE).pathname, filepath))),
       );
 
       if (paths.length > 0) {
-        await rmdir(path.dirname(path.join(new URL(ENV().STORAGE).pathname, paths[0]!))).catch(
+        await rmdir(path.dirname(path.join(new URL(ENV.STORAGE).pathname, paths[0]!))).catch(
           (error) =>
             `Could not delete ${paths[0]}: ${error} (this is considered OK, continuing mutation)`,
         );

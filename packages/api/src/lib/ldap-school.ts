@@ -13,7 +13,7 @@ export interface LdapUser {
   lastName?: string;
 }
 
-export const schoolLdapSettings = ENV().LDAP_SCHOOL;
+export const schoolLdapSettings = ENV.LDAP_SCHOOL;
 
 function parseN7ApprenticeAndMajor(groups: string[] | undefined):
   | undefined

@@ -60,7 +60,7 @@ export const PicturedInterface = builder.interfaceRef<Pictured>('Pictured').impl
         const filepath = dark ? pictureFileDark || pictureFile : pictureFile;
         if (!filepath) return '';
 
-        const result = new URL(ENV().PUBLIC_STORAGE_URL);
+        const result = new URL(ENV.PUBLIC_STORAGE_URL);
         result.pathname = path.join(result.pathname, filepath);
         if (timestamp)
           result.searchParams.set('t', (updatedAt?.getTime() ?? Date.now()).toString());

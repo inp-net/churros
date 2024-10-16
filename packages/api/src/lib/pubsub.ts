@@ -4,7 +4,7 @@ import { Redis } from 'ioredis';
 import { ENV } from './env.js';
 import { splitID } from './global-id.js';
 
-const REDIS_URL = new URL(ENV().REDIS_URL || 'redis://localhost:6379');
+const REDIS_URL = new URL(ENV.REDIS_URL || 'redis://localhost:6379');
 
 export const publishClient = new Redis({
   host: REDIS_URL.hostname,

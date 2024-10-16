@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { ZodError } from 'zod';
 
-const issuer = ENV().GOOGLE_WALLET_ISSUER_KEY;
+const issuer = ENV.GOOGLE_WALLET_ISSUER_KEY;
 
 builder.mutationField('createGoogleWalletPass', (t) =>
   t.string({

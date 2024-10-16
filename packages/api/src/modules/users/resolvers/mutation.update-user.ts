@@ -135,7 +135,7 @@ builder.mutationField('updateUser', (t) =>
           {},
           email,
           targetUser.id,
-          new URL('/validate-email/[token]', ENV().PUBLIC_FRONTEND_ORIGIN),
+          new URL('/validate-email/[token]', ENV.PUBLIC_FRONTEND_ORIGIN),
         );
       }
 
