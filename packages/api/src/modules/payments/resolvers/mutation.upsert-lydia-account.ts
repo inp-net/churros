@@ -5,6 +5,7 @@ import { LydiaAccountType, checkLydiaAccount } from '../index.js';
 builder.mutationField('upsertLydiaAccount', (t) =>
   t.prismaField({
     type: LydiaAccountType,
+    errors: {},
     args: {
       id: t.arg.id({ required: false }),
       groupUid: t.arg.string(),
