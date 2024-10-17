@@ -3074,7 +3074,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     name: String!
     privateToken: String!
     vendorToken: String!
-  ): LydiaAccount!
+  ): MutationUpsertLydiaAccountResult!
   upsertManagersOfEvent(eventId: ID!, managers: [ManagerOfEventInput!]!): [EventManager!]!
     @deprecated(reason: "Use 'upsertEventManager' and 'removeEventManager' instead")
   """
@@ -3784,6 +3784,12 @@ union MutationUpsertGroupResult = Error | MutationUpsertGroupSuccess | ZodError
 
 type MutationUpsertGroupSuccess {
   data: Group!
+}
+
+union MutationUpsertLydiaAccountResult = Error | MutationUpsertLydiaAccountSuccess | ZodError
+
+type MutationUpsertLydiaAccountSuccess {
+  data: LydiaAccount!
 }
 
 union MutationUpsertPageResult = Error | MutationUpsertPageSuccess | ZodError
