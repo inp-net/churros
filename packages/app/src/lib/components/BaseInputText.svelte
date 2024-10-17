@@ -23,6 +23,7 @@
   export let closeKeyboardOnEnter = false;
   export let element: HTMLInputElement | undefined = undefined;
   export let focused = false;
+  export let readonly = false;
   export let help = '';
 
   // TODO use (HTMLInputElement).valueAsDate instead
@@ -140,6 +141,7 @@
       {name}
       value={stringifyValue(value, type)}
       required={required || undefined}
+      readonly={readonly || undefined}
       {autocomplete}
       {placeholder}
       {...$$restProps}
