@@ -13,6 +13,7 @@
     - cp $HARBOR_CONFIG_JSON ~/.docker/config.json
   script:
     - eval $TAG
+    - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
@@ -20,7 +21,7 @@
           --local dockerfile=. \
           --opt target=$TARGET \
           --opt build-arg:TAG=$TAG \
-          --secret id=SENTRY_AUTH_TOKEN \
+          $BUILD_SECRET_SENTRY \
           --output type=image,name=$HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
     - |
       if [ "$DEPLOY" == "true" ]; then \
