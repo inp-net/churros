@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql';
 import type { ImageFileExtension } from 'image-type';
 import imageType from 'image-type';
 import { mkdir, unlink } from 'node:fs/promises';
+// eslint-disable-next-line unicorn/import-style
 import { dirname, join, relative } from 'node:path';
 import sharp from 'sharp';
 
@@ -237,14 +238,6 @@ export async function updatePicture({
           OR: [{ uid: identifier }, { id: ensureGlobalId(identifier, 'StudentAssociation') }],
         },
         data: { [propertyName]: relative(root, path) },
-      });
-      break;
-    }
-
-    case 'photos': {
-      await prisma.picture.update({
-        where: { id: identifier },
-        data: { path: relative(root, path) },
       });
       break;
     }

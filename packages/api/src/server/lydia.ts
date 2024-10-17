@@ -134,16 +134,6 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
                 },
               },
             },
-            shopPayment: {
-              select: {
-                user: true,
-                shopItem: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            },
           },
         });
         if (txn.registration?.author) {
@@ -161,16 +151,6 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
           await notify([txn.contribution.user], {
             title: 'Cotisation payée',
             body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
-            data: {
-              channel: 'Other',
-              goto: txn.paidCallback ?? '/',
-              group: undefined,
-            },
-          });
-        } else if (txn.shopPayment?.user) {
-          await notify([txn.shopPayment.user], {
-            title: 'Articles payés',
-            body: `Achat de ${txn.shopPayment.shopItem.name} confirmé`,
             data: {
               channel: 'Other',
               goto: txn.paidCallback ?? '/',

@@ -1722,12 +1722,6 @@ type Group implements Node & Pictured {
   secretaries: [GroupMember!]!
   selfJoinable: Boolean!
   services: [Service!]!
-  """
-  Article de la boutique du groupe
-  """
-  shopItem(id: LocalID!): ShopItem
-  shopItems(after: String, before: String, first: Int, last: Int): GroupShopItemsConnection!
-  shopOrders: [ShopPayment!]!
   shortDescription: String!
   studentAssociation: StudentAssociation!
   treasurers: [GroupMember!]!
@@ -1851,17 +1845,6 @@ type GroupSearchResult {
   id: ID!
   rank: Float
   similarity: Float!
-}
-
-type GroupShopItemsConnection {
-  edges: [GroupShopItemsConnectionEdge!]!
-  nodes: [ShopItem!]!
-  pageInfo: PageInfo!
-}
-
-type GroupShopItemsConnectionEdge {
-  cursor: String!
-  node: ShopItem!
 }
 
 enum GroupType {
@@ -2377,7 +2360,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteGroupMember(group: UID!, user: UID!): MutationDeleteGroupMemberResult!
   deleteGroupPicture(dark: Boolean!, uid: String!): Boolean!
     @deprecated(reason: "Use setPicture instead")
-  deleteItemPicture(groupUid: String!, itemId: String!, pictureId: String!): Boolean!
   """
   Supprimer un lien existant
   """
@@ -2416,8 +2398,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Supprime un service
   """
   deleteService(id: LocalID!): MutationDeleteServiceResult!
-  deleteShopItem(groupUid: String!, itemId: ID!): MutationDeleteShopItemResult!
-  deleteShopOption(optionIds: [String!]!): Boolean!
   deleteTicket(
     """
     Supprimer le billet même s'il existe des réservations
@@ -2478,11 +2458,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   ): MutationMarkContributionAsPaidResult!
   mergeDocuments(from: [ID!]!, into: ID!): Document!
   opposeRegistration(id: ID!): MutationOpposeRegistrationResult!
-  paidShopPayment(
-    paymentMethod: PaymentMethod
-    phone: String
-    shopPaymentId: ID!
-  ): MutationPaidShopPaymentResult!
   payBooking(
     """
     Montant que l'on souhaite payer. Par défaut, le prix du billet. Peut être supérieur si l'on souhaite payer plus
@@ -2858,7 +2833,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Mettre à jour le profil d'un groupe
   """
   updateGroupProfile(profile: GroupProfileInput!, uid: UID!): MutationUpdateGroupProfileResult!
-  updateItemPicture(file: File!, groupUid: String!, itemId: String!): Picture!
   """
   Mettre à jour un lien existant
   """
@@ -3128,30 +3102,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Create or update a service
   """
   upsertServiceV2(id: LocalID, input: ServiceInput!): MutationUpsertServiceV2Result!
-  upsertShopItem(
-    description: String!
-    endsAt: DateTime
-    groupUid: String!
-    id: ID
-    lydiaAccounId: String
-    max: Int!
-    name: String!
-    paymentMethods: [PaymentMethod!]!
-    price: Float!
-    startsAt: DateTime
-    stock: Int!
-    visibility: Visibility!
-  ): MutationUpsertShopItemResult!
-  upsertShopOptions(itemOptions: [ShopItemOptionInput!]!, shopItemId: String!): Boolean!
-  upsertShopPayment(
-    answers: [String!]!
-    id: ID
-    paymentMethod: String
-    phone: String
-    quantity: Int!
-    shopItemId: String!
-    userUid: String!
-  ): MutationUpsertShopPaymentResult!
   """
   Créer ou modifier un thème
   """
@@ -3408,12 +3358,6 @@ type MutationDeleteServiceSuccess {
   data: Service!
 }
 
-union MutationDeleteShopItemResult = Error | MutationDeleteShopItemSuccess | ZodError
-
-type MutationDeleteShopItemSuccess {
-  data: Boolean!
-}
-
 union MutationDeleteTicketGroupResult = Error | MutationDeleteTicketGroupSuccess | ZodError
 
 type MutationDeleteTicketGroupSuccess {
@@ -3470,12 +3414,6 @@ union MutationOpposeRegistrationResult = Error | MutationOpposeRegistrationSucce
 
 type MutationOpposeRegistrationSuccess {
   data: Boolean!
-}
-
-union MutationPaidShopPaymentResult = Error | MutationPaidShopPaymentSuccess | ZodError
-
-type MutationPaidShopPaymentSuccess {
-  data: ShopPayment!
 }
 
 union MutationPayBookingResult = Error | MutationPayBookingSuccess | ZodError
@@ -3874,18 +3812,6 @@ type MutationUpsertServiceV2Success {
   data: Service!
 }
 
-union MutationUpsertShopItemResult = Error | MutationUpsertShopItemSuccess | ZodError
-
-type MutationUpsertShopItemSuccess {
-  data: ShopItem!
-}
-
-union MutationUpsertShopPaymentResult = Error | MutationUpsertShopPaymentSuccess | ZodError
-
-type MutationUpsertShopPaymentSuccess {
-  data: ShopPayment!
-}
-
 union MutationUpsertThemeResult = Error | MutationUpsertThemeSuccess | ZodError
 
 type MutationUpsertThemeSuccess {
@@ -4092,12 +4018,6 @@ enum PaymentMethod {
 Numéro de téléphone, au format international (E.164, avec préfixes “+”), ou au format local français (10 chiffres, sans préfixe).
 """
 scalar PhoneNumber
-
-type Picture {
-  id: ID!
-  path: String!
-  position: Int!
-}
 
 """
 Une ressource qui possède une image associée
@@ -4463,8 +4383,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     mine: Boolean!
   ): [Service!]!
-  shopItem(slug: String!): ShopItem!
-  shopPayments(item: ID!): [ShopPayment!]!
   """
   Identifiants des différentes promotions existantes
   """
@@ -5617,74 +5535,6 @@ interface Shareable {
   Nombre de partages
   """
   shares: Int!
-}
-
-type ShopItem implements Node {
-  createdAt: DateTime!
-  description: String!
-  descriptionHtml: String!
-  endsAt: DateTime
-  group: Group!
-  id: ID!
-  itemOptions: [ShopItemOption!]!
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
-  localID: LocalID!
-  lydiaAccount: LydiaAccount
-  max: Int!
-  name: String!
-  paymentMethods: [PaymentMethod!]!
-  pictures: [Picture!]!
-  price: Float!
-  shopPayments: [ShopPayment!]!
-  """
-  Un nom lisible sans espaces, adaptés pour des URLs.
-  """
-  slug: String!
-  startsAt: DateTime
-  stock: Int!
-  stockLeft: Int!
-  uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
-  updatedAt: DateTime!
-  visibility: Visibility!
-}
-
-type ShopItemAnswer {
-  id: ID!
-  options: [String!]!
-  shopPayment: ShopPayment!
-  shopPaymentId: String!
-}
-
-type ShopItemOption {
-  id: ID!
-  name: String!
-  options: [String!]!
-  otherToggle: Boolean!
-  required: Boolean!
-  shopItem: ShopItem!
-}
-
-input ShopItemOptionInput {
-  id: String!
-  name: String!
-  options: [String!]!
-  otherToggle: Boolean!
-  required: Boolean!
-}
-
-type ShopPayment {
-  createdAt: DateTime!
-  id: ID!
-  paid: Boolean!
-  paymentMethod: PaymentMethod!
-  quantity: Int!
-  shopItem: ShopItem!
-  shopItemAnswer: ShopItemAnswer
-  totalPrice: Float!
-  updatedAt: DateTime!
-  user: User!
 }
 
 """

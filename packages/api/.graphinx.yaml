@@ -59,7 +59,6 @@ modules:
     - posts
     - events
     - ticketing
-    - shop
     - forms
     - documents
     - themes
