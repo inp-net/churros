@@ -1,4 +1,4 @@
-import { getSessionUser, prisma } from '#lib';
+import { ENV, getSessionUser, prisma } from '#lib';
 import { nanoid } from 'nanoid';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
@@ -77,7 +77,7 @@ api.get('/auth/oauth2', (req, res, next) => {
     // @ts-expect-error undocumented option
     callbackURL: new URL(
       `/auth/oauth2/callback?${forwardSearchParams(searchParams, ['from', 'native'])}`,
-      process.env.PUBLIC_API_URL,
+      ENV.PUBLIC_API_URL,
     ).toString(),
   })(req, res, next);
 });
@@ -117,10 +117,10 @@ api.get(
     let redirectURL: string;
     if (searchParams.get('native') === '1') {
       // Native app logins get redirected to the app via a custom URL scheme whose name is the package ID
-      redirectURL = `${process.env.PUBLIC_APP_PACKAGE_ID}://login/done?${outputParams}`;
+      redirectURL = `${ENV.PUBLIC_APP_PACKAGE_ID}://login/done?${outputParams}`;
     } else {
       // Web logins get redirected to the frontend
-      redirectURL = new URL('/login/done', process.env.PUBLIC_FRONTEND_ORIGIN).toString();
+      redirectURL = new URL('/login/done', ENV.PUBLIC_FRONTEND_ORIGIN).toString();
     }
 
     res.redirect(redirectURL);

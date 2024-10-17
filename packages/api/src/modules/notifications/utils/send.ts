@@ -1,5 +1,4 @@
 import { ENV, prisma } from '#lib';
-
 import { serverCanSendNotificationToUser } from '#permissions';
 import { type NotificationSubscription, type User } from '@churros/db/prisma';
 import type { MaybePromise } from '@pothos/core';
@@ -9,19 +8,13 @@ import webpush, { WebPushError } from 'web-push';
 import type { PushNotification } from './push-notification.js';
 import { setVapidDetails } from './vapid.js';
 
-/*                  ↓ Vivement churros/churros!165 lol */
-const fireAppCreds: object | null = await new Promise((resolve) => {
-  try {
-    resolve(JSON.parse(process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY));
-  } catch (error) {
-    console.error(`Invalid firebase admin credentials: ${error}`);
-    resolve(null);
-  }
-});
-
-const firebaseApp = fireAppCreds
+const firebaseApp = ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY
   ? firebase.initializeApp({
-      credential: firebase.credential.cert(fireAppCreds),
+      credential: firebase.credential.cert({
+        clientEmail: ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY.client_email,
+        privateKey: ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY.private_key,
+        projectId: ENV.FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY.project_id,
+      }),
     })
   : undefined;
 
@@ -136,9 +129,9 @@ async function sendWebPushNotification(
     JSON.stringify(notification),
     {
       vapidDetails: {
-        subject: `mailto:${process.env.PUBLIC_CONTACT_EMAIL}`,
-        publicKey: process.env.PUBLIC_VAPID_KEY,
-        privateKey: process.env.VAPID_PRIVATE_KEY,
+        subject: `mailto:${ENV.PUBLIC_CONTACT_EMAIL}`,
+        publicKey: ENV.PUBLIC_VAPID_KEY,
+        privateKey: ENV.VAPID_PRIVATE_KEY,
       },
     },
   );
@@ -156,7 +149,7 @@ async function sendNativePushNotification(
       original: JSON.stringify(notification),
     },
     android: {
-      restrictedPackageName: process.env.PUBLIC_APP_PACKAGE_ID,
+      restrictedPackageName: ENV.PUBLIC_APP_PACKAGE_ID,
       notification: {
         vibrateTimingsMillis: notification.vibrate,
         eventTimestamp: notification.timestamp ? new Date(notification.timestamp) : undefined,

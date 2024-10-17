@@ -52,6 +52,9 @@ export const environmentSchema = z.object({
     .email()
     .describe('The email from which will be sent all emails.'),
   PUBLIC_LYDIA_API_URL: uri().describe('Lydia API URL.'),
+  LYDIA_WEBHOOK_URL: uri().describe(
+    'Lydia webhook URL: Where Lydia should notify us of payment acknowledgements.',
+  ),
   PUBLIC_FOY_GROUPS: z.string().describe('DEPRECATED.').optional(),
   PUBLIC_VAPID_KEY: z.string().describe('Public VAPID key. Used to send push notifications.'),
   VAPID_PRIVATE_KEY: z.string().describe('Private VAPID key. Used to send push notifications.'),
@@ -88,18 +91,7 @@ export const environmentSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional().describe('Google APIs client secret.'),
   PUBLIC_GOOGLE_CLIENT_ID: z.string().optional().describe('Google APIs client ID.'),
   PUBLIC_GOOGLE_WALLET_ISSUER_ID: z.string().optional().describe('Google Wallet issuer ID.'),
-  GOOGLE_WALLET_ISSUER_KEY: optionaljsonobject({
-    type: z.literal('service_account'),
-    project_id: z.string(),
-    private_key_id: z.string(),
-    private_key: z.string(),
-    client_email: z.string().email(),
-    client_id: z.string(),
-    auth_uri: uri(),
-    token_uri: uri(),
-    auth_provider_x509_cert_url: uri(),
-    universe_domain: z.string(),
-  }).describe('Google Wallet issuer key.'),
+  GOOGLE_WALLET_ISSUER_KEY: googleServiceAccountKey().describe('Google Wallet issuer key.'),
   PUBLIC_DEACTIVATE_SIGNUPS: z
     .enum(['true', 'false'])
     .describe('Set to "true" to deactivate signups.'),
@@ -144,7 +136,45 @@ export const environmentSchema = z.object({
   }).describe(
     "Additive modifier for favoring some types in global search results. A search result's rank is between 0 and 1. JSON object mapping types to rank bumps. Types are values of the `SearchResultType` GraphQL enum. Omitting a value means no bump.",
   ),
+  PUBLIC_API_ORIGIN_WEB: optionaluri().describe(
+    "Origin of the public API for the web client. Defaults to PUBLIC_API_URL's origin.",
+  ),
+  PUBLIC_API_ORIGIN_ANDROID: optionaluri().describe(
+    "Origin of the public API for the Android client. Defaults to PUBLIC_API_URL's origin.",
+  ),
+  PUBLIC_API_ORIGIN_IOS: optionaluri().describe(
+    "Origin of the public API for the iOS client. Defaults to PUBLIC_API_URL's origin.",
+  ),
+  PUBLIC_FRONTEND_ORIGIN_ANDROID: optionaluri().describe(
+    'Origin of the public frontend for the Android client. Defaults to PUBLIC_FRONTEND_ORIGIN.',
+  ),
+  PUBLIC_FRONTEND_ORIGIN_IOS: optionaluri().describe(
+    'Origin of the public frontend for the iOS client. Defaults to PUBLIC_FRONTEND_ORIGIN.',
+  ),
+  FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY: googleServiceAccountKey().describe(
+    'Firebase Admin SDK service account key. JSON contents of the key file, can be downloaded from the Firebase Admin console. Used to send push notifications to Android & iOS native clients.',
+  ),
+  PUBLIC_APP_PACKAGE_ID: z
+    .string()
+    .regex(/^[\d.a-z]+$/)
+    .describe('App package ID (Android) and Bundle ID (iOS).'),
 });
+
+function googleServiceAccountKey() {
+  return optionaljsonobject({
+    type: z.literal('service_account'),
+    project_id: z.string(),
+    private_key_id: z.string(),
+    private_key: privatekey(),
+    client_email: z.string().email(),
+    client_id: z.string(),
+    auth_uri: uri(),
+    token_uri: uri(),
+    auth_provider_x509_cert_url: uri(),
+    client_x509_cert_url: uri(),
+    universe_domain: z.string(),
+  });
+}
 
 function uri(...protocols: string[]) {
   return z
@@ -208,4 +238,12 @@ function optionaljsonobject<Shape extends z.ZodRawShape, Params extends z.RawCre
       }
     })
     .pipe(z.object(shape, params).or(z.undefined()));
+}
+
+function privatekey() {
+  return z
+    .string()
+    .trim()
+    .startsWith('-----BEGIN PRIVATE KEY-----')
+    .endsWith('-----END PRIVATE KEY-----');
 }

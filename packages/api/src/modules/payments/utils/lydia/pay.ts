@@ -1,10 +1,7 @@
-import { log, prisma } from '#lib';
+import { ENV, log, prisma } from '#lib';
+import { actualPrice, checkLydiaTransaction, sendLydiaPaymentRequest } from '#modules/payments';
 import type { LydiaAccount, LydiaTransaction, ShopItem, ShopPayment } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
-import { actualPrice, checkLydiaTransaction, sendLydiaPaymentRequest } from '#modules/payments';
-
-// Get the Lydia API URL from the environment
-const { PUBLIC_LYDIA_API_URL } = process.env;
 
 // Send a payment request to a number
 export async function payEventRegistrationViaLydia(
@@ -94,7 +91,7 @@ export async function payEventRegistrationViaLydia(
 export async function cancelLydiaTransaction(transaction: LydiaTransaction, vendorToken: string) {
   if (!transaction.requestId)
     throw new GraphQLError("Aucune requête pour cette transaction, impossible de l'annuler");
-  await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/cancel.json`, {
+  await fetch(`${ENV.PUBLIC_LYDIA_API_URL}/api/request/cancel.json`, {
     method: 'POST',
     body: new URLSearchParams({
       request_id: transaction.requestId,
