@@ -48,7 +48,7 @@
         password,
       }),
     });
-    if (!response.ok) throw new Error('Mauvais identifiants');
+    if (!response.ok) toasts.error('Impossible de se connecter à Lydia, vérifie tes identifiants');
 
     let { business_list } = await response.json();
     business_list = business_list.filter(
@@ -79,13 +79,18 @@
           vendorToken: $api_token
           groupUid: $group
         ) {
-          id
-          name
+          ...MutationErrors
+          ... on MutationUpsertLydiaAccountSuccess {
+            data {
+              id
+              name
+            }
+          }
         }
       }
     `);
 
-    await RegisterLydiaAccount.mutate({
+    const result = await RegisterLydiaAccount.mutate({
       name,
       api_token_id,
       api_token,
@@ -96,7 +101,12 @@
       variables: { uid: $page.params.uid },
     });
 
-    toasts.success('Compte Lydia ajouté');
+    toasts.mutation(
+      result,
+      'upsertLydiaAccount',
+      'Compte Lydia ajouté',
+      "Impossible d'ajouter le compte Lydia",
+    );
     lydiaAccounts = lydiaAccounts.filter((account) => account.api_token_id !== api_token_id);
   };
 </script>
