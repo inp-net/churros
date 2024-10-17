@@ -15,6 +15,7 @@
   import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
   import { toasts } from '$lib/toasts';
   import type { PageData } from './$houdini';
+  import { z } from 'zod';
 
   export let data: PageData;
   $: ({ PageGroupEditBankAccounts } = data);
@@ -48,15 +49,44 @@
         password,
       }),
     });
-    if (!response.ok) throw new Error('Mauvais identifiants');
+    if (!response.ok) {
+      toasts.error('Impossible de se connecter à Lydia, vérifie tes identifiants');
+      return;
+    }
 
-    let { business_list } = await response.json();
-    business_list = business_list.filter(
-      (business: { name: string; api_token_id: string; api_token: string }) =>
-        // If the lydia account is already linked to the group, don't show it
-        !alreadyLinkedAccounts.some((lydiaAccount) => lydiaAccount.name === business.name),
-    );
-    lydiaAccounts = business_list;
+    const data = await response.json();
+
+    await z
+      .object({
+        business_list: z.array(
+          z.object({
+            name: z.string(),
+            api_token_id: z.string(),
+            api_token: z.string(),
+          }),
+        ),
+      })
+      .parseAsync(data)
+      .then(({ business_list }) => {
+        lydiaAccounts = business_list.filter(
+          (business: { name: string; api_token_id: string; api_token: string }) =>
+            // If the lydia account is already linked to the group, don't show it
+            !alreadyLinkedAccounts.some((lydiaAccount) => lydiaAccount.name === business.name),
+        );
+      })
+      .catch(async () => {
+        toasts.debug('Got response from Lydia:', JSON.stringify(data, null, 2), {
+          lifetime: Number.POSITIVE_INFINITY,
+        });
+        toasts.error(
+          'Impossible de récupérer les comptes Lydia',
+          await z
+            .object({ message: z.string() })
+            .parseAsync(data)
+            .then((res) => res.message)
+            .catch(() => ''),
+        );
+      });
   };
 
   const addLydiaAccount = async (
@@ -79,13 +109,18 @@
           vendorToken: $api_token
           groupUid: $group
         ) {
-          id
-          name
+          ...MutationErrors
+          ... on MutationUpsertLydiaAccountSuccess {
+            data {
+              id
+              name
+            }
+          }
         }
       }
     `);
 
-    await RegisterLydiaAccount.mutate({
+    const result = await RegisterLydiaAccount.mutate({
       name,
       api_token_id,
       api_token,
@@ -96,7 +131,12 @@
       variables: { uid: $page.params.uid },
     });
 
-    toasts.success('Compte Lydia ajouté');
+    toasts.mutation(
+      result,
+      'upsertLydiaAccount',
+      'Compte Lydia ajouté',
+      "Impossible d'ajouter le compte Lydia",
+    );
     lydiaAccounts = lydiaAccounts.filter((account) => account.api_token_id !== api_token_id);
   };
 </script>
