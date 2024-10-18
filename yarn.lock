@@ -490,6 +490,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor/haptics@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@capacitor/haptics@npm:6.0.1"
+  peerDependencies:
+    "@capacitor/core": ^6.0.0
+  checksum: 10c0/d7c1c46a01efa7ba99152ae0bb0893a4dc489f2025c7008d0f7e8cfad4320bdcfad227cb1f3831e5d56c2635aeb49707bcb3da63e6b2fe070d90ff596ad64f81
+  languageName: node
+  linkType: hard
+
 "@capacitor/ios@npm:^6.1.2":
   version: 6.1.2
   resolution: "@capacitor/ios@npm:6.1.2"
@@ -8767,6 +8776,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "churros@workspace:."
   dependencies:
+    "@capacitor/haptics": "npm:^6.0.1"
     "@changesets/changelog-git": "npm:^0.2.0"
     "@changesets/cli": "npm:^2.27.8"
     "@commitlint/cli": "npm:^19.5.0"
