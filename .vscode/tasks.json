@@ -25,6 +25,11 @@
       "command": "yarn reset"
     },
     {
+      "label": "Generate Prisma Client",
+      "type": "shell",
+      "command": "yarn prisma generate"
+    },
+    {
       "label": "Install dependencies",
       "type": "shell",
       "command": "yarn install"
@@ -35,8 +40,21 @@
       "command": "yarn build"
     },
     {
+      "label": "Create .env file",
+      "type": "shell",
+      "command": "cp .env.example .env && yarn cp-env"
+    },
+    {
       "label": "Setup environment",
-      "dependsOn": ["Install dependencies", "Reset database", "Build", "Pre-dev", "Develop"],
+      "dependsOn": [
+        "Install dependencies",
+        "Create .env file",
+        "Generate Prisma Client",
+        "Build",
+        "Reset database",
+        "Pre-dev",
+        "Develop"
+      ],
       "dependsOrder": "sequence"
     },
     {
