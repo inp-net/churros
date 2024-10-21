@@ -871,9 +871,11 @@ __metadata:
     barrelsby: "npm:^2.8.1"
     bunyan: "npm:^1.8.15"
     chalk: "npm:^5.3.0"
+    chokidar: "npm:^4.0.1"
     cli: "npm:^1.0.1"
     cli-progress: "npm:^3.12.0"
     colord: "npm:^2.9.3"
+    concurrently: "npm:^9.0.1"
     connect-redis: "npm:^7.1.1"
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
@@ -922,7 +924,6 @@ __metadata:
     multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^5.0.7"
     nodemailer: "npm:^6.9.15"
-    nodemon: "npm:^3.1.7"
     normalize-url: "npm:^8.0.1"
     npm-run-all2: "npm:^6.2.3"
     npm-upgrade: "npm:^3.1.0"
@@ -8118,7 +8119,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^3.0.0, chokidar@npm:^3.5.2, chokidar@npm:^3.5.3, chokidar@npm:^3.6.0":
+"chokidar@npm:^3.0.0, chokidar@npm:^3.5.3, chokidar@npm:^3.6.0":
   version: 3.6.0
   resolution: "chokidar@npm:3.6.0"
   dependencies:
@@ -8174,12 +8175,15 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
     "@typescript-eslint/parser": "npm:^8.8.0"
     changesets-gitlab: "npm:^0.12.0"
+    chokidar: "npm:^4.0.1"
+    concurrently: "npm:^9.0.1"
     dotenv-cli: "npm:^7.4.2"
     dotenv-parser-serializer: "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch"
     eslint: "npm:^8.57.1"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-svelte: "npm:^2.44.1"
     eslint-plugin-unicorn: "npm:^55.0.0"
+    execa: "npm:^9.4.1"
     husky: "npm:^9.1.6"
     kleur: "npm:^4.1.5"
     lint-staged: "npm:^15.2.10"
@@ -8668,6 +8672,24 @@ __metadata:
     readable-stream: "npm:^2.2.2"
     typedarray: "npm:^0.0.6"
   checksum: 10c0/2e9864e18282946dabbccb212c5c7cec0702745e3671679eb8291812ca7fd12023f7d8cb36493942a62f770ac96a7f90009dc5c82ad69893438371720fa92617
+  languageName: node
+  linkType: hard
+
+"concurrently@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "concurrently@npm:9.0.1"
+  dependencies:
+    chalk: "npm:^4.1.2"
+    lodash: "npm:^4.17.21"
+    rxjs: "npm:^7.8.1"
+    shell-quote: "npm:^1.8.1"
+    supports-color: "npm:^8.1.1"
+    tree-kill: "npm:^1.2.2"
+    yargs: "npm:^17.7.2"
+  bin:
+    conc: dist/bin/concurrently.js
+    concurrently: dist/bin/concurrently.js
+  checksum: 10c0/e2c3d3f3d1b1457ccd27e69f0d840ba4915d571fae4e1088498234ec1174fd547c127de0df6dbe5eb71b2df973b26a6fdc931a9e7e3658f25287ef2106bdb413
   languageName: node
   linkType: hard
 
@@ -9542,7 +9564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.6":
+"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.6":
   version: 4.3.6
   resolution: "debug@npm:4.3.6"
   dependencies:
@@ -10878,6 +10900,26 @@ __metadata:
     strip-final-newline: "npm:^4.0.0"
     yoctocolors: "npm:^2.0.0"
   checksum: 10c0/6ad06c627b5d7bb007bc7b6cc35d7e32b5a3365375ffc8ddbcc12d2423651fa9928ba0c447cc9e60079e505e9b24fbe0a57f80371511d7d20302c04c2d3ce95e
+  languageName: node
+  linkType: hard
+
+"execa@npm:^9.4.1":
+  version: 9.4.1
+  resolution: "execa@npm:9.4.1"
+  dependencies:
+    "@sindresorhus/merge-streams": "npm:^4.0.0"
+    cross-spawn: "npm:^7.0.3"
+    figures: "npm:^6.1.0"
+    get-stream: "npm:^9.0.0"
+    human-signals: "npm:^8.0.0"
+    is-plain-obj: "npm:^4.1.0"
+    is-stream: "npm:^4.0.1"
+    npm-run-path: "npm:^6.0.0"
+    pretty-ms: "npm:^9.0.0"
+    signal-exit: "npm:^4.1.0"
+    strip-final-newline: "npm:^4.0.0"
+    yoctocolors: "npm:^2.0.0"
+  checksum: 10c0/2166de02c8c940312481e480ef47f54636725b24a402d25bdbaeca97f6eeb82b21def1279e00378872fbe6a0c675d6b5cd144be4d52c1485a7a3895e611ac03e
   languageName: node
   linkType: hard
 
@@ -13236,13 +13278,6 @@ __metadata:
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
   checksum: 10c0/b0782ef5e0935b9f12883a2e2aa37baa75da6e66ce6515c168697b42160807d9330de9a32ec1ed73149aea02e0d822e572bca6f1e22bdcbd2149e13b050b17bb
-  languageName: node
-  linkType: hard
-
-"ignore-by-default@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "ignore-by-default@npm:1.0.1"
-  checksum: 10c0/9ab6e70e80f7cc12735def7ecb5527cfa56ab4e1152cd64d294522827f2dcf1f6d85531241537dc3713544e88dd888f65cb3c49c7b2cddb9009087c75274e533
   languageName: node
   linkType: hard
 
@@ -16947,26 +16982,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemon@npm:^3.1.7":
-  version: 3.1.7
-  resolution: "nodemon@npm:3.1.7"
-  dependencies:
-    chokidar: "npm:^3.5.2"
-    debug: "npm:^4"
-    ignore-by-default: "npm:^1.0.1"
-    minimatch: "npm:^3.1.2"
-    pstree.remy: "npm:^1.1.8"
-    semver: "npm:^7.5.3"
-    simple-update-notifier: "npm:^2.0.0"
-    supports-color: "npm:^5.5.0"
-    touch: "npm:^3.1.0"
-    undefsafe: "npm:^2.0.5"
-  bin:
-    nodemon: bin/nodemon.js
-  checksum: 10c0/e0b46939abdbce251b1d6281005a5763cee57db295bb00bc4a753b0f5320dac00fe53547fb6764c70a086cf6d1238875cccb800fbc71544b3ecbd3ef71183c87
-  languageName: node
-  linkType: hard
-
 "nopt@npm:^5.0.0":
   version: 5.0.0
   resolution: "nopt@npm:5.0.0"
@@ -18708,13 +18723,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pstree.remy@npm:^1.1.8":
-  version: 1.1.8
-  resolution: "pstree.remy@npm:1.1.8"
-  checksum: 10c0/30f78c88ce6393cb3f7834216cb6e282eb83c92ccb227430d4590298ab2811bc4a4745f850a27c5178e79a8f3e316591de0fec87abc19da648c2b3c6eb766d14
-  languageName: node
-  linkType: hard
-
 "pump@npm:^3.0.0":
   version: 3.0.0
   resolution: "pump@npm:3.0.0"
@@ -20442,7 +20450,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.7.3":
+"shell-quote@npm:^1.7.3, shell-quote@npm:^1.8.1":
   version: 1.8.1
   resolution: "shell-quote@npm:1.8.1"
   checksum: 10c0/8cec6fd827bad74d0a49347057d40dfea1e01f12a6123bf82c4649f3ef152fc2bc6d6176e6376bffcd205d9d0ccb4f1f9acae889384d20baff92186f01ea455a
@@ -20529,15 +20537,6 @@ __metadata:
   dependencies:
     is-arrayish: "npm:^0.3.1"
   checksum: 10c0/df5e4662a8c750bdba69af4e8263c5d96fe4cd0f9fe4bdfa3cbdeb45d2e869dff640beaaeb1ef0e99db4d8d2ec92f85508c269f50c972174851bc1ae5bd64308
-  languageName: node
-  linkType: hard
-
-"simple-update-notifier@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "simple-update-notifier@npm:2.0.0"
-  dependencies:
-    semver: "npm:^7.5.3"
-  checksum: 10c0/2a00bd03bfbcbf8a737c47ab230d7920f8bfb92d1159d421bdd194479f6d01ebc995d13fbe13d45dace23066a78a3dc6642999b4e3b38b847e6664191575b20c
   languageName: node
   linkType: hard
 
@@ -21263,7 +21262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^5.3.0, supports-color@npm:^5.5.0":
+"supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
   dependencies:
@@ -21809,15 +21808,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"touch@npm:^3.1.0":
-  version: 3.1.1
-  resolution: "touch@npm:3.1.1"
-  bin:
-    nodetouch: bin/nodetouch.js
-  checksum: 10c0/d2e4d269a42c846a22a29065b9af0b263de58effc85a1764bb7a2e8fc4b47700e9e2fcbd7eb1f5bffbb7c73d860f93600cef282b93ddac8f0b62321cb498b36e
-  languageName: node
-  linkType: hard
-
 "tough-cookie@npm:~2.5.0":
   version: 2.5.0
   resolution: "tough-cookie@npm:2.5.0"
@@ -21841,6 +21831,15 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 10c0/047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
+  languageName: node
+  linkType: hard
+
+"tree-kill@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "tree-kill@npm:1.2.2"
+  bin:
+    tree-kill: cli.js
+  checksum: 10c0/7b1b7c7f17608a8f8d20a162e7957ac1ef6cd1636db1aba92f4e072dc31818c2ff0efac1e3d91064ede67ed5dc57c565420531a8134090a12ac10cf792ab14d2
   languageName: node
   linkType: hard
 
@@ -22152,13 +22151,6 @@ __metadata:
   version: 0.0.1
   resolution: "unaccent@npm:0.0.1"
   checksum: 10c0/a06d968d59432387e6ab337fdf1c159ab50fa224c2b4404797691667e40bb53991a96fe7c4e8181a440a148274fdd5499fcb18b2ac83573ea1c5dd09c2139edc
-  languageName: node
-  linkType: hard
-
-"undefsafe@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "undefsafe@npm:2.0.5"
-  checksum: 10c0/96c0466a5fbf395917974a921d5d4eee67bca4b30d3a31ce7e621e0228c479cf893e783a109af6e14329b52fe2f0cb4108665fad2b87b0018c0df6ac771261d5
   languageName: node
   linkType: hard
 
