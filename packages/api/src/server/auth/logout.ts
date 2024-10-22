@@ -1,3 +1,4 @@
+import { ENV } from '#lib';
 import { api } from '../express.js';
 import { AUTHED_VIA_COOKIE_NAME } from './constants.js';
 
@@ -6,7 +7,7 @@ api.get('/auth/logout', (req, res, next) => {
     if (error) return next(error);
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, '', { httpOnly: false, secure: false });
-    res.redirect(process.env.PUBLIC_OAUTH_LOGOUT_URL);
+    res.redirect(ENV.PUBLIC_OAUTH_LOGOUT_URL ?? ENV.PUBLIC_FRONTEND_ORIGIN);
   });
 });
 

@@ -1,4 +1,4 @@
-import { prisma } from '#lib';
+import { ENV, prisma } from '#lib';
 import type { Prisma } from '@churros/db/prisma';
 import pdfMakePrinter from 'pdfmake';
 import type { TFontDictionary } from 'pdfmake/interfaces';
@@ -97,7 +97,7 @@ export function generatePDF(
                     text: registration.id.replace(/^r:/, '').toUpperCase() + '\n',
                     link: new URL(
                       `/bookings/${registration.id}`,
-                      process.env.PUBLIC_FRONTEND_ORIGIN,
+                      ENV.PUBLIC_FRONTEND_ORIGIN,
                     ).toString(),
                     style: {
                       font: 'SpaceMono',

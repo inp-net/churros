@@ -6,6 +6,8 @@ import { lydiaWebhook } from './server/lydia.js';
 import { maintenance } from './server/maintenance.js';
 import { prometheusServer } from './server/prometheus.js';
 
+// Validates env variables before doing anything else
+import './lib/env.js';
 startApiServer();
 
 lydiaWebhook.listen(4001, () => {

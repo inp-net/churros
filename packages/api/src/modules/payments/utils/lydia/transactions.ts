@@ -1,10 +1,7 @@
-import { log, prisma } from '#lib';
+import { ENV, log, prisma } from '#lib';
 import type { LydiaTransaction } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { createHash } from 'node:crypto';
-
-// Get the Lydia API URL from the environment
-const { PUBLIC_LYDIA_API_URL, LYDIA_WEBHOOK_URL } = process.env;
 
 export function lydiaSignature(
   { privateToken }: { privateToken: string },
@@ -81,7 +78,7 @@ export enum LydiaTransactionState {
 export async function checkLydiaTransaction(transaction: LydiaTransaction) {
   if (!transaction.requestId)
     throw new GraphQLError('Aucune requête pour cette transaction, impossible de checker');
-  const res = await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/state.json`, {
+  const res = await fetch(`${ENV.PUBLIC_LYDIA_API_URL}/api/request/state.json`, {
     method: 'POST',
     body: new URLSearchParams({
       request_id: transaction.requestId,
@@ -116,13 +113,13 @@ export async function sendLydiaPaymentRequest(
     type: 'phone',
     recipient: phone,
     vendor_token: vendorToken,
-    confirm_url: LYDIA_WEBHOOK_URL || '',
+    confirm_url: ENV.LYDIA_WEBHOOK_URL || '',
   };
 
   await log('lydia', 'request/sending', formParams, phone);
 
   // Send the lydia payment request
-  const response = await fetch(`${PUBLIC_LYDIA_API_URL}/api/request/do.json`, {
+  const response = await fetch(`${ENV.PUBLIC_LYDIA_API_URL}/api/request/do.json`, {
     method: 'POST',
     body: new URLSearchParams(formParams),
   });

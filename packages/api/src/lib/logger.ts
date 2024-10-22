@@ -1,4 +1,5 @@
-import { inDevelopment, prisma, publish } from '#lib';
+import { prisma, publish } from '#lib';
+import { inDevelopment } from './env.js';
 
 export async function log(
   area: string,

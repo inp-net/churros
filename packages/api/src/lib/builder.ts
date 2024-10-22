@@ -1,5 +1,6 @@
 import type { Context, GraphinxDirective, RateLimitDirective } from '#lib';
 import {
+  ENV,
   authScopes,
   context,
   decodeGlobalID,
@@ -215,7 +216,7 @@ builder.mutationType({
 
 builder.subscriptionType({
   description: `Permet de faire des requêtes de données temps-réel, via des _websockets_.
-L'endpoint pour le temps réel est \`${process.env.PUBLIC_API_WEBSOCKET_URL}\`. 
+L'endpoint pour le temps réel est \`${ENV.PUBLIC_API_WEBSOCKET_URL}\`. 
 
 Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-guild.dev/graphql/ws/get-started#use-the-client)`,
   directives: {

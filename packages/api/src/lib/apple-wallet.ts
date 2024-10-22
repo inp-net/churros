@@ -6,27 +6,35 @@ import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path/posix';
 import sharp from 'sharp';
+import { ENV } from './env.js';
 import { localID } from './global-id.js';
 import { storageRoot } from './storage.js';
 
 let appleWalletTemplate: Template | null = null;
 
 export async function writePemCertificate(to: string) {
-  if (!process.env.APPLE_WALLET_PEM_CERTIFICATE) {
+  const certificate = ENV.APPLE_WALLET_PEM_CERTIFICATE;
+  if (!certificate) {
     console.warn(
       `No APPLE_WALLET_PEM_CERTIFICATE set in environment variables, not writing certificate to ${to}.`,
     );
     return;
   }
-  await writeFile(to, process.env.APPLE_WALLET_PEM_CERTIFICATE);
+  await writeFile(to, certificate);
 }
 
 export async function registerAppleWalletPassTemplate() {
   if (appleWalletTemplate) return;
+  if (!ENV.APPLE_WALLET_PASS_TYPE_ID || !ENV.APPLE_WALLET_TEAM_ID) {
+    console.warn(
+      'No APPLE_WALLET_PASS_TYPE_ID or APPLE_WALLET_TEAM_ID set in environment variables, not registering Apple Wallet pass template.',
+    );
+    return;
+  }
   console.info('Registering Apple Wallet pass template...');
   const template = new Template('eventTicket', {
-    passTypeIdentifier: process.env.APPLE_WALLET_PASS_TYPE_ID,
-    teamIdentifier: process.env.APPLE_WALLET_TEAM_ID,
+    passTypeIdentifier: ENV.APPLE_WALLET_PASS_TYPE_ID,
+    teamIdentifier: ENV.APPLE_WALLET_TEAM_ID,
     backgroundColor: 'white',
     sharingProhibited: true,
     organizationName: 'net7', // TODO: dehardcode?
@@ -44,10 +52,7 @@ export async function registerAppleWalletPassTemplate() {
     appleWalletTemplate = null;
     return;
   }
-  await template.loadCertificate(
-    'apple-wallet-cert.pem',
-    process.env.APPLE_WALLET_PEM_KEY_PASSWORD,
-  );
+  await template.loadCertificate('apple-wallet-cert.pem', ENV.APPLE_WALLET_PEM_KEY_PASSWORD);
   appleWalletTemplate = template;
   return appleWalletTemplate;
 }
@@ -70,7 +75,7 @@ export async function createAppleWalletPass(
     relevantDate: subMinutes(booking.ticket.event.startsAt, 5).toISOString(),
     barcodes: [
       {
-        message: new URL(`/bookings/${booking.id}`, process.env.PUBLIC_FRONTEND_ORIGIN).toString(),
+        message: new URL(`/bookings/${booking.id}`, ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
         format: 'PKBarcodeFormatQR',
         messageEncoding: 'iso-8859-1',
         altText: localID(booking.id).toUpperCase(),
@@ -104,7 +109,7 @@ export async function createAppleWalletPass(
     key: 'code',
     label: 'Code de réservation',
     value: localID(booking.id).toUpperCase(),
-    attributedValue: `<a href="${new URL(`/bookings/${localID(booking.id).toUpperCase()}`, process.env.PUBLIC_FRONTEND_ORIGIN)}">${localID(booking.id).toUpperCase()}</a>`,
+    attributedValue: `<a href="${new URL(`/bookings/${localID(booking.id).toUpperCase()}`, ENV.PUBLIC_FRONTEND_ORIGIN)}">${localID(booking.id).toUpperCase()}</a>`,
   });
   pass.primaryFields.add({
     key: 'title',
@@ -126,7 +131,7 @@ export async function createAppleWalletPass(
     booking.internalBeneficiary || booking.author
       ? new URL(
           `/${booking.internalBeneficiary?.uid ?? booking.author?.uid}`,
-          process.env.PUBLIC_FRONTEND_ORIGIN,
+          ENV.PUBLIC_FRONTEND_ORIGIN,
         )
       : null;
 
@@ -180,7 +185,7 @@ export async function createAppleWalletPass(
   pass.backFields.add({
     key: 'platform',
     label: 'Acheté sur',
-    value: new URL(process.env.PUBLIC_FRONTEND_ORIGIN).hostname,
+    value: new URL(ENV.PUBLIC_FRONTEND_ORIGIN).hostname,
   });
   if (booking.ticket.name || booking.ticket.event._count.tickets > 1) {
     pass.headerFields.add({

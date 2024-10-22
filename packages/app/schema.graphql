@@ -1236,6 +1236,37 @@ type FamilyTree {
   users: [User!]!
 }
 
+type FeaturesHealthCheck @graphinx(module: "health-checks") {
+  """
+  Whether Apple Wallet integration is configured
+  """
+  appleWallet: Boolean!
+  """
+  Whether the GitLab API is configured
+  """
+  gitlab: Boolean!
+  """
+  Whether Google APIs are configured
+  """
+  googleAPIs: Boolean!
+  """
+  Whether Google Wallet integration is configured
+  """
+  googleWallet: Boolean!
+  """
+  Whether Mailman automation is configured
+  """
+  mailman: Boolean!
+  """
+  Whether OAuth login is configured
+  """
+  oauth: Boolean!
+  """
+  Whether the Prometheus pushgateway is configured
+  """
+  prometheus: Boolean!
+}
+
 scalar File
 
 """
@@ -1865,6 +1896,7 @@ Results of a health self-check
 """
 type HealthCheck {
   database: DatabaseHealthCheck!
+  features: FeaturesHealthCheck!
   ldap: LdapHealthCheck!
   mail: MailHealthCheck!
   redis: RedisHealthCheck!
@@ -1924,9 +1956,9 @@ type LdapHealthCheck @graphinx(module: "health-checks") {
   """
   internal: Boolean!
   """
-  Whether the LDAP school client is ready
+  Whether the LDAP school client is ready. Null when no LDAP_SCHOOL has been configured.
   """
-  school: Boolean!
+  school: Boolean
 }
 
 """
@@ -2008,9 +2040,9 @@ type LydiaAccount implements Node {
 
 type MailHealthCheck @graphinx(module: "health-checks") {
   """
-  Whether the SMTP client is ready
+  Whether the SMTP client is ready. Null if no SMTP_URL is configured.
   """
-  smtp: Boolean!
+  smtp: Boolean
 }
 
 """
