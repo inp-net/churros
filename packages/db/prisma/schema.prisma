@@ -644,7 +644,7 @@ model Ticket {
   openToPromotions   Int[]    @default([])
   openToAlumni       Boolean? @default(false) // false means only non-alumni, true means only alumni, null means both
   openToExternal     Boolean? @default(false) // same thing
-  openToContributors Boolean? @default(false) // same thing
+  openToContributors Boolean? // same thing
   openToApprentices  Boolean? // same thing
   openToSchools      School[]
   openToMajors       Major[]
