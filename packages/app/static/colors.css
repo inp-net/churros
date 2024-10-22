@@ -78,7 +78,7 @@ dialog,
   --border-block: 1px;
   --radius-inline: 0.25rem;
   --radius-block: 0.5rem;
-  --skeleton-ui-bg: rgb(0 0 0 / 30%);
+  --skeleton-ui-bg: rgb(225 225 225);
   --backdrop: rgb(0 0 0 / 30%);
   --original-bg: var(
     --bg
@@ -135,7 +135,7 @@ dialog[data-theme-variant='dark']::backdrop {
 
   /* Utility */
   --backdrop: rgb(0 0 0 / 80%);
-  --skeleton-ui-bg: rgb(255 255 255 / 30%);
+  --skeleton-ui-bg: rgb(30 30 30);
   --shadow: 0 0.25rem 0.5rem #000;
 }
 
