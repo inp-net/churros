@@ -218,9 +218,7 @@
           <div class="subtitle">Connectes-toi pour shotgun ;)</div>
         </div>
         <div class="actions">
-          <ButtonSecondary noClientSideNavigation href={refroute('/login')}
-            >Connexion</ButtonSecondary
-          >
+          <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
         </div>
       </div>
     </section>

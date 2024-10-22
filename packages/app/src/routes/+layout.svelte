@@ -15,6 +15,7 @@
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
+  import { route } from '$lib/ROUTES';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -66,6 +67,13 @@
   beforeNavigate(async ({ willUnload, to }) => {
     // See https://kit.svelte.dev/docs/configuration#version
     if ($updated && !willUnload && to?.url) location.href = to.url.href;
+  });
+
+  beforeNavigate(({ from, to }) => {
+    // See https://github.com/sveltejs/kit/issues/12626#issuecomment-2429179311
+    if (from?.url.pathname !== route('/login') && to?.url.pathname === route('/login')) 
+      window.location.href = route('/login');
+    
   });
 
   onMount(() => {

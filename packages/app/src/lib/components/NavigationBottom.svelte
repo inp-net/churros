@@ -71,7 +71,6 @@
         e?.preventDefault();
         goto(route('/login', { bypass_oauth: '1' }));
       }}
-      noClientSideNavigation
       href={route('/login')}>Connexion</ButtonSecondary
     >
   {/if}

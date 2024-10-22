@@ -242,9 +242,8 @@
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
         <section class="actions">
           <!-- Can't use refroute here cuz it's not called again on every page change, since this lives in the layout -->
-          <ButtonSecondary
-            noClientSideNavigation
-            href={addReferrer(route('/login'), $page.url.pathname)}>Connexion</ButtonSecondary
+          <ButtonSecondary href={addReferrer(route('/login'), $page.url.pathname)}
+            >Connexion</ButtonSecondary
           >
           <ButtonSecondary noClientSideNavigation href={refroute('/signup')}
             >Inscription</ButtonSecondary
@@ -440,8 +439,8 @@
 
   .page-content {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
   }
 
   footer {
