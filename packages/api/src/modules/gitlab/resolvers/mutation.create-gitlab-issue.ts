@@ -1,4 +1,4 @@
-import { builder } from '#lib';
+import { builder, ENV } from '#lib';
 
 import { GraphQLError } from 'graphql';
 
@@ -14,6 +14,8 @@ builder.mutationField('createGitlabIssue', (t) =>
     },
     authScopes: () => true,
     async resolve(_, { title, description, isBug }, { user }) {
+      if (!ENV.GITLAB_SUDO_TOKEN) throw new GraphQLError('Intégration à Gitlab désactivée');
+
       let hasGitlabAccount = false;
       if (user) {
         const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`)
@@ -27,11 +29,12 @@ builder.mutationField('createGitlabIssue', (t) =>
       const url = (path: string) => {
         const result = new URL('/api/v4/' + path, `https://git.inpt.fr/`);
         result.searchParams.set('sudo', (hasGitlabAccount ? user?.uid : undefined) ?? 'issuebot');
-        result.searchParams.set('private_token', process.env.GITLAB_SUDO_TOKEN);
+        result.searchParams.set('private_token', ENV.GITLAB_SUDO_TOKEN!);
+
         return result.toString();
       };
 
-      const response = await fetch(url(`/projects/${process.env.GITLAB_PROJECT_ID}/issues`), {
+      const response = await fetch(url(`/projects/${ENV.GITLAB_PROJECT_ID}/issues`), {
         method: 'POST',
         body: JSON.stringify({
           description:

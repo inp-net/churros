@@ -1,9 +1,8 @@
 import { fullName } from '#modules/users';
 import type { Prisma } from '@churros/db/prisma';
-import { GoogleAuth, type JWTInput } from 'google-auth-library';
+import { GoogleAuth } from 'google-auth-library';
+import { ENV } from './env.js';
 import { localID } from './global-id.js';
-
-const GOOGLE_WALLET_ISSUER_ID = process.env.PUBLIC_GOOGLE_WALLET_ISSUER_ID;
 
 const baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
 
@@ -31,10 +30,7 @@ export function makeGoogleWalletObject(
     classId: GOOGLE_WALLET_CLASS.id,
     logo: {
       sourceUri: {
-        uri: noLocalhostURL(
-          'android-chrome-512x512.png',
-          process.env.PUBLIC_FRONTEND_ORIGIN,
-        ).toString(),
+        uri: noLocalhostURL('android-chrome-512x512.png', ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
       },
       contentDescription: {
         defaultValue: {
@@ -97,11 +93,8 @@ export function makeGoogleWalletObject(
     heroImage: {
       sourceUri: {
         uri: event.pictureFile
-          ? noLocalhostURL(event.pictureFile, process.env.PUBLIC_STORAGE_URL).toString()
-          : noLocalhostURL(
-              'android-chrome-512x512.png',
-              process.env.PUBLIC_FRONTEND_ORIGIN,
-            ).toString(),
+          ? noLocalhostURL(event.pictureFile, ENV.PUBLIC_STORAGE_URL).toString()
+          : noLocalhostURL('android-chrome-512x512.png', ENV.PUBLIC_FRONTEND_ORIGIN).toString(),
       },
       contentDescription: {
         defaultValue: {
@@ -128,7 +121,7 @@ makeGoogleWalletObject.prismaIncludes = {
 } as const satisfies Prisma.RegistrationInclude;
 
 export const GOOGLE_WALLET_CLASS = {
-  id: `${GOOGLE_WALLET_ISSUER_ID}.churros_event`,
+  id: `${ENV.PUBLIC_GOOGLE_WALLET_ISSUER_ID}.churros_event`,
   classTemplateInfo: {
     cardTemplateOverride: {
       cardRowTemplateInfos: [
@@ -182,15 +175,14 @@ export const GOOGLE_WALLET_CLASS = {
 };
 
 export async function registerGoogleWalletClass(data: typeof GOOGLE_WALLET_CLASS): Promise<string> {
-  let credentials: JWTInput;
-  try {
-    credentials = JSON.parse(process.env.GOOGLE_WALLET_ISSUER_KEY);
-  } catch (error) {
-    console.error(`Could not parse credentials for Google Wallet issuer service account: ${error}`);
+  if (!ENV.GOOGLE_WALLET_ISSUER_KEY) {
+    console.warn(
+      'No GOOGLE_WALLET_ISSUER_KEY set in environment variables, not registering Google Wallet class.',
+    );
     return '';
   }
   const httpClient = new GoogleAuth({
-    credentials,
+    credentials: ENV.GOOGLE_WALLET_ISSUER_KEY,
     scopes: 'https://www.googleapis.com/auth/wallet_object.issuer',
   });
   try {
