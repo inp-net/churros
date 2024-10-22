@@ -4,9 +4,10 @@ query PageGroupEditBankAccounts($uid: String!) @loading {
     canEditLydiaAccounts(
       assert: "Tu n'as pas les droits pour modifier les comptes Lydia de ce groupe"
     )
-    lydiaAccounts {
+    lydiaAccounts @loading(count: 1) {
       id
       name
+      eventsCount
     }
   }
 }

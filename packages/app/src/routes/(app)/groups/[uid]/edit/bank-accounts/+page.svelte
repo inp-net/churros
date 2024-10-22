@@ -1,21 +1,23 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import IconHelp from '~icons/msl/help-outline';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputPassword from '$lib/components/InputPassword.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
-  import { allLoaded, loaded, type MaybeLoading } from '$lib/loading';
+  import { countThing } from '$lib/i18n';
+  import { allLoaded, loaded, mapLoading, type MaybeLoading } from '$lib/loading';
   import { toasts } from '$lib/toasts';
-  import type { PageData } from './$houdini';
   import { z } from 'zod';
+  import IconHelp from '~icons/msl/help-outline';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PageGroupEditBankAccounts } = data);
@@ -144,8 +146,11 @@
 <MaybeError result={$PageGroupEditBankAccounts} let:data={{ group }}>
   <div class="contents">
     <Submenu>
-      {#each group.lydiaAccounts as { name, id }}
-        <SubmenuItem icon={null}>
+      {#each group.lydiaAccounts as { name, id, eventsCount }}
+        <SubmenuItem
+          icon={null}
+          subtext={mapLoading(eventsCount, (count) => countThing('évènement lié', count))}
+        >
           <LoadingText value={name} />
           <ButtonSecondary
             slot="right"
@@ -161,18 +166,22 @@
             }}>Supprimer</ButtonSecondary
           >
         </SubmenuItem>
+      {:else}
+        <SubmenuItem icon={null}>
+          <span class="muted">Aucune compte lié pour l'instant.</span>
+        </SubmenuItem>
       {/each}
     </Submenu>
     <form
       class="add-account"
       on:submit|preventDefault={async () => searchLydiaAccounts(group.lydiaAccounts)}
     >
-      <legend>
+      <legend class="typo-field-label">
         Ajouter un compte Lydia
         <ButtonGhost on:click={openHelp}>
           <IconHelp />
         </ButtonGhost>
-        <ModalOrDrawer let:close bind:open={openHelp}>
+        <ModalOrDrawer narrow let:close bind:open={openHelp} title="Ajouter un compte Lydia">
           <p>
             Pour ajouter un compte Lydia pro, vous devez d'abord créer un compte Lydia pour votre
             club.
@@ -183,13 +192,14 @@
             identifiants Lydia.
             <strong class="danger">(Aucun mot de passe n'est enregistré sur nos serveurs.)</strong>
           </p>
-          <section class="submits">
+          <section class="actions">
             <ButtonSecondary on:click={close}>OK</ButtonSecondary>
           </section>
         </ModalOrDrawer>
       </legend>
       <InputText type="tel" label="Numéro de téléphone" required bind:value={phone} />
-      <InputText type="password" label="Mot de passe Lydia" required bind:value={password} />
+      <InputPassword hint="" label="Mot de passe Lydia" required bind:value={password} />
+
       <section class="submits">
         <ButtonPrimary submits>Rechercher</ButtonPrimary>
       </section>
@@ -223,6 +233,17 @@
     justify-content: center;
     margin-top: 1rem;
     margin-bottom: 2rem;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  form.add-account {
+    margin-top: 2rem;
   }
 
   h2 {

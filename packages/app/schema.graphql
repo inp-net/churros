@@ -2026,6 +2026,7 @@ A Lydia account
 """
 type LydiaAccount implements Node {
   events: [Event!]!
+  eventsCount: Int!
   group: Group
   groupId: ID
   id: ID!
