@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto, pushState } from '$app/navigation';
+  import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import { colorName } from '$lib/colors';
@@ -87,17 +87,7 @@
     {#if profile.__typename === 'User' && tab === 'groups'}
       <Submenu>
         {#each profile.memberOf as membership}
-          <GroupMember
-            chevron
-            on:click={async () => {
-              await goto(refroute('/groups/[uid]/members', loading(membership.group.uid, '')), {
-                state: {
-                  EDITING_GROUP_MEMBER: $page.params.uid,
-                },
-              });
-            }}
-            side="group"
-            {membership}
+          <GroupMember href={refroute('/[uid=uid]', membership.group.uid)} side="group" {membership}
           ></GroupMember>
         {/each}
         <SubmenuItem
@@ -212,17 +202,7 @@
     {:else if profile.__typename === 'Group' && tab === 'members'}
       <Submenu>
         {#each profile.boardMembers as membership}
-          <GroupMember
-            chevron
-            on:click={async () => {
-              await goto(refroute('/groups/[uid]/members', $page.params.uid), {
-                state: {
-                  EDITING_GROUP_MEMBER: loading(membership.user.uid, ''),
-                },
-              });
-            }}
-            side="user"
-            {membership}
+          <GroupMember href={refroute('/[uid=uid]', membership.user.uid)} side="user" {membership}
           ></GroupMember>
         {/each}
       </Submenu>
