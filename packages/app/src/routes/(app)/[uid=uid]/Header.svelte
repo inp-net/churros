@@ -59,6 +59,7 @@
               uid
             }
           }
+          pronouns
           links {
             ...PillLink
           }
@@ -184,6 +185,10 @@
     <div class="text">
       <h2>
         <LoadingText value={$data && 'name' in $data ? $data.name : PendingValue} />
+        {#if $data && 'pronouns' in $data && loading($data.pronouns, '')}
+          <br />
+          <span class="pronouns" use:tooltip={'Pronoms'}>{$data.pronouns}</span>
+        {/if}
       </h2>
       <div class="details">
         {#if !$data || !loaded($data.__typename)}
@@ -376,6 +381,11 @@
     header {
       --picture-size: 150px;
     }
+  }
+
+  .pronouns {
+    font-size: 0.8em;
+    color: var(--shy);
   }
 
   .bio {

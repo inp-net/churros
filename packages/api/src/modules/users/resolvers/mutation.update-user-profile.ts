@@ -35,6 +35,7 @@ builder.mutationField('updateUserProfile', (t) =>
           phone: profile.unsetPhone ? '' : (profile.phone ?? undefined),
           nickname: profile.nickname ?? undefined,
           description: profile.description ?? undefined,
+          pronouns: profile.pronouns ?? undefined,
         },
       });
       if (!result.bot) {
