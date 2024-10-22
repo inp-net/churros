@@ -3,7 +3,7 @@ kind: Cluster
 metadata:
   name: churros-postgresql
 spec:
-  instances: 1
+  instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:16
   primaryUpdateStrategy: unsupervised
   bootstrap:
