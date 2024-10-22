@@ -8,14 +8,15 @@
   import Toast from '$lib/components/Toast.svelte';
   import { debugging, themeDebugger } from '$lib/debugging';
   import { setupIsMobile } from '$lib/mobile';
+  import { oauthEnabled, oauthLoginBypassed } from '$lib/oauth';
   import '$lib/polyfills';
+  import { route } from '$lib/ROUTES';
   import { setSentryUser } from '$lib/sentry';
   import { theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
-  import { route } from '$lib/ROUTES';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -71,9 +72,14 @@
 
   beforeNavigate(({ from, to }) => {
     // See https://github.com/sveltejs/kit/issues/12626#issuecomment-2429179311
-    if (from?.url.pathname !== route('/login') && to?.url.pathname === route('/login')) 
+    if (
+      to &&
+      oauthEnabled() &&
+      !oauthLoginBypassed(to) &&
+      from?.url.pathname !== route('/login') &&
+      to.url.pathname === route('/login')
+    )
       window.location.href = route('/login');
-    
   });
 
   onMount(() => {
