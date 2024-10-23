@@ -51,9 +51,11 @@ export const UserType = builder.prismaNode('User', {
     }),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
-    fullName: t.field({
-      type: 'String',
-      resolve: (user) => fullName(user),
+    fullName: t.string({
+      args: {
+        nickname: t.arg.boolean({ description: 'Inclure le pseudo', defaultValue: true }),
+      },
+      resolve: (user, { nickname }) => fullName(user, nickname),
     }),
     pronouns: t.exposeString('pronouns', {
       description: "Pronoms de l'utilisateur·ice",

@@ -6359,7 +6359,12 @@ type User implements Node & Pictured {
   external: Boolean!
   familyTree: FamilyTree!
   firstName: String!
-  fullName: String!
+  fullName(
+    """
+    Inclure le pseudo
+    """
+    nickname: Boolean! = true
+  ): String!
   godchildren: [User!]!
   godparent: User
   graduationYear: Int!
