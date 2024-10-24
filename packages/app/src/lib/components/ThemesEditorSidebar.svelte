@@ -231,8 +231,7 @@
         et déposer tes fichiers dessus
       </p>
       <p>
-        Ensuite, en incluant l'image dans la page, tu verras que l'image a une URL. Tu peux utiliser
-        celle-ci
+Ensuite, après avoir upload l'image tu pourra l'ajouter à la page à l'aide du bouton d'insertion. Cet ajout va te générer une URL que tu peux garder et utiliser pour le thème.
       </p>
       <section class="ok">
         <ButtonPrimary on:click={close}>OK</ButtonPrimary>
