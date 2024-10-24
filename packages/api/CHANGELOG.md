@@ -1,5 +1,22 @@
 # @churros/api
 
+## 5.0.0
+
+### Major Changes
+
+- 4f87c5e: improve groups' Lydia accounts management and fix bugs
+- 3fa8469: feat(shop): drop shops (shops will come back as a separate project)
+
+### Minor Changes
+
+- 78a786a: validate env vars before launching server
+
+### Patch Changes
+
+- Updated dependencies [cfaed6e]
+- Updated dependencies [3fa8469]
+  - @churros/db@3.0.0
+
 ## 4.0.1
 
 ### Patch Changes
