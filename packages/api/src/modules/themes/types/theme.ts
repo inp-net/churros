@@ -1,15 +1,12 @@
 import { builder } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
-import { canEditTheme, canSeeTheme, canSetThemeVisibility } from '#modules/themes/utils';
+import { canEditTheme, canSetThemeVisibility } from '#modules/themes/utils';
 import { ThemeVariantType } from './theme-variant.js';
 
 export const ThemeType = builder.prismaNode('Theme', {
   id: { field: 'id' },
   include: {
     author: true,
-  },
-  authScopes(theme, { user }) {
-    return canSeeTheme(user, theme);
   },
   fields: (t) => ({
     name: t.exposeString('name'),

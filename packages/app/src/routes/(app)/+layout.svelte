@@ -7,12 +7,15 @@
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
+  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import NavigationBottom from '$lib/components/NavigationBottom.svelte';
   import NavigationSide from '$lib/components/NavigationSide.svelte';
   import NavigationTop, { type NavigationContext } from '$lib/components/NavigationTop.svelte';
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import PickGroup from '$lib/components/PickGroup.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
+  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
+  import { allLoaded } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { mutate } from '$lib/mutations';
   import { addReferrer, refroute } from '$lib/navigation';
@@ -27,9 +30,6 @@
   import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
-  import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
-  import { allLoaded } from '$lib/loading';
-  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
 
   onNavigate(setupViewTransition);
 
@@ -123,8 +123,6 @@
 
   let openChangelog: () => void;
   $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) openChangelog?.();
-
-  $: console.log({ t: $RootLayout });
 </script>
 
 {#if $AppLayout.data?.combinedChangelog}
@@ -236,7 +234,10 @@
 
   <aside class="right">
     {#if $RootLayout.data?.editingTheme && $editingTheme}
-      <ThemesEditorSidebar theme={$RootLayout.data?.editingTheme} />
+      <ThemesEditorSidebar
+        theme={$RootLayout.data?.editingTheme}
+        me={$AppLayout.data?.me ?? null}
+      />
     {:else if $AppLayout.data?.me}
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
@@ -447,8 +448,8 @@
 
   .page-content {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
   }
 
   footer {

@@ -4,6 +4,7 @@
 
 export * from './group.can-create-themes.js';
 export * from './mutation.block-theme.js';
+export * from './mutation.delete-theme.js';
 export * from './mutation.set-theme-value.js';
 export * from './mutation.set-theme-visibility.js';
 export * from './mutation.upsert-theme.js';

@@ -8,7 +8,7 @@ import { THEME_CSS_VARIABLE_NAMES } from '$lib/theme.js';
 
 graphql(`
   query ThemesCSSFile {
-    themes {
+    themes(all: true) {
       localID
       name
       author {

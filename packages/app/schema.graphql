@@ -2435,6 +2435,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Supprime un service
   """
   deleteService(id: LocalID!): MutationDeleteServiceResult!
+  """
+  Supprimer un thème
+  """
+  deleteTheme(id: LocalID!): MutationDeleteThemeResult!
   deleteTicket(
     """
     Supprimer le billet même s'il existe des réservations
@@ -3403,6 +3407,12 @@ union MutationDeleteServiceResult = Error | MutationDeleteServiceSuccess | ZodEr
 
 type MutationDeleteServiceSuccess {
   data: Service!
+}
+
+union MutationDeleteThemeResult = Error | MutationDeleteThemeSuccess | ZodError
+
+type MutationDeleteThemeSuccess {
+  data: Theme!
 }
 
 union MutationDeleteTicketGroupResult = Error | MutationDeleteTicketGroupSuccess | ZodError

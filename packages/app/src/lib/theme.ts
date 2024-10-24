@@ -1,7 +1,13 @@
 import { browser } from '$app/environment';
-import { type ThemeVariable$options } from '$houdini';
+import {
+  fragment,
+  graphql,
+  type ThemeValuesForEditing,
+  type ThemeVariable$options,
+  type ThemeVariant$options,
+} from '$houdini';
 import { syncToLocalStorage } from 'svelte-store2storage';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 export const THEME_CSS_VARIABLE_NAMES: Record<ThemeVariable$options, string> = {
   ColorBackground: 'bg',
@@ -78,4 +84,86 @@ if (browser) {
   isDark.subscribe(($isDark) => {
     document.documentElement.dataset.themeVariant = $isDark ? 'dark' : 'light';
   });
+}
+export function baseValues(
+  variant: ThemeVariant$options,
+  baseValuesGetter: HTMLDivElement,
+): Record<ThemeVariable$options, string> {
+  if (!baseValuesGetter)
+    {return Object.fromEntries(Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, ''])) as Record<
+      ThemeVariable$options,
+      string
+    >;}
+
+  const getter = baseValuesGetter.querySelector(`.${variant}`);
+  if (!getter)
+    {return Object.fromEntries(Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, ''])) as Record<
+      ThemeVariable$options,
+      string
+    >;}
+
+  return Object.fromEntries(
+    Object.keys(THEME_CSS_VARIABLE_NAMES).map((variable) => {
+      const value = getComputedStyle(getter).getPropertyValue(
+        `--${THEME_CSS_VARIABLE_NAMES[variable as ThemeVariable$options]}`,
+      );
+      return [variable, value];
+    }),
+  ) as Record<ThemeVariable$options, string>;
+}
+
+export function actualValues(
+  baseValuesGetter: HTMLDivElement,
+  themeValues: ThemeValuesForEditing | null,
+) {
+  const data = get(
+    fragment(
+      themeValues,
+      graphql(`
+        fragment ThemeValuesForEditing on Theme @loading {
+          lightValues: values(variant: Light) {
+            variable
+            value
+          }
+          darkValues: values(variant: Dark) {
+            variable
+            value
+          }
+        }
+      `),
+    ),
+  );
+  return {
+    Dark: {
+      ...baseValues('Dark', baseValuesGetter),
+      ...Object.fromEntries(data?.darkValues.map((v) => [v.variable, v.value]) ?? []),
+    },
+    Light: {
+      ...baseValues('Light', baseValuesGetter),
+      ...Object.fromEntries(data?.lightValues.map((v) => [v.variable, v.value]) ?? []),
+    },
+  };
+}
+
+export function colorValues(values: Record<ThemeVariable$options, string>) {
+  return Object.entries(values).filter(([v]) => v.startsWith('Color')) as Array<
+    [ThemeVariable$options & `Color${string}`, string]
+  >;
+}
+
+export function urlValues(values: Record<ThemeVariable$options, string>) {
+  return Object.entries(values).filter(([v]) => /^(Pattern|Image)/.test(v)) as Array<
+    [ThemeVariable$options, string]
+  >;
+}
+
+export function themeCurrentValue(variable: ThemeVariable$options): string {
+  if (!browser) return '';
+  return getComputedStyle(document.body).getPropertyValue(
+    `--${THEME_CSS_VARIABLE_NAMES[variable]}`,
+  );
+}
+
+export function themeCurrentValueURL(variable: ThemeVariable$options): string {
+  return themeCurrentValue(variable).replace(/url\((["'])(.+)\1\)/, '$2');
 }

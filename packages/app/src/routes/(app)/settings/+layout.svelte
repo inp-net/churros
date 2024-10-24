@@ -16,15 +16,15 @@
   import { mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
+  import { theme } from '$lib/theme';
   import IconDebug from '~icons/msl/code';
   import IconTrash from '~icons/msl/delete-outline';
   import IconPersonalData from '~icons/msl/download';
   import IconNotification from '~icons/msl/notifications-outline';
   import IconTheme from '~icons/msl/palette-outline';
-  import IconProfile from '~icons/msl/person-outline';
   import IconSpecialOffer from '~icons/msl/percent';
+  import IconProfile from '~icons/msl/person-outline';
   import type { LayoutData } from './$houdini';
-  import { theme } from '$lib/theme';
 
   const UpdateLydiaPhone = graphql(`
     mutation UpdateLydiaPhone($lydiaPhone: String!) {

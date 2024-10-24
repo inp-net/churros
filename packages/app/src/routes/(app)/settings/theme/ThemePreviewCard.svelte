@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { cache, fragment, graphql, RootLayoutStore, type ThemePreviewCard } from '$houdini';
+  import { fragment, graphql, type ThemePreviewCard } from '$houdini';
   import Badge from '$lib/components/Badge.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
@@ -13,6 +13,8 @@
     isDark,
     THEME_CSS_VARIABLE_NAMES,
   } from '$lib/theme';
+  import IconDone from '~icons/msl/check-circle-outline';
+  import IconEdit from '~icons/msl/edit-outline';
   import IconFeur from '~icons/msl/home-outline';
 
   export let theme: ThemePreviewCard | null;
@@ -39,10 +41,12 @@
   );
 
   $: values = $data ? ($isDark ? $data.darkValues : $data.lightValues) : null;
+  $: editing = $data && $editingTheme?.id === $data.id;
 </script>
 
 <label
   data-force-default-theme={$data ? undefined : $isDark ? 'dark' : 'light'}
+  class:editing
   for="theme-preview-{$data ? loading($data.localID, '') : 'system'}"
   style={values && allLoaded(values)
     ? values
@@ -83,7 +87,8 @@
   <header>
     <h2><LoadingText value={$data?.name ?? 'Par défaut'}></LoadingText></h2>
     {#if $data?.canEdit}
-      <ButtonSecondary
+      <ButtonGhost
+        help={editing ? 'Terminer' : 'Modifier'}
         on:click={async () => {
           if (!$data || !loaded($data?.id)) return;
           $editingTheme =
@@ -93,17 +98,17 @@
                   id: $data.id,
                   variant: $currentTheme.variant,
                 };
-          if ($editingTheme) {
+          if ($editingTheme) 
             $currentTheme.id = $editingTheme.id;
-          }
+          
         }}
       >
-        {#if $editingTheme?.id === $data.id}
-          Terminé
+        {#if editing}
+          <IconDone />
         {:else}
-          Modifier
+          <IconEdit />
         {/if}
-      </ButtonSecondary>
+      </ButtonGhost>
     {/if}
   </header>
 </label>
@@ -124,6 +129,16 @@
     border-radius: var(--radius-block);
   }
 
+  label.editing {
+    animation: blink-border 500ms infinite alternate;
+  }
+
+  @keyframes blink-border {
+    to {
+      border-color: var(--primary-bg);
+    }
+  }
+
   .selected-badge {
     margin: 1em 0 0 1em;
     font-size: 1.2em;
@@ -138,7 +153,9 @@
     flex-grow: 1;
     flex-wrap: wrap;
     gap: 0 1em;
-    padding: 1em;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5em 1em;
     color: var(--primary);
     background-color: var(--primary-bg);
   }

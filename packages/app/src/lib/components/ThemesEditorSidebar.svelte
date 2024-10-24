@@ -2,18 +2,35 @@
   import {
     fragment,
     graphql,
+    type ThemeEditorSidebar_Me,
     type ThemesEditorSidebar,
     type ThemeVariable$options,
     type ThemeVariant$options,
   } from '$houdini';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import PickGroup from '$lib/components/PickGroup.svelte';
   import { DISPLAY_THEME_VARIABLE, DISPLAY_THEME_VARIANT } from '$lib/display';
+  import { loading } from '$lib/loading';
   import { mutate, mutateAndToast } from '$lib/mutations';
-  import { THEME_CSS_VARIABLE_NAMES, isDark } from '$lib/theme';
+  import { refroute } from '$lib/navigation';
+  import {
+    actualValues,
+    colorValues,
+    editingTheme,
+    isDark,
+    THEME_CSS_VARIABLE_NAMES,
+    urlValues,
+  } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import { onMount } from 'svelte';
+  import IconHelp from '~icons/msl/help-outline';
 
   export let theme: ThemesEditorSidebar | null;
   $: data = fragment(
@@ -26,70 +43,65 @@
           uid
           ...AvatarGroup
         }
-        darkValues: values(variant: Dark) {
-          variable
-          value
-        }
-        lightValues: values(variant: Light) {
-          variable
-          value
+        ...ThemeValuesForEditing
+      }
+    `),
+  );
+
+  export let me: ThemeEditorSidebar_Me | null;
+  $: dataMe = fragment(
+    me,
+    graphql(`
+      fragment ThemeEditorSidebar_Me on User {
+        canCreateThemesOn {
+          ...PickGroup @mask_disable
         }
       }
     `),
   );
 
   let baseValuesGetter: HTMLDivElement;
-  function baseValues(
-    variant: ThemeVariant$options,
-    baseValuesGetter: HTMLDivElement,
-  ): Record<ThemeVariable$options, string> {
-    if (!baseValuesGetter)
-      return Object.fromEntries(
-        Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, '']),
-      ) as Record<ThemeVariable$options, string>;
-
-    const getter = baseValuesGetter.querySelector(`.${variant}`);
-    if (!getter)
-      return Object.fromEntries(
-        Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, '']),
-      ) as Record<ThemeVariable$options, string>;
-
-    return Object.fromEntries(
-      Object.keys(THEME_CSS_VARIABLE_NAMES).map((variable) => {
-        const value = getComputedStyle(getter).getPropertyValue(
-          `--${THEME_CSS_VARIABLE_NAMES[variable as ThemeVariable$options]}`,
-        );
-        return [variable, value];
-      }),
-    ) as Record<ThemeVariable$options, string>;
-  }
-
-  function actualValues() {
-    return {
-      Dark: {
-        ...baseValues('Dark', baseValuesGetter),
-        ...Object.fromEntries($data?.darkValues.map((v) => [v.variable, v.value]) ?? []),
-      },
-      Light: {
-        ...baseValues('Light', baseValuesGetter),
-        ...Object.fromEntries($data?.lightValues.map((v) => [v.variable, v.value]) ?? []),
-      },
-    };
-  }
-
-  function colorValues(values: Record<ThemeVariable$options, string>) {
-    return Object.entries(values).filter(([v]) => v.startsWith('Color')) as Array<
-      [ThemeVariable$options & `Color${string}`, string]
-    >;
-  }
+  $: values = actualValues(baseValuesGetter, $data);
+  onMount(() => {
+    values = actualValues(baseValuesGetter, $data);
+  });
 
   let selectedVariant: ThemeVariant$options | undefined;
   $: selectedVariant ??= $isDark ? 'Dark' : 'Light';
 
-  $: values = actualValues();
-  onMount(() => {
-    values = actualValues();
-  });
+  let openURLsHelp: () => void;
+
+  async function setValue(variable: ThemeVariable$options, value: string) {
+    if (!$data) return;
+    const result = await mutate(UpdateValue, {
+      theme: $data.localID,
+      value: value,
+      variant: selectedVariant,
+      variable: variable,
+    });
+    if (!result || result.errors) {
+      toasts.error(
+        'Impossible de mettre à jour la valeur',
+        result?.errors?.map((e) => e.message).join(', ') ?? '',
+      );
+      return;
+    }
+    document.documentElement.style.setProperty(`--${THEME_CSS_VARIABLE_NAMES[variable]}`, value);
+    values[selectedVariant ?? 'Light'][variable] = value;
+  }
+
+  const DeleteTheme = graphql(`
+    mutation DeleteTheme($theme: LocalID!) {
+      deleteTheme(id: $theme) {
+        ...MutationErrors
+        ... on MutationDeleteThemeSuccess {
+          data {
+            id @Theme_delete
+          }
+        }
+      }
+    }
+  `);
 
   const UpdateValue = graphql(`
     mutation UpdateThemValue(
@@ -112,6 +124,9 @@
         ... on MutationUpsertThemeSuccess {
           data {
             name
+            author {
+              ...AvatarGroup
+            }
           }
         }
       }
@@ -137,24 +152,45 @@
         });
       }}
     />
-  </section>
-
-  <section class="colors">
-    <header>
-      <NavigationTabs
-        tabs={[
-          { name: 'Light', active: selectedVariant === 'Light' },
-          { name: 'Dark', active: selectedVariant === 'Dark' },
-        ]}
-        on:click={({ detail }) => {
-          selectedVariant = detail;
+    <div class="author">
+      par <PickGroup
+        value={$data?.author?.uid}
+        options={$dataMe?.canCreateThemesOn ?? []}
+        let:open
+        on:finish={async ({ detail }) => {
+          if (!$data) return;
+          await mutateAndToast(UpdateName, {
+            theme: $data.localID,
+            author: detail,
+            name: $data.name,
+          });
         }}
       >
-        <svelte:fragment slot="tab" let:tab>
-          {DISPLAY_THEME_VARIANT[tab]}
-        </svelte:fragment>
-      </NavigationTabs>
-    </header>
+        <ButtonGhost help="Changer le groupe responsable du thème" on:click={open}>
+          <AvatarGroup href="" name group={$data?.author ?? null} />
+        </ButtonGhost>
+      </PickGroup>
+    </div>
+  </section>
+
+  <header>
+    <NavigationTabs
+      tabs={[
+        { name: 'Light', active: selectedVariant === 'Light' },
+        { name: 'Dark', active: selectedVariant === 'Dark' },
+      ]}
+      on:click={({ detail }) => {
+        selectedVariant = detail;
+      }}
+    >
+      <svelte:fragment slot="tab" let:tab>
+        {DISPLAY_THEME_VARIANT[tab]}
+      </svelte:fragment>
+    </NavigationTabs>
+  </header>
+
+  <section class="colors">
+    <h2 class="typo-field-label">Couleurs</h2>
     {#each colorValues(values[selectedVariant ?? 'Light']) as [variable, value]}
       <label
         class="swatch"
@@ -169,29 +205,59 @@
           {value}
           on:input={async ({ currentTarget }) => {
             if (!(currentTarget instanceof HTMLInputElement)) return;
-            if (!$data) return;
-            const result = await mutate(UpdateValue, {
-              theme: $data.localID,
-              value: currentTarget.value,
-              variant: selectedVariant,
-              variable: variable,
-            });
-            if (!result || result.errors) {
-              toasts.error(
-                'Impossible de mettre à jour la valeur',
-                result?.errors?.map((e) => e.message).join(', ') ?? '',
-              );
-              return;
-            }
-            document.documentElement.style.setProperty(
-              `--${THEME_CSS_VARIABLE_NAMES[variable]}`,
-              currentTarget.value,
-            );
-            values[selectedVariant ?? 'Light'][variable] = currentTarget.value;
+            await setValue(variable, currentTarget.value);
           }}
         />
       </label>
     {/each}
+  </section>
+
+  <section class="urls">
+    <ModalOrDrawer narrow title="Obtenir des URLs de tes images" bind:open={openURLsHelp} let:close>
+      <p>
+        Pour uploader une image, tu peut utiliser une
+        <a href={refroute('/groups/[uid]/edit/pages', loading($data?.author?.uid ?? '', ''))}>
+          page de groupe
+        </a>
+        et déposer tes fichiers dessus
+      </p>
+      <p>
+        Ensuite, en incluant l'image dans la page, tu verras que l'image a une URL. Tu peux utiliser
+        celle-ci
+      </p>
+      <section class="ok">
+        <ButtonPrimary on:click={close}>OK</ButtonPrimary>
+      </section>
+    </ModalOrDrawer>
+
+    <h2 class="typo-field-label">
+      Images <ButtonGhost on:click={openURLsHelp}>
+        <IconHelp /></ButtonGhost
+      >
+    </h2>
+    {#each urlValues(values[selectedVariant ?? 'Light']) as [variable, value]}
+      <InputTextGhost
+        placeholder="URL pour {variable}"
+        label={DISPLAY_THEME_VARIABLE[variable]}
+        {value}
+        on:blur={async ({ detail }) => {
+          await setValue(variable, detail);
+        }}
+      />
+    {/each}
+  </section>
+
+  <section class="actions">
+    <ButtonPrimary on:click={() => ($editingTheme = null)}>Terminé</ButtonPrimary>
+    <ButtonSecondary
+      danger
+      on:click={async () => {
+        await mutateAndToast(DeleteTheme, {
+          theme: $data?.localID,
+        });
+        $editingTheme = null;
+      }}>Supprimer</ButtonSecondary
+    >
   </section>
 
   <div class="base-values-getter" bind:this={baseValuesGetter}>
@@ -202,12 +268,19 @@
 
 <style>
   .sidebar {
-    height: 100%;
-    padding: 1rem;
-    overflow-y: scroll;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    height: 100%;
+    padding: 1rem;
+    overflow-y: scroll;
+  }
+
+  .infos .author {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
   }
 
   .colors {
@@ -216,8 +289,14 @@
     gap: 0.5rem 1rem;
   }
 
-  .colors header {
+  header {
     width: 100%;
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
   }
 
   .swatch input {
@@ -225,8 +304,8 @@
   }
 
   .swatch {
-    height: 3rem;
     width: 3rem;
+    height: 3rem;
     border-radius: 10000px;
     outline: 1px solid var(--fg);
   }

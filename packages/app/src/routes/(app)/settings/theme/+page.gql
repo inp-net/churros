@@ -1,5 +1,5 @@
 query PageSettingsTheme @loading {
-  themes {
+  themes(all: true) @list(name: "List_SettingsThemes") {
     localID
     ...ThemePreviewCard
   }

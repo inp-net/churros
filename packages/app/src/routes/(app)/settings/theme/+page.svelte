@@ -21,6 +21,7 @@
           data {
             localID
             ...ThemesEditorSidebar
+            ...List_SettingsThemes_insert
           }
         }
       }
@@ -48,27 +49,29 @@
       {/each}
       <ThemePreviewCard theme={null} />
     </section>
-    <section class="new">
-      <PickGroup
-        let:open
-        title="Groupe responsable du thème"
-        value={null}
-        options={me?.canCreateThemesOn ?? []}
-        on:finish={async ({ detail }) => {
-          const result = await mutate(NewTheme, { group: detail });
-          if (
-            toasts.mutation(result, 'upsertTheme', 'Thème créé', 'Impossible de créer le thème')
-          ) {
-            $editingTheme = {
-              id: result.data.upsertTheme.data.localID,
-              variant: $theme.variant,
-            };
-          }
-        }}
-      >
-        <ButtonInk on:click={open}>Créer un nouveau thème…</ButtonInk>
-      </PickGroup>
-    </section>
+    {#if (me?.canCreateThemesOn?.length ?? 0) > 0}
+      <section class="new">
+        <PickGroup
+          let:open
+          title="Groupe responsable du thème"
+          value={null}
+          options={me?.canCreateThemesOn ?? []}
+          on:finish={async ({ detail }) => {
+            const result = await mutate(NewTheme, { group: detail });
+            if (
+              toasts.mutation(result, 'upsertTheme', 'Thème créé', 'Impossible de créer le thème')
+            ) {
+              $editingTheme = {
+                id: result.data.upsertTheme.data.localID,
+                variant: $theme.variant,
+              };
+            }
+          }}
+        >
+          <ButtonInk on:click={open}>Créer un nouveau thème…</ButtonInk>
+        </PickGroup>
+      </section>
+    {/if}
   </div>
 </MaybeError>
 
