@@ -33,7 +33,7 @@ builder.mutationField('updateUserProfile', (t) =>
           birthday: profile.unsetBirthday ? null : (profile.birthday ?? undefined),
           address: profile.address ?? undefined,
           phone: profile.unsetPhone ? '' : (profile.phone ?? undefined),
-          nickname: profile.nickname ?? undefined,
+          nickname: profile.nickname?.toLowerCase() ?? undefined,
           description: profile.description ?? undefined,
           pronouns: profile.pronouns ?? undefined,
         },

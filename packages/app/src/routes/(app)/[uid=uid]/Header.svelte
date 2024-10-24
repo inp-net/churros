@@ -22,7 +22,7 @@
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
-  import { loaded, loading, LoadingText, mapLoading } from '$lib/loading';
+  import { loaded, loading, LoadingText, mapAllLoading, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
@@ -49,6 +49,7 @@
         ... on User {
           name: fullName(nickname: false)
           pronouns
+          nickname
           descriptionHtml
           yearTier
           major {
@@ -188,8 +189,8 @@
         {#if $data?.__typename === 'User'}
           <div class="subline">
             <LoadingText
-              value={mapLoading($data.pronouns, (pro) =>
-                [$page.params.uid, pro].filter(Boolean).join(' · '),
+              value={mapAllLoading([$data.nickname, $data.pronouns], (nick, pro) =>
+                [nick, $page.params.uid, pro].filter(Boolean).join(' · '),
               )}
             />
           </div>
