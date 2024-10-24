@@ -78,7 +78,7 @@
 
   tr.highlighted {
     color: var(--primary);
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
   }
 
   tr:not(:hover, .highlighted) :global(.button-secondary) {

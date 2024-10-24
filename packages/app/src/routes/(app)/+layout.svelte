@@ -355,7 +355,7 @@
     display: flex;
     flex-direction: column;
     max-width: var(--scrollable-content-width, 700px);
-    background-color: var(--bg);
+    background: var(--bg);
   }
 
   .layout .nav-bottom {

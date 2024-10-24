@@ -15,7 +15,6 @@
   import { onMount } from 'svelte';
   import '../design/app.scss';
   import type { LayoutData } from './$houdini';
-  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
 
   export let data: LayoutData;
   $: ({ RootLayout } = data);
@@ -165,7 +164,7 @@
 
   [data-vaul-drawer-wrapper] {
     position: relative;
-    background-color: var(--bg);
+    background: var(--bg);
     background-image: var(--bg-pattern);
     background-attachment: fixed;
     transition: ease 1s background-image;

@@ -95,6 +95,6 @@
   }
 
   li.active::after {
-    background-color: var(--primary);
+    background: var(--primary);
   }
 </style>

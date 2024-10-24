@@ -98,9 +98,7 @@
                   id: $data.id,
                   variant: $currentTheme.variant,
                 };
-          if ($editingTheme) 
-            $currentTheme.id = $editingTheme.id;
-          
+          if ($editingTheme) $currentTheme.id = $editingTheme.id;
         }}
       >
         {#if editing}
@@ -157,7 +155,7 @@
     justify-content: space-between;
     padding: 0.5em 1em;
     color: var(--primary);
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
   }
 
   header h2 {
@@ -173,7 +171,7 @@
     margin-top: 1rem;
     margin-left: auto;
     font-size: 0.5em;
-    background-color: var(--bg2);
+    background: var(--bg2);
     border-top-left-radius: var(--radius-block);
   }
 
