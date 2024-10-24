@@ -29,6 +29,7 @@
   } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
+  import debounce from 'lodash.debounce';
   import { onMount } from 'svelte';
   import IconHelp from '~icons/msl/help-outline';
 
@@ -71,7 +72,7 @@
 
   let openURLsHelp: () => void;
 
-  async function setValue(variable: ThemeVariable$options, value: string) {
+  async function updateValueInAPI(variable: ThemeVariable$options, value: string) {
     if (!$data) return;
     const result = await mutate(UpdateValue, {
       theme: $data.localID,
@@ -86,6 +87,11 @@
       );
       return;
     }
+  }
+
+  const debouncedUpdateValueInAPI = debounce(updateValueInAPI, 500);
+
+  async function setValue(variable: ThemeVariable$options, value: string) {
     document.documentElement.style.setProperty(`--${THEME_CSS_VARIABLE_NAMES[variable]}`, value);
     values[selectedVariant ?? 'Light'][variable] = value;
   }
@@ -191,25 +197,28 @@
 
   <section class="colors">
     <h2 class="typo-field-label">Couleurs</h2>
-    {#each colorValues(values[selectedVariant ?? 'Light']) as [variable, value]}
-      <label
-        class="swatch"
-        use:tooltip={`${variable}: ${DISPLAY_THEME_VARIABLE[variable]}<br>
-        <em><code>${value}</code></em>`}
-        style:background-color={value}
-      >
-        <input
-          type="color"
-          name=""
-          id=""
-          {value}
-          on:input={async ({ currentTarget }) => {
-            if (!(currentTarget instanceof HTMLInputElement)) return;
-            await setValue(variable, currentTarget.value);
-          }}
-        />
-      </label>
-    {/each}
+    <div class="swatches">
+      {#each colorValues(values[selectedVariant ?? 'Light']) as [variable, value]}
+        <label
+          class="swatch"
+          use:tooltip={`${variable}: ${DISPLAY_THEME_VARIABLE[variable]}<br>
+          <em><code>${value}</code></em>`}
+          style:background-color={value}
+        >
+          <input
+            type="color"
+            name=""
+            id=""
+            {value}
+            on:input={async ({ currentTarget }) => {
+              if (!(currentTarget instanceof HTMLInputElement)) return;
+              await setValue(variable, currentTarget.value);
+              await debouncedUpdateValueInAPI(variable, currentTarget.value);
+            }}
+          />
+        </label>
+      {/each}
+    </div>
   </section>
 
   <section class="urls">
@@ -283,10 +292,11 @@
     margin-top: 0.5rem;
   }
 
-  .colors {
+  .swatches {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
+    margin-top: 1rem;
   }
 
   header {

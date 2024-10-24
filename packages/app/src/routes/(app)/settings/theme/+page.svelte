@@ -1,5 +1,6 @@
 <script lang="ts">
   import { graphql } from '$houdini';
+  import Alert from '$lib/components/Alert.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import InputRadios from '$lib/components/InputRadios.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
@@ -72,6 +73,16 @@
         </PickGroup>
       </section>
     {/if}
+    {#if $editingTheme}
+      <section class="a11y-checks">
+        <h2 class="typo-field-label">Aperçu supplémentaires</h2>
+        <p class="typo-details">Des tests d'accessibilités plus approfondis arriveront plus tard</p>
+        <Alert theme="primary">Information</Alert>
+        <Alert theme="warning">Attention!</Alert>
+        <Alert theme="danger">Erreur</Alert>
+        <Alert theme="success">Letsgo!</Alert>
+      </section>
+    {/if}
   </div>
 </MaybeError>
 
@@ -109,5 +120,12 @@
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
     align-items: center;
+  }
+
+  .a11y-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
   }
 </style>
