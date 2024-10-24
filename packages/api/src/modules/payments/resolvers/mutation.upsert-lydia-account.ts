@@ -1,11 +1,11 @@
 import { builder, log, prisma } from '#lib';
-
-import { userIsPresidentOf, userIsTreasurerOf } from '#permissions';
+import { canEditLydiaAccounts } from '#modules/groups';
 import { LydiaAccountType, checkLydiaAccount } from '../index.js';
 
 builder.mutationField('upsertLydiaAccount', (t) =>
   t.prismaField({
     type: LydiaAccountType,
+    errors: {},
     args: {
       id: t.arg.id({ required: false }),
       groupUid: t.arg.string(),
@@ -13,10 +13,13 @@ builder.mutationField('upsertLydiaAccount', (t) =>
       privateToken: t.arg.string(),
       vendorToken: t.arg.string(),
     },
-    authScopes: (_, { groupUid }, { user }) =>
-      Boolean(
-        user?.admin || userIsPresidentOf(user, groupUid) || userIsTreasurerOf(user, groupUid),
-      ),
+    async authScopes(_, { groupUid }, { user }) {
+      const group = await prisma.group.findUniqueOrThrow({
+        where: { uid: groupUid },
+        include: canEditLydiaAccounts.prismaIncludes,
+      });
+      return canEditLydiaAccounts(user, group);
+    },
     async resolve(query, _, { id, groupUid, name, privateToken, vendorToken }, { user }) {
       await checkLydiaAccount(vendorToken, privateToken);
       const data = {
