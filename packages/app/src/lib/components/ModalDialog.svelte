@@ -5,6 +5,7 @@
 
   export let element: HTMLDialogElement;
   export let tall = false;
+  export let narrow = false;
   export let opened = false;
   export let maxWidth = 'unset';
   export const open = () => {
@@ -30,6 +31,7 @@
 
 <dialog
   class:tall
+  class:narrow
   on:close={(e) => {
     if (element.classList.contains('closing')) return;
     if (!(e.currentTarget instanceof HTMLDialogElement)) return;
@@ -73,6 +75,10 @@
     height: 80vh;
   }
 
+  dialog.narrow {
+    width: 33vw;
+  }
+
   dialog:global(.closing) {
     animation: pop-up 0.5s ease reverse;
   }
@@ -86,19 +92,25 @@
     background-color: transparent;
   }
 
+  dialog:global(.closing)::backdrop {
+    animation: fade-in 0.25s ease reverse;
+  }
+
   dialog[open]::backdrop {
     overscroll-behavior: contain;
     background-color: var(--backdrop);
     backdrop-filter: blur(10px);
-    transition: background-color 0.5s ease;
+    animation: fade-in 0.75s ease;
   }
 
   @keyframes pop-up {
     from {
-      transform: scale(0);
+      opacity: 0;
+      transform: scale(0.6);
     }
 
     to {
+      opacity: 1;
       transform: scale(1);
     }
   }
