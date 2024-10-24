@@ -173,12 +173,11 @@
   "scripts": {
     "format-at": "prettier --write --ignore-unknown",
     "format": "yarn format-at .",
-    "build": "run-s \"build:*\"",
+    "build": "run-s barrelize \"build:*\"",
     "prisma": "yarn workspace @churros/db run prisma",
     "build:prisma": "yarn workspace @churros/db run generate",
     "build:changelog": "run-s copy-changelog",
     "build:typenames": "tsx ./scripts/update-id-prefix-to-typename-map.ts",
-    "build:barrelize": "run-s barrelize",
     "build:api": "tsc",
     "build:post": "tsx ./src/post-build.ts",
     "check": "yarn build",
