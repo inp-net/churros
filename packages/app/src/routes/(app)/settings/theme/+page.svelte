@@ -22,7 +22,6 @@
           data {
             localID
             ...ThemesEditorSidebar
-            ...List_SettingsThemes_insert
           }
         }
       }
@@ -62,6 +61,7 @@
             if (
               toasts.mutation(result, 'upsertTheme', 'Thème créé', 'Impossible de créer le thème')
             ) {
+              await PageSettingsTheme.fetch();
               $editingTheme = {
                 id: result.data.upsertTheme.data.localID,
                 variant: $theme.variant,

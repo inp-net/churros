@@ -2,6 +2,7 @@
   import {
     fragment,
     graphql,
+    PageSettingsThemeStore,
     type ThemeEditorSidebar_Me,
     type ThemesEditorSidebar,
     type ThemeVariable$options,
@@ -39,6 +40,7 @@
     graphql(`
       fragment ThemesEditorSidebar on Theme @loading {
         name
+        id
         localID
         author {
           uid
@@ -102,7 +104,7 @@
         ...MutationErrors
         ... on MutationDeleteThemeSuccess {
           data {
-            id @Theme_delete
+            id
           }
         }
       }
@@ -231,7 +233,8 @@
         et déposer tes fichiers dessus
       </p>
       <p>
-Ensuite, après avoir upload l'image tu pourra l'ajouter à la page à l'aide du bouton d'insertion. Cet ajout va te générer une URL que tu peux garder et utiliser pour le thème.
+        Ensuite, après avoir upload l'image tu pourra l'ajouter à la page à l'aide du bouton
+        d'insertion. Cet ajout va te générer une URL que tu peux garder et utiliser pour le thème.
       </p>
       <section class="ok">
         <ButtonPrimary on:click={close}>OK</ButtonPrimary>
@@ -263,6 +266,7 @@ Ensuite, après avoir upload l'image tu pourra l'ajouter à la page à l'aide du
         await mutateAndToast(DeleteTheme, {
           theme: $data?.localID,
         });
+        await new PageSettingsThemeStore().fetch();
         $editingTheme = null;
       }}>Supprimer</ButtonSecondary
     >
