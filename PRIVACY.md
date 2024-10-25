@@ -39,7 +39,7 @@ Nous ne procédons pas à du profilage des utilisateurs. Toute information que n
 
 # Politique de rétention des données
 
-TBD
+Hors IP et autres métadonnées qui sont supprimées à plus haute fréquence, tout compte sera supprimé au plus 5 ans après sa création. Si le titulaire du compte souhaites le garder après cette durée, il peut nous en faire la demande qu'il devra renouveler tous les ans.
 
 # Divulgation et échange de données avec des services tiers
 
