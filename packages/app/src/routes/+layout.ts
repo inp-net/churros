@@ -19,5 +19,6 @@ export async function load(event) {
 }
 
 export const _RootLayoutVariables: RootLayoutVariables = async () => ({
-  editingTheme: browser ? (get(editingTheme)?.id ?? '') : '',
+  editingThemeId: browser ? (get(editingTheme)?.id ?? 'none') : 'none',
+  editingTheme: browser ? Boolean(get(editingTheme)) : false,
 });

@@ -40,7 +40,7 @@
   $: setSentryUser($RootLayout.data?.me ?? null);
 
   $: if (browser && $editingTheme)
-    RootLayout.fetch({ variables: { editingTheme: $editingTheme.id } });
+    RootLayout.fetch({ variables: { editingThemeId: $editingTheme.id, editingTheme: true } });
 
   // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);

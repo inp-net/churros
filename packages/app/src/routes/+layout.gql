@@ -1,4 +1,4 @@
-query RootLayout($editingTheme: LocalID!) {
+query RootLayout($editingThemeId: LocalID!, $editingTheme: Boolean!) {
   loggedIn
   me {
     ...AnalyticsTrackerUser
@@ -10,7 +10,7 @@ query RootLayout($editingTheme: LocalID!) {
     name
   }
 
-  editingTheme: theme(id: $editingTheme) {
+  editingTheme: theme(id: $editingThemeId) @include(if: $editingTheme) {
     ...ThemesEditorSidebar
   }
 }
