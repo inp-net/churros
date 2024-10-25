@@ -123,6 +123,7 @@
     overflow: hidden;
     color: var(--fg);
     cursor: pointer;
+    background: var(--bg);
     border: var(--primary) solid var(--border-block);
     border-radius: var(--radius-block);
   }
