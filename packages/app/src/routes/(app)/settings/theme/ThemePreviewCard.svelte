@@ -88,6 +88,7 @@
     <h2><LoadingText value={$data?.name ?? 'Par défaut'}></LoadingText></h2>
     {#if $data?.canEdit}
       <ButtonGhost
+        --text="var(--primary)"
         help={editing ? 'Terminer' : 'Modifier'}
         on:click={async () => {
           if (!$data || !loaded($data?.id)) return;
