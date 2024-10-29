@@ -1,13 +1,12 @@
-import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
-import { LocalID, UIDScalar } from '#modules/global';
+import { builder, ensureGlobalId, localID, log, prisma, publish } from '#lib';
+import { LocalID, pictureURL, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
-import { Visibility } from '@churros/db/prisma';
+import { NotellaEvent, queueNotification } from '#modules/notifications';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
+import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
-import { ArticleType, scheduleNewArticleNotification } from '../index.js';
-import { PostInput } from '../types/post-input.js';
-import { canEditArticle } from '../utils/permissions.js';
+import { ArticleType, canEditArticle, PostInput } from '#modules/posts';
 
 builder.mutationField('upsertArticleV2', (t) =>
   t.prismaField({
@@ -62,7 +61,6 @@ builder.mutationField('upsertArticleV2', (t) =>
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
-      const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
 
       publishedAt ??= new Date();
 
@@ -100,22 +98,16 @@ builder.mutationField('upsertArticleV2', (t) =>
         result.id,
         user,
       );
-      const visibilitiesByVerbosity = [
-        Visibility.Private,
-        Visibility.Unlisted,
-        Visibility.GroupRestricted,
-        Visibility.SchoolRestricted,
-        Visibility.Public,
-      ];
-      void scheduleNewArticleNotification(result, {
-        // Only post the notification immediately if the article was not already published before.
-        // This prevents notifications if the content of the article is changed after its publication; but allows to send notifications immediately if the article was previously set to be published in the future and the author changes their mind and decides to publish it now.
-        eager:
-          !old ||
-          old.publishedAt > new Date() ||
-          // send new notifications when changing visibility of article to a more public one (e.g. from private to school-restricted)
-          visibilitiesByVerbosity.indexOf(result.visibility) >
-            visibilitiesByVerbosity.indexOf(old.visibility),
+      void queueNotification({
+        body: result.title,
+        title: `Post de ${result.group.name}`,
+        action: `/posts/${localID(result.id)}`,
+        event: NotellaEvent.NewPost,
+        object_id: result.id,
+        image: pictureURL({ pictureFile: result.pictureFile }),
+        send_at: result.publishedAt,
+        actions: [],
+        id: nanoid(),
       });
       return result;
     },

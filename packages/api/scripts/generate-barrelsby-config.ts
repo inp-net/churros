@@ -97,7 +97,7 @@ ${existsSync(`${modulePath}/types/index.ts`) ? `export * from './types/index.js'
         continue;
       }
 
-      if (dir === 'resolvers' || dir === 'types') {
+      if (dir === 'resolvers' || dir === 'types' || dir === 'notella') {
         continue;
       }
 

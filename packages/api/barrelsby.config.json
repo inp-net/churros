@@ -29,6 +29,7 @@
     "./src/modules/gitlab/utils",
     "./src/modules/global/resolvers",
     "./src/modules/global/types",
+    "./src/modules/global/utils",
     "./src/modules/groups/resolvers",
     "./src/modules/groups/types",
     "./src/modules/groups/utils",
