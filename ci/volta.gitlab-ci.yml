@@ -9,6 +9,11 @@
     - yarn config set enableImmutableInstalls true
     - yarn install
 
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: packages/api/src/modules/notifications/notella
+
   cache:
     paths:
       - .yarn/cache/
