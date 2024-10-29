@@ -921,6 +921,7 @@ __metadata:
     mjml: "npm:^4.15.3"
     multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^5.0.7"
+    nats: "npm:^2.28.2"
     nodemailer: "npm:^6.9.15"
     nodemon: "npm:^3.1.7"
     normalize-url: "npm:^8.0.1"
@@ -16788,6 +16789,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nats@npm:^2.28.2":
+  version: 2.28.2
+  resolution: "nats@npm:2.28.2"
+  dependencies:
+    nkeys.js: "npm:1.1.0"
+  checksum: 10c0/5f7a5665908b1038c2a0018a02951bab0718a20322324fe102d268d0e1183ddfe93a0587b3d0a7d4c86be3428125cee605e2f3878f419b10f7fb277453edb733
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -16822,6 +16832,15 @@ __metadata:
   version: 1.0.5
   resolution: "nice-try@npm:1.0.5"
   checksum: 10c0/95568c1b73e1d0d4069a3e3061a2102d854513d37bcfda73300015b7ba4868d3b27c198d1dbbd8ebdef4112fc2ed9e895d4a0f2e1cce0bd334f2a1346dc9205f
+  languageName: node
+  linkType: hard
+
+"nkeys.js@npm:1.1.0":
+  version: 1.1.0
+  resolution: "nkeys.js@npm:1.1.0"
+  dependencies:
+    tweetnacl: "npm:1.0.3"
+  checksum: 10c0/44ff8d61e46d2b345351ed7844d66036a815aeca23927def6ca258e27a18a1678fe5ab161c5cf0b6e3a3993a945d422b71036986d09669b214540c8491478bef
   languageName: node
   linkType: hard
 
@@ -21993,6 +22012,13 @@ __metadata:
   version: 0.0.6
   resolution: "tunnel@npm:0.0.6"
   checksum: 10c0/e27e7e896f2426c1c747325b5f54efebc1a004647d853fad892b46d64e37591ccd0b97439470795e5262b5c0748d22beb4489a04a0a448029636670bfd801b75
+  languageName: node
+  linkType: hard
+
+"tweetnacl@npm:1.0.3":
+  version: 1.0.3
+  resolution: "tweetnacl@npm:1.0.3"
+  checksum: 10c0/069d9df51e8ad4a89fbe6f9806c68e06c65be3c7d42f0701cc43dba5f0d6064686b238bbff206c5addef8854e3ce00c643bff59432ea2f2c639feab0ee1a93f9
   languageName: node
   linkType: hard
 

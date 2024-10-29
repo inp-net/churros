@@ -3,6 +3,7 @@
  */
 
 export * from './count.js';
+export * from './notella.js';
 export * from './push-notification.js';
 export * from './schedule.js';
 export * from './send.js';

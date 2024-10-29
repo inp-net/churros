@@ -46,6 +46,8 @@ const main = () => {
         continue;
       }
 
+      if (dir.split('/').some((f) => f === 'notella')) continue;
+
       barrelsbyConfig.directory.push(`./${dir}`);
     }
   };
