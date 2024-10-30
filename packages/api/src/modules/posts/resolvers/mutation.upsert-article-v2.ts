@@ -2,11 +2,10 @@ import { builder, ensureGlobalId, localID, log, prisma, publish } from '#lib';
 import { LocalID, pictureURL, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
 import { NotellaEvent, queueNotification } from '#modules/notifications';
+import { ArticleType, canEditArticle, PostInput } from '#modules/posts';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
-import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
-import { ArticleType, canEditArticle, PostInput } from '#modules/posts';
 
 builder.mutationField('upsertArticleV2', (t) =>
   t.prismaField({
@@ -107,7 +106,6 @@ builder.mutationField('upsertArticleV2', (t) =>
         image: pictureURL({ pictureFile: result.pictureFile }),
         send_at: result.publishedAt,
         actions: [],
-        id: nanoid(),
       });
       return result;
     },
