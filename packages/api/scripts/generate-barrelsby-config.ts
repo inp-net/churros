@@ -46,8 +46,6 @@ const main = () => {
         continue;
       }
 
-      if (dir.split('/').some((f) => f === 'notella')) continue;
-
       barrelsbyConfig.directory.push(`./${dir}`);
     }
   };
@@ -97,7 +95,7 @@ ${existsSync(`${modulePath}/types/index.ts`) ? `export * from './types/index.js'
         continue;
       }
 
-      if (dir === 'resolvers' || dir === 'types' || dir === 'notella') {
+      if (dir === 'resolvers' || dir === 'types') {
         continue;
       }
 

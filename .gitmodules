@@ -1,3 +1,0 @@
-[submodule "packages/api/src/modules/notifications/notella"]
-	path = packages/api/src/modules/notifications/notella
-	url = git@git.inpt.fr:churros/notella.git
