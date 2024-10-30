@@ -9,6 +9,7 @@
     "@graphql-yoga/node": "^3.9.1",
     "@graphql-yoga/redis-event-target": "^3.0.1",
     "@inp-net/ldap7": "^1.0.12",
+    "@inp-net/notella": "^0.1.2",
     "@pothos/core": "4.2.0",
     "@pothos/plugin-complexity": "^4.1.0",
     "@pothos/plugin-dataloader": "^4.1.1",

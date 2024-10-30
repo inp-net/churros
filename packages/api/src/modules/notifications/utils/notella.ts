@@ -1,9 +1,8 @@
+import {  STREAM_NAME, SUBJECT_NAME, type Message } from '@inp-net/notella';
 import { connect, StringCodec, type JetStreamManager, type NatsConnection } from 'nats';
-import { STREAM_NAME, SUBJECT_NAME } from '../notella/constants.js';
-import { Event, type Message } from '../notella/types.js';
 
 export type NotellaMessage = Message;
-export { Event as NotellaEvent };
+
 
 let jetstreamManager: JetStreamManager;
 let natsConnection: NatsConnection;
@@ -49,3 +48,5 @@ async function setupStream(
     );
   }
 }
+
+export {Event as NotellaEvent} from '@inp-net/notella';
