@@ -1,4 +1,5 @@
 import { STREAM_NAME, SUBJECT_NAME, type Message } from '@inp-net/notella';
+import { nanoid } from 'nanoid';
 import { connect, StringCodec, type JetStreamManager, type NatsConnection } from 'nats';
 
 export type NotellaMessage = Message;
@@ -6,15 +7,14 @@ export type NotellaMessage = Message;
 let jetstreamManager: JetStreamManager;
 let natsConnection: NatsConnection;
 
-export async function queueNotification(message: Message) {
+export async function queueNotification(message: Omit<Message, 'id'> & { id?: string }) {
   const nc = await setupNats();
   const js = nc.jetstream();
   const sc = StringCodec();
 
-  await js.publish(SUBJECT_NAME, sc.encode(JSON.stringify(message)));
   message.id ??= nanoid(10);
-
   console.info(`Queuing notification ${message.id}`);
+  await js.publish(SUBJECT_NAME, sc.encode(JSON.stringify(message)));
 }
 
 async function setupNats(): Promise<NatsConnection> {
