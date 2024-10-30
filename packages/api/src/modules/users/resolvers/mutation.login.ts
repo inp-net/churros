@@ -1,8 +1,9 @@
 import { builder, log, prisma } from '#lib';
-import { notify } from '#modules/notifications';
+import { queueNotification } from '#modules/notifications';
 import type { Prisma } from '@churros/db/prisma';
-import { CredentialType as CredentialPrismaType, NotificationChannel } from '@churros/db/prisma';
+import { CredentialType as CredentialPrismaType } from '@churros/db/prisma';
 import { hashPassword, upsertLdapUser } from '@inp-net/ldap7/user';
+import { Event as NotellaEvent } from '@inp-net/notella';
 import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import {
@@ -113,14 +114,12 @@ export async function login(
           userCandidate,
         });
 
-        await notify(await prisma.user.findMany({ where: { admin: true } }), {
+        await queueNotification({
           title: `${userCandidate.email} est bloqué dans une étape intermédiaire`,
           body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
-          data: {
-            channel: NotificationChannel.Other,
-            goto: `/signups/edit/${userCandidate.email}`,
-            group: undefined,
-          },
+          action: `/signups/edit/${userCandidate.email}`,
+          object_id: userCandidate.id,
+          event: NotellaEvent.LoginStuck,
         });
 
         throw new GraphQLError("Ton compte n'est pas encore prêt. Réessaie plus tard.");

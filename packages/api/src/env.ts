@@ -56,8 +56,6 @@ export const environmentSchema = z.object({
     'Lydia webhook URL: Where Lydia should notify us of payment acknowledgements.',
   ),
   PUBLIC_FOY_GROUPS: z.string().describe('DEPRECATED.').optional(),
-  PUBLIC_VAPID_KEY: z.string().describe('Public VAPID key. Used to send push notifications.'),
-  VAPID_PRIVATE_KEY: z.string().describe('Private VAPID key. Used to send push notifications.'),
   PUBLIC_CONTACT_EMAIL: z.string().email().describe('Contact email.'),
   GITLAB_PROJECT_ID: z
     .string()
@@ -150,9 +148,6 @@ export const environmentSchema = z.object({
   ),
   PUBLIC_FRONTEND_ORIGIN_IOS: optionaluri().describe(
     'Origin of the public frontend for the iOS client. Defaults to PUBLIC_FRONTEND_ORIGIN.',
-  ),
-  FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY: googleServiceAccountKey().describe(
-    'Firebase Admin SDK service account key. JSON contents of the key file, can be downloaded from the Firebase Admin console. Used to send push notifications to Android & iOS native clients.',
   ),
   PUBLIC_APP_PACKAGE_ID: z
     .string()

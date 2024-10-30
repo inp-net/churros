@@ -1,6 +1,6 @@
 import { builder } from '#lib';
-import { NotificationChannel as NotificationChannelPrisma } from '@churros/db/prisma';
-import { notify, type PushNotification } from '../index.js';
+import { Event as NotellaEvent } from '@inp-net/notella';
+import { queueNotification } from '../index.js';
 
 builder.mutationField('sendNotification', (t) =>
   t.boolean({
@@ -18,16 +18,12 @@ builder.mutationField('sendNotification', (t) =>
     async resolve(_, { title, body }, { user }) {
       if (!user) return false;
 
-      const data: PushNotification['data'] = {
-        channel: NotificationChannelPrisma.Other,
-        goto: '/',
-        group: undefined,
-      };
-
-      await notify([user], {
+      await queueNotification({
         title,
         body,
-        data,
+        event: NotellaEvent.Custom,
+        action: '/',
+        object_id: '',
       });
       return true;
     },

@@ -10,9 +10,10 @@ import {
   splitID,
   yearTier,
 } from '#lib';
-import { notify } from '#modules/notifications';
+import { queueNotification } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
-import { NotificationChannel, type User } from '@churros/db/prisma';
+import { type User } from '@churros/db/prisma';
+import { Event as NotellaEvent } from '@inp-net/notella';
 import { GraphQLError } from 'graphql';
 import { CommentType } from '../index.js';
 
@@ -163,16 +164,17 @@ builder.mutationField('upsertComment', (t) =>
         comment.inReplyTo.author.id !== comment.author.id &&
         commentedOn
       ) {
-        await notify([comment.inReplyTo.author], {
-          title: `@${comment.author.uid} a répondu à votre commentaire sur ${
+        await queueNotification({
+          title: `@${comment.author.uid} a répondu à ton commentaire sur ${
             commentedOn?.title ?? '???'
           }`,
           body: comment.body,
-          data: {
-            group: comment.article?.group.uid ?? undefined,
-            channel: NotificationChannel.Comments,
-            goto: commentUrl,
-          },
+          action: commentUrl,
+          actions: [],
+          event: NotellaEvent.CommentReply,
+          object_id: comment.id,
+          send_at: new Date(),
+          image: '',
         });
       } else if (
         !id &&
@@ -180,14 +182,15 @@ builder.mutationField('upsertComment', (t) =>
         commentedOn?.author &&
         commentedOn?.author !== comment.author
       ) {
-        await notify([commentedOn.author], {
+        await queueNotification({
           title: `@${comment.author?.uid ?? '???'} a commenté sur ${commentedOn.title ?? '???'}`,
           body: comment.body,
-          data: {
-            group: comment.article?.group.uid ?? undefined,
-            channel: NotificationChannel.Comments,
-            goto: commentUrl,
-          },
+          action: commentUrl,
+          actions: [],
+          event: NotellaEvent.NewComment,
+          object_id: comment.id,
+          send_at: new Date(),
+          image: '',
         });
       }
 

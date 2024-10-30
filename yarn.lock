@@ -814,7 +814,7 @@ __metadata:
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.1"
     "@inp-net/ldap7": "npm:^1.0.12"
-    "@inp-net/notella": "npm:^0.1.3"
+    "@inp-net/notella": "npm:^0.4.0"
     "@orangeopensource/hurl": "npm:^5.0.1"
     "@pothos/core": "npm:4.2.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
@@ -860,7 +860,6 @@ __metadata:
     "@types/qrcode": "npm:^1.5.5"
     "@types/semver": "npm:^7.5.8"
     "@types/slug": "npm:^5.0.9"
-    "@types/web-push": "npm:^3.6.3"
     "@types/which": "npm:^3.0.4"
     "@types/ws": "npm:^8.5.12"
     "@zxcvbn-ts/core": "npm:^3.0.4"
@@ -877,7 +876,6 @@ __metadata:
     colord: "npm:^2.9.3"
     connect-redis: "npm:^7.1.1"
     cors: "npm:^2.8.5"
-    croner: "npm:^8.1.2"
     dataloader: "npm:^2.2.2"
     date-fns: "npm:^2.30.0"
     date-fns-tz: "npm:^2.0.1"
@@ -962,7 +960,6 @@ __metadata:
     ua-parser-js: "npm:^1.0.39"
     unaccent: "npm:^0.0.1"
     unified: "npm:^11.0.5"
-    web-push: "npm:^3.6.7"
     which: "npm:^5.0.0"
     ws: "npm:^8.18.0"
     yaml: "npm:^2.5.1"
@@ -2872,12 +2869,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inp-net/notella@npm:^0.1.3":
-  version: 0.1.3
-  resolution: "@inp-net/notella@npm:0.1.3"
+"@inp-net/notella@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@inp-net/notella@npm:0.4.0"
   dependencies:
     "@prisma/client": "npm:^5.20.0"
-  checksum: 10c0/ac91b5bf26143a95eb1220f69ecc1eb024afaf01367893449bc5236aff51d2271ece8866f6dadcadc518dbf7ff9c904d73e22b30fe230a67477b1965243e8421
+  checksum: 10c0/8800eaaa4fc4bd65cdf3bc2efbf06bd1de5bea4afd8a58b6fddf38659e301664b2fdafd7c25639f8ff0bb6fe2e0e3425996b8f782be652e61ba238d715d0012c
   languageName: node
   linkType: hard
 
@@ -6417,15 +6414,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/web-push@npm:^3.6.3":
-  version: 3.6.3
-  resolution: "@types/web-push@npm:3.6.3"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/c08830b5568939ef4d5b40a347893284feb94bbacaffdf105556a4285f565c2396be99d7a4e7fa98ce72ec8de061a04f0283961f90c809d19a0aeae322d8e50e
-  languageName: node
-  linkType: hard
-
 "@types/which@npm:^3.0.4":
   version: 3.0.4
   resolution: "@types/which@npm:3.0.4"
@@ -7200,18 +7188,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asn1.js@npm:^5.3.0":
-  version: 5.4.1
-  resolution: "asn1.js@npm:5.4.1"
-  dependencies:
-    bn.js: "npm:^4.0.0"
-    inherits: "npm:^2.0.1"
-    minimalistic-assert: "npm:^1.0.0"
-    safer-buffer: "npm:^2.1.0"
-  checksum: 10c0/b577232fa6069cc52bb128e564002c62b2b1fe47f7137bdcd709c0b8495aa79cee0f8cc458a831b2d8675900eea0d05781b006be5e1aa4f0ae3577a73ec20324
-  languageName: node
-  linkType: hard
-
 "asn1@npm:~0.2.3, asn1@npm:~0.2.6":
   version: 0.2.6
   resolution: "asn1@npm:0.2.6"
@@ -7527,13 +7503,6 @@ __metadata:
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 10c0/680de03adc54ff925eaa6c7bb9a47a0690e8b5de60f4792604aae8ed618c65e6b63a7893b57ca924beaf53eee69c5af4f8314148c08124c550fe1df1add897d2
-  languageName: node
-  linkType: hard
-
-"bn.js@npm:^4.0.0":
-  version: 4.12.0
-  resolution: "bn.js@npm:4.12.0"
-  checksum: 10c0/9736aaa317421b6b3ed038ff3d4491935a01419ac2d83ddcfebc5717385295fcfcf0c57311d90fe49926d0abbd7a9dbefdd8861e6129939177f7e67ebc645b21
   languageName: node
   linkType: hard
 
@@ -8967,13 +8936,6 @@ __metadata:
     "@types/luxon": "npm:~3.4.0"
     luxon: "npm:~3.4.0"
   checksum: 10c0/c009c79714ae2916233c8cd2700cdda17c9e20d0e8e32eeb6c0d63b8e89bb7c38dbf9f0423f0f6da52d3f054f735aabb988cbe5b25bb55d9c6ca48ed4cfaaaec
-  languageName: node
-  linkType: hard
-
-"croner@npm:^8.1.2":
-  version: 8.1.2
-  resolution: "croner@npm:8.1.2"
-  checksum: 10c0/9ce614c9ef5eb7c2106ff6a5f0cc2dcfe5dd69aff7792fefdc7bd79e7901b498ecd477dcfa790a1db0e46cb3b385f13f6bf870d072f11323ae9d44d8b040c878
   languageName: node
   linkType: hard
 
@@ -13094,13 +13056,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http_ece@npm:1.2.0":
-  version: 1.2.0
-  resolution: "http_ece@npm:1.2.0"
-  checksum: 10c0/647edb7438a56e028acac8a598a685b9186497b0e30747a65889faa209fdde48d5b525da88e7fdcab2b0ce1840eba737f87fa57e96bfe967015d08759fab1771
-  languageName: node
-  linkType: hard
-
 "https-proxy-agent@npm:^5.0.0":
   version: 5.0.1
   resolution: "https-proxy-agent@npm:5.0.1"
@@ -13111,7 +13066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:^7.0.0, https-proxy-agent@npm:^7.0.1":
+"https-proxy-agent@npm:^7.0.1":
   version: 7.0.5
   resolution: "https-proxy-agent@npm:7.0.5"
   dependencies:
@@ -13377,7 +13332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inherits@npm:2, inherits@npm:2.0.4, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.3":
+"inherits@npm:2, inherits@npm:2.0.4, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.3":
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 10c0/4e531f648b29039fb7426fb94075e6545faa1eb9fe83c29f0b6d9e7263aceb4289d2d4557db0d428188eeb449cc7c5e77b0a0b2c4e248ff2a65933a0dee49ef2
@@ -16035,13 +15990,6 @@ __metadata:
   version: 1.0.1
   resolution: "min-indent@npm:1.0.1"
   checksum: 10c0/7e207bd5c20401b292de291f02913230cb1163abca162044f7db1d951fa245b174dc00869d40dd9a9f32a885ad6a5f3e767ee104cf278f399cb4e92d3f582d5c
-  languageName: node
-  linkType: hard
-
-"minimalistic-assert@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "minimalistic-assert@npm:1.0.1"
-  checksum: 10c0/96730e5601cd31457f81a296f521eb56036e6f69133c0b18c13fe941109d53ad23a4204d946a0d638d7f3099482a0cec8c9bb6d642604612ce43ee536be3dddd
   languageName: node
   linkType: hard
 
@@ -22947,21 +22895,6 @@ __metadata:
   version: 2.0.1
   resolution: "web-namespaces@npm:2.0.1"
   checksum: 10c0/df245f466ad83bd5cd80bfffc1674c7f64b7b84d1de0e4d2c0934fb0782e0a599164e7197a4bce310ee3342fd61817b8047ff04f076a1ce12dd470584142a4bd
-  languageName: node
-  linkType: hard
-
-"web-push@npm:^3.6.7":
-  version: 3.6.7
-  resolution: "web-push@npm:3.6.7"
-  dependencies:
-    asn1.js: "npm:^5.3.0"
-    http_ece: "npm:1.2.0"
-    https-proxy-agent: "npm:^7.0.0"
-    jws: "npm:^4.0.0"
-    minimist: "npm:^1.2.5"
-  bin:
-    web-push: src/cli.js
-  checksum: 10c0/d6a90dfe12f938396d0bff4e211a73347c3d584591768f6e62d006b5426710b033bae196a39cf28114f14dc0443a714c24ada1528ec8f11dfa5cb92153643c96
   languageName: node
   linkType: hard
 

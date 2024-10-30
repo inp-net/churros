@@ -1,6 +1,7 @@
 import { log, prisma, publish } from '#lib';
-import { notify } from '#modules/notifications/utils';
+import { queueNotification } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
+import { Event as NotellaEvent } from '@inp-net/notella';
 import express, { type Request, type Response } from 'express';
 import multer from 'multer';
 
@@ -126,6 +127,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             },
             contribution: {
               select: {
+                id: true,
                 user: true,
                 option: {
                   select: {
@@ -138,24 +140,20 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
         });
         if (txn.registration?.author) {
           publish(txn.registration.id, 'updated', txn);
-          await notify([txn.registration.author], {
+          await queueNotification({
             title: 'Place payée',
             body: `Ta réservation pour ${txn.registration.ticket.event}`,
-            data: {
-              channel: 'Other',
-              goto: txn.paidCallback ?? '/',
-              group: undefined,
-            },
+            action: txn.paidCallback ?? '/',
+            event: NotellaEvent.BookingPaid,
+            object_id: txn.registration.id,
           });
         } else if (txn.contribution?.user) {
-          await notify([txn.contribution.user], {
+          await queueNotification({
             title: 'Cotisation payée',
             body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
-            data: {
-              channel: 'Other',
-              goto: txn.paidCallback ?? '/',
-              group: undefined,
-            },
+            action: txn.paidCallback ?? '/',
+            event: NotellaEvent.ContributionPaid,
+            object_id: txn.contribution.id,
           });
         }
         return res.status(200).send('OK');
