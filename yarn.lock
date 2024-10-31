@@ -814,7 +814,7 @@ __metadata:
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.1"
     "@inp-net/ldap7": "npm:^1.0.12"
-    "@inp-net/notella": "https://git.inpt.fr/churros/notella.git#v0.8.0"
+    "@inp-net/notella": "https://git.inpt.fr/churros/notella.git#v0.8.1"
     "@orangeopensource/hurl": "npm:^5.0.1"
     "@pothos/core": "npm:4.2.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
@@ -2689,12 +2689,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inp-net/notella@https://git.inpt.fr/churros/notella.git#v0.8.0":
-  version: 0.8.0
-  resolution: "@inp-net/notella@https://git.inpt.fr/churros/notella.git#commit=33258aa16616452ee44d1a8100692e4cc598c49e"
+"@inp-net/notella@https://git.inpt.fr/churros/notella.git#v0.8.1":
+  version: 0.8.1
+  resolution: "@inp-net/notella@https://git.inpt.fr/churros/notella.git#commit=59bdda3f6a9fb95438303321631d609172a3a43e"
   dependencies:
     "@prisma/client": "npm:^5.20.0"
-  checksum: 10c0/84879b03b1abe33ad1b556cd6a06ca5cf24fb95e299458f8cb4cdcc0106f3ee48ee35fe92e50b25fd85e771f6e2e31360fc1cab8e68e9cba82e96585596db9f1
+  checksum: 10c0/dbf520100ff070c08d951be08e8a328f9725239f76af899cf3ad96e43ca6822735de0065585b64100d934dd43c9d182c79596b49a045777bcb69a5d9492e4378
   languageName: node
   linkType: hard
 
