@@ -5,19 +5,55 @@ services:
       - 5432:5432
     environment:
       - POSTGRES_PASSWORD=dev
+
   smtp:
+    profiles:
+      - mails
     image: mailhog/mailhog
     ports:
       - 1025:1025
       - 8025:8025
+
   redis:
     image: redis/redis-stack:7.2.0-v11
     ports:
       - 6379:6379
       - 8001:8001
 
-  # peut être commenté pour alléger la charge du serveur de développement, si l'on est pas en train de tester des choses qui dépendent de prometheus
+  notella:
+    image: harbor.k8s.inpt.fr/net7_public/churros/notella:v0.8.0
+    profiles:
+      - notella
+    env_file:
+      - .env
+    network_mode: host
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - PUBLIC_VAPID_KEY=${PUBLIC_VAPID_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - CONTACT_EMAIL=${PUBLIC_CONTACT_EMAIL}
+      - FIREBASE_SERVICE_ACCOUNT=${FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY}
+      - STARTUP_SCHEDULE_RESTORATION=enabled # enabled, disabled, eager
+      - APP_PACKAGE_ID=${PUBLIC_APP_PACKAGE_ID}
+      - HEALTH_CHECK_PORT=8080
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  nats:
+    profiles:
+      - notella
+    image: nats
+    ports:
+      - '8222:8222'
+      - '4222:4222'
+    volumes:
+      - ./nats-dev-server.conf:/nats-server.conf
+    command: ['-c', '/nats-server.conf']
+
   prometheus:
+    profiles:
+      - prometheus
     image: prom/prometheus
     ports:
       - 9090:9090
