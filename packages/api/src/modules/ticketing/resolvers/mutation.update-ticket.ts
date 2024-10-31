@@ -1,5 +1,10 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
-import { canEditEvent, canEditEventPrismaIncludes, CapacityScalar } from '#modules/events';
+import {
+  canEditEvent,
+  canEditEventPrismaIncludes,
+  CapacityScalar,
+  scheduleShotgunNotifications,
+} from '#modules/events';
 import { DateRangeInput, LocalID } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { TicketType } from '#modules/ticketing/types';
@@ -78,7 +83,7 @@ builder.mutationField('updateTicket', (t) =>
         }
       }
 
-      return prisma.ticket.update({
+      const result = await prisma.ticket.update({
         ...query,
         where: { id },
         data: {
@@ -95,6 +100,9 @@ builder.mutationField('updateTicket', (t) =>
           countingPolicy: args.countingPolicy,
         },
       });
+
+      await scheduleShotgunNotifications(result.eventId);
+      return result;
     },
   }),
 );

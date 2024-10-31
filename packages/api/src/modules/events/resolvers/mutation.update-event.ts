@@ -1,6 +1,10 @@
 import { builder, ensureGlobalId, lastElement, log, nullToUndefined, prisma } from '#lib';
 import { EventType } from '#modules/events/types';
-import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
+import {
+  canEditEvent,
+  canEditEventPrismaIncludes,
+  scheduleShotgunNotifications,
+} from '#modules/events/utils';
 import { LocalID } from '#modules/global';
 import { PromotionTypeEnum } from '#modules/payments';
 import omit from 'lodash.omit';
@@ -96,6 +100,7 @@ builder.mutationField('updateEvent', (t) =>
           },
         }),
       ]);
+      await scheduleShotgunNotifications(id);
       return lastElement(results);
     },
   }),

@@ -1,5 +1,6 @@
 import { ENV } from '#lib';
-import { STREAM_NAME, SUBJECT_NAME, type Message } from '@inp-net/notella';
+import { Event, STREAM_NAME, SUBJECT_NAME, type Message } from '@inp-net/notella';
+import { isPast } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { connect, StringCodec, type JetStreamManager, type NatsConnection } from 'nats';
 
@@ -9,17 +10,44 @@ export type NotellaMessage = Message;
 let jetstreamManager: JetStreamManager;
 let natsConnection: NatsConnection;
 
-export async function queueNotification(
-  message: Omit<Message, 'id' | 'send_at'> & { id?: string; send_at?: Date },
-) {
+export async function queueNotification({
+  /** Queue notification even if send_at is in the past */
+  eager = true,
+  ...msg
+}: Omit<Message, 'id' | 'send_at'> & { id?: string; send_at?: Date; eager?: boolean }) {
+  const message = {
+    id: nanoid(10),
+    send_at: new Date(),
+    ...msg,
+  };
+
+  if (!eager && isPast(message.send_at)) return;
+
+  console.info(
+    `Queuing notification ${message.id}: ${message.event} for ${message.object_id} at ${message.send_at.toISOString()}`,
+  );
+
+  await send(message);
+}
+
+export async function clearScheduledNotifications(objectId: string) {
+  console.info(`Clearing scheduled notifications for ${objectId}`);
+  await send({
+    title: '',
+    body: '',
+    send_at: new Date(),
+    id: `CLEAR_${nanoid(10)}`,
+    event: Event.ClearScheduledJobs,
+    object_id: objectId,
+    action: '',
+  });
+}
+
+async function send(message: Message) {
   const nc = await setupNats();
   if (!nc) return;
   const js = nc.jetstream();
   const sc = StringCodec();
-
-  message.id ??= nanoid(10);
-  message.send_at ??= new Date();
-  console.info(`Queuing notification ${message.id}`);
   await js.publish(SUBJECT_NAME, sc.encode(JSON.stringify(message)));
 }
 

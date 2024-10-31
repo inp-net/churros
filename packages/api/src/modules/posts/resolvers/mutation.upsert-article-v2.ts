@@ -1,8 +1,7 @@
-import { builder, ensureGlobalId, localID, log, prisma, publish } from '#lib';
-import { LocalID, pictureURL, UIDScalar } from '#modules/global';
+import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
+import { LocalID, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
-import { NotellaEvent, queueNotification } from '#modules/notifications';
-import { ArticleType, canEditArticle, PostInput } from '#modules/posts';
+import { ArticleType, canEditArticle, PostInput, schedulePostNotification } from '#modules/posts';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
@@ -57,6 +56,7 @@ builder.mutationField('upsertArticleV2', (t) =>
     ) {
       if (id) id = ensureGlobalId(id, 'Article');
       eventId = eventId ? ensureGlobalId(eventId, 'Event') : null;
+      const old = id ? await prisma.article.findUnique({ where: { id } }) : null;
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
@@ -89,7 +89,9 @@ builder.mutationField('upsertArticleV2', (t) =>
           event: eventId ? { connect: { id: eventId } } : undefined,
         },
       });
+
       publish(result.id, id ? 'updated' : 'created', result);
+
       await log(
         'article',
         id ? 'update' : 'create',
@@ -97,16 +99,9 @@ builder.mutationField('upsertArticleV2', (t) =>
         result.id,
         user,
       );
-      void queueNotification({
-        body: result.title,
-        title: `Post de ${result.group.name}`,
-        action: `/posts/${localID(result.id)}`,
-        event: NotellaEvent.NewPost,
-        object_id: result.id,
-        image: pictureURL({ pictureFile: result.pictureFile }),
-        send_at: result.publishedAt,
-        actions: [],
-      });
+
+      if (!old || isFuture(old.publishedAt)) await schedulePostNotification(result);
+
       return result;
     },
   }),

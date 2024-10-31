@@ -1,5 +1,9 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
-import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
+import {
+  canEditEvent,
+  canEditEventPrismaIncludes,
+  scheduleShotgunNotifications,
+} from '#modules/events';
 import { DateRangeInput, LocalID } from '#modules/global';
 import { TicketType } from '#modules/ticketing/types';
 import { isWithinInterval } from 'date-fns';
@@ -30,7 +34,7 @@ builder.mutationField('createTicket', (t) =>
     async resolve(query, _, args, { user }) {
       const id = ensureGlobalId(args.event, 'Event');
       await log('events', 'create-ticket', args, id, user);
-      return prisma.ticket.create({
+      const result = await prisma.ticket.create({
         ...query,
         data: {
           event: { connect: { id } },
@@ -48,6 +52,8 @@ builder.mutationField('createTicket', (t) =>
           onlyManagersCanProvide: isWithinInterval(new Date(), args.shotgun),
         },
       });
+      await scheduleShotgunNotifications(result.eventId);
+      return result;
     },
   }),
 );

@@ -170,11 +170,8 @@ builder.mutationField('upsertComment', (t) =>
           }`,
           body: comment.body,
           action: commentUrl,
-          actions: [],
           event: NotellaEvent.CommentReply,
           object_id: comment.id,
-          send_at: new Date(),
-          image: '',
         });
       } else if (
         !id &&
@@ -186,11 +183,8 @@ builder.mutationField('upsertComment', (t) =>
           title: `@${comment.author?.uid ?? '???'} a commenté sur ${commentedOn.title ?? '???'}`,
           body: comment.body,
           action: commentUrl,
-          actions: [],
           event: NotellaEvent.NewComment,
           object_id: comment.id,
-          send_at: new Date(),
-          image: '',
         });
       }
 
