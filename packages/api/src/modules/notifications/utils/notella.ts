@@ -54,13 +54,13 @@ async function send(message: Message) {
 async function setupNats(): Promise<NatsConnection | undefined> {
   if (jetstreamManager && natsConnection) return natsConnection;
 
-  if (!ENV.NOTELLA_URL) {
+  if (!ENV.NOTELLA_NATS_URL) {
     console.warn("Notella URL not set, can't send notifications");
     return;
   }
 
   // Connect to the NATS server
-  const nc = await connect({ servers: new URL(ENV.NOTELLA_URL).host });
+  const nc = await connect({ servers: new URL(ENV.NOTELLA_NATS_URL).host });
 
   // Create a JetStream manager to manage streams
   const jsm = await nc.jetstreamManager();

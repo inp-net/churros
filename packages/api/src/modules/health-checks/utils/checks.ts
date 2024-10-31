@@ -1,5 +1,6 @@
 import { ENV, prisma, publishClient, schoolLdapSettings, subscribeClient } from '#lib';
 import { Client } from '@inp-net/ldap7';
+import * as Notella from '@inp-net/notella';
 import ldap from 'ldapjs';
 import { createTransport } from 'nodemailer';
 import type { HealthCheck } from '../types/index.js';
@@ -86,6 +87,25 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
           .every(Boolean)
       : null,
   },
+  notella: await (async () => {
+    try {
+      if (!ENV.NOTELLA_HEALTHCHECK_ENDPOINT) throw new Error('No endpoint');
+      const res = await fetch(ENV.NOTELLA_HEALTHCHECK_ENDPOINT);
+      const data = (await res.json()) as Notella.HealthResponse;
+      return {
+        gateway: true,
+        ...data,
+      };
+    } catch {
+      return {
+        gateway: false,
+        churros_db: false,
+        firebase: false,
+        nats: false,
+        redis: false,
+      };
+    }
+  })(),
   features: {
     prometheus: Boolean(ENV.PROMETHEUS_URL),
     gitlab: Boolean(ENV.GITLAB_SUDO_TOKEN && ENV.GITLAB_PROJECT_ID),
@@ -100,5 +120,6 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
         ENV.PUBLIC_OAUTH_SCOPES,
     ),
     mailman: Boolean(ENV.MAILMAN_API_URL && ENV.MAILMAN_API_TOKEN),
+    notifications: Boolean(ENV.NOTELLA_HEALTHCHECK_ENDPOINT && ENV.NOTELLA_NATS_URL),
   },
 });

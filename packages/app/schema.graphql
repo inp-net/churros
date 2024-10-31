@@ -1258,6 +1258,10 @@ type FeaturesHealthCheck @graphinx(module: "health-checks") {
   """
   mailman: Boolean!
   """
+  Whether notifications are configured
+  """
+  notifications: Boolean!
+  """
   Whether OAuth login is configured
   """
   oauth: Boolean!
@@ -1899,6 +1903,7 @@ type HealthCheck {
   features: FeaturesHealthCheck!
   ldap: LdapHealthCheck!
   mail: MailHealthCheck!
+  notella: NotellaHealthCheck!
   redis: RedisHealthCheck!
 }
 
@@ -3904,6 +3909,29 @@ An error raised when a resource does not exist.
 """
 type NotFoundError implements ErrorInterface {
   message: String!
+}
+
+type NotellaHealthCheck @graphinx(module: "health-checks") {
+  """
+  Whether Notella's connection to the Churros database is ready
+  """
+  churrosDatabase: Boolean!
+  """
+  Whether Notella's connection to Firebase is ready
+  """
+  firebase: Boolean!
+  """
+  Whether Churros can access Notella at all
+  """
+  gateway: Boolean!
+  """
+  Whether Notella's connection to NATS is ready
+  """
+  nats: Boolean!
+  """
+  Whether Notella's connection to Redis is ready
+  """
+  redis: Boolean!
 }
 
 """

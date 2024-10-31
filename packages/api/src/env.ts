@@ -153,7 +153,8 @@ export const environmentSchema = z.object({
     .string()
     .regex(/^[\d.a-z]+$/)
     .describe('App package ID (Android) and Bundle ID (iOS).'),
-  NOTELLA_URL: optionaluri('nats').describe('Notella notifications scheduler NATS URL.'),
+  NOTELLA_NATS_URL: optionaluri('nats').describe('Notella notifications scheduler NATS URL.'),
+  NOTELLA_HEALTHCHECK_ENDPOINT: optionaluri().describe('Notella healthcheck endpoint.'),
 });
 
 function googleServiceAccountKey() {
