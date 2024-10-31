@@ -21,15 +21,17 @@ services:
       - 8001:8001
 
   notella:
-    image: harbor.k8s.inpt.fr/net7_public/churros/notella:v0.8.1
+    image: harbor.k8s.inpt.fr/net7_public/churros/notella:v0.9.0
     profiles:
       - notella
     env_file:
       - .env
-    network_mode: host
+    ports:
+      - 8080:8080
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
+      - NATS_URL=nats://nats:4222
       - PUBLIC_VAPID_KEY=${PUBLIC_VAPID_KEY}
       - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
       - CONTACT_EMAIL=${PUBLIC_CONTACT_EMAIL}
@@ -37,8 +39,8 @@ services:
       - STARTUP_SCHEDULE_RESTORATION=enabled # enabled, disabled, eager
       - APP_PACKAGE_ID=${PUBLIC_APP_PACKAGE_ID}
       - HEALTH_CHECK_PORT=8080
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+    command: >
+      sh -c 'export DATABASE_URL=$${DATABASE_URL/localhost/db} && export REDIS_URL=$${REDIS_URL/localhost/redis} && exec /app/notella'
 
   nats:
     profiles:
