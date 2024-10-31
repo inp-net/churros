@@ -12,5 +12,6 @@ export async function schedulePostNotification(
     action: `/posts/${post.id}`,
     object_id: post.id,
     event: Event.NewPost,
+    send_at: post.publishedAt,
   });
 }
