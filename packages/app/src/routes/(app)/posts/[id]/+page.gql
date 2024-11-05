@@ -11,7 +11,6 @@ query PagePostDetail($id: LocalID!) @loading {
     bodyHtml: bodyHtmlSafe
     visibility
     publishedAt
-    notifiedAt
     canBeEdited
     pictureURL
     group {

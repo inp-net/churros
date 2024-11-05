@@ -61,7 +61,12 @@ export const ArticleType = builder.prismaNode('Article', {
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
-    notifiedAt: t.expose('notifiedAt', { type: DateTimeScalar, nullable: true }),
+    notifiedAt: t.field({
+      type: DateTimeScalar,
+      nullable: true,
+      deprecationReason: "Le champ n'est plus mis à jour maintenant",
+      resolve: () => null,
+    }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     pictureFile: t.exposeString('pictureFile'),
     author: t.relation('author', { nullable: true }),

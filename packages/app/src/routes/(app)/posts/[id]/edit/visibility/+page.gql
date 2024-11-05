@@ -1,9 +1,8 @@
 query PagePostEditVisibility($id: LocalID!) @loading {
-    post: article(id: $id) {
-        visibility
-        group {
-            uid
-        }
-        notifiedAt
+  post: article(id: $id) {
+    visibility
+    group {
+      uid
     }
+  }
 }

@@ -70,8 +70,6 @@ builder.mutationField('upsertArticle', (t) =>
       const group = await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } });
       publishedAt ??= new Date();
       const data = {
-        // eslint-disable-next-line unicorn/no-null
-        notifiedAt: null,
         author: user
           ? {
               connect: {

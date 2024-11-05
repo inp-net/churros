@@ -70,7 +70,6 @@ builder.mutationField('upsertArticleV2', (t) =>
         },
         where: { id: id ?? '' },
         create: {
-          notifiedAt: null,
           body: body ?? '',
           title: title ?? '',
           slug: '',

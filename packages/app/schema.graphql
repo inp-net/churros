@@ -564,7 +564,7 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   """
   localID: LocalID!
   myReactions: BooleanMap!
-  notifiedAt: DateTime
+  notifiedAt: DateTime @deprecated(reason: "Le champ n'est plus mis à jour maintenant")
   """
   Texte alternatif de l'image
   """
