@@ -134,6 +134,15 @@ export function canSeePlacesLeftCount(
 
 canSeePlacesLeftCount.prismaIncludes = canSeeAllBookingsPrismaIncludes;
 
+export function canSeeTicketCapacity(
+  event: Prisma.EventGetPayload<{ include: typeof canSeeTicketCapacity.prismaIncludes }>,
+  user: Context['user'],
+) {
+  return event.showCapacity || canSeeAllBookings(event, user);
+}
+
+canSeeTicketCapacity.prismaIncludes = canSeeAllBookingsPrismaIncludes;
+
 export function canMarkBookingAsPaid(
   user: Context['user'] &
     Prisma.UserGetPayload<{ include: typeof canMarkBookingAsPaid.userPrismaIncludes }>,
@@ -171,9 +180,8 @@ export function userIsBookedToEvent(
       // Ignore cancelled registrations
       if (reg.cancelledAt) return false;
       // If the registration has an internal beneficiary, check that it's the user
-      if (reg.internalBeneficiaryId) 
-        return reg.internalBeneficiaryId === user.id;
-      
+      if (reg.internalBeneficiaryId) return reg.internalBeneficiaryId === user.id;
+
       // Otherwise, the registration is for the author, check that it's the user
       return reg.authorId === user.id;
     }),
