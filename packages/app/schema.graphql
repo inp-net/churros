@@ -1131,6 +1131,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   searchBookings(q: String!): [RegistrationSearchResult!]!
   shares: Int!
   """
+  Vrai si les capacités des billets doivent être affichées
+  """
+  showCapacity: Boolean!
+  """
   Vrai si le nombre de places restantes doit être affiché
   """
   showPlacesLeft: Boolean!
@@ -2829,6 +2833,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     Lieu de l'évènement
     """
     location: String
+    """
+    Afficher la capacité sur les billets
+    """
+    showCapacity: Boolean = true
     """
     Afficher le nombre de places restantes sur les billets
     """

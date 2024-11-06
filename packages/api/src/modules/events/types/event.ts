@@ -97,6 +97,9 @@ export const EventType = builder.prismaNode('Event', {
     showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
       description: 'Vrai si le nombre de places restantes doit être affiché',
     }),
+    showCapacity: t.exposeBoolean('showCapacity', {
+      description: 'Vrai si les capacités des billets doivent être affichées',
+    }),
     shares: t.int({
       async resolve({ id }) {
         const {

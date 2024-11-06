@@ -1,15 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import PickLydiaAccount from './PickBeneficiary.svelte';
   import { route } from '$lib/ROUTES';
   import Alert from '$lib/components/Alert.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import CardTicket from '$lib/components/CardTicket.svelte';
   import InputText from '$lib/components/InputText.svelte';
-  import InputToggle from '$lib/components/InputToggle.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import TextTicketGroupSummary from '$lib/components/TextTicketGroupSummary.svelte';
   import TextTicketSummary from '$lib/components/TextTicketSummary.svelte';
   import {
     LoadingText,
@@ -19,31 +21,36 @@
     mapLoading,
     onceLoaded,
   } from '$lib/loading';
-  import { mutate } from '$lib/mutations';
+  import { mutate, mutateAndToast } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import { subDays } from 'date-fns';
   import IconBeneficiary from '~icons/msl/account-balance-outline';
+  import IconAdd from '~icons/msl/add';
+  import IconShowPlacesLeft from '~icons/msl/check';
   import IconChevronRight from '~icons/msl/chevron-right';
   import IconRemainingPlaces from '~icons/msl/clock-loader-90';
+  import IconHideCapacity from '~icons/msl/close';
   import IconCapacity from '~icons/msl/file-copy-outline';
-  import IconAdd from '~icons/msl/add';
+  import IconHelp from '~icons/msl/help-outline';
+  import IconCapacityOnly from '~icons/msl/stacks-outline';
   import type { PageData } from './$houdini';
+  import PickLydiaAccount from './PickBeneficiary.svelte';
   import {
     ChangeCapacity,
     CreateTicket,
-    SetEventShowRemainingPlaces,
-    SetEventBeneficiary,
-    UnsetEventBeneficiary,
     CreateTicketGroup,
+    SetEventBeneficiary,
+    SetEventPlacesVisibility,
+    UnsetEventBeneficiary,
   } from './mutations';
-  import CardTicket from '$lib/components/CardTicket.svelte';
-  import TextTicketGroupSummary from '$lib/components/TextTicketGroupSummary.svelte';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
 
   let pickLydiaAccount: () => void;
   $: if ($page.url.hash === '#beneficiary') pickLydiaAccount?.();
+
+  let openPlacesVisibilityHelp: () => void;
 </script>
 
 <MaybeError result={$PageEditEventTickets} let:data={{ event }}>
@@ -68,27 +75,82 @@
     <Submenu>
       <SubmenuItem
         icon={IconRemainingPlaces}
-        label
-        subtext={mapLoading(event.showPlacesLeft, (show) =>
-          show ? 'Affiché' : 'Caché (excepté pour les managers)',
-        )}
+        clickable
+        on:click={async () => {
+          if (!loaded(event.showPlacesLeft) || !loaded(event.showCapacity)) return;
+          const newValues = {
+            // Cycler entre les 3 états: showPlacesLeft+showCapacity, showCapacity seulement et aucun
+            showCapacity: event.showPlacesLeft ? true : event.showCapacity ? false : true,
+            showRemainingPlaces: event.showPlacesLeft ? false : event.showCapacity ? false : true,
+          };
+          await mutateAndToast(
+            SetEventPlacesVisibility,
+            {
+              id: $page.params.id,
+              ...newValues,
+            },
+            {
+              error: 'Impossible de modifier la visibilité du nombre de places',
+              // optimistic: {
+              //   updateEvent: {
+              //     __typename: "MutationUpdateEventSuccess",
+              //     data: newValues
+              //   }
+              // }
+            },
+          );
+        }}
       >
-        Nombre de places restantes
-        <InputToggle
-          slot="right"
-          value={event.showPlacesLeft}
-          on:update={async ({ detail }) => {
-            toasts.mutation(
-              await mutate(SetEventShowRemainingPlaces, {
-                id: event.id,
-                showRemainingPlaces: detail,
-              }),
-              'updateEvent',
-              '',
-              `Impossible de ${detail ? 'montrer' : 'cacher'} les places restantes`,
-            );
-          }}
-        />
+        Visibilité du nombre de places
+        <div class="places-visiblity-subtext" slot="subtext">
+          <LoadingText
+            value={mapAllLoading(
+              [event.showPlacesLeft, event.showCapacity],
+              (placesLeft, capacity) =>
+                placesLeft
+                  ? 'Total & restantes visibles'
+                  : capacity
+                    ? 'Places restantes cachées'
+                    : 'Total & restantes cachées',
+            )}
+          />
+          <ButtonInk
+            inline
+            neutral
+            insideProse
+            icon={IconHelp}
+            on:click={(e) => {
+              e.stopPropagation();
+              openPlacesVisibilityHelp();
+            }}
+          >
+            Aide
+          </ButtonInk>
+        </div>
+        <ModalOrDrawer
+          notrigger
+          title="Visiblité des places restantes"
+          bind:open={openPlacesVisibilityHelp}
+        >
+          Le nombre de places restantes est toujours visibles pour les personnes qui peuvent scanner
+          des billets
+        </ModalOrDrawer>
+        <svelte:fragment slot="right">
+          {#if loaded(event.showPlacesLeft) && loaded(event.showCapacity)}
+            <div
+              class="places-visibility-indicator
+              {event.showPlacesLeft ? 'success' : event.showCapacity ? 'warning' : 'danger'}"
+            >
+              {#if event.showPlacesLeft}
+                <IconShowPlacesLeft />
+              {:else if event.showCapacity}
+                <IconCapacityOnly />
+              {:else}
+                <IconHideCapacity />
+              {/if}
+            </div>
+          {/if}
+        </svelte:fragment>
       </SubmenuItem>
       <SubmenuItem icon={IconCapacity} label subtext="Limite sur l'ensemble des places">
         Capacité totale
@@ -352,5 +414,9 @@
 
   .external-suggestion *:not(:last-child) {
     margin-bottom: 1rem;
+  }
+
+  .places-visibility-indicator {
+    font-size: 1.5rem;
   }
 </style>
