@@ -32,6 +32,8 @@ import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
 import { DEFAULT_RATE_LIMITS } from './ratelimit.js';
 
+export const CapacityUnlimitedValue = 'Unlimited' as const;
+
 export interface PothosTypes {
   AuthContexts: AuthContexts;
   AuthScopes: AuthScopes;
@@ -91,8 +93,8 @@ export interface PothosTypes {
       Output: number;
     };
     Capacity: {
-      Input: number | null;
-      Output: number | 'Unlimited';
+      Input: number | typeof CapacityUnlimitedValue;
+      Output: number | typeof CapacityUnlimitedValue;
     };
     URL: {
       Input: URL;
