@@ -33,6 +33,7 @@ import { pubsub } from './pubsub.js';
 import { DEFAULT_RATE_LIMITS } from './ratelimit.js';
 
 export const CapacityUnlimitedValue = 'Unlimited' as const;
+export type Capacity = number | typeof CapacityUnlimitedValue;
 
 export interface PothosTypes {
   AuthContexts: AuthContexts;
@@ -93,8 +94,8 @@ export interface PothosTypes {
       Output: number;
     };
     Capacity: {
-      Input: number | typeof CapacityUnlimitedValue;
-      Output: number | typeof CapacityUnlimitedValue;
+      Input: Capacity;
+      Output: Capacity;
     };
     URL: {
       Input: URL;

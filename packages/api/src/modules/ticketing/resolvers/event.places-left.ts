@@ -1,4 +1,4 @@
-import { builder, CapacityUnlimitedValue, prisma, subscriptionName } from '#lib';
+import { builder, CapacityUnlimitedValue, prisma, subscriptionName, type Capacity } from '#lib';
 import { CapacityScalar, eventCapacity, EventType } from '#modules/events';
 import { canSeePlacesLeftCount } from '../index.js';
 
@@ -19,7 +19,7 @@ builder.prismaObjectField(EventType, 'placesLeft', (t) =>
         include: { ...canSeePlacesLeftCount.prismaIncludes, ...eventCapacity.prismaIncludes },
       });
 
-      let placesLeft = Math.max(
+      let placesLeft: Capacity = Math.max(
         0,
         eventCapacity(event) - registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
       );
