@@ -1116,7 +1116,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
     """
     timestamp: Boolean! = true
   ): String!
-  placesLeft: Int
+  placesLeft: Capacity
   profitsBreakdown: ProfitsBreakdown!
   """
   Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
@@ -6046,7 +6046,10 @@ type Ticket implements Node {
     """
     themself: Boolean!
   ): String
-  capacity: Int
+  """
+  Nombre de places totales du billet. Null si l'information n'est pas disponible.
+  """
+  capacity: Capacity
   closesAt: DateTime
   countingPolicy: TicketCountingPolicy!
   description: String!
@@ -6113,7 +6116,7 @@ type Ticket implements Node {
   """
   Nombre de places restantes. Null si l'information n'est pas disponible. N'est jamais null quand il n'y a plus de places disponibles (0)
   """
-  placesLeft: Int
+  placesLeft: Capacity
   price: Float! @deprecated(reason: "Use minimumPrice(applyPromotions: true) instead")
   """
   Le billet permet de payer un prix choisi par l'utilisateur.ice, entre minimumPrice et maximumPrice

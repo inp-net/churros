@@ -43,6 +43,7 @@
     SetEventPlacesVisibility,
     UnsetEventBeneficiary,
   } from './mutations';
+  import { stringifyCapacity } from '$lib/display';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
@@ -159,7 +160,7 @@
           clearable
           label=""
           inputmode="decimal"
-          value={onceLoaded(event.globalCapacity, (x) => x?.toString() ?? '', '')}
+          value={onceLoaded(event.globalCapacity, stringifyCapacity, '')}
           placeholder="Illimité"
           on:blur={async ({ currentTarget }) => {
             if (!(currentTarget instanceof HTMLInputElement)) return;
@@ -170,7 +171,7 @@
             toasts.mutation(
               await mutate(ChangeCapacity, {
                 id: event.id,
-                capacity: coerced,
+                capacity: coerced ?? 'Unlimited',
               }),
               'updateEvent',
               '',
