@@ -16,6 +16,7 @@ export const CredentialType = builder.prismaObject('Credential', {
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     expiresAt: t.expose('expiresAt', { type: DateTimeScalar, nullable: true }),
     active: t.boolean({
+      description: "Pour un Token, vrai quand c'est le token actuellement utilisé",
       resolve: ({ type, value }, _, { user }) =>
         type === PrismaTypes.CredentialType.Token && value === user?.credential,
     }),
