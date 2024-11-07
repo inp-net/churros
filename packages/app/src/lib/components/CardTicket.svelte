@@ -93,14 +93,16 @@
   });
 
   /** Used to show an icon saying that the user can see an information because they have some rights */
-  $: canSeePlacesBecauseManager = onceAllLoaded(
-    [$dataPlaces],
-    ({ placesLeft, capacity, event: { showCapacity, showPlacesLeft } }) => {
-      if (showCapacity && placesLeft === 'Unlimited') return false;
-      return (placesLeft !== null && !showPlacesLeft) || (capacity !== null && !showCapacity);
-    },
-    false,
-  );
+  $: canSeePlacesBecauseManager =
+    $dataPlaces &&
+    onceAllLoaded(
+      [$dataPlaces],
+      ({ placesLeft, capacity, event: { showCapacity, showPlacesLeft } }) => {
+        if (showCapacity && placesLeft === 'Unlimited') return false;
+        return (placesLeft !== null && !showPlacesLeft) || (capacity !== null && !showCapacity);
+      },
+      false,
+    );
 
   $: ticketIsOpen =
     $data &&
