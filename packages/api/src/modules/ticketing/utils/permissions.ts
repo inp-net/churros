@@ -1,4 +1,4 @@
-import { log, type Context } from '#lib';
+import { CapacityUnlimitedValue, log, type Context } from '#lib';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
@@ -127,7 +127,7 @@ export function canSeeTicket(
 export function canSeePlacesLeftCount(
   event: Prisma.EventGetPayload<{ include: typeof canSeePlacesLeftCount.prismaIncludes }>,
   user: Context['user'],
-  placesLeft: number,
+  placesLeft: number | typeof CapacityUnlimitedValue,
 ) {
   return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
 }
