@@ -129,12 +129,15 @@
           </ButtonInk>
         </div>
         <ModalOrDrawer
+          narrow
           notrigger
           title="Visiblité des places restantes"
           bind:open={openPlacesVisibilityHelp}
         >
-          Le nombre de places restantes est toujours visibles pour les personnes qui peuvent scanner
-          des billets
+          <p>
+            Le nombre de places restantes est toujours visible par les managers avec Modification ou
+            plus
+          </p>
         </ModalOrDrawer>
         <svelte:fragment slot="right">
           {#if loaded(event.showPlacesLeft) && loaded(event.showCapacity)}
