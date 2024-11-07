@@ -1,4 +1,5 @@
 import { CapacityUnlimitedValue, log, type Context } from '#lib';
+import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
@@ -129,19 +130,19 @@ export function canSeePlacesLeftCount(
   user: Context['user'],
   placesLeft: number | typeof CapacityUnlimitedValue,
 ) {
-  return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
+  return placesLeft === 0 || event.showPlacesLeft || canEditEvent(event, user);
 }
 
-canSeePlacesLeftCount.prismaIncludes = canSeeAllBookingsPrismaIncludes;
+canSeePlacesLeftCount.prismaIncludes = canEditEventPrismaIncludes;
 
 export function canSeeTicketCapacity(
   event: Prisma.EventGetPayload<{ include: typeof canSeeTicketCapacity.prismaIncludes }>,
   user: Context['user'],
 ) {
-  return event.showCapacity || canSeeAllBookings(event, user);
+  return event.showCapacity || canEditEvent(event, user);
 }
 
-canSeeTicketCapacity.prismaIncludes = canSeeAllBookingsPrismaIncludes;
+canSeeTicketCapacity.prismaIncludes = canEditEventPrismaIncludes;
 
 export function canMarkBookingAsPaid(
   user: Context['user'] &
