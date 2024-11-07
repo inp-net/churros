@@ -197,14 +197,23 @@
         {/if}
         {#if canSeePlacesBecauseManager}
           <ModalOrDrawer
+            narrow
             notrigger
             bind:open={openCanSeePlacesBcauseManagerExplainer}
             title="Visibilité du nombre de places"
           >
-            Tu peux voir le nombre de places {#if loading($dataPlaces.event.showCapacity, null)}restantes{/if}
-            parce que tu es manager de l'évènement
+            <p>
+              Tu peux voir le nombre de places {#if loading($dataPlaces.event.showCapacity, null)}restantes{/if}
+              parce que tu es manager de l'évènement
+            </p>
           </ModalOrDrawer>
-          <ButtonGhost inline on:click={openCanSeePlacesBcauseManagerExplainer}>
+          <ButtonGhost
+            inline
+            on:click={openCanSeePlacesBcauseManagerExplainer}
+            help="Tu peux voir le nombre de places {loading($dataPlaces.event.showCapacity, null)
+              ? 'restantes'
+              : ''} parce que tu es manager de l'évènement"
+          >
             <IconLockOpen />
           </ButtonGhost>
         {/if}
