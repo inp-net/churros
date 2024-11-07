@@ -10,15 +10,23 @@ import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType, PromotionTypeEnum } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
-import { PaymentMethod } from '@churros/db/prisma';
+import { PaymentMethod, Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
 import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
 import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
 
+export const EventTypePrismaIncludes = {
+  managers: true,
+  group: true,
+  tickets: true,
+  links: true,
+  reactions: true,
+} as const satisfies Prisma.EventInclude;
+
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true, group: true, tickets: true, links: true, reactions: true },
+  include: EventTypePrismaIncludes,
   interfaces: [
     PicturedInterface,
     ReactableInterface,
