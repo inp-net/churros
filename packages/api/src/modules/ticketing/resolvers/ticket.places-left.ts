@@ -1,4 +1,4 @@
-import { builder, CapacityUnlimitedValue, prisma, subscriptionName } from '#lib';
+import { builder, type Capacity, CapacityUnlimitedValue, prisma, subscriptionName } from '#lib';
 import { CapacityScalar } from '#modules/events';
 import { canSeePlacesLeftCount, placesLeft, TicketType } from '../index.js';
 
@@ -23,7 +23,7 @@ builder.prismaObjectField(TicketType, 'placesLeft', (t) =>
       });
       if (!ticket) return 0;
 
-      let places = placesLeft(ticket);
+      let places: Capacity = placesLeft(ticket);
       // TODO handle infinity at the scalar level
       if (places === Number.POSITIVE_INFINITY) places = CapacityUnlimitedValue;
 
