@@ -1,4 +1,4 @@
-import { CapacityUnlimitedValue, log, type Context } from '#lib';
+import { log, type Capacity, type Context } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
@@ -128,7 +128,7 @@ export function canSeeTicket(
 export function canSeePlacesLeftCount(
   event: Prisma.EventGetPayload<{ include: typeof canSeePlacesLeftCount.prismaIncludes }>,
   user: Context['user'],
-  placesLeft: number | typeof CapacityUnlimitedValue,
+  placesLeft: Capacity,
 ) {
   return placesLeft === 0 || event.showPlacesLeft || canEditEvent(event, user);
 }
