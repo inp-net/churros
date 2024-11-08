@@ -48,14 +48,14 @@ export const EventManagerInviteType = builder.prismaObject('EventManagerInvite',
         url: t.arg({
           type: URLScalar,
           description:
-            'URL à utiliser pour le QR Code. `[code]` sera remplacé par le code de la réservation',
+            "URL à utiliser pour le QR Code. `[code]` sera remplacé par le code d'invitation",
         }),
       },
       authScopes({ event }, {}, { user }) {
         return canSeeEventManagerInvites(event, user);
       },
-      resolve({ id }, { url }) {
-        return renderQRCode(url.toString().replace('[code]', id));
+      resolve({ code }, { url }) {
+        return renderQRCode(url.toString().replace('[code]', code));
       },
     }),
     expiresAt: t.field({
