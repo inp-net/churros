@@ -83,7 +83,7 @@
 
   const CreateEvent = graphql(`
     mutation CreateEvent($group: UID!) {
-      createEvent(group: $group, title: "") {
+      createEvent(group: $group, title: "", createManagerInvite: true) {
         ... on MutationCreateEventSuccess {
           data {
             localID
@@ -440,8 +440,8 @@
 
   .page-content {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
   }
 
   footer {

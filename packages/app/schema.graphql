@@ -1082,6 +1082,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   logs(after: String, before: String, first: Int, last: Int): EventLogsConnection!
   lydiaAccountId: ID
+  """
+  Invitations de manager pour l'évènement. Renvoie une liste vide si l'on n'a pas la permission de les voir
+  """
+  managerInvites: [EventManagerInvite!]!
   managers: [EventManager!]!
   """
   Réservations faites par et/ou pour l'utilisateur.ice connecté.e. Triée par bénéficiaire (soi-même d'abord), puis par date de création. Renvoie au maximum 100 réservations.
@@ -1210,6 +1214,70 @@ type EventManager implements Node {
   localID: LocalID!
   power: EventManagerPowerLevel!
   user: User!
+}
+
+"""
+Invitations pour ajouter facilement des managers à un évènement
+"""
+type EventManagerInvite {
+  """
+  Limite sur le nombre de personnes pouvant utiliser l'invitation
+  """
+  capacity: Capacity!
+  code: String
+  createdAt: DateTime!
+  """
+  L'invitation est expiré
+  """
+  expired: Boolean!
+  """
+  Date à partir de laquelle l'invitation n'est plus valide. Si null, la date de fin de l'évènement est utilisée
+  """
+  expiresAt(
+    """
+    Renvoyer la date d'expiration réelle (donc date de fin de l'évènement si expiresAt est null).
+    """
+    definitive: Boolean!
+  ): DateTime
+  id: ID!
+  """
+  Niveau de permissions que l'invitation donne
+  """
+  power: EventManagerPowerLevel!
+  """
+  Path SVG du QR Code pour utiliser l'invation
+  """
+  qrcode(
+    """
+    URL à utiliser pour le QR Code. `[code]` sera remplacé par le code de la réservation
+    """
+    url: URL!
+  ): QRCode!
+  """
+  L'invitation est expiré ou a atteint sa limite de nombre d'utilisations
+  """
+  unusable: Boolean!
+  updatedAt: DateTime!
+  usedBy(after: String, before: String, first: Int, last: Int): EventManagerInviteUsedByConnection!
+  """
+  Nombre de personnes ayant utilisé l'invitation
+  """
+  uses: Int!
+  """
+  Nombre d'utilisations restantes pour l'invitation
+  """
+  usesLeft: Capacity!
+}
+
+type EventManagerInviteUsedByConnection {
+  edges: [EventManagerInviteUsedByConnectionEdge!]!
+  nodes: [User!]!
+  pageInfo: PageInfo!
+}
+
+type EventManagerInviteUsedByConnectionEdge {
+  cursor: String!
+  node: User!
 }
 
 """
@@ -2300,6 +2368,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   createEvent(
     """
+    Crée un lien d'invitation à 30 utilisations pour inviter des managers à l'évènement avec niveau de permissions ScanTickets
+    """
+    createManagerInvite: Boolean! = false
+    """
     Dates de l'évènement. Si non précisé, l'évènement est créé sans dates, ce qui l'empêche d'avoir une visibilité autre que `Private` ou `Unlisted`.
     """
     dates: DateRangeInput
@@ -3189,6 +3261,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     id: LocalID
     name: String
   ): MutationUpsertTicketGroupResult!
+  """
+  Utilise une invitation de manager d'évènement. Renvoie l'objet manager créé
+  """
+  useEventManagerInvite(
+    """
+    Code d'invitation
+    """
+    code: String!
+  ): MutationUseEventManagerInviteResult!
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
   validateEmail(token: String!): MutationValidateEmailResult!
   verifyBooking(
@@ -3901,6 +3982,12 @@ union MutationUpsertTicketGroupResult = Error | MutationUpsertTicketGroupSuccess
 
 type MutationUpsertTicketGroupSuccess {
   data: TicketGroup!
+}
+
+union MutationUseEventManagerInviteResult = Error | MutationUseEventManagerInviteSuccess | ZodError
+
+type MutationUseEventManagerInviteSuccess {
+  data: EventManager!
 }
 
 union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess | ZodError

@@ -97,6 +97,7 @@ model User {
   sharedPosts                Article[]                  @relation("shares")
   sharedEvents               Event[]                    @relation("shares")
   seenBookings               Registration[]             @relation("seenBy")
+  eventManagerInvites        EventManagerInvite[]       @relation("eventManagerInviteUses")
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -537,43 +538,44 @@ enum EventFrequency {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id               String         @id @default(dbgenerated("nanoid('e:')"))
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @default(now()) @updatedAt
+  id               String               @id @default(dbgenerated("nanoid('e:')"))
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @default(now()) @updatedAt
   authorId         String?
   groupId          String
   contactMail      String
-  beneficiary      LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
-  description      String         @db.Text
-  slug             String         @db.VarChar(255)
-  title            String         @db.VarChar(255)
+  beneficiary      LydiaAccount?        @relation(fields: [lydiaAccountId], references: [id])
+  description      String               @db.Text
+  slug             String               @db.VarChar(255)
+  title            String               @db.VarChar(255)
   // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
   startsAt         DateTime?
   endsAt           DateTime?
   globalCapacity   Int?
-  notifiedAt       DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location         String         @default("") @db.VarChar(255)
+  notifiedAt       DateTime?            @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  location         String               @default("") @db.VarChar(255)
   visibility       Visibility
-  frequency        EventFrequency @default(Once)
+  frequency        EventFrequency       @default(Once)
   recurringUntil   DateTime?
-  pictureFile      String         @default("") @db.VarChar(255)
-  showPlacesLeft   Boolean        @default(true)
-  showCapacity     Boolean        @default(true)
+  pictureFile      String               @default("") @db.VarChar(255)
+  showPlacesLeft   Boolean              @default(true)
+  showCapacity     Boolean              @default(true)
   managers         EventManager[]
-  author           User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  includeInKiosk   Boolean        @default(false)
-  group            Group          @relation(fields: [groupId], references: [id])
-  coOrganizers     Group[]        @relation("coOrganizer")
+  author           User?                @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk   Boolean              @default(false)
+  group            Group                @relation(fields: [groupId], references: [id])
+  coOrganizers     Group[]              @relation("coOrganizer")
   tickets          Ticket[]
   ticketGroups     TicketGroup[]
   articles         Article[]
   lydiaAccountId   String?
   links            Link[]
-  bannedUsers      User[]         @relation("bannedFromEvents")
+  bannedUsers      User[]               @relation("bannedFromEvents")
   reactions        Reaction[]
   forms            Form[]
-  sharedBy         User[]         @relation("shares")
+  sharedBy         User[]               @relation("shares")
   applicableOffers Promotion[]
+  managerInvites   EventManagerInvite[]
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -587,6 +589,28 @@ enum Visibility {
   GroupRestricted
   SchoolRestricted
   Public
+}
+
+/// Used to make invite links to invite people as managers of an event
+model EventManagerInvite {
+  id        String   @id @default(dbgenerated("nanoid('eminvite:')"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Maximum number of uses
+  capacity  Int?
+  code      String    @unique
+  /// If null, should expire at the event's end date, not never expire
+  expiresAt DateTime?
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  canVerifyRegistrations Boolean @default(true) // Can scan tickets
+  canEdit                Boolean @default(false)
+  canEditPermissions     Boolean @default(false)
+
+  usedBy User[] @relation("eventManagerInviteUses")
 }
 
 /// An event manager is a user that can scan tickets, and may be able to manage the event

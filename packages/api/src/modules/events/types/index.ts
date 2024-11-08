@@ -5,6 +5,7 @@
 export * from './capacity.js';
 export * from './even-search-result.js';
 export * from './event-frequency.js';
+export * from './event-manager-invite.js';
 export * from './event-manager-maybe-inherited.js';
 export * from './event-manager-power-level.js';
 export * from './event-manager.js';

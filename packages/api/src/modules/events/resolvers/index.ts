@@ -27,6 +27,7 @@ export * from './mutation.update-event-recurrence.js';
 export * from './mutation.update-event.js';
 export * from './mutation.upsert-event-manager.js';
 export * from './mutation.upsert-managers-of-event.js';
+export * from './mutation.use-event-manager-invite.js';
 export * from './query.event-manager.js';
 export * from './query.event.js';
 export * from './query.events-by-day.js';
