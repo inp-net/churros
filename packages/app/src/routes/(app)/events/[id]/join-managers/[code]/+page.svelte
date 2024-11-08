@@ -4,7 +4,7 @@
   import { graphql } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
-  import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+  import { mutationErrorMessages } from '$lib/errors';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
@@ -30,12 +30,13 @@
   onMount(async () => {
     const result = await UseInvite.mutate({ code: $page.params.code });
 
-    if (mutationSucceeded('useEventManagerInvite', result)) {
-      toasts.success('Et voilà!', `Tu es maintenant manager de ${result.data.event.title}`);
-      goto(route('/events/[id]', result.data.event.localID), {});
+    if (result.data?.useEventManagerInvite?.__typename === 'MutationUseEventManagerInviteSuccess') {
+      const { event } = result.data.useEventManagerInvite.data;
+      toasts.success('Et voilà!', `Tu es maintenant manager de ${event.title}`);
+      goto(route('/events/[id]', event.localID), {});
+    } else {
+      error = mutationErrorMessages('useEventManagerInvite', result).join('\n\n');
     }
-
-    error = mutationErrorMessages('useEventManagerInvite', result).join('\n\n');
   });
 </script>
 
