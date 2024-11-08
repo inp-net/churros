@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import { graphql, type EventManagerPowerLevel$options } from '$houdini';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
@@ -136,12 +135,7 @@
               >
             </section>
             <section class="actions">
-              <ButtonShare
-                text
-                path={route('/events/[id]/join-managers/[code]', {
-                  id: $page.params.id,
-                  code: loading(invite.code, ''),
-                })}
+              <ButtonShare text path={route('/join-managers/[code]', loading(invite.code, ''))}
               ></ButtonShare>
             </section>
           </li>

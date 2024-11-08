@@ -173,9 +173,6 @@ const PAGES = {
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
   },
-  '/events/[id]/join-managers/[code]': (params: { id: string | number; code: string | number }) => {
-    return `/events/${params.id}/join-managers/${params.code}`;
-  },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
   },
@@ -210,6 +207,9 @@ const PAGES = {
     return `/groups/${uid}/members`;
   },
   '/help': `/help`,
+  '/join-managers/[code]': (code: string | number, params?: {}) => {
+    return `/join-managers/${code}`;
+  },
   '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
     params = params ?? {};
     params.bypass_oauth = params.bypass_oauth ?? undefined;
@@ -564,7 +564,6 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
-    '/events/[id]/join-managers/[code]': 'id' | 'code';
     '/events/[id]/scan': 'id';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -576,6 +575,7 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/type': 'uid';
     '/groups/[uid]/members': 'uid';
     '/help': never;
+    '/join-managers/[code]': 'code';
     '/login': never;
     '/login/done': never;
     '/login/forgotten': never;
