@@ -1249,7 +1249,7 @@ type EventManagerInvite {
   """
   qrcode(
     """
-    URL à utiliser pour le QR Code. `[code]` sera remplacé par le code de la réservation
+    URL à utiliser pour le QR Code. `[code]` sera remplacé par le code d'invitation
     """
     url: URL!
   ): QRCode!
@@ -1267,6 +1267,25 @@ type EventManagerInvite {
   Nombre d'utilisations restantes pour l'invitation
   """
   usesLeft: Capacity!
+}
+
+input EventManagerInviteInput @graphinx(module: "events") {
+  """
+  Nombre maximal de personnes pouvant utiliser l'invitation
+  """
+  capacity: Capacity
+  """
+  Date d'expiration. Si non précisée, expire à la fin de l'évènement
+  """
+  expiresAt: DateTime
+  """
+  Niveau de permission accordé aux managers créés par l'invitation
+  """
+  powerlevel: EventManagerPowerLevel
+  """
+  Pour une modification d'invitation existante, permet de mettre expiresAt à null
+  """
+  resetExpiresAt: Boolean! = false
 }
 
 type EventManagerInviteUsedByConnection {
@@ -2481,6 +2500,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteEvent(id: LocalID!): MutationDeleteEventResult!
   deleteEventManager(eventId: ID!, user: String!): Boolean!
     @deprecated(reason: "Use 'removeEventManager' instead")
+  """
+  Supprimer une invitation de managers d'évènement
+  """
+  deleteEventManagerInvite(
+    id: LocalID!
+    """
+    Aussi enlever des managers celleux qui le sont devenu via cette invation
+    """
+    kickManagers: Boolean! = false
+  ): MutationDeleteEventManagerInviteResult!
   deleteEventPicture(id: ID!): Event!
   deleteGodchild(child: UID!, parent: UID!): MutationDeleteGodchildResult!
   """
@@ -3141,6 +3170,20 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     user: UID!
   ): MutationUpsertEventManagerResult!
   """
+  Créer ou modifier une invitation de manager d'évènement
+  """
+  upsertEventManagerInvite(
+    """
+    Évènement associé.
+    """
+    event: LocalID
+    """
+    Identifiant de l'invitation. Ne pas préciser pour en créer une nouvelle
+    """
+    id: LocalID
+    input: EventManagerInviteInput!
+  ): MutationUpsertEventManagerInviteResult!
+  """
   Crée ou met à jour un formulaire. À la création, une section de formulaire vide sans titre est automatiquement créée. C'est pratique pour les formulaires sans section.
   """
   upsertForm(input: MutationUpsertFormInput!): Form!
@@ -3458,6 +3501,15 @@ union MutationDeleteContributionResult = Error | MutationDeleteContributionSucce
 
 type MutationDeleteContributionSuccess {
   data: ContributionOption!
+}
+
+union MutationDeleteEventManagerInviteResult =
+  | Error
+  | MutationDeleteEventManagerInviteSuccess
+  | ZodError
+
+type MutationDeleteEventManagerInviteSuccess {
+  data: EventManagerInvite!
 }
 
 union MutationDeleteEventResult = Error | MutationDeleteEventSuccess | ZodError
@@ -3838,6 +3890,15 @@ union MutationUpsertDocumentResult = Error | MutationUpsertDocumentSuccess | Zod
 
 type MutationUpsertDocumentSuccess {
   data: Document!
+}
+
+union MutationUpsertEventManagerInviteResult =
+  | Error
+  | MutationUpsertEventManagerInviteSuccess
+  | ZodError
+
+type MutationUpsertEventManagerInviteSuccess {
+  data: EventManagerInvite!
 }
 
 union MutationUpsertEventManagerResult = Error | MutationUpsertEventManagerSuccess | ZodError
