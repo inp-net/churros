@@ -2,10 +2,12 @@
 <script lang="ts">
   import { PendingValue } from '$houdini';
   import { LOREM_IPSUM, loaded, type MaybeLoading } from '$lib/loading';
+  import { tooltip } from '$lib/tooltip';
 
   export let tag: string = 'span';
   export let lines: number | undefined = undefined;
   export let value: MaybeLoading<string | number> | null | undefined = PendingValue;
+  export let help = '';
 
   let loadingTextSlotContent: HTMLSpanElement | null = null;
 
@@ -25,6 +27,7 @@
 {#if !loaded(value) || value === null}
   <svelte:element
     this={tag === 'code' ? 'span' : tag}
+    use:tooltip={help}
     {...$$restProps}
     class="skeleton-text skeleton-effect-wave"
   >
@@ -36,7 +39,9 @@
   </svelte:element>
 {:else}
   <slot name="loaded" {value}>
-    <svelte:element this={tag} data-loaded {...$$restProps}>{value}</svelte:element>
+    <svelte:element this={tag} use:tooltip={help} data-loaded {...$$restProps}
+      >{value}</svelte:element
+    >
   </slot>
 {/if}
 

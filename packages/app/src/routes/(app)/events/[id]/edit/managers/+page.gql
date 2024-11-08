@@ -16,11 +16,10 @@ query PageEventEditManagers($id: LocalID!) {
     inheritedManagers {
       ...PageEventEditManagers_ItemManager
     }
-    managerInvites {
-      code
-      uses
-      capacity
-      expiresAt(definitive: true)
+    managerInvites @list(name: "List_EventManagerInvites") {
+      id
+      unusable
+      ...PageEventEditManagers_ItemInvite
     }
   }
 }

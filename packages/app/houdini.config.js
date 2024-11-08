@@ -59,6 +59,13 @@ const config = {
         queryField: 'eventManager',
       },
     },
+    EventManagerInvite: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'eventManagerInvite',
+        arguments: ({ id }) => ({ idOrCode: id }),
+      },
+    },
     Ticket: {
       keys: ['id'],
       resolve: {

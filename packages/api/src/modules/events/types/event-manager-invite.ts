@@ -65,6 +65,7 @@ export const EventManagerInviteType = builder.prismaObject('EventManagerInvite',
       nullable: true,
       args: {
         definitive: t.arg.boolean({
+          defaultValue: false,
           description:
             "Renvoyer la date d'expiration réelle (donc date de fin de l'évènement si expiresAt est null).",
         }),

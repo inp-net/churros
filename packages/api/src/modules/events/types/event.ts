@@ -262,6 +262,24 @@ export const EventType = builder.prismaNode('Event', {
         return prisma.eventManagerInvite.findMany({
           ...query,
           where: { eventId: id },
+          // Return valid invites first, then those that have no more uses left, then those that are expired
+          // This way of sorting is easier and fast because it's db-side, but it's not entirely accurate.
+          orderBy: [
+            {
+              expiresAt: {
+                sort: 'desc',
+                nulls: 'first',
+              },
+            },
+            {
+              capacity: 'desc',
+            },
+            {
+              usedBy: {
+                _count: 'asc',
+              },
+            },
+          ],
         });
       },
     }),

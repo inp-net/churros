@@ -60,10 +60,10 @@ builder.mutationField('upsertEventManagerInvite', (t) =>
       const event = await prisma.event.findFirst({
         where: eventId
           ? {
-              id: eventId,
+              id: ensureGlobalId(eventId, 'Event'),
             }
           : {
-              managerInvites: { some: { id: id! } },
+              managerInvites: { some: { id: ensureGlobalId(id!, 'EventManagerInvite') } },
             },
         include: canEditManagersPrismaIncludes,
       });
@@ -73,6 +73,7 @@ builder.mutationField('upsertEventManagerInvite', (t) =>
     async resolve(query, _, { id, event, input }, { user }) {
       if (id) id = ensureGlobalId(id, 'EventManagerInvite');
       if (event) event = ensureGlobalId(event, 'Event');
+
       await log(
         'events',
         `manager-invite/${id ? 'update' : 'create'}`,
@@ -80,6 +81,7 @@ builder.mutationField('upsertEventManagerInvite', (t) =>
         event,
         user,
       );
+
       if (id) {
         return prisma.eventManagerInvite.update({
           ...query,

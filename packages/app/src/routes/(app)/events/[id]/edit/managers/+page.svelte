@@ -1,25 +1,39 @@
 <script lang="ts">
-  import { graphql, type EventManagerPowerLevel$options } from '$houdini';
+  import { page } from '$app/stores';
+  import {
+    graphql,
+    type CreateEventManagerInvite$input,
+    type EventManagerPowerLevel$options,
+  } from '$houdini';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
-  import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import { DISPLAY_MANAGER_PERMISSION_LEVELS, stringifyCapacity } from '$lib/display';
-  import { loading, mapAllLoading, mapLoading } from '$lib/loading';
-  import { mutate } from '$lib/mutations';
+  import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
+  import { mutationSucceeded } from '$lib/errors';
+  import { loading } from '$lib/loading';
+  import { mutate, mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
-  import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
-  import { formatDistanceToNow } from 'date-fns';
+  import IconAdd from '~icons/msl/add';
   import type { PageData } from './$houdini';
+  import ItemInvite from './ItemInvite.svelte';
   import ItemManager from './ItemManager.svelte';
 
   export let data: PageData;
   $: ({ PageEventEditManagers } = data);
+
+  let editingInviteId = '';
+
+  const newInvite: CreateEventManagerInvite$input = {
+    capacity: 30,
+    event: $page.params.id,
+    power: 'ScanTickets',
+    expiresAt: null,
+  };
 
   let newManager = {
     uid: '',
@@ -33,6 +47,28 @@
           data {
             id
             ...List_EventManagers_insert
+          }
+        }
+        ...MutationErrors
+      }
+    }
+  `);
+
+  const CreateInvite = graphql(`
+    mutation CreateEventManagerInvite(
+      $event: LocalID!
+      $power: EventManagerPowerLevel!
+      $capacity: Capacity!
+      $expiresAt: DateTime
+    ) {
+      upsertEventManagerInvite(
+        event: $event
+        input: { capacity: $capacity, expiresAt: $expiresAt, powerlevel: $power }
+      ) {
+        ... on MutationUpsertEventManagerInviteSuccess {
+          data {
+            id
+            ...List_EventManagerInvites_insert @prepend
           }
         }
         ...MutationErrors
@@ -114,31 +150,25 @@
       {/each}
     </ul>
     {#if event.canEditManagers}
-      <h2 class="typo-field-label">Liens d'invitation</h2>
+      <h2 class="invites typo-field-label">
+        Liens d'invitation
+
+        <ButtonSecondary
+          icon={IconAdd}
+          on:click={async () => {
+            const result = await mutateAndToast(CreateInvite, newInvite, {
+              success: `Invitation créée`,
+              error: 'Impossible de créer une invitation',
+            });
+            if (result && mutationSucceeded('upsertEventManagerInvite', result)) 
+              editingInviteId = result.data.upsertEventManagerInvite.data.id;
+            
+          }}>Créer</ButtonSecondary
+        >
+      </h2>
       <ul class="invites">
         {#each event.managerInvites as invite}
-          <li>
-            <section class="info">
-              <LoadingText tag="code" value={invite.code}>......</LoadingText>
-              <LoadingText
-                value={mapAllLoading(
-                  [invite.uses, invite.capacity],
-                  (uses, cap) => `${uses} utilisations / ${stringifyCapacity(cap, '∞')}`,
-                )}>xx utilisations / xx</LoadingText
-              >
-              <LoadingText
-                value={mapLoading(invite.expiresAt, (exp) =>
-                  exp
-                    ? `Expire ${formatDistanceToNow(exp, { addSuffix: true })}`
-                    : "N'expire jamais",
-                )}>Expire dans ........</LoadingText
-              >
-            </section>
-            <section class="actions">
-              <ButtonShare text path={route('/join-managers/[code]', loading(invite.code, ''))}
-              ></ButtonShare>
-            </section>
-          </li>
+          <ItemInvite bind:editingId={editingInviteId} {invite} />
         {:else}
           <li class="muted">Aucune invitation créée</li>
         {/each}
@@ -160,6 +190,10 @@
     margin-top: 2rem;
   }
 
+  h2.invites {
+    justify-content: space-between;
+  }
+
   ul {
     display: flex;
     flex-direction: column;
@@ -175,19 +209,6 @@
     flex-wrap: wrap;
     gap: 1rem 2rem;
     justify-content: center;
-  }
-
-  .invites li {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    justify-content: space-between;
-  }
-
-  .invites li section {
-    display: flex;
-    gap: 0.5rem 1rem;
-    align-items: center;
   }
 
   .explain {
