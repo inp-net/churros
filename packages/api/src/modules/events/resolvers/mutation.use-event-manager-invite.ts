@@ -33,6 +33,12 @@ builder.mutationField('useEventManagerInvite', (t) =>
     async resolve(query, _, { code }, { user, caveats }) {
       if (!user) throw new UnauthorizedError();
 
+      if ((await prisma.eventManagerInvite.count({ where: { code } })) === 0) {
+        throw new GraphQLError(
+          `Code d'invitation "${code}" invalide. L'invitation a dû être supprimée`,
+        );
+      }
+
       const invite = await prisma.eventManagerInvite.update({
         where: { code },
         data: {
