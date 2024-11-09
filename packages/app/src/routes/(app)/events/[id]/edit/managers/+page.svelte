@@ -27,6 +27,7 @@
   $: ({ PageEventEditManagers } = data);
 
   let editingInviteId = '';
+  let highlightedInviteId = '';
   let creatingInvite = false;
 
   const newInvite: CreateEventManagerInvite$input = {
@@ -146,13 +147,13 @@
     <h2 class="typo-field-label">Managers</h2>
     <ul class="managers nobullet">
       {#each event.managers as manager}
-        <ItemManager {manager} />
+        <ItemManager bind:highlightedInviteId {manager} />
       {:else}
         <li class="muted">Aucun manager ajouté</li>
       {/each}
     </ul>
     <h2 class="typo-field-label">
-      Managers par permissions sur <AvatarGroup group={event.organizer} name />
+      Membres de <AvatarGroup group={event.organizer} name /> avec permissions
     </h2>
     <p class="explain muted">
       Ces personnes sont managers de l'évènement par leur permissions en tant que membre du groupe
@@ -193,7 +194,11 @@
       </h2>
       <ul class="invites">
         {#each event.managerInvites as invite}
-          <ItemInvite bind:editingId={editingInviteId} {invite} />
+          <ItemInvite
+            bind:highlightedId={highlightedInviteId}
+            bind:editingId={editingInviteId}
+            {invite}
+          />
         {:else}
           <li class="muted">Aucune invitation créée</li>
         {/each}

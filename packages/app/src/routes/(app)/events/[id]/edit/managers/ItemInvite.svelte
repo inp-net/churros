@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { replaceState } from '$app/navigation';
-  import { page } from '$app/stores';
   import { fragment, graphql, type PageEventEditManagers_ItemInvite } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
@@ -21,7 +19,11 @@
   /** ID de l'invit en cours de modification */
   export let editingId = '';
 
+  /** ID de l'invit en surbrillance */
+  export let highlightedId = '';
+
   $: editing = editingId === loading($data?.id, '_');
+  $: highlighted = highlightedId === loading($data?.id, '_');
 
   export let invite: PageEventEditManagers_ItemInvite | null = null;
   $: data = fragment(
@@ -69,12 +71,7 @@
   `);
 </script>
 
-<li
-  id="invite-{loading($data?.localID, '')}"
-  class:editing
-  class:highlighted={$page.url.hash === `#invite-${loading($data?.localID, '')}`}
-  class:muted={loading($data?.unusable, false)}
->
+<li class:editing class:highlighted class:muted={loading($data?.unusable, false)}>
   <section class="info">
     <!-- <LoadingText tag="code" value={$data?.code}>......</LoadingText> -->
     <code class="uses-left">
@@ -200,9 +197,9 @@
   </section>
   <section class="secondline">
     <div class="link">
-      <em>
+      <code>
         <LoadingText tag="code" value={$data?.code} />
-      </em>
+      </code>
       {#if !loading($data?.unusable, false)}
         <ButtonShare text path={route('/join-managers/[code]', loading($data?.code, ''))} />
       {/if}
@@ -213,7 +210,7 @@
         on:click={() => {
           if (!$data) return;
           editingId = editing ? '' : $data.id;
-          replaceState('#', {});
+          if (editingId === highlightedId) highlightedId = '';
         }}
       >
         {#if editing}Terminé{:else}Modifier{/if}
@@ -244,20 +241,30 @@
     flex-direction: column;
     gap: 0.5rem 1rem;
     padding: 0.5rem 1rem;
-    border: var(--border-block) solid transparent;
     border-radius: var(--radius-block);
+    outline: 0 solid var(--shy);
+    transition: outline 50ms ease;
   }
 
   li.editing {
-    border-color: var(--shy);
+    outline-width: var(--border-block);
+    outline-color: var(--shy);
   }
 
   li.highlighted {
-    border-color: var(--primary);
+    outline-width: calc(2 * var(--border-block));
+    outline-color: var(--primary);
+  }
+
+  .secondline code {
+    transition: all 100ms ease;
   }
 
   li.highlighted .secondline code {
+    padding: 0 1ch;
+    font-weight: bold;
     color: var(--primary);
+    background-color: var(--primary-bg);
   }
 
   section,

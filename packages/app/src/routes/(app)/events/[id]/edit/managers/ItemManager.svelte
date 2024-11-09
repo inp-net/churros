@@ -9,7 +9,6 @@
   } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import IconFocusInvite from '~icons/msl/arrow-drop-down';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
@@ -28,6 +27,8 @@
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
+
+  export let highlightedInviteId = '';
 
   export let manager: PageEventEditManagers_ItemManager | null;
   $: data = fragment(
@@ -130,14 +131,16 @@
       user={$data?.user ?? null}
     />
     {#if allLoaded($data) && $data?.__typename === 'EventManager' && $data.usedInvite}
-      <a
+      <button
         class="used-invite"
         use:tooltip={`${$data.user.uid} a rejoint avec un lien d'invitation`}
-        href="#invite-{$data.usedInvite.localID}"
+        on:click={() => {
+          if (!$data.usedInvite) return;
+          highlightedInviteId = $data.usedInvite.id;
+        }}
       >
         via {inviteCode($data.usedInvite.id) ?? 'invitation'}
-        <IconFocusInvite />
-      </a>
+      </button>
     {/if}
   </div>
   <div class="right">
@@ -227,6 +230,12 @@
   .used-invite {
     display: inline-flex;
     align-items: center;
-    border-bottom: var(--border-inline) dashed var(--muted);
+    cursor: pointer;
+    border-bottom: var(--border-inline) dashed transparent;
+  }
+
+  .used-invite:hover,
+  .used-invite:focus-visible {
+    border-bottom-color: var(--muted);
   }
 </style>
