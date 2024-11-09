@@ -1223,7 +1223,7 @@ type EventManager implements Node {
 """
 Invitations pour ajouter facilement des managers à un évènement
 """
-type EventManagerInvite {
+type EventManagerInvite implements Node {
   """
   Limite sur le nombre de personnes pouvant utiliser l'invitation
   """
@@ -1244,6 +1244,10 @@ type EventManagerInvite {
     definitive: Boolean! = false
   ): DateTime
   id: ID!
+  """
+  L'identifiant local de la ressource (sans préfixe)
+  """
+  localID: LocalID!
   """
   Niveau de permissions que l'invitation donne
   """

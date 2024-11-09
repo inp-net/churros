@@ -1,12 +1,21 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { fragment, graphql, type PageEventEditManagers_ItemManager } from '$houdini';
+  import { cache, fragment, graphql, type PageEventEditManagers_ItemManager } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import IconFocusInvite from '~icons/msl/arrow-drop-down';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
-  import { allLoaded, loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
+  import {
+    allLoaded,
+    loaded,
+    loading,
+    mapAllLoading,
+    mapLoading,
+    onceLoaded,
+    type MaybeLoading,
+  } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
@@ -22,7 +31,8 @@
         ... on EventManager {
           power
           usedInvite {
-            code
+            id
+            localID
           }
           user {
             uid
@@ -78,6 +88,20 @@
       }
     }
   `);
+
+  /** Get the invitation code. Since websocket requests are not authenticated, updates to the manager list would cause the invite code to be "null". Here, we get the code from houdini's cache, as the event manager invite should've been loaded by the page load anyway. If the code is not found in the cache, we simply tell the user that the manager got here from *an* invitation link, without displaying the code */
+  function inviteCode(id: MaybeLoading<string>): string | null {
+    if (!loaded(id)) return null;
+    return (
+      cache.get('EventManagerInvite', { id })?.read({
+        fragment: graphql(`
+          fragment EventManagerInviteCodeFromId on EventManagerInvite {
+            code
+          }
+        `),
+      }).data?.code ?? null
+    );
+  }
 </script>
 
 <li>
@@ -98,14 +122,14 @@
       user={$data?.user ?? null}
     />
     {#if allLoaded($data) && $data?.__typename === 'EventManager' && $data.usedInvite}
-      <span
+      <a
         class="used-invite"
         use:tooltip={`${$data.user.uid} a rejoint avec un lien d'invitation`}
+        href="#invite-{$data.usedInvite.localID}"
       >
-        via <code>
-          <a href="#invite-{$data.usedInvite.code}">{$data.usedInvite.code}</a>
-        </code>
-      </span>
+        via {inviteCode($data.usedInvite.id) ?? 'invitation'}
+        <IconFocusInvite />
+      </a>
     {/if}
   </div>
   <div class="right">
@@ -181,5 +205,11 @@
 
   li {
     justify-content: space-between;
+  }
+
+  .used-invite {
+    display: inline-flex;
+    align-items: center;
+    border-bottom: var(--border-inline) dashed var(--muted);
   }
 </style>

@@ -21,11 +21,11 @@ export const EventManagerInviteTypePrismaIncludes = {
   },
 } as const satisfies Prisma.EventManagerInviteInclude;
 
-export const EventManagerInviteType = builder.prismaObject('EventManagerInvite', {
+export const EventManagerInviteType = builder.prismaNode('EventManagerInvite', {
   description: 'Invitations pour ajouter facilement des managers à un évènement',
   include: EventManagerInviteTypePrismaIncludes,
+  id: { field: 'id' },
   fields: (t) => ({
-    id: t.exposeID('id'),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     updatedAt: t.expose('updatedAt', { type: DateTimeScalar }),
     capacity: t.field({

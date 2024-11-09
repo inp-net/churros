@@ -27,6 +27,7 @@
   $: ({ PageEventEditManagers } = data);
 
   let editingInviteId = '';
+  let creatingInvite = false;
 
   const newInvite: CreateEventManagerInvite$input = {
     capacity: 30,
@@ -174,13 +175,19 @@
 
         <ButtonSecondary
           icon={IconAdd}
+          loading={creatingInvite}
           on:click={async () => {
-            const result = await mutateAndToast(CreateInvite, newInvite, {
-              success: `Invitation créée`,
-              error: 'Impossible de créer une invitation',
-            });
-            if (result && mutationSucceeded('upsertEventManagerInvite', result))
-              editingInviteId = result.data.upsertEventManagerInvite.data.id;
+            creatingInvite = true;
+            try {
+              const result = await mutateAndToast(CreateInvite, newInvite, {
+                success: `Invitation créée`,
+                error: 'Impossible de créer une invitation',
+              });
+              if (result && mutationSucceeded('upsertEventManagerInvite', result))
+                editingInviteId = result.data.upsertEventManagerInvite.data.id;
+            } finally {
+              creatingInvite = false;
+            }
           }}>Créer</ButtonSecondary
         >
       </h2>

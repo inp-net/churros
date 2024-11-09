@@ -2,11 +2,12 @@
   import { replaceState } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql, type PageEventEditManagers_ItemInvite } from '$houdini';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import InputDateTime from '$lib/components/InputDateTime.svelte';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
+  import { formatDateTime } from '$lib/dates';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS, stringifyCapacity } from '$lib/display';
   import { loading, LoadingText, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
@@ -15,6 +16,7 @@
   import IconDone from '~icons/msl/check';
   import IconDelete from '~icons/msl/delete-outline';
   import IconEdit from '~icons/msl/edit-outline';
+  import IconReset from '~icons/msl/refresh';
 
   /** ID de l'invit en cours de modification */
   export let editingId = '';
@@ -27,6 +29,7 @@
     graphql(`
       fragment PageEventEditManagers_ItemInvite on EventManagerInvite {
         id
+        localID
         code
         uses
         usesLeft
@@ -67,9 +70,9 @@
 </script>
 
 <li
-  id="invite-{loading($data?.code, '')}"
+  id="invite-{loading($data?.localID, '')}"
   class:editing
-  class:highlighted={$page.url.hash === `#invite-${loading($data?.code, '')}`}
+  class:highlighted={$page.url.hash === `#invite-${loading($data?.localID, '')}`}
   class:muted={loading($data?.unusable, false)}
 >
   <section class="info">
@@ -122,25 +125,44 @@
     </code>
     <div class="expiration">
       {#if editing}
-        <InputDateTime
-          label=""
-          variant="ghost"
-          clearHelp="Faire expirer à la fin de l'évènement"
-          value={$data?.expiresAtSetting}
-          on:clear={async () => {
-            await mutateAndToast(Update, { id: $data?.id, input: { resetExpiresAt: true } });
-          }}
-          on:blur={async ({ detail: { value } }) => {
-            await mutateAndToast(
-              Update,
-              { id: $data?.id, input: { expiresAt: value, resetExpiresAt: value === null } },
-              {
-                error: "Impossible de changer la date d'expiration de l'invitation",
-              },
-            );
-          }}
-        />{:else}
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label>
+          Expire le
+          <InputTextGhost
+            label="Date d'expiration. Si non spécifé, le lien expire à la fin de l'évènement"
+            placeholder=""
+            value={$data?.expiresAtSetting}
+            type="date"
+            on:blur={async ({ detail }) => {
+              await mutateAndToast(
+                Update,
+                { id: $data?.id, input: { expiresAt: detail, resetExpiresAt: detail === null } },
+                {
+                  error: "Impossible de changer la date d'expiration de l'invitation",
+                },
+              );
+            }}
+          />
+        </label>
+        {#if $data?.expiresAtSetting !== null}
+          <ButtonGhost
+            help="Utiliser la date de fin de l'évènement"
+            on:click={async () => {
+              await mutateAndToast(
+                Update,
+                { id: $data?.id, input: { resetExpiresAt: true } },
+                {
+                  error: "Impossible d'enlever la date d'expiration",
+                },
+              );
+            }}
+          >
+            <IconReset />
+          </ButtonGhost>
+        {/if}
+      {:else}
         <LoadingText
+          help={onceLoaded($data?.expiresAt, formatDateTime, '')}
           value={mapLoading($data?.expiresAt, (exp) =>
             exp
               ? `${isFuture(exp) ? 'Expire' : 'Expirée'} ${formatDistanceToNow(exp, { addSuffix: true })}`
@@ -239,7 +261,7 @@
   }
 
   section,
-  section > div {
+  section.secondline > div {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
@@ -258,6 +280,18 @@
   }
 
   .expiration {
-    width: 16rem;
+    display: flex;
+    gap: 0 1ch;
+    align-items: center;
+    width: 17rem;
+  }
+
+  .expiration label {
+    display: flex;
+    gap: 0 1ch;
+  }
+
+  .expiration :global(.input-with-indicator) {
+    width: min-content;
   }
 </style>
