@@ -4048,6 +4048,10 @@ type MutationUpsertTicketGroupSuccess {
 union MutationUseEventManagerInviteResult = Error | MutationUseEventManagerInviteSuccess | ZodError
 
 type MutationUseEventManagerInviteSuccess {
+  """
+  Message d'explication si jamais l'on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé
+  """
+  alreadyManager: String
   data: EventManager!
 }
 

@@ -15,6 +15,7 @@
     mutation UseEventManagerInvite($code: String!) {
       useEventManagerInvite(code: $code) {
         ... on MutationUseEventManagerInviteSuccess {
+          alreadyManager
           data {
             event {
               localID
@@ -31,8 +32,12 @@
     const result = await UseInvite.mutate({ code: $page.params.code });
 
     if (result.data?.useEventManagerInvite?.__typename === 'MutationUseEventManagerInviteSuccess') {
-      const { event } = result.data.useEventManagerInvite.data;
-      toasts.success('Et voilà!', `Tu es maintenant manager de ${event.title}`);
+      const {
+        data: { event },
+        alreadyManager,
+      } = result.data.useEventManagerInvite;
+      if (alreadyManager) toasts.info(alreadyManager);
+      else toasts.success('Et voilà!', `Tu es maintenant manager de ${event.title}`);
       goto(route('/events/[id]', event.localID), {});
     } else {
       error = mutationErrorMessages('useEventManagerInvite', result).join('\n\n');
