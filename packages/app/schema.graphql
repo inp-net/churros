@@ -1213,6 +1213,10 @@ type EventManager implements Node {
   """
   localID: LocalID!
   power: EventManagerPowerLevel!
+  """
+  L'invitation utilisée par ce manager pour devenir manager de l'évènement.
+  """
+  usedInvite: EventManagerInvite
   user: User!
 }
 

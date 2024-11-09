@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fragment, graphql, type PageEventEditManagers_ItemInvite } from '$houdini';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
@@ -64,7 +66,12 @@
   `);
 </script>
 
-<li class:editing class:muted={loading($data?.unusable, false)}>
+<li
+  id="invite-{loading($data?.code, '')}"
+  class:editing
+  class:highlighted={$page.url.hash === `#invite-${loading($data?.code, '')}`}
+  class:muted={loading($data?.unusable, false)}
+>
   <section class="info">
     <!-- <LoadingText tag="code" value={$data?.code}>......</LoadingText> -->
     <code class="uses-left">
@@ -184,6 +191,7 @@
         on:click={() => {
           if (!$data) return;
           editingId = editing ? '' : $data.id;
+          replaceState('#', {});
         }}
       >
         {#if editing}Terminé{:else}Modifier{/if}
@@ -220,6 +228,14 @@
 
   li.editing {
     border-color: var(--shy);
+  }
+
+  li.highlighted {
+    border-color: var(--primary);
+  }
+
+  li.highlighted .secondline code {
+    color: var(--primary);
   }
 
   section,

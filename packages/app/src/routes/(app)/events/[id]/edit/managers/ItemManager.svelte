@@ -6,10 +6,11 @@
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
-  import { loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
+  import { allLoaded, loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
 
   export let manager: PageEventEditManagers_ItemManager | null;
@@ -20,6 +21,9 @@
         __typename
         ... on EventManager {
           power
+          usedInvite {
+            code
+          }
           user {
             uid
             ...AvatarUser
@@ -77,17 +81,28 @@
     <AvatarUser
       href={$data
         ? mapAllLoading([$data], ({ user, ...d }) => {
-            if (d.__typename === 'InheritedEventManager')
-              {return (
+            if (d.__typename === 'InheritedEventManager') {
+              return (
                 refroute('/groups/[uid]/members', d.groupMember.group.uid ?? '') +
                 `#${user.uid ?? ''}`
-              );}
+              );
+            }
             return refroute('/[uid=uid]', user.uid ?? '');
           })
         : ''}
       name
       user={$data?.user ?? null}
     />
+    {#if allLoaded($data) && $data?.__typename === 'EventManager' && $data.usedInvite}
+      <span
+        class="used-invite"
+        use:tooltip={`${$data.user.uid} a rejoint avec un lien d'invitation`}
+      >
+        via <code>
+          <a href="#invite-{$data.usedInvite.code}">{$data.usedInvite.code}</a>
+        </code>
+      </span>
+    {/if}
   </div>
   <div class="right">
     {#if readonly}
