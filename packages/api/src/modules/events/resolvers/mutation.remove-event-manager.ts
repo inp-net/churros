@@ -45,11 +45,10 @@ builder.mutationField('removeEventManager', (t) =>
       if ((await prisma.eventManager.count({ where: { eventId: id } })) === 2) {
         const lastManager = await prisma.eventManager.findFirstOrThrow({
           where: { eventId: id, userId: { not: userId } },
-          select: { canEditPermissions: true, eventId: true, userId: true },
         });
         if (!lastManager.canEditPermissions) {
           await prisma.eventManager.update({
-            where: { eventId_userId: lastManager },
+            where: { id: lastManager.id },
             data: {
               canEdit: true,
               canEditPermissions: true,
