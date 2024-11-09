@@ -1,12 +1,19 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { cache, fragment, graphql, type PageEventEditManagers_ItemManager } from '$houdini';
+  import {
+    cache,
+    fragment,
+    graphql,
+    PageEventEditManagersStore,
+    type PageEventEditManagers_ItemManager,
+  } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import IconFocusInvite from '~icons/msl/arrow-drop-down';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
+  import { mutationSucceeded } from '$lib/errors';
   import {
     allLoaded,
     loaded,
@@ -76,6 +83,7 @@
     mutation RemoveEventManager($user: UID!, $event: LocalID!) {
       removeEventManager(user: $user, event: $event) {
         ... on MutationRemoveEventManagerSuccess {
+          lastManagerPowerlevelChanged
           data {
             id @EventManager_delete
             usedInvite {
@@ -174,6 +182,15 @@
             `${loading($data?.user.uid, 'cette personne')} n'est plus manager`,
             `Impossible de retirer ${loading($data?.user.uid, 'cette personne')} des managers`,
           );
+          if (
+            mutationSucceeded('removeEventManager', result) &&
+            result.data.removeEventManager.lastManagerPowerlevelChanged
+          ) {
+            toasts.info(result.data.removeEventManager.lastManagerPowerlevelChanged);
+            await new PageEventEditManagersStore().fetch({
+              variables: { id: $page.params.id },
+            });
+          }
         }}><IconRemove></IconRemove></ButtonGhost
       >
     {/if}
