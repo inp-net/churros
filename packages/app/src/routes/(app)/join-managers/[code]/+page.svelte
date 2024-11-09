@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
-  import LoadingChurros from '$lib/components/LoadingChurros.svelte';
+  import LoadingScreen from '$lib/components/LoadingScreen.svelte';
   import { mutationErrorMessages } from '$lib/errors';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
@@ -50,7 +50,7 @@
     <h1>Woops!</h1>
     <Alert theme="danger">Impossible d'utiliser cette invitation: {error}</Alert>
   {:else}
-    <LoadingChurros />
+    <LoadingScreen>Redirection vers l'évènement</LoadingScreen>
   {/if}
 </div>
 
