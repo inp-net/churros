@@ -68,6 +68,10 @@
         ... on MutationRemoveEventManagerSuccess {
           data {
             id @EventManager_delete
+            usedInvite {
+              usesLeft
+              unusable
+            }
           }
         }
         ...MutationErrors

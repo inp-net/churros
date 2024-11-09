@@ -47,6 +47,10 @@
           user {
             uid
           }
+          usedInvite {
+            usesLeft
+            unusable
+          }
           ...PageEventEditManagers_ItemManager
         }
       }
