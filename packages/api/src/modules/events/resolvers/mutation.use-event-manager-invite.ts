@@ -1,4 +1,4 @@
-import { builder, log, prisma, purgeSessionsUser, UnauthorizedError } from '#lib';
+import { builder, log, prisma, publish, purgeSessionsUser, UnauthorizedError } from '#lib';
 import { EventManagerType } from '#modules/events/types';
 import {
   eventManagerInviteHasNoUsesLeft,
@@ -62,7 +62,7 @@ builder.mutationField('useEventManagerInvite', (t) =>
 
       await purgeSessionsUser(user.uid);
 
-      return prisma.eventManager.upsert({
+      const manager = await prisma.eventManager.upsert({
         ...query,
         where: {
           eventId_userId: {
@@ -79,6 +79,10 @@ builder.mutationField('useEventManagerInvite', (t) =>
           canVerifyRegistrations: invite.canVerifyRegistrations,
         },
       });
+
+      publish(manager.id, 'created', manager, manager.eventId);
+
+      return manager;
     },
   }),
 );

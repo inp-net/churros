@@ -40,6 +40,21 @@
     power: 'ScanTickets' as EventManagerPowerLevel$options,
   };
 
+  const ManagerUpdates = graphql(`
+    subscription PageEventEditManager_ManagerUpdates($event: LocalID!) {
+      event(id: $event) {
+        managers {
+          user {
+            uid
+          }
+          ...PageEventEditManagers_ItemManager
+        }
+      }
+    }
+  `);
+
+  $: ManagerUpdates.listen({ event: $page.params.id });
+
   const AddEventManager = graphql(`
     mutation AddEventManager($user: UID!, $event: LocalID!, $power: EventManagerPowerLevel!) {
       upsertEventManager(user: $user, event: $event, powerlevel: $power) {
@@ -160,9 +175,8 @@
               success: `Invitation créée`,
               error: 'Impossible de créer une invitation',
             });
-            if (result && mutationSucceeded('upsertEventManagerInvite', result)) 
+            if (result && mutationSucceeded('upsertEventManagerInvite', result))
               editingInviteId = result.data.upsertEventManagerInvite.data.id;
-            
           }}>Créer</ButtonSecondary
         >
       </h2>
