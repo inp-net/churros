@@ -3,6 +3,7 @@
   "version": "2.12.1",
   "dependencies": {
     "@carbon/charts-svelte": "^1.22.0",
+    "@ewen-lbh/houdini": "1.6.0",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@iconify-json/logos": "^1.2.1",
     "@paypal/paypal-js": "^8.1.2",
@@ -27,7 +28,6 @@
     "google-auth-library": "^9.14.1",
     "graphql": "^16.9.0",
     "graphql-ws": "^5.16.0",
-    "houdini": "^1.2.62",
     "html-to-text": "^9.0.5",
     "html5-qrcode": "^2.3.8",
     "ics": "^3.8.1",

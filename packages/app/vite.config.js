@@ -1,6 +1,6 @@
+import houdini from '@ewen-lbh/houdini/vite';
 import { sentrySvelteKit } from '@sentry/sveltekit';
 import { sveltekit } from '@sveltejs/kit/vite';
-import houdini from 'houdini/vite';
 import { fileURLToPath } from 'node:url';
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import icons from 'unplugin-icons/vite';
@@ -46,7 +46,9 @@ export default mergeConfig(
   commonConfig,
   defineConfig({
     plugins: [
-      houdini(),
+      houdini({
+        autoCodeGen: 'smart',
+      }),
       sentrySvelteKit({
         sourceMapsUploadOptions: {
           project: 'app',
