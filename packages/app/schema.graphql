@@ -4421,6 +4421,12 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   documents(after: String, before: String, first: Int, last: Int): QueryDocumentsConnection!
   event(id: LocalID!): Event!
   eventManager(id: LocalID!): EventManager!
+  eventManagerInvite(
+    """
+    Indentifiant de l'invitation ou code d'invitation
+    """
+    idOrCode: String!
+  ): EventManagerInvite
   events(
     after: String
     before: String
