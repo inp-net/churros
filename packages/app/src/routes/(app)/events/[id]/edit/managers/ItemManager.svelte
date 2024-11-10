@@ -12,7 +12,6 @@
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
-  import { mutationSucceeded } from '$lib/errors';
   import {
     allLoaded,
     loaded,
@@ -186,7 +185,7 @@
             `Impossible de retirer ${loading($data?.user.uid, 'cette personne')} des managers`,
           );
           if (
-            mutationSucceeded('removeEventManager', result) &&
+            result?.data?.removeEventManager.__typename === 'MutationRemoveEventManagerSuccess' &&
             result.data.removeEventManager.lastManagerPowerlevelChanged
           ) {
             toasts.info(result.data.removeEventManager.lastManagerPowerlevelChanged);
