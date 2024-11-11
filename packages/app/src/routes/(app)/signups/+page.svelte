@@ -1,13 +1,13 @@
 <script lang="ts">
-  import IconEditPen2Line from '~icons/mdi/pencil';
-  import type { PageData } from './$types';
+  import { graphql } from '$houdini';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import { removeIdPrefix } from '$lib/typenames';
   import IconCheck from '~icons/mdi/check';
   import IconTrash from '~icons/mdi/delete-outline';
-  import { zeus } from '$lib/zeus';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import { tooltip } from '$lib/tooltip';
-  import { toasts } from '$lib/toasts';
-  import { removeIdPrefix } from '$lib/typenames';
+  import IconEditPen2Line from '~icons/mdi/pencil';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -29,30 +29,38 @@
       loadingRegistrations.push(email);
       let ok = false;
       if (accept) {
-        const { acceptRegistration: result } = await $zeus.mutate({
-          acceptRegistration: [
-            { email },
-            {
-              '__typename': true,
-              '...on Error': { message: true },
-              '...on ZodError': { message: true },
-              '...on MutationAcceptRegistrationSuccess': {
-                data: {
-                  email: true,
-                },
-              },
-            },
-          ],
-        });
+        const result = await graphql(`
+          mutation AcceptUserCandidate($email: String!) {
+            acceptRegistration(email: $email) {
+              ...MutationErrors
+              ... on MutationAcceptRegistrationSuccess {
+                data {
+                  email
+                }
+              }
+            }
+          }
+        `).mutate({ email });
 
-        if (result.__typename === 'Error')
-          toasts.error("Erreur lors de l'acceptation de l'inscription", result.message);
-        else ok = true;
+        ok = toasts.mutation(
+          result,
+          'acceptRegistration',
+          'Inscription acceptée',
+          "Impossible d'accepter l'inscription",
+        );
       } else {
-        const { refuseRegistration: result } = await $zeus.mutate({
-          refuseRegistration: [{ email, reason: why }, true],
-        });
-        ok = result;
+        const result = await graphql(`
+          mutation RefuseUserCandidate($email: String!, $why: String!) {
+            refuseRegistration(email: $email, reason: $why)
+          }
+        `).mutate({ email, why });
+
+        if (result.data?.refuseRegistration) {
+          ok = true;
+          toasts.success('Inscription refusée');
+        } else {
+          toasts.error("Impossible de refuser l'inscription");
+        }
       }
 
       if (ok) removeRow(email);
