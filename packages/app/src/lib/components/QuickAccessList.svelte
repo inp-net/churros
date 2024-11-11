@@ -93,9 +93,14 @@
       {:else}
         <li class="muted">
           <p>
-            Aucune page épinglée à l'accès rapide. Utilise
-            <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
-            ajouter.
+            <!-- the if condition is to prevent showing the bigass explanation message on mobile when not editing -->
+            {#if !mobile || editing}
+              Aucune page épinglée à l'accès rapide. Rends-toi sur la page à épingler, puis
+              <IconDots></IconDots> et <IconBookmark></IconBookmark>&nbsp;Accès rapide pour
+              l'ajouter.
+            {:else}
+              Aucune page épinglée.
+            {/if}
           </p>
         </li>
       {/each}
@@ -163,9 +168,8 @@
       {:else}
         <li class="muted">
           <p>
-            Aucune page épinglée à l'accès rapide. Utilise
-            <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
-            ajouter.
+            Aucune page épinglée à l'accès rapide. Rends-toi sur la page à épingler, puis
+            <IconDots></IconDots> et <IconBookmark></IconBookmark>&nbsp;Accès rapide pour l'ajouter.
           </p>
         </li>
       {/each}
