@@ -1,5 +1,6 @@
 import { dev } from '$app/environment';
-import { PendingValue } from '$houdini';
+import { fragment, FragmentStore, PendingValue, type Fragment } from '$houdini';
+import { derived, type Readable } from 'svelte/store';
 
 export { default as LoadingChurros } from '$lib/components/LoadingChurros.svelte';
 export { default as LoadingSpinner } from '$lib/components/LoadingSpinner.svelte';
@@ -30,13 +31,16 @@ export function loading<T>(value: MaybeLoading<T>, fallback: T): T {
   return value === PendingValue || value === null || value === undefined ? fallback : value;
 }
 
-export type AllLoaded<T> = T extends object
-  ? { [K in keyof T]: AllLoaded<T[K]> }
-  : T extends unknown[]
-    ? AllLoaded<T[number]>[]
-    : T extends typeof PendingValue
-      ? never
-      : T;
+export type AllLoaded<T> =
+  T extends Loading<infer U>
+    ? U
+    : T extends object
+      ? { [K in keyof T]: AllLoaded<T[K]> }
+      : T extends unknown[]
+        ? AllLoaded<T[number]>[]
+        : T extends typeof PendingValue
+          ? never
+          : T;
 
 export type DeepMaybeLoading<T> = T extends object
   ? { [K in keyof T]: DeepMaybeLoading<T[K]> }
@@ -73,7 +77,7 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
   else if (typeof value === 'object' && value !== null)
     return Object.values(value).every((item) => allLoaded(item));
 
-  return loaded(value);
+  return value instanceof Loading ? value.loaded() : loaded(value);
 }
 
 export function mapLoading<T, O>(
@@ -106,3 +110,52 @@ accusantium enim et repudiandae omnis cum dolorem nemo id quia facilis.
 Et dolorem perferendis et rerum suscipit qui voluptatibus quia et nihil nostrum 33 omnis soluta. 
 Nam minus minima et perspiciatis velit et eveniet rerum et nihil voluptates aut eaque ipsa et 
 ratione facere!`;
+
+export function loadingFragment<
+  Store extends FragmentStore<any, any, any>,
+  Data = Store extends FragmentStore<infer D, any, any> ? D : any,
+>(fragmentRef: Fragment<any> | null, store: Store): Readable<null | Loading<Data>> {
+  return derived([fragment(fragmentRef, store)], ([$store]) =>
+    $store ? new Loading($store) : null,
+  );
+}
+
+export class Loading<T> {
+  v: typeof PendingValue | AllLoaded<T>;
+
+  constructor(value?: T) {
+    if (value instanceof Loading) this.v = value.v;
+    if (value !== undefined && allLoaded(value)) this.v = value;
+    this.v = PendingValue;
+  }
+
+  static collect<Value>(values: Array<Loading<Value>>): Loading<Value[]> {
+    if (values.some((v) => !v.loaded())) return new Loading([PendingValue] as Value[]);
+    return new Loading(values as Value[]);
+  }
+
+  loading(): this is { v: typeof PendingValue } {
+    return !this.loaded();
+  }
+
+  loaded(): this is { v: AllLoaded<T> } {
+    if (simulatingLoadingState()) return false;
+    return this.v !== PendingValue;
+  }
+
+  map<O>(mapper: (value: AllLoaded<T>) => O): Loading<O> {
+    return new Loading(this.loaded() ? mapper(this.v) : PendingValue);
+  }
+
+  unwrap<Fallback>(fallback: Fallback): T | Fallback;
+  unwrap(): T | undefined;
+  unwrap<Fallback>(fallback?: Fallback) {
+    return this.loaded() ? this.v : fallback;
+  }
+
+  then<Out, Fallback>(mapper: (value: AllLoaded<T>) => Out, fallback: Fallback): T | Fallback;
+  then<Out>(mapper: (value: AllLoaded<T>) => Out): T | undefined;
+  then<Out, Fallback>(mapper: (value: AllLoaded<T>) => Out, fallback?: Fallback) {
+    return this.map(mapper).unwrap(fallback);
+  }
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { fragment, graphql, PendingValue, type BookingStatus } from '$houdini';
-  import { allLoaded, mapAllLoading, LoadingText } from '$lib/loading';
+  import { graphql, type BookingStatus } from '$houdini';
+  import LoadingTextNew from '$lib/components/LoadingTextNew.svelte';
+  import { loadingFragment, LoadingText } from '$lib/loading';
   import IconPaid from '~icons/msl/check';
   import IconCancelled from '~icons/msl/close';
   import IconOpposed from '~icons/msl/do-not-disturb-on-outline';
@@ -8,10 +9,10 @@
   import IconWaitingForPayment from '~icons/msl/more-horiz';
 
   export let booking: BookingStatus | null;
-  $: data = fragment(
+  $: data = loadingFragment(
     booking,
     graphql(`
-      fragment BookingStatus on Registration {
+      fragment BookingStatus on Registration @loading {
         opposed
         verified
         cancelled
@@ -22,45 +23,37 @@
 </script>
 
 <div
-  class="booking-status {$data?.opposed
-    ? 'danger'
-    : $data?.verified
-      ? 'primary'
-      : $data?.cancelled
-        ? 'warning'
-        : $data?.paid
-          ? 'success'
-          : 'warning'}"
+  class="booking-status {$data?.then(({ opposed, verified, cancelled, paid }) => {
+    if (opposed) return 'danger';
+    if (verified) return 'primary';
+    if (cancelled) return 'warning';
+    if (paid) return 'success';
+  }) ?? 'warning'}"
 >
   <div class="icon-booking-status">
-    {#if !allLoaded($data) || !$data}
+    {#if !$data?.loaded()}
       <LoadingText>..</LoadingText>
-    {:else if $data.opposed}
+    {:else if $data.v.opposed}
       <IconOpposed />
-    {:else if $data.verified}
+    {:else if $data.v.verified}
       <IconVerified />
-    {:else if $data.cancelled}
+    {:else if $data.v.cancelled}
       <IconCancelled />
-    {:else if $data.paid}
+    {:else if $data.v.paid}
       <IconPaid />
     {:else}
       <IconWaitingForPayment />
     {/if}
   </div>
 
-  <LoadingText
-    value={$data
-      ? mapAllLoading(
-          [$data.opposed, $data.verified, $data.cancelled, $data.paid],
-          (opposed, verified, cancelled, paid) => {
-            if (opposed) return 'En opposition';
-            if (verified) return 'Scannée';
-            if (cancelled) return 'Annulée';
-            if (paid) return 'Payée';
-            return 'En attente de paiement';
-          },
-        )
-      : PendingValue}
+  <LoadingTextNew
+    value={$data?.map(({ opposed, verified, cancelled, paid }) => {
+      if (opposed) return 'En opposition';
+      if (verified) return 'Scannée';
+      if (cancelled) return 'Annulée';
+      if (paid) return 'Payée';
+      return 'En attente de paiement';
+    })}
   />
 </div>
 

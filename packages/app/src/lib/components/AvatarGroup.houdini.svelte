@@ -2,7 +2,7 @@
   import { fragment, graphql, PendingValue, type AvatarGroup } from '$houdini';
   import Avatar from '$lib/components/Avatar.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import { loading, mapLoading, type MaybeLoading } from '$lib/loading';
+  import { Loading, loading, mapLoading, type MaybeLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { isDark } from '$lib/theme';
 
@@ -34,7 +34,7 @@
       {...$$restProps}
       {src}
       href=""
-      alt={mapLoading($data?.name ?? PendingValue, (n) => `Logo de ${n}`)}
+      alt={new Loading($data?.name).then(name => `Logo de ${name}`)}
       help={$data?.name}
     />
     <LoadingText value={$data?.name} />
