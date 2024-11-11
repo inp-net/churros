@@ -10,10 +10,10 @@
   import { loading, onceAllLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import IconKioskMode from '~icons/msl/tv-outline';
   import { ChangeEventVisibility, SetEventKioskModeInclusion } from '../mutations';
   import type { PageData } from './$houdini';
-  import { tooltip } from '$lib/tooltip';
   export let data: PageData;
 
   $: ({ PageEventEditVisibility } = data);
@@ -31,12 +31,7 @@
       <InputRadios
         value={event.visibility}
         options={DISPLAY_VISIBILITIES}
-        isDisabled={(option) =>
-          onceAllLoaded(
-            event.allowedVisibilities,
-            (...allowed) => !allowed.includes(option),
-            false,
-          )}
+        isDisabled={(option) => event.allowedVisibilities.some((v) => loading(v, '') === option)}
         on:change={async ({ detail }) => {
           const result = await mutate(ChangeEventVisibility, {
             event: event.id,
