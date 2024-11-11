@@ -72,6 +72,7 @@ export const EventType = builder.prismaNode('Event', {
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     managers: t.relation('managers'),
     banned: t.relation('bannedUsers'),
+    enforcePointOfContact: t.exposeBoolean('enforcePointOfContact'),
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles', {
       query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),

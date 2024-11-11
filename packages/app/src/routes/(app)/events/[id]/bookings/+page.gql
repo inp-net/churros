@@ -18,6 +18,7 @@ query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
       id
       allowedPaymentMethods
     }
+    ...PageEventAllBookings_ModalBokingDetailsEvent
     bookings(first: 30, only: $filter) @paginate {
       pageInfo {
         hasNextPage
@@ -25,35 +26,7 @@ query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
       }
       nodes @loading(count: 30) {
         id
-        code
-        ...BookingBeneficiary
-        ...BookingAuthor
-        ticket {
-          name
-        }
-        verifiedAt
-        verifiedBy {
-          ...AvatarUser
-          fullName
-        }
-        cancelledAt
-        cancelledBy {
-          ...AvatarUser
-          fullName
-        }
-        opposedAt
-        opposedBy {
-          ...AvatarUser
-          fullName
-        }
-        updatedAt
-        ...BookingPaymentMethod
-        ...BookingStatus
-        authorIsBeneficiary
-        author {
-          ...AvatarUser
-          fullName
-        }
+        ...PageEventAllBookings_ItemBooking
       }
     }
   }

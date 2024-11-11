@@ -63,7 +63,7 @@ export function addReferrer(
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
 export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT'}`;
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT' | 'DOWNLOAD_CSV'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   window.dispatchEvent(new CustomEvent(eventID));
 };
@@ -565,7 +565,7 @@ export const topnavConfigs: Partial<{
       {
         icon: IconDownload,
         label: 'Excel',
-        href: route('GET /events/[id]/bookings.csv', id),
+        do: () => navigationTopActionEventDispatcher('NAVTOP_DOWNLOAD_CSV'),
       },
       commonActions.pin,
     ],

@@ -1046,6 +1046,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   enabledSpecialOffers: [PromotionType!]
   endsAt: DateTime
+  enforcePointOfContact: Boolean!
   """
   URL vers une billetterie externe. Null si l'évènement possède un lien à URL valide, non dynamique, nommé "billetterie" et n'a pas de billets
   """
@@ -2235,9 +2236,17 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     beneficiary: String
     """
+    URL vers la page du billet. '[code]' est remplacé par le code de réservation
+    """
+    bookingUrl: String!
+    """
     Identifiant (@) de la personne qui recevra la place
     """
     churrosBeneficiary: UID
+    """
+    Personne référente à contacter s'il y a un problème de comportement avec la personne ayant réservé. Surtout pratique pour les réservations faites par des extés (sans compte Churros). Il est obligatoire de le renseigner si l'on réserve sans compte Churros et que Event.enforcePointOfContact est true.
+    """
+    pointOfContact: UID
     ticket: LocalID!
   ): MutationBookEventResult!
   """
@@ -2842,6 +2851,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     contactMail: String
     description: Markdown
+    """
+    Forcer celleux qui réservent sans compte Churros à renseigner un·e référent·e
+    """
+    enforcePointOfContact: Boolean
     """
     Capacité globale de l'évènement
     """
@@ -5346,6 +5359,7 @@ type Registration implements Node {
   Une demande de paiement a été effectuée mais la place n'est pas encore payée
   """
   pendingPayment: Boolean!
+  pointOfContact: User
   """
   Returns an SVG path of the QR Code for the given registration
   """
@@ -6060,7 +6074,7 @@ type Ticket implements Node {
   """
   canBeSafelyDeleted: Boolean!
   """
-  Un message d'explication sur pourquoi la personne connectée peut réserver ce billet pour quelqu'un d'autre. Null si la personne peut.
+  Un message d'explication sur pourquoi la personne connectée ne peut pas réserver ce billet pour quelqu'un d'autre. Null si la personne peut.
   """
   cannotBookReason(
     """

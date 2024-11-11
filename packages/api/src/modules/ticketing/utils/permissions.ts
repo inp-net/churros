@@ -1,5 +1,5 @@
-import { log, type Capacity, type Context } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
+import { fullName, log, type Capacity, type Context } from '#lib';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
@@ -211,18 +211,23 @@ userIsBookedToEvent.prismaIncludes = {
  * @returns [canBook, why]
  * @param beneficiary - can be a string if it's a beneficiary (free form) or a User if it's a churrosBeneficiary
  */
-export function canBookTicket(
-  // user: null | NonNullable<
-  //   Context['user'] & Prisma.UserGetPayload<{ include: typeof canBookTicket.userPrismaIncludes }>
-  // >,
-  user: Context['user'],
+export function canBookTicket({
+  user,
+  userAdditionalData,
+  beneficiary,
+  ticket,
+  debug,
+  pointOfContact,
+}: {
+  user: Context['user'];
   userAdditionalData: null | Prisma.UserGetPayload<{
     include: typeof canBookTicket.userPrismaIncludes;
-  }>,
-  beneficiary: string | User | null | undefined,
-  ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>,
-  debug?: boolean,
-): [boolean, string] {
+  }>;
+  pointOfContact: User | null | undefined;
+  beneficiary: string | User | null | undefined;
+  ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>;
+  debug?: boolean;
+}): [boolean, string] {
   const dret = <T extends [boolean, string]>(ret: T, data: unknown) => {
     if (debug) void log('ticketing', 'debug/can-book-ticket', { ret, data }, ticket.id, user);
     return ret;
@@ -234,6 +239,33 @@ export function canBookTicket(
   if (canSeeAllBookings(ticket.event, user)) return dret([true, ''], { why: 'canSeeAllBookings' });
 
   d({ canSeeAllBookings: false });
+
+  if (!user && ticket.event.enforcePointOfContact && !pointOfContact)
+    {return dret([false, 'Veuillez renseigner un·e référent·e ou réserver avec un compte Churros'], {
+      why: 'pointofContactCheck failed: no contact given',
+    });}
+
+  if (
+    !user &&
+    ticket.event.enforcePointOfContact &&
+    !ticket.event.managers.some((mgr) => mgr.userId === pointOfContact?.id)
+  ) {
+    return dret(
+      [
+        false,
+        "Lea référent·e spécifié·e est invalide, car iel ne fait pas partie des managers de l'évènement",
+      ],
+      {
+        why: 'pointofContact is invalid',
+        given: pointOfContact?.id,
+        valids: ticket.event.managers.map((mgr) => ({
+          id: mgr.userId,
+          uid: mgr.user.uid,
+          name: fullName(mgr.user),
+        })),
+      },
+    );
+  }
 
   if (!canSeeTicket(ticket, userAdditionalData))
     return dret([false, "Vous n'êtes pas autorisé à voir ce billet"], {});
