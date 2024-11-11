@@ -970,6 +970,10 @@ An event is a date, time and place, as well as an optional ticket
 """
 type Event implements Node & Pictured & Reactable & Shareable {
   """
+  Visibilités que l'on peut mettre sur l'évènement. C'est pas forcément toutes les visibilités, car par exemple si l'évènement n'a pas de dates, ou qu'il possède des billets ouverts aux externes, certaines visibilités ne sont pas autorisées. Voir Event.visibilityRestrictedWhy pour récupérer un message d'explication.
+  """
+  allowedVisibilities: [Visibility!]!
+  """
   Les promotions applicables à cet évènement
   """
   applicableOffers: [PromotionType!]!
@@ -1149,6 +1153,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   title: String!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   updatedAt: DateTime
+  """
+  Raison pour laquelle certaines visibilités ne sont pas autorisées
+  """
+  visibilitiesRestrictedWhy: String!
   visibility: Visibility!
 }
 

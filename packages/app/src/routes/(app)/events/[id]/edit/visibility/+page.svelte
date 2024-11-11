@@ -7,12 +7,13 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
-  import { onceAllLoaded } from '$lib/loading';
+  import { loading, onceAllLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
   import IconKioskMode from '~icons/msl/tv-outline';
   import { ChangeEventVisibility, SetEventKioskModeInclusion } from '../mutations';
   import type { PageData } from './$houdini';
+  import { tooltip } from '$lib/tooltip';
   export let data: PageData;
 
   $: ({ PageEventEditVisibility } = data);
@@ -30,6 +31,12 @@
       <InputRadios
         value={event.visibility}
         options={DISPLAY_VISIBILITIES}
+        isDisabled={(option) =>
+          onceAllLoaded(
+            event.allowedVisibilities,
+            (...allowed) => !allowed.includes(option),
+            false,
+          )}
         on:change={async ({ detail }) => {
           const result = await mutate(ChangeEventVisibility, {
             event: event.id,
@@ -38,12 +45,21 @@
           toasts.mutation(result, 'setEventVisibility', '', 'Impossible de changer la visibilité');
         }}
       >
-        <div slot="label" class="visibility-label label" let:label let:option>
+        <div
+          slot="label"
+          class="visibility-label label"
+          let:label
+          let:option
+          let:disabled
+          class:disabled
+          use:tooltip={disabled ? loading(event.visibilitiesRestrictedWhy, '') : ''}
+        >
           <p class="main">{label}</p>
           <p class="muted">{HELP_VISIBILITY[option]}</p>
         </div>
       </InputRadios>
     </InputField>
+
     <Submenu>
       <SubmenuItem label icon={IconKioskMode} subtext="Pour par exemple afficher sur des télés">
         Inclure dans le mode kioske
@@ -65,6 +81,12 @@
         />
       </SubmenuItem>
     </Submenu>
+    {#if loading(event.visibilitiesRestrictedWhy, '')}
+      <Alert theme="warning">
+        <h3>Certains niveaux de visibilité sont indisponibles</h3>
+        {event.visibilitiesRestrictedWhy}
+      </Alert>
+    {/if}
   </div>
 </MaybeError>
 
@@ -86,5 +108,9 @@
   .label .muted {
     margin-top: 0.2em;
     font-size: 0.8rem;
+  }
+
+  .label.disabled p {
+    opacity: 0.5;
   }
 </style>

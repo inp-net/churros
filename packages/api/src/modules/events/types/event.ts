@@ -14,7 +14,12 @@ import { PaymentMethod } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
 import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
-import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
+import {
+  allowedVisibilities,
+  canEditEvent,
+  canEditManagers,
+  canSeeEventLogs,
+} from '../utils/index.js';
 
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
@@ -62,6 +67,22 @@ export const EventType = builder.prismaNode('Event', {
     endsAt: t.expose('endsAt', { type: DateTimeScalar, nullable: true }),
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
+    allowedVisibilities: t.field({
+      type: [VisibilityEnum],
+      description:
+        "Visibilités que l'on peut mettre sur l'évènement. C'est pas forcément toutes les visibilités, car par exemple si l'évènement n'a pas de dates, ou qu'il possède des billets ouverts aux externes, certaines visibilités ne sont pas autorisées. Voir Event.visibilityRestrictedWhy pour récupérer un message d'explication.",
+      resolve(event) {
+        const [vis] = allowedVisibilities(event);
+        return vis;
+      },
+    }),
+    visibilitiesRestrictedWhy: t.string({
+      description: 'Raison pour laquelle certaines visibilités ne sont pas autorisées',
+      resolve(event) {
+        const [, why] = allowedVisibilities(event);
+        return why;
+      },
+    }),
     managers: t.relation('managers'),
     banned: t.relation('bannedUsers'),
     ticketGroups: t.relation('ticketGroups'),
