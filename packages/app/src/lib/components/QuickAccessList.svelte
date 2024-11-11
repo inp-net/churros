@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fragment, graphql, type QuickAccessList } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { page } from '$app/stores';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
@@ -27,6 +28,7 @@
         bookmarks @list(name: "List_Bookmarks") {
           id
           path
+          url
         }
       }
     `),
@@ -39,6 +41,12 @@
       }
     }
   `);
+
+  function bookmarkHref({ url, path }: { url: URL | null; path: string }): string {
+    if (!url) return path;
+    if (url.origin === $page.url.origin) return addReferrer(path);
+    return url.toString();
+  }
 
   export let editing = false;
 
@@ -66,9 +74,9 @@
     </h2>
 
     <ul class="nobullet cards">
-      {#each $data?.bookmarks ?? [] as { path, id } (id)}
+      {#each $data?.bookmarks ?? [] as { path, id, url } (id)}
         <li class="card" transition:scale={{ duration: 200 }}>
-          <a href={addReferrer(path)}>
+          <a href={bookmarkHref({ path, url })}>
             {#await pinDisplay(path)}
               <LoadingText>{path}</LoadingText>
             {:then data}
@@ -122,7 +130,7 @@
       class:editing
       class:empty={($data?.bookmarks.filter(allLoaded)?.length ?? 0) === 0}
     >
-      {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id } (id)}
+      {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id, url } (id)}
         <li class="item" transition:fly={{ x: -50, duration: 200 }}>
           <div class="remove-button">
             <ButtonGhost
@@ -143,7 +151,7 @@
               </svelte:fragment>
             </ButtonGhost>
           </div>
-          <a href={addReferrer(path)}>
+          <a href={bookmarkHref({ url, path })}>
             {#await pinDisplay(path)}
               <LoadingText>{path}</LoadingText>
             {:then data}

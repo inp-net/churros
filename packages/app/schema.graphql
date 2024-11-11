@@ -645,9 +645,13 @@ type Bookmark implements Node {
   """
   localID: LocalID!
   """
-  Chemin de la page
+  Chemin de la page, ou identifiant global pour les services épinglés. Voir aussi Bookmark.url
   """
   path: String!
+  """
+  URL vers la page. Pratique notamment pour les services épinglés, qui n'ont pas de valeur utile pour Bookmark.path.
+  """
+  url: URL!
   user: User!
 }
 

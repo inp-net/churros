@@ -108,3 +108,13 @@ export function decodeGlobalID(globalID: string) {
     id: globalID,
   };
 }
+
+export function isGlobalID(id: string): boolean {
+  return Object.keys(TYPENAMES_TO_ID_PREFIXES).some((typename) =>
+    isGlobalIdOf(typename as keyof typeof TYPENAMES_TO_ID_PREFIXES, id),
+  );
+}
+
+export function isGlobalIdOf(typename: keyof typeof TYPENAMES_TO_ID_PREFIXES, id: string): boolean {
+  return id.startsWith(TYPENAMES_TO_ID_PREFIXES[typename] + ':');
+}
