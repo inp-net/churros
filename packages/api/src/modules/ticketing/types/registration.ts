@@ -99,6 +99,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
     ticket: t.relation('ticket'),
     author: t.relation('author', { nullable: true }),
     authorEmail: t.exposeString('authorEmail'),
+    authorName: t.exposeString('authorName'),
     authorIsBeneficiary: t.boolean({
       async resolve({ authorId, authorEmail, internalBeneficiaryId, externalBeneficiary }) {
         if (!authorId) return true;

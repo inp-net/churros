@@ -1,22 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fragment, graphql, type ModalBookTicket, type ModalBookTicketMe } from '$houdini';
-  import MaybeError from '$lib/components/MaybeError.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputRadios from '$lib/components/InputRadios.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
-  import { loaded, mapLoading, onceLoaded } from '$lib/loading';
+  import { loaded, onceLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import { createEventDispatcher } from 'svelte';
-  import InputRadios from '$lib/components/InputRadios.svelte';
-  import { route } from '$lib/ROUTES';
-  import { page } from '$app/stores';
 
   const dispatch = createEventDispatcher<{ close: undefined }>();
 
@@ -70,12 +70,14 @@
       $beneficiary: String
       $churrosBeneficiary: UID
       $authorEmail: Email
+      $authorName: String
       $pointOfContact: UID
       $urlTemplate: String!
     ) {
       bookEvent(
         ticket: $ticket
         authorEmail: $authorEmail
+        authorName: $authorName
         beneficiary: $beneficiary
         churrosBeneficiary: $churrosBeneficiary
         pointOfContact: $pointOfContact
@@ -94,10 +96,11 @@
   async function createBooking(close: () => void) {
     const result = await mutate(CreateBooking, {
       ticket: $data?.localID,
-      churrosBeneficiary: mapLoading(churrosBeneficiary, (v) => v || null),
-      beneficiary: mapLoading(beneficiary, (v) => v || null),
-      authorEmail: mapLoading(authorEmail, (v) => v || null),
-      pointOfContact: mapLoading(pointOfContact, (v) => v || null),
+      churrosBeneficiary: churrosBeneficiary || null,
+      beneficiary: beneficiary || null,
+      authorName: authorName || null,
+      authorEmail: authorEmail || null,
+      pointOfContact: pointOfContact || null,
       urlTemplate: new URL(route('/bookings/[code]', '[code]'), $page.url).toString(),
     });
     if (toasts.mutation(result, 'bookEvent', 'Place réservée', 'Impossible de réserver la place')) {
@@ -126,6 +129,8 @@
 
   let churrosBeneficiary = '';
   let beneficiary = '';
+  /** Pour les réservations sans compte Churros */
+  let authorName = '';
   let authorEmail = '';
   let pointOfContact = '';
 
@@ -292,8 +297,11 @@
           </p>
         {/if}
         {#if !$dataMe}
-          <InputText required label="Votre adresse e-mail" type="email" bind:value={authorEmail}
+          <InputText required label="Ton adresse e-mail" type="email" bind:value={authorEmail}
           ></InputText>
+        {/if}
+        {#if !$dataMe && !beneficiary}
+          <InputText required label="Ton joli nom" type="text" bind:value={authorName}></InputText>
         {/if}
         <nav>
           <ButtonSecondary on:click={back}>Retour</ButtonSecondary>
