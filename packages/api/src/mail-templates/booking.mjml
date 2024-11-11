@@ -44,6 +44,14 @@
       </mj-column>
     </mj-section>
 
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Tu as désigné {{pointOfContact}} comme référent·e de ta réservation. L'orga lea contactera si jamais il y a un problème.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
     <mj-include path="./_footer.mjml" />
   </mj-body>
 </mjml>

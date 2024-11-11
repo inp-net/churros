@@ -1,20 +1,7 @@
-import { graphql } from '$houdini';
 import { operationErrorMessages, operationSucceeded } from '$lib/errors';
 import { route } from '$lib/ROUTES.js';
 import { error, text } from '@sveltejs/kit';
-
-const BookingsExport = graphql(`
-  query BookingCSVExport($id: LocalID!, $ticketPageURLTemplate: URL!) {
-    event(id: $id) {
-      bookingsCsv(dialect: Excel, bookingURL: $ticketPageURLTemplate) {
-        ... on EventBookingsCsvSuccess {
-          data
-        }
-        ...MutationErrors @mask_disable
-      }
-    }
-  }
-`);
+import { BookingsExport } from '../bookings/csv';
 
 export async function GET(event) {
   const result = await BookingsExport.fetch({

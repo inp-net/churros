@@ -104,6 +104,7 @@ model User {
   claimedPromotions         PromotionCode[]
   formsWithMarkedCheckboxes Form[]                  @relation("formsWithMarkedCheckbox")
   createdPages              Page[]
+  pointOfContactFor         Registration[]          @relation("pointOfContactFor")
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
@@ -538,44 +539,46 @@ enum EventFrequency {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id               String               @id @default(dbgenerated("nanoid('e:')"))
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @default(now()) @updatedAt
-  authorId         String?
-  groupId          String
-  contactMail      String
-  beneficiary      LydiaAccount?        @relation(fields: [lydiaAccountId], references: [id])
-  description      String               @db.Text
-  slug             String               @db.VarChar(255)
-  title            String               @db.VarChar(255)
+  id                    String               @id @default(dbgenerated("nanoid('e:')"))
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @default(now()) @updatedAt
+  authorId              String?
+  groupId               String
+  contactMail           String
+  beneficiary           LydiaAccount?        @relation(fields: [lydiaAccountId], references: [id])
+  description           String               @db.Text
+  slug                  String               @db.VarChar(255)
+  title                 String               @db.VarChar(255)
   // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
-  startsAt         DateTime?
-  endsAt           DateTime?
-  globalCapacity   Int?
-  notifiedAt       DateTime?            @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location         String               @default("") @db.VarChar(255)
-  visibility       Visibility
-  frequency        EventFrequency       @default(Once)
-  recurringUntil   DateTime?
-  pictureFile      String               @default("") @db.VarChar(255)
-  showPlacesLeft   Boolean              @default(true)
-  showCapacity     Boolean              @default(true)
-  managers         EventManager[]
-  author           User?                @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  includeInKiosk   Boolean              @default(false)
-  group            Group                @relation(fields: [groupId], references: [id])
-  coOrganizers     Group[]              @relation("coOrganizer")
-  tickets          Ticket[]
-  ticketGroups     TicketGroup[]
-  articles         Article[]
-  lydiaAccountId   String?
-  links            Link[]
-  bannedUsers      User[]               @relation("bannedFromEvents")
-  reactions        Reaction[]
-  forms            Form[]
-  sharedBy         User[]               @relation("shares")
-  applicableOffers Promotion[]
-  managerInvites   EventManagerInvite[]
+  startsAt              DateTime?
+  endsAt                DateTime?
+  globalCapacity        Int?
+  notifiedAt            DateTime?            @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  location              String               @default("") @db.VarChar(255)
+  visibility            Visibility
+  frequency             EventFrequency       @default(Once)
+  recurringUntil        DateTime?
+  pictureFile           String               @default("") @db.VarChar(255)
+  showPlacesLeft        Boolean              @default(true)
+  showCapacity          Boolean              @default(true)
+  managers              EventManager[]
+  author                User?                @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk        Boolean              @default(false)
+  group                 Group                @relation(fields: [groupId], references: [id])
+  coOrganizers          Group[]              @relation("coOrganizer")
+  tickets               Ticket[]
+  ticketGroups          TicketGroup[]
+  articles              Article[]
+  lydiaAccountId        String?
+  links                 Link[]
+  bannedUsers           User[]               @relation("bannedFromEvents")
+  reactions             Reaction[]
+  forms                 Form[]
+  sharedBy              User[]               @relation("shares")
+  applicableOffers      Promotion[]
+  managerInvites        EventManagerInvite[]
+  // enfore providing a point of contact for external bookings
+  enforcePointOfContact Boolean              @default(false)
 
   // For full-text search
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -694,6 +697,7 @@ model Registration {
   internalBeneficiaryId String?
   authorId              String?
   authorEmail           String         @default("")
+  authorName            String         @default("")
   verifiedById          String?
   opposedById           String?
   cancelledById         String?
@@ -702,6 +706,9 @@ model Registration {
   paymentMethod         PaymentMethod?
   paid                  Boolean        @default(false)
   wantsToPay            Float?
+  // Person to refer to, especially for external beneficiaries, to handle misconducts at the event
+  pointOfContactId      String?
+  pointOfContact        User?          @relation(fields: [pointOfContactId], references: [id], onDelete: SetNull, name: "pointOfContactFor")
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?

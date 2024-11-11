@@ -107,9 +107,7 @@ export const TicketType = builder.prismaNode('Ticket', {
           include: canSeeTicketCapacity.prismaIncludes,
         });
 
-        if (canSeeTicketCapacity(event, user)) 
-          return ticket.capacity ?? 'Unlimited';
-        
+        if (canSeeTicketCapacity(event, user)) return ticket.capacity ?? 'Unlimited';
 
         return canSeeTicketCapacity(event, user) ? ticket.capacity : null;
       },
@@ -160,27 +158,29 @@ export const TicketType = builder.prismaNode('Ticket', {
     cannotBookReason: t.string({
       nullable: true,
       description:
-        "Un message d'explication sur pourquoi la personne connectée peut réserver ce billet pour quelqu'un d'autre. Null si la personne peut.",
+        "Un message d'explication sur pourquoi la personne connectée ne peut pas réserver ce billet pour quelqu'un d'autre. Null si la personne peut.",
       args: {
         themself: t.arg.boolean({
           description: 'On souhaite réserver pour soi-même',
         }),
       },
       async resolve({ id }, { themself }, { user }) {
-        const [can, whynot] = canBookTicket(
+        const ticket = await prisma.ticket.findUniqueOrThrow({
+          where: { id },
+          include: canBookTicket.prismaIncludes,
+        });
+        const [can, whynot] = canBookTicket({
+          ticket,
           user,
-          user
+          userAdditionalData: user
             ? await prisma.user.findUniqueOrThrow({
                 where: { id: user.id },
                 include: canBookTicket.userPrismaIncludes,
               })
             : null,
-          themself ? null : 'someone else',
-          await prisma.ticket.findUniqueOrThrow({
-            where: { id },
-            include: canBookTicket.prismaIncludes,
-          }),
-        );
+          beneficiary: themself ? null : 'someone else',
+          pointOfContact: ticket.event.managers.at(0)?.user,
+        });
         return can ? null : whynot;
       },
     }),
