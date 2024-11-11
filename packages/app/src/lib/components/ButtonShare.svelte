@@ -11,7 +11,7 @@
   export let white = false;
   export let url = '';
   export let path = '';
-  export let text = false;
+  export let text: boolean | string = false;
 
   /** Resource that was shared. Useful to display the share count (and count up new shares) */
   export let resource: ButtonShare | null = null;
@@ -68,7 +68,7 @@
   <slot {share}></slot>
 {:else if text}
   <ButtonInk track="share" trackData={{ url }} on:click={share} icon={IconShare}
-    >{#if canShare}Partager{:else}Copier le lien{/if}</ButtonInk
+    >{#if typeof text === 'string'}{text}{:else if canShare}Partager{:else}Copier le lien{/if}</ButtonInk
   >
 {:else}
   <GhostButton
