@@ -3162,14 +3162,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     eventId: ID
     id: ID
   ): Int! @deprecated(reason: "Use 'react' instead")
-  upsertRegistration(
-    authorEmail: String
-    beneficiary: String
-    id: ID
-    paid: Boolean!
-    paymentMethod: PaymentMethod
-    ticketId: ID!
-  ): MutationUpsertRegistrationResult! @deprecated(reason: "Use bookEvent instead")
   upsertService(
     description: String!
     groupUid: String
@@ -3888,12 +3880,6 @@ input MutationUpsertQuestionInput {
   sectionId: ID
   title: String!
   type: QuestionKind!
-}
-
-union MutationUpsertRegistrationResult = Error | MutationUpsertRegistrationSuccess | ZodError
-
-type MutationUpsertRegistrationSuccess {
-  data: Registration!
 }
 
 union MutationUpsertServiceResult = Error | MutationUpsertServiceSuccess | ZodError

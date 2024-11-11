@@ -30,7 +30,6 @@ export * from './mutation.oppose-registration.js';
 export * from './mutation.pay-booking.js';
 export * from './mutation.set-ticket-group.js';
 export * from './mutation.update-ticket.js';
-export * from './mutation.upsert-registration.js';
 export * from './mutation.upsert-ticket-group.js';
 export * from './mutation.verify-booking.js';
 export * from './query.booking.js';
