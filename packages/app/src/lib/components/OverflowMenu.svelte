@@ -17,6 +17,8 @@
     hidden?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     overflow?: OverflowMenuAction<any>[];
+    /** Show a red dot on the icon to notify the user. Loaded lazily after the menu is shown */
+    badge?: () => Promise<boolean>;
   };
 
   export type OverflowMenuAction<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> =

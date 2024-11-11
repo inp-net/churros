@@ -266,6 +266,16 @@ const rootPagesActions = [
       label: 'Zone admins',
       href: '/backrooms',
       hidden: !me?.admin && !me?.studentAssociationAdmin,
+      badge: async () =>
+        browser
+          ? await graphql(`
+              query NavtopPendingSignupsCount {
+                userCandidatesCount
+              }
+            `)
+              .fetch()
+              .then((r) => (r.data?.userCandidatesCount ?? 0) > 0)
+          : false,
     };
   },
   async () => {
