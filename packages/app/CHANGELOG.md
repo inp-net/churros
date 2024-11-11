@@ -1,5 +1,17 @@
 # @churros/app
 
+## 2.13.0
+
+### Minor Changes
+
+- aceb9af: fix(profile): make group members link point to group/user pages instead of group member edition modal
+- 4f87c5e: improve groups' Lydia accounts management and fix bugs
+- fb45fa1: feat(app): improve skeleton UI appearance
+
+### Patch Changes
+
+- 0c84def: fix(app): date inputs were sometimes not editable
+
 ## 2.12.1
 
 ### Patch Changes
