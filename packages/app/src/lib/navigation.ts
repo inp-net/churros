@@ -310,6 +310,15 @@ export const topnavConfigs: Partial<{
           };
         },
         async ({ params: { uid } }) => {
+          const isme = await isMe(uid);
+          return {
+            label: 'Se déconnecter',
+            icon: IconLogout,
+            href: route('/logout'),
+            hidden: !isme,
+          };
+        },
+        async ({ params: { uid } }) => {
           const typename = await profileKind(uid);
           return {
             icon: IconPen,
