@@ -4476,6 +4476,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     first: Int
     last: Int
   ): QueryUserCandidatesConnection!
+  """
+  Nombre d'inscriptions à valider qui sont validables par la personne connectée
+  """
+  userCandidatesCount: Int!
   userServices: [Service!]! @deprecated(reason: "Use `services(mine: true)` instead")
 }
 

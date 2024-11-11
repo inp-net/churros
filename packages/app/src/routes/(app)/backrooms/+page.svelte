@@ -1,108 +1,94 @@
 <script lang="ts">
-  import CardService from '$lib/components/CardService.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import IconTelevision from '~icons/mdi/television';
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { zeus } from '$lib/zeus';
-  import InputStudentAssociations, {
-    type StudentAssociation,
-  } from '$lib/components/InputStudentAssociations.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import { countThing } from '$lib/i18n';
+  import { loading, mapAllLoading, mapLoading, onceAllLoaded } from '$lib/loading';
   import { refroute } from '$lib/navigation';
+  import IconGoto from '~icons/msl/arrow-right-alt';
+  import IconSwitchDomains from '~icons/msl/domain';
+  import IconQuickSignups from '~icons/msl/qr-code-2';
+  import IconLogs from '~icons/msl/receipt-long-outline';
+  import IconSignups from '~icons/msl/switch-account-outline';
+  import IconEditServices from '~icons/msl/widgets-outline';
+  import type { PageData } from './$houdini';
 
-  let kioskReloadStudentAssociation: StudentAssociation | undefined = undefined;
+  export let data: PageData;
+  $: ({ PageBackrooms } = data);
 
-  let path = '/';
+  let gotoPath = '';
+
+  $: otherDomainUrl = ((currentUrl: URL) => {
+    const otherUrl = new URL(currentUrl);
+    otherUrl.host =
+      currentUrl.host === 'churros.inpt.fr' ? 'staging.churros.inpt.fr' : 'churros.inpt.fr';
+    return otherUrl.toString();
+  })($page.url);
 </script>
 
-<div class="content">
-  <ul class="nobullet">
-    <li>
-      <CardService service={{ name: 'Logs', logo: 'logs', logoSourceType: 'Icon', url: '/logs' }} />
-    </li>
-    <li>
-      <CardService
-        service={{
-          name: $page.url.hostname === 'staging.churros.inpt.fr' ? 'Go to prod' : 'Go to staging',
-          logo: 'domainSwitch',
-          logoSourceType: 'Icon',
-          url:
-            $page.url.hostname === 'staging.churros.inpt.fr'
-              ? 'https://churros.inpt.fr'
-              : 'https://staging.churros.inpt.fr',
-        }}
-      />
-    </li>
-    <li>
-      <CardService
-        service={{
-          name: 'Manage Services',
-          logo: 'services',
-          logoSourceType: 'Icon',
-          url: refroute('/services/manage'),
-        }}
-      />
-    </li>
-    <li>
-      <CardService
-        service={{
-          name: "Demandes d'inscriptions",
-          logo: 'forms',
-          logoSourceType: 'Icon',
-          url: '/signups',
-        }}
-      />
-    </li>
-    <li>
-      <CardService
-        service={{
-          name: 'Inscription rapides',
-          logo: 'signups',
-          logoSourceType: 'Icon',
-          url: '/quick-signups/manage',
-        }}
-      />
-    </li>
-    <li>
-      <InputStudentAssociations
-        label="AE à reload"
-        bind:association={kioskReloadStudentAssociation}
-      />
-      {#if kioskReloadStudentAssociation}
-        <ButtonSecondary
-          on:click={async () => {
-            await $zeus.mutate({
-              kioskReload: [{ studentAssociation: kioskReloadStudentAssociation?.uid ?? '' }, true],
-            });
-          }}
-          icon={IconTelevision}>Reload {kioskReloadStudentAssociation.name} kiosk</ButtonSecondary
+<MaybeError result={$PageBackrooms} let:data={{ me, userCandidatesCount, services }}>
+  {@const isAdmin = onceAllLoaded(
+    [me?.admin, me?.studentAssociationAdmin],
+    (admin, stu) => admin || stu,
+    false,
+  )}
+  {@const isSystemAdmin = loading(me?.admin, false)}
+  <div class="contents">
+    <Submenu>
+      {#if isSystemAdmin}
+        <SubmenuItem subtext="Good luck :p" href={refroute('/logs')} icon={IconLogs}
+          >Logs</SubmenuItem
         >
       {/if}
-    </li>
-  </ul>
-
-  <div class="goto">
-    <InputText label="Goto" bind:value={path} />
-    <ButtonSecondary href={path}>Go</ButtonSecondary>
+      {#if isAdmin}
+        <SubmenuItem
+          href={refroute('/services/manage')}
+          icon={IconEditServices}
+          subtext={mapAllLoading([services], (svcs) => countThing('service', svcs.length))}
+        >
+          Gérer les services
+        </SubmenuItem>
+        <SubmenuItem
+          href={refroute('/signups')}
+          icon={IconSignups}
+          subtext={mapLoading(userCandidatesCount, (count) =>
+            count ? countThing('inscription', count) : 'Aucune inscription en attente ^^',
+          )}
+        >
+          Inscriptions en attente
+        </SubmenuItem>
+        <SubmenuItem
+          href={refroute('/quick-signups/manage')}
+          icon={IconQuickSignups}
+          subtext="Inscrire des étudiant·es sans mail étu et sans validation manuelle"
+        >
+          QR Codes d'inscription rapide
+        </SubmenuItem>
+      {/if}
+      <SubmenuItem icon={IconSwitchDomains} href={otherDomainUrl} subtext={otherDomainUrl}>
+        Switcher de domaine
+      </SubmenuItem>
+      <SubmenuItem
+        form
+        icon={IconGoto}
+        on:submit={async (e) => {
+          e?.preventDefault();
+          await goto(gotoPath);
+        }}
+      >
+        <InputText label="" bind:value={gotoPath} placeholder="Chemin d'une page" />
+        <ButtonSecondary submits slot="right">Aller</ButtonSecondary>
+      </SubmenuItem>
+    </Submenu>
   </div>
-</div>
+</MaybeError>
 
 <style>
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  .content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .goto {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+  .contents {
+    padding: 0 1rem;
   }
 </style>

@@ -11,6 +11,9 @@
 
   export let subtext: MaybeLoading<string> = '';
 
+  /** The submenu item is a form */
+  export let form = false;
+
   /** Whether to allow overflows, could be useful when the icon slot requires so. */
   export let overflow = false;
 
@@ -50,9 +53,10 @@
 </script>
 
 <svelte:element
-  this={href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
+  this={form ? 'form' : href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
   {href}
   on:click
+  on:submit
   role="menuitem"
   tabindex="-1"
   id={anchor}

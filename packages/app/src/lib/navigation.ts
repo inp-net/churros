@@ -699,6 +699,11 @@ export const topnavConfigs: Partial<{
     back: route('/events'),
     actions: rootPagesActions,
   },
+  '/(app)/backrooms': {
+    title: 'Backrooms',
+    back: route('/'),
+    actions: rootPagesActions,
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';

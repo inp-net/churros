@@ -51,6 +51,7 @@ export * from './query.suggested-uid.js';
 export * from './query.user-by-email.js';
 export * from './query.user-candidate-by-email.js';
 export * from './query.user-candidate.js';
+export * from './query.user-candidates-count.js';
 export * from './query.user-candidates.js';
 export * from './query.user.js';
 export * from './user.board-memberships.js';
