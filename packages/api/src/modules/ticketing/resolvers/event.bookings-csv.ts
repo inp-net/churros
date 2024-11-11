@@ -104,6 +104,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           cancelledAt,
           paid,
           authorEmail,
+          authorName,
           author,
           ticket,
           paymentMethod,
@@ -125,8 +126,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       ) =>
         ({
           'Date de réservation': createdAt.toISOString(),
-          'Bénéficiaire':
-            (benef ? fullName(benef) : externalBeneficiary) || '(Pas de compte Churros)',
+          'Bénéficiaire': (benef ? fullName(benef) : externalBeneficiary) || authorName,
           'Référent·e': pointOfContact ? fullName(pointOfContact) : '',
           'Achat par': author ? fullName(author) : authorEmail,
           'Payée': humanBoolean(paid),

@@ -2232,6 +2232,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     authorEmail: Email
     """
+    Nom de la personne réservant la place, pratique quand on réserve une place sans compte Churros. L'email peut ne pas être très parlante pour savoir qui a réservé
+    """
+    authorName: String
+    """
     Nom de la personne pour qui on réserve la place. Préférer churrosBeneficiary quand c'est possible
     """
     beneficiary: String
@@ -5329,6 +5333,7 @@ type Registration implements Node {
   authorEmail: String!
   authorId: ID
   authorIsBeneficiary: Boolean!
+  authorName: String!
   """
   En attente du démarrage du paiement par l'utilisateur.ice
   """

@@ -672,6 +672,7 @@ model Registration {
   internalBeneficiaryId String?
   authorId              String?
   authorEmail           String         @default("")
+  authorName            String         @default("")
   verifiedById          String?
   opposedById           String?
   cancelledById         String?

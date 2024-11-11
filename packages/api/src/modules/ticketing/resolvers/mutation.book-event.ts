@@ -26,6 +26,11 @@ builder.mutationField('bookEvent', (t) =>
         description:
           "Nom de la personne pour qui on réserve la place. Préférer churrosBeneficiary quand c'est possible",
       }),
+      authorName: t.arg.string({
+        required: false,
+        description:
+          "Nom de la personne réservant la place, pratique quand on réserve une place sans compte Churros. L'email peut ne pas être très parlante pour savoir qui a réservé",
+      }),
       authorEmail: t.arg({
         required: false,
         type: Email,
@@ -107,6 +112,7 @@ builder.mutationField('bookEvent', (t) =>
           ticket: { connect: { id } },
           author: user ? { connect: { id: user.id } } : undefined,
           authorEmail: args.authorEmail ?? undefined,
+          authorName: args.authorName ?? undefined,
           paid:
             actualPrice(user, ticket, null) === 0 && ticket.maximumPrice === ticket.minimumPrice,
           externalBeneficiary: args.beneficiary,
