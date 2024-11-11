@@ -41,6 +41,7 @@
     CreateGoogleWalletPass,
     MarkBookingAsPaid,
   } from './mutations';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
@@ -225,6 +226,16 @@
         <dd>
           <BookingAuthor {booking} />
         </dd>
+        {#if ticket.event.enforcePointOfContact || booking.pointOfContact}
+          <dt>Référent·e</dt>
+          <dd>
+            {#if booking.pointOfContact}
+              <AvatarUser name user={booking.pointOfContact} />
+            {:else}
+              <span class="muted">Aucun·e</span>
+            {/if}
+          </dd>
+        {/if}
         <dt>Place</dt>
         <dd><LoadingText value={ticket.name}></LoadingText></dd>
         <dt>Prix</dt>
