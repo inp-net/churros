@@ -14,6 +14,11 @@ spec:
           containers:
             - name: hello
               image: curlimages/curl:latest
+              env:
+                - name: USERS_THRESHOLD
+                  value: 1825 # = 365 * 5 days
+                - name: EVENTS_THRESHOLD
+                  value: 30 # days
               envFrom:
                 - configMapRef:
                     name: churros-config
@@ -27,5 +32,5 @@ spec:
                 - '-H'
                 - 'Content-Type: application/json'
                 - '-d'
-                - '{"query":"mutation RunHousekeeper($token: String!) { housekeep(token: $token, expiredEventsDaysThreshold: 30, expiredUsersDaysThreshold: 1825) { __typename ...on Error {message} } }", "operationName":"RunHousekeeper", "variables": {"token": $HOUSEKEEPER_TOKEN}}'
+                - '{"query":"mutation RunHousekeeper($token: String!, $events: Int!, $users: Int!) { housekeep(token: $token, expiredEventsDaysThreshold: $events, expiredUsersDaysThreshold: $users) { __typename ...on Error {message} } }", "operationName":"RunHousekeeper", "variables": {"token": $HOUSEKEEPER_TOKEN, "events": $EVENTS_THRESHOLD, "users": $USERS_THRESHOLD}}'
                 - 'http://churros-api:4000/graphql'
