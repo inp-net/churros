@@ -15,7 +15,7 @@
 
 ---
 
-Cette politique de confidentialité décrit comment churros ("on", "nous") collecte et utilise les données à caractère personnelles que vous pouvez fournir à churros. La politique décrit aussi vos choix et droits concernant notre collecte et utilisation des données à caractère personnelles. Cette politique ne s'applique pas aux pratiques des tiers vers lesquels vous pouvez être redirigé au sein de messages postés sur le site web.
+Cette politique de confidentialité décrit comment Churros ("on", "nous") collecte et utilise les données à caractère personnelles que vous pouvez fournir à Churros. La politique décrit aussi vos choix et droits concernant notre collecte et utilisation des données à caractère personnelles. Cette politique ne s'applique pas aux pratiques des tiers vers lesquels vous pouvez être redirigé au sein de messages postés sur le site web.
 
 # Informations que nous collectons
 
