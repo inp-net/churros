@@ -18,7 +18,6 @@ function simulatingLoadingState(): boolean {
 }
 
 export type MaybeLoading<T> = T | null | undefined | typeof PendingValue;
-export type MaybeLoadingStrict<T> = T | typeof PendingValue;
 
 /**
  * Provide a fallback value if the value is PendingValue
@@ -78,9 +77,9 @@ export function allLoaded<T>(value: T): value is AllLoaded<T> {
 }
 
 export function mapLoading<T, O>(
-  value: MaybeLoadingStrict<T>,
+  value: MaybeLoading<T>,
   mapping: (value: T) => O,
-): MaybeLoadingStrict<O> {
+): MaybeLoading<O> {
   if (loaded(value)) return mapping(value);
   return PendingValue;
 }
