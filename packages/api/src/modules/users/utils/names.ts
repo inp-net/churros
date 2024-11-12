@@ -12,7 +12,7 @@ export function fullName(
   includeNickname = true,
 ) {
   const { firstName, lastName, nickname } = user;
-  if (includeNickname && nickname) return `${firstName} ${lastName} (${includeNickname})`;
+  if (includeNickname && nickname) return `${firstName} ${lastName} (${nickname})`;
   return `${firstName} ${lastName}`;
 }
 

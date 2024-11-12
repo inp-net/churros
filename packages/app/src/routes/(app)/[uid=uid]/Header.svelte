@@ -22,7 +22,7 @@
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import { DISPLAY_GROUP_TYPES } from '$lib/display';
-  import { loaded, loading, LoadingText, mapAllLoading, mapLoading } from '$lib/loading';
+  import { loaded, loading, LoadingText, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
@@ -47,7 +47,7 @@
       fragment ProfileHeader on Profile @loading {
         __typename
         ... on User {
-          name: fullName(nickname: false)
+          name: fullName
           pronouns
           nickname
           descriptionHtml
@@ -186,13 +186,9 @@
     <div class="text">
       <h2>
         <LoadingText value={$data && 'name' in $data ? $data.name : PendingValue} />
-        {#if $data?.__typename === 'User'}
+        {#if $data?.__typename === 'User' && loading($data.pronouns, '')}
           <div class="subline">
-            <LoadingText
-              value={mapAllLoading([$data.nickname, $data.pronouns], (nick, pro) =>
-                [nick, $page.params.uid, pro].filter(Boolean).join(' · '),
-              )}
-            />
+            <LoadingText value={$data.pronouns} />
           </div>
         {/if}
       </h2>
