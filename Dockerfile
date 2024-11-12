@@ -24,6 +24,7 @@ COPY scripts/ /app/scripts/
 RUN rm -rf packages/mock-n7-ldap pack
 RUN rm -rf packages/oauth-client
 
+RUN df -h; exit 1
 RUN yarn install
 RUN yarn cp-env
 RUN yarn generate-buildinfo
