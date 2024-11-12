@@ -158,6 +158,11 @@ export const environmentSchema = z.object({
     .string()
     .regex(/^[\d.a-z]+$/)
     .describe('App package ID (Android) and Bundle ID (iOS).'),
+  HOUSEKEEPER_TOKEN: z
+    .string()
+    .min(10)
+    .optional()
+    .describe('Token to execute Mutation.housekeep. If left empty, the mutation is unavailable.'),
 });
 
 function googleServiceAccountKey() {

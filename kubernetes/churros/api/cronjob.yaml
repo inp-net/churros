@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: churros-housekeeping
+spec:
+  # run monthly at some low-traffic time
+  schedule: '7 4 2 * *'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: hello
+              image: curlimages/curl:latest
+              envFrom:
+                - configMapRef:
+                    name: churros-config
+                - secretRef:
+                    name: churros-secrets
+              # call graphql mutation Mutation.housekeep
+              command:
+                - 'curl'
+                - '-X'
+                - 'POST'
+                - '-H'
+                - 'Content-Type: application/json'
+                - '-d'
+                - '{"query":"mutation RunHousekeeper($token: String!) { housekeep(token: $token, expiredEventsDaysThreshold: 30, expiredUsersDaysThreshold: 1825) { __typename ...on Error {message} } }", "operationName":"RunHousekeeper", "variables": {"token": $HOUSEKEEPER_TOKEN}}'
+                - 'http://churros-api:4000/graphql'
