@@ -4,17 +4,15 @@ import {
   builder,
   localID,
   log,
-  objectValuesFlat,
   prisma,
   publish,
   splitID,
   yearTier,
 } from '#lib';
 import { notify } from '#modules/notifications';
-import { userIsAdminOf } from '#permissions';
 import { NotificationChannel, type User } from '@churros/db/prisma';
-import { GraphQLError } from 'graphql';
 import { CommentType } from '../index.js';
+import { canEditComment } from '../utils/permissions.js';
 
 builder.mutationField('upsertComment', (t) =>
   t.prismaField({
@@ -35,55 +33,16 @@ builder.mutationField('upsertComment', (t) =>
       ],
     ],
     async authScopes(_, { id }, { user }) {
-      if (!user) return false;
-      if (user.admin) return true;
-
       if (id) {
-        const comment = await prisma.comment.findUnique({
+        const comment = await prisma.comment.findUniqueOrThrow({
           where: { id },
-          select: {
-            author: {
-              select: {
-                id: true,
-                major: {
-                  select: {
-                    schools: { select: { studentAssociations: { select: { id: true } } } },
-                  },
-                },
-              },
-            },
-            article: { select: { group: { select: { studentAssociationId: true } } } },
-            document: {
-              select: {
-                subject: {
-                  select: {
-                    minors: {
-                      select: {
-                        majors: {
-                          select: {
-                            schools: { select: { studentAssociations: { select: { id: true } } } },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          include: canEditComment.prismaIncludes,
         });
-
-        // Who can edit this commment?
-        if (!comment) throw new GraphQLError('Commentaire introuvable');
-        // - The author
-        if (comment.author?.id === user.id) return true;
-        // - Student association admins of the author or the resource on which the comment is
-        if (userIsAdminOf(user, objectValuesFlat(comment))) return true;
-        return false;
+        return canEditComment(user, comment);
       }
 
       // TODO only allow for articles the user can see
-      return true;
+      return Boolean(user);
     },
     async resolve(query, _, { id, body, resourceId, inReplyToId }, { user }) {
       let connection: undefined | { articleId: string } | { documentId: string };
