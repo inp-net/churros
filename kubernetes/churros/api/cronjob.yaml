@@ -18,7 +18,7 @@ spec:
                 - name: USERS_THRESHOLD
                   value: 1825 # = 365 * 5 days
                 - name: EVENTS_THRESHOLD
-                  value: 30 # days
+                  value: 365 # days
               envFrom:
                 - configMapRef:
                     name: churros-config
