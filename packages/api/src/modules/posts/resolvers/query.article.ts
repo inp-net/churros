@@ -1,6 +1,6 @@
 import { builder, ensureGlobalId, graphinx, localID, prisma } from '#lib';
 import { UIDScalar } from '#modules/global';
-import { prismaQueryAccessibleArticles, prismaQueryVisibleEvents } from '#permissions';
+import { prismaQueryAccessibleArticles } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { LocalID } from '../../global/types/local-id.js';
 import { ArticleType } from '../index.js';
@@ -35,18 +35,7 @@ builder.queryField('article', (t) =>
       const article = await prisma.article.findUnique({
         ...query,
         where: {
-          id: ensureGlobalId(id, 'Article'),
-          AND: [
-            prismaQueryAccessibleArticles(user, 'can'),
-            {
-              OR: [
-                { eventId: null },
-                {
-                  AND: [{ eventId: { not: null } }, { event: prismaQueryVisibleEvents(user) }],
-                },
-              ],
-            },
-          ],
+          AND: [prismaQueryAccessibleArticles(user, 'can'), { id: ensureGlobalId(id, 'Article') }],
         },
       });
       if (!article) throw new GraphQLError('Post introuvable');

@@ -6,3 +6,4 @@ export * from './comment.replies.js';
 export * from './document.comments.js';
 export * from './mutation.delete-comment.js';
 export * from './mutation.upsert-comment.js';
+export * from './query.comment.js';

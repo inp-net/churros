@@ -2,6 +2,7 @@ import {
   ENV,
   TYPENAMES_TO_ID_PREFIXES,
   builder,
+  ensureGlobalId,
   localID,
   log,
   prisma,
@@ -9,6 +10,7 @@ import {
   splitID,
   yearTier,
 } from '#lib';
+import { LocalID, MarkdownScalar } from '#modules/global';
 import { notify } from '#modules/notifications';
 import { NotificationChannel, type User } from '@churros/db/prisma';
 import { CommentType } from '../index.js';
@@ -17,15 +19,16 @@ import { canEditComment } from '../utils/permissions.js';
 builder.mutationField('upsertComment', (t) =>
   t.prismaField({
     type: CommentType,
+    errors: {},
     args: {
-      id: t.arg.id({ required: false }),
-      body: t.arg.string({ validate: { minLength: 1 } }),
-      resourceId: t.arg.id({ required: false }),
-      inReplyToId: t.arg.id({ required: false }),
+      id: t.arg({ type: LocalID, required: false }),
+      body: t.arg({ type: MarkdownScalar, validate: { minLength: 1 } }),
+      resource: t.arg.id({ required: false }),
+      inReplyTo: t.arg({ type: LocalID, required: false }),
     },
     validate: [
       [
-        ({ resourceId, id }) => Boolean(id || resourceId),
+        ({ resource, id }) => Boolean(id || resource),
         {
           message:
             'Vous devez spécifier le commentaire à modifier ou la resource sur laquelle créer le commentaire',
@@ -44,8 +47,11 @@ builder.mutationField('upsertComment', (t) =>
       // TODO only allow for articles the user can see
       return Boolean(user);
     },
-    async resolve(query, _, { id, body, resourceId, inReplyToId }, { user }) {
+    async resolve(query, _, { id, body, resource: resourceId, inReplyTo: inReplyToId }, { user }) {
       let connection: undefined | { articleId: string } | { documentId: string };
+
+      inReplyToId = ensureGlobalId(inReplyToId, 'Comment');
+      id = ensureGlobalId(id, 'Comment');
 
       if (resourceId) {
         connection = {

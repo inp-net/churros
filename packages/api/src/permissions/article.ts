@@ -1,3 +1,4 @@
+import { prismaQueryVisibleEvents } from '#permissions';
 import { Visibility, type Prisma } from '@churros/db/prisma';
 import type { Context } from '../lib/index.js';
 import {
@@ -18,6 +19,25 @@ import {
  * @returns a Prisma.ArticleWhereInput, an object to pass inside of a `where` field in a prisma query
  */
 export function prismaQueryAccessibleArticles(
+  user: Context['user'],
+  level: 'can' | 'wants',
+): Prisma.ArticleWhereInput {
+  return {
+    AND: [
+      prismaQueryAccessibleArticlesNoEvents(user, level),
+      {
+        OR: [
+          { eventId: null },
+          {
+            AND: [{ eventId: { not: null } }, { event: prismaQueryVisibleEvents(user) }],
+          },
+        ],
+      },
+    ],
+  };
+}
+
+export function prismaQueryAccessibleArticlesNoEvents(
   user: Context['user'],
   level: 'can' | 'wants',
 ): Prisma.ArticleWhereInput {

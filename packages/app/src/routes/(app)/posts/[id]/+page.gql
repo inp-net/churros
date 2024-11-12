@@ -1,6 +1,6 @@
 query PagePostDetail($id: LocalID!) @loading {
   me {
-    ...AreaCommentsUser
+    ...CardCommentMe
   }
 
   post: article(id: $id) {

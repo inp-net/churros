@@ -70,6 +70,10 @@ export function ensureGlobalId(id: string, typename: keyof typeof TYPENAMES_TO_I
 export function ensureGlobalId(
   id: string | null | undefined,
   typename: keyof typeof TYPENAMES_TO_ID_PREFIXES,
+): string | null | undefined;
+export function ensureGlobalId(
+  id: string | null | undefined,
+  typename: keyof typeof TYPENAMES_TO_ID_PREFIXES,
 ): string | null | undefined {
   if (!id) return id;
   if (id.split(':').length === 2) return id;

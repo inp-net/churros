@@ -12,6 +12,10 @@ export const CommentableInterface = builder.interfaceRef<Commentable>('Commentab
   description: 'Une resource pouvant être commentée par les utilisateur·ice·s',
   fields: (t) => ({
     id: t.exposeID('id', { description: 'L’identifiant de la resource commentée' }),
+    canComment: t.boolean({
+      description: 'On peut commenter sur cette ressource',
+      resolve: (_, __, { user }) => Boolean(user),
+    }),
     comments: t.connection(
       {
         type: CommentType,

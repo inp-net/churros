@@ -1,21 +1,24 @@
-import { builder, log, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { CommentType } from '#modules/comments/types';
+import { LocalID } from '#modules/global';
 import { canEditComment } from '../utils/permissions.js';
 
 builder.mutationField('deleteComment', (t) =>
   t.prismaField({
     type: CommentType,
+    errors: {},
     args: {
-      id: t.arg.id(),
+      id: t.arg({ type: LocalID }),
     },
     async authScopes(_, { id }, { user }) {
       const comment = await prisma.comment.findUniqueOrThrow({
-        where: { id },
+        where: { id: ensureGlobalId(id, 'Comment') },
         include: canEditComment.prismaIncludes,
       });
       return canEditComment(user, comment);
     },
     async resolve(query, _, { id }) {
+      id = ensureGlobalId(id, 'Comment');
       const repliesCount = await prisma.comment.count({ where: { inReplyToId: id } });
       await log('comments', 'delete', { repliesCount }, id);
 

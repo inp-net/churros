@@ -8,7 +8,7 @@
   /** Include user name next to picture */
   export let name = false;
 
-  export let user: AvatarUser | null;
+  export let user: AvatarUser | null | undefined;
   $: data = fragment(
     user,
     graphql(`
