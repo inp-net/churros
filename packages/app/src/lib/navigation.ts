@@ -458,10 +458,6 @@ export const topnavConfigs: Partial<{
       commonActions.copyID,
     ],
   }),
-  '/(app)/posts/[[group]]/create': {
-    title: 'Nouveau post',
-    actions: [],
-  },
   '/(app)/events/[id]/scan': ({ params: { id } }) => ({
     title: 'Scanner des billets',
     back: route('/events/[id]', id),
