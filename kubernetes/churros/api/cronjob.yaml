@@ -26,11 +26,10 @@ spec:
                     name: churros-secrets
               # call graphql mutation Mutation.housekeep
               command:
-                - 'curl'
                 - '-X'
                 - 'POST'
                 - '-H'
                 - 'Content-Type: application/json'
                 - '-d'
-                - '{"query":"mutation RunHousekeeper($token: String!, $events: Int!, $users: Int!) { housekeep(token: $token, expiredEventsDaysThreshold: $events, expiredUsersDaysThreshold: $users) { __typename ...on Error {message} } }", "operationName":"RunHousekeeper", "variables": {"token": $HOUSEKEEPER_TOKEN, "events": $EVENTS_THRESHOLD, "users": $USERS_THRESHOLD}}'
+                - '{"query":"mutation RunHousekeeper($token: String!, $events: Int!, $users: Int!) { housekeep(token: $token, expiredEventsDaysThreshold: $events, expiredUsersDaysThreshold: $users) { __typename ...on Error {message} } }", "operationName":"RunHousekeeper", "variables": {"token": "$HOUSEKEEPER_TOKEN", "events": $EVENTS_THRESHOLD, "users": $USERS_THRESHOLD}}'
                 - 'http://churros-api:4000/graphql'
