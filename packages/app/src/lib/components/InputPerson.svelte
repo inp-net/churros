@@ -1,10 +1,9 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
-  import { zeus } from '$lib/zeus';
+  import { graphql } from '$houdini';
   import IconNone from '~icons/mdi/help';
   import InputField from './InputField.svelte';
   import InputSearchObject from './InputSearchObject.svelte';
-  import { graphql } from '$houdini';
 
   type User = {
     uid: string;
@@ -39,21 +38,19 @@
   }
 
   async function search(query: string): Promise<User[]> {
-    const { searchUsers } = await $zeus.query({
-      searchUsers: [
-        { q: query },
-        {
-          user: {
-            uid: true,
-            fullName: true,
-            firstName: true,
-            lastName: true,
-            pictureFile: true,
-          },
-        },
-      ],
-    });
-    return searchUsers.filter(({ user: { uid } }) => allowed(uid)).map(({ user }) => user);
+    const SearchUsers = graphql(`
+      query SearchUsers($q: String!) {
+        searchUsers(q: $q) {
+          user {
+            ...InputPerson @mask_disable
+          }
+        }
+      }
+    `);
+
+    return SearchUsers.fetch({ variables: { q: query } }).then(({ data }) =>
+      (data?.searchUsers ?? []).filter(({ user: { uid } }) => allowed(uid)).map(({ user }) => user),
+    );
   }
 </script>
 
