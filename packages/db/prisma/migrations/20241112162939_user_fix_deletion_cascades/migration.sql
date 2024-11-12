@@ -2,6 +2,9 @@
 ALTER TABLE "Answer" DROP CONSTRAINT "Answer_createdById_fkey";
 
 -- DropForeignKey
+ALTER TABLE "Document" DROP CONSTRAINT "Document_uploaderId_fkey";
+
+-- DropForeignKey
 ALTER TABLE "GodparentRequest" DROP CONSTRAINT "GodparentRequest_godchildId_fkey";
 
 -- DropForeignKey
@@ -167,6 +170,9 @@ ALTER TABLE "Registration" ADD CONSTRAINT "Registration_authorId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Document" ADD CONSTRAINT "Document_uploaderId_fkey" FOREIGN KEY ("uploaderId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PromotionCode" ADD CONSTRAINT "PromotionCode_claimedById_fkey" FOREIGN KEY ("claimedById") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

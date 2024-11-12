@@ -2444,6 +2444,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   ): MutationDeleteTicketResult!
   deleteTicketGroup(id: LocalID!): MutationDeleteTicketGroupResult!
   deleteToken(id: ID!): Boolean!
+  """
+  Supprimer son compte
+  """
+  deleteUser: MutationDeleteUserResult!
   deleteUserPicture(uid: String!): Boolean!
   finishPaypalRegistrationPayment(orderId: String!): MutationFinishPaypalRegistrationPaymentResult!
   kioskReload(
@@ -3415,6 +3419,12 @@ type MutationDeleteTicketSuccess {
   Message d'explication si le billet n'a pas pu être supprimé mais qu'une autre action a été effectuée à la place
   """
   softDeleted: String
+}
+
+union MutationDeleteUserResult = Error | MutationDeleteUserSuccess | ZodError
+
+type MutationDeleteUserSuccess {
+  data: User!
 }
 
 union MutationFinishPaypalRegistrationPaymentResult =
@@ -6346,6 +6356,10 @@ type User implements Node & Pictured {
   contributionOptions: [ContributionOption!]!
   createdAt: DateTime!
   credentials: [Credential!]!
+  """
+  Liste de messages expliquant les conséquences de la suppression de l'utilisateur
+  """
+  deletionConsequences: [String!]!
   description: String!
   descriptionHtml: HTML!
   email: Email

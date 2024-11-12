@@ -54,5 +54,6 @@ export * from './query.user-candidate.js';
 export * from './query.user-candidates.js';
 export * from './query.user.js';
 export * from './user.board-memberships.js';
+export * from './user.deletion-consequences.js';
 export * from './user.family-tree.js';
 export * from './user.pins.js';

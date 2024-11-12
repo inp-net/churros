@@ -52,6 +52,7 @@ const PAGES = {
     return `/claim-code/${code}`;
   },
   '/credits': `/credits`,
+  '/delete-account': `/delete-account`,
   '/documents': `/documents`,
   '/documents/[major]': (major: string | number, params?: {}) => {
     return `/documents/${major}`;
@@ -523,6 +524,7 @@ export type KIT_ROUTES = {
     '/claim-code': never;
     '/claim-code/[code]': 'code';
     '/credits': never;
+    '/delete-account': never;
     '/documents': never;
     '/documents/[major]': 'major';
     '/documents/[major]/[yearTier=display_year_tier]': 'major' | 'yearTier';

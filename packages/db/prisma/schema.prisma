@@ -901,7 +901,7 @@ model Document {
   paperPaths    String[] // le sujet
   solutionPaths String[] // la correction
 
-  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   uploaderId String?
 
   comments  Comment[]

@@ -1,29 +1,28 @@
 <script lang="ts">
+  import { graphql } from '$houdini';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import IconLydia from '$lib/components/IconLydia.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputRadios from '$lib/components/InputRadios.svelte';
+  import InputText from '$lib/components/InputText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { formatDateTime } from '$lib/dates';
+  import { debugging } from '$lib/debugging';
   import { loading } from '$lib/loading';
+  import { mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { theme } from '$lib/theme';
-  import IconTrash from '~icons/msl/delete-outline';
   import IconDebug from '~icons/msl/code';
-  import IconLydia from '$lib/components/IconLydia.svelte';
+  import IconTrash from '~icons/msl/delete-outline';
   import IconPersonalData from '~icons/msl/download';
   import IconNotification from '~icons/msl/notifications-outline';
   import IconTheme from '~icons/msl/palette-outline';
-  import IconProfile from '~icons/msl/person-outline';
   import IconSpecialOffer from '~icons/msl/percent';
+  import IconProfile from '~icons/msl/person-outline';
   import type { LayoutData } from './$houdini';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import { debugging } from '$lib/debugging';
-  import InputText from '$lib/components/InputText.svelte';
-  import { mutateAndToast } from '$lib/mutations';
-  import { graphql } from '$houdini';
 
   const UpdateLydiaPhone = graphql(`
     mutation UpdateLydiaPhone($lydiaPhone: String!) {
@@ -40,9 +39,6 @@
 
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
-
-  export let deleteAccountModal: () => void;
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
 <MaybeError result={$LayoutSettings} let:data={{ me }}>
@@ -99,7 +95,7 @@
           Télécharger
         </ButtonSecondary>
       </SubmenuItem>
-      <SubmenuItem clickable on:click={deleteAccountModal} icon={IconTrash}>
+      <SubmenuItem href={route('/delete-account')} icon={IconTrash}>
         Supprimer mon compte
       </SubmenuItem>
       <SubmenuItem icon={IconDebug} label>
@@ -107,9 +103,6 @@
         <InputCheckbox slot="right" label="" bind:value={$debugging}></InputCheckbox>
       </SubmenuItem>
     </Submenu>
-    <ModalOrDrawer bind:open={deleteAccountModal}>
-      <p>Veuillez contacter l'équipe administrative de votre AE pour supprimer votre compte.</p>
-    </ModalOrDrawer>
   </div>
 </MaybeError>
 

@@ -158,6 +158,9 @@ export const environmentSchema = z.object({
     .string()
     .regex(/^[\d.a-z]+$/)
     .describe('App package ID (Android) and Bundle ID (iOS).'),
+  USER_DELETED_WEBHOOK: optionaluri().describe(
+    "When someone deletes their account, a GET request to this URL will be made with the user's UID as the ?user query parameter.",
+  ),
 });
 
 function googleServiceAccountKey() {
