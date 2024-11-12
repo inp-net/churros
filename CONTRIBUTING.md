@@ -36,6 +36,7 @@ yarn install
 ```
 
 3. Ajouter les variables d'environnement
+
 ```
 cp .env.example .env
 ```
@@ -76,6 +77,8 @@ yarn reset
       | --------------- | --------------- |
       | `yarn @api dev` | `yarn @app dev` |
 
+      (sur VSCode: Run Task puis Develop)
+
   Note que le faux serveur LDAP de l'école ne fonctionnera pas (il faut le lancer dans encore un autre terminal), mais ça ne pose pas de problème si l'on ne développe pas la partie inscriptions.
 
 Parmis d'autres choses, sont notamment lancés:
@@ -83,6 +86,12 @@ Parmis d'autres choses, sont notamment lancés:
 - <http://localhost:5173>: l'application
 - <http://localhost:4000>: l'API
 - <http://localhost:8025>: un serveur mail de test reçevant tout les mails envoyés par l'application
+
+On peut lancer Prisma Studio pour inspecter la base de données:
+
+```
+yarn prisma studio
+```
 
 ## Développement
 
