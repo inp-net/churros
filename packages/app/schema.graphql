@@ -714,6 +714,13 @@ type ChangelogRelease {
 }
 
 """
+An error raised when an operation is in progress and should be retried later.
+"""
+type CheckBackLaterError implements ErrorInterface {
+  message: String!
+}
+
+"""
 Une couleur. En entrée, un code héxadécimal avec '#', ou un nom de couleur CSS. En sortie, un code héxadécimal avec '#' présent. La transparence n'est pas supportée.
 """
 scalar Color
@@ -2283,6 +2290,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     group: UID!
     title: ShortString!
   ): MutationCreateEventResult!
+  """
+  Créer une demande d'export RGPD de données personnelles pour la peronne connectée. Renvoie le lien a télécharger quand un export est prêt. Voir aussi User.gdprExport pour récupérer un lien sans émettre une nouvelle demande.
+  """
+  createGdprExport(
+    """
+    Forcer la création d'une nouvelle demande d'export de données personnelles RGPD. Par défaut, une nouvelle demande est créée si l'export date de plus de 24 heures.
+    """
+    force: Boolean! = false
+  ): MutationCreateGdprExportResult! @rateLimit(duration: 3600, limit: 10)
   createGitlabIssue(description: String!, isBug: Boolean!, title: String!): Int!
   """
   Créer un pass Google Wallet pour une réservation donnée. Renvoie l'URL a utiliser pour ajouter le pass à Google Wallet.
@@ -3283,6 +3299,16 @@ union MutationCreateEventResult = Error | MutationCreateEventSuccess | ZodError
 
 type MutationCreateEventSuccess {
   data: Event!
+}
+
+union MutationCreateGdprExportResult =
+  | CheckBackLaterError
+  | Error
+  | MutationCreateGdprExportSuccess
+  | ZodError
+
+type MutationCreateGdprExportSuccess {
+  data: URL!
 }
 
 union MutationCreateGoogleWalletPassResult =
@@ -6360,6 +6386,10 @@ type User implements Node & Pictured {
   familyTree: FamilyTree!
   firstName: String!
   fullName: String!
+  """
+  Lien de téléchargement de l'export RGPD de données personnelles. Si aucun export n'existe, renvoie null. Voir Mutation.createGdprExport pour créer un export.
+  """
+  gdprExport: URL
   godchildren: [User!]!
   godparent: User
   graduationYear: Int!
