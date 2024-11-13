@@ -458,6 +458,11 @@ export const topnavConfigs: Partial<{
       commonActions.copyID,
     ],
   }),
+  '/(app)/events/[id]/join/[code]': ({ params: { id } }) => ({
+    title: 'Invitation',
+    back: route('/events/[id]', id),
+    actions: [],
+  }),
   '/(app)/posts/[[group]]/create': {
     title: 'Nouveau post',
     actions: [],
@@ -550,6 +555,11 @@ export const topnavConfigs: Partial<{
   }),
   '/(app)/events/[id]/edit/tickets/[ticket]/payment': ({ params }) => ({
     title: 'Moyens de paiement',
+    back: route('/events/[id]/edit/tickets/[ticket]', params),
+    actions: [],
+  }),
+  '/(app)/events/[id]/edit/tickets/[ticket]/invited': ({ params }) => ({
+    title: 'Billet sur invitation',
     back: route('/events/[id]/edit/tickets/[ticket]', params),
     actions: [],
   }),
