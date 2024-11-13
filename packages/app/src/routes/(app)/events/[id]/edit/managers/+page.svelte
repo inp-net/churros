@@ -147,9 +147,27 @@
     <h2 class="typo-field-label">Managers</h2>
     <ul class="managers nobullet">
       {#each event.managers as manager}
-        <ItemManager bind:highlightedInviteId {manager} />
+        <ItemManager {manager} />
       {:else}
         <li class="muted">Aucun manager ajouté</li>
+      {/each}
+    </ul>
+    <h2 class="typo-field-label">
+      Managers par permissions sur <AvatarGroup group={event.organizer} name />
+    </h2>
+    <p class="explain muted">
+      Ces personnes sont managers de l'évènement par leur permissions en tant que membre du groupe
+      organisateur. <ButtonInk
+        insideProse
+        href={refroute('/groups/[uid]/members', loading(event.organizer.uid, ''))}
+        >Gérer les membres</ButtonInk
+      >
+    </p>
+    <ul class="managers nobullet">
+      {#each event.inheritedManagers as manager}
+        <ItemManager {manager} />
+      {:else}
+        <li class="muted">Aucun membre du groupe n'est manager par permissions</li>
       {/each}
     </ul>
     <h2 class="typo-field-label">

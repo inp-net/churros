@@ -581,7 +581,7 @@ model Event {
   enforcePointOfContact Boolean              @default(false)
 
   // For full-text search
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@index([search], type: Gin)
 }
