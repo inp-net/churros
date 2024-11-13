@@ -6268,8 +6268,8 @@ type User implements Node & Pictured {
     Identifiant complet (avec le préfixe) pour un bénéficiaire avec compte Churros, ou texte libre pour un bénéficiaire externe
     """
     beneficiary: String
-    event: ID!
-  ): Registration!
+    event: LocalID!
+  ): Registration
   bookings(
     after: String
     before: String
