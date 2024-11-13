@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/v0.12.0/config.schema.json
-template: graphinx/templates/default#v0.12.0
+template: graphinx/templates/default#v0.12.0-1
 
 schema:
   static: ../app/schema.graphql
@@ -48,12 +48,14 @@ modules:
     PageInfo: global
     Error: global
     ErrorInterface: global
-    ZodFieldError: global
-    NotFoundError: global
+    AwaitingValidationError: users
+    '*Error': global
+    Query.search*: search
     # FIXME: Graphinx cannot infer when success datatype is String
     EventBookingsCsv{Result,Success}: ticketing
   order:
     - global
+    - search
     - users
     - groups
     - posts
