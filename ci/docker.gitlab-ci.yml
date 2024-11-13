@@ -30,7 +30,6 @@ deploy_api:
   stage: deploy
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/api@(\d+\.\d+\.\d+)/
-    - when: manual
   script:
     - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/api@//')
     - |
@@ -50,7 +49,6 @@ deploy_app:
     SENTRY_PROJECT: app
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
-    - when: manual
   script:
     - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
     - |
@@ -69,7 +67,6 @@ deploy_sync:
   stage: deploy
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/sync@(\d+\.\d+\.\d+)/
-    - when: manual
   script:
     - export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/sync@//')
     - |
