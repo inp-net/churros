@@ -10,15 +10,17 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import { countThing } from '$lib/i18n';
   import { LoadingText, allLoaded, loaded, loading, mapLoading, onceLoaded } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
+  import { infinitescroll } from '$lib/scroll';
+  import debounce from 'lodash.debounce';
   import IconGotoBooking from '~icons/msl/qr-code';
   import IconRefresh from '~icons/msl/refresh';
   import IconWarning from '~icons/msl/warning-outline';
   import type { PageData } from './$houdini';
-  import debounce from 'lodash.debounce';
 
   export let data: PageData;
   $: ({ PageEventEditTicketInvited } = data);
@@ -54,6 +56,7 @@
           data {
             inviteCode
             invitedUsers {
+              totalCount
               nodes {
                 id
               }
@@ -118,19 +121,26 @@
         </div>
       </SubmenuItem>
     </Submenu>
-    {#if event.ticket?.inviteCode || (event.ticket?.invitedUsers.nodes.length ?? 0) > 0}
-      <section class="uses">
+    {#if event.ticket && (event.ticket.inviteCode || event.ticket.invitedUsers.totalCount > 0)}
+      <section
+        class="uses"
+        use:infinitescroll={async () => PageEventEditTicketInvited.loadNextPage()}
+      >
         <h2 class="typo-field-label">
-          Utilisations
+          {#if event.ticket.invitedUsers.totalCount === 0}
+            utilisations
+          {:else}
+            {countThing('utilisation', event.ticket.invitedUsers.totalCount)}
+          {/if}
 
-          {#if (event.ticket?.invitedUsers.nodes.length ?? 0) > 0}
+          {#if loading(event.ticket.invitedUsers.totalCount, 0) > 0}
             <ButtonInk icon={IconRefresh} loading={refreshingInvites} on:click={refreshInvites}>
               Recharger
             </ButtonInk>
           {/if}
         </h2>
         <Submenu>
-          {#each event.ticket?.invitedUsers.nodes ?? [] as user}
+          {#each event.ticket.invitedUsers.edges as { node: user }}
             <SubmenuItem icon={null}>
               <AvatarUser slot="icon" {user} />
               <LoadingText value={user.fullName} />
@@ -179,6 +189,7 @@
             </SubmenuItem>
           {/each}
         </Submenu>
+        <div data-infinitescroll-bottom=""></div>
       </section>
     {/if}
   </div>

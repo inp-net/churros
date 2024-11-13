@@ -6246,6 +6246,7 @@ type TicketInvitedUsersConnection {
   edges: [TicketInvitedUsersConnectionEdge!]!
   nodes: [User!]!
   pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type TicketInvitedUsersConnectionEdge {

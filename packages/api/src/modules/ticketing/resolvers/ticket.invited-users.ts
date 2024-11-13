@@ -17,5 +17,13 @@ builder.prismaObjectField(TicketType, 'invitedUsers', (t) =>
     async resolve(query, { id }) {
       return prisma.ticket.findUniqueOrThrow({ where: { id } }).invited(query);
     },
+    async totalCount({ id }) {
+      return prisma.ticket
+        .findUniqueOrThrow({
+          where: { id },
+          select: { _count: { select: { invited: true } } },
+        })
+        .then(({ _count }) => _count.invited);
+    },
   }),
 );
