@@ -1,5 +1,11 @@
 # @churros/api
 
+## 5.0.1
+
+### Patch Changes
+
+- 3e47614: allow postgresql: protocol alongside postgres: protocol for database_url env variable
+
 ## 5.0.0
 
 ### Major Changes
