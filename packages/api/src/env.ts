@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const environmentSchema = z.object({
-  DATABASE_URL: uri('postgres').describe(
+  DATABASE_URL: uri('postgres', 'postgresql').describe(
     'Database connection string. See https://www.prisma.io/docs/reference/database-reference/connection-urls',
   ),
   REDIS_URL: uri('redis').describe('Redis connection string.'),
