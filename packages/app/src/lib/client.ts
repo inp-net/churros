@@ -5,7 +5,7 @@ import { HoudiniClient, subscription } from '$houdini';
 import { API_URL } from '$lib/env';
 import { redirectToLogin } from '$lib/session';
 import { Capacitor } from '@capacitor/core';
-import { parse } from 'cookie';
+import { Preferences } from '@capacitor/preferences';
 import { createClient } from 'graphql-ws';
 
 // XXX: must be the same as in the API
@@ -29,6 +29,19 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
     },
   };
 };
+
+const nativeAuthentication: ClientPlugin = () => ({
+  async start(ctx, { next }) {
+    if (Capacitor.isNativePlatform()) {
+      ctx.session = {
+        token: await Preferences.get({ key: 'token' }).then(({ value }) => value ?? undefined),
+        ...ctx.session,
+      };
+    }
+
+    next(ctx);
+  },
+});
 
 const logger: ClientPlugin = () => ({
   start(ctx, { next }) {
@@ -84,17 +97,8 @@ const subscriptionPlugin = subscription(({ session }) =>
 
 export default new HoudiniClient({
   url: API_URL,
-  plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
+  plugins: [logger, nativeAuthentication, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
-    if (Capacitor.getPlatform() !== 'web') {
-	  const token = parse(document.cookie).token
-      console.log(`using_token ${token ?? '<none>'}`);
-      return {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-      };
-    }
     return {
       credentials: 'include',
       headers: {
