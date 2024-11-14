@@ -20,7 +20,7 @@ export async function saveSessionToken(
     : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
 
   if (cookies) {
-    console.log(JSON.stringify({ setting_web_cookie: token, expiration }));
+    console.log(JSON.stringify({ setting_web_cookie: token, exp: expiration?.toString() ?? '<none>' }));
     cookies.set('token', token, {
       expires: expiration,
       path: '/',
@@ -29,7 +29,7 @@ export async function saveSessionToken(
   } else if (Capacitor.getPlatform() !== 'web') {
     // TODO handle expiration date?
     // the app should handle invalid tokens anyways, so not sure if this is actually needed
-    console.log(JSON.stringify({ saving_token: token, expiration }));
+    console.log(JSON.stringify({ saving_token: token, exp: expiration?.toString() ?? '<none>' }));
     await Preferences.set({
       key: 'token',
       value: token,
