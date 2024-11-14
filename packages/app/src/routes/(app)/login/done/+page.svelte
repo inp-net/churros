@@ -8,7 +8,7 @@
 
   onMount(async () => {
     cache.reset();
-    console.log('redirect after login finished from', $page.url.searchParams.get('from'));
+    console.log(JSON.stringify({'redirect after login finished from': $page.url.searchParams.get('from')}));
     await goto($page.url.searchParams.get('from') || route('/'));
   });
 </script>

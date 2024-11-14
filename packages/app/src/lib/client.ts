@@ -87,7 +87,7 @@ export default new HoudiniClient({
   plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
     if (Capacitor.getPlatform() !== 'web') {
-      console.log({ using_token: parse(document.cookie).token });
+      console.log(JSON.stringify({ using_token: parse(document.cookie).token }));
       return {
         headers: {
           Authorization: parse(document.cookie).token

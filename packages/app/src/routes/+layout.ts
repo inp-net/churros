@@ -21,7 +21,7 @@ export async function load(event) {
   });
   if (Capacitor.isNativePlatform()) {
     const token = await Preferences.get({ key: 'token' }).then(({ value }) => value ?? '');
-    console.log({ token_set_on_root_layout: token });
+    console.log(JSON.stringify({ token_set_on_root_layout: token }));
     // Expose token to cookies so that houdini client can use it (its fetchParams function is synchronous so there's no way to call Preferences.get there)
     await CapacitorCookies.setCookie({
       key: 'token',
