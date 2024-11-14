@@ -15,16 +15,31 @@ spec:
             - name: hello
               image: curlimages/curl:latest
               env:
-                - name: USERS_THRESHOLD
-                  value: 1825 # = 365 * 5 days
-                - name: EVENTS_THRESHOLD
-                  value: 365 # days
-                - name: NOTIFS_THRESHOLD
-                  value: 30 # days
-                - name: LOGS_THRESHOLD
-                  value: 90 # days
-                - name: GDPR_EXPORTS_THRESHOLD
-                  value: 30 # days
+                - name: REQUEST
+                  # all thresholds are in days
+                  # WARNING: DON'T add identation. it'll make yaml keep newlines and break the JSON string
+                  value: >-
+                    mutation RunHousekeeper(\$token: String!) { 
+                    housekeep(token: \$token, thresholds: { 
+                    eventEndedAt: 356, 
+                    userLastLogin: 1825,
+                    logHappenedAt: 90,
+                    notificationSentAt: 30,
+                    gdprExportCreatedAt: 30,
+                    }) { 
+                    __typename 
+                    ...on Error { message } 
+                    ...on HousekeepingResult {
+                    deletedEvents
+                    deletedUsers
+                    deletedLogs
+                    deletedGdprExports
+                    warnedUsers
+                    deletedNotifications
+                    deletedAppleWalletFiles
+                    }
+                    } 
+                    }
               envFrom:
                 - configMapRef:
                     name: churros-config
@@ -32,37 +47,12 @@ spec:
                     name: churros-secrets
               # call graphql mutation Mutation.housekeep
               command:
-                - '-X'
-                - 'POST'
-                - '-H'
-                - 'Content-Type: application/json'
-                - '-d'
+                - /bin/sh
+                - -c
                 - >
-                  {
-                    "query":"
-                      mutation RunHousekeeper($token: String!) { 
-                        housekeep(token: $token, thresholds: { 
-                          eventEndedAt: $EVENTS_THRESHOLD, 
-                          userLastLogin: $USERS_THRESHOLD,
-                          logHappenedAt: $LOGS_THRESHOLD,
-                          notificationSentAt: $NOTIFS_THRESHOLD,
-                          gdprExportCreatedAt: $GDPR_EXPORTS_THRESHOLD,
-                        }) { 
-                          __typename 
-                          ...on Error { message } 
-                          ...on HousekeepingResult {
-                            deletedEvents
-                            deletedUsers
-                            deletedLogs
-                            deletedGdprExports
-                            warnedUsers
-                            deletedNotifications
-                            deletedAppleWalletFiles
-                          }
-                        } 
-                      }
-                    ", 
-                    "operationName":"RunHousekeeper", 
-                    "variables": { "token": "$HOUSEKEEPER_TOKEN" }
-                  }
-                - 'http://churros-api:4000/graphql'
+                  curl 
+                  -X POST 
+                  -H 'Content-Type: application/json' 
+                  -d "{ \"query\": \"$(REQUEST)\", \"variables\": { \"token\": \"$(HOUSEKEEPER_TOKEN)\" }, \"operationName\": \"RunHousekeeper\" }" 
+                  https://churros.inpt.fr/graphql
+                  --trace-ascii -
