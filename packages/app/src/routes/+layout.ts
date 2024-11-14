@@ -20,10 +20,12 @@ export async function load(event) {
     else App.exitApp();
   });
   if (Capacitor.isNativePlatform()) {
+    const token = await Preferences.get({ key: 'token' }).then(({ value }) => value ?? '');
+    console.log({ token_set_on_root_layout: token });
     // Expose token to cookies so that houdini client can use it (its fetchParams function is synchronous so there's no way to call Preferences.get there)
     await CapacitorCookies.setCookie({
       key: 'token',
-      value: await Preferences.get({ key: 'token' }).then(({ value }) => value ?? ''),
+      value: token,
       // Token will definitely be invalid before that date, but the app should handle invalid tokens anyways
       expires: addYears(new Date(), 1).toISOString(),
       path: '/',

@@ -34,6 +34,7 @@ export async function authedVia(cookies: Document['cookie']): Promise<'oauth2' |
     return Preferences.get({
       key: 'authed_via',
     }).then(({ value }) => {
+	  console.log({ authed_via: value })
       if (value === 'oauth2') return 'oauth2';
       if (value === 'token') return 'token';
       return null;
