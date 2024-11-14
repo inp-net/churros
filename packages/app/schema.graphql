@@ -1913,6 +1913,44 @@ type HealthCheck {
   redis: RedisHealthCheck!
 }
 
+input HousekeepingExpirationThresholds @graphinx(module: "global") {
+  """
+  Number of days since event's end to remove bookings
+  """
+  eventEnd: Int!
+  """
+  Number of days since a notification was sent to remove it
+  """
+  notificationSentAt: Int!
+  """
+  Number of days since last login to remove users
+  """
+  userLastLogin: Int!
+}
+
+type HousekeepingResult @graphinx(module: "global") {
+  """
+  Number of deleted Apple Wallet files
+  """
+  deletedAppleWalletFiles: Int!
+  """
+  Number of deleted events
+  """
+  deletedEvents: Int!
+  """
+  Number of deleted notifications
+  """
+  deletedNotifications: Int!
+  """
+  Number of deleted users
+  """
+  deletedUsers: Int!
+  """
+  Number of warned users
+  """
+  warnedUsers: Int!
+}
+
 """
 A Gitlab issue
 """
@@ -2470,14 +2508,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Run housekeeping tasks: remove bookings on old events, remove old users (no login since a certain time), apple wallet pass files, etc.
   """
   housekeep(
-    """
-    Number of days since event's end to remove bookings
-    """
-    expiredEventsDaysThreshold: Int!
-    """
-    Number of days since last login to remove users
-    """
-    expiredUsersDaysThreshold: Int!
+    thresholds: HousekeepingExpirationThresholds!
     """
     Housekeeper token
     """
@@ -3473,11 +3504,7 @@ type MutationFinishPaypalRegistrationPaymentSuccess {
   data: Boolean!
 }
 
-union MutationHousekeepResult = Error | MutationHousekeepSuccess | ZodError
-
-type MutationHousekeepSuccess {
-  data: Boolean!
-}
+union MutationHousekeepResult = Error | HousekeepingResult | ZodError
 
 union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess | ZodError
 

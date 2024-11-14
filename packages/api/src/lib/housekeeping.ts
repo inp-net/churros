@@ -9,7 +9,7 @@ import { rimraf } from 'rimraf';
  * @param thresholdDays days since event end
  */
 export async function removeOldBookings(thresholdDays: number) {
-  return prisma.registration.deleteMany({
+  const toDelete = await prisma.registration.findMany({
     where: {
       ticket: {
         event: {
@@ -20,6 +20,17 @@ export async function removeOldBookings(thresholdDays: number) {
       },
     },
   });
+
+  const deletionResults = prisma.registration.deleteMany({
+    where: {
+      id: { in: toDelete.map((r) => r.id) },
+    },
+  });
+
+  return {
+    bookings: toDelete,
+    ...deletionResults,
+  };
 }
 
 /**
@@ -40,7 +51,7 @@ export async function removeAppleWalletFiles() {
  * @param thresholdDays days since last login
  */
 export async function removeOldUsers(thresholdDays: number) {
-  return prisma.user.deleteMany({
+  const toDelete = await prisma.user.findMany({
     where: {
       bot: false,
       lastSeenAt: {
@@ -48,6 +59,16 @@ export async function removeOldUsers(thresholdDays: number) {
       },
     },
   });
+  const deletionResults = prisma.user.deleteMany({
+    where: {
+      id: { in: toDelete.map((u) => u.id) },
+    },
+  });
+
+  return {
+    users: toDelete,
+    ...deletionResults,
+  };
 }
 
 /**
@@ -81,4 +102,14 @@ export async function warnSoonOldUsers(thresholdDays: number) {
   }
 
   return usersToWarn;
+}
+
+export async function deleteOldNotifications(thresholdDays: number) {
+  return prisma.notification.deleteMany({
+    where: {
+      createdAt: {
+        lt: subDays(new Date(), thresholdDays),
+      },
+    },
+  });
 }
