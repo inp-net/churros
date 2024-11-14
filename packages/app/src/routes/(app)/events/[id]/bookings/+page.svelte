@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { graphql, type PageEventAllBookings$result } from '$houdini';
+  import { graphql, type PageEventBookings_ItemBooking$data } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import BookingAuthor from '$lib/components/BookingAuthor.svelte';
@@ -10,28 +10,51 @@
   import BookingStatus from '$lib/components/BookingStatus.svelte';
   import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import LoadingScreen from '$lib/components/LoadingScreen.svelte';
+  import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
-  import { allLoaded, loaded, loading, LoadingText, mapLoading } from '$lib/loading';
+  import { countThing } from '$lib/i18n';
+  import { loaded, loading, LoadingText, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { isPWA } from '$lib/pwa';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
+  import { onMount } from 'svelte';
+  import { queryParam } from 'sveltekit-search-params';
   import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
   import { tabToFilter } from './filters';
+  import ItemBooking from './ItemBooking.svelte';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
 
   const FILTERS = ['unpaid', 'paid', 'verified'] as const;
-  $: activeTab = ($page.url.searchParams.get('tab') ?? 'unpaid') as (typeof FILTERS)[number];
+  const DEFAULT_FILTER = 'unpaid';
+
+  const q = queryParam('q', {
+    encode: (v) => v || undefined,
+    decode: (v) => v ?? '',
+  });
+
+  // Using $q as the value of the input is really bad for performance,
+  // as every debounce will trigger a re-render of the input, which will trigger a re-render of the input's value. If someone types slow enough, the last character typed will be erased as $q updates with the previous value.
+  // This is called a "controlled input" and is generally a bad practice.
+  // Using this allows us to still fill the input value with the ?q query parameter in case we navigate to this page with a ?q set, but prevents the controlled input issues.
+  let initialQ = '';
+  onMount(() => {
+    initialQ = $q ?? '';
+  });
+
+  const activeTab = queryParam<(typeof FILTERS)[number]>('tab', {
+    encode: (v) => v || undefined,
+    decode: (v) => FILTERS.find((f) => f === v) ?? DEFAULT_FILTER,
+  });
 
   let openBookingDetailModal: () => void;
-  let selectedBooking: PageEventAllBookings$result['event']['bookings']['edges'][number]['node'];
+  let selectedBooking: PageEventBookings_ItemBooking$data | null = null;
 
   const updates = graphql(`
     subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
@@ -47,7 +70,7 @@
 
   $: updates.listen({
     id: $page.params.id,
-    filter: tabToFilter[activeTab],
+    filter: tabToFilter[$activeTab ?? DEFAULT_FILTER],
   });
 
   // Count new bookings by taking the length of the intersection of booking IDs from updates and PageEventAllBookings
@@ -71,6 +94,32 @@
       }),
     );
   }
+
+  $: showingSearchResults = $q && $SearchBookings.data?.event;
+
+  $: bookings =
+    $q && $SearchBookings.data?.event
+      ? $SearchBookings.data.event.searchBookings.map((r) => ({
+          ...r.registration,
+          byCode: r.byCode,
+        }))
+      : ($PageEventAllBookings.data?.event.bookings.edges.map((e) => ({
+          ...e.node,
+          byCode: false,
+        })) ?? []);
+
+  const SearchBookings = graphql(`
+    query PageEventBookings_Search($event: LocalID!, $q: String!) {
+      event(id: $event) {
+        searchBookings(q: $q) {
+          byCode
+          registration {
+            ...PageEventBookings_ItemBooking
+          }
+        }
+      }
+    }
+  `);
 </script>
 
 <ModalOrDrawer bind:open={openBookingDetailModal}>
@@ -155,21 +204,25 @@
 <MaybeError result={$PageEventAllBookings} let:data={{ event }}>
   <div class="contents">
     <header>
-      {#if newBookingsCount}
-        <Alert theme="primary">
-          {newBookingsCount} nouvelles réservations <ButtonSecondary
-            on:click={async () => PageEventAllBookings.fetch()}>Charger</ButtonSecondary
-          >
-        </Alert>
-      {/if}
-      <NavigationTabs
-        on:click={({ detail }) => {
-          // To change tabs visually before the page has even finished loading
-          activeTab = detail;
+      <InputSearchQuery
+        placeholder="Rechercher par nom, code, email..."
+        q={initialQ}
+        on:debouncedInput={async ({ detail }) => {
+          $q = detail;
+          if (!detail) return;
+          await SearchBookings.fetch({
+            variables: {
+              event: $page.params.id,
+              q: detail,
+            },
+          });
         }}
+      ></InputSearchQuery>
+
+      <NavigationTabs
         tabs={FILTERS.map((name) => ({
           name,
-          active: name === activeTab,
+          active: name === $activeTab,
           href: route('/events/[id]/bookings', $page.params.id, {
             tab: name,
           }),
@@ -201,64 +254,46 @@
           </div>
         </div>
       </NavigationTabs>
-    </header>
-    <ul class="bookings" use:infinitescroll={() => PageEventAllBookings.loadNextPage()}>
-      {#each event.bookings.edges as { node: booking }}
-        <li>
-          <button
-            class="booking"
-            on:click={() => {
-              selectedBooking = booking;
-              openBookingDetailModal?.();
-            }}
+
+      {#if newBookingsCount}
+        <Alert theme="primary">
+          {newBookingsCount} nouvelles réservations <ButtonSecondary
+            on:click={async () => PageEventAllBookings.fetch()}>Charger</ButtonSecondary
           >
-            <div class="top">
-              <div class="people">
-                <div class="beneficiary">
-                  <BookingBeneficiary {booking} />
-                </div>
-                <div class="author desktop-only">
-                  {#if booking.author && loading(booking.authorIsBeneficiary, false)}
-                    Payé par <AvatarUser user={booking.author} />
-                    <LoadingText value={booking.author.fullName} />
-                  {:else}
-                    <p></p>
-                  {/if}
-                </div>
-              </div>
-              <div class="code">
-                <LoadingText tag="code" value={booking.code}></LoadingText>
-              </div>
-            </div>
-            <div class="bottom">
-              <BookingStatus {booking} />
-              <div class="date muted">
-                <LoadingText value={mapLoading(booking.updatedAt, formatDateTimeSmart)} />
-              </div>
-              {#if allLoaded(event.tickets) && event.tickets.length > 1}
-                <div class="ticket">
-                  <LoadingText value={booking.ticket.name} />
-                </div>
-              {:else}
-                <div class="payment">
-                  <BookingPaymentMethod {booking} />
-                </div>
-              {/if}
-            </div>
-          </button>
-        </li>
+        </Alert>
+      {/if}
+    </header>
+    <ul
+      class="bookings"
+      use:infinitescroll={async () => {
+        if (showingSearchResults) return;
+        await PageEventAllBookings.loadNextPage();
+      }}
+    >
+      {#each bookings as booking}
+        <ItemBooking
+          {booking}
+          highlightCode={booking.byCode}
+          showTicketNames={event.tickets.length > 1}
+          on:openDetails={({ detail }) => {
+            selectedBooking = detail;
+            openBookingDetailModal();
+          }}
+        />
       {:else}
-        <li class="booking empty muted">Aucune résevation pour le moment</li>
+        {#if !showingSearchResults}
+          <li class="empty muted">Aucune résevation pour le moment</li>
+        {/if}
       {/each}
+      {#if loading(event.bookings.pageInfo.hasNextPage, false)}
+        <ItemBooking showTicketNames={event.tickets.length > 1} booking={null} />
+      {/if}
     </ul>
-    {#if loading(event.bookings.pageInfo.hasNextPage, false)}
-      <!-- TODO: Move to ./ItemBooking.svelte and add a loading placeholder one here  -->
-      <div class="loading-more">
-        <LoadingScreen />
-      </div>
+    {#if showingSearchResults}
+      <section class="search-results-count">{countThing('résultat', bookings.length)}</section>
     {/if}
-  </div>
-</MaybeError>
+  </div></MaybeError
+>
 
 <style>
   .contents {
@@ -269,79 +304,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-  }
-
-  .booking {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 1rem 1.5rem;
-    cursor: pointer;
-    border-radius: var(--border-block);
-  }
-
-  .booking:hover,
-  .booking:focus-visible {
-    background-color: var(--bg2);
-  }
-
-  .code {
-    margin-left: auto;
-    font-size: 0.8rem;
-    color: var(--bg4);
-    text-transform: uppercase;
-  }
-
-  @media (max-width: 900px) {
-    .booking .desktop-only {
-      display: none;
-    }
-
-    .bottom {
-      justify-content: space-between;
-    }
-  }
-
-  .top {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    width: 100%;
-  }
-
-  .beneficiary {
-    font-size: 1.2em;
-  }
-
-  .bottom {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    width: 100%;
-    container: bottom / inline-size;
-  }
-
-  @container bottom (min-width: 300px) {
-    .booking .payment-method-name {
-      display: inline;
-    }
-  }
-
-  .payment {
-    color: var(--shy);
-  }
-
-  .author {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-  }
-
-  .beneficiary,
-  .date {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .tab .subtitle {
@@ -360,10 +322,8 @@
     align-items: center;
   }
 
-  .loading-more {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7em;
+  .search-results-count {
+    padding: 1rem;
+    text-align: center;
   }
 </style>

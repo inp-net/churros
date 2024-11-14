@@ -26,35 +26,7 @@ query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
       edges @loading(count: 30) {
         node {
           id
-          code
-          ...BookingBeneficiary
-          ...BookingAuthor
-          ticket {
-            name
-          }
-          verifiedAt
-          verifiedBy {
-            ...AvatarUser
-            fullName
-          }
-          cancelledAt
-          cancelledBy {
-            ...AvatarUser
-            fullName
-          }
-          opposedAt
-          opposedBy {
-            ...AvatarUser
-            fullName
-          }
-          updatedAt
-          ...BookingPaymentMethod
-          ...BookingStatus
-          authorIsBeneficiary
-          author {
-            ...AvatarUser
-            fullName
-          }
+          ...PageEventBookings_ItemBooking
         }
       }
     }

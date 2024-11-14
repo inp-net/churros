@@ -96,7 +96,7 @@ export async function fullTextSearch<
       rank, similarity DESC NULLS LAST
   `;
 
-  const results: Array<{ id: string; rank: number; similarity: number }> =
+  const results: Array<{ id: string; rank: number; similarity: null | number }> =
     await prisma.$queryRawUnsafe(
       query,
       // This spread is _not_ useless, unicorn spittin some absolute BS
@@ -107,9 +107,12 @@ export async function fullTextSearch<
   const matches = results.map(({ id, rank, similarity, ...highlights }) => ({
     id,
     rank,
-    similarity,
+    similarity: similarity ?? 0,
     highlights: Object.fromEntries(
-      Object.entries(highlights).map(([k, v]) => [k.replace(/^highlights_/, ''), v as string]),
+      Object.entries(highlights).map(([k, v]) => [
+        k.replace(/^highlights_/, ''),
+        v ?? ('' as string),
+      ]),
     ) as Record<Highlights[number], string>,
   }));
 

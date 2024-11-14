@@ -5335,7 +5335,10 @@ type Registration implements Node {
 }
 
 type RegistrationSearchResult {
-  highlightedBeneficiary: String!
+  """
+  Le résultat de recherche apparaît car le code de réservation correspond à l'entrée de recherche
+  """
+  byCode: Boolean!
   id: ID!
   rank: Float
   registration: Registration!
