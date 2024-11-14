@@ -1,6 +1,7 @@
 import {
   builder,
   ENV,
+  environmentSchema,
   log,
   removeAppleWalletFiles,
   removeOldBookings,
@@ -17,7 +18,9 @@ builder.mutationField('housekeep', (t) =>
     args: {
       token: t.arg.string({
         description: 'Housekeeper token',
-        // validate: environmentSchema.shape.HOUSEKEEPER_TOKEN,
+        validate: {
+          schema: environmentSchema.shape.HOUSEKEEPER_TOKEN.unwrap(),
+        },
       }),
       expiredEventsDaysThreshold: t.arg.int({
         description: "Number of days since event's end to remove bookings",
