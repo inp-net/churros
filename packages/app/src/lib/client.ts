@@ -33,10 +33,9 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
 const nativeAuthentication: ClientPlugin = () => ({
   async start(ctx, { next }) {
     if (Capacitor.isNativePlatform()) {
-      ctx.session = {
-        token: await Preferences.get({ key: 'token' }).then(({ value }) => value ?? undefined),
-        ...ctx.session,
-      };
+      const token = await Preferences.get({ key: 'token' }).then(({ value }) => value ?? undefined);
+      console.info(`[nativeAuthentication] token = ${token ?? '<none>'}`);
+      ctx.session = { token, ...ctx.session };
     }
 
     next(ctx);
