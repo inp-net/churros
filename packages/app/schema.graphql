@@ -1917,7 +1917,15 @@ input HousekeepingExpirationThresholds @graphinx(module: "global") {
   """
   Number of days since event's end to remove bookings
   """
-  eventEnd: Int!
+  eventEndedAt: Int!
+  """
+  Number of days since a GDPR export was created to remove it
+  """
+  gdprExportCreatedAt: Int!
+  """
+  Number of days since a log was created to remove it
+  """
+  logHappenedAt: Int!
   """
   Number of days since a notification was sent to remove it
   """
@@ -1937,6 +1945,14 @@ type HousekeepingResult @graphinx(module: "global") {
   Number of deleted events
   """
   deletedEvents: Int!
+  """
+  Number of deleted GDPR exports
+  """
+  deletedGdprExports: Int!
+  """
+  Number of deleted logs
+  """
+  deletedLogs: Int!
   """
   Number of deleted notifications
   """

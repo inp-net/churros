@@ -19,6 +19,12 @@ spec:
                   value: 1825 # = 365 * 5 days
                 - name: EVENTS_THRESHOLD
                   value: 365 # days
+                - name: NOTIFS_THRESHOLD
+                  value: 30 # days
+                - name: LOGS_THRESHOLD
+                  value: 90 # days
+                - name: GDPR_EXPORTS_THRESHOLD
+                  value: 30 # days
               envFrom:
                 - configMapRef:
                     name: churros-config
@@ -34,17 +40,21 @@ spec:
                 - >
                   {
                     "query":"
-                      mutation RunHousekeeper($token: String!, $events: Int!, $users: Int!, $notifs: Int!) { 
+                      mutation RunHousekeeper($token: String!) { 
                         housekeep(token: $token, thresholds: { 
-                          eventEnd: $events, 
-                          userLastLogin: $users, 
-                          notificationSentAt: $notifs 
+                          eventEndedAt: $EVENTS_THRESHOLD, 
+                          userLastLogin: $USERS_THRESHOLD,
+                          logHappenedAt: $LOGS_THRESHOLD,
+                          notificationSentAt: $NOTIFS_THRESHOLD,
+                          gdprExportCreatedAt: $GDPR_EXPORTS_THRESHOLD,
                         }) { 
                           __typename 
                           ...on Error { message } 
                           ...on HousekeepingResult {
                             deletedEvents
                             deletedUsers
+                            deletedLogs
+                            deletedGdprExports
                             warnedUsers
                             deletedNotifications
                             deletedAppleWalletFiles
@@ -53,6 +63,6 @@ spec:
                       }
                     ", 
                     "operationName":"RunHousekeeper", 
-                    "variables": {"token": "$HOUSEKEEPER_TOKEN", "events": $EVENTS_THRESHOLD, "users": $USERS_THRESHOLD}
+                    "variables": { "token": "$HOUSEKEEPER_TOKEN" }
                   }
                 - 'http://churros-api:4000/graphql'

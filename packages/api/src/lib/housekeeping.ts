@@ -1,6 +1,7 @@
 import { APPLE_WALLET_PASS_STORAGE_PATH, ENV, fullName, prisma, sendMail, storageRoot } from '#lib';
-import { subDays } from 'date-fns';
-import { mkdir, readdir } from 'node:fs/promises';
+import { gdprExportCreationDateFromFilename, getAllGdprExports } from '#modules/users';
+import { isBefore, subDays } from 'date-fns';
+import { mkdir, readdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { rimraf } from 'rimraf';
 
@@ -8,7 +9,7 @@ import { rimraf } from 'rimraf';
  * Delete bookings for events that have been finished for a certain amount of time, and their associated Apple Wallet pass files
  * @param thresholdDays days since event end
  */
-export async function removeOldBookings(thresholdDays: number) {
+export async function housekeepBookings(thresholdDays: number) {
   const toDelete = await prisma.registration.findMany({
     where: {
       ticket: {
@@ -36,7 +37,7 @@ export async function removeOldBookings(thresholdDays: number) {
 /**
  * Delete Apple Wallet pass files & resources
  */
-export async function removeAppleWalletFiles() {
+export async function housekeepAppleWallet() {
   const directory = path.join(storageRoot(), APPLE_WALLET_PASS_STORAGE_PATH);
   const files = await readdir(directory);
 
@@ -50,7 +51,7 @@ export async function removeAppleWalletFiles() {
  * Delete users that have not been seen for a certain amount of time
  * @param thresholdDays days since last login
  */
-export async function removeOldUsers(thresholdDays: number) {
+export async function housekeepUsers(thresholdDays: number) {
   const toDelete = await prisma.user.findMany({
     where: {
       bot: false,
@@ -75,7 +76,7 @@ export async function removeOldUsers(thresholdDays: number) {
  * Warn users by email that will have their account deleted in thresholdDays/2 days
  * @param thresholdDays days since last login
  */
-export async function warnSoonOldUsers(thresholdDays: number) {
+export async function warnUsersToHousekeep(thresholdDays: number) {
   const daysLeft = Math.floor(thresholdDays / 2);
 
   const usersToWarn = await prisma.user.findMany({
@@ -104,7 +105,7 @@ export async function warnSoonOldUsers(thresholdDays: number) {
   return usersToWarn;
 }
 
-export async function deleteOldNotifications(thresholdDays: number) {
+export async function housekeepNotifications(thresholdDays: number) {
   return prisma.notification.deleteMany({
     where: {
       createdAt: {
@@ -112,4 +113,28 @@ export async function deleteOldNotifications(thresholdDays: number) {
       },
     },
   });
+}
+
+export async function housekeepLogs(thresholdDays: number) {
+  return prisma.logEntry.deleteMany({
+    where: {
+      happenedAt: {
+        lt: subDays(new Date(), thresholdDays),
+      },
+    },
+  });
+}
+
+export async function housekeepGdprExports(thresholdDays: number) {
+  const exportPaths = await getAllGdprExports();
+  const thresholdDate = subDays(new Date(), thresholdDays);
+  const toDelete = exportPaths.filter((exportPath) =>
+    isBefore(gdprExportCreationDateFromFilename(path.basename(exportPath)), thresholdDate),
+  );
+  await Promise.all(
+    toDelete.map(async (exportPath) => {
+      await unlink(exportPath);
+    }),
+  );
+  return toDelete;
 }
