@@ -7,14 +7,6 @@ export type SearchResult<
   highlightedColumns extends string[] = [],
 > = FullTextMatch<highlightedColumns> & AdditionalData;
 
-export type FullTextMatches<highlights = {}> = Array<
-  {
-    id: string;
-    rank: number;
-    similarity: number;
-  } & highlights
->;
-
 export type FullTextMatch<columns extends string[]> = {
   id: string;
   rank: number;
@@ -35,14 +27,14 @@ export type FullTextMatch<columns extends string[]> = {
  * @returns An array of matches, containing the id, rank of the full-text search, similarity for the fuzzy search and the highlights, and object mapping each column name to the highlighted string. Highlighted parts are surrounded by tags, respecing the HIGHLIGHTER_OPTIONS constant (see StartSel and StopSel)
  */
 export async function fullTextSearch<
+  Table extends Prisma.ModelName,
   Property extends string,
-  Model extends Record<string, unknown> & { id: string },
   Output extends { id: string },
-  Highlights extends (keyof Model & string)[],
-  FuzzyColumns extends (keyof Model & string)[],
+  Highlights extends Array<StringFieldsOfTable<Table> & string>,
+  FuzzyColumns extends Array<StringFieldsOfTable<Table> & string>,
   HTMLHighlights extends Highlights,
 >(
-  table: Prisma.ModelName,
+  table: Table,
   q: string,
   {
     similarityCutoff = 0.1,
@@ -170,3 +162,13 @@ export function highlightProperties<
       ]) as O,
   );
 }
+
+/** Gets a union type that's the keys of the String fields a given Prisma model  */
+type StringFieldsOfTable<ModelName extends Prisma.ModelName> =
+  Extract<keyof Prisma.TypeMap['model'][ModelName]['fields'], string> extends infer K
+    ? K extends keyof Prisma.TypeMap['model'][ModelName]['fields']
+      ? Prisma.TypeMap['model'][ModelName]['fields'][K] extends Prisma.FieldRef<ModelName, 'String'>
+        ? K
+        : never
+      : never
+    : never;
