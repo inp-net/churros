@@ -1,12 +1,11 @@
-import { env } from '$env/dynamic/public';
-import { Capacitor } from '@capacitor/core';
+import { getServerManifest } from '$lib/servmanifest';
 
-function replaceOrigin(url: string): string {
-  return url.replace(
-    env.PUBLIC_API_ORIGIN_WEB,
-    Capacitor.getPlatform() === 'web' ? env.PUBLIC_API_ORIGIN_WEB : env.PUBLIC_API_ORIGIN_ANDROID,
-  );
+export function getAuthUrl(): string {
+  const manifest = getServerManifest();
+  return manifest.urls.auth;
 }
 
-export const AUTH_URL = replaceOrigin(env.PUBLIC_API_AUTH_URL);
-export const API_URL = replaceOrigin(env.PUBLIC_API_URL);
+export function getApiUrl(): string {
+  const manifest = getServerManifest();
+  return manifest.urls.api;
+}

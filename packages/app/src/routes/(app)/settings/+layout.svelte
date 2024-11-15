@@ -18,10 +18,13 @@
   import { mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
+  import { getServerManifest, type ServerManifest } from '$lib/servmanifest';
   import { theme } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import IconReady from '~icons/msl/check-circle';
   import IconDebug from '~icons/msl/code';
+  import IconDebug from '~icons/msl/code';
+  import IconServerConfig from '~icons/msl/database-outline';
   import IconTrash from '~icons/msl/delete-outline';
   import IconPersonalData from '~icons/msl/download';
   import IconNotification from '~icons/msl/notifications-outline';
@@ -29,6 +32,9 @@
   import IconSpecialOffer from '~icons/msl/percent';
   import IconProfile from '~icons/msl/person-outline';
   import type { LayoutData } from './$houdini';
+  import ServerConfigurationModal from './ServerConfigurationModal.svelte';
+
+  let openServerConfig: () => void;
 
   const UpdateLydiaPhone = graphql(`
     mutation UpdateLydiaPhone($lydiaPhone: String!) {
@@ -59,6 +65,9 @@
 
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
+
+  let serverManifest: ServerManifest | undefined;
+  $: if (browser) serverManifest = getServerManifest();
 </script>
 
 <MaybeError result={$LayoutSettings} let:data={{ me, themes }}>
@@ -147,13 +156,6 @@
             />
           </ButtonSecondary>
         </SubmenuItem>
-        <SubmenuItem href={route('/delete-account')} icon={IconTrash}>
-          Supprimer mon compte
-        </SubmenuItem>
-        <SubmenuItem icon={IconDebug} label>
-          Mode debug
-          <InputCheckbox slot="right" label="" bind:value={$debugging}></InputCheckbox>
-        </SubmenuItem>
         <SubmenuItem
           clickable
           on:click={() => {
@@ -164,6 +166,26 @@
         >
           Réafficher toutes les annonces en cours
         </SubmenuItem>
+        <SubmenuItem icon={IconDebug} label>
+          Mode debug
+          <InputCheckbox slot="right" label="" bind:value={$debugging}></InputCheckbox>
+        </SubmenuItem>
+      <SubmenuItem
+        on:click={openServerConfig}
+        icon={IconServerConfig}
+        clickable
+        chevron
+        subtext={serverManifest
+          ? `Churros API v${serverManifest.version} à ${new URL(serverManifest.urls.api).host}`
+          : PendingValue}
+      >
+        Choix du serveur
+      </SubmenuItem>
+        <SubmenuItem href={route('/delete-account')} icon={IconTrash}>
+          Supprimer mon compte
+        </SubmenuItem>
+    </Submenu>
+    <ServerConfigurationModal bind:open={openServerConfig} />
       </Submenu>
     </div>
     <slot slot="right"></slot>

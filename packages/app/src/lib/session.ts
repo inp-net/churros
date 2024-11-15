@@ -1,7 +1,8 @@
-import { graphql, type SessionToken$data } from '$houdini';
+import { graphql, setClientSession, type SessionToken$data } from '$houdini';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { redirect, type Cookies } from '@sveltejs/kit';
+import { serialize } from 'cookie';
 
 graphql(`
   fragment SessionToken on Credential {
@@ -25,7 +26,7 @@ export async function saveSessionToken(
       path: '/',
       sameSite: 'lax',
     });
-  } else if (Capacitor.getPlatform() !== 'web') {
+  } else if (Capacitor.isNativePlatform()) {
     // TODO handle expiration date?
     // the app should handle invalid tokens anyways, so not sure if this is actually needed
     await Preferences.set({
@@ -39,6 +40,11 @@ export async function saveSessionToken(
       expires: expiration.toISOString(),
       path: '/',
     });
+  } else {
+    document.cookie = serialize('token', token, {
+      path: '/',
+    });
+    setClientSession({ token });
   }
 }
 

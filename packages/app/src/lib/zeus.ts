@@ -14,7 +14,7 @@ import {
 // @ts-expect-error This file is not typed
 import extractFiles from 'extract-files/extractFiles.mjs';
 // @ts-expect-error This file is not typed
-import { API_URL } from '$lib/env';
+import { getApiUrl } from '$lib/env';
 import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
 import { derived } from 'svelte/store';
@@ -78,7 +78,7 @@ export const chain = (fetch: LoadEvent['fetch'], { token }: Options) => {
     }
     /* eslint-enable */
 
-    const response = await fetch(new URL(API_URL), {
+    const response = await fetch(new URL(getApiUrl()), {
       body,
       method: 'POST',
       headers,
