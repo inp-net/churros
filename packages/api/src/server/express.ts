@@ -55,6 +55,7 @@ export async function startApiServer() {
     console.error('Failed to initialize GraphQL server', error);
   }
   import('./log.js');
+  import('./wellknown.js');
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');

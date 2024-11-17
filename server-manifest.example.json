@@ -1,0 +1,20 @@
+{
+  "version": "5.0.1",
+  "urls": {
+    "api": "https://churros.inpt.fr/graphql",
+    "auth": "https://churros.inpt.fr/auth"
+  },
+  "oauth": {
+    "enabled": true,
+    "clientId": "y87JANYpibsGhWJorAgYO9AOPU9PtecC7WsZwDNo",
+    "authorizeUrl": "https://auth.inpt.fr/application/o/authorize/",
+    "tokenUrl": "https://auth.inpt.fr/application/o/token/",
+    "logoutUrl": "https://auth.inpt.fr/application/o/churros/end-session/",
+    "userInfoUrl": "https://auth.inpt.fr/application/o/userinfo/",
+    "scopes": "openid profile email"
+  },
+  "emails": {
+    "contact": "contact@net7.dev",
+    "support": "contact@net7.dev"
+  }
+}
