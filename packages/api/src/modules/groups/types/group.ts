@@ -1,6 +1,6 @@
 import { builder, ensureGlobalId, fromYearTier, prisma, toHtml } from '#lib';
 import { ColorScalar, DateTimeScalar, Email, HTMLScalar } from '#modules/global';
-import { prismaQueryAccessibleArticles } from '#permissions';
+import { canSeeUserProfile, prismaQueryAccessibleArticles } from '#permissions';
 import { GraphQLError } from 'graphql';
 import { PicturedInterface } from '../../global/types/pictured.js';
 import { canEditGroup, GroupEnumType, GroupMemberType } from '../index.js';
@@ -103,7 +103,8 @@ export const GroupType = builder.prismaNode('Group', {
           description: "Renvoyer d'abord les membres du bureau",
         }),
       },
-      query: ({ boardFirst }) => ({
+      query: ({ boardFirst }, { user }) => ({
+        where: { member: canSeeUserProfile.prismaQuery(user) },
         orderBy: boardFirst
           ? [
               { president: 'desc' },
@@ -142,30 +143,59 @@ export const GroupType = builder.prismaNode('Group', {
     president: t.prismaField({
       type: 'GroupMember',
       nullable: true,
-      resolve: async (query, { id }) =>
-        prisma.groupMember.findFirst({ ...query, where: { group: { id }, president: true } }),
+      resolve: async (query, { id }, _, { user }) =>
+        prisma.groupMember.findFirst({
+          ...query,
+          where: {
+            group: { id },
+            president: true,
+            member: canSeeUserProfile.prismaQuery(user),
+          },
+        }),
     }),
     vicePresidents: t.prismaField({
       type: ['GroupMember'],
-      resolve: async (query, { id }) =>
-        prisma.groupMember.findMany({ ...query, where: { group: { id }, vicePresident: true } }),
-    }),
-    secretaries: t.prismaField({
-      type: ['GroupMember'],
-      resolve: async (query, { id }) =>
-        prisma.groupMember.findMany({ ...query, where: { group: { id }, secretary: true } }),
-    }),
-    treasurers: t.prismaField({
-      type: ['GroupMember'],
-      resolve: async (query, { id }) =>
-        prisma.groupMember.findMany({ ...query, where: { group: { id }, treasurer: true } }),
-    }),
-    boardMembers: t.prismaField({
-      type: ['GroupMember'],
-      resolve: async (query, { id }) =>
+      resolve: async (query, { id }, _, { user }) =>
         prisma.groupMember.findMany({
           ...query,
           where: {
+            group: { id },
+            vicePresident: true,
+            member: canSeeUserProfile.prismaQuery(user),
+          },
+        }),
+    }),
+    secretaries: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }, _, { user }) =>
+        prisma.groupMember.findMany({
+          ...query,
+          where: {
+            group: { id },
+            secretary: true,
+            member: canSeeUserProfile.prismaQuery(user),
+          },
+        }),
+    }),
+    treasurers: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }, _, { user }) =>
+        prisma.groupMember.findMany({
+          ...query,
+          where: {
+            group: { id },
+            treasurer: true,
+            member: canSeeUserProfile.prismaQuery(user),
+          },
+        }),
+    }),
+    boardMembers: t.prismaField({
+      type: ['GroupMember'],
+      resolve: async (query, { id }, _, { user }) =>
+        prisma.groupMember.findMany({
+          ...query,
+          where: {
+            member: canSeeUserProfile.prismaQuery(user),
             group: { id },
             OR: [
               { president: true },

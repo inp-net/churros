@@ -57,6 +57,9 @@ model User {
   // Prevent these themes from being auto-deployed to the user
   blockedThemes                Theme[]
 
+  // User's profile should not be public
+  privateProfile Boolean @default(false)
+
   // Permissions
   admin              Boolean              @default(false)
   canEditGroups      StudentAssociation[] @relation("studentAssociationGroupsEditor")

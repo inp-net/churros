@@ -1,6 +1,6 @@
 import { builder, prisma, toHtml, yearTier } from '#lib';
 import { DateTimeScalar, Email, HTMLScalar, PicturedInterface } from '#modules/global';
-import { userIsStudent } from '#permissions';
+import { canSeeUserProfile, userIsStudent } from '#permissions';
 import { NotificationChannel, type Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { canBeEdited, canEditProfile, canEditUserPermissions, fullName } from '../index.js';
@@ -18,6 +18,9 @@ export const UserType = builder.prismaNode('User', {
     ...(id === user?.id ? ['me'] : []),
     ...(majorId ? ['student'] : []),
   ],
+  authScopes(targetUser, { user }) {
+    return canSeeUserProfile(user, targetUser);
+  },
   include: UserTypePrismaIncludes,
   fields: (t) => ({
     isMe: t.boolean({

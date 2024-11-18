@@ -1,6 +1,6 @@
 import type { Context } from '#lib';
-import { userIsAdminOf } from '#permissions';
-import type { Prisma } from '@churros/db/prisma';
+import { userIsAdminOf, userIsStudent } from '#permissions';
+import type { Prisma, User } from '@churros/db/prisma';
 
 export const prismaIncludesForStudentAssociationAdmins = {
   schools: {
