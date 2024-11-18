@@ -12,7 +12,7 @@ builder.mutationField('deleteEventManagerInvite', (t) =>
       id: t.arg({ type: LocalID }),
       kickManagers: t.arg.boolean({
         defaultValue: false,
-        description: 'Aussi enlever des managers celleux qui le sont devenu via cette invation',
+        description: 'Aussi enlever des managers celleux qui le sont devenu via cette invitation',
       }),
     },
     async authScopes(_, { id }, { user }) {
