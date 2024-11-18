@@ -17,7 +17,7 @@ builder.mutationField('useEventManagerInvite', (t) =>
           alreadyManager: t.string({
             nullable: true,
             description:
-              "Message d'explication si jamais l'on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé",
+              "Message d'explication si on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé",
             resolve: (_, __, { caveats }) => caveats.at(0) || null,
           }),
         }),
