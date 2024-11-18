@@ -10,6 +10,7 @@
  */
 const PAGES = {
   '/': `/`,
+  '/forms': `/forms`,
   '/[uid=uid]': (
     uid: Parameters<typeof import('../params/uid.ts').match>[0],
     params?: {
@@ -510,6 +511,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 export type KIT_ROUTES = {
   PAGES: {
     '/': never;
+    '/forms': never;
     '/[uid=uid]': 'uid';
     '/[uid=uid]/[...page]': 'uid' | 'page';
     '/announcements': never;

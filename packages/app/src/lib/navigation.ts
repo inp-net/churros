@@ -699,6 +699,16 @@ export const topnavConfigs: Partial<{
     back: route('/events'),
     actions: rootPagesActions,
   },
+  '/(app)/(questinp)/forms': {
+    title: 'Formulaires',
+    back: route('/'),
+    quickAction: {
+      icon: IconAdd,
+      label: 'Nouveau formulaire',
+      href: 'https://forms.new',
+    },
+    actions: rootPagesActions,
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
