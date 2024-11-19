@@ -1,13 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { PendingValue } from '$houdini';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { countThing } from '$lib/i18n';
-  import { loading, mapAllLoading, mapLoading, onceAllLoaded } from '$lib/loading';
+  import { loaded, LoadingText, mapAllLoading, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import IconGoto from '~icons/msl/arrow-right-alt';
   import IconSwitchDomains from '~icons/msl/domain';
@@ -31,20 +32,32 @@
 </script>
 
 <MaybeError result={$PageBackrooms} let:data={{ me, userCandidatesCount, services }}>
-  {@const isAdmin = onceAllLoaded(
+  {@const isAdmin = mapAllLoading(
     [me?.admin, me?.studentAssociationAdmin],
     (admin, stu) => admin || stu,
-    false,
   )}
-  {@const isSystemAdmin = loading(me?.admin, false)}
   <div class="contents">
     <Submenu>
-      {#if isSystemAdmin}
+      {#if !loaded(me?.admin)}
+        <SubmenuItem icon={IconLogs} chevron subtext={PendingValue}>
+          <LoadingText />
+        </SubmenuItem>
+      {:else if me?.admin}
         <SubmenuItem subtext="Good luck :p" href={refroute('/logs')} icon={IconLogs}
           >Logs</SubmenuItem
         >
       {/if}
-      {#if isAdmin}
+      {#if !loaded(isAdmin)}
+        <SubmenuItem icon={IconEditServices} chevron subtext={PendingValue}>
+          <LoadingText />
+        </SubmenuItem>
+        <SubmenuItem icon={IconSignups} chevron subtext={PendingValue}>
+          <LoadingText />
+        </SubmenuItem>
+        <SubmenuItem icon={IconQuickSignups} chevron subtext={PendingValue}>
+          <LoadingText />
+        </SubmenuItem>
+      {:else if isAdmin}
         <SubmenuItem
           href={refroute('/services/manage')}
           icon={IconEditServices}
