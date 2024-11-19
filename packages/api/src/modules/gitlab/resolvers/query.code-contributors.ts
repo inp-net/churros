@@ -10,12 +10,14 @@ builder.queryField('codeContributors', (t) =>
     errors: {},
     authScopes: () => true,
     async resolve() {
+      const gitlabDomain = new URL(ENV.PUBLIC_REPOSITORY_URL).hostname;
+
       const codeContributors = (await fetch(
-        `https:///git.inpt.fr/api/v4/projects/${ENV.GITLAB_PROJECT_ID}/repository/contributors?pagination=keyset&per_page=1000&order_by=commits&sort=desc`,
+        `https://${gitlabDomain}/api/v4/projects/${ENV.GITLAB_PROJECT_ID}/repository/contributors?pagination=keyset&per_page=1000&order_by=commits&sort=desc`,
       )
         .then(async (r) => r.json())
         .catch(() => {
-          throw new GraphQLError('Connexion à git.inpt.fr impossible');
+          throw new GraphQLError(`Connexion à ${gitlabDomain} impossible`);
         })) as Array<{
         name: string;
         email: string;

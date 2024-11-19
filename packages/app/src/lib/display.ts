@@ -359,3 +359,11 @@ export const DISPLAY_THEME_VARIABLE: Record<ThemeVariable$options, string> = {
   ImageBackgroundNavbarTop: 'Fond de la barre de navigation en haut',
   PatternBackground: 'Fond avec motif',
 };
+export function stringifyCapacity(
+  capacity: null | number | App.CapacityUnlimitedValue,
+  fallback = '',
+): string {
+  if (capacity === null) return fallback;
+  if (capacity === 'Unlimited') return fallback;
+  return capacity.toString();
+}

@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { goto, onNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
   import { graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
@@ -263,7 +264,7 @@
         Churros v{CURRENT_VERSION}
         · <wbr />Made by <a href="https://net7.dev">net7</a>
         · <wbr /><a href="/credits">À propos</a>
-        · <wbr /><a href="https://git.inpt.fr/inp-net/churros">Code source</a>
+        · <wbr /><a href={env.PUBLIC_REPOSITORY_URL}>Code source</a>
         · <wbr /><a href="https://www.gnu.org/licenses/agpl-3.0.en.html#license-text"
           >Licensed under AGPL-v3.0</a
         >

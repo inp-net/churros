@@ -112,7 +112,7 @@ api.get('/', (req, res) => {
   <p><strong><a href="${new URL(ENV.PUBLIC_FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>
-  <p><a href="https://git.inpt.fr/inp-net/churros">Code source</a></p>
+  <p><a href="${ENV.PUBLIC_REPOSITORY_URL}">Code source</a></p>
 </body>
 </html>`);
 });

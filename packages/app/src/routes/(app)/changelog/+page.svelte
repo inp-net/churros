@@ -7,6 +7,7 @@
   } from '$lib/components/ModalChangelog.svelte';
   import type { PageData } from './$houdini';
   import Alert from '$lib/components/Alert.svelte';
+  import { env } from '$env/dynamic/public';
 
   export let data: PageData;
   $: ({ PageChangelog } = data);
@@ -52,7 +53,7 @@
                 {@html change.html}
                 {#if change.issues.length > 0}
                   ({#each change.issues as issue}
-                    <a href="https://git.inpt.fr/inp-net/churros/-/issues/{issue}">#{issue}</a>
+                    <a href="{env.PUBLIC_REPOSITORY_URL}/-/issues/{issue}">#{issue}</a>
                   {/each})
                 {/if}
               </li>
@@ -85,7 +86,7 @@
             {@html change.html}
             {#if change.issues.length > 0}
               ({#each change.issues as issue}
-                <a href="https://git.inpt.fr/inp-net/churros/-/issues/{issue}">#{issue}</a>
+                <a href="{env.PUBLIC_REPOSITORY_URL}/-/issues/{issue}">#{issue}</a>
               {/each})
             {/if}
           </li>
@@ -95,8 +96,7 @@
       {#if !version.description}
         <p class="muted">
           Pas grand chose d'intéréssant pour cette version… <a
-            href="https://git.inpt.fr/inp-net/churros/-/tags/v{version.version}"
-            >Détails techniques</a
+            href="{env.PUBLIC_REPOSITORY_URL}/-/tags/v{version.version}">Détails techniques</a
           >
         </p>
       {/if}

@@ -20,6 +20,7 @@
   export let required = false;
   export let hint: string | undefined = undefined;
   export let other: boolean = false;
+  export let disabled = false;
 
   let opened = false;
   let errorMessage = '';
@@ -51,6 +52,7 @@
   <div class="wrapper">
     <fieldset bind:this={fieldsetElement}>
       <select
+        {disabled}
         {required}
         {name}
         bind:value
@@ -66,9 +68,9 @@
         {/if}
       </select>
     </fieldset>
-    {#if opened}
+    {#if !disabled && opened}
       <ChevronUp />
-    {:else}
+    {:else if !disabled}
       <ChevronDown />
     {/if}
   </div>
