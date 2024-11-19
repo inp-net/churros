@@ -1067,6 +1067,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   Vrai si l'évènement doit apparaître dans le mode kiosque
   """
   includeInKiosk: Boolean!
+  """
+  Managers de l'évènement qui le sont par leur permissions sur le groupe organisateur de l'évènement.
+  """
+  inheritedManagers: [InheritedEventManager!]!
   links: [Link!]!
   """
   L'identifiant local de la ressource (sans préfixe)
@@ -1116,7 +1120,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
     """
     timestamp: Boolean! = true
   ): String!
-  placesLeft: Int
+  placesLeft: Capacity
   profitsBreakdown: ProfitsBreakdown!
   """
   Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
@@ -1130,6 +1134,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   recurringUntil: DateTime
   searchBookings(q: String!): [RegistrationSearchResult!]!
   shares: Int!
+  """
+  Vrai si les capacités des billets doivent être affichées
+  """
+  showCapacity: Boolean!
   """
   Vrai si le nombre de places restantes doit être affiché
   """
@@ -1203,6 +1211,11 @@ type EventManager implements Node {
   power: EventManagerPowerLevel!
   user: User!
 }
+
+"""
+Manager d'évènemet, qu'il soit sur l'évènement directement ou hérité d'une appartenance à un groupe
+"""
+union EventManagerMaybeInherited = EventManager | InheritedEventManager
 
 enum EventManagerPowerLevel {
   Edit
@@ -1900,6 +1913,19 @@ type HealthCheck {
   ldap: LdapHealthCheck!
   mail: MailHealthCheck!
   redis: RedisHealthCheck!
+}
+
+"""
+Un manager d'évènement hérité par ses permissions en tant que membre d'un groupe
+"""
+type InheritedEventManager {
+  canEdit: Boolean!
+  canEditPermissions: Boolean!
+  canVerifyRegistrations: Boolean!
+  event: Event!
+  groupMember: GroupMember!
+  power: EventManagerPowerLevel!
+  user: User!
 }
 
 """
@@ -2829,6 +2855,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     Lieu de l'évènement
     """
     location: String
+    """
+    Afficher la capacité sur les billets
+    """
+    showCapacity: Boolean = true
     """
     Afficher le nombre de places restantes sur les billets
     """
@@ -6038,7 +6068,10 @@ type Ticket implements Node {
     """
     themself: Boolean!
   ): String
-  capacity: Int
+  """
+  Nombre de places totales du billet. Null si l'information n'est pas disponible.
+  """
+  capacity: Capacity
   closesAt: DateTime
   countingPolicy: TicketCountingPolicy!
   description: String!
@@ -6105,7 +6138,7 @@ type Ticket implements Node {
   """
   Nombre de places restantes. Null si l'information n'est pas disponible. N'est jamais null quand il n'y a plus de places disponibles (0)
   """
-  placesLeft: Int
+  placesLeft: Capacity
   price: Float! @deprecated(reason: "Use minimumPrice(applyPromotions: true) instead")
   """
   Le billet permet de payer un prix choisi par l'utilisateur.ice, entre minimumPrice et maximumPrice
