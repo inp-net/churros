@@ -3,6 +3,7 @@
  */
 
 export * from './event.enabled-special-offers.js';
+export * from './event.inherited-managers.js';
 export * from './event.managers.js';
 export * from './group.co-organized-events.js';
 export * from './group.events.js';

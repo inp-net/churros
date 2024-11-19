@@ -220,9 +220,6 @@ const PAGES = {
   '/logout': `/logout`,
   '/logs': `/logs`,
   '/notifications': `/notifications`,
-  '/posts/create': (params?: { group?: string | number }) => {
-    return `/posts${params?.group ? `/${params?.group}` : ''}/create`;
-  },
   '/posts/[id]': (id: string | number, params?: {}) => {
     return `/posts/${id}`;
   },
@@ -577,7 +574,6 @@ export type KIT_ROUTES = {
     '/logout': never;
     '/logs': never;
     '/notifications': never;
-    '/posts/create': 'group';
     '/posts/[id]': 'id';
     '/posts/[id]/edit': 'id';
     '/posts/[id]/edit/body': 'id';

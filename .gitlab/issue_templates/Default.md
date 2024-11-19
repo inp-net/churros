@@ -1,18 +1,21 @@
-<!-- Ne pas écrire entre les balises. -->
+<!-- Ne pas écrire entre les <!-- et -->
 <!-- Avant de publier votre issue, merci de vérifier qu'elle n'a pas déjà été remontée. -->
 
 # Description
+
 <!--
 Une description claire et concise du problème rencontré.
 Ajoutez si possible des copies d'écran si cela peut aider à l'expliquer.
 -->
 
 # Comportement attendu/souhaité
-<!-- 
+
+<!--
 Une description claire et concise du comportement que vous vous attendiez à rencontrer.
 -->
 
 # Comment reproduire l'anomalie
+
 <!-- Si applicable (bug) :
 Dans quelles conditions se produit le bug : sur un ordinateur de bureau ou sur mobile ? Avec quel système d'exploitation ? Quel navigateur et version ?
 Étapes pour reproduire le comportement :
@@ -26,7 +29,9 @@ Ajoutez des copies d'écran si nécessaire.
 -->
 
 # Solution possible
+
 <!-- Optionnel : Suggestions pour corriger cette anomalie. -->
 
 # Complément de contexte
+
 <!-- Optionnel : Ajoutez toute information qui vous semblerait utile pour nous aider à cerner le bug / comprendre l'intérêt de la fonctionnalité ou amélioration proposée. -->
