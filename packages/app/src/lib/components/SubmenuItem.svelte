@@ -55,7 +55,7 @@
   on:click
   role="menuitem"
   tabindex="-1"
-  id={anchor}
+  id={anchor?.replace(/^#/, '')}
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
   class="submenu-item"
