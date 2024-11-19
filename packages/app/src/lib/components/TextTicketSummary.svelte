@@ -9,7 +9,7 @@
     graphql(`
       fragment TextTicketSummary on Ticket {
         capacity
-        basePrice
+        minimumPrice
         openToAlumni
         openToApprentices
         openToContributors
@@ -28,9 +28,13 @@
 
 {#if $data}
   <LoadingText
-    value={mapAllLoading([$data.capacity, $data.basePrice], (cap, price) =>
+    value={mapAllLoading([$data.capacity, $data.minimumPrice], (cap, price) =>
       [
-        cap === null ? 'Places illimitées' : `${cap} place${cap > 1 ? 's' : ''}`,
+        cap === null
+          ? ''
+          : cap === 'Unlimited'
+            ? 'Places illimitées'
+            : `${cap} place${cap > 1 ? 's' : ''}`,
         price === 0 ? 'Gratuit' : `${price}€`,
       ].join(' · '),
     )}>.. places . xE . Contraintes</LoadingText

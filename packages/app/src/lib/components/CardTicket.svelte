@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import IconLockOpen from '~icons/msl/lock-open-outline';
   import {
     fragment,
     graphql,
@@ -25,14 +26,11 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import IconOpenExternal from '~icons/msl/open-in-new';
   import ButtonSecondary from './ButtonSecondary.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
 
   const dispatch = createEventDispatcher<{ book: string }>();
-
-  /** Returns the unicode infinity symbol if the amount is -1 or Infinity, and the stringified value otherwise */
-  function displayInfinity(amount: number | null): string {
-    if ([Number.POSITIVE_INFINITY, -1, null].includes(amount)) return '∞';
-    return amount!.toString();
-  }
+  let openCanSeePlacesBcauseManagerExplainer: () => void;
 
   export let externalURL: MaybeLoading<URL | null> | null = null;
 
@@ -43,6 +41,10 @@
       fragment CardTicketPlaces on Ticket @loading {
         placesLeft
         capacity
+        event {
+          showPlacesLeft
+          showCapacity
+        }
       }
     `),
   );
@@ -89,6 +91,18 @@
       now = new Date();
     }, 500);
   });
+
+  /** Used to show an icon saying that the user can see an information because they have some rights */
+  $: canSeePlacesBecauseManager =
+    $dataPlaces &&
+    onceAllLoaded(
+      [$dataPlaces],
+      ({ placesLeft, capacity, event: { showCapacity, showPlacesLeft } }) => {
+        if (showCapacity && placesLeft === 'Unlimited') return false;
+        return (placesLeft !== null && !showPlacesLeft) || (capacity !== null && !showCapacity);
+      },
+      false,
+    );
 
   $: ticketIsOpen =
     $data &&
@@ -172,12 +186,36 @@
       <div class="places">
         {#if !allLoaded($dataPlaces)}
           <LoadingText>... places / ...</LoadingText>
+        {:else if $dataPlaces.placesLeft === 'Unlimited' || $dataPlaces.capacity === 'Unlimited'}
+          Places illimitées
         {:else if $dataPlaces.placesLeft}
-          {displayInfinity($dataPlaces.placesLeft)} places {#if $dataPlaces.capacity}
+          {$dataPlaces.placesLeft} places {#if $dataPlaces.capacity}
             / {$dataPlaces.capacity}{:else}
             restantes{/if}
-        {:else}
-          {$dataPlaces.capacity === null ? '∞' : $dataPlaces.capacity} places au total
+        {:else if $dataPlaces.capacity}
+          {$dataPlaces.capacity} places au total
+        {/if}
+        {#if canSeePlacesBecauseManager}
+          <ModalOrDrawer
+            narrow
+            notrigger
+            bind:open={openCanSeePlacesBcauseManagerExplainer}
+            title="Visibilité du nombre de places"
+          >
+            <p>
+              Tu peux voir le nombre de places {#if loading($dataPlaces.event.showCapacity, null)}restantes{/if}
+              parce que tu es manager de l'évènement
+            </p>
+          </ModalOrDrawer>
+          <ButtonGhost
+            inline
+            on:click={openCanSeePlacesBcauseManagerExplainer}
+            help="Tu peux voir le nombre de places {loading($dataPlaces.event.showCapacity, null)
+              ? 'restantes'
+              : ''} parce que tu es manager de l'évènement"
+          >
+            <IconLockOpen />
+          </ButtonGhost>
         {/if}
       </div>
     {/if}

@@ -5,7 +5,7 @@
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
-  import { allLoaded, mapAllLoading } from '$lib/loading';
+  import { allLoaded, mapAllLoading, onceLoaded } from '$lib/loading';
 
   /**
    * 'group' to show the group name (to be used on a user's profile, for example)
@@ -46,9 +46,14 @@
       }
     `),
   );
+
+  $: anchor = (onceLoaded($data?.user.uid, (uid) => `#${uid}`, null) ?? undefined) as
+    | `#${string}`
+    | undefined;
 </script>
 
 <SubmenuItem
+  {anchor}
   {chevron}
   overflow
   icon={null}

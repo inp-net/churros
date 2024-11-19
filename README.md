@@ -25,11 +25,11 @@ Voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Stack technique et structure du code
 
-Voir [le wiki](https://git.inpt.fr/inp-net/churros/-/wikis/home)
+Voir [le wiki](https://git.inpt.fr/churros/churros/-/wikis/home)
 
 ## Remerciements
 
 - [Gautier Ben Aïm](https://gauben.github.io/) pour le lancement inital du projet et de précieux conseils sur les choix du bibliothèques et l'organisation du code
 - [Antonin Litschgy](https://www.instagram.com/antonin_litschgy) pour l'idée du nom, et ses contributions à quelques composants du frontend
 - [Guilhem Mangenot](https://github.com/guilhemmgt) pour continuer à encore et toujours trouver autant de bugs aussi vite
-- [Tout les développeur·euse·s](https://git.inpt.fr/inp-net/churros/-/graphs/main) qui ont contribué au projet
+- [Tout les développeur·euse·s](https://git.inpt.fr/churros/churros/-/graphs/main) qui ont contribué au projet

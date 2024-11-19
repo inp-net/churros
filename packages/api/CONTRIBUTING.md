@@ -37,7 +37,7 @@ Use `import { ... } from '#modules/module-name'` to import types and utility fun
 
 #### Modules dependency graph
 
-![](./scripts/modules-import-graph.png)
+![](./scripts/modules-import-graph.svg)
 
 ### Adding a new module
 
