@@ -1,5 +1,29 @@
 # @churros/api
 
+## 6.0.0
+
+### Major Changes
+
+- bba3e47: change return type and argument type for Mutation.deleteArticle
+- f09cd52: Change arguments for Mutation.requestEmailChange: email is now newEmail and there's an additional user argument
+- 02fa1a0: Event.placesLeft and Ticket.placesLeft are now of type Capacity and not Int. Instead of -1 to represent infinity, the Capacity scalar is used
+
+### Minor Changes
+
+- 6e11d67: Add Bookmark.url, useful for bookmarking services
+- 02fa1a0: allow hiding capacity on tickets
+- f09cd52: fix and improve email change request flow (wording in email, appearance of error state, and making request creating actually work)
+- 02fa1a0: show event managers inherited from group memberships
+- 02fa1a0: only Edit-level managers can now see places left count and capacities when they are hidden
+- aee5a3a: make repository url to the churros repo env-configurable, defaults to https://git.inpt.fr/churros/churros
+
+### Patch Changes
+
+- 12d9dec: fix(profile): paiement en attente sur le profil d'ae quand loggedout (closes #1176)
+- eecc2c9: fix Mutation.updateGroupMember createdAt not doing anything
+- Updated dependencies [02fa1a0]
+  - @churros/db@3.1.0
+
 ## 5.0.1
 
 ### Patch Changes
