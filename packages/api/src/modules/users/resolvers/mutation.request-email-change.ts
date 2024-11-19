@@ -1,5 +1,5 @@
 import { builder, log, prisma, sendMail } from '#lib';
-import { Email, URLScalar } from '#modules/global';
+import { Email, UIDScalar, URLScalar } from '#modules/global';
 import { EmailChangeType } from '#modules/users/types';
 import type { Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
@@ -9,7 +9,8 @@ builder.mutationField('requestEmailChange', (t) =>
     type: EmailChangeType,
     errors: {},
     args: {
-      email: t.arg({ type: Email }),
+      newEmail: t.arg({ type: Email, description: 'Nouvelle addresse e-mail' }),
+      user: t.arg({ type: UIDScalar, description: "Personne à qui changer l'adresse email" }),
       callbackURL: t.arg({
         type: URLScalar,
         description:
@@ -17,13 +18,13 @@ builder.mutationField('requestEmailChange', (t) =>
       }),
     },
     authScopes: { loggedIn: true },
-    async resolve(query, _, { email, callbackURL }, { user }) {
+    async resolve(query, _, { newEmail, callbackURL, user: targetUser }, { user }) {
       if (!user) throw new GraphQLError('Not logged in');
       const subject = await prisma.user.findUniqueOrThrow({
-        where: { email },
+        where: { uid: targetUser },
       });
-      await log('users', 'request-email-change', { email, callbackURL }, user.id, user);
-      return requestEmailChange(query, email, subject.id, callbackURL);
+      await log('users', 'request-email-change', { newEmail, user, callbackURL }, user.id, user);
+      return requestEmailChange(query, newEmail, subject.id, callbackURL);
     },
   }),
 );

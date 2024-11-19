@@ -2549,7 +2549,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     URL vers laquelle faire pointer le lien de validation de la nouvelle adresse email. [token] sera remplacé par le token d'activation.
     """
     callbackURL: URL!
-    email: Email!
+    """
+    Nouvelle addresse e-mail
+    """
+    newEmail: Email!
+    """
+    Personne à qui changer l'adresse email
+    """
+    user: UID!
   ): MutationRequestEmailChangeResult!
   resetPassword(
     disconnectAll: Boolean!
