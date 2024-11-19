@@ -16,7 +16,7 @@
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
   import { countThing } from '$lib/i18n';
-  import { loaded, loading, LoadingText, mapLoading } from '$lib/loading';
+  import { loaded, loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { isPWA } from '$lib/pwa';
   import { route } from '$lib/ROUTES';
@@ -101,11 +101,11 @@
     $q && $SearchBookings.data?.event
       ? $SearchBookings.data.event.searchBookings.map((r) => ({
           ...r.registration,
-          byCode: r.byCode,
+          byCode: r.byCode as MaybeLoading<boolean>,
         }))
       : ($PageEventAllBookings.data?.event.bookings.edges.map((e) => ({
           ...e.node,
-          byCode: false,
+          byCode: false as MaybeLoading<boolean>,
         })) ?? []);
 
   const SearchBookings = graphql(`
