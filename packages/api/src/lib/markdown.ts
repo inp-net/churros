@@ -1,3 +1,4 @@
+import { ENV } from '#lib';
 import { htmlToText as convertHtmlToText } from 'html-to-text';
 import linkifyHtml from 'linkify-html';
 import 'linkify-plugin-mention';
@@ -24,7 +25,7 @@ export const toHtml = async (
       .use(remarkMath)
       .use(remarkBreaks)
       .use(options?.linkifyGitlabItems ? remarkGitlab : () => {}, {
-        repository: 'https://git.inpt.fr/inp-net/churros',
+        repository: ENV.PUBLIC_REPOSITORY_URL,
       })
       // Downlevel titles (h1 -> h3)
       // @ts-expect-error upgrade to unified 11 broke the type but this still works
@@ -48,7 +49,7 @@ export const toHtml = async (
       .then((s) =>
         options?.linkifyGitlabItems
           ? String(s).replaceAll(
-              /https:\/\/git.inpt.fr\/inp-net\/churros\/(?:-\/)?issues\/(\d+)/g,
+              new RegExp(`${ENV.PUBLIC_REPOSITORY_URL}/(?:-/)issues/(\\d+)`, 'g'),
               '/reports/$1',
             )
           : String(s),

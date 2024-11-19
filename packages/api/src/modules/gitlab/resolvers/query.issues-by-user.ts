@@ -1,9 +1,9 @@
-import { builder } from '#lib';
+import { builder, ENV } from '#lib';
 
 import { GraphQLError } from 'graphql';
 import {
-  IssueType,
   gitlabAPIIssueQuery as issueQuery,
+  IssueType,
   makeIssue,
   type GitlabAPIResponse,
 } from '../index.js';
@@ -30,7 +30,9 @@ builder.queryField('issuesByUser', (t) =>
         }
       }`;
 
-      const { fromIssuebot, fromGitlabUsers } = await fetch(`https://git.inpt.fr/api/graphql`, {
+      const gitlabOrigin = new URL(ENV.PUBLIC_REPOSITORY_URL).origin;
+
+      const { fromIssuebot, fromGitlabUsers } = await fetch(`${gitlabOrigin}/api/graphql`, {
         body: JSON.stringify({ query: query(user.uid) }),
         method: 'POST',
         headers: {
@@ -51,7 +53,9 @@ builder.queryField('issuesByUser', (t) =>
           /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
         )
         .catch(() => {
-          throw new GraphQLError('Connexion à git.inpt.fr impossible');
+          throw new GraphQLError(
+            `Connexion à ${new URL(ENV.PUBLIC_REPOSITORY_URL).host} impossible`,
+          );
         });
 
       const allIssues = [...fromIssuebot, ...fromGitlabUsers];

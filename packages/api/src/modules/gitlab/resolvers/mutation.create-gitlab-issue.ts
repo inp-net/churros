@@ -16,18 +16,23 @@ builder.mutationField('createGitlabIssue', (t) =>
     async resolve(_, { title, description, isBug }, { user }) {
       if (!ENV.GITLAB_SUDO_TOKEN) throw new GraphQLError('Intégration à Gitlab désactivée');
 
+      if (!URL.canParse(ENV.PUBLIC_REPOSITORY_URL)) throw new GraphQLError('URL de dépôt invalide');
+
+      const gitlabDomain = new URL(ENV.PUBLIC_REPOSITORY_URL).host;
+      const gitlabApiBaseUrl = `https://${gitlabDomain}/api/v4`;
+
       let hasGitlabAccount = false;
       if (user) {
-        const data = (await fetch(`https://git.inpt.fr/api/v4/users?username=${user.uid}`)
+        const data = (await fetch(`${gitlabApiBaseUrl}/users?username=${user.uid}`)
           .then(async (r) => r.json())
           .catch(() => {
-            throw new GraphQLError('Connexion à git.inpt.fr impossible');
+            throw new GraphQLError(`Connexion à ${gitlabDomain} impossible`);
           })) as unknown as unknown[];
         hasGitlabAccount = data.length > 0;
       }
 
       const url = (path: string) => {
-        const result = new URL('/api/v4/' + path, `https://git.inpt.fr/`);
+        const result = new URL(gitlabApiBaseUrl + path);
         result.searchParams.set('sudo', (hasGitlabAccount ? user?.uid : undefined) ?? 'issuebot');
         result.searchParams.set('private_token', ENV.GITLAB_SUDO_TOKEN!);
 
@@ -42,7 +47,9 @@ builder.mutationField('createGitlabIssue', (t) =>
             (hasGitlabAccount
               ? ''
               : `\n\n\n -- ${
-                  user ? `[@${user.uid}](https://churros.inpt.fr/users/${user.uid})` : 'Anonymous'
+                  user
+                    ? `[@${user.uid}](https://${ENV.PUBLIC_FRONTEND_ORIGIN}/${user.uid})`
+                    : 'Anonymous'
                 }`),
           title: title || description.split('. ')[0],
           labels:
