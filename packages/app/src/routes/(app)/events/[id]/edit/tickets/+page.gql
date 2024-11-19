@@ -4,6 +4,7 @@ query PageEditEventTickets($id: LocalID!) @loading {
     id
     localID
     showPlacesLeft
+    showCapacity
     globalCapacity
     startsAt
     endsAt

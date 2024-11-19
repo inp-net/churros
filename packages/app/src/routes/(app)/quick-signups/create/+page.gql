@@ -1,0 +1,12 @@
+query PageQuickSignupCreate {
+  me: assertMe {
+    major {
+      schools {
+        id
+        uid
+        name
+        pictureFile
+      }
+    }
+  }
+}

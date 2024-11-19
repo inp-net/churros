@@ -15,8 +15,8 @@
   $: ({ PageUserEditEmail } = data);
 
   const RequestChange = graphql(`
-    mutation RequestEmailChange($email: Email!, $callbackURL: URL!) {
-      requestEmailChange(email: $email, callbackURL: $callbackURL) {
+    mutation RequestEmailChange($email: Email!, $callbackURL: URL!, $user: UID!) {
+      requestEmailChange(newEmail: $email, callbackURL: $callbackURL, user: $user) {
         ...MutationErrors
         ... on MutationRequestEmailChangeSuccess {
           data {
@@ -37,6 +37,7 @@
       on:submit|preventDefault={async () => {
         const result = await mutate(RequestChange, {
           email: newEmail,
+          user: $page.params.uid,
           callbackURL: new URL(route('/validate-email/[token]', '[token]'), $page.url),
         });
         toasts.mutation(
