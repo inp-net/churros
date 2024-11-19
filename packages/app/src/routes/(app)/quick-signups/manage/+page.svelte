@@ -1,87 +1,92 @@
 <script lang="ts">
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
-  import IconDelete from '~icons/mdi/delete-outline';
-  import IconQRCode from '~icons/mdi/qrcode';
-  import { formatDateTime } from '$lib/dates';
-  import type { PageData } from './$types';
-  import { zeus } from '$lib/zeus';
-  import { toasts } from '$lib/toasts';
-  import { page } from '$app/stores';
+  import IconAdd from '~icons/msl/add';
+  import IconDelete from '~icons/msl/delete-outline';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import IconQRCode from '~icons/msl/qr-code-2';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import { formatDistanceToNow } from 'date-fns';
+  import type { PageData } from './$houdini';
+  import { loading, mapAllLoading } from '$lib/loading';
+  import LoadingText from '$lib/components/LoadingText.svelte';
+  import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import { route } from '$lib/ROUTES';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import { refroute } from '$lib/navigation';
+  import { infinitescroll } from '$lib/scroll';
+  import { graphql } from '$houdini';
+  import { mutateAndToast } from '$lib/mutations';
 
   export let data: PageData;
+  $: ({ PageAppQuickSignupsManagePage } = data);
+
+  const Delete = graphql(`
+    mutation DeleteQuickSignup($code: String!) {
+      deleteQuickSignup(code: $code) {
+        id
+      }
+    }
+  `);
 </script>
 
-<div class="content">
-  <main>
-    <h1>
-      <ButtonBack />
-      Liens d'inscription rapide
-      <ButtonPrimary href="../create">Créer un nouveau lien</ButtonPrimary>
-    </h1>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>École</th>
-          <th>Valide jusqu'au</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data.quickSignups.nodes ?? [] as { code, validUntil, school } (code)}
-          <tr id={code} class:highlighted={$page.url.hash === `#${code}`}>
-            <td><a href="#{code}"><code>{code}</code></a></td>
-            <td><AvatarSchool name {school}></AvatarSchool></td>
-            <td
-              >{#if validUntil}{formatDateTime(validUntil)}{:else}—{/if}</td
+<MaybeError result={$PageAppQuickSignupsManagePage} let:data={{ quickSignups }}>
+  <div
+    class="contents"
+    use:infinitescroll={async () => PageAppQuickSignupsManagePage.loadNextPage()}
+  >
+    <Submenu>
+      <SubmenuItem href={route('/quick-signups/create')} icon={IconAdd}>
+        Créer un lien d'inscription rapide
+      </SubmenuItem>
+      {#each quickSignups.nodes as quickSignup}
+        <SubmenuItem
+          icon={null}
+          subtext={mapAllLoading([quickSignup], ({ validUntil, expired, school }) => {
+            if (expired) return 'Lien expiré';
+            return `Expire ${formatDistanceToNow(validUntil, { addSuffix: true })} · pour inscriptions à ${school.name}`;
+          })}
+        >
+          <AvatarSchool slot="icon" school={quickSignup.school} />
+          <LoadingText tag="code" value={quickSignup.code} />
+          <div class="actions" slot="right">
+            <ButtonInk
+              help="Afficher le QR code"
+              icon={IconQRCode}
+              href={refroute('/quick-signups/qr/[code]', loading(quickSignup.code, ''))}
             >
-            <td
-              ><ButtonSecondary
-                on:click={async () => {
-                  await $zeus.mutate({
-                    deleteQuickSignup: [{ code }, { __typename: true }],
-                  });
-                  toasts.success("Lien d'inscription rapide supprimé");
-                }}
-                icon={IconDelete}
-                danger>Supprimer</ButtonSecondary
-              >
-            </td>
-            <td><ButtonSecondary href="../qr/{code}" icon={IconQRCode}>QR Code</ButtonSecondary></td
-            >
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </main>
-</div>
+              QR
+            </ButtonInk>
+            <ButtonShare text="Lien" path={route('/signup/[qrcode]', loading(quickSignup.code, ''))}
+            ></ButtonShare>
+            <ButtonInk
+              icon={IconDelete}
+              danger
+              on:click={async () => {
+                await mutateAndToast(Delete, { code: quickSignup.code });
+              }}
+            ></ButtonInk>
+          </div>
+        </SubmenuItem>
+      {:else}
+        <SubmenuItem icon={null}>
+          <p class="muted">Aucun lien créé</p>
+        </SubmenuItem>
+      {/each}
+    </Submenu>
+  </div>
+</MaybeError>
 
 <style>
-  th {
-    text-align: left;
+  .contents {
+    padding: 0 1rem;
   }
 
-  td,
-  th {
-    height: 3.5rem;
-    padding: 0.5rem;
-  }
-
-  tr {
-    border-radius: var(--radius-block);
-  }
-
-  tr.highlighted {
-    color: var(--primary);
-    background-color: var(--primary-bg);
-  }
-
-  tr:not(:hover, .highlighted) :global(.button-secondary) {
-    display: none;
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1ch 0.5rem;
+    align-items: center;
+    width: max-content;
   }
 </style>

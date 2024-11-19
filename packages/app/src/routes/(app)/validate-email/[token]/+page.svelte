@@ -14,10 +14,29 @@
 
   async function rerequestValidation() {
     loading = true;
+
+    // Data required to potentially re-request an email change: we need to know for who the email change is. We assume its the logged-in user.
+    const meResult = await graphql(`
+      query ValidateEmailFailure {
+        me: assertMe {
+          uid
+        }
+      }
+    `).fetch();
+
+    if (!meResult.data) {
+      toasts.error(
+        "Impossible de re-demander une validation d'email",
+        meResult.errors?.map((e) => e.message).join('; ') ?? 'Erreur inconnue',
+      );
+      loading = false;
+      return;
+    }
+
     toasts.mutation(
       await graphql(`
-        mutation RequestEmailChangeAgain($email: Email!, $callbackURL: URL!) {
-          requestEmailChange(email: $email, callbackURL: $callbackURL) {
+        mutation RequestEmailChangeAgain($email: Email!, $callbackURL: URL!, $user: UID!) {
+          requestEmailChange(newEmail: $email, callbackURL: $callbackURL, user: $user) {
             ...MutationErrors
             ... on MutationRequestEmailChangeSuccess {
               data {
@@ -26,7 +45,11 @@
             }
           }
         }
-      `).mutate({ email, callbackURL: new URL(route('/validate-email/[token]', '[token]')) }),
+      `).mutate({
+        email,
+        callbackURL: new URL(route('/validate-email/[token]', '[token]')),
+        user: meResult.data.me.uid,
+      }),
       'requestEmailChange',
       "Si l'adresse fournie existe, tu devrais recevoir un e-mail de validation dans quelques instants.",
       "Erreur lors de l'envoi de l'e-mail de validation",
@@ -36,11 +59,8 @@
 </script>
 
 <div class="content">
-  <h1>Oops!</h1>
-
-  <p>Ce lien de validation d'adresse e-mail n'est plus valide.</p>
-
   <Alert theme="danger">
+    <h1>Oops!</h1>
     {data.message}
   </Alert>
 
@@ -55,7 +75,9 @@
 
 <style>
   .content {
-    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem 0;
     margin: 0 auto;
   }
 

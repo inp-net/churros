@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { env } from '$env/dynamic/public';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { isDark } from '$lib/theme';
   import type { PageData } from './$types';
@@ -24,7 +25,9 @@
     <ul class="nobullet">
       {#each codeContributors as contributor (contributor.uid)}
         <li>
-          <AvatarPerson href="https://git.inpt.fr/users/{contributor.uid}/activity" {...contributor}
+          <AvatarPerson
+            href="{new URL(env.PUBLIC_REPOSITORY_URL).origin}/users/{contributor.uid}/activity"
+            {...contributor}
           ></AvatarPerson>
         </li>
       {/each}

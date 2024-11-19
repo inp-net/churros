@@ -4,22 +4,22 @@
   import { graphql, type PageEventAllBookings$result } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
+  import BookingAuthor from '$lib/components/BookingAuthor.svelte';
   import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
   import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
   import BookingStatus from '$lib/components/BookingStatus.svelte';
-  import BookingAuthor from '$lib/components/BookingAuthor.svelte';
   import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import LoadingScreen from '$lib/components/LoadingScreen.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
   import { allLoaded, loaded, loading, LoadingText, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { isPWA } from '$lib/pwa';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
-  import { notNull } from '$lib/typing';
   import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
   import { tabToFilter } from './filters';
@@ -31,7 +31,7 @@
   $: activeTab = ($page.url.searchParams.get('tab') ?? 'unpaid') as (typeof FILTERS)[number];
 
   let openBookingDetailModal: () => void;
-  let selectedBooking: PageEventAllBookings$result['event']['bookings']['nodes'][number];
+  let selectedBooking: PageEventAllBookings$result['event']['bookings']['edges'][number]['node'];
 
   const updates = graphql(`
     subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
@@ -54,8 +54,8 @@
   $: newBookingsCount =
     $updates.data?.event.bookings.nodes.filter(
       (fresh) =>
-        !$PageEventAllBookings.data?.event.bookings.nodes.some(
-          (existing) => existing.id === fresh.id,
+        !$PageEventAllBookings.data?.event.bookings.edges.some(
+          ({ node: existing }) => existing.id === fresh.id,
         ),
     ).length ?? 0;
 
@@ -205,7 +205,7 @@
       </NavigationTabs>
     </header>
     <ul class="bookings" use:infinitescroll={() => PageEventAllBookings.loadNextPage()}>
-      {#each event.bookings.nodes.filter(notNull) as booking}
+      {#each event.bookings.edges as { node: booking }}
         <li>
           <button
             class="booking"
@@ -253,6 +253,12 @@
         <li class="booking empty muted">Aucune résevation pour le moment</li>
       {/each}
     </ul>
+    {#if loading(event.bookings.pageInfo.hasNextPage, false)}
+      <!-- TODO: Move to ./ItemBooking.svelte and add a loading placeholder one here  -->
+      <div class="loading-more">
+        <LoadingScreen />
+      </div>
+    {/if}
   </div>
 </MaybeError>
 
@@ -354,5 +360,12 @@
     display: flex;
     gap: 0.5ch;
     align-items: center;
+  }
+
+  .loading-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7em;
   }
 </style>

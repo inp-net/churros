@@ -19,16 +19,16 @@
     align-items: center;
     justify-content: center;
     min-height: 100%;
-    font-size: 7rem;
+    font-size: 7em;
   }
 
   .regular-content {
-    font-size: 1rem;
+    font-size: calc(1em / 7);
   }
 
   .loading p.gradiented {
-    margin-top: 2rem;
-    font-size: 1.5rem;
+    margin-top: 1.5em;
+    font-size: calc(1.5em * 1 / 7);
     font-weight: bold;
     background: linear-gradient(90deg, var(--fg), var(--primary), var(--fg));
     background-clip: text;
