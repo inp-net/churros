@@ -47,8 +47,6 @@ strict digraph ImportGraph {
     "services" -> "groups";
     "services" -> "schools";
     "services" -> "student-associations";
-    "shop" -> "groups";
-    "shop" -> "payments";
     "student-associations" -> "groups";
     "student-associations" -> "payments";
     "student-associations" -> "users";
