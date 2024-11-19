@@ -463,10 +463,6 @@ export const topnavConfigs: Partial<{
     back: route('/events/[id]', id),
     actions: [],
   }),
-  '/(app)/posts/[[group]]/create': {
-    title: 'Nouveau post',
-    actions: [],
-  },
   '/(app)/events/[id]/scan': ({ params: { id } }) => ({
     title: 'Scanner des billets',
     back: route('/events/[id]', id),
