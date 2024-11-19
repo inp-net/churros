@@ -24,7 +24,7 @@
 > **NOTE:** Si vous souhaitez travailler sur le code et proposer des changements, faites un _fork_ et clonez celui-ci plutôt. (Voir [Merge requests](#merge-requests))
 
 ```
-git clone https://git.inpt.fr/inp-net/churros.git
+git clone https://git.inpt.fr/churros/churros.git
 ```
 
 > **NOTE:** Si vous utilisez VS Code, vous pouvez ouvrir le projet dans VS Code et lancher la tache "Setup environment" (<kbbd>Ctrl+Shift+P</kbd> puis taper "Run Task" et sélectionner "Setup environment"). C'est l'équivalent des commandes ci-dessous.
@@ -36,6 +36,7 @@ yarn install
 ```
 
 3. Ajouter les variables d'environnement
+
 ```
 cp .env.example .env
 ```
@@ -76,6 +77,8 @@ yarn reset
       | --------------- | --------------- |
       | `yarn @api dev` | `yarn @app dev` |
 
+      (sur VSCode: Run Task puis Develop)
+
   Note que le faux serveur LDAP de l'école ne fonctionnera pas (il faut le lancer dans encore un autre terminal), mais ça ne pose pas de problème si l'on ne développe pas la partie inscriptions.
 
 Parmis d'autres choses, sont notamment lancés:
@@ -84,9 +87,15 @@ Parmis d'autres choses, sont notamment lancés:
 - <http://localhost:4000>: l'API
 - <http://localhost:8025>: un serveur mail de test reçevant tout les mails envoyés par l'application
 
+On peut lancer Prisma Studio pour inspecter la base de données:
+
+```
+yarn prisma studio
+```
+
 ## Développement
 
-[Voir le wiki](https://git.inpt.fr/inp-net/churros/-/wikis) pour se familiariser avec l'architecture du projet.
+[Voir le wiki](https://git.inpt.fr/churros/churros/-/wikis) pour se familiariser avec l'architecture du projet.
 
 ### Résolution de problèmes
 
@@ -103,7 +112,7 @@ yarn reset
 
 Pour effectuer vos changements puis les proposer:
 
-1. [Créez un _fork_ de ce dépôt](https://git.inpt.fr/inp-net/churros/-/forks/new)
+1. [Créez un _fork_ de ce dépôt](https://git.inpt.fr/churros/churros/-/forks/new)
 2. Clonez ce _fork_ sur votre machine
 3. Faites vos commits sur ce _fork_
 4. Faites une _merge request_, demandant à intégrer les changements de _votre fork_ vers ce dépôt

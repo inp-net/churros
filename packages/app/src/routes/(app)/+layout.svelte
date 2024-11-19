@@ -29,6 +29,7 @@
   import type { PageData } from './$houdini';
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
   import { allLoaded } from '$lib/loading';
+  import { env } from '$env/dynamic/public';
 
   onNavigate(setupViewTransition);
 
@@ -257,7 +258,7 @@
         Churros v{CURRENT_VERSION}
         · <wbr />Made by <a href="https://net7.dev">net7</a>
         · <wbr /><a href="/credits">À propos</a>
-        · <wbr /><a href="https://git.inpt.fr/inp-net/churros">Code source</a>
+        · <wbr /><a href={env.PUBLIC_REPOSITORY_URL}>Code source</a>
         · <wbr /><a href="https://www.gnu.org/licenses/agpl-3.0.en.html#license-text"
           >Licensed under AGPL-v3.0</a
         >
@@ -440,8 +441,8 @@
 
   .page-content {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
   }
 
   footer {

@@ -1,13 +1,11 @@
 #!/usr/bin/env ts-node
-import { execSync } from 'child_process';
+import { DotParser } from '@vizdom/vizdom-ts-node';
 import cli from 'cli';
 import * as fs from 'fs';
 import { glob } from 'glob';
 import { analyzeGraph } from 'graph-cycles';
 import * as path from 'path';
-import which from 'which';
 
-const hasDotCommand = await which('dot').catch(() => false);
 const options = cli.parse({
   exclude: ['e', 'Comma-separated list of modules to exclude from the graph', 'string', ''],
   all: [
@@ -16,14 +14,8 @@ const options = cli.parse({
     'boolean',
     false,
   ],
-  png: [
-    '',
-    "Generate a PNG image of the graph, using graphviz's dot command" +
-      (hasDotCommand ? '' : ' \x1b[1;31m(Warning: dot command not found)\x1b[0m'),
-    'boolean',
-    false,
-  ],
-}) as { exclude: string; all: boolean; png?: boolean };
+  svg: ['', 'Generate a SVG image of the graph', 'boolean', false],
+}) as { exclude: string; all: boolean; svg?: boolean };
 
 console.log(options);
 
@@ -96,6 +88,8 @@ for (const moduleDirectory of fs.readdirSync(modulesDirectory, { withFileTypes: 
   importGraph.push([moduleName, Array.from(imports)]);
 }
 
+importGraph.sort(([a], [b]) => a.localeCompare(b));
+
 const dotFileContent = generateDotFile(importGraph);
 fs.writeFileSync(path.join(here, 'modules-import-graph.dot'), dotFileContent);
 
@@ -104,18 +98,14 @@ for (const cycle of analysis.cycles.filter((cycle) => cycle.length > 1)) {
   console.log(`\x1b[1;31mCycle detected: ${cycle.join(' -> ')}\x1b[0m`);
 }
 
-// check if the dot executable is available
-
-if (options.png) {
-  if (!hasDotCommand) {
-    console.error(
-      'dot command not found, cannot generate PNG image of the dependency graph. Remove the --png flag to not attempt to generate the image.',
-    );
-    process.exit(0);
-  }
-
-  execSync(
-    `dot -Tpng ${path.join(here, 'modules-import-graph.dot')} -o ${path.join(here, 'modules-import-graph.png')}`,
-  );
-  console.info(`Graph generated to ${path.join(here, 'modules-import-graph.png')}`);
+if (options.svg) {
+  const output = path.join(here, `modules-import-graph.${options.svg ? 'svg' : 'png'}`);
+  const svgContents = new DotParser()
+    .parse(dotFileContent)
+    .to_directed()
+    .layout()
+    .to_svg()
+    .to_string();
+  fs.writeFileSync(output, svgContents);
+  console.info(`Graph generated to ${output}`);
 }

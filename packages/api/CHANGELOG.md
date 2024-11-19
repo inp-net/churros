@@ -1,5 +1,29 @@
 # @churros/api
 
+## 5.0.1
+
+### Patch Changes
+
+- 3e47614: allow postgresql: protocol alongside postgres: protocol for database_url env variable
+
+## 5.0.0
+
+### Major Changes
+
+- 4f87c5e: improve groups' Lydia accounts management and fix bugs
+- 3fa8469: feat(shop): drop shops (shops will come back as a separate project)
+
+### Minor Changes
+
+- 78a786a: validate env vars before launching server
+
+### Patch Changes
+
+- 524ef98: don't try to sync bot accounts to ldap when logging in or updating profile/curriculum of the bot account
+- Updated dependencies [cfaed6e]
+- Updated dependencies [3fa8469]
+  - @churros/db@3.0.0
+
 ## 4.0.1
 
 ### Patch Changes

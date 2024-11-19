@@ -61,7 +61,7 @@
     "prisma": "yarn workspace @churros/db run prisma",
     "reset": "docker compose up -d && NODE_ENV=development yarn prisma migrate reset --force",
     "start": "docker compose up -d && yarn workspaces foreach -Apiv run start",
-    "triage": "xdg-open 'https://git.inpt.fr/inp-net/churros/-/issues/?sort=created_date&state=opened&not[label_name][]=importance:urgent&not[label_name][]=importance:high&not[label_name][]=importance:medium&not[label_name][]=importance:low&not[label_name][]=importance:rockbottom&not[label_name][]=difficulty:braindead&not[label_name][]=difficulty:easy&not[label_name][]=difficulty:moderate&not[label_name][]=difficulty:hard&not[label_name][]=difficulty:unknown'",
+    "triage": "xdg-open 'https://git.inpt.fr/churros/churros/-/issues/?sort=created_date&state=opened&not[label_name][]=importance:urgent&not[label_name][]=importance:high&not[label_name][]=importance:medium&not[label_name][]=importance:low&not[label_name][]=importance:rockbottom&not[label_name][]=difficulty:braindead&not[label_name][]=difficulty:easy&not[label_name][]=difficulty:moderate&not[label_name][]=difficulty:hard&not[label_name][]=difficulty:unknown'",
     "candidaterelease": "release-it --preRelease=rc",
     "generate-buildinfo": "yarn tsx scripts/generate-buildinfo.ts",
     "sync-with-example-dotenv": "yarn tsx scripts/sync-with-example-dotenv.ts && yarn cp-env",

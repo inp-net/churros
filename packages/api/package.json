@@ -1,8 +1,8 @@
 {
   "name": "@churros/api",
-  "version": "4.0.1",
+  "version": "5.0.1",
   "dependencies": {
-    "@churros/db": "workspace:^2.0.0",
+    "@churros/db": "workspace:^3.0.0",
     "@clack/prompts": "^0.7.0",
     "@envelop/core": "^5.0.2",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
@@ -160,6 +160,7 @@
     "@types/web-push": "^3.6.3",
     "@types/which": "^3.0.4",
     "@types/ws": "^8.5.12",
+    "@vizdom/vizdom-ts-node": "^0.1.17",
     "barrelsby": "^2.8.1",
     "chokidar": "^4.0.1",
     "concurrently": "^9.0.1",
@@ -190,7 +191,7 @@
     "barrelize": "tsx scripts/generate-barrelsby-config.ts && echo Running barrelsby && barrelsby --config barrelsby.config.json && tsx scripts/fix-extensionless-barrel-imports.ts",
     "new-module": "tsx ./scripts/new-module.ts",
     "add-search-support": "tsx ./scripts/add-search-support.ts",
-    "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --png",
+    "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --svg",
     "migration": "yarn run -T migration",
     "dev:barrels": "tsx ./scripts/watch-barrels.ts",
     "dev:typenames": "tsx ./scripts/watch-id-prefixes.ts",

@@ -37,14 +37,16 @@ builder.mutationField('updateUserProfile', (t) =>
           description: profile.description ?? undefined,
         },
       });
-      await upsertLdapUser({
-        firstName: result.firstName,
-        lastName: result.lastName,
-        uid: result.uid,
-        email: [result.email, ...result.otherEmails],
-      }).catch(async (error) => {
-        await log('ldap', 'update-user-profile', { uid, profile, error }, uid, user);
-      });
+      if (!result.bot) {
+        await upsertLdapUser({
+          firstName: result.firstName,
+          lastName: result.lastName,
+          uid: result.uid,
+          email: [result.email, ...result.otherEmails],
+        }).catch(async (error) => {
+          await log('ldap', 'update-user-profile', { uid, profile, error }, uid, user);
+        });
+      }
       return result;
     },
   }),
