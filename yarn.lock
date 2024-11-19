@@ -837,6 +837,7 @@ __metadata:
     "@types/cli": "npm:^0.11.25"
     "@types/cli-progress": "npm:^3.11.6"
     "@types/cookie": "npm:^0.6.0"
+    "@types/cookie-parser": "npm:^1.4.7"
     "@types/cors": "npm:^2.8.17"
     "@types/cron": "npm:^2.4.0"
     "@types/express": "npm:^4.0.0"
@@ -875,6 +876,7 @@ __metadata:
     cli-progress: "npm:^3.12.0"
     colord: "npm:^2.9.3"
     connect-redis: "npm:^7.1.1"
+    cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
     dataloader: "npm:^2.2.2"
@@ -928,6 +930,7 @@ __metadata:
     npm-upgrade: "npm:^3.1.0"
     passport: "npm:^0.7.0"
     passport-anonymous: "npm:^1.0.1"
+    passport-cookie: "npm:^1.0.9"
     passport-http-bearer: "npm:^1.0.1"
     passport-oauth2: "npm:^1.8.0"
     pdfmake: "npm:^0.2.13"
@@ -5354,6 +5357,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie-parser@npm:^1.4.7":
+  version: 1.4.7
+  resolution: "@types/cookie-parser@npm:1.4.7"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 10c0/af37fea5399950e59ceb2e1f25c633f3df360c4f17e8b3f26418e672fe5c926a20993b86f8e1df72cfe2c4dc8967d9a18d3d78b5c6a5f751a297d0418e5690fa
+  languageName: node
+  linkType: hard
+
 "@types/cookie@npm:^0.5.1":
   version: 0.5.4
   resolution: "@types/cookie@npm:0.5.4"
@@ -8822,6 +8834,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-parser@npm:^1.4.7":
+  version: 1.4.7
+  resolution: "cookie-parser@npm:1.4.7"
+  dependencies:
+    cookie: "npm:0.7.2"
+    cookie-signature: "npm:1.0.6"
+  checksum: 10c0/46bef553de409031b69a6074ce512d131a98e4fa12612669f1a9c3dd98d56897a31db86a3f4338d4a3a895c6f8d5cfd6fa4d99cdf588e0e8eda655efc3f384dc
+  languageName: node
+  linkType: hard
+
 "cookie-signature@npm:1.0.6":
   version: 1.0.6
   resolution: "cookie-signature@npm:1.0.6"
@@ -8840,6 +8862,13 @@ __metadata:
   version: 0.6.0
   resolution: "cookie@npm:0.6.0"
   checksum: 10c0/f2318b31af7a31b4ddb4a678d024514df5e705f9be5909a192d7f116cfb6d45cbacf96a473fa733faa95050e7cff26e7832bb3ef94751592f1387b71c8956686
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.7.2":
+  version: 0.7.2
+  resolution: "cookie@npm:0.7.2"
+  checksum: 10c0/9596e8ccdbf1a3a88ae02cf5ee80c1c50959423e1022e4e60b91dd87c622af1da309253d8abdb258fb5e3eacb4f08e579dc58b4897b8087574eee0fd35dfa5d2
   languageName: node
   linkType: hard
 
@@ -17857,6 +17886,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-cookie@npm:^1.0.9":
+  version: 1.0.9
+  resolution: "passport-cookie@npm:1.0.9"
+  dependencies:
+    passport-strategy: "npm:^1.0.0"
+  checksum: 10c0/8246c8ea3d44ecc5124a1fab854e7a72b0d3515970234170b9a310329d60f690be3d65ab95843644684414f51ed94cc3322873e083e6ca16c7d3fa8ec1687c5e
+  languageName: node
+  linkType: hard
+
 "passport-http-bearer@npm:^1.0.1":
   version: 1.0.1
   resolution: "passport-http-bearer@npm:1.0.1"
@@ -17879,7 +17917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-strategy@npm:1.x.x":
+"passport-strategy@npm:1.x.x, passport-strategy@npm:^1.0.0":
   version: 1.0.0
   resolution: "passport-strategy@npm:1.0.0"
   checksum: 10c0/cf4cd32e1bf2538a239651581292fbb91ccc83973cde47089f00d2014c24bed63d3e65af21da8ddef649a8896e089eb9c3ac9ca639f36c797654ae9ee4ed65e1

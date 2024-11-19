@@ -17,14 +17,14 @@ api.use(
   // Passport middleware
   passport.initialize(),
   passport.session(),
-  passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  passport.authenticate(['bearer', 'cookie', 'anonymous'], { session: false }),
   async (req, res, next) => {
     // If the path matches a private-profile user's profile picture, make sure we are authenticated
     const userOfPicture = await prisma.user.findFirst({
       where: { pictureFile: path.relative('/', req.path), privateProfile: true },
     });
 
-    console.log({ userOfPicture });
+    console.log(req.user);
 
     if (userOfPicture && !canSeeUserProfile(req.user?.user, userOfPicture)) {
       res.status(403).send('Forbidden');

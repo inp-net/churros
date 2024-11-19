@@ -11,12 +11,14 @@ import { setIntervalAsync } from 'set-interval-async';
 import { WebSocketServer } from 'ws';
 import { schema } from '../schema.js';
 import session from './auth/session.js';
+import cookieParser from 'cookie-parser';
 
 export const api = express();
 
 // default passport strategy
 import('./auth/anonymous.js');
 import('./auth/bearer.js');
+import('./auth/token-cookie.js');
 
 api.use(
   // Allow any origin, this is a public API :)
@@ -30,12 +32,13 @@ api.use(
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
+  cookieParser(),
   // express-session middleware
   session,
   // Passport middleware
   passport.initialize(),
   passport.session(),
-  passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  passport.authenticate(['bearer', 'cookie', 'anonymous'], { session: false }),
 );
 
 export async function startApiServer() {

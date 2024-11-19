@@ -3,7 +3,7 @@ import { userIsStudent } from '#permissions';
 import type { Prisma, User } from '@churros/db/prisma';
 
 export function canSeeUserProfile(user: Context['user'], targetUser: User) {
-  if (user?.admin) return false;
+  if (user?.admin) return true;
   if (!targetUser.privateProfile) return true;
   if (targetUser.majorId === null) return Boolean(user);
   return userIsStudent(user);
