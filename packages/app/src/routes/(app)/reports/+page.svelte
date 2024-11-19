@@ -8,6 +8,7 @@
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import { CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { env } from '$env/dynamic/public';
 
   export let data: PageData;
 </script>
@@ -49,7 +50,7 @@
   {#if data.issuesByUser.length >= 20}
     <p>
       Note: seuls tes derniers 20 signalements sont affichés. Pour voir des plus anciens, rends-toi
-      sur <ButtonSecondary insideProse href="https://git.inpt.fr/inp-net/churros/-/issues"
+      sur <ButtonSecondary insideProse href="{env.PUBLIC_REPOSITORY_URL}/-/issues"
         >Notre gitlab</ButtonSecondary
       >
     </p>

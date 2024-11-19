@@ -1,4 +1,4 @@
-import { builder, log, prisma, purgeSessionsUser } from '#lib';
+import { builder, log, nullToUndefined, prisma, purgeSessionsUser } from '#lib';
 import { UIDScalar } from '#modules/global';
 import { GroupMemberType } from '#modules/groups/types';
 import { canEditGroupMembers } from '#modules/groups/utils';
@@ -37,16 +37,7 @@ builder.mutationField('updateGroupMember', (t) =>
             memberId: targetUser.id,
           },
         },
-        data: {
-          title: input.title ?? undefined,
-          president: input.president ?? undefined,
-          treasurer: input.treasurer ?? undefined,
-          vicePresident: input.vicePresident ?? undefined,
-          secretary: input.secretary ?? undefined,
-          canEditMembers: input.canEditMembers ?? undefined,
-          canEditArticles: input.canEditArticles ?? undefined,
-          canScanEvents: input.canScanEvents ?? undefined,
-        },
+        data: nullToUndefined(input),
       });
       await purgeSessionsUser(targetUserUid);
       return member;
