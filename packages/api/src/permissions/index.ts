@@ -7,6 +7,7 @@ export * from './article.js';
 export * from './bar-week.js';
 export * from './board.js';
 export * from './contributions.js';
+export * from './documents.js';
 export * from './events.js';
 export * from './manager.js';
 export * from './member.js';
