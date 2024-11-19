@@ -1,9 +1,9 @@
-import { builder } from '#lib';
+import { builder, ENV } from '#lib';
 import {
-  ChangelogReleaseType,
-  UpcomingVersion,
   changelogFromFile,
+  ChangelogReleaseType,
   findReleaseInChangelog,
+  UpcomingVersion,
 } from '../index.js';
 
 builder.queryField('upcomingChangelog', (t) =>
@@ -12,7 +12,7 @@ builder.queryField('upcomingChangelog', (t) =>
     errors: {},
     async resolve() {
       const futureChangelogFile = await fetch(
-        `https://git.inpt.fr/inp-net/churros/-/raw/main/CHANGELOG.md`,
+        `${ENV.PUBLIC_REPOSITORY_URL}/-/raw/main/CHANGELOG.md`,
       );
       return findReleaseInChangelog(
         await changelogFromFile(await futureChangelogFile.text()),

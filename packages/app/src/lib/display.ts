@@ -329,3 +329,12 @@ export const DISPLAY_GROUP_MEMBER_PERMISSIONS: Record<
   canEditMembers: 'Gestion des membres',
   canScanEvents: 'Scan de billets',
 };
+
+export function stringifyCapacity(
+  capacity: null | number | App.CapacityUnlimitedValue,
+  fallback = '',
+): string {
+  if (capacity === null) return fallback;
+  if (capacity === 'Unlimited') return fallback;
+  return capacity.toString();
+}

@@ -17,7 +17,11 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { fromYearTier } from '$lib/dates';
-  import { DISPLAY_PAYMENT_METHODS, DISPLAY_TICKET_COUNTING_POLICY } from '$lib/display';
+  import {
+    DISPLAY_PAYMENT_METHODS,
+    DISPLAY_TICKET_COUNTING_POLICY,
+    stringifyCapacity,
+  } from '$lib/display';
   import { sentenceJoin } from '$lib/i18n';
   import {
     loaded,
@@ -254,7 +258,7 @@
             slot="right"
             clearable
             inputmode="decimal"
-            value={onceLoaded(event.ticket.capacity, (x) => x?.toString() ?? '', '')}
+            value={onceLoaded(event.ticket.capacity, stringifyCapacity, '')}
             on:blur={async ({ currentTarget }) => {
               if (!event.ticket) return;
               if (!(currentTarget instanceof HTMLInputElement)) return;
@@ -264,7 +268,7 @@
               toasts.mutation(
                 await mutate(UpdateCapacity, {
                   ticket: event.ticket.id,
-                  capacity: coerced,
+                  capacity: coerced ?? 'Unlimited',
                 }),
                 'updateTicket',
                 '',

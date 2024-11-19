@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { NotificationsSendCountForPostStore, type Visibility$options } from '$houdini';
+  import { type Visibility$options, graphql } from '$houdini';
   import { track } from '$lib/analytics';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
@@ -23,7 +23,11 @@
   $: if ($PagePostEditVisibility.data && loaded($PagePostEditVisibility.data.post.visibility))
     visibility ??= $PagePostEditVisibility.data?.post.visibility;
 
-  const NotificationsSendCount = new NotificationsSendCountForPostStore();
+  const NotificationsSendCount = graphql(`
+    query NotificationsSendCountForPost($visibility: Visibility!, $group: UID!) {
+      notificationsSendCountForArticle(visibility: $visibility, group: $group)
+    }
+  `);
 
   let openModalWarnNotifications: () => void;
 

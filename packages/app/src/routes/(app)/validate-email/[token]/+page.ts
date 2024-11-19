@@ -1,6 +1,6 @@
 import { graphql } from '$houdini';
-import { redirectToLogin } from '$lib/session';
 import { toasts } from '$lib/toasts';
+import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, url, fetch }) => {
@@ -29,7 +29,7 @@ export const load: PageLoad = async ({ params, url, fetch }) => {
 
   if (validateEmail.__typename === 'MutationValidateEmailSuccess') {
     toasts.success(`Adresse e-mail validée`, '', { lifetime: 5000 });
-    throw redirectToLogin(url.searchParams.get('next')?.toString() ?? '/');
+    redirect(302, url.searchParams.get('next')?.toString() ?? '/');
   }
 
   return validateEmail;

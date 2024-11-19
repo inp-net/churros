@@ -67,7 +67,6 @@
         startsAt
         endsAt
         location
-        placesLeft
         frequency
         recurringUntil
         canEdit
