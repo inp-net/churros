@@ -695,6 +695,16 @@ export const topnavConfigs: Partial<{
     back: route('/events'),
     actions: rootPagesActions,
   },
+  '/(app)/quick-signups/manage': {
+    title: 'Inscriptions rapides',
+    back: route('/backrooms'),
+    actions: rootPagesActions,
+  },
+  '/(app)/quick-signups/create': {
+    title: 'Nouvelle inscription rapide',
+    back: route('/quick-signups/manage'),
+    actions: [],
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
