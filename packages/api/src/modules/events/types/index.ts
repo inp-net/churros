@@ -3,11 +3,11 @@
  */
 
 export * from './capacity.js';
-export * from './even-search-result.js';
 export * from './event-frequency.js';
 export * from './event-manager-maybe-inherited.js';
 export * from './event-manager-power-level.js';
 export * from './event-manager.js';
+export * from './event-search-result.js';
 export * from './event.js';
 export * from './events-by-day.js';
 export * from './inherited-event-manager.js';
