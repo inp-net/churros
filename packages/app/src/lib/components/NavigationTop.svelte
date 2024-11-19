@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
   import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
+  import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import { isMobile } from '$lib/mobile';
   import { topnavConfigs } from '$lib/navigation';
   import { SvelteComponent } from 'svelte';
@@ -102,14 +102,16 @@
     {/if}
   </div>
   <div class="actions">
-    <button
-      class="bug-report"
-      on:click={() => {
-        window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
-      }}
-    >
-      <IconBugReport></IconBugReport>
-    </button>
+    <div class="bug-report">
+      <ButtonGhost
+        --text="var(--danger)"
+        on:click={() => {
+          window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+        }}
+      >
+        <IconBugReport></IconBugReport>
+      </ButtonGhost>
+    </div>
     {#if quickAction && !quickAction.disabled && !quickAction.hidden && !(quickAction.mobileOnly && !mobile)}
       {#if 'overflow' in quickAction && quickAction.overflow && 'icon' in quickAction}
         <OverflowMenu actions={quickAction.overflow}>
@@ -173,10 +175,6 @@
     max-width: 130px;
     height: 2rem;
     overflow: visible;
-  }
-
-  .bug-report {
-    color: var(--danger);
   }
 
   @media (min-width: 900px) {

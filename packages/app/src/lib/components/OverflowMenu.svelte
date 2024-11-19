@@ -6,6 +6,7 @@
   import type { SvelteComponent } from 'svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
   import IconDots from '~icons/msl/more-vert';
+  import { page } from '$app/stores';
 
   export type ActionData<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
     icon: IconType;
@@ -36,6 +37,15 @@
   // eslint-disable-next-line no-undef
   export let actions: OverflowMenuAction<IconType>[];
   const mobile = isMobile();
+
+  /** Show a red dot to get the user's attention (most likely because an overflow menu item inside has a red dot itself) */
+  let hasBadge = false;
+  $: Promise.all(
+    actions.map(async (action) => {
+      const data = typeof action === 'function' ? await action($page) : action;
+      if (await data.badge?.()) hasBadge = true;
+    }),
+  );
 
   type FlyAndScaleParams = {
     y?: number;
@@ -97,11 +107,17 @@
       {#if drawerOpen}
         <slot name="open">
           <slot>
-            <IconDots></IconDots>
+            <div class="icon" class:has-badge={hasBadge}>
+              <IconDots />
+            </div>
           </slot>
         </slot>
       {:else}
-        <slot><IconDots></IconDots></slot>
+        <slot>
+          <div class="icon" class:has-badge={hasBadge}>
+            <IconDots />
+          </div>
+        </slot>
       {/if}
     </svelte:fragment>
     {#each actions as action}
@@ -118,11 +134,15 @@
     <DropdownMenu.Trigger>
       <ButtonGhost>
         <slot>
-          <IconDots></IconDots>
+          <div class="icon" class:has-badge={hasBadge}>
+            <IconDots />
+          </div>
         </slot>
         <slot name="hovering" slot="hovering">
           <slot>
-            <IconDots></IconDots>
+            <div class="icon" class:has-badge={hasBadge}>
+              <IconDots />
+            </div>
           </slot>
         </slot>
       </ButtonGhost>
@@ -156,5 +176,22 @@
     width: max-content;
     padding: 0.25em;
     font-size: 1em;
+  }
+
+  .icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon.has-badge::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0.5em;
+    height: 0.5em;
+    content: '';
+    background: var(--danger);
+    border-radius: 50%;
   }
 </style>
