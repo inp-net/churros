@@ -85,7 +85,7 @@ modules:
 footer: |
   <p>
     Churros API, version %$CURRENT_VERSION% (at
-    <a href="https://git.inpt.fr/inp-net/churros/-/commit/%$CURRENT_COMMIT%">
+    <a href="https://git.inpt.fr/churros/churros/-/commit/%$CURRENT_COMMIT%">
       <code class="no-color">%$CURRENT_COMMIT_SHORT%</code></a
     >)
   </p>
