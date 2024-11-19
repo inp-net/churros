@@ -645,9 +645,13 @@ type Bookmark implements Node {
   """
   localID: LocalID!
   """
-  Chemin de la page
+  Chemin de la page, ou identifiant global pour les services épinglés. Voir aussi Bookmark.url
   """
   path: String!
+  """
+  URL vers la page. Pratique notamment pour les services épinglés, qui n'ont pas de valeur utile pour Bookmark.path.
+  """
+  url: URL!
   user: User!
 }
 
@@ -2371,7 +2375,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
   deleteAnnouncement(id: ID!): Boolean!
-  deleteArticle(id: ID!): Boolean!
+  """
+  Supprimer un post
+  """
+  deleteArticle(id: LocalID!): MutationDeleteArticleResult!
   deleteArticlePicture(id: ID!): Boolean!
   deleteComment(id: ID!): Comment!
   """
@@ -2542,7 +2549,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     URL vers laquelle faire pointer le lien de validation de la nouvelle adresse email. [token] sera remplacé par le token d'activation.
     """
     callbackURL: URL!
-    email: Email!
+    """
+    Nouvelle addresse e-mail
+    """
+    newEmail: Email!
+    """
+    Personne à qui changer l'adresse email
+    """
+    user: UID!
   ): MutationRequestEmailChangeResult!
   resetPassword(
     disconnectAll: Boolean!
@@ -3341,6 +3355,12 @@ union MutationDeduplicateBookingsResult = Error | MutationDeduplicateBookingsSuc
 
 type MutationDeduplicateBookingsSuccess {
   data: Int!
+}
+
+union MutationDeleteArticleResult = Error | MutationDeleteArticleSuccess | ZodError
+
+type MutationDeleteArticleSuccess {
+  data: Article!
 }
 
 union MutationDeleteContributionResult = Error | MutationDeleteContributionSuccess | ZodError

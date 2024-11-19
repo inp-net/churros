@@ -1,5 +1,13 @@
 # @churros/sync
 
+## 1.71.6
+
+### Patch Changes
+
+- Updated dependencies [cfaed6e]
+- Updated dependencies [3fa8469]
+  - @churros/db@3.0.0
+
 ## 1.71.5
 
 ### Patch Changes
