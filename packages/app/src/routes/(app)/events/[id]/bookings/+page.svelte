@@ -273,7 +273,7 @@
       {#each bookings as booking}
         <ItemBooking
           {booking}
-          highlightCode={booking.byCode}
+          highlightCode={loading(booking.byCode, false)}
           showTicketNames={event.tickets.length > 1}
           on:openDetails={({ detail }) => {
             selectedBooking = detail;
