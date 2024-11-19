@@ -15,8 +15,9 @@ export function canContributeTo(
     include: typeof canContributeTo.prismaIncludes;
   }>,
 ) {
+  if (!user) return false;
   return studentAssociation.contributionOptions.some((option) =>
-    user?.major?.schools.some((s) => s.id === option.offeredInId),
+    user.major?.schools.some((s) => s.id === option.offeredInId),
   );
 }
 
@@ -46,7 +47,7 @@ userContributesTo.prismaIncludes = {
 
 export function canEditDetails(
   user: Context['user'],
-  studentAssociation: Prisma.StudentAssociationGetPayload<{ include: {} }>,
+  studentAssociation: Prisma.StudentAssociationGetPayload<{ include: undefined }>,
 ) {
   if (!user) return false;
   return (
