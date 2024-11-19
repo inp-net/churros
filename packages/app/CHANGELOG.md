@@ -1,5 +1,11 @@
 # @churros/app
 
+## 3.0.1
+
+### Patch Changes
+
+- 45962da: make services in quick access list actually clickable
+
 ## 3.0.0
 
 ### Major Changes
