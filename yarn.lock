@@ -526,6 +526,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor/share@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "@capacitor/share@npm:6.0.3"
+  peerDependencies:
+    "@capacitor/core": ^6.0.0
+  checksum: 10c0/a6ae816a91c444ec080359f6d55c71785dd6391ed254baed105b8d282f56dc31c1940ec0760d0a7fb891dc1a5ac52298d79897f3c5bc70bce37490e9f187a28d
+  languageName: node
+  linkType: hard
+
 "@capgo/inappbrowser@npm:^6.6.8":
   version: 6.6.8
   resolution: "@capgo/inappbrowser@npm:6.6.8"
@@ -1134,6 +1143,7 @@ __metadata:
     "@capacitor/ios": "npm:^6.1.2"
     "@capacitor/preferences": "npm:^6.0.2"
     "@capacitor/push-notifications": "npm:^6.0.2"
+    "@capacitor/share": "npm:^6.0.3"
     "@capgo/inappbrowser": "npm:^6.6.8"
     "@carbon/charts-svelte": "npm:^1.19.2"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
