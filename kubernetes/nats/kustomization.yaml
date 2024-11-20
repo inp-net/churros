@@ -1,0 +1,18 @@
+# coucou https://github.com/bleemeo/bleemeo-community-edition/pull/4/files :)
+
+commonLabels:
+  app: nats
+
+configMapGenerator:
+- name: churros-nats-config
+  files:
+  - nats.conf
+
+secretGenerator:
+- name: churros-nats-jetstream-secrets
+  literals:
+  - JETSTREAM_PASSWORD=jetstream
+
+resources:
+- statefulset.yaml
+- service.yaml

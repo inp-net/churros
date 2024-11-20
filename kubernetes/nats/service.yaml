@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: churros-nats
+spec:
+  ports:
+  - port: 4222
+    name: churros-nats-client
+  selector:
+    app: churros-nats 
+  type: LoadBalancer
