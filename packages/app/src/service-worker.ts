@@ -4,9 +4,13 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 import * as $serviceWorker from '$service-worker';
-import type { PushNotification } from '@churros/api/src/modules/notifications/utils/push-notification';
 import { default as parseUserAgent } from 'ua-parser-js';
 const sw = self as unknown as ServiceWorkerGlobalScope;
+
+type PushNotification = NotificationOptions & {
+  title: string;
+  image?: string;
+};
 
 // can't import from $env/dynamic/public in service worker
 const PUBLIC_STORAGE_URL = /* @generated */ `https://${sw.location.hostname}/storage`;
