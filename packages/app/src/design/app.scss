@@ -1,6 +1,6 @@
-@import 'sanitize.css/sanitize';
-@import 'sanitize.css/assets';
-@import 'sanitize.css/typography';
+@use 'sanitize.css/sanitize';
+@use 'sanitize.css/assets';
+@use 'sanitize.css/typography';
 
 * {
   max-width: 100%;
