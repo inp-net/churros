@@ -5,7 +5,6 @@
     "prisma": "prisma",
     "generate": "run-s \"generate:*\"",
     "generate:prisma": "prisma generate",
-    "generate:patch": "patch src/client/runtime/library.d.ts < patches/runtime_library.patch",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio",
     "format": "prettier --write .",
