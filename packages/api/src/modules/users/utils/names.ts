@@ -1,9 +1,18 @@
 import type { Prisma, School } from '@churros/db/prisma';
 import { replaceMailDomainPart } from './school.js';
 
-export function fullName(user: { firstName: string; lastName: string; nickname?: string }) {
+/**
+ * Compute the full name of a user.
+ * @param user the user
+ * @param includeNickname whether to include their nickname in the full name
+ * @returns the full name
+ */
+export function fullName(
+  user: { firstName: string; lastName: string; nickname?: string },
+  includeNickname = true,
+) {
   const { firstName, lastName, nickname } = user;
-  if (nickname) return `${firstName} ${lastName} (${nickname})`;
+  if (includeNickname && nickname) return `${firstName} ${lastName} (${nickname})`;
   return `${firstName} ${lastName}`;
 }
 

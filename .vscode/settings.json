@@ -17,5 +17,6 @@
     "html": {
       "compactBooleanAttributes": true
     }
-  }
+  },
+  "editor.wordBasedSuggestions": "matchingDocuments"
 }
