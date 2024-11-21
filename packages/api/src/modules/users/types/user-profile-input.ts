@@ -6,6 +6,7 @@ export const UserProfileInput = builder.inputType('UserProfileInput', {
   fields: (t) => ({
     firstName: t.string({ required: false, validate: { minLength: 1 } }),
     lastName: t.string({ required: false, validate: { minLength: 1 } }),
+    pronouns: t.string({ required: false, validate: { maxLength: 30 } }),
     otherEmails: t.field({ type: [Email], required: false }),
     birthday: t.field({
       type: DateTimeScalar,

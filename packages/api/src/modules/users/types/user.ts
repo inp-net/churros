@@ -55,6 +55,9 @@ export const UserType = builder.prismaNode('User', {
       type: 'String',
       resolve: (user) => fullName(user),
     }),
+    pronouns: t.exposeString('pronouns', {
+      description: "Pronoms de l'utilisateur·ice",
+    }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
     graduationYear: t.exposeInt('graduationYear'),
     yearTier: t.int({
