@@ -24,14 +24,16 @@
     actualValues,
     colorValues,
     editingTheme,
+    forceReloadTheme,
     isDark,
+    isImageVariable,
     THEME_CSS_VARIABLE_NAMES,
     urlValues,
   } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { tooltip } from '$lib/tooltip';
   import debounce from 'lodash.debounce';
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import IconHelp from '~icons/msl/help-outline';
 
   export let theme: ThemesEditorSidebar | null;
@@ -96,7 +98,10 @@
   const debouncedUpdateValueInAPI = debounce(updateValueInAPI, 500);
 
   async function setValue(variable: ThemeVariable$options, value: string) {
-    document.documentElement.style.setProperty(`--${THEME_CSS_VARIABLE_NAMES[variable]}`, value);
+    document.documentElement.style.setProperty(
+      `--${THEME_CSS_VARIABLE_NAMES[variable]}`,
+      isImageVariable(variable) ? `url('${value}')` : value,
+    );
     values[selectedVariant ?? 'Light'][variable] = value;
   }
 
@@ -255,6 +260,10 @@
         {value}
         on:blur={async ({ detail }) => {
           await setValue(variable, detail);
+          await debouncedUpdateValueInAPI(variable, detail);
+          // Tell svelte to apply dom changes (css variable changes) before reloading theme variables
+          await tick();
+          forceReloadTheme();
         }}
       />
     {/each}

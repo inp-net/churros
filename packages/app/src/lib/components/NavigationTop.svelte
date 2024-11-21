@@ -76,6 +76,9 @@
   on:NAVTOP_UPDATE_TITLE={({ detail }) => {
     title = detail;
   }}
+  on:THEME_FORCE_RELOAD={() => {
+    themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarTop');
+  }}
 />
 
 <svelte:head>

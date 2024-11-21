@@ -50,6 +50,12 @@
   });
 </script>
 
+<svelte:window
+  on:THEME_FORCE_RELOAD={() => {
+    themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarSide');
+  }}
+/>
+
 <nav>
   <div class="top">
     <ButtonNavigation
