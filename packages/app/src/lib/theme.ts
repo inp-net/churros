@@ -85,22 +85,37 @@ if (browser) {
     document.documentElement.dataset.themeVariant = $isDark ? 'dark' : 'light';
   });
 }
+
+/**
+ * Get the default theme's values
+ * @param variant variant (light or dark)
+ * @param baseValuesGetter a DOM element that has the default theme values. Must one children element for each theme variant, with the class name being the variant name. Each of those children must have the CSS variables set to the default values for that theme variant. It could look something like this:
+ * ```html
+ * <div> <!-- baseValuesGetter -->
+ *  <div class="Light" data-force-default-theme="light"></div>
+ *  <div class="Dark" data-force-default-theme="dark"></div>
+ * </div>
+ * ```
+ * @returns the default theme's values
+ */
 export function baseValues(
   variant: ThemeVariant$options,
   baseValuesGetter: HTMLDivElement,
 ): Record<ThemeVariable$options, string> {
-  if (!baseValuesGetter)
-    {return Object.fromEntries(Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, ''])) as Record<
+  if (!baseValuesGetter) {
+    return Object.fromEntries(Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, ''])) as Record<
       ThemeVariable$options,
       string
-    >;}
+    >;
+  }
 
   const getter = baseValuesGetter.querySelector(`.${variant}`);
-  if (!getter)
-    {return Object.fromEntries(Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, ''])) as Record<
+  if (!getter) {
+    return Object.fromEntries(Object.keys(THEME_CSS_VARIABLE_NAMES).map((v) => [v, ''])) as Record<
       ThemeVariable$options,
       string
-    >;}
+    >;
+  }
 
   return Object.fromEntries(
     Object.keys(THEME_CSS_VARIABLE_NAMES).map((variable) => {
@@ -112,6 +127,12 @@ export function baseValues(
   ) as Record<ThemeVariable$options, string>;
 }
 
+/**
+ * Get actual theme values, with all values filled in
+ * @param baseValuesGetter A DOM element used to get the base (default) theme values. Used as fallback when those values are not set by the current theme. See baseValues for more information on this particular DOM element
+ * @param themeValues the current theme's values
+ * @returns all themes values, none are empty. Those that are not set by the given themes get their values from the base, default theme, using baseValueGetter
+ */
 export function actualValues(
   baseValuesGetter: HTMLDivElement,
   themeValues: ThemeValuesForEditing | null,
@@ -145,18 +166,40 @@ export function actualValues(
   };
 }
 
+/**
+ * retain theme values that are colors
+ * @param values theme values
+ * @returns values that are colors
+ */
 export function colorValues(values: Record<ThemeVariable$options, string>) {
   return Object.entries(values).filter(([v]) => v.startsWith('Color')) as Array<
     [ThemeVariable$options & `Color${string}`, string]
   >;
 }
 
-export function urlValues(values: Record<ThemeVariable$options, string>) {
-  return Object.entries(values).filter(([v]) => /^(Pattern|Image)/.test(v)) as Array<
-    [ThemeVariable$options, string]
-  >;
+/**
+ * Is the given theme variable an image (or pattern) variable?
+ */
+export function isImageVariable(variable: ThemeVariable$options): boolean {
+  return variable.startsWith('Image') || variable.startsWith('Pattern');
 }
 
+/**
+ * retain theme values that are URLs
+ * @param values theme values
+ * @returns values that are URLs
+ */
+export function urlValues(values: Record<ThemeVariable$options, string>) {
+  return Object.entries(values).filter(([k]) =>
+    isImageVariable(k as ThemeVariable$options),
+  ) as Array<[ThemeVariable$options, string]>;
+}
+
+/**
+ * Get a theme's value, as it is currently set in the DOM
+ * @param variable the theme variable
+ * @returns the value
+ */
 export function themeCurrentValue(variable: ThemeVariable$options): string {
   if (!browser) return '';
   return getComputedStyle(document.body).getPropertyValue(
@@ -164,6 +207,21 @@ export function themeCurrentValue(variable: ThemeVariable$options): string {
   );
 }
 
+/**
+ * Get a theme's value just like themeCurrentValue, without the url("...") wrapper (get just the URL inside)
+ * @param variable the name of the theme variable to get the value from
+ * @returns the extracted value
+ */
 export function themeCurrentValueURL(variable: ThemeVariable$options): string {
-  return themeCurrentValue(variable).replace(/url\((["'])(.+)\1\)/, '$2');
+  const value = themeCurrentValue(variable);
+  // url("") or url('')
+  if (/url\((["'])\1\)/.test(value)) return '';
+  // extract thing from url("thing")
+  return value.replace(/url\((["'])(.+)\1\)/, '$2');
+}
+
+/** Forces reloading the theme. Useful for theme value changes that imply JS computations, that can't be simply updated by the CSS variable's value changing (most likely, URLs) */
+export function forceReloadTheme() {
+  if (!browser) return;
+  window.dispatchEvent(new CustomEvent('THEME_FORCE_RELOAD'));
 }
