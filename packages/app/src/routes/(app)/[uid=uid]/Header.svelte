@@ -7,7 +7,6 @@
     type ProfileHeader,
     type ProfileHeader_Me,
   } from '$houdini';
-  import HTMLContent from '$lib/components/HTMLContent.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';
@@ -18,17 +17,18 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import HTMLContent from '$lib/components/HTMLContent.svelte';
+  import ModalContribute from '$lib/components/ModalContribute.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
+  import { DISPLAY_GROUP_TYPES } from '$lib/display';
   import { loaded, loading, LoadingText, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
+  import IconCheck from '~icons/msl/check';
   import IconBotAccount from '~icons/msl/robot-2-outline';
   import IconAdmin from '~icons/msl/shield-outline';
-  import IconCheck from '~icons/msl/check';
-  import { DISPLAY_GROUP_TYPES } from '$lib/display';
-  import { tooltip } from '$lib/tooltip';
-  import ModalContribute from '$lib/components/ModalContribute.svelte';
 
   export let me: ProfileHeader_Me | null;
   $: Me = fragment(
@@ -48,6 +48,8 @@
         __typename
         ... on User {
           name: fullName
+          pronouns
+          nickname
           descriptionHtml
           yearTier
           major {
@@ -184,6 +186,11 @@
     <div class="text">
       <h2>
         <LoadingText value={$data && 'name' in $data ? $data.name : PendingValue} />
+        {#if $data?.__typename === 'User' && loading($data.pronouns, '')}
+          <div class="subline">
+            <LoadingText value={$data.pronouns} />
+          </div>
+        {/if}
       </h2>
       <div class="details">
         {#if !$data || !loaded($data.__typename)}
@@ -376,6 +383,11 @@
     header {
       --picture-size: 150px;
     }
+  }
+
+  .subline {
+    font-size: 0.8em;
+    color: var(--shy);
   }
 
   .bio {
