@@ -8,7 +8,7 @@ Checks before adding `review:ready`:
 
 - [ ] My branch is up-to-date with upstream's main branch, at the latest tag or more recent (this prevents, amongst other things, creating prisma migrations dated in the past relative to the current deployed migrations)
 - [ ] I've added changesets if necessary (see the comment by the changeset bot below)
-- [ ] I some commits were made without commit lints (`--no-verify` flag), I ran `yarn lintfix` and `yarn format` afterwards
+- [ ] If some commits were made without commit lints (`--no-verify` flag), I ran `yarn lintfix` and `yarn format` afterwards
 - [ ] I've tested the changes locally
 - [ ] If I added / removed environment variables:
   - [ ] I've updated the `.env.example` file
