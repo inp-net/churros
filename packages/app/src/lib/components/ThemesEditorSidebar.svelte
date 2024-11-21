@@ -89,6 +89,8 @@
       );
       return;
     }
+
+    await new PageSettingsThemeStore().fetch();
   }
 
   const debouncedUpdateValueInAPI = debounce(updateValueInAPI, 500);

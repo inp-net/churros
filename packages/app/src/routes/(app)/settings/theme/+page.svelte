@@ -5,6 +5,7 @@
   import InputRadios from '$lib/components/InputRadios.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import PickGroup from '$lib/components/PickGroup.svelte';
+  import { allLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { editingTheme, theme } from '$lib/theme';
   import { toasts } from '$lib/toasts';
@@ -44,7 +45,7 @@
       </div>
     </header>
     <section class="themes">
-      {#each themes as theme}
+      {#each themes.filter(allLoaded) as theme (theme.id)}
         <ThemePreviewCard {theme} />
       {/each}
       <ThemePreviewCard theme={null} />
