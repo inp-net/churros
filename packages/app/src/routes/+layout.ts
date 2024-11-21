@@ -4,7 +4,6 @@ import { editingTheme } from '$lib/theme';
 import { setDefaultOptions } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 import { get } from 'svelte/store';
-import type { RootLayoutVariables } from './$houdini';
 
 export const ssr = false;
 
@@ -15,10 +14,11 @@ export async function load(event) {
     weekStartsOn: 1,
     locale: fr,
   });
-  return await load_RootLayout({ event });
+  return await load_RootLayout({
+    event,
+    variables: {
+      editingThemeId: browser ? (get(editingTheme)?.id ?? 'none') : 'none',
+      editingTheme: browser ? Boolean(get(editingTheme)) : false,
+    },
+  });
 }
-
-export const _RootLayoutVariables: RootLayoutVariables = async () => ({
-  editingThemeId: browser ? (get(editingTheme)?.id ?? 'none') : 'none',
-  editingTheme: browser ? Boolean(get(editingTheme)) : false,
-});
