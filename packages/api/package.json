@@ -1,8 +1,8 @@
 {
   "name": "@churros/api",
-  "version": "4.0.1",
+  "version": "6.0.0",
   "dependencies": {
-    "@churros/db": "workspace:^2.0.0",
+    "@churros/db": "workspace:^3.1.0",
     "@clack/prompts": "^0.7.0",
     "@envelop/core": "^5.0.2",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
@@ -161,6 +161,7 @@
     "@types/web-push": "^3.6.3",
     "@types/which": "^3.0.4",
     "@types/ws": "^8.5.12",
+    "@vizdom/vizdom-ts-node": "^0.1.17",
     "barrelsby": "^2.8.1",
     "graphinx": "^0.12.1"
   },
@@ -189,7 +190,7 @@
     "barrelize": "tsx scripts/generate-barrelsby-config.ts && echo Running barrelsby && barrelsby --config barrelsby.config.json && tsx scripts/fix-extensionless-barrel-imports.ts && echo Formatting barrels for consistency && yarn format-at ./src/modules/**/index.ts --log-level silent",
     "new-module": "tsx ./scripts/new-module.ts",
     "add-search-support": "tsx ./scripts/add-search-support.ts",
-    "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --png",
+    "modules-import-graph": "tsx ./scripts/modules-import-graph.ts --exclude global --svg",
     "migration": "yarn run -T migration",
     "watch-barrels": "nodemon --exec 'yarn barrelize' --watch src/modules -e ts --ignore 'src/modules/**/index.ts'",
     "test:hurl": "echo Logging in… && http post :4000/graphql query='mutation { login(email: \"versairea\", password: \"a\") { ...on MutationLoginSuccess { data { token } } } }' | jq -r .data.login.data.token | xargs -I@ hurl --parallel --test --variable token=@ --variable host=http://localhost:4000 --glob src/modules/*/tests/*.hurl",

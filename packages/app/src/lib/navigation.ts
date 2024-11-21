@@ -458,10 +458,6 @@ export const topnavConfigs: Partial<{
       commonActions.copyID,
     ],
   }),
-  '/(app)/posts/[[group]]/create': {
-    title: 'Nouveau post',
-    actions: [],
-  },
   '/(app)/events/[id]/scan': ({ params: { id } }) => ({
     title: 'Scanner des billets',
     back: route('/events/[id]', id),
@@ -698,6 +694,16 @@ export const topnavConfigs: Partial<{
     title: 'Mes billets',
     back: route('/events'),
     actions: rootPagesActions,
+  },
+  '/(app)/quick-signups/manage': {
+    title: 'Inscriptions rapides',
+    back: route('/backrooms'),
+    actions: rootPagesActions,
+  },
+  '/(app)/quick-signups/create': {
+    title: 'Nouvelle inscription rapide',
+    back: route('/quick-signups/manage'),
+    actions: [],
   },
 };
 

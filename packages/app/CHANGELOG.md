@@ -1,5 +1,49 @@
 # @churros/app
 
+## 3.0.1
+
+### Patch Changes
+
+- 45962da: make services in quick access list actually clickable
+
+## 3.0.0
+
+### Major Changes
+
+- bba3e47: Remove /posts/:group/create - the URL was not used anywhere in the UI anymore
+
+### Minor Changes
+
+- 02fa1a0: allow hiding capacity on tickets
+- f09cd52: fix and improve email change request flow (wording in email, appearance of error state, and making request creating actually work)
+- a73ec69: redesign quick signups management pages
+- 02fa1a0: show event managers inherited from group memberships
+- 0453154: fix(signup): force opening major picker before anything else (closes #1190)
+- 02fa1a0: clarify when someone can see places left and/or capacity of a ticket because they are managers
+- aee5a3a: make repository url to the churros repo env-configurable, defaults to https://git.inpt.fr/churros/churros
+
+### Patch Changes
+
+- 11d9947: fix(permissions): make documents access toggle actually trigger the mutation (fixes #1228)
+- b616da1: fix borked infinite scroll on /events/:id/bookings
+- eecc2c9: clarify what the date range headers are in group members list page
+- 6e11d67: make bookmarked services actually clickable
+- bba3e47: make delete button on posts work
+- 0453154: don't trigger form submissions when picking an option in a modal picker
+- 6e11d67: improve help message for empty state of bookmarks list
+
+## 2.13.0
+
+### Minor Changes
+
+- aceb9af: fix(profile): make group members link point to group/user pages instead of group member edition modal
+- 4f87c5e: improve groups' Lydia accounts management and fix bugs
+- fb45fa1: feat(app): improve skeleton UI appearance
+
+### Patch Changes
+
+- 0c84def: fix(app): date inputs were sometimes not editable
+
 ## 2.12.1
 
 ### Patch Changes

@@ -1,4 +1,5 @@
-import { log, type Context } from '#lib';
+import { log, type Capacity, type Context } from '#lib';
+import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
@@ -127,12 +128,21 @@ export function canSeeTicket(
 export function canSeePlacesLeftCount(
   event: Prisma.EventGetPayload<{ include: typeof canSeePlacesLeftCount.prismaIncludes }>,
   user: Context['user'],
-  placesLeft: number,
+  placesLeft: Capacity,
 ) {
-  return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
+  return placesLeft === 0 || event.showPlacesLeft || canEditEvent(event, user);
 }
 
-canSeePlacesLeftCount.prismaIncludes = canSeeAllBookingsPrismaIncludes;
+canSeePlacesLeftCount.prismaIncludes = canEditEventPrismaIncludes;
+
+export function canSeeTicketCapacity(
+  event: Prisma.EventGetPayload<{ include: typeof canSeeTicketCapacity.prismaIncludes }>,
+  user: Context['user'],
+) {
+  return event.showCapacity || canEditEvent(event, user);
+}
+
+canSeeTicketCapacity.prismaIncludes = canEditEventPrismaIncludes;
 
 export function canMarkBookingAsPaid(
   user: Context['user'] &
@@ -171,9 +181,8 @@ export function userIsBookedToEvent(
       // Ignore cancelled registrations
       if (reg.cancelledAt) return false;
       // If the registration has an internal beneficiary, check that it's the user
-      if (reg.internalBeneficiaryId) 
-        return reg.internalBeneficiaryId === user.id;
-      
+      if (reg.internalBeneficiaryId) return reg.internalBeneficiaryId === user.id;
+
       // Otherwise, the registration is for the author, check that it's the user
       return reg.authorId === user.id;
     }),

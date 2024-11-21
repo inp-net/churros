@@ -1,5 +1,21 @@
 # @churros/db
 
+## 3.1.0
+
+### Minor Changes
+
+- 02fa1a0: allow hiding capacity on tickets
+
+## 3.0.0
+
+### Major Changes
+
+- 3fa8469: feat(shop): drop shops (shops will come back as a separate project)
+
+### Minor Changes
+
+- cfaed6e: feat(ticketing): improve default constraints (closes #1212)
+
 ## 2.0.0
 
 ### Major Changes

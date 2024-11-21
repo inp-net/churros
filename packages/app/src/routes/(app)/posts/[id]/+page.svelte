@@ -10,11 +10,14 @@
   import { LoadingText, loading } from '$lib/loading';
   import { Lightbox } from 'svelte-lightbox';
   import type { PageData } from './$houdini';
+  import { page } from '$app/stores';
+  import ModalDelete from './ModalDelete.svelte';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
+
+<ModalDelete postId={$page.params.id} />
 
 <MaybeError result={$PagePostDetail} let:data={{ post, me }}>
   <div class="contents">

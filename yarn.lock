@@ -807,7 +807,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/api@workspace:packages/api"
   dependencies:
-    "@churros/db": "workspace:^2.0.0"
+    "@churros/db": "workspace:^3.1.0"
     "@clack/prompts": "npm:^0.7.0"
     "@envelop/core": "npm:^5.0.2"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
@@ -862,6 +862,7 @@ __metadata:
     "@types/web-push": "npm:^3.6.3"
     "@types/which": "npm:^3.0.4"
     "@types/ws": "npm:^8.5.12"
+    "@vizdom/vizdom-ts-node": "npm:^0.1.17"
     "@zxcvbn-ts/core": "npm:^3.0.4"
     "@zxcvbn-ts/language-common": "npm:^3.0.4"
     "@zxcvbn-ts/language-en": "npm:^3.0.2"
@@ -1078,7 +1079,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^, @churros/db@workspace:^2.0.0, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^, @churros/db@workspace:^3.1.0, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
@@ -3010,7 +3011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kitql/helpers@npm:0.8.9, @kitql/helpers@npm:^0.8.2":
+"@kitql/helpers@npm:^0.8.2":
   version: 0.8.9
   resolution: "@kitql/helpers@npm:0.8.9"
   dependencies:
@@ -6579,6 +6580,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vizdom/vizdom-ts-node@npm:^0.1.17":
+  version: 0.1.17
+  resolution: "@vizdom/vizdom-ts-node@npm:0.1.17"
+  checksum: 10c0/d87d55630c234cdddcced090b0363d4297f3a59e06b5f53fb2177e1184401278bc338d8c48707f78b24121dee53dde48a308cbf17f8a705c0247c9b548894969
+  languageName: node
+  linkType: hard
+
 "@whatwg-node/events@npm:0.0.2":
   version: 0.0.2
   resolution: "@whatwg-node/events@npm:0.0.2"
@@ -7615,7 +7623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:^3.0.2, braces@npm:^3.0.3, braces@npm:~3.0.2":
+"braces@npm:^3.0.3, braces@npm:~3.0.2":
   version: 3.0.3
   resolution: "braces@npm:3.0.3"
   dependencies:
@@ -12861,8 +12869,8 @@ __metadata:
   linkType: hard
 
 "houdini@npm:^1.2.62, houdini@npm:^1.2.64":
-  version: 1.2.64
-  resolution: "houdini@npm:1.2.64"
+  version: 1.3.0
+  resolution: "houdini@npm:1.3.0"
   dependencies:
     "@babel/parser": "npm:^7.23.9"
     "@clack/prompts": "npm:^0.6.3"
@@ -12888,10 +12896,10 @@ __metadata:
     node-fetch: "npm:^3.2.10"
     npx-import: "npm:^1.1.3"
     recast: "npm:^0.23.1"
-    vite-plugin-watch-and-run: "npm:^1.3.2"
+    vite-plugin-watch-and-run: "npm:^1.7.0"
   bin:
     houdini: build/cmd-esm/index.js
-  checksum: 10c0/b4aac9e606f566419f1e3463a0c53339d16b1cd9f825303e00e0e7a612718266dd883fcfa76f6d7fad8acff3bae7f13243f4a8f2d7ad9f1cb30ae7331ccaf05d
+  checksum: 10c0/18a216be5c39ef06039c5b61261298cf3445c4acd5f6d10871b29f81499913fae1be2b46dc922bb1a5e73a93bae6ad6aa707cd740dfd6d2462086962f2460de3
   languageName: node
   linkType: hard
 
@@ -15896,16 +15904,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:4.0.5":
-  version: 4.0.5
-  resolution: "micromatch@npm:4.0.5"
-  dependencies:
-    braces: "npm:^3.0.2"
-    picomatch: "npm:^2.3.1"
-  checksum: 10c0/3d6505b20f9fa804af5d8c596cb1c5e475b9b0cd05f652c5b56141cf941bd72adaeb7a436fda344235cef93a7f29b7472efc779fcdb83b478eab0867b95cdeff
-  languageName: node
-  linkType: hard
-
 "micromatch@npm:4.0.8, micromatch@npm:^4.0.2, micromatch@npm:^4.0.8, micromatch@npm:~4.0.8":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
@@ -18119,6 +18117,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picocolors@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "picocolors@npm:1.1.1"
+  checksum: 10c0/e2e3e8170ab9d7c7421969adaa7e1b31434f789afb9b3f115f6b96d91945041ac3ceb02e9ec6fe6510ff036bcc0bf91e69a1772edc0b707e12b19c0f2d6bcf58
+  languageName: node
+  linkType: hard
+
 "picomatch-browser@npm:^2.2.6":
   version: 2.2.6
   resolution: "picomatch-browser@npm:2.2.6"
@@ -18339,7 +18344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.0, postcss@npm:^8.4.27, postcss@npm:^8.4.32, postcss@npm:^8.4.38, postcss@npm:^8.4.39":
+"postcss@npm:^8.4.0, postcss@npm:^8.4.32, postcss@npm:^8.4.38, postcss@npm:^8.4.39":
   version: 8.4.40
   resolution: "postcss@npm:8.4.40"
   dependencies:
@@ -18347,6 +18352,17 @@ __metadata:
     picocolors: "npm:^1.0.1"
     source-map-js: "npm:^1.2.0"
   checksum: 10c0/65ed67573e5443beaeb582282ff27a6be7c7fe3b4d9fa15761157616f2b97510cb1c335023c26220b005909f007337026d6e3ff092f25010b484ad484e80ea7f
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.27":
+  version: 8.4.48
+  resolution: "postcss@npm:8.4.48"
+  dependencies:
+    nanoid: "npm:^3.3.7"
+    picocolors: "npm:^1.1.1"
+    source-map-js: "npm:^1.2.1"
+  checksum: 10c0/d586361fda12fc7ab5650ce9b5763fc61d6ea2cecac9da98fceea6a3f27e42ed34db830582411bc06743492d9bb414c52b0c81da65440682d244d692da2f928a
   languageName: node
   linkType: hard
 
@@ -19634,8 +19650,8 @@ __metadata:
   linkType: hard
 
 "rollup@npm:^3.27.1, rollup@npm:^3.7.4":
-  version: 3.29.4
-  resolution: "rollup@npm:3.29.4"
+  version: 3.29.5
+  resolution: "rollup@npm:3.29.5"
   dependencies:
     fsevents: "npm:~2.3.2"
   dependenciesMeta:
@@ -19643,7 +19659,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 10c0/65eddf84bf389ea8e4d4c1614b1c6a298d08f8ae785c0c087e723a879190c8aaddbab4aa3b8a0524551b9036750c9f8bfea27b377798accfd2ba5084ceff5aaa
+  checksum: 10c0/a1fa26f21f0d6cf93b6d05ea284ad5854905b585f28a14c27d439b0f9b859cba13ea25f376303d86770e59b4686bedc52b4706e57442514f0414c6fd3c5b8e71
   languageName: node
   linkType: hard
 
@@ -22761,23 +22777,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-watch-and-run@npm:1.7.1":
+"vite-plugin-watch-and-run@npm:1.7.1, vite-plugin-watch-and-run@npm:^1.7.0":
   version: 1.7.1
   resolution: "vite-plugin-watch-and-run@npm:1.7.1"
   dependencies:
     "@kitql/helpers": "npm:0.8.10"
     micromatch: "npm:4.0.8"
   checksum: 10c0/495422b708af227e4fdd6f00c9d025f7ca3f04d036244fc4a4a0f32026285454d7b47f13af33c90fb62966905f5eaca8df7418489560fdb2bad9d92797ad2dce
-  languageName: node
-  linkType: hard
-
-"vite-plugin-watch-and-run@npm:^1.3.2":
-  version: 1.7.0
-  resolution: "vite-plugin-watch-and-run@npm:1.7.0"
-  dependencies:
-    "@kitql/helpers": "npm:0.8.9"
-    micromatch: "npm:4.0.5"
-  checksum: 10c0/781c44c1c1de10dd4a77576535e9a6ead952ceb32671aca8560b0403c3c0c3fdf2f5783cf58e78464e70e8733ba4aff6c7f14431430382aa21cf1bcca97cc573
   languageName: node
   linkType: hard
 
@@ -22825,8 +22831,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^4.1.1":
-  version: 4.5.3
-  resolution: "vite@npm:4.5.3"
+  version: 4.5.5
+  resolution: "vite@npm:4.5.5"
   dependencies:
     esbuild: "npm:^0.18.10"
     fsevents: "npm:~2.3.2"
@@ -22860,7 +22866,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/caeb1eecc0a8e0865782899e2f83d2993a9816562badc1c8291316d80d49b82f12038abd8cb8b8c627b6f369f58dfb25972ef4517d5e6e1b6e1bf7ee5b63a8a6
+  checksum: 10c0/cde5a1d80ae61b2c0b2e2a04938e10aa8821a4c2c625f1dcd6eff179f0c9ce98a5b3c8fd62b54a81299568f7747fff4d35ffecc0e7f7ff34d76124d94a24ce9b
   languageName: node
   linkType: hard
 
