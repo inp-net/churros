@@ -99,6 +99,7 @@ declare namespace svelteHTML {
     'on:NAVTOP_COPY_ID'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_CREATE_POST_ON_EVENT'?: (event: CustomEvent<undefined>) => Promise<void> | void;
+    'on:NAVTOP_RELOAD'?: (event: CustomEvent<undefined>) => Promise<void> | void;
   }
 }
 

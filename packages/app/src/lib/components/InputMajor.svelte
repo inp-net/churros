@@ -9,18 +9,21 @@
   import { createEventDispatcher } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
 
-  const dispatch = createEventDispatcher<{ open: undefined }>();
+  type Clearable = $$Generic<boolean>;
+
+  const dispatch = createEventDispatcher<{ open: undefined; pick: undefined }>();
 
   /** Selected major uid */
-  export let major: string;
+  export let major: Clearable extends true ? string | null : string;
 
   /** Allow clearing selection */
-  export let clearable = false;
+  // @ts-expect-error clearable's default value makes the generic type weird
+  export let clearable: Clearable = false;
 
   /** Text on the clear button */
   export let clearLabel: MaybeLoading<string> = 'Effacer';
 
-  export let initialSchool: InputMajorInitialSchool | null;
+  export let initialSchool: InputMajorInitialSchool | null = null;
   $: dataInitialSchool = fragment(
     initialSchool,
     graphql(`
@@ -89,6 +92,7 @@
       <PickMajor
         on:finish={({ detail }) => {
           major = detail;
+          dispatch('pick');
         }}
         value={major}
         options={$data.majors}

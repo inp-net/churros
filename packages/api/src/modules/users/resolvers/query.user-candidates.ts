@@ -1,5 +1,4 @@
-import { builder, prisma } from '#lib';
-
+import { builder, prisma, type Context } from '#lib';
 import { UserCandidateType } from '../index.js';
 
 builder.queryField('userCandidates', (t) =>
@@ -7,23 +6,30 @@ builder.queryField('userCandidates', (t) =>
     type: UserCandidateType,
     authScopes: { admin: true, studentAssociationAdmin: true },
     cursor: 'id',
-    resolve: async (query, _, {}, { user }) => {
+    async totalCount(_, {}, { user }) {
+      return prisma.userCandidate.count({
+        where: whereQuery(user),
+      });
+    },
+    async resolve(query, _, {}, { user }) {
       return prisma.userCandidate.findMany({
         ...query,
-        where: {
-          emailValidated: true,
-          ...(user?.admin
-            ? {}
-            : // only return signups for the student association the user is admin of
-              {
-                major: {
-                  schools: {
-                    some: { studentAssociations: { some: { admins: { some: { id: user?.id } } } } },
-                  },
-                },
-              }),
-        },
+        where: whereQuery(user),
       });
     },
   }),
 );
+
+const whereQuery = (user: Context['user']) => ({
+  emailValidated: true,
+  ...(user?.admin
+    ? {}
+    : // only return signups for the student association the user is admin of
+      {
+        major: {
+          schools: {
+            some: { studentAssociations: { some: { admins: { some: { id: user?.id } } } } },
+          },
+        },
+      }),
+});

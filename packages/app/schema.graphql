@@ -2551,7 +2551,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     target: ID!
   ): Reactable!
-  refuseRegistration(email: String!, reason: String!): Boolean!
+  refuseRegistration(email: String!, reason: String!): MutationRefuseRegistrationResult!
   """
   Enregistrer un token OAuth2 Google pour l'utilisateur connecté.
   """
@@ -3003,21 +3003,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
       reason: "Use `updateUserProfile`, `requestEmailChange` and other `updateUser*` mutations instead"
     )
   updateUserCandidate(
-    birthday: DateTime
-    cededImageRightsToTVn7: Boolean!
-    email: String!
-    firstName: String!
-    graduationYear: Int!
-    lastName: String!
-    majorId: ID!
+    """
+    Adresse email de l'inscription à modifier. On ne peut pas modifier l'adresse e-mail d'une inscription.
+    """
+    email: Email!
+    input: UserCandidateUpdateInput!
     """
     Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte
     """
     register: Boolean!
-    """
-    Le @ souhaité
-    """
-    uid: UID!
   ): MutationUpdateUserCandidateResult!
   """
   Met à jour les infos sur le cursus scolaire de l'utilisateur.ice
@@ -3224,7 +3218,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
 union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess | ZodError
 
 type MutationAcceptRegistrationSuccess {
-  data: User!
+  data: UserCandidate!
 }
 
 union MutationAddFileToPageResult = Error | MutationAddFileToPageSuccess | ZodError
@@ -3515,6 +3509,12 @@ type MutationPayBookingSuccess {
   data: Registration!
 }
 
+union MutationRefuseRegistrationResult = Error | MutationRefuseRegistrationSuccess | ZodError
+
+type MutationRefuseRegistrationSuccess {
+  data: UserCandidate!
+}
+
 union MutationRegisterGoogleCredentialResult =
   | Error
   | MutationRegisterGoogleCredentialSuccess
@@ -3728,7 +3728,7 @@ type MutationUpdateTicketSuccess {
 union MutationUpdateUserCandidateResult = Error | MutationUpdateUserCandidateSuccess | ZodError
 
 type MutationUpdateUserCandidateSuccess {
-  data: Boolean!
+  data: UserCandidate!
 }
 
 union MutationUpdateUserCurriculumResult = Error | MutationUpdateUserCurriculumSuccess | ZodError
@@ -4717,6 +4717,7 @@ type QueryUserCandidatesConnection {
   edges: [QueryUserCandidatesConnectionEdge!]!
   nodes: [UserCandidate!]!
   pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type QueryUserCandidatesConnectionEdge {
@@ -6576,6 +6577,22 @@ type UserCandidate implements Node {
   Vrai si l'utilisateur a été créé via un lien d'inscription rapide.
   """
   usingQuickSignup: Boolean!
+}
+
+input UserCandidateUpdateInput @graphinx(module: "users") {
+  birthday: DateTime
+  cededImageRightsToTVn7: Boolean
+  firstName: String
+  graduationYear: Int
+  lastName: String
+  """
+  UID de la filière
+  """
+  major: UID
+  """
+  Le @ souhaité.
+  """
+  uid: UID
 }
 
 type UserPartiallyAnsweredFormsConnection {
