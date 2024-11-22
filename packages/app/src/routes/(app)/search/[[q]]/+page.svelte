@@ -2,7 +2,7 @@
   import { replaceState } from '$app/navigation';
   import { page } from '$app/stores';
   import { PendingValue, type PageSearch$result } from '$houdini';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import BaseInputText from '$lib/components/BaseInputText.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';

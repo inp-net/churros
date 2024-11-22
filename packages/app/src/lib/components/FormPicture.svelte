@@ -9,7 +9,7 @@
   import ButtonInk from './ButtonInk.svelte';
   import CardEvent from './CardEvent.svelte';
   import InputFile from './InputFile.svelte';
-  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
 
   export let variant: ThemeVariant$options = 'Light';
 

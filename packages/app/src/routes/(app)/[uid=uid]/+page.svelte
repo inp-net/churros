@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import { colorName } from '$lib/colors';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
   import ButtonCopyToClipboard, {
     copyToClipboard,

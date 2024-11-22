@@ -2,7 +2,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
   import InputCheckboxes from '$lib/components/InputCheckboxes.svelte';

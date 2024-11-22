@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { PendingValue, type LayoutEventEdit$result, type PromotionType$options } from '$houdini';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
   import InputDateTime from '$lib/components/InputDateTime.svelte';

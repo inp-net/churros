@@ -22,7 +22,7 @@
   import IconLockOpen from '~icons/msl/lock-open-outline';
   import IconLock from '~icons/msl/lock-outline';
   import IconTime from '~icons/msl/schedule-outline';
-  import AvatarGroup from './AvatarGroup.houdini.svelte';
+  import AvatarGroup from './AvatarGroup.svelte';
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import CardTicket from './CardTicket.svelte';

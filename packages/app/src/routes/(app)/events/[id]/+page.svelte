@@ -4,7 +4,7 @@
   import CardBooking from '$lib/components/CardBooking.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Alert from '$lib/components/Alert.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
@@ -20,7 +20,7 @@
   import type { PageData } from './$houdini';
   import ModalBookTicket from './ModalBookTicket.svelte';
   import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
-  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
   export let data: PageData;
 
   $: ({ PageEventDetail, RootLayout } = data);

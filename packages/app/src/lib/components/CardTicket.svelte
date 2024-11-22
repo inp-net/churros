@@ -8,7 +8,7 @@
     type CardTicketDetails,
     type CardTicketPlaces,
   } from '$houdini';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';

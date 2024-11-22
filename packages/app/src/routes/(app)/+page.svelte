@@ -2,7 +2,7 @@
   import { PendingValue } from '$houdini';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
+  import CardArticle from '$lib/components/CardArticle.svelte';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';

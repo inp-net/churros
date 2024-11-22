@@ -10,7 +10,7 @@
   import IconPinned from '~icons/msl/push-pin-outline';
   import IconServiceFallback from '~icons/msl/widgets-outline';
   import Avatar from './Avatar.svelte';
-  import AvatarGroup from './AvatarGroup.houdini.svelte';
+  import AvatarGroup from './AvatarGroup.svelte';
 
   /** Causes the list of services to re-shuffle when we pin/unpin a service */
   export let reloadListOnPinChange = false;

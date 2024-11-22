@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import IconLinks from '$lib/components/IconLinkVariant.svelte';
   import InputLongText from '$lib/components/InputLongText.svelte';

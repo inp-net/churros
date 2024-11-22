@@ -1,6 +1,6 @@
 <script lang="ts">
   import { graphql, type EventManagerPowerLevel$options } from '$houdini';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';

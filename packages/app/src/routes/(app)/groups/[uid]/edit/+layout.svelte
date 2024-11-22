@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { colorName } from '$lib/colors';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
   import FormPicture from '$lib/components/FormPicture.svelte';
   import IconLinks from '$lib/components/IconLinkVariant.svelte';

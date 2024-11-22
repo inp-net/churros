@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AreaComments from '$lib/components/AreaComments.houdini.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AreaComments from '$lib/components/AreaComments.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';

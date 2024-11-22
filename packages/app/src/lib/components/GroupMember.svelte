@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fragment, graphql, PendingValue, type GroupMember } from '$houdini';
   import Avatar from '$lib/components/Avatar.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';

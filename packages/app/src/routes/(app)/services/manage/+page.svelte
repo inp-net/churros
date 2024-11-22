@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto, pushState } from '$app/navigation';
   import { graphql } from '$houdini';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';

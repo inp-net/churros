@@ -8,7 +8,7 @@
     type ProfileHeader_Me,
   } from '$houdini';
   import Avatar from '$lib/components/Avatar.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarMajor from '$lib/components/AvatarMajor.svelte';
   import AvatarSchool from '$lib/components/AvatarSchool.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';

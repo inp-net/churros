@@ -4,7 +4,7 @@
   import { graphql, PendingValue } from '$houdini';
   import { track } from '$lib/analytics';
   import Avatar from '$lib/components/Avatar.svelte';
-  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import AvatarGroup from '$lib/components/AvatarGroup.svelte';
   import AvatarStudentAssociation from '$lib/components/AvatarStudentAssociation.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
