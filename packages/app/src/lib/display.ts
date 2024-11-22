@@ -4,7 +4,6 @@ import {
   type EventFrequency$options,
   type EventManagerPowerLevel$options,
   type GroupType$options,
-  type IssueState$options,
   type NotificationChannel$options,
   type PaymentMethod$options,
   type TicketCountingPolicy$options,
@@ -247,12 +246,6 @@ export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡'
 //     outlined:
 //   }
 // }
-
-export const ISSUE_STATE_DISPLAY = new Map<IssueState$options, string>([
-  ['Closed', 'Terminé'],
-  ['Open', 'En cours'],
-  ['Deployed', 'En ligne'],
-]);
 
 export function orderedDisplay<T extends string | number | symbol>(
   order: T[],
