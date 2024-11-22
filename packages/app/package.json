@@ -102,13 +102,13 @@
     "typescript": "^5.6.2",
     "unplugin-icons": "^0.18.5",
     "vite": "5.4.8",
-    "vite-plugin-kit-routes": "^0.6.11",
+    "vite-plugin-kit-routes": "patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch",
     "wait-port": "^1.1.0",
     "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
   "scripts": {
-    "generate": "node src/scripts/generate-dotenv-service-worker.js && tsx src/scripts/generate-reserved-usernames-from-routes.ts && svelte-kit sync && yarn zeus && houdini generate",
+    "generate": "svelte-kit sync && yarn zeus && houdini generate",
     "build": "yarn generate && yarn verify --threshold warning && vite build",
     "verify": "svelte-check --tsconfig ./tsconfig.json",
     "check": "yarn generate && yarn verify",
