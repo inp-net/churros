@@ -68,7 +68,6 @@ query PageProfile($uid: UID!) @loading {
         nodes {
           ...AvatarGroup
           president {
-            ...MemberRoleEmoji
             member {
               fullName
             }
