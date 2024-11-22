@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql, PendingValue, type CardEvent } from '$houdini';
   import LoadingText from '$lib/components/LoadingText.svelte';
@@ -26,7 +27,6 @@
   import ButtonInk from './ButtonInk.svelte';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import CardTicket from './CardTicket.svelte';
-  import { goto } from '$app/navigation';
 
   /**
    * Whether this component should announce a shotgun instead of the event itself
@@ -188,11 +188,7 @@
   </section>
   <div class="description-preview">
     <LoadingText value={$data?.descriptionPreview ?? PendingValue} lines={2}></LoadingText>
-    <ButtonInk
-      insideProse
-      href={onceLoaded($data?.localID, (id) => (id ? route('/events/[id]', id) : ''), '')}
-      >Voir plus</ButtonInk
-    >
+    <ButtonInk insideProse href="">Voir plus</ButtonInk>
   </div>
   {#if showTickets && ticket && (ticketIsOpen || shotgun)}
     <section class="tickets">
