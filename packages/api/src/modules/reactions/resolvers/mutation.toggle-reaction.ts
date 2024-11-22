@@ -8,10 +8,9 @@ builder.mutationField('toggleReaction', (t) =>
       emoji: t.arg.string({ validate: { maxLength: 2 } }),
       documentId: t.arg.id({ required: false }),
       articleId: t.arg.id({ required: false }),
-      commentId: t.arg.id({ required: false }),
       eventId: t.arg.id({ required: false }),
     },
-    authScopes(_, { documentId, articleId, commentId, eventId }, { user }) {
+    authScopes(_, { documentId, articleId, eventId }, { user }) {
       if (!user) return false;
       return Boolean(
         user?.admin ||
@@ -19,17 +18,15 @@ builder.mutationField('toggleReaction', (t) =>
           articleId /* && true */ ||
           // TODO only allow for events the user can see
           eventId /* && true */ ||
-          // TODO only allow for comments on stuff the user can see
-          commentId /* && true */ ||
           (documentId && user?.canAccessDocuments),
       );
     },
-    async resolve(_query, { emoji, documentId, articleId, commentId, eventId }, { user }) {
+    async resolve(_query, { emoji, documentId, articleId, eventId }, { user }) {
       await log(
         'reactions',
         'toggle',
         { emoji },
-        commentId || documentId || articleId || eventId || '<nothing>',
+        documentId || articleId || eventId || '<nothing>',
         user,
       );
 
@@ -38,13 +35,11 @@ builder.mutationField('toggleReaction', (t) =>
           emoji,
           documentId,
           articleId,
-          commentId,
           eventId,
           authorId: user!.id,
         },
         include: {
           article: { include: { reactions: true } },
-          comment: { include: { reactions: true } },
           document: { include: { reactions: true } },
           event: { include: { reactions: true } },
         },
@@ -55,17 +50,15 @@ builder.mutationField('toggleReaction', (t) =>
             emoji,
             documentId,
             articleId,
-            commentId,
             eventId,
             authorId: user!.id,
           },
         });
         return {
-          id: articleId || commentId || documentId || eventId || '',
-          ...(reaction.article ?? reaction.comment ?? reaction.document ?? reaction.event),
+          id: articleId || documentId || eventId || '',
+          ...(reaction.article ?? reaction.document ?? reaction.event),
           reactions: (
             reaction.article?.reactions ??
-            reaction.comment?.reactions ??
             reaction.document?.reactions ??
             reaction.event?.reactions ??
             []
@@ -73,27 +66,24 @@ builder.mutationField('toggleReaction', (t) =>
         };
       }
 
-      const { article, comment, document, event } = await prisma.reaction.create({
+      const { article, document, event } = await prisma.reaction.create({
         data: {
           emoji,
           document: documentId ? { connect: { id: documentId } } : undefined,
           article: articleId ? { connect: { id: articleId } } : undefined,
-          comment: commentId ? { connect: { id: commentId } } : undefined,
           event: eventId ? { connect: { id: eventId } } : undefined,
           author: { connect: { id: user!.id } },
         },
         include: {
           article: { include: { reactions: true } },
-          comment: { include: { reactions: true } },
           document: { include: { reactions: true } },
           event: { include: { reactions: true } },
         },
       });
       return {
-        id: articleId || commentId || documentId || eventId || '',
-        reactions:
-          article?.reactions ?? comment?.reactions ?? document?.reactions ?? event?.reactions ?? [],
-        ...(article ?? comment ?? document ?? event),
+        id: articleId || documentId || eventId || '',
+        reactions: article?.reactions ?? document?.reactions ?? event?.reactions ?? [],
+        ...(article ?? document ?? event),
       };
     },
   }),

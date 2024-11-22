@@ -10,8 +10,6 @@
     "./src/modules/changelogs/resolvers",
     "./src/modules/changelogs/types",
     "./src/modules/changelogs/utils",
-    "./src/modules/comments/resolvers",
-    "./src/modules/comments/types",
     "./src/modules/curriculum/resolvers",
     "./src/modules/curriculum/types",
     "./src/modules/curriculum/utils",

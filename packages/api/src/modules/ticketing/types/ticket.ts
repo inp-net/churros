@@ -4,8 +4,8 @@ import { CapacityScalar } from '#modules/events';
 import { DateTimeScalar, LocalID } from '#modules/global';
 import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
-import { canBookTicket, canSeeTicketCapacity, shotgunIsOpen } from '#modules/ticketing/utils';
 import type { Prisma } from '@churros/db/prisma';
+import { canBookTicket, canSeeTicketCapacity, shotgunIsOpen } from '../utils/index.js';
 import { TicketCountingPolicyEnum } from './ticket-counting-policy.js';
 
 export const TicketTypePrismaIncludes = {
@@ -107,9 +107,7 @@ export const TicketType = builder.prismaNode('Ticket', {
           include: canSeeTicketCapacity.prismaIncludes,
         });
 
-        if (canSeeTicketCapacity(event, user)) 
-          return ticket.capacity ?? 'Unlimited';
-        
+        if (canSeeTicketCapacity(event, user)) return ticket.capacity ?? 'Unlimited';
 
         return canSeeTicketCapacity(event, user) ? ticket.capacity : null;
       },
