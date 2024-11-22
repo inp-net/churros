@@ -14,6 +14,7 @@ query PageProfile($uid: UID!) @loading {
 
       # tab: infos
       postalAddress: address
+      nickname
       phone
       birthday
       email
