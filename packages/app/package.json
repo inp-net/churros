@@ -63,7 +63,6 @@
     "@types/pdfmake": "^0.2.9",
     "@types/semver": "^7.5.8",
     "@types/ua-parser-js": "^0.7.39",
-    "depcheck": "file:///home/uwun/playground/depcheck/",
     "dotenv": "^16.4.5",
     "git-root-path": "^1.0.0",
     "graphql-zeus": "^5.3.3",
