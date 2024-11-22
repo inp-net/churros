@@ -6,7 +6,6 @@
     "prisma.prisma",
     "stylelint.vscode-stylelint",
     "svelte.svelte-vscode",
-    // "mjmlio.vscode-mjml"
     "rbremont.vscode-handlebars-mjml",
     "antfu.iconify"
   ]
