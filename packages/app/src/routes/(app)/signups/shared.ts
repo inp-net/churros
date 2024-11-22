@@ -1,16 +1,11 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
-import { LayoutManageSignupsStore } from '$houdini';
+import { LayoutManageSignupsStore, graphql } from '$houdini';
 import { type MaybeLoading, loaded } from '$lib/loading';
 import { route } from '$lib/ROUTES';
 import { toasts } from '$lib/toasts';
-import { graphql } from 'graphql';
 import debounce from 'lodash.debounce';
 import { get, writable } from 'svelte/store';
-
-
-
-
 
 /** Store of signup emails we are currently deciding upon */
 export const decidingOn = writable<
@@ -39,9 +34,7 @@ function _setDecisionTaken() {
   decided.update((list) => [...list, ...willDecideOn.map((e) => e.email)]);
   willDecideOn = [];
   // Don't stay on a page that will have no more info
-  if (get(page).route.id === '/(app)/signups/edit/[email]') 
-    goto(route('/signups'));
-  
+  if (get(page).route.id === '/(app)/signups/edit/[email]') goto(route('/signups'));
 }
 const setDecisionTaken = debounce(_setDecisionTaken, 1000);
 
@@ -108,5 +101,5 @@ export async function decide(
   setDecisionTaken();
 }
 
-export {default as IconRefuse} from '~icons/msl/back-hand-outline';
-export {default as IconAccept} from '~icons/msl/thumb-up-outline';
+export { default as IconRefuse } from '~icons/msl/back-hand-outline';
+export { default as IconAccept } from '~icons/msl/thumb-up-outline';
