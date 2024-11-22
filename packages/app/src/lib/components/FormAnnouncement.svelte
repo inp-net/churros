@@ -25,14 +25,17 @@
     `),
   );
 
-  $: ({ title, body, startsAt, endsAt, warning } = $data ?? {
+  let { title, body, startsAt, endsAt, warning, id } = {
     title: '',
     body: '',
     startsAt: new Date(),
     endsAt: addDays(new Date(), 1),
     warning: false,
     id: null,
-  });
+  };
+
+  let dirty = false;
+  $: if (!dirty && $data) ({ title, body, startsAt, endsAt, warning } = $data);
 
   let loading = false;
 
@@ -83,13 +86,47 @@
 </script>
 
 <form on:submit|preventDefault={saveChanges}>
-  <InputText label="Titre" maxlength={255} bind:value={title} />
-  <InputLongText rich label="Message" bind:value={body} />
+  <InputText
+    on:input={() => {
+      dirty = true;
+    }}
+    label="Titre"
+    maxlength={255}
+    bind:value={title}
+  />
+  <InputLongText
+    on:input={() => {
+      dirty = true;
+    }}
+    rich
+    label="Message"
+    bind:value={body}
+  />
   <div class="side-by-side">
-    <InputDate time label="Début" bind:value={startsAt} />
-    <InputDate time label="Fin" bind:value={endsAt} />
+    <InputDate
+      on:input={() => {
+        dirty = true;
+      }}
+      time
+      label="Début"
+      bind:value={startsAt}
+    />
+    <InputDate
+      on:input={() => {
+        dirty = true;
+      }}
+      time
+      label="Fin"
+      bind:value={endsAt}
+    />
   </div>
-  <InputCheckbox bind:value={warning} label="Avertissement" />
+  <InputCheckbox
+    on:change={() => {
+      dirty = true;
+    }}
+    bind:value={warning}
+    label="Avertissement"
+  />
 
   <section class="submit">
     <ButtonPrimary {loading} submits disabled={dateIsInvalid}>Sauvegarder</ButtonPrimary>

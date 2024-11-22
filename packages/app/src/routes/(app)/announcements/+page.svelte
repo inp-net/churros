@@ -1,96 +1,81 @@
 <script lang="ts">
-  import AvatarPerson from '$lib/components/AvatarPerson.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import { formatDateTime } from '$lib/dates';
-  import { zeus } from '$lib/zeus';
-  import { compareDesc, isFuture } from 'date-fns';
-  import type { PageData } from './$types';
-  import IconAdd from '~icons/mdi/add';
+  import type { PageData } from './$houdini';
+  import { page } from '$app/stores';
+  import IconAdd from '~icons/msl/add';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import { route } from '$lib/ROUTES';
+  import { refroute } from '$lib/navigation';
+  import { mutate } from '$lib/mutations';
+  import {
+    onceLoaded,
+    mapLoading,
+    LoadingText,
+    loading,
+    mapAllLoading,
+    allLoaded,
+    onceAllLoaded,
+  } from '$lib/loading';
+  import Submenu from '$lib/components/Submenu.svelte';
+  import { infinitescroll } from '$lib/scroll';
+  import SubmenuItem from '$lib/components/SubmenuItem.svelte';
+  import IconWarning from '~icons/msl/warning-outline';
+  import IconInfo from '~icons/msl/info-outline';
+  import { formatDateRelativeSmart } from '$lib/dates';
+  import { isFuture, isWithinInterval } from 'date-fns';
 
   export let data: PageData;
-  let showPastAnnouncements = false;
+  $: ({ PageAnnouncementsList } = data);
+  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
-<h1>
-  Annonces
-  <div class="toggle-past">
-    <InputCheckbox label="Passées" bind:value={showPastAnnouncements} />
+<MaybeError result={$PageAnnouncementsList} let:data={{ announcements }}>
+  <div class="contents" use:infinitescroll={async () => PageAnnouncementsList.loadNextPage()}>
+    <Submenu>
+      <SubmenuItem href={route('/announcements/create')} icon={IconAdd}>
+        Nouvelle annonce
+      </SubmenuItem>
+      {#each announcements.edges as { node }}
+        <SubmenuItem
+          icon={null}
+          href={route('/announcements/[id]/edit', loading(node.localID, ''))}
+        >
+          <div slot="subtext">
+            {#if onceAllLoaded([node.startsAt, node.endsAt], (start, end) => isWithinInterval( new Date(), { start, end }, ), false)}
+              <LoadingText class="primary" tag="strong" value="Active"></LoadingText>
+              <span class="sep"> · </span>
+            {/if}
+            <LoadingText
+              value={mapAllLoading([node.startsAt, node.endsAt], (start, end) =>
+                isFuture(start)
+                  ? `Commence ${formatDateRelativeSmart(start)}`
+                  : isFuture(end)
+                    ? `Se termine ${formatDateRelativeSmart(end)}`
+                    : `Terminée ${formatDateRelativeSmart(end)}`,
+              )}
+            ></LoadingText>
+          </div>
+          <div class="icon" slot="icon" class:warning={node.warning}>
+            {#if node.warning}
+              <IconWarning />
+            {:else}
+              <IconInfo />
+            {/if}
+          </div>
+          <LoadingText value={node.title} />
+        </SubmenuItem>
+      {/each}
+    </Submenu>
   </div>
-  <ButtonSecondary href="/announcements/create" icon={IconAdd}>Créer</ButtonSecondary>
-</h1>
-
-<ul class="nobullet">
-  {#each data.announcements.edges
-    .map((e) => e.node)
-    .filter((a) => showPastAnnouncements || isFuture(a.endsAt))
-    .sort( (a, b) => compareDesc(a.startsAt, b.startsAt), ) as { id, title, bodyHtml, by, startsAt, endsAt }}
-    <li>
-      <h2>{title}</h2>
-      <div class="body" data-user-html>
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html bodyHtml}
-      </div>
-      <div class="date-range">
-        {formatDateTime(startsAt)}—{formatDateTime(endsAt)}
-      </div>
-      {#if by}
-        <div class="by">
-          <AvatarPerson href="/users/{by.uid}" {...by} />
-        </div>
-      {/if}
-      <div class="actions">
-        <ButtonSecondary href="/announcements/{id.replace(/^ann:/, '')}/edit"
-          >Modifier</ButtonSecondary
-        >
-        <ButtonSecondary
-          danger
-          on:click={async () => {
-            await $zeus.mutate({
-              deleteAnnouncement: [{ id }, true],
-            });
-          }}>Supprimer</ButtonSecondary
-        >
-      </div>
-    </li>
-  {/each}
-</ul>
+</MaybeError>
 
 <style>
-  h1 {
+  .contents {
+    padding: 0 1rem;
+  }
+
+  .icon {
     display: flex;
-    gap: 1rem;
+    justify-content: center;
     align-items: center;
-    max-width: 600px;
-    margin: 0 auto 2rem;
-  }
-
-  .toggle-past {
-    margin-right: auto;
-    font-size: 1rem;
-    font-weight: normal;
-  }
-
-  ul {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  li {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--muted-bg);
-    border-radius: var(--radius-block);
-  }
-
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
   }
 </style>
