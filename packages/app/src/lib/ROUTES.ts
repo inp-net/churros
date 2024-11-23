@@ -218,7 +218,11 @@ const PAGES = {
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
   },
-  '/logout': `/logout`,
+  '/logout': (params?: { userWasDeleted?: true | undefined }) => {
+    params = params ?? {};
+    params.userWasDeleted = params.userWasDeleted ?? undefined;
+    return `/logout${appendSp({ userWasDeleted: params.userWasDeleted })}`;
+  },
   '/logs': `/logs`,
   '/notifications': `/notifications`,
   '/posts/[id]': (id: string | number, params?: {}) => {
@@ -662,6 +666,7 @@ export type KIT_ROUTES = {
     ticket: never;
     bypass_oauth: never;
     token: never;
+    userWasDeleted: never;
     number: never;
     q: never;
     email: never;

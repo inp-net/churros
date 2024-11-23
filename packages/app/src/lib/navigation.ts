@@ -705,6 +705,11 @@ export const topnavConfigs: Partial<{
     back: route('/quick-signups/manage'),
     actions: [],
   },
+  '/(app)/delete-account': {
+    title: 'Supprimer son compte',
+    back: route('/settings'),
+    actions: [],
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
