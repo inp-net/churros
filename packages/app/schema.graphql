@@ -620,7 +620,7 @@ type AwaitingValidationError {
   message: String!
 }
 
-enum BookingState @graphinx(module: "ticketing") {
+enum BookingState {
   """
   Payée
   """
@@ -1136,7 +1136,13 @@ type Event implements Node & Pictured & Reactable & Shareable {
   """
   reactions(emoji: String!): Int!
   recurringUntil: DateTime
-  searchBookings(q: String!): [RegistrationSearchResult!]!
+  searchBookings(
+    """
+    Ne montre que les réservations d'un certain statut
+    """
+    only: BookingState
+    q: String!
+  ): [RegistrationSearchResult!]!
   shares: Int!
   """
   Vrai si les capacités des billets doivent être affichées

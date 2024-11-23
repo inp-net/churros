@@ -77,7 +77,7 @@
   $: newBookingsCount =
     $updates.data?.event.bookings.nodes.filter(
       (fresh) =>
-        !$PageEventAllBookings.data?.event.bookings.edges.some(
+        !$PageEventAllBookings.data?.event.bookings?.edges.some(
           ({ node: existing }) => existing.id === fresh.id,
         ),
     ).length ?? 0;
@@ -95,31 +95,22 @@
     );
   }
 
-  $: showingSearchResults = $q && $SearchBookings.data?.event;
+  $: showingSearchResults = Boolean($PageEventAllBookings.data?.event.searchBookings);
 
+  /** Array of booking objects */
   $: bookings =
-    $q && $SearchBookings.data?.event
-      ? $SearchBookings.data.event.searchBookings.map((r) => ({
-          ...r.registration,
-          byCode: r.byCode as MaybeLoading<boolean>,
-        }))
-      : ($PageEventAllBookings.data?.event.bookings.edges.map((e) => ({
-          ...e.node,
-          byCode: false as MaybeLoading<boolean>,
-        })) ?? []);
-
-  const SearchBookings = graphql(`
-    query PageEventBookings_Search($event: LocalID!, $q: String!) {
-      event(id: $event) {
-        searchBookings(q: $q) {
-          byCode
-          registration {
-            ...PageEventBookings_ItemBooking
-          }
-        }
-      }
-    }
-  `);
+    // ...if we're showing search results
+    $PageEventAllBookings.data?.event.searchBookings?.map((r) => ({
+      ...r.registration,
+      byCode: r.byCode as MaybeLoading<boolean>,
+    })) ??
+    // if we're not
+    $PageEventAllBookings.data?.event.bookings?.edges.map((e) => ({
+      ...e.node,
+      byCode: false,
+    })) ??
+    // if data hasn't been loaded yet
+    [];
 </script>
 
 <ModalOrDrawer bind:open={openBookingDetailModal}>
@@ -204,21 +195,6 @@
 <MaybeError result={$PageEventAllBookings} let:data={{ event }}>
   <div class="contents">
     <header>
-      <InputSearchQuery
-        placeholder="Rechercher par nom, code, email..."
-        q={initialQ}
-        on:debouncedInput={async ({ detail }) => {
-          $q = detail;
-          if (!detail) return;
-          await SearchBookings.fetch({
-            variables: {
-              event: $page.params.id,
-              q: detail,
-            },
-          });
-        }}
-      ></InputSearchQuery>
-
       <NavigationTabs
         tabs={FILTERS.map((name) => ({
           name,
@@ -255,6 +231,14 @@
         </div>
       </NavigationTabs>
 
+      <InputSearchQuery
+        placeholder="Rechercher par nom, code, email..."
+        q={initialQ}
+        on:debouncedInput={async ({ detail }) => {
+          $q = detail;
+        }}
+      ></InputSearchQuery>
+
       {#if newBookingsCount}
         <Alert theme="primary">
           {newBookingsCount} nouvelles réservations <ButtonSecondary
@@ -285,7 +269,7 @@
           <li class="empty muted">Aucune résevation pour le moment</li>
         {/if}
       {/each}
-      {#if loading(event.bookings.pageInfo.hasNextPage, false)}
+      {#if loading(event.bookings?.pageInfo.hasNextPage, false)}
         <ItemBooking showTicketNames={event.tickets.length > 1} booking={null} />
       {/if}
     </ul>
@@ -298,6 +282,16 @@
 <style>
   .contents {
     padding: 0 1rem;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  header :global(> *) {
+    width: 100%;
   }
 
   .bookings {

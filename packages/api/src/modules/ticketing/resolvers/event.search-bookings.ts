@@ -1,20 +1,33 @@
 import { builder, ensureGlobalId, fullTextSearch, prisma } from '#lib';
 import { EventType } from '#modules/events';
-import { canSeeAllBookings, RegistrationSearchResultType } from '../index.js';
+import {
+  BookingStateEnum,
+  bookingStatePrismaWhereClause,
+  canSeeAllBookings,
+  RegistrationSearchResultType,
+} from '../index.js';
 
 builder.prismaObjectField(EventType, 'searchBookings', (t) =>
   t.field({
     type: [RegistrationSearchResultType],
     args: {
       q: t.arg.string(),
+      only: t.arg({
+        type: BookingStateEnum,
+        required: false,
+        description: "Ne montre que les réservations d'un certain statut",
+      }),
     },
     async authScopes(event, _, { user }) {
       return canSeeAllBookings(event, user);
     },
-    async resolve({ id }, { q }) {
+    async resolve({ id }, { q, only }) {
       // Try to find by code
       const byCode = await prisma.registration.findUnique({
-        where: { id: ensureGlobalId(q.toLowerCase(), 'Registration') },
+        where: {
+          id: ensureGlobalId(q.toLowerCase(), 'Registration'),
+          ...bookingStatePrismaWhereClause(only),
+        },
       });
 
       if (byCode) {
