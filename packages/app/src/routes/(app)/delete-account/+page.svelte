@@ -78,7 +78,7 @@
                 () =>
                   goto(
                     route('/logout', {
-                      userWasDeleted: true,
+                      userWasDeleted: '1',
                     }),
                   ),
                 2000,

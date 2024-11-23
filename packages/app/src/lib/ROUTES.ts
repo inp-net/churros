@@ -218,7 +218,7 @@ const PAGES = {
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
   },
-  '/logout': (params?: { userWasDeleted?: true | undefined }) => {
+  '/logout': (params?: { userWasDeleted?: '1' | undefined }) => {
     params = params ?? {};
     params.userWasDeleted = params.userWasDeleted ?? undefined;
     return `/logout${appendSp({ userWasDeleted: params.userWasDeleted })}`;
