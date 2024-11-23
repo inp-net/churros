@@ -71,6 +71,7 @@
           subtext={mapLoading(userCandidatesCount, (count) =>
             count ? countThing('inscription', count) : 'Aucune inscription en attente ^^',
           )}
+          badge={mapLoading(userCandidatesCount, (count) => count > 0)}
         >
           Inscriptions en attente
         </SubmenuItem>
