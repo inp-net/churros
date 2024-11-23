@@ -35,6 +35,11 @@
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     actions: OverflowMenuAction<any>[];
   };
+
+  export function updateTitle(title: string) {
+    if (!browser) return;
+    window.dispatchEvent(new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: title }));
+  }
 </script>
 
 <script lang="ts">
