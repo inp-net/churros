@@ -2,7 +2,6 @@
   import Badge from '$lib/components/Badge.svelte';
   import ButtonBack from '$lib/components/ButtonBack.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import CardComment from '$lib/components/CardComment.svelte';
   import { ISSUE_STATE_DISPLAY } from '$lib/display';
   import { IssueState } from '$lib/zeus';
   import IconOpenExternal from '~icons/mdi/open-in-new';
@@ -10,7 +9,7 @@
 
   export let data: PageData;
 
-  const { title, bodyHtml, importance, url, difficulty, number, state, comments } = data.issue;
+  const { title, bodyHtml, importance, url, difficulty, number, state } = data.issue;
 </script>
 
 <div class="content">
@@ -43,27 +42,6 @@
   <section class="body" data-user-html>
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html bodyHtml}
-  </section>
-
-  <section class="comments">
-    <h2>Commentaires</h2>
-    <ul>
-      {#each comments as comment}
-        <CardComment
-          readonly
-          id=""
-          bodyHtml={comment.bodyHtml}
-          body={comment.body}
-          author={{
-            uid: '',
-            externalHref: comment.authorGitlabUrl,
-            fullName: comment.authorName,
-            pictureFile: comment.authorAvatarUrl,
-          }}
-          createdAt={new Date(comment.addedAt)}
-        ></CardComment>
-      {/each}
-    </ul>
   </section>
 
   <section class="actions">
@@ -101,16 +79,6 @@
   .body > :global(hr:last-of-type + *),
   .body > :global(hr:last-of-type) {
     display: none;
-  }
-
-  .comments h2 {
-    margin-bottom: 1rem;
-  }
-
-  .comments ul {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
   }
 
   .actions {
