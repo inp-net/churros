@@ -41,7 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ampproject/remapping@npm:^2.2.0, @ampproject/remapping@npm:^2.2.1":
+"@ampproject/remapping@npm:^2.2.0, @ampproject/remapping@npm:^2.2.1, @ampproject/remapping@npm:^2.3.0":
   version: 2.3.0
   resolution: "@ampproject/remapping@npm:2.3.0"
   dependencies:
@@ -1071,7 +1071,7 @@ __metadata:
     unplugin-icons: "npm:^0.18.5"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.8"
-    vite-plugin-kit-routes: "patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch"
+    vite-plugin-kit-routes: "npm:^0.7.0"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.10"
     ws: "npm:^8.18.0"
@@ -3021,15 +3021,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kitql/internals@npm:0.9.10":
-  version: 0.9.10
-  resolution: "@kitql/internals@npm:0.9.10"
+"@kitql/internals@npm:0.10.0":
+  version: 0.10.0
+  resolution: "@kitql/internals@npm:0.10.0"
   dependencies:
     "@babel/parser": "npm:^7.23.0"
     "@kitql/helpers": "npm:0.8.10"
     recast: "npm:^0.23.4"
-    svelte: "npm:4.2.19"
-  checksum: 10c0/d96288d44f84f9b7ec9a46c82c54b628406a79dd96fe8f410dfed5d65794a39bd1c56950d6f633b8366bf1e9f3d1ec77fbb37cec9292cd6aa7dc5801e565a010
+    svelte: "npm:^5.0.0"
+  checksum: 10c0/e5540b09ff98370efe3f06a7025dcc23f607c09a609f0dc2a454965e221452800f57bd87743fad50ea7c42fcdd1452a5f470f129eb27c2e9edbda35909174a2a
   languageName: node
   linkType: hard
 
@@ -5695,7 +5695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree@npm:1.0.6":
+"@types/estree@npm:1.0.6, @types/estree@npm:^1.0.5, @types/estree@npm:^1.0.6":
   version: 1.0.6
   resolution: "@types/estree@npm:1.0.6"
   checksum: 10c0/cdfd751f6f9065442cd40957c07fd80361c962869aa853c1c2fd03e101af8b9389d8ff4955a43a6fcfa223dd387a089937f95be0f3eec21ca527039fd2d9859a
@@ -6811,6 +6811,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"acorn-typescript@npm:^1.4.13":
+  version: 1.4.13
+  resolution: "acorn-typescript@npm:1.4.13"
+  peerDependencies:
+    acorn: ">=8.9.0"
+  checksum: 10c0/f2f17cf03379d63beeb007f0feea02cebbd9af261f6b5619ea7345b177bd7a5f99752927cbf652baa3fc97962ae4561592093ab0a1c3e00ca4f354ba23c557ae
+  languageName: node
+  linkType: hard
+
 "acorn-walk@npm:^8.1.1":
   version: 8.3.3
   resolution: "acorn-walk@npm:8.3.3"
@@ -7170,6 +7179,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"aria-query@npm:^5.3.1":
+  version: 5.3.2
+  resolution: "aria-query@npm:5.3.2"
+  checksum: 10c0/003c7e3e2cff5540bf7a7893775fc614de82b0c5dde8ae823d47b7a28a9d4da1f7ed85f340bdb93d5649caa927755f0e31ecc7ab63edfdfc00c8ef07e505e03e
+  languageName: node
+  linkType: hard
+
 "array-flatten@npm:1.1.1":
   version: 1.1.1
   resolution: "array-flatten@npm:1.1.1"
@@ -7319,7 +7335,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axobject-query@npm:^4.0.0":
+"axobject-query@npm:^4.0.0, axobject-query@npm:^4.1.0":
   version: 4.1.0
   resolution: "axobject-query@npm:4.1.0"
   checksum: 10c0/c470e4f95008f232eadd755b018cb55f16c03ccf39c027b941cd8820ac6b68707ce5d7368a46756db4256fbc91bb4ead368f84f7fb034b2b7932f082f6dc0775
@@ -10768,6 +10784,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esrap@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "esrap@npm:1.2.2"
+  dependencies:
+    "@jridgewell/sourcemap-codec": "npm:^1.4.15"
+    "@types/estree": "npm:^1.0.1"
+  checksum: 10c0/a3a0b665c034f604a162b910346309c64c42635c5d2e8704a27afcdf4e6d4c529e05475d1875d6b3e0d550f8470986116414097230ab3a7c565b85091ca5e177
+  languageName: node
+  linkType: hard
+
 "esrecurse@npm:^4.3.0":
   version: 4.3.0
   resolution: "esrecurse@npm:4.3.0"
@@ -12910,7 +12936,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"houdini@npm:^1.2.62, houdini@npm:^1.2.64":
+"houdini@npm:^1.2.62":
+  version: 1.3.1
+  resolution: "houdini@npm:1.3.1"
+  dependencies:
+    "@babel/parser": "npm:^7.23.9"
+    "@clack/prompts": "npm:^0.6.3"
+    "@graphql-tools/merge": "npm:^9.0.0"
+    "@graphql-tools/schema": "npm:^9.0.4"
+    "@kitql/helpers": "npm:^0.8.2"
+    "@types/estree": "npm:^1.0.0"
+    "@types/fs-extra": "npm:^9.0.13"
+    "@types/micromatch": "npm:^4.0.2"
+    "@ungap/structured-clone": "npm:^1.0.2"
+    "@whatwg-node/server": "npm:^0.9.14"
+    ast-types: "npm:^0.16.1"
+    commander: "npm:^9.4.0"
+    deepmerge: "npm:^4.2.2"
+    estree-walker: "npm:^3.0.1"
+    fs-extra: "npm:^10.1.0"
+    glob: "npm:^8.0.3"
+    graphql: "npm:^15.8.0"
+    graphql-yoga: "npm:^4.0.4"
+    memfs: "npm:^3.4.7"
+    micromatch: "npm:^4.0.5"
+    minimatch: "npm:^5.1.0"
+    node-fetch: "npm:^3.2.10"
+    npx-import: "npm:^1.1.3"
+    recast: "npm:^0.23.1"
+    vite-plugin-watch-and-run: "npm:^1.7.0"
+  bin:
+    houdini: build/cmd-esm/index.js
+  checksum: 10c0/a7bafb792fdca0484454c4ada58c82fabdb2b4ac7f16e3e2f6bae5d9670bd3cf7d5309b57c2b02ceab16759791a7f1031d7678fdd901074134af816da083c2f9
+  languageName: node
+  linkType: hard
+
+"houdini@npm:^1.2.64":
   version: 1.3.0
   resolution: "houdini@npm:1.3.0"
   dependencies:
@@ -13770,6 +13831,15 @@ __metadata:
   dependencies:
     "@types/estree": "npm:*"
   checksum: 10c0/652d31b405e8e8269071cee78fe874b072745012eba202c6dc86880fd603a65ae043e3160990ab4a0a4b33567cbf662eecf3bc6b3c2c1550e6c2b6cf885ce5aa
+  languageName: node
+  linkType: hard
+
+"is-reference@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "is-reference@npm:3.0.3"
+  dependencies:
+    "@types/estree": "npm:^1.0.6"
+  checksum: 10c0/35edd284cfb4cd9e9f08973f20e276ec517eaca31f5f049598e97dbb2d05544973dde212dac30fddee5b420930bff365e2e67dcd1293d0866c6720377382e3e5
   languageName: node
   linkType: hard
 
@@ -15131,6 +15201,15 @@ __metadata:
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.5.0"
   checksum: 10c0/b9eb370773d0bd90ca11a848753409d8e5309b1ad56d2a1aa49d6649da710a6d2fe7237ad1a643c5a5d3800de2b9946ed9690acdfc00e6cc1aeafff3ab1752c4
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:^0.30.11":
+  version: 0.30.13
+  resolution: "magic-string@npm:0.30.13"
+  dependencies:
+    "@jridgewell/sourcemap-codec": "npm:^1.5.0"
+  checksum: 10c0/a275faeca1564c545019b4742c38a42ca80226c8c9e0805c32d1a1cc58b0e6ff7bbd914ed885fd10043858a7da0f732cb8f49c8975c3ecebde9cad4b57db5115
   languageName: node
   linkType: hard
 
@@ -21502,7 +21581,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:4.2.19, svelte@npm:^4.2.19":
+"svelte@npm:^3.57.0":
+  version: 3.59.2
+  resolution: "svelte@npm:3.59.2"
+  checksum: 10c0/3482d020b291c6784e372315d63e3ab5530b8389adbd739a369d69ec995929276ebbc1cbdf8e5382c9dd887a55ec655702769de85836270e1a4a0ab3e0247b34
+  languageName: node
+  linkType: hard
+
+"svelte@npm:^4.2.19":
   version: 4.2.19
   resolution: "svelte@npm:4.2.19"
   dependencies:
@@ -21524,10 +21610,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^3.57.0":
-  version: 3.59.2
-  resolution: "svelte@npm:3.59.2"
-  checksum: 10c0/3482d020b291c6784e372315d63e3ab5530b8389adbd739a369d69ec995929276ebbc1cbdf8e5382c9dd887a55ec655702769de85836270e1a4a0ab3e0247b34
+"svelte@npm:^5.0.0":
+  version: 5.2.7
+  resolution: "svelte@npm:5.2.7"
+  dependencies:
+    "@ampproject/remapping": "npm:^2.3.0"
+    "@jridgewell/sourcemap-codec": "npm:^1.5.0"
+    "@types/estree": "npm:^1.0.5"
+    acorn: "npm:^8.12.1"
+    acorn-typescript: "npm:^1.4.13"
+    aria-query: "npm:^5.3.1"
+    axobject-query: "npm:^4.1.0"
+    esm-env: "npm:^1.0.0"
+    esrap: "npm:^1.2.2"
+    is-reference: "npm:^3.0.3"
+    locate-character: "npm:^3.0.0"
+    magic-string: "npm:^0.30.11"
+    zimmerframe: "npm:^1.1.2"
+  checksum: 10c0/6913d4e379ee1073ff3e93dfb6b75d35e2279f32087767c47d886f2194bb3111f88d8379c595ba473b95a109bc765c1dd0b32ab25dcd1aadb5d846f3a7f4b236
   languageName: node
   linkType: hard
 
@@ -22756,29 +22856,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:0.6.11":
-  version: 0.6.11
-  resolution: "vite-plugin-kit-routes@npm:0.6.11"
+"vite-plugin-kit-routes@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "vite-plugin-kit-routes@npm:0.7.0"
   dependencies:
-    "@babel/parser": "npm:^7.23.0"
     "@kitql/helpers": "npm:0.8.10"
-    "@kitql/internals": "npm:0.9.10"
-    recast: "npm:^0.23.4"
+    "@kitql/internals": "npm:0.10.0"
     vite-plugin-watch-and-run: "npm:1.7.1"
-  checksum: 10c0/bded2c0206152afb39b2c89b42b2ee10bdc13ace31f3c463a389b9d476f9bdbbf29032a64bcb8144e896af85965705f8389a8f96e1fc60297280c18a653cb73d
-  languageName: node
-  linkType: hard
-
-"vite-plugin-kit-routes@patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch":
-  version: 0.6.11
-  resolution: "vite-plugin-kit-routes@patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch::version=0.6.11&hash=6d1f6f"
-  dependencies:
-    "@babel/parser": "npm:^7.23.0"
-    "@kitql/helpers": "npm:0.8.10"
-    "@kitql/internals": "npm:0.9.10"
-    recast: "npm:^0.23.4"
-    vite-plugin-watch-and-run: "npm:1.7.1"
-  checksum: 10c0/8a58345790f0fd603570f5f87a0c40737dc9a0ebc912fec557e69fff1e469f00b5876291a42f92498a0e4d6a794ec4653ee4a9c01142cb0402a32f1ffc366347
+  peerDependencies:
+    "@sveltejs/kit": ^2.4.0
+  checksum: 10c0/bc82d70cd4e7526b57facec8329e8ac7132eb76f71e6eda0dcb62b71a8c5f96a75c378ecdcd4aaa8e9f0e9a0e3f96786ebb3f965ef6069a9482a4f6b73c20846
   languageName: node
   linkType: hard
 
@@ -23466,6 +23553,13 @@ __metadata:
     toposort: "npm:^2.0.2"
     type-fest: "npm:^2.19.0"
   checksum: 10c0/fe142141365eed0f78fb2e18bdd2f10bf101385dae12a5f9de14884448067bdca16a54b547fc0bffec04a098dd70b4519ff366422f3da006fd11a0717a7863ac
+  languageName: node
+  linkType: hard
+
+"zimmerframe@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "zimmerframe@npm:1.1.2"
+  checksum: 10c0/8f693609c31cbb4449db223acd61661bc93b73e615f9db6fb8c86d4ceea84ca54cbbeebcf53cf74c22a1f923b92abd18e97988a5e175c76b6ab17238e5593a9d
   languageName: node
   linkType: hard
 
