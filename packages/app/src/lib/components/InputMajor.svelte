@@ -22,6 +22,10 @@
   /** Text on the clear button */
   export let clearLabel: MaybeLoading<string> = 'Effacer';
 
+  const clear = () => {
+    major = null as MajorUid;
+  };
+
   export let initialSchool: InputMajorInitialSchool | null = null;
   $: dataInitialSchool = fragment(
     initialSchool,
@@ -103,7 +107,7 @@
             <ButtonSecondary
               on:click={() => {
                 dispatch('open');
-                major = '';
+                clear();
               }}
             >
               <LoadingText value={clearLabel} />
