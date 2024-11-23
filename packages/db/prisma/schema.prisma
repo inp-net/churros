@@ -44,6 +44,7 @@ model User {
   birthday                     DateTime?
   description                  String                @default("") @db.Text
   nickname                     String                @default("") @db.VarChar(255)
+  pronouns                     String                @default("") @db.VarChar(255)
   phone                        String                @default("") @db.VarChar(255)
   pictureFile                  String                @default("") @db.VarChar(255)
   links                        Link[]
@@ -558,6 +559,7 @@ model Event {
   recurringUntil   DateTime?
   pictureFile      String         @default("") @db.VarChar(255)
   showPlacesLeft   Boolean        @default(true)
+  showCapacity     Boolean        @default(true)
   managers         EventManager[]
   author           User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   includeInKiosk   Boolean        @default(false)
