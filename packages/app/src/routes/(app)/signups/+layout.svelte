@@ -54,7 +54,7 @@
   ) {
     dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', {
-        detail: `${countThing('inscription', $LayoutManageSignups.data.userCandidates.totalCount - $decided.length)} en attente`,
+        detail: `${countThing('inscription', $LayoutManageSignups.data.userCandidates.totalCount)} en attente`,
       }),
     );
   }
