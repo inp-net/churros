@@ -19,6 +19,7 @@ import IconXML from '~icons/msl/code';
 import IconTrashFilled from '~icons/msl/delete';
 import IconTrash from '~icons/msl/delete-outline';
 import IconDownload from '~icons/msl/download';
+import IconBackrooms from '~icons/msl/dual-screen-outline';
 import IconPen from '~icons/msl/edit-outline';
 import IconEvent from '~icons/msl/event-outline';
 import IconGift from '~icons/msl/featured-seasonal-and-gifts-rounded';
@@ -33,7 +34,6 @@ import {
 import IconPostAdd from '~icons/msl/post-add';
 import IconScanQR from '~icons/msl/qr-code-scanner';
 import IconCog from '~icons/msl/settings-outline';
-import IconShield from '~icons/msl/shield-outline';
 import IconPost from '~icons/msl/text-ad-outline';
 import IconBookingsList from '~icons/msl/view-list-outline';
 import IconWallet from '~icons/msl/wallet';
@@ -262,7 +262,7 @@ const rootPagesActions = [
   async () => {
     const me = browser ? await navtopPermissions() : null;
     return {
-      icon: IconShield,
+      icon: IconBackrooms,
       label: 'Zone admins',
       href: '/backrooms',
       hidden: !me?.admin && !me?.studentAssociationAdmin,
@@ -708,7 +708,7 @@ export const topnavConfigs: Partial<{
   '/(app)/backrooms': {
     title: 'Backrooms',
     back: route('/'),
-    actions: rootPagesActions,
+    actions: [],
   },
   '/(app)/quick-signups/manage': {
     title: 'Inscriptions rapides',
