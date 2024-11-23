@@ -1071,7 +1071,7 @@ __metadata:
     unplugin-icons: "npm:^0.18.5"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.8"
-    vite-plugin-kit-routes: "npm:^0.6.11"
+    vite-plugin-kit-routes: "patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.10"
     ws: "npm:^8.18.0"
@@ -22756,7 +22756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.6.11":
+"vite-plugin-kit-routes@npm:0.6.11":
   version: 0.6.11
   resolution: "vite-plugin-kit-routes@npm:0.6.11"
   dependencies:
@@ -22766,6 +22766,19 @@ __metadata:
     recast: "npm:^0.23.4"
     vite-plugin-watch-and-run: "npm:1.7.1"
   checksum: 10c0/bded2c0206152afb39b2c89b42b2ee10bdc13ace31f3c463a389b9d476f9bdbbf29032a64bcb8144e896af85965705f8389a8f96e1fc60297280c18a653cb73d
+  languageName: node
+  linkType: hard
+
+"vite-plugin-kit-routes@patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch":
+  version: 0.6.11
+  resolution: "vite-plugin-kit-routes@patch:vite-plugin-kit-routes@npm%3A0.6.11#~/.yarn/patches/vite-plugin-kit-routes-npm-0.6.11-4c63c495df.patch::version=0.6.11&hash=6d1f6f"
+  dependencies:
+    "@babel/parser": "npm:^7.23.0"
+    "@kitql/helpers": "npm:0.8.10"
+    "@kitql/internals": "npm:0.9.10"
+    recast: "npm:^0.23.4"
+    vite-plugin-watch-and-run: "npm:1.7.1"
+  checksum: 10c0/8a58345790f0fd603570f5f87a0c40737dc9a0ebc912fec557e69fff1e469f00b5876291a42f92498a0e4d6a794ec4653ee4a9c01142cb0402a32f1ffc366347
   languageName: node
   linkType: hard
 
