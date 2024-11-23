@@ -44,6 +44,7 @@ model User {
   birthday                     DateTime?
   description                  String                @default("") @db.Text
   nickname                     String                @default("") @db.VarChar(255)
+  pronouns                     String                @default("") @db.VarChar(255)
   phone                        String                @default("") @db.VarChar(255)
   pictureFile                  String                @default("") @db.VarChar(255)
   links                        Link[]

@@ -4,4 +4,4 @@
 '@churros/db': minor
 ---
 
-allow hiding capacity on tickets
+allow users to set their pronouns
