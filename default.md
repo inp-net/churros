@@ -15,7 +15,7 @@ Checks before adding `review:ready`:
   - [ ] I've updated the `packages/api/src/env.ts` file
   - [ ] I opened a MR to inp-net/k8s to update the production environment variables (can be done by a core team member if the new variable is a secret)
 - [ ] If relevant, I added database seeding data to by modifying `packages/db/seed/index.ts`
-- [ ] If I removed fields from a database table (prisma model) that has a `search Unsupported("tsvector")` field, I also updated the trigger function that computes this tsvector (see `fulltextsearch.sql`: copy-paste the `CREATE OR REPLACE FUNCTION update_TABLE_search()` statement, removing the deleted fields from its implementation
+- [ ] If I removed fields from a database table (prisma model) I also updated trigger functions that computes fulltext search  vectors (fields with the `Unsupported("tsvector")` type in the prisma schema): see `fulltextsearch.sql`, copy-paste the `CREATE OR REPLACE FUNCTION update_TABLE_search()` statement, removing the deleted fields from its implementation, for every `TABLE` that uses your now-deleted field in its search tsvector update trigger function
 - [ ] If relevant, I've updated the technical documentation:
   - [ ] [The wiki](https://git.inpt.fr/churros/wiki)
   - [ ] The various CONTRIBUTING.md files
