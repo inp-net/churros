@@ -9,16 +9,15 @@
   import { createEventDispatcher } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
 
-  type Clearable = $$Generic<boolean>;
-
   const dispatch = createEventDispatcher<{ open: undefined; pick: undefined }>();
 
+  type MajorUid = $$Generic<string | null>;
+
   /** Selected major uid */
-  export let major: Clearable extends true ? string | null : string;
+  export let major: MajorUid;
 
   /** Allow clearing selection */
-  // @ts-expect-error clearable's default value makes the generic type weird
-  export let clearable: Clearable = false;
+  export let clearable = false;
 
   /** Text on the clear button */
   export let clearLabel: MaybeLoading<string> = 'Effacer';
@@ -45,7 +44,7 @@
     loading($dataInitialSchool?.majors?.at(0)?.uid, null) &&
     $dataInitialSchool?.majors.length === 1
   )
-    major = $dataInitialSchool!.majors.at(0)!.uid;
+    major = $dataInitialSchool!.majors.at(0)!.uid as MajorUid;
 
   export let options: InputMajor | null;
   $: data = fragment(
