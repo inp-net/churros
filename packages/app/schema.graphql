@@ -2156,7 +2156,7 @@ type Minor implements Node {
 }
 
 type Mutation @rateLimit(limit: 1200, duration: 600) {
-  acceptRegistration(email: String!): MutationAcceptRegistrationResult!
+  acceptUserCandidate(email: String!): MutationAcceptUserCandidateResult!
   """
   Marks the user as having seen the given version's changelog.
   """
@@ -2551,7 +2551,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     target: ID!
   ): Reactable!
-  refuseRegistration(email: String!, reason: String!): MutationRefuseRegistrationResult!
+  refuseUserCandidate(email: String!, reason: String!): MutationRefuseUserCandidateResult!
   """
   Enregistrer un token OAuth2 Google pour l'utilisateur connecté.
   """
@@ -3215,9 +3215,9 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   ): MutationVerifyBookingResult!
 }
 
-union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess | ZodError
+union MutationAcceptUserCandidateResult = Error | MutationAcceptUserCandidateSuccess | ZodError
 
-type MutationAcceptRegistrationSuccess {
+type MutationAcceptUserCandidateSuccess {
   data: UserCandidate!
 }
 
@@ -3509,9 +3509,9 @@ type MutationPayBookingSuccess {
   data: Registration!
 }
 
-union MutationRefuseRegistrationResult = Error | MutationRefuseRegistrationSuccess | ZodError
+union MutationRefuseUserCandidateResult = Error | MutationRefuseUserCandidateSuccess | ZodError
 
-type MutationRefuseRegistrationSuccess {
+type MutationRefuseUserCandidateSuccess {
   data: UserCandidate!
 }
 

@@ -4,9 +4,8 @@ import { GraphQLError } from 'graphql';
 import { Prisma } from '@churros/db/prisma';
 import { saveUser, UserCandidateType } from '../index.js';
 import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
-// TODO rename to accept-user-candidate
 
-builder.mutationField('acceptRegistration', (t) =>
+builder.mutationField('acceptUserCandidate', (t) =>
   t.prismaField({
     authScopes: { admin: true, studentAssociationAdmin: true },
     errors: {},

@@ -3,8 +3,7 @@ import { UserCandidateType } from '#modules/users/types';
 import { GraphQLError } from 'graphql';
 import { prismaUserFilterForStudentAssociationAdmins } from '../utils/index.js';
 
-// TODO rename registration to reject-user-candidate
-builder.mutationField('refuseRegistration', (t) =>
+builder.mutationField('refuseUserCandidate', (t) =>
   t.prismaField({
     type: UserCandidateType,
     errors: {},

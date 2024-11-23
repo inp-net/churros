@@ -50,9 +50,9 @@ export async function decide(
   if (accept) {
     const result = await graphql(`
       mutation AcceptUserCandidate($email: String!) {
-        acceptRegistration(email: $email) {
+        acceptUserCandidate(email: $email) {
           ...MutationErrors
-          ... on MutationAcceptRegistrationSuccess {
+          ... on MutationAcceptUserCandidateSuccess {
             data {
               email
             }
@@ -63,16 +63,16 @@ export async function decide(
 
     ok = toasts.mutation(
       result,
-      'acceptRegistration',
+      'acceptUserCandidate',
       'Inscription acceptée',
       "Impossible d'accepter l'inscription",
     );
   } else {
     const result = await graphql(`
       mutation RefuseUserCandidate($email: String!, $why: String!) {
-        refuseRegistration(email: $email, reason: $why) {
+        refuseUserCandidate(email: $email, reason: $why) {
           ...MutationErrors
-          ... on MutationRefuseRegistrationSuccess {
+          ... on MutationRefuseUserCandidateSuccess {
             data {
               email
             }
@@ -83,7 +83,7 @@ export async function decide(
 
     ok = toasts.mutation(
       result,
-      'refuseRegistration',
+      'refuseUserCandidate',
       'Inscription refusée',
       "Impossible de refuser l'inscription",
     );
