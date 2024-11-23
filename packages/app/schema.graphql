@@ -6488,6 +6488,10 @@ type User implements Node & Pictured {
     """
     timestamp: Boolean! = true
   ): String!
+  """
+  Pronoms de l'utilisateur·ice
+  """
+  pronouns: String!
   schoolEmail: Email
   schoolUid: String
   """
@@ -6612,6 +6616,7 @@ input UserProfileInput {
   Pour effacer, mettre unsetPhone à `true`
   """
   phone: PhoneNumber
+  pronouns: String
   """
   Supprimer une date d'anniversaire existante
   """

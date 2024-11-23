@@ -44,7 +44,7 @@
 
   function bookmarkHref({ url, path }: { url: URL | null; path: string }): string {
     if (!url) return path;
-    if (url.origin === $page.url.origin) return addReferrer(path);
+    if (url.origin === $page.url.origin) return addReferrer(url.pathname);
     return url.toString();
   }
 
