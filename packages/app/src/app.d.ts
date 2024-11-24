@@ -17,10 +17,11 @@ declare namespace App {
   }
 
   interface Metadata {
-    queryTimestamps: {
+    queryTimestamps?: {
       global: number;
       network: number;
     };
+    tokenOverride?: string;
   }
 
   // interface PageData {}
