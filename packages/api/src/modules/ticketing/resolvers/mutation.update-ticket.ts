@@ -80,6 +80,13 @@ builder.mutationField('updateTicket', (t) =>
       const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id } });
       if (ticket.allowedPaymentMethods.length === 0 && (args.price! > 0 || args.maximumPrice! > 0))
         throw new GraphQLError('Un billet payant doit accepter au moins un moyen de paiement');
+
+      if (args.allowedPaymentMethods && 
+          (ticket.minimumPrice > 0 || ticket.maximumPrice > 0) &&
+          args.allowedPaymentMethods!.length === 0
+        ) {throw new GraphQLError(
+            "Vous ne pouvez pas retirer tous les modes de paiement d'un billet payant",
+          );}
       return prisma.ticket.update({
         ...query,
         where: { id },
