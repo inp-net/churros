@@ -178,13 +178,6 @@
     text-align: center;
   }
 
-  .side-by-side {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-  }
-
   .submit {
     display: flex;
     justify-content: center;
