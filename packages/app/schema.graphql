@@ -2479,12 +2479,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteToken(id: ID!): Boolean!
   deleteUserPicture(uid: String!): Boolean!
   finishPaypalRegistrationPayment(orderId: String!): MutationFinishPaypalRegistrationPaymentResult!
-  kioskReload(
-    """
-    UID de l'AE sur laquelle on veut indiquer que les kiosques concernés doivent être re-chargés
-    """
-    studentAssociation: String!
-  ): Boolean!
   """
   Logs a user in and returns a session token.
   """
@@ -4343,7 +4337,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
   issue(number: Int!): Issue!
   issuesByUser: [Issue!]!
-  kioskReload: Boolean!
   """
   Vrai si l'utilisateur·ice est connecté·e
   """
@@ -5910,7 +5903,6 @@ type Subscription @rateLimit(limit: 600, duration: 600) {
   Gets the homepage articles, customized if the user is logged in.
   """
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
-  kioskReload: Boolean!
   registration(id: ID!): SubscriptionRegistrationResult!
 }
 
