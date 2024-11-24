@@ -907,6 +907,7 @@ __metadata:
     npm-run-all2: "npm:^6.2.3"
     npm-upgrade: "npm:^3.1.0"
     prisma: "npm:^5.20.0"
+    ts-tqdm: "npm:^0.8.6"
     typescript: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
@@ -19522,6 +19523,13 @@ __metadata:
     ts-patch: bin/ts-patch.js
     tspc: bin/tspc.js
   checksum: 10c0/c214e0218f905c6445830821d400280c9b127fa41f2984bbad59c1f19eda7b6a0529457af7bc6d80fdfa38289207d5b5e2f40912c33758a243ca2064ed0aa137
+  languageName: node
+  linkType: hard
+
+"ts-tqdm@npm:^0.8.6":
+  version: 0.8.6
+  resolution: "ts-tqdm@npm:0.8.6"
+  checksum: 10c0/f91574e4ee71a007987bcdbb21036c76499f2141c2190e0c1100bbc7e0908862935bb43762e7df2ab13e2838cba8bd371e5601aa5468098f3872dcea3fe54a0a
   languageName: node
   linkType: hard
 
