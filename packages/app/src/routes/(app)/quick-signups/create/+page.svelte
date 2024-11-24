@@ -3,7 +3,7 @@
   import { graphql } from '$houdini';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import InputDate from '$lib/components/InputDate.svelte';
-  import InputSchools, { type School } from '$lib/components/InputSchools.svelte';
+  import InputSchools from '$lib/components/InputSchools.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { allLoaded } from '$lib/loading';
   import { toasts } from '$lib/toasts';
@@ -13,7 +13,7 @@
   export let data: PageData;
   $: ({ PageQuickSignupCreate } = data);
 
-  let school: School | undefined;
+  let schoolUid: string | undefined;
   let validUntil = addWeeks(new Date(), 1);
 
   const Create = graphql(`
@@ -24,19 +24,19 @@
     }
   `);
 
-  $: if (!school && $PageQuickSignupCreate?.data && allLoaded($PageQuickSignupCreate.data)) 
-    school = $PageQuickSignupCreate.data.me?.major?.schools[0];
-  
+  $: if (!schoolUid && $PageQuickSignupCreate?.data && allLoaded($PageQuickSignupCreate.data))
+    schoolUid = $PageQuickSignupCreate.data.me?.major?.schools[0]?.uid;
 </script>
 
 <MaybeError result={$PageQuickSignupCreate}>
   <div class="contents">
     <form
       on:submit|preventDefault={async () => {
-        if (!school) return;
-        const { data, errors } = await Create.mutate({ validUntil, school: school.uid });
-        if (data) {await goto(`../manage#${data.createQuickSignup.code}`);}
-        else {
+        if (!schoolUid) return;
+        const { data, errors } = await Create.mutate({ validUntil, school: schoolUid });
+        if (data) {
+          await goto(`../manage#${data.createQuickSignup.code}`);
+        } else {
           toasts.error(
             'Erreur lors de la création du lien',
             errors?.map((e) => e.message).join('; ') ?? 'Erreur inconnue',
@@ -44,7 +44,7 @@
         }
       }}
     >
-      <InputSchools required label="École" bind:school></InputSchools>
+      <InputSchools required label="École" bind:school={schoolUid}></InputSchools>
       <InputDate time required name="validUntil" bind:value={validUntil} label="Valide jusqu'au"
       ></InputDate>
       <section class="submit">

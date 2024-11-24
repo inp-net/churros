@@ -15,7 +15,7 @@
   // eslint-disable-next-line no-undef
   type Value = $$Generic<multiple extends true ? string[] : string | null>;
 
-  export let title = 'AEs';
+  export let title = 'Écoles';
 
   export let value: MaybeLoading<Value>;
   // let q: string;
