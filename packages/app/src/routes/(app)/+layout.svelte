@@ -501,6 +501,10 @@
     background: var(--bg);
   }
 
+  .announcement .body :global(p) {
+    margin: 0;
+  }
+
   @media (min-width: 900px) {
     .announcements {
       padding: 0 1rem;

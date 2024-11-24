@@ -71,7 +71,7 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
 export type ModalStateKeys = `EDITING_GROUP_MEMBER`;
 
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'SERVICE' | 'POST' | 'GROUP_MEMBER'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'SERVICE' | 'POST' | 'GROUP_MEMBER' | 'ANNOUNCEMENT'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
@@ -79,7 +79,7 @@ export type ModalState = {
   EDITING_GROUP_MEMBER?: string;
 };
 
-function navtopPushState(key: NavigationTopStateKeys | ModalStateKeys) {
+export function navtopPushState(key: NavigationTopStateKeys | ModalStateKeys) {
   pushState('', {
     [key]: true,
   } satisfies NavigationTopState & ModalState);
@@ -269,7 +269,7 @@ const rootPagesActions = [
       badge: async () =>
         browser
           ? await graphql(`
-              query NavtopPendingSignupsCount {
+              query NavtopPendingSignupsCount @cache(policy: CacheOrNetwork) {
                 userCandidatesCount
               }
             `)
@@ -719,6 +719,22 @@ export const topnavConfigs: Partial<{
     title: 'Nouvelle inscription rapide',
     back: route('/quick-signups/manage'),
     actions: [],
+  },
+  '/(app)/announcements': {
+    title: 'Annonces',
+    back: route('/'),
+    quickAction: {
+      icon: IconAdd,
+      do() {
+        navtopPushState('NAVTOP_CREATING_ANNOUNCEMENT');
+      },
+    },
+    actions: rootPagesActions,
+  },
+  '/(app)/announcements/[id]/edit': {
+    title: 'Annonce',
+    back: route('/announcements'),
+    actions: [commonActions.delete],
   },
 };
 

@@ -2400,7 +2400,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Dédoublonne les réservations. Renvoie les réservations supprimées.
   """
   deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
-  deleteAnnouncement(id: ID!): Boolean!
+  deleteAnnouncement(id: LocalID!): MutationDeleteAnnouncementResult!
   """
   Supprimer un post
   """
@@ -3385,6 +3385,12 @@ union MutationDeduplicateBookingsResult = Error | MutationDeduplicateBookingsSuc
 
 type MutationDeduplicateBookingsSuccess {
   data: Int!
+}
+
+union MutationDeleteAnnouncementResult = Error | MutationDeleteAnnouncementSuccess | ZodError
+
+type MutationDeleteAnnouncementSuccess {
+  data: Announcement!
 }
 
 union MutationDeleteArticleResult = Error | MutationDeleteArticleSuccess | ZodError

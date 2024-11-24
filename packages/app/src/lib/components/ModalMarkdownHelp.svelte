@@ -1,18 +1,11 @@
 <script lang="ts">
-  import IconClose from '~icons/mdi/close';
-  import ButtonGhost from './ButtonGhost.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { tooltip } from '$lib/tooltip';
 
   export let open: () => void;
 </script>
 
-<ModalOrDrawer tall bind:open let:close>
-  <h1 slot="header">
-    Aide sur Markdown
-
-    <ButtonGhost on:click={close}><IconClose /></ButtonGhost>
-  </h1>
+<ModalOrDrawer tall title="Aide sur markdown" bind:open>
   <div class="content">
     <div class="side-by-side muted legend">
       <span>Écris…</span>
