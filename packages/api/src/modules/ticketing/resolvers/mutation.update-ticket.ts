@@ -77,7 +77,9 @@ builder.mutationField('updateTicket', (t) =>
           );
         }
       }
-
+      const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id } });
+      if (ticket.allowedPaymentMethods.length === 0 && (args.price! > 0 || args.maximumPrice! > 0))
+        throw new GraphQLError('Un billet payant doit accepter au moins un moyen de paiement');
       return prisma.ticket.update({
         ...query,
         where: { id },
