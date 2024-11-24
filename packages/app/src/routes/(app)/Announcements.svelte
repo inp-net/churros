@@ -6,7 +6,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import { graphql } from 'graphql';
+  import { graphql } from '$houdini';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
   import IconClose from '~icons/msl/close';

@@ -10,7 +10,7 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
-  import { allLoaded, mapLoading } from '$lib/loading';
+  import { allLoaded, loaded, mapLoading } from '$lib/loading';
   import { toasts } from '$lib/toasts';
   import { addDays } from 'date-fns';
   import { createEventDispatcher } from 'svelte';
@@ -53,6 +53,7 @@
   let loading = false;
 
   async function saveChanges() {
+    if (!loaded($data?.id)) return;
     loading = true;
     const result = await graphql(`
       mutation UpsertAnnouncement(

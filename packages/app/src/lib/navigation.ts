@@ -223,7 +223,10 @@ const quickActionAdd = {
       return {
         icon: IconAnnouncement,
         label: 'Annonce',
-        href: route('/announcements/create'),
+        do() {
+          setTimeout(() => navtopPushState('NAVTOP_CREATING_ANNOUNCEMENT'), 200);
+          goto(route('/announcements'));
+        },
         disabled: !me?.canManageAnnouncements,
       };
     },
