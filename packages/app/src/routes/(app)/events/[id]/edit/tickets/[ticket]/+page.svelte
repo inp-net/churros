@@ -173,7 +173,13 @@
             <InputDateTime on:clear={update} variant="box" {value} label="" on:blur={update} />
           </SubmenuItem>
         </InputDateTimeRange>
-        <SubmenuItem icon={IconPrice} label>
+        <SubmenuItem
+          icon={IconPrice}
+          subtext={loading(event.ticket.allowedPaymentMethods, []).length === 0
+            ? 'Pensez à choisir un mode de paiement'
+            : ''}
+          label
+        >
           {#if priceIsVariable}
             Prix minimum
           {:else}
@@ -183,6 +189,8 @@
             label=""
             inputmode="decimal"
             slot="right"
+            readonly={loading(event.ticket.allowedPaymentMethods, []).length === 0 &&
+              loading(event.ticket.minimumPrice, 0) === 0}
             value={onceLoaded(event.ticket.minimumPrice, (x) => x.toString(), '')}
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
@@ -205,6 +213,14 @@
         <SubmenuItem icon={IconHeart} subtext="Permettre de payer plus" label={!priceIsVariable}>
           {#if priceIsVariable}
             Prix maximum
+            {#if loading(event.ticket.maximumPrice, 0) === 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
+              <span
+                class="warning no-payment-method"
+                use:tooltip={'Ajoutez un moyen de paiement !'}
+              >
+                <IconWarning />
+              </span>
+            {/if}
           {:else}
             Cotisation solidaire
           {/if}
@@ -214,6 +230,8 @@
                 label=""
                 inputmode="decimal"
                 slot="right"
+                readonly={loading(event.ticket.allowedPaymentMethods, []).length === 0 &&
+                  loading(event.ticket.maximumPrice, 0) === 0}
                 value={onceLoaded(event.ticket.maximumPrice, (x) => x.toString(), '')}
                 on:blur={async ({ currentTarget }) => {
                   if (!(currentTarget instanceof HTMLInputElement)) return;
