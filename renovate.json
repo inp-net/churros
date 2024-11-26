@@ -5,7 +5,7 @@
     {
       "customType": "regex",
       "fileMatch": ["\\.graphinx\\.ya?ml$"],
-      "matchStrings": ["template: graphinx/templates/default#(?<currentDigest>.*?)\\n"],
+      "matchStrings": ["template: graphinx/templates/default#(?<currentValue>.*?)\\n"],
       "currentValueTemplate": "main",
       "depNameTemplate": "graphinx template",
       "packageNameTemplate": "https://github.com/graphinx/templates",
@@ -15,7 +15,7 @@
       "customType": "regex",
       "fileMatch": ["\\.graphinx\\.ya?ml$"],
       "matchStrings": [
-        "# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/(?<currentDigest>.*)/config.schema.json"
+        "# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/(?<currentValue>.*)/config.schema.json"
       ],
       "currentValueTemplate": "main",
       "depNameTemplate": "graphinx config file version",
