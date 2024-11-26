@@ -2,3 +2,4 @@
 $houdini/
 # Sentry Config File
 .sentryclirc
+/src/lib/ROUTES.ts
