@@ -25,6 +25,7 @@
   import { formatDistance, isWithinInterval } from 'date-fns';
   import { createEventDispatcher, onMount } from 'svelte';
   import IconOpenExternal from '~icons/msl/open-in-new';
+  import IconInvited from '~icons/msl/link';
   import ButtonSecondary from './ButtonSecondary.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
@@ -33,6 +34,8 @@
   let openCanSeePlacesBcauseManagerExplainer: () => void;
 
   export let externalURL: MaybeLoading<URL | null> | null = null;
+
+  export let highlighted = false;
 
   export let places: CardTicketPlaces | null = null;
   $: dataPlaces = fragment(
@@ -54,6 +57,7 @@
     details,
     graphql(`
       fragment CardTicketDetails on Ticket @loading {
+        invited
         openToGroups {
           ...AvatarGroup
         }
@@ -117,7 +121,7 @@
     : false;
 </script>
 
-<div class="ticket">
+<div class="ticket" class:highlighted class:invited={loading($dataDetails?.invited, false)}>
   <div class="text">
     <div class="title">
       {#if $dataDetails && hasAvatars}
@@ -154,6 +158,11 @@
           },
         )}>?</LoadingText
       >
+      {#if loading($dataDetails?.invited, false)}
+        <svelte:element this={highlighted ? 'span' : 'em'} class="invited">
+          · <IconInvited /> visible par invitation
+        </svelte:element>
+      {/if}
     </div>
   </div>
   <div class="actions">
@@ -233,6 +242,11 @@
     background-color: var(--background, var(--bg2));
     border: var(--border-block) solid var(--color, transparent);
     border-radius: 10px;
+  }
+
+  .ticket.highlighted {
+    color: var(--highlight-fg, var(--primary));
+    background-color: var(--highlight, var(--primary-bg));
   }
 
   /* .ticket .price {
