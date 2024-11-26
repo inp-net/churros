@@ -17,6 +17,7 @@
       "matchStrings": [
         "# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/(?<currentDigest>.*)/config.schema.json"
       ],
+      "currentValueTemplate": "main",
       "depNameTemplate": "graphinx config file version",
       "packageNameTemplate": "https://github.com/graphinx/graphinx",
       "datasourceTemplate": "git-refs"
