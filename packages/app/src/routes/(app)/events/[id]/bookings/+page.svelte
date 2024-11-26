@@ -79,7 +79,9 @@
     <ButtonSecondary
       target={isPWA() ? undefined : '_blank'}
       icon={IconOpenTicketPage}
-      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''))}
+      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''), {
+        dontpay: '1',
+      })}
     >
       Voir le billet
     </ButtonSecondary>
