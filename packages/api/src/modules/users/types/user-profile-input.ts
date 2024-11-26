@@ -7,7 +7,14 @@ export const UserProfileInput = builder.inputType('UserProfileInput', {
     firstName: t.string({ required: false, validate: { minLength: 1 } }),
     lastName: t.string({ required: false, validate: { minLength: 1 } }),
     pronouns: t.string({ required: false, validate: { maxLength: 30 } }),
-    otherEmails: t.field({ type: [Email], required: false }),
+    otherEmails: t.field({
+      type: [Email],
+      required: false,
+      validate: [
+        (value) => new Set(value).size === value.length,
+        { message: 'Les adresses email doivent être uniques' },
+      ],
+    }),
     birthday: t.field({
       type: DateTimeScalar,
       required: false,
