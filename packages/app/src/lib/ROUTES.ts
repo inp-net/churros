@@ -43,8 +43,10 @@ const PAGES = {
   '/backrooms': `/backrooms`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
-  '/bookings/[code]': (code: string | number, params?: {}) => {
-    return `/bookings/${code}`;
+  '/bookings/[code]': (code: string | number, params?: { dontpay?: undefined | '1' }) => {
+    params = params ?? {};
+    params.dontpay = params.dontpay ?? undefined;
+    return `/bookings/${code}${appendSp({ dontpay: params.dontpay })}`;
   },
   '/changelog': `/changelog`,
   '/claim-code': `/claim-code`,
@@ -96,8 +98,10 @@ const PAGES = {
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
     return `/events${params?.week ? `/${params?.week}` : ''}`;
   },
-  '/events/[id]': (id: string | number, params?: {}) => {
-    return `/events/${id}`;
+  '/events/[id]': (id: string | number, params?: { ticket?: string | undefined }) => {
+    params = params ?? {};
+    params.ticket = params.ticket ?? undefined;
+    return `/events/${id}${appendSp({ ticket: params.ticket })}`;
   },
   '/events/[id]/bookings': (
     id: string | number,
@@ -158,6 +162,12 @@ const PAGES = {
   }) => {
     return `/events/${params.id}/edit/tickets/${params.ticket}/group`;
   },
+  '/events/[id]/edit/tickets/[ticket]/invited': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params.id}/edit/tickets/${params.ticket}/invited`;
+  },
   '/events/[id]/edit/tickets/[ticket]/links': (params: {
     id: string | number;
     ticket: string | number;
@@ -172,6 +182,9 @@ const PAGES = {
   },
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
+  },
+  '/events/[id]/join/[code]': (params: { id: string | number; code: string | number }) => {
+    return `/events/${params.id}/join/${params.code}`;
   },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
@@ -555,9 +568,11 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/counting': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/group': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/invited': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
+    '/events/[id]/join/[code]': 'id' | 'code';
     '/events/[id]/scan': 'id';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -651,13 +666,14 @@ export type KIT_ROUTES = {
     page: never;
     id: never;
     code: never;
+    dontpay: never;
     major: never;
     yearTier: never;
     subject: never;
     document: never;
     week: never;
-    group: never;
     ticket: never;
+    group: never;
     bypass_oauth: never;
     token: never;
     number: never;
