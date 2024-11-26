@@ -9,6 +9,7 @@ query LayoutSettings @loading {
   me: assertMe {
     uid
     lydiaPhone
+    gdprExport
     # TODO: enabledNotificationChannels
   }
 }
