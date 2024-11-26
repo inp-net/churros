@@ -576,6 +576,7 @@
             </PickMajor>
 
             <SubmenuItem
+              wideRightPart
               icon={IconPromotion}
               subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
                 if (names.length === 0) return 'Aucune contrainte';
@@ -586,9 +587,10 @@
               })}
               >Promos
               <InputCheckboxes
+                --checkboxes-direction="row-reverse"
                 value={mapAllLoading(event.ticket.openToPromotions, (...promos) => promos)}
                 slot="right"
-                options={[0, 1, 2].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
+                options={[3, 2, 1, 0].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
                 on:change={async ({ detail }) => {
                   if (!event.ticket) return;
                   toasts.mutation(
