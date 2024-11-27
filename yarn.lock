@@ -1285,7 +1285,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@clack/core@npm:0.3.4, @clack/core@npm:^0.3.2, @clack/core@npm:^0.3.3":
+"@clack/core@npm:0.3.5":
+  version: 0.3.5
+  resolution: "@clack/core@npm:0.3.5"
+  dependencies:
+    picocolors: "npm:^1.0.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10c0/b1037226b38696bd95e09beef789ff4e23abb282505ac233c0316c2410c8afb68cf91b67812c883f05ffa6943d6f0593f1ebc17beb94f4a42c13e4657f598c0b
+  languageName: node
+  linkType: hard
+
+"@clack/core@npm:^0.3.2, @clack/core@npm:^0.3.3":
   version: 0.3.4
   resolution: "@clack/core@npm:0.3.4"
   dependencies:
@@ -1320,14 +1330,13 @@ __metadata:
   linkType: hard
 
 "@clack/prompts@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@clack/prompts@npm:0.8.1"
+  version: 0.8.2
+  resolution: "@clack/prompts@npm:0.8.2"
   dependencies:
-    "@clack/core": "npm:0.3.4"
-    is-unicode-supported: "npm:*"
+    "@clack/core": "npm:0.3.5"
     picocolors: "npm:^1.0.0"
     sisteransi: "npm:^1.0.5"
-  checksum: 10c0/7d97c66cafafbc6e2d9c2a13034904b8b7626d3af93e6e0487b648e95f8068372b7ea2e4b6a045fa4b55b310db0ce84f969197fb57da91b040505d395cf70d9e
+  checksum: 10c0/7ac6e7e0fba1c958847e6e3ef9415d9c2184fb424b31691aaef64fd06042d243e859c157b941ca1c9f73e9cb649413fab487a602b981e300acfbec4a111d7562
   languageName: node
   linkType: hard
 
