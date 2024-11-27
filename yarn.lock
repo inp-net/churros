@@ -2645,11 +2645,11 @@ __metadata:
   linkType: hard
 
 "@iconify-json/material-symbols-light@npm:^1.2.7":
-  version: 1.2.7
-  resolution: "@iconify-json/material-symbols-light@npm:1.2.7"
+  version: 1.2.8
+  resolution: "@iconify-json/material-symbols-light@npm:1.2.8"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 10c0/7fd670484e8c4ae69333ed00d3e906067162992b2dca9116e6c2dbe6083b72a7d5edea848749e3ade7998db42539b2e5079e730d9eed52bbead6767cd145a468
+  checksum: 10c0/cdd0f043068d96958c4bbfc3488121f40bd9ca142f7c4d7c036338bcc8e43e3e7b89e957c3853dc00ab8fdba2702ce756bc31114c22aece0b94d98e6e99f1c3d
   languageName: node
   linkType: hard
 
