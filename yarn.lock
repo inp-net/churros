@@ -981,7 +981,7 @@ __metadata:
     "@pothos/plugin-errors": "npm:^4.2.0"
     "@pothos/plugin-prisma": "npm:^4.3.1"
     "@pothos/plugin-relay": "npm:^4.3.0"
-    "@pothos/plugin-scope-auth": "npm:^4.1.0"
+    "@pothos/plugin-scope-auth": "npm:^4.1.1"
     "@pothos/plugin-simple-objects": "npm:^4.1.0"
     "@pothos/plugin-smart-subscriptions": "npm:^4.1.1"
     "@pothos/plugin-tracing": "npm:^1.1.0"
@@ -4087,13 +4087,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/plugin-scope-auth@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@pothos/plugin-scope-auth@npm:4.1.0"
+"@pothos/plugin-scope-auth@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@pothos/plugin-scope-auth@npm:4.1.1"
   peerDependencies:
     "@pothos/core": "*"
     graphql: ">=16.6.0"
-  checksum: 10c0/d8b4ac1f05ebb2381d0f9e5e71d06db3e51dd7b106eb32d2f27fc57b1acae17781fe6346f700e7d253afb00d58f94c1aee7e932470e5fc4a2ae18c0162bc2fa1
+  checksum: 10c0/90fd634a1dbd688276a7c4180a5ce082ded302d93386a9a735e28b4bad3e77685632c2d90fe3df960c9f629f1568277c3bb72bb0bed179f5959ff628afb0b2c9
   languageName: node
   linkType: hard
 
