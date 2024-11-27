@@ -9210,7 +9210,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.5":
+"cross-spawn@npm:^7.0.5, cross-spawn@npm:^7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
   dependencies:
@@ -10208,16 +10208,16 @@ __metadata:
   linkType: hard
 
 "dotenv-cli@npm:^7.4.3":
-  version: 7.4.3
-  resolution: "dotenv-cli@npm:7.4.3"
+  version: 7.4.4
+  resolution: "dotenv-cli@npm:7.4.4"
   dependencies:
-    cross-spawn: "npm:^7.0.3"
+    cross-spawn: "npm:^7.0.6"
     dotenv: "npm:^16.3.0"
     dotenv-expand: "npm:^10.0.0"
     minimist: "npm:^1.2.6"
   bin:
     dotenv: cli.js
-  checksum: 10c0/b147c7445154edb36d589841fefe50f1f6b984fbc1a6118e710ea6076c6c31e1eb33e92b32a44aa4f3a48cd7d19b7502c65ed04b5a1089fcee08b974e2616a6c
+  checksum: 10c0/180801e02dcc02da4557338f48caa54740e38ffef39c7cd231e283d6fc32f4112186980773344df85a4514db28fdedace94d1b83a706ac39a4f1c2c3a402e71d
   languageName: node
   linkType: hard
 
