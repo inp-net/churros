@@ -65,7 +65,7 @@ export const refroute: typeof route = (...args) => addReferrer(route(...args));
 export type NavigationTopActionEvent =
   `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
-  window.dispatchEvent(new CustomEvent(eventID));
+  globalThis.dispatchEvent(new CustomEvent(eventID));
 };
 
 export type ModalStateKeys = `EDITING_GROUP_MEMBER`;
@@ -463,6 +463,11 @@ export const topnavConfigs: Partial<{
       commonActions.copyID,
     ],
   }),
+  '/(app)/events/[id]/join/[code]': ({ params: { id } }) => ({
+    title: 'Invitation',
+    back: route('/events/[id]', id),
+    actions: [],
+  }),
   '/(app)/events/[id]/scan': ({ params: { id } }) => ({
     title: 'Scanner des billets',
     back: route('/events/[id]', id),
@@ -551,6 +556,11 @@ export const topnavConfigs: Partial<{
   }),
   '/(app)/events/[id]/edit/tickets/[ticket]/payment': ({ params }) => ({
     title: 'Moyens de paiement',
+    back: route('/events/[id]/edit/tickets/[ticket]', params),
+    actions: [],
+  }),
+  '/(app)/events/[id]/edit/tickets/[ticket]/invited': ({ params }) => ({
+    title: 'Billet sur invitation',
     back: route('/events/[id]/edit/tickets/[ticket]', params),
     actions: [],
   }),

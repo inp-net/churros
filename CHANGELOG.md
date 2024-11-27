@@ -9,11 +9,18 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - `Sécurité` pour les mises à jour de sécurité.
 - `Technique` pour les changements techniques. Ils n'apparaîtront pas dans le popup de notes de mises à jour.
 
-## [Unreleased]
+## [3.0.0] - 2024-11-19
+
+### Nouveautés
+
+- Il est maintenant possible de cacher la capacité totale d'un billet.
+- Les managers avec la permission "Scanner des billets" ne peuvent plus voir les nombres de places quand elles sont cachées. Il faut être manager "Modification" ou plus.
 
 ### Corrections
 
-- Accéder à un fichier sur un document de la Frappe affichait un message "No Group Found". C'est réglé!
+- Changer son adresse e-mail principale était impossible
+- Les services épinglés n'était pas cliquables
+- Le bouton pour supprimer un post ne faisait rien
 
 ## [2.7.0] - 2024-09-10
 

@@ -65,7 +65,7 @@
     loaded($PageEventAllBookings.data.event.bookingsCounts.total)
   ) {
     const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', {
         detail: `${total} réservation${total > 1 ? 's' : ''}`,
       }),
@@ -79,7 +79,9 @@
     <ButtonSecondary
       target={isPWA() ? undefined : '_blank'}
       icon={IconOpenTicketPage}
-      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''))}
+      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''), {
+        dontpay: '1',
+      })}
     >
       Voir le billet
     </ButtonSecondary>

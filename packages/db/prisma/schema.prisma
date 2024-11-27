@@ -44,6 +44,7 @@ model User {
   birthday                     DateTime?
   description                  String                @default("") @db.Text
   nickname                     String                @default("") @db.VarChar(255)
+  pronouns                     String                @default("") @db.VarChar(255)
   phone                        String                @default("") @db.VarChar(255)
   pictureFile                  String                @default("") @db.VarChar(255)
   links                        Link[]
@@ -97,6 +98,7 @@ model User {
   sharedPosts                Article[]                  @relation("shares")
   sharedEvents               Event[]                    @relation("shares")
   seenBookings               Registration[]             @relation("seenBy")
+  invitedToTickets           Ticket[]                   @relation("invitedTo")
 
   // For full-text search
   search                    Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -640,6 +642,7 @@ model Ticket {
   links                 Link[]
   allowedPaymentMethods PaymentMethod[]      @default([]) // empty means all
   countingPolicy        TicketCountingPolicy @default(OnBooked)
+  inviteCode            String?              @unique
 
   // Conditions for that ticket.
   openToPromotions   Int[]    @default([])
@@ -659,6 +662,7 @@ model Ticket {
   group       TicketGroup? @relation(fields: [ticketGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   Promotion   Promotion?   @relation(fields: [promotionId], references: [id])
   promotionId String?
+  invited     User[]       @relation("invitedTo")
 }
 
 /// A reservation is a user's registration for a ticket

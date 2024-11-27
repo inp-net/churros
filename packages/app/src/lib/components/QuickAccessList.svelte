@@ -44,7 +44,7 @@
 
   function bookmarkHref({ url, path }: { url: URL | null; path: string }): string {
     if (!url) return path;
-    if (url.origin === $page.url.origin) return addReferrer(path);
+    if (url.origin === $page.url.origin) return addReferrer(url.pathname);
     return url.toString();
   }
 
@@ -194,6 +194,11 @@
     margin-bottom: 1rem;
   }
 
+  .remove-button,
+  .icon {
+    font-size: 1.2em;
+  }
+
   .bookmarks {
     display: flex;
     flex-direction: column;
@@ -262,11 +267,6 @@
     height: 1em;
     overflow: hidden;
     border-radius: 10000px;
-  }
-
-  .remove-button,
-  .icon {
-    font-size: 1.2em;
   }
 
   .items {

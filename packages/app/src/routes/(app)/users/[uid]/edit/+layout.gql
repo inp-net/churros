@@ -7,6 +7,7 @@ query LayoutUserEdit($uid: String!) @loading {
     firstName
     lastName
     nickname
+    pronouns
     email
     otherEmails
     phone

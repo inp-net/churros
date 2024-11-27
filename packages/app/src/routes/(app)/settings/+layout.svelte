@@ -5,18 +5,20 @@
   import IconLydia from '$lib/components/IconLydia.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Split from '$lib/components/Split.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
-  import { formatDateTime } from '$lib/dates';
   import { debugging } from '$lib/debugging';
-  import { loading } from '$lib/loading';
+  import { loading, mapLoading, onceLoaded } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { theme } from '$lib/theme';
+  import { toasts } from '$lib/toasts';
+  import IconReady from '~icons/msl/check-circle';
   import IconDebug from '~icons/msl/code';
   import IconTrash from '~icons/msl/delete-outline';
   import IconPersonalData from '~icons/msl/download';
@@ -39,6 +41,20 @@
     }
   `);
 
+  const RequestGDPRExport = graphql(`
+    mutation RequestGDPRExport {
+      createGdprExport(force: true) {
+        ...MutationErrors
+        ... on CheckBackLaterError {
+          message
+        }
+        ... on MutationCreateGdprExportSuccess {
+          data
+        }
+      }
+    }
+  `);
+
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
 
@@ -47,8 +63,9 @@
 </script>
 
 <MaybeError result={$LayoutSettings} let:data={{ me, themes }}>
+  {@const gdprExportReady = Boolean(loading(me.gdprExport, null))}
   <Split mobilePart={$page.route.id === '/(app)/settings' ? 'left' : 'right'}>
-    <div class="contents" slot="left">
+    <div class="contents">
       <Submenu>
         <SubmenuItem icon={IconProfile} href={route('/users/[uid]/edit', loading(me.uid, ''))}>
           Profil
@@ -88,12 +105,48 @@
         </SubmenuItem>
         <SubmenuItem icon={IconPersonalData}>
           Mes données personnelles
+          <svelte:fragment slot="subtext">
+            {#if gdprExportReady}
+              <div class="gdpr-ready">
+                <IconReady class="success" />
+                Ton export est prêt
+              </div>
+            {/if}
+          </svelte:fragment>
           <ButtonSecondary
             slot="right"
-            download="Mes données personnelles Churros {formatDateTime(new Date())}.json"
-            href={refroute('GET /gdpr')}
+            href={onceLoaded(me.gdprExport, (u) => u?.toString() ?? '', '') || undefined}
+            newTab={gdprExportReady}
+            on:click={async () => {
+              const result = await RequestGDPRExport.mutate(null);
+              if (result.data?.createGdprExport?.__typename === 'CheckBackLaterError') {
+                toasts.success(
+                  'Demande créée',
+                  'Tu recevras un email dès que ton export sera prêt.',
+                );
+              } else if (
+                result.data?.createGdprExport?.__typename === 'MutationCreateGdprExportSuccess'
+              ) {
+                // Since we passed force: true, this should never happen
+                await LayoutSettings.fetch();
+                toasts.info(
+                  'Tu as déjà un export de prêt',
+                  'Tu peux le télécharger en cliquant de nouveau sur le bouton.',
+                );
+                return;
+              } else {
+                toasts.mutation(
+                  result,
+                  'createGdprExport',
+                  '',
+                  "Erreur lors de la création de l'export",
+                );
+              }
+            }}
           >
-            Télécharger
+            <LoadingText
+              value={mapLoading(me.gdprExport, (u) => (u ? 'Télécharger' : 'Demander'))}
+            />
           </ButtonSecondary>
         </SubmenuItem>
         <SubmenuItem clickable on:click={deleteAccountModal} icon={IconTrash}>
@@ -115,5 +168,12 @@
 <style>
   .contents {
     padding: 0 1rem;
+  }
+
+  .gdpr-ready {
+    display: flex;
+    gap: 0 0.5ch;
+    align-items: center;
+    font-size: 1.1em;
   }
 </style>

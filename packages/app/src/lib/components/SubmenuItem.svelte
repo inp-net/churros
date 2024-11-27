@@ -11,6 +11,9 @@
 
   export let subtext: MaybeLoading<string> = '';
 
+  /** Widen the space available to the right slot */
+  export let wideRightPart = false;
+
   /** Whether to allow overflows, could be useful when the icon slot requires so. */
   export let overflow = false;
 
@@ -55,6 +58,7 @@
   on:click
   role="menuitem"
   tabindex="-1"
+  class:wide-right-part={wideRightPart}
   id={anchor?.replace(/^#/, '')}
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
@@ -84,7 +88,7 @@
       {/if}
     </div>
   </div>
-  <div class="right" class:chevron>
+  <div class="right" class:chevron class:wider={wideRightPart}>
     {#if chevron}
       <svelte:component this={IconChevronRight}></svelte:component>
     {:else}
@@ -102,6 +106,18 @@
     min-height: 70px; /* XXX: hardcoded from getting the computed height for a simple item */
     padding: 1rem 0.7rem;
     overflow: hidden;
+  }
+
+  /* Requires the CSS container-name submenu, so requires that the parent is the <Submenu> component -- which is expected anyway */
+  @container submenu (max-width: 600px) {
+    .submenu-item.wide-right-part {
+      flex-direction: column;
+    }
+
+    .submenu-item.wide-right-part .right {
+      width: unset;
+      text-align: center;
+    }
   }
 
   .submenu-item.current {
@@ -163,8 +179,12 @@
     white-space: nowrap;
   }
 
-  .right {
+  .right:not(.wider) {
     max-width: 40%;
+  }
+
+  .right.wider {
+    width: 100%;
   }
 
   .chevron {

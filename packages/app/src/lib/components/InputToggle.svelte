@@ -8,8 +8,11 @@
 
   export let value: Value;
 
+  /** Assert that you'll use two-way binding on value (i.e. do bind:value instead of value) */
+  export let twoway = false;
+
   let _value: boolean;
-  $: if (_value === undefined && loaded(value)) _value = value as boolean;
+  $: if ((!twoway || _value === undefined) && loaded(value)) _value = value as boolean;
 </script>
 
 <div class="switch">
