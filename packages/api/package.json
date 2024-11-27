@@ -145,7 +145,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/ldapjs": "^3.0.6",
     "@types/lodash.countby": "^4.6.9",
-    "@types/lodash.get": "^4",
+    "@types/lodash.get": "^4.4.9",
     "@types/lodash.omit": "^4.5.9",
     "@types/lodash.range": "^3.2.9",
     "@types/mjml": "^4.7.4",
