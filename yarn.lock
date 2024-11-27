@@ -2672,11 +2672,11 @@ __metadata:
   linkType: hard
 
 "@iconify-json/simple-icons@npm:^1.2.12":
-  version: 1.2.12
-  resolution: "@iconify-json/simple-icons@npm:1.2.12"
+  version: 1.2.13
+  resolution: "@iconify-json/simple-icons@npm:1.2.13"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 10c0/089dcbc8ae251cf026ad6631318c3a0a99c55fe054e36cb6fc4f996ebbb95bf4170e6d40b3425793bab08b6c4f21ffc45adeaa48ea355fa33598c516fe581c7f
+  checksum: 10c0/290e3aaba57630c9dcf55f3098ce7095b821329acc3b5905b1fb4789e22c616f5b83bc6dc03cdbcf3792868e7d7d4324cd92cd0eee4aeb89347c05c490d012dc
   languageName: node
   linkType: hard
 
