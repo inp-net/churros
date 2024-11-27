@@ -5521,11 +5521,11 @@ __metadata:
   linkType: hard
 
 "@types/cron@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "@types/cron@npm:2.4.0"
+  version: 2.4.3
+  resolution: "@types/cron@npm:2.4.3"
   dependencies:
     cron: "npm:*"
-  checksum: 10c0/a0deb757122deb6b1395ef328e93d98c8ceb5e9fc37dfce0c1afa13122a1f0e070364cef691f08ffd0e2e817e7b6b8c3160832afa91410302b2c6f8304bca262
+  checksum: 10c0/c34b92d8e57512db03ad638f0c62bf937dc07dd672298394acc1d88dc7f2e659ea6ebf9a4227bfa577ecbf02d5b3993039ecdc58812805f8875d627e6c16074f
   languageName: node
   linkType: hard
 
