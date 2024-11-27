@@ -998,7 +998,7 @@ __metadata:
     "@types/cookie": "npm:^0.6.0"
     "@types/cors": "npm:^2.8.17"
     "@types/cron": "npm:^2.4.3"
-    "@types/express": "npm:^4.0.0"
+    "@types/express": "npm:^4.17.21"
     "@types/express-session": "npm:^1.18.1"
     "@types/is-plain-object": "npm:^2.0.4"
     "@types/jsonwebtoken": "npm:^9.0.7"
@@ -5870,7 +5870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.0.0, @types/express@npm:^4.17.17":
+"@types/express@npm:*, @types/express@npm:^4.17.17, @types/express@npm:^4.17.21":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
