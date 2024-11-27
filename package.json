@@ -39,7 +39,7 @@
     "typescript": "^5.6.3"
   },
   "license": "AGPL-3.0-only",
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "yarn@4.5.3",
   "private": true,
   "scripts": {
     "@app": "yarn workspace @churros/app",
@@ -66,7 +66,7 @@
   },
   "volta": {
     "node": "20.6.1",
-    "yarn": "4.5.0"
+    "yarn": "4.5.3"
   },
   "workspaces": [
     "packages/*"
