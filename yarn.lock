@@ -1229,7 +1229,7 @@ __metadata:
     unplugin-icons: "npm:^0.18.5"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.11"
-    vite-plugin-kit-routes: "npm:^0.6.11"
+    vite-plugin-kit-routes: "npm:^0.7.0"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.10"
     ws: "npm:^8.18.0"
@@ -3076,15 +3076,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kitql/internals@npm:0.9.10":
-  version: 0.9.10
-  resolution: "@kitql/internals@npm:0.9.10"
+"@kitql/internals@npm:0.10.0":
+  version: 0.10.0
+  resolution: "@kitql/internals@npm:0.10.0"
   dependencies:
     "@babel/parser": "npm:^7.23.0"
     "@kitql/helpers": "npm:0.8.10"
     recast: "npm:^0.23.4"
-    svelte: "npm:4.2.19"
-  checksum: 10c0/d96288d44f84f9b7ec9a46c82c54b628406a79dd96fe8f410dfed5d65794a39bd1c56950d6f633b8366bf1e9f3d1ec77fbb37cec9292cd6aa7dc5801e565a010
+    svelte: "npm:^5.0.0"
+  checksum: 10c0/e5540b09ff98370efe3f06a7025dcc23f607c09a609f0dc2a454965e221452800f57bd87743fad50ea7c42fcdd1452a5f470f129eb27c2e9edbda35909174a2a
   languageName: node
   linkType: hard
 
@@ -21777,7 +21777,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:4.2.19, svelte@npm:^4.2.19":
+"svelte@npm:^4.2.19":
   version: 4.2.19
   resolution: "svelte@npm:4.2.19"
   dependencies:
@@ -23093,16 +23093,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.6.11":
-  version: 0.6.11
-  resolution: "vite-plugin-kit-routes@npm:0.6.11"
+"vite-plugin-kit-routes@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "vite-plugin-kit-routes@npm:0.7.0"
   dependencies:
-    "@babel/parser": "npm:^7.23.0"
     "@kitql/helpers": "npm:0.8.10"
-    "@kitql/internals": "npm:0.9.10"
-    recast: "npm:^0.23.4"
+    "@kitql/internals": "npm:0.10.0"
     vite-plugin-watch-and-run: "npm:1.7.1"
-  checksum: 10c0/bded2c0206152afb39b2c89b42b2ee10bdc13ace31f3c463a389b9d476f9bdbbf29032a64bcb8144e896af85965705f8389a8f96e1fc60297280c18a653cb73d
+  peerDependencies:
+    "@sveltejs/kit": ^2.4.0
+  checksum: 10c0/bc82d70cd4e7526b57facec8329e8ac7132eb76f71e6eda0dcb62b71a8c5f96a75c378ecdcd4aaa8e9f0e9a0e3f96786ebb3f965ef6069a9482a4f6b73c20846
   languageName: node
   linkType: hard
 
