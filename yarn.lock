@@ -1217,7 +1217,7 @@ __metadata:
     svelte-local-storage-store: "npm:^0.6.4"
     svelte-preprocess: "npm:^6.0.3"
     svelte-seo: "npm:^1.6.1"
-    svelte-store2storage: "npm:^1.0.0"
+    svelte-store2storage: "npm:^2.0.0"
     svelte-tenor: "npm:^0.2.0"
     sveltejs-tippy: "npm:^3.0.0"
     sveltekit-search-params: "npm:^3.0.0"
@@ -21744,10 +21744,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-store2storage@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "svelte-store2storage@npm:1.0.0"
-  checksum: 10c0/36f4f5425e042cf96af42550173b9ca4845d092c6aab3a287903a7ca5bf25619d12a553b98bf8bb2b1f74efe62cb4664f36b5b264c0dff14d792f4ef329e04da
+"svelte-store2storage@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "svelte-store2storage@npm:2.0.0"
+  checksum: 10c0/77adbf91d0c10558dd0ac0eff786f1034203cec100cab0bf4f126d8edccf4e2eca0562cab571646bbd347e31ecb656ddd91cadd2ee13105b3647464ba14590e1
   languageName: node
   linkType: hard
 
