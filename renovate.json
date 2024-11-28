@@ -3,6 +3,11 @@
   "extends": ["config:recommended"],
   "labels": ["dependencies"],
   "rangeStrategy": "bump",
+  "postUpgradeTasks": {
+    "commands": ["sh scripts/renovate-make-changeset.sh {{{ replace '^\\w+/' '' branchName }}}"],
+    "fileFilters": [".changeset/*"],
+    "executionMode": "update"
+  },
   "customManagers": [
     {
       "customType": "regex",
