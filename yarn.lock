@@ -1046,7 +1046,7 @@ __metadata:
     express: "npm:^4.21.1"
     express-session: "npm:^1.18.1"
     extract-files: "npm:^13.0.0"
-    firebase-admin: "npm:^12.6.0"
+    firebase-admin: "npm:^12.7.0"
     glob: "npm:^11.0.0"
     google-auth-library: "npm:^9.15.0"
     googleapis: "npm:144.0.0"
@@ -2112,7 +2112,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/database-compat@npm:^1.0.2":
+"@firebase/database-compat@npm:1.0.8":
   version: 1.0.8
   resolution: "@firebase/database-compat@npm:1.0.8"
   dependencies:
@@ -2126,7 +2126,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/database-types@npm:1.0.5, @firebase/database-types@npm:^1.0.0":
+"@firebase/database-types@npm:1.0.5":
   version: 1.0.5
   resolution: "@firebase/database-types@npm:1.0.5"
   dependencies:
@@ -11616,13 +11616,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^12.6.0":
-  version: 12.6.0
-  resolution: "firebase-admin@npm:12.6.0"
+"firebase-admin@npm:^12.7.0":
+  version: 12.7.0
+  resolution: "firebase-admin@npm:12.7.0"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
-    "@firebase/database-compat": "npm:^1.0.2"
-    "@firebase/database-types": "npm:^1.0.0"
+    "@firebase/database-compat": "npm:1.0.8"
+    "@firebase/database-types": "npm:1.0.5"
     "@google-cloud/firestore": "npm:^7.7.0"
     "@google-cloud/storage": "npm:^7.7.0"
     "@types/node": "npm:^22.0.1"
@@ -11636,7 +11636,7 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 10c0/c96c2ea58646ad45934fa114b5dc228ce82f12e185eb5b2aee3eef66546df218d4338cb398b6792d268780fc25b55d808e8b93822665dd7a9162742f3ad65b8b
+  checksum: 10c0/5a6645b004adbc13bce4d9876e8d62135408bdcf3537c32493832472bd219d543830a01da1773aa4183e298f96a476095613e6c8b1d334721e10313b6272da34
   languageName: node
   linkType: hard
 

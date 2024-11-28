@@ -49,7 +49,7 @@
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "extract-files": "^13.0.0",
-    "firebase-admin": "^12.6.0",
+    "firebase-admin": "^12.7.0",
     "glob": "^11.0.0",
     "google-auth-library": "^9.15.0",
     "googleapis": "144.0.0",
