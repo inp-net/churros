@@ -102,7 +102,7 @@
     "typescript": "^5.7.2",
     "unplugin-icons": "^0.18.5",
     "vite": "5.4.11",
-    "vite-plugin-kit-routes": "^0.6.11",
+    "vite-plugin-kit-routes": "^0.7.0",
     "wait-port": "^1.1.0",
     "ws": "^8.18.0",
     "zod": "^3.23.8"
