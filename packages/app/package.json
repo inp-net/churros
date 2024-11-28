@@ -40,7 +40,7 @@
     "lodash.omit": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "mime": "^4.0.4",
-    "nanoid": "^5.0.8",
+    "nanoid": "^5.0.9",
     "number-flip-animation": "patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch",
     "party-js": "^2.2.0",
     "pdfmake": "^0.2.15",
