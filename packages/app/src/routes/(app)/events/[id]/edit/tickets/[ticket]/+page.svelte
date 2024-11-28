@@ -174,8 +174,37 @@
           </SubmenuItem>
         </InputDateTimeRange>
         <SubmenuItem
+          icon={IconPaymentMethod}
+          chevron
+          href={route('/events/[id]/edit/tickets/[ticket]/payment', {
+            id: $page.params.id,
+            ticket: $page.params.ticket,
+          })}
+        >
+          Méthodes de paiement autorisées
+          <svelte:fragment slot="subtext">
+            <LoadingText
+              value={sentenceJoin(
+                event.ticket.allowedPaymentMethods
+                  .filter(loaded)
+                  .map((m) => DISPLAY_PAYMENT_METHODS[m]),
+                'or',
+              ) || 'Aucune'}
+            />
+            {#if (loading(event.ticket.minimumPrice, 0) > 0 || loading(event.ticket.maximumPrice, 0) > 0) && loading(event.ticket.allowedPaymentMethods, []).length === 0}
+              <span
+                class="warning no-payment-method"
+                use:tooltip={"Le billet est payant, mais aucune méthode de paiement n'est autorisée!"}
+              >
+                <IconWarning />
+              </span>
+            {/if}
+          </svelte:fragment>
+        </SubmenuItem>
+        <SubmenuItem
           icon={IconPrice}
-          subtext={loading(event.ticket.allowedPaymentMethods, []).length === 0
+          subtext={loading(event.ticket.allowedPaymentMethods, []).length === 0 &&
+          loading(event.ticket.minimumPrice, 0) > 0
             ? 'Pensez à choisir un mode de paiement'
             : ''}
           label
@@ -189,8 +218,6 @@
             label=""
             inputmode="decimal"
             slot="right"
-            readonly={loading(event.ticket.allowedPaymentMethods, []).length === 0 &&
-              loading(event.ticket.minimumPrice, 0) === 0}
             value={onceLoaded(event.ticket.minimumPrice, (x) => x.toString(), '')}
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;
@@ -210,17 +237,15 @@
             }}
           />
         </SubmenuItem>
-        <SubmenuItem icon={IconHeart} subtext="Permettre de payer plus" label={!priceIsVariable}>
+        <SubmenuItem
+          icon={IconHeart}
+          subtext={loading(event.ticket.maximumPrice, 0) > 0
+            ? 'Ajoutez un moyen de paiement'
+            : 'Permettre de payer plus'}
+          label={!priceIsVariable}
+        >
           {#if priceIsVariable}
             Prix maximum
-            {#if loading(event.ticket.maximumPrice, 0) === 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
-              <span
-                class="warning no-payment-method"
-                use:tooltip={'Ajoutez un moyen de paiement !'}
-              >
-                <IconWarning />
-              </span>
-            {/if}
           {:else}
             Cotisation solidaire
           {/if}
@@ -230,8 +255,6 @@
                 label=""
                 inputmode="decimal"
                 slot="right"
-                readonly={loading(event.ticket.allowedPaymentMethods, []).length === 0 &&
-                  loading(event.ticket.maximumPrice, 0) === 0}
                 value={onceLoaded(event.ticket.maximumPrice, (x) => x.toString(), '')}
                 on:blur={async ({ currentTarget }) => {
                   if (!(currentTarget instanceof HTMLInputElement)) return;
@@ -347,34 +370,6 @@
               );
             }}
           ></InputText>
-        </SubmenuItem>
-        <SubmenuItem
-          icon={IconPaymentMethod}
-          chevron
-          href={route('/events/[id]/edit/tickets/[ticket]/payment', {
-            id: $page.params.id,
-            ticket: $page.params.ticket,
-          })}
-        >
-          Méthodes de paiement autorisées
-          <svelte:fragment slot="subtext">
-            <LoadingText
-              value={sentenceJoin(
-                event.ticket.allowedPaymentMethods
-                  .filter(loaded)
-                  .map((m) => DISPLAY_PAYMENT_METHODS[m]),
-                'or',
-              ) || 'Aucune'}
-            />
-            {#if loading(event.ticket.minimumPrice, 0) > 0 && loading(event.ticket.allowedPaymentMethods, []).length === 0}
-              <span
-                class="warning no-payment-method"
-                use:tooltip={"Le billet est payant, mais aucune méthode de paiement n'est autorisée!"}
-              >
-                <IconWarning />
-              </span>
-            {/if}
-          </svelte:fragment>
         </SubmenuItem>
         <SubmenuItem
           icon={IconTicketGroup}
