@@ -1091,7 +1091,7 @@ __metadata:
     passport-http-bearer: "npm:^1.0.1"
     passport-oauth2: "npm:^1.8.0"
     pdfmake: "npm:^0.2.15"
-    phone: "npm:^3.1.53"
+    phone: "npm:^3.1.55"
     prettier: "npm:^3.3.3"
     prisma: "npm:5.22.0"
     prom-client: "npm:^15.1.3"
@@ -18376,10 +18376,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"phone@npm:^3.1.53":
-  version: 3.1.53
-  resolution: "phone@npm:3.1.53"
-  checksum: 10c0/59ae0c785cd142684617da53b98e3db19ae707345a646f46cbf42fdec425277da0f77cd1096e9b016c7e6f9e5d31bbba77df3d924fd54a1f81fa781ececd987e
+"phone@npm:^3.1.55":
+  version: 3.1.55
+  resolution: "phone@npm:3.1.55"
+  checksum: 10c0/bd65c45ea334a80aac1814e69794ecf5314e6df638ee36bb915b9b8b9cfc7344ff332fc7374901c6d7d66c3ec5c862f902018407e6131629ea8e3c7417f54d49
   languageName: node
   linkType: hard
 
