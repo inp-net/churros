@@ -31,11 +31,11 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
 };
 
 const nativeAuthentication: ClientPlugin = () => ({
-  async start(ctx, { next }) {
+  async beforeNetwork(ctx, { next }) {
     if (Capacitor.isNativePlatform()) {
       const token = await Preferences.get({ key: 'token' }).then(({ value }) => value ?? undefined);
       console.info(`[nativeAuthentication] token = ${token ?? '<none>'}`);
-      ctx.session = { token, ...ctx.session };
+      ctx.session = { ...ctx?.session, token };
     }
 
     next(ctx);
@@ -99,7 +99,7 @@ export default new HoudiniClient({
   plugins: [logger, nativeAuthentication, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
     return {
-      credentials: 'include',
+      credentials: Capacitor.isNativePlatform() ? undefined : 'include',
       headers: {
         Authorization: session?.token ? `Bearer ${session.token}` : '',
       },
