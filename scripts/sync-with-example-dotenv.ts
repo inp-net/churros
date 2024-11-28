@@ -46,8 +46,8 @@ if (keysNotInExample.length > 0) {
   });
 
   console.info('Adding the following to .env.example:');
-  console.info(quoteblock(dotenv.serialize(toAddToExample).trim()));
-  fs.writeFileSync(examplePath, dotenv.serialize({ ...example, ...toAddToExample }));
+  console.info(quoteblock(serializeDotenv(toAddToExample).trim()));
+  fs.writeFileSync(examplePath, serializeDotenv({ ...example, ...toAddToExample }));
   console.info(bold('Remember to also update packages/api/src/env.ts, add the following:'));
   console.info(
     Object.entries(toAddToExample)
@@ -62,14 +62,29 @@ if (keysNotInExample.length > 0) {
 const keysOnlyInExample = Object.keys(example).filter((key) => !(key in env));
 for (const key of keysOnlyInExample) {
   console.info(`${blue(bold(key))} was added to .env.example, adding this to your .env file:`);
-  console.info(quoteblock(dotenv.serialize({ [key]: example[key] }).trim()));
+  console.info(quoteblock(serializeDotenv({ [key]: example[key] }).trim()));
 }
 const result = { ...example, ...env };
 
 // back up the old .env file
 fs.copyFileSync(envPath, `${envPath}.bak`);
 
-fs.writeFileSync(envPath, dotenv.serialize(result));
+fs.writeFileSync(envPath, serializeDotenv(result));
+
+function serializeDotenv(dotenv: DotEnv): string {
+  return Object.entries(dotenv)
+    .map(
+      ([key, { value, description }]) =>
+        (description ? `# ${description.replaceAll('\n', '\n# ')}\n` : '') +
+        `${key}=${maybeBacktick(value)}`,
+    )
+    .join('\n');
+}
+
+function maybeBacktick(value: string | undefined): string {
+  if (!value) return '""';
+  return ['\n', '"', "'"].some((c) => value.includes(c)) ? `\`${value}\`` : value;
+}
 
 function isSensitive(value: string): boolean {
   // see https://github.com/mvhenten/string-entropy/blob/HEAD/src/index.ts
