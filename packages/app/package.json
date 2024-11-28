@@ -20,7 +20,7 @@
     "calendar-link": "^2.7.0",
     "colord": "^2.9.3",
     "cookie": "^1.0.1",
-    "cytoscape": "^3.30.3",
+    "cytoscape": "^3.30.4",
     "date-fns": "^2.30.0",
     "extract-files": "^13.0.0",
     "fuse.js": "^7.0.0",
