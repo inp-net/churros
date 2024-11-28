@@ -1178,7 +1178,7 @@ __metadata:
     google-auth-library: "npm:^9.15.0"
     graphql: "npm:^16.9.0"
     graphql-ws: "npm:^5.16.0"
-    graphql-zeus: "npm:^5.3.3"
+    graphql-zeus: "npm:^7.0.1"
     houdini: "npm:^1.3.1"
     houdini-svelte: "npm:^2.0.1"
     html-to-text: "npm:^9.0.5"
@@ -8902,9 +8902,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"config-maker@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "config-maker@npm:0.0.2"
+"config-maker@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "config-maker@npm:0.0.6"
   dependencies:
     adm-zip: "npm:^0.5.9"
     archiver: "npm:^5.3.1"
@@ -8929,7 +8929,7 @@ __metadata:
     ts-patch: "npm:^3.0.2"
     ws: "npm:^8.14.2"
     yargs: "npm:^17.5.1"
-  checksum: 10c0/717c4903d9311f6aeab8616440801adb3562201b2c4a0637c7883795d192cac0ab63ee7b3a4e21344ba72da0e4526f42fb44d9e82e93cd216ae21304f46ec1f0
+  checksum: 10c0/dbcaca42b56e9201b93d06479886dcef76595e1d80550e39da771d153e2517482e406d291e97cdc66b5b3ff8b89aabb693d334d54d3113246c3a2ab31c4d4749
   languageName: node
   linkType: hard
 
@@ -12589,9 +12589,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-zeus-core@npm:^5.4.4":
-  version: 5.4.4
-  resolution: "graphql-zeus-core@npm:5.4.4"
+"graphql-zeus-core@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "graphql-zeus-core@npm:7.0.1"
   dependencies:
     graphql: "npm:^16.5.0"
     graphql-js-tree: "npm:^1.0.5"
@@ -12600,13 +12600,13 @@ __metadata:
   peerDependenciesMeta:
     graphql-ws:
       optional: true
-  checksum: 10c0/966c603fbec2187d540929ba514b2c5cf66ecb4a0fa7cf8b376c115bdda894479b2b83f111863ba03066c296bde1da026759392ac977bd14ad4d3f09ab5b0c3e
+  checksum: 10c0/dcb2e76841e390cc3dcd764842a23d46e46a8cf7aeed7eb18ac985765e62e86f607e002f143b4967015db3fc7461dce71df7f472e4e4f56219cb4df13a438e7f
   languageName: node
   linkType: hard
 
-"graphql-zeus-jsonschema@npm:^5.4.4":
-  version: 5.4.4
-  resolution: "graphql-zeus-jsonschema@npm:5.4.4"
+"graphql-zeus-jsonschema@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "graphql-zeus-jsonschema@npm:7.0.1"
   dependencies:
     graphql: "npm:^16.5.0"
     graphql-js-tree: "npm:^1.0.5"
@@ -12616,22 +12616,22 @@ __metadata:
   peerDependenciesMeta:
     graphql-ws:
       optional: true
-  checksum: 10c0/8c14b6de7c8e4ba0422fafc409e7fed6c18b2a1fb225185fb6f70fcdf486f32fe2f0c81ba8c506703eb921bef2fdb602e4cd23cd739f64e98f81644252fd9980
+  checksum: 10c0/0ff6c4cfe70bdf2fea5a1150198240ea486abb9910acc6e7d2500b3adb353eb1af0846f5c4bf3348149a27ce3df86de3dde7ba128923c69aa2c79c07abf3dc5f
   languageName: node
   linkType: hard
 
-"graphql-zeus@npm:^5.3.3":
-  version: 5.4.4
-  resolution: "graphql-zeus@npm:5.4.4"
+"graphql-zeus@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "graphql-zeus@npm:7.0.1"
   dependencies:
-    config-maker: "npm:^0.0.2"
+    config-maker: "npm:^0.0.6"
     cross-fetch: "npm:^3.0.4"
-    graphql-zeus-core: "npm:^5.4.4"
-    graphql-zeus-jsonschema: "npm:^5.4.4"
+    graphql-zeus-core: "npm:^7.0.1"
+    graphql-zeus-jsonschema: "npm:^7.0.1"
     yargs: "npm:^16.1.1"
   bin:
     zeus: lib/index.js
-  checksum: 10c0/d3120e452a02f0da6f82840b41dee79a3e1d77e170e8e02ba0648b26f1ee6aeeea0c150a56380885bd90fa48a7497eb27a823ca2781c47d2f9451c1eb4824c91
+  checksum: 10c0/92c4b1ae29d56574613d345521217b1424ba3ee47fc6563f2743b3a4138adc2daee478c4dab3a0e3c2d2330412a6be2fbc1e77bf51e707f15389b9fd8be5c24f
   languageName: node
   linkType: hard
 
