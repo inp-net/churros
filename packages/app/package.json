@@ -6,7 +6,7 @@
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@iconify-json/logos": "^1.2.3",
     "@paypal/paypal-js": "^8.1.2",
-    "@sentry/sveltekit": "^8.39.0",
+    "@sentry/sveltekit": "^8.41.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@swc/core": "^1.9.2",
     "@swc/wasm": "^1.9.2",
