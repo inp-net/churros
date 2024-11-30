@@ -8,7 +8,7 @@
 /**
  * PAGES
  */
-const PAGES = {
+export const PAGES = {
   '/': `/`,
   '/[uid=uid]': (
     uid: Parameters<typeof import('../params/uid.ts').match>[0],
@@ -158,6 +158,12 @@ const PAGES = {
   }) => {
     return `/events/${params.id}/edit/tickets/${params.ticket}/group`;
   },
+  '/events/[id]/edit/tickets/[ticket]/invited': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params.id}/edit/tickets/${params.ticket}/invited`;
+  },
   '/events/[id]/edit/tickets/[ticket]/links': (params: {
     id: string | number;
     ticket: string | number;
@@ -172,6 +178,9 @@ const PAGES = {
   },
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
+  },
+  '/events/[id]/join/[code]': (params: { id: string | number; code: string | number }) => {
+    return `/events/${params.id}/join/${params.code}`;
   },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
@@ -257,6 +266,7 @@ const PAGES = {
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
+  '/settings/theme': `/settings/theme`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -327,7 +337,7 @@ const PAGES = {
 /**
  * SERVERS
  */
-const SERVERS = {
+export const SERVERS = {
   'GET /[entity=entity_handle]': (
     entity: Parameters<typeof import('../params/entity_handle.ts').match>[0],
     params?: {},
@@ -387,14 +397,14 @@ const SERVERS = {
 /**
  * ACTIONS
  */
-const ACTIONS = {
+export const ACTIONS = {
   'default /login': `/login`,
 };
 
 /**
  * LINKS
  */
-const LINKS = {};
+export const LINKS = {};
 
 type ParamValue = string | number | undefined;
 
@@ -551,9 +561,11 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/counting': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/group': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/invited': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
+    '/events/[id]/join/[code]': 'id' | 'code';
     '/events/[id]/scan': 'id';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -589,6 +601,7 @@ export type KIT_ROUTES = {
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;
+    '/settings/theme': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';

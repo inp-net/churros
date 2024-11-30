@@ -71,3 +71,21 @@ export const NotFoundErrorType = builder.objectType(Prisma.NotFoundError, {
     message: t.exposeString('message'),
   }),
 });
+
+export class CheckBackLaterError extends Error {
+  /**
+   * @param object the name of the object being processed/created
+   */
+  constructor(object: string) {
+    super(`Ton ${object} est en cours de traitement, réessayes plus tard`);
+  }
+}
+
+export const CheckBackLaterErrorType = builder.objectType(CheckBackLaterError, {
+  name: 'CheckBackLaterError',
+  description: 'An error raised when an operation is in progress and should be retried later.',
+  interfaces: [ErrorInterface],
+  fields: (t) => ({
+    message: t.exposeString('message'),
+  }),
+});
