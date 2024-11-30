@@ -1,5 +1,17 @@
 # @churros/db
 
+## 3.2.0
+
+### Minor Changes
+
+- 4589b01: allow tickets to be accessed via invitation links only
+- 85bc631: theme dates are now nullable
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- e1262b7: upgrade dependencies
+
 ## 3.1.0
 
 ### Minor Changes
