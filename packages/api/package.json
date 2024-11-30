@@ -164,7 +164,7 @@
     "@vizdom/vizdom-ts-node": "^0.1.17",
     "barrelsby": "^2.8.1",
     "chokidar": "^4.0.1",
-    "concurrently": "^9.0.1",
+    "concurrently": "^9.1.0",
     "graphinx": "^0.12.1"
   },
   "imports": {
