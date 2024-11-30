@@ -82,7 +82,7 @@
   }
 
   a:hover {
-    background-color: var(--bg3);
+    background: var(--bg3);
   }
 
   .icon {

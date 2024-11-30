@@ -14,13 +14,14 @@
   import OverlayQuickBookings from '$lib/components/OverlayQuickBookings.svelte';
   import PickGroup from '$lib/components/PickGroup.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
+  import ThemesEditorSidebar from '$lib/components/ThemesEditorSidebar.svelte';
   import { allLoaded } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
   import { mutate } from '$lib/mutations';
   import { addReferrer, refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
-  import { isDark } from '$lib/theme';
+  import { editingTheme, isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
   import { setContext } from 'svelte';
@@ -193,7 +194,12 @@
   </div>
 
   <aside class="right">
-    {#if $AppLayout.data?.me}
+    {#if $RootLayout.data?.editingTheme && $editingTheme}
+      <ThemesEditorSidebar
+        theme={$RootLayout.data?.editingTheme}
+        me={$AppLayout.data?.me ?? null}
+      />
+    {:else if $AppLayout.data?.me}
       <section class="quick-access">
         <QuickAccessList pins={$AppLayout.data.me} />
       </section>
@@ -310,6 +316,7 @@
     display: flex;
     flex-direction: column;
     max-width: var(--scrollable-content-width, 700px);
+    background: var(--bg);
   }
 
   .layout .nav-bottom {
@@ -359,6 +366,7 @@
     position: sticky;
     top: 0;
     z-index: 20;
+    background: var(--bg);
   }
 
   @media (max-width: 900px) {

@@ -46,6 +46,7 @@
   import { browser } from '$app/environment';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { themeCurrentValueURL } from '$lib/theme';
 
   export let scrolled = false;
 
@@ -71,6 +72,7 @@
   }
 
   $: backHref = $page.url.searchParams.get('from') ?? back;
+  $: themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarTop');
 
   const mobile = isMobile();
 </script>
@@ -78,6 +80,9 @@
 <svelte:window
   on:NAVTOP_UPDATE_TITLE={({ detail }) => {
     title = detail;
+  }}
+  on:THEME_FORCE_RELOAD={() => {
+    themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarTop');
   }}
 />
 
@@ -102,7 +107,11 @@
       <div class="title">{title}</div>
     {:else}
       <a class="left logo" href="/">
-        <LogoChurros wordmark></LogoChurros>
+        {#if themedLogoUrl}
+          <img src={themedLogoUrl} alt="Churros" class="themed-logo" />
+        {:else}
+          <LogoChurros wordmark></LogoChurros>
+        {/if}
       </a>
     {/if}
   </div>
