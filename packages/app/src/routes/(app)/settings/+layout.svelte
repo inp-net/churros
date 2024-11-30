@@ -63,9 +63,8 @@
 </script>
 
 <MaybeError result={$LayoutSettings} let:data={{ me, themes }}>
-  {@const gdprExportReady = Boolean(loading(me.gdprExport, null))}
   <Split mobilePart={$page.route.id === '/(app)/settings' ? 'left' : 'right'}>
-    <div class="contents">
+    <div class="contents" slot="left">
       <Submenu>
         <SubmenuItem icon={IconProfile} href={route('/users/[uid]/edit', loading(me.uid, ''))}>
           Profil
@@ -106,7 +105,7 @@
         <SubmenuItem icon={IconPersonalData}>
           Mes données personnelles
           <svelte:fragment slot="subtext">
-            {#if gdprExportReady}
+            {#if loading(me.gdprExport, null)}
               <div class="gdpr-ready">
                 <IconReady class="success" />
                 Ton export est prêt
@@ -116,7 +115,7 @@
           <ButtonSecondary
             slot="right"
             href={onceLoaded(me.gdprExport, (u) => u?.toString() ?? '', '') || undefined}
-            newTab={gdprExportReady}
+            newTab={onceLoaded(me.gdprExport, Boolean, false)}
             on:click={async () => {
               const result = await RequestGDPRExport.mutate(null);
               if (result.data?.createGdprExport?.__typename === 'CheckBackLaterError') {
