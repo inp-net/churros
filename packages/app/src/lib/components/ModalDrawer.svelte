@@ -41,7 +41,7 @@
     position: fixed;
     inset: 0;
     z-index: 999;
-    background-color: var(--backdrop);
+    background: var(--backdrop);
   }
 
   :global([data-vaul-drawer]) {
@@ -83,7 +83,7 @@
     width: 25%;
     height: 0.25rem;
     content: '';
-    background-color: var(--muted);
+    background: var(--muted);
     border-radius: 9999px;
     translate: -50%;
   }

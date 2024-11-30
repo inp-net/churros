@@ -58,8 +58,8 @@
   on:click
   role="menuitem"
   tabindex="-1"
-  id={anchor?.replace(/^#/, '')}
   class:wide-right-part={wideRightPart}
+  id={anchor?.replace(/^#/, '')}
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
   class="submenu-item"
@@ -123,7 +123,7 @@
 
   .submenu-item.current {
     color: var(--primary);
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   .submenu-item.highlighted {

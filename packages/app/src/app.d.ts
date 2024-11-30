@@ -100,6 +100,7 @@ declare namespace svelteHTML {
     'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_CREATE_POST_ON_EVENT'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_RELOAD'?: (event: CustomEvent<undefined>) => Promise<void> | void;
+    'on:THEME_FORCE_RELOAD'?: (event: CustomEvent<undefined>) => Promise<void> | void;
   }
 }
 

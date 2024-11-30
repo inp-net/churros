@@ -1,14 +1,13 @@
 query LayoutSettings @loading {
-  # TODO:
-  # themes {
-  #     name
-  #     author {
-  #         ...AvatarGroup
-  #     }
-  # }
+  themes {
+    id
+    name
+    localID
+  }
   me: assertMe {
     uid
     lydiaPhone
+    gdprExport
     # TODO: enabledNotificationChannels
   }
 }
