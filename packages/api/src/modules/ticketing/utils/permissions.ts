@@ -1,4 +1,5 @@
-import { log, type Context } from '#lib';
+import { log, type Capacity, type Context } from '#lib';
+import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
@@ -36,6 +37,7 @@ export const canSeeTicketPrismaIncludes = {
   openToGroups: true,
   openToSchools: true,
   openToMajors: true,
+  invited: true,
   event: {
     include: {
       managers: { include: { user: true } },
@@ -68,6 +70,8 @@ export function canSeeTicket(
     openToContributors,
     openToApprentices,
     openToExternal,
+    invited,
+    inviteCode,
   } = ticket;
 
   // Admins can see everything
@@ -79,6 +83,9 @@ export function canSeeTicket(
 
   // Banned users cannot see any ticket
   if (event.bannedUsers.some(({ id }) => id === user?.id)) return false;
+
+  // When the ticket has an invite code only invited users can see it
+  if (inviteCode && !invited.some(({ id }) => id === user?.id)) return false;
 
   // External accounts or logged-out users can only see tickets not excluded from external users
   if (openToExternal === false && !user?.major) return false;
@@ -127,12 +134,21 @@ export function canSeeTicket(
 export function canSeePlacesLeftCount(
   event: Prisma.EventGetPayload<{ include: typeof canSeePlacesLeftCount.prismaIncludes }>,
   user: Context['user'],
-  placesLeft: number,
+  placesLeft: Capacity,
 ) {
-  return placesLeft === 0 || event.showPlacesLeft || canSeeAllBookings(event, user);
+  return placesLeft === 0 || event.showPlacesLeft || canEditEvent(event, user);
 }
 
-canSeePlacesLeftCount.prismaIncludes = canSeeAllBookingsPrismaIncludes;
+canSeePlacesLeftCount.prismaIncludes = canEditEventPrismaIncludes;
+
+export function canSeeTicketCapacity(
+  event: Prisma.EventGetPayload<{ include: typeof canSeeTicketCapacity.prismaIncludes }>,
+  user: Context['user'],
+) {
+  return event.showCapacity || canEditEvent(event, user);
+}
+
+canSeeTicketCapacity.prismaIncludes = canEditEventPrismaIncludes;
 
 export function canMarkBookingAsPaid(
   user: Context['user'] &
@@ -171,9 +187,8 @@ export function userIsBookedToEvent(
       // Ignore cancelled registrations
       if (reg.cancelledAt) return false;
       // If the registration has an internal beneficiary, check that it's the user
-      if (reg.internalBeneficiaryId) 
-        return reg.internalBeneficiaryId === user.id;
-      
+      if (reg.internalBeneficiaryId) return reg.internalBeneficiaryId === user.id;
+
       // Otherwise, the registration is for the author, check that it's the user
       return reg.authorId === user.id;
     }),
@@ -315,6 +330,7 @@ canBookTicket.prismaIncludes = {
   openToSchools: true,
   openToMajors: true,
   registrations: true,
+  invited: true,
 } as const satisfies Prisma.TicketInclude;
 
 canBookTicket.userPrismaIncludes = {

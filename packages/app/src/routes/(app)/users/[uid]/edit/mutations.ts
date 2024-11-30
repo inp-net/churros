@@ -27,6 +27,19 @@ export const UpdateUserNickname = graphql(`
   }
 `);
 
+export const UpdateUserPronouns = graphql(`
+  mutation UpdateUserPronouns($uid: UID!, $pronouns: String!) {
+    updateUserProfile(uid: $uid, profile: { pronouns: $pronouns }) {
+      ...MutationErrors
+      ... on MutationUpdateUserProfileSuccess {
+        data {
+          pronouns
+        }
+      }
+    }
+  }
+`);
+
 export const SetUserPhone = graphql(`
   mutation SetUserPhone($uid: UID!, $phone: PhoneNumber!) {
     updateUserProfile(uid: $uid, profile: { phone: $phone }) {

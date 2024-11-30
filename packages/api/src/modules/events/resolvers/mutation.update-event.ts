@@ -31,6 +31,11 @@ builder.mutationField('updateEvent', (t) =>
         description: 'Afficher le nombre de places restantes sur les billets',
         defaultValue: true,
       }),
+      showCapacity: t.arg.boolean({
+        required: false,
+        description: 'Afficher la capacité sur les billets',
+        defaultValue: true,
+      }),
       globalCapacity: t.arg({
         type: CapacityScalar,
         required: false,

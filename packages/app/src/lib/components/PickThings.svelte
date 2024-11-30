@@ -86,6 +86,7 @@
         {/if}
         <li>
           <button
+            type="button"
             class:selected
             on:click={() => {
               if (!loaded(option.uid)) return;

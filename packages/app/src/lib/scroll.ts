@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { afterNavigate, beforeNavigate } from '$app/navigation';
 import { page } from '$app/stores';
+import { debugging } from '$lib/debugging';
 import { onMount } from 'svelte';
 import { syncToLocalStorage } from 'svelte-store2storage';
 import { get, writable, type Writable } from 'svelte/store';
@@ -19,11 +20,13 @@ export function onReachingEndSoon(
   threshold = 3,
 ) {
   if (!browser) return () => {};
+  const log = taggedLogger('infinitescroll');
 
   async function restartIntersectionObserver() {
     // Get the element that's at threshold elements from the bottom
     const elements = [...scrollableArea.querySelectorAll(scrollableElementSelector)];
     const lastElement = elements.at(elements.length - threshold);
+    log(`watching for scroll into view of element`, lastElement);
     // If there is no such element, we're at the bottom (or at least over the theshold)
     if (!lastElement) {
       await callback();
@@ -35,6 +38,7 @@ export function onReachingEndSoon(
       async (entries) => {
         // If the last element is in view, we're at the bottom
         if (entries.some((entry) => entry.isIntersecting)) {
+          log(`reached last element, calling callback`);
           await callback();
           intersectionObserver.disconnect();
         }
@@ -61,9 +65,7 @@ export function onReachingEndSoon(
     // Also watch for intersection with the "infinitescroll bottom" element(data-infinitescroll-bottom)
     infinitescrollBottomIntersectionObserver = new IntersectionObserver(async (entries) => {
       if (entries.some((entry) => entry.isIntersecting)) {
-        console.warn(
-          `[infinitescroll] Reached data-infinitescroll-bottom, calling callback ${callback.name}`,
-        );
+        log(`reached data-infinitescroll-bottom, calling callback`);
         await callback();
       }
     });
@@ -97,9 +99,10 @@ export function setupScrollPositionRestorer(
   scrollableArea: HTMLElement | null | (() => HTMLElement | null),
   onScroll: (scrolled: boolean) => void,
 ) {
+  const log = taggedLogger('scrollrestorer');
   const scrollableElement = () => {
     const element = scrollableArea instanceof Function ? scrollableArea() : scrollableArea;
-    console.info(`[scrollrestorer] Using scrollable element`, element);
+    log(`Using scrollable element`, element);
     return element ?? document.documentElement;
   };
   /**
@@ -112,7 +115,7 @@ export function setupScrollPositionRestorer(
     const scrollpos = {
       [get(page).url.pathname]: scrollableElement().scrollTop,
     };
-    console.info(`[scrollrestorer] Saving scroll position`, scrollpos);
+    log(`Saving scroll position`, scrollpos);
     scrollPositions.set({
       ...get(scrollPositions),
       ...scrollpos,
@@ -121,9 +124,7 @@ export function setupScrollPositionRestorer(
 
   afterNavigate(async () => {
     const scrollpos = get(scrollPositions)[get(page).url.pathname];
-    console.info(
-      `[scrollrestorer] Restoring scroll position for ${get(page).url.pathname}: ${scrollpos}`,
-    );
+    log(`Restoring scroll position for ${get(page).url.pathname}: ${scrollpos}`);
     scrollableElement().scrollTo(0, scrollpos ?? 0);
   });
 
@@ -139,7 +140,13 @@ export function setupScrollPositionRestorer(
 
 export function scrollableContainer(mobile: boolean) {
   // Scrollable container element depends on `mobile` (from UA) _and_ on the viewport width (from CSS media query)
-  return mobile || window.matchMedia('(max-width: 900px)').matches
+  return mobile || globalThis.matchMedia('(max-width: 900px)').matches
     ? (document.querySelector('#scrollable-area') as HTMLElement)
     : (document.documentElement as HTMLElement);
+}
+
+function taggedLogger(tag: string) {
+  return (...msg: unknown[]) => {
+    if (get(debugging)) console.info(`[${tag}]`, ...msg);
+  };
 }

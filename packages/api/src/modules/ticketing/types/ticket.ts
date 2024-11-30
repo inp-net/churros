@@ -1,15 +1,17 @@
 import { builder, ensureGlobalId, prisma, toHtml } from '#lib';
 import { MajorType } from '#modules/curriculum';
+import { CapacityScalar, canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { DateTimeScalar, LocalID } from '#modules/global';
 import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
-import { canBookTicket, shotgunIsOpen } from '#modules/ticketing/utils';
+import { canBookTicket, canSeeTicketCapacity, shotgunIsOpen } from '#modules/ticketing/utils';
 import type { Prisma } from '@churros/db/prisma';
 import { TicketCountingPolicyEnum } from './ticket-counting-policy.js';
 
 export const TicketTypePrismaIncludes = {
   group: true,
   openToMajors: true,
+  invited: true,
 } as const satisfies Prisma.TicketInclude;
 
 export const TicketType = builder.prismaNode('Ticket', {
@@ -68,6 +70,30 @@ export const TicketType = builder.prismaNode('Ticket', {
         );
       },
     }),
+    invited: t.boolean({
+      description: 'On a été invité à réserver ce billet',
+      args: {
+        code: t.arg.string({
+          required: false,
+          description: "Qui possède ce code d'invitation",
+        }),
+      },
+      resolve({ invited, inviteCode }, { code }, { user }) {
+        if (code && inviteCode !== code) return false;
+        return Boolean(user && invited.some(({ uid }) => uid === user.uid));
+      },
+    }),
+    inviteCode: t.string({
+      nullable: true,
+      description:
+        "Code d'invitation pour ce billet. Uniquement visibles par celleux qui peuvent modifier les billets de l'événement",
+      async resolve({ id, inviteCode }, _, { user }) {
+        const event = await prisma.ticket
+          .findUniqueOrThrow({ where: { id } })
+          .event({ include: canEditEventPrismaIncludes });
+        return canEditEvent(event, user) ? inviteCode || null : null;
+      },
+    }),
     priceIsVariable: t.boolean({
       description:
         "Le billet permet de payer un prix choisi par l'utilisateur.ice, entre minimumPrice et maximumPrice",
@@ -96,7 +122,21 @@ export const TicketType = builder.prismaNode('Ticket', {
         );
       },
     }),
-    capacity: t.exposeInt('capacity', { nullable: true }),
+    capacity: t.field({
+      type: CapacityScalar,
+      nullable: true,
+      description:
+        "Nombre de places totales du billet. Null si l'information n'est pas disponible.",
+      async resolve(ticket, {}, { user }) {
+        const event = await prisma.ticket.findUniqueOrThrow({ where: { id: ticket.id } }).event({
+          include: canSeeTicketCapacity.prismaIncludes,
+        });
+
+        if (canSeeTicketCapacity(event, user)) return ticket.capacity ?? 'Unlimited';
+
+        return canSeeTicketCapacity(event, user) ? ticket.capacity : null;
+      },
+    }),
     countingPolicy: t.expose('countingPolicy', {
       type: TicketCountingPolicyEnum,
     }),

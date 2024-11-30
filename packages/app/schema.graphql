@@ -645,9 +645,13 @@ type Bookmark implements Node {
   """
   localID: LocalID!
   """
-  Chemin de la page
+  Chemin de la page, ou identifiant global pour les services épinglés. Voir aussi Bookmark.url
   """
   path: String!
+  """
+  URL vers la page. Pratique notamment pour les services épinglés, qui n'ont pas de valeur utile pour Bookmark.path.
+  """
+  url: URL!
   user: User!
 }
 
@@ -680,6 +684,14 @@ type BuildInfo @graphinx(module: "global") {
   La version actuelle de l'API (et de l'application)
   """
   version: String!
+}
+
+type CanBookExplanation @graphinx(module: "ticketing") {
+  can: Boolean!
+  """
+  Explication de pourquoi l'on ne peut pas réserver
+  """
+  why: String!
 }
 
 """
@@ -1074,6 +1086,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   Vrai si l'évènement doit apparaître dans le mode kiosque
   """
   includeInKiosk: Boolean!
+  """
+  Managers de l'évènement qui le sont par leur permissions sur le groupe organisateur de l'évènement.
+  """
+  inheritedManagers: [InheritedEventManager!]!
   links: [Link!]!
   """
   L'identifiant local de la ressource (sans préfixe)
@@ -1123,7 +1139,7 @@ type Event implements Node & Pictured & Reactable & Shareable {
     """
     timestamp: Boolean! = true
   ): String!
-  placesLeft: Int
+  placesLeft: Capacity
   profitsBreakdown: ProfitsBreakdown!
   """
   Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
@@ -1137,6 +1153,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   recurringUntil: DateTime
   searchBookings(q: String!): [RegistrationSearchResult!]!
   shares: Int!
+  """
+  Vrai si les capacités des billets doivent être affichées
+  """
+  showCapacity: Boolean!
   """
   Vrai si le nombre de places restantes doit être affiché
   """
@@ -1210,6 +1230,11 @@ type EventManager implements Node {
   power: EventManagerPowerLevel!
   user: User!
 }
+
+"""
+Manager d'évènemet, qu'il soit sur l'évènement directement ou hérité d'une appartenance à un groupe
+"""
+union EventManagerMaybeInherited = EventManager | InheritedEventManager
 
 enum EventManagerPowerLevel {
   Edit
@@ -1968,6 +1993,19 @@ type HousekeepingResult @graphinx(module: "global") {
 }
 
 """
+Un manager d'évènement hérité par ses permissions en tant que membre d'un groupe
+"""
+type InheritedEventManager {
+  canEdit: Boolean!
+  canEditPermissions: Boolean!
+  canVerifyRegistrations: Boolean!
+  event: Event!
+  groupMember: GroupMember!
+  power: EventManagerPowerLevel!
+  user: User!
+}
+
+"""
 A Gitlab issue
 """
 type Issue {
@@ -2445,7 +2483,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
   deleteAnnouncement(id: ID!): Boolean!
-  deleteArticle(id: ID!): Boolean!
+  """
+  Supprimer un post
+  """
+  deleteArticle(id: LocalID!): MutationDeleteArticleResult!
   deleteArticlePicture(id: ID!): Boolean!
   deleteComment(id: ID!): Comment!
   """
@@ -2626,7 +2667,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     URL vers laquelle faire pointer le lien de validation de la nouvelle adresse email. [token] sera remplacé par le token d'activation.
     """
     callbackURL: URL!
-    email: Email!
+    """
+    Nouvelle addresse e-mail
+    """
+    newEmail: Email!
+    """
+    Personne à qui changer l'adresse email
+    """
+    user: UID!
   ): MutationRequestEmailChangeResult!
   resetPassword(
     disconnectAll: Boolean!
@@ -2914,6 +2962,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     location: String
     """
+    Afficher la capacité sur les billets
+    """
+    showCapacity: Boolean = true
+    """
     Afficher le nombre de places restantes sur les billets
     """
     showPlacesLeft: Boolean = true
@@ -3015,6 +3067,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     Contraintes pour limiter la réservation du billet. Les différentes contraintes sont appliquées avec un “ET logique”: il faut que chacune des contraintes spécificées soient remplies par la personne voulant réserver.
     """
     constraints: TicketConstraintsInput!
+    """
+    Lors d'un passage de TicketConstraintsInput.invitesOnly à false, supprime les invitations existantes, enlevant l'accès au billet aux personnes ayant utilisé le lien d'invitation avant qu'il soit retiré
+    """
+    kickInvited: Boolean! = true
     ticket: LocalID!
   ): MutationUpdateTicketConstraintsResult!
   updateUser(
@@ -3244,6 +3300,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     name: String
   ): MutationUpsertTicketGroupResult!
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
+  """
+  Utiliser un code d'invitation pour gagner accès à un billet
+  """
+  useTicketInviteCode(code: String!): MutationUseTicketInviteCodeResult!
   validateEmail(token: String!): MutationValidateEmailResult!
   verifyBooking(
     """
@@ -3435,6 +3495,12 @@ union MutationDeduplicateBookingsResult = Error | MutationDeduplicateBookingsSuc
 
 type MutationDeduplicateBookingsSuccess {
   data: Int!
+}
+
+union MutationDeleteArticleResult = Error | MutationDeleteArticleSuccess | ZodError
+
+type MutationDeleteArticleSuccess {
+  data: Article!
 }
 
 union MutationDeleteContributionResult = Error | MutationDeleteContributionSuccess | ZodError
@@ -3973,6 +4039,12 @@ union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess |
 
 type MutationUsePasswordResetSuccess {
   data: Boolean!
+}
+
+union MutationUseTicketInviteCodeResult = Error | MutationUseTicketInviteCodeSuccess | ZodError
+
+type MutationUseTicketInviteCodeSuccess {
+  data: Event!
 }
 
 union MutationValidateEmailResult = Error | MutationValidateEmailSuccess | ZodError
@@ -6134,7 +6206,10 @@ type Ticket implements Node {
     """
     themself: Boolean!
   ): String
-  capacity: Int
+  """
+  Nombre de places totales du billet. Null si l'information n'est pas disponible.
+  """
+  capacity: Capacity
   closesAt: DateTime
   countingPolicy: TicketCountingPolicy!
   description: String!
@@ -6148,6 +6223,23 @@ type Ticket implements Node {
   godsonLimit: Int!
   group: TicketGroup
   id: ID!
+  """
+  Code d'invitation pour ce billet. Uniquement visibles par celleux qui peuvent modifier les billets de l'événement
+  """
+  inviteCode: String
+  """
+  On a été invité à réserver ce billet
+  """
+  invited(
+    """
+    Qui possède ce code d'invitation
+    """
+    code: String
+  ): Boolean!
+  """
+  Personnes ayant utilisé un code d'invitation pour accéder à ce billet
+  """
+  invitedUsers(after: String, before: String, first: Int, last: Int): TicketInvitedUsersConnection!
   """
   Ce billet appartient au groupe de billet donné
   """
@@ -6201,7 +6293,7 @@ type Ticket implements Node {
   """
   Nombre de places restantes. Null si l'information n'est pas disponible. N'est jamais null quand il n'y a plus de places disponibles (0)
   """
-  placesLeft: Int
+  placesLeft: Capacity
   price: Float! @deprecated(reason: "Use minimumPrice(applyPromotions: true) instead")
   """
   Le billet permet de payer un prix choisi par l'utilisateur.ice, entre minimumPrice et maximumPrice
@@ -6240,6 +6332,10 @@ input TicketConstraintsInput {
   Membres d'au moins un des groupes spécifiés
   """
   groupMembers: [UID!]
+  """
+  Réservable uniquement via un code d'invitation. Quand true, génère un code d'invitation récupérable avec Ticket.inviteCode. Quand false, supprime un éventuel code d'invitation existant. Quand false, supprime un éventuel code d'invitation existant
+  """
+  invitesOnly: Boolean
   """
   Étudiant·e·s de certaines filières
   """
@@ -6293,6 +6389,18 @@ input TicketGroupInput {
   capacity: Int!
   id: ID
   name: String!
+}
+
+type TicketInvitedUsersConnection {
+  edges: [TicketInvitedUsersConnectionEdge!]!
+  nodes: [User!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TicketInvitedUsersConnectionEdge {
+  cursor: String!
+  node: User!
 }
 
 """
@@ -6359,13 +6467,23 @@ type User implements Node & Pictured {
   Les affiliations de l'utilisateur à des groupes dont iel est au bureau
   """
   boardMemberships: [GroupMember!]!
+  """
+  L'utilisateur·ice a réservé un billet pour un évènement donné
+  """
+  bookedTo(
+    event: LocalID!
+    """
+    En utilisant ce billet spécifiquement
+    """
+    using: LocalID
+  ): Boolean!
   booking(
     """
     Identifiant complet (avec le préfixe) pour un bénéficiaire avec compte Churros, ou texte libre pour un bénéficiaire externe
     """
     beneficiary: String
-    event: ID!
-  ): Registration!
+    event: LocalID!
+  ): Registration
   bookings(
     after: String
     before: String
@@ -6387,6 +6505,15 @@ type User implements Node & Pictured {
   """
   canAddMembersTo: [Group!]!
   canBeEdited: Boolean!
+  """
+  L'utilisateur·ice peut réserver un billet pour un évènement donné
+  """
+  canBookTicket(
+    """
+    Le billet à vérifier
+    """
+    id: LocalID!
+  ): CanBookExplanation!
   """
   Les AEs pour lesquelles la personne peut cotiser
   """
@@ -6532,6 +6659,10 @@ type User implements Node & Pictured {
     """
     timestamp: Boolean! = true
   ): String!
+  """
+  Pronoms de l'utilisateur·ice
+  """
+  pronouns: String!
   schoolEmail: Email
   schoolUid: String
   """
@@ -6656,6 +6787,7 @@ input UserProfileInput {
   Pour effacer, mettre unsetPhone à `true`
   """
   phone: PhoneNumber
+  pronouns: String
   """
   Supprimer une date d'anniversaire existante
   """
