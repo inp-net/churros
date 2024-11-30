@@ -132,7 +132,9 @@ export const TicketType = builder.prismaNode('Ticket', {
           include: canSeeTicketCapacity.prismaIncludes,
         });
 
-        if (canSeeTicketCapacity(event, user)) return ticket.capacity ?? 'Unlimited';
+        if (canSeeTicketCapacity(event, user)) 
+          return ticket.capacity ?? 'Unlimited';
+        
 
         return canSeeTicketCapacity(event, user) ? ticket.capacity : null;
       },

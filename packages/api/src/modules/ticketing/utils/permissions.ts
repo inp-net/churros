@@ -1,5 +1,5 @@
-import { fullName, log, type Capacity, type Context } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
+import { fullName, log, type Capacity, type Context } from '#lib';
 import { actualPrice } from '#modules/payments';
 import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
