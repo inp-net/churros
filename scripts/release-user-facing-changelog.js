@@ -46,11 +46,16 @@ const versions = newChangelog
   ?.map((v) => v.slice(4, -1))
   .filter((v) => v !== 'Unreleased');
 
-newChangelog += `[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/v${newVersion}...main\n`;
+function tagOfVersion(version) {
+  if (version.startsWith('1.')) return `v${version}`;
+  return `@churros%2Fapp@${version}`;
+}
+
+newChangelog += `[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/${tagOfVersion(newVersion)}...main\n`;
 
 if (versions) {
   versions.forEach((version) => {
-    newChangelog += `[${version}]: https://git.inpt.fr/churros/churros/-/releases/tag/v${version}\n`;
+    newChangelog += `[${version}]: https://git.inpt.fr/churros/churros/-/releases/${tagOfVersion(version)}\n`;
   });
 }
 
