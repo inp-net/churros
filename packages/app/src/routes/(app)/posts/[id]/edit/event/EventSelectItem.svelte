@@ -2,7 +2,13 @@
   import type { PagePostEditLinkedEvent_Event$data } from '$houdini';
   import HtmlContent from '$lib/components/HTMLContent.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
-  import { type DeepMaybeLoading, type MaybeLoading, loading, LoadingText, mapLoading } from '$lib/loading';
+  import {
+    type DeepMaybeLoading,
+    type MaybeLoading,
+    loading,
+    LoadingText,
+    mapLoading,
+  } from '$lib/loading';
   import { xss } from '$lib/xss';
   import { createEventDispatcher } from 'svelte';
   import IconDates from '~icons/msl/calendar-month-outline';
@@ -11,13 +17,10 @@
   const dispatch = createEventDispatcher<{ select: string | null }>();
 
   export let event: DeepMaybeLoading<PagePostEditLinkedEvent_Event$data>;
-  export let selected: MaybeLoading<boolean> = false
+  export let selected: MaybeLoading<boolean> = false;
 </script>
 
-<label
-  for="linked-event-{loading(event.id, '')}"
-  class:selected
->
+<label for="linked-event-{loading(event.id, '')}" class:selected>
   <input
     type="radio"
     name="linked-event"
@@ -50,14 +53,14 @@
     flex-direction: column;
     padding: 1rem 2rem;
     cursor: pointer;
-    background-color: var(--bg2);
+    background: var(--bg2);
     border-radius: var(--radius-block);
     outline: 0 solid var(--primary);
     transition: all 100ms ease;
   }
 
   label.selected {
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
     outline-width: calc(3 * var(--border-block));
   }
 

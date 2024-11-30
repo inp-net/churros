@@ -6,6 +6,7 @@
   import ChurrosLogo from '$lib/components/LogoChurros.svelte';
   import { allLoaded } from '$lib/loading';
   import { route } from '$lib/ROUTES';
+  import { themeCurrentValueURL } from '$lib/theme';
   import IconAccountFilled from '~icons/msl/account-circle';
   import IconAccount from '~icons/msl/account-circle-outline';
   import IconBugReport from '~icons/msl/bug-report-outline';
@@ -35,6 +36,8 @@
     `),
   );
 
+  $: themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarSide');
+
   let animatingChurrosLogo = false;
 
   beforeNavigate(() => {
@@ -46,6 +49,12 @@
     }, 1000);
   });
 </script>
+
+<svelte:window
+  on:THEME_FORCE_RELOAD={() => {
+    themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarSide');
+  }}
+/>
 
 <nav>
   <div class="top">
@@ -59,7 +68,11 @@
         }, 1000);
       }}
     >
-      <ChurrosLogo drawing={animatingChurrosLogo} />
+      {#if themedLogoUrl}
+        <img src={themedLogoUrl} alt="C" />
+      {:else}
+        <ChurrosLogo drawing={animatingChurrosLogo} />
+      {/if}
     </ButtonNavigation>
   </div>
   <div class="middle">
