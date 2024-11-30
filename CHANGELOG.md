@@ -9,6 +9,19 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 - `Sécurité` pour les mises à jour de sécurité.
 - `Technique` pour les changements techniques. Ils n'apparaîtront pas dans le popup de notes de mises à jour.
 
+## [Unreleased]
+
+### Nouveautés
+
+- On peut maintenant indiquer ses pronoms sur son profil!
+- On peut définir qu'un billet est _sur invitation_: dans ce cas, pour pouvoir prendre une place avec, il faut avoir reçu un lien d'invitation. Ça pourrait servir à faire des places de staff, ou n'importe quoi d'autre ;)
+- On peut télécharger ses données personnelles depuis les réglages de son compte
+- Des thèmes personnalisés sont maintenant possibles! Attendez vous à un thème de Noël dans les jours à venir ^^
+
+### Corrections
+
+- Il était impossible de changer ses addresses mail secondaires sur certains appareils. C'est réglé dans [!309](https://git.inpt.fr/churros/churros/-/merge_requests/309). Merci à [Matteo Planchet](https://churros.inpt.fr/planchetm) !
+
 ## [3.0.0] - 2024-11-19
 
 ### Nouveautés
@@ -858,9 +871,39 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
-[1.40.0]: https://git.inpt.fr/churros/churros/-/tags/v1.40.0
-[unreleased]: https://git.inpt.fr/churros/churros/-/compare/v1.71.0...main
-[1.44.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.44.1
+[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/v3.0.0...main
+[3.0.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v3.0.0
+[2.7.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v2.7.0
+[2.1.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v2.1.0
+[2.0.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v2.0.0
+[1.71.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.71.1
+[1.71.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.71.0
+[1.70.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.70.0
+[1.69.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.69.1
+[1.69.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.69.0
+[1.68.6]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.6
+[1.68.5]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.5
+[1.68.4]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.4
+[1.68.3]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.3
+[1.68.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.2
+[1.68.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.1
+[1.68.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.0
+[1.67.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.67.1
+[1.67.1-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.67.1-rc.0
+[1.67.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.67.0
+[1.66.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.66.0
+[1.66.0-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.66.0-rc.0
+[1.65.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.1
+[1.65.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.0
+[1.65.0-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.0-rc.1
+[1.65.0-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.0-rc.0
+[1.64.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.64.0
+[1.64.0-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.64.0-rc.1
+[1.63.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.1
+[1.63.1-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.1-rc.1
+[1.63.1-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.1-rc.0
+[1.63.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.0
+[1.63.0-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.0-rc.1
 [1.62.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.62.0
 [1.61.3]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.61.3
 [1.61.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.61.2
@@ -904,8 +947,8 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 [1.45.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.45.2
 [1.45.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.45.1
 [1.45.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.45.0
+[1.44.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.44.1
 [1.44.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.44.0
-[1.43.4]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.43.4
 [1.43.4]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.43.4
 [1.43.3]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.43.3
 [1.43.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.43.2
@@ -914,29 +957,6 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 [1.42.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.42.2
 [1.42.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.42.1
 [1.42.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.42.0
-[1.71.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.71.0
-[1.70.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.70.0
-[1.69.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.69.1
-[1.69.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.69.0
-[1.68.6]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.6
-[1.68.5]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.5
-[1.68.4]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.4
-[1.68.3]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.3
-[1.68.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.2
-[1.68.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.1
-[1.68.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.68.0
-[1.67.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.67.1
-[1.67.1-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.67.1-rc.0
-[1.67.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.67.0
-[1.66.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.66.0
-[1.66.0-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.66.0-rc.0
-[1.65.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.1
-[1.65.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.0
-[1.65.0-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.0-rc.1
-[1.65.0-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.65.0-rc.0
-[1.64.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.64.0
-[1.64.0-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.64.0-rc.1
-[1.63.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.1
-[1.63.1-rc.1]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.1-rc.1
-[1.63.1-rc.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.1-rc.0
-[1.63.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.63.0
+[1.41.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.41.0
+[1.40.2]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.40.2
+[1.40.0]: https://git.inpt.fr/churros/churros/-/releases/tag/v1.40.0
