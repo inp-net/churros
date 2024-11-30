@@ -728,7 +728,7 @@ __metadata:
     "@types/bunyan": "npm:^1.8.11"
     "@types/cli": "npm:^0.11.25"
     "@types/cli-progress": "npm:^3.11.6"
-    "@types/cookie": "npm:^0.6.0"
+    "@types/cookie": "npm:^1.0.0"
     "@types/cors": "npm:^2.8.17"
     "@types/cron": "npm:^2.4.3"
     "@types/express": "npm:^4.17.21"
@@ -884,7 +884,7 @@ __metadata:
     "@swc/core": "npm:^1.9.2"
     "@swc/wasm": "npm:^1.9.2"
     "@types/blob-stream": "npm:^0.1.33"
-    "@types/cookie": "npm:^0.6.0"
+    "@types/cookie": "npm:^1.0.0"
     "@types/cytoscape": "npm:^3.21.8"
     "@types/html-to-text": "npm:^9.0.4"
     "@types/js-cookie": "npm:^3.0.6"
@@ -903,7 +903,7 @@ __metadata:
     blob-stream: "npm:^0.1.3"
     calendar-link: "npm:^2.7.0"
     colord: "npm:^2.9.3"
-    cookie: "npm:^1.0.1"
+    cookie: "npm:^1.0.2"
     cytoscape: "npm:^3.30.4"
     date-fns: "npm:^2.30.0"
     dotenv: "npm:^16.4.5"
@@ -5146,6 +5146,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/cookie@npm:1.0.0"
+  dependencies:
+    cookie: "npm:*"
+  checksum: 10c0/d471539d289c6d9c6ab2986a881b10a55c9e489c2d35da0d1bdbbabdca9a8125de4cbc007bb525060265c64c14288c690f991ba6d84eea8c6ddacaa150179557
+  languageName: node
+  linkType: hard
+
 "@types/cookies@npm:*":
   version: 0.9.0
   resolution: "@types/cookies@npm:0.9.0"
@@ -8592,6 +8601,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie@npm:*, cookie@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "cookie@npm:1.0.2"
+  checksum: 10c0/fd25fe79e8fbcfcaf6aa61cd081c55d144eeeba755206c058682257cb38c4bd6795c6620de3f064c740695bb65b7949ebb1db7a95e4636efb8357a335ad3f54b
+  languageName: node
+  linkType: hard
+
 "cookie@npm:0.7.1":
   version: 0.7.1
   resolution: "cookie@npm:0.7.1"
@@ -8610,13 +8626,6 @@ __metadata:
   version: 0.6.0
   resolution: "cookie@npm:0.6.0"
   checksum: 10c0/f2318b31af7a31b4ddb4a678d024514df5e705f9be5909a192d7f116cfb6d45cbacf96a473fa733faa95050e7cff26e7832bb3ef94751592f1387b71c8956686
-  languageName: node
-  linkType: hard
-
-"cookie@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "cookie@npm:1.0.2"
-  checksum: 10c0/fd25fe79e8fbcfcaf6aa61cd081c55d144eeeba755206c058682257cb38c4bd6795c6620de3f064c740695bb65b7949ebb1db7a95e4636efb8357a335ad3f54b
   languageName: node
   linkType: hard
 
