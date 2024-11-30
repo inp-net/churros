@@ -108,7 +108,7 @@
     "zod": "^3.23.8"
   },
   "scripts": {
-    "generate": "node src/scripts/generate-dotenv-service-worker.js && tsx src/scripts/generate-reserved-usernames-from-routes.ts && svelte-kit sync && yarn zeus && houdini generate",
+    "generate": "svelte-kit sync && yarn zeus && houdini generate",
     "build": "yarn generate && yarn verify --threshold warning && vite build",
     "verify": "svelte-check --tsconfig ./tsconfig.json",
     "check": "yarn generate && yarn verify",
