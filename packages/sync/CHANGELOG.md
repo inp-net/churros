@@ -1,5 +1,16 @@
 # @churros/sync
 
+## 1.71.8
+
+### Patch Changes
+
+- e1262b7: upgrade dependencies
+- Updated dependencies [4589b01]
+- Updated dependencies [85bc631]
+- Updated dependencies [e1262b7]
+- Updated dependencies [93f7dd6]
+  - @churros/db@3.2.0
+
 ## 1.71.7
 
 ### Patch Changes
