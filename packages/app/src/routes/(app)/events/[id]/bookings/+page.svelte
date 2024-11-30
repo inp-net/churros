@@ -4,9 +4,10 @@
   import { graphql, type PageEventAllBookings_ModalBookingDetails } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import LoadingScreen from '$lib/components/LoadingScreen.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { loaded, LoadingText, mapAllLoading, mapLoading } from '$lib/loading';
+  import { loaded, loading, LoadingText, mapAllLoading, mapLoading } from '$lib/loading';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
   import type { PageData } from './$houdini';
@@ -47,8 +48,8 @@
   $: newBookingsCount =
     $updates.data?.event.bookings.nodes.filter(
       (fresh) =>
-        !$PageEventAllBookings.data?.event.bookings.nodes.some(
-          (existing) => existing.id === fresh.id,
+        !$PageEventAllBookings.data?.event.bookings.edges.some(
+          ({ node: existing }) => existing.id === fresh.id,
         ),
     ).length ?? 0;
 
@@ -58,7 +59,7 @@
     loaded($PageEventAllBookings.data.event.bookingsCounts.total)
   ) {
     const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', {
         detail: `${total} réservation${total > 1 ? 's' : ''}`,
       }),
@@ -138,6 +139,12 @@
         <li class="booking empty muted">Aucune réservation pour le moment</li>
       {/each}
     </ul>
+    {#if loading(event.bookings.pageInfo.hasNextPage, false)}
+      <!-- TODO: Move to ./ItemBooking.svelte and add a loading placeholder one here  -->
+      <div class="loading-more">
+        <LoadingScreen />
+      </div>
+    {/if}
   </div>
 </MaybeError>
 

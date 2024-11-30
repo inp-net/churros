@@ -1,5 +1,11 @@
 # @churros/db
 
+## 3.1.0
+
+### Minor Changes
+
+- 02fa1a0: allow hiding capacity on tickets
+
 ## 3.0.0
 
 ### Major Changes

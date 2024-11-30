@@ -1,33 +1,30 @@
-import { builder, log, prisma, publish } from '#lib';
+import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
+import { LocalID } from '#modules/global';
+import { ArticleType, canEditArticle } from '#modules/posts';
 
 builder.mutationField('deleteArticle', (t) =>
-  t.field({
-    type: 'Boolean',
-    args: { id: t.arg.id() },
+  t.prismaField({
+    type: ArticleType,
+    errors: {},
+    description: 'Supprimer un post',
+    args: { id: t.arg({ type: LocalID }) },
     async authScopes(_, { id }, { user }) {
-      if (!user) return false;
-      if (user.canEditGroups) return true;
-
-      const article = await prisma.article.findUniqueOrThrow({ where: { id } });
-
-      // Who can delete this article?
-      return (
-        // Admins
-        user.admin ||
-        // The author
-        user.id === article.authorId ||
-        // Other authors of the group
-        user.groups.some(
-          ({ groupId, canEditArticles }) => canEditArticles && groupId === article.groupId,
-        )
-      );
+      const post = await prisma.article.findUniqueOrThrow({
+        where: { id: ensureGlobalId(id, 'Article') },
+        include: canEditArticle.prismaIncludes,
+      });
+      return canEditArticle(post, { authorId: null, group: null }, user);
     },
-    async resolve(_, { id }, { user }) {
-      await prisma.article.delete({ where: { id } });
+    async resolve(query, _, { id }, { user }) {
+      id = ensureGlobalId(id, 'Article');
 
       await log('article', 'delete', { message: `Article ${id} deleted` }, id, user);
+
+      const result = await prisma.article.delete({ ...query, where: { id } });
+
       publish(id, 'deleted', id);
-      return true;
+
+      return result;
     },
   }),
 );

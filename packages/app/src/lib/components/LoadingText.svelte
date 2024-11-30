@@ -58,6 +58,7 @@
       letter-spacing: -0.03em;
       background-color: var(--skeleton-ui-bg);
       border-radius: 1000px;
+      box-decoration-break: clone;
     }
   }
 

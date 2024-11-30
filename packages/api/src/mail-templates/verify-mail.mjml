@@ -1,6 +1,6 @@
 <mjml>
   <mj-head>
-    <mj-title>Validation de votre adresse e-mail</mj-title>
+    <mj-title>Validation de ton adresse e-mail</mj-title>
     <mj-include path="./_head.mjml"></mj-include>
   </mj-head>
   <mj-body>
@@ -9,7 +9,7 @@
     <mj-section>
       <mj-column>
         <mj-text>
-          <h1>Validation de votre adresse e-mail</h1>
+          <h1>Validation de ton adresse e-mail</h1>
         </mj-text>
       </mj-column>
     </mj-section>

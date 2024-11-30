@@ -49,6 +49,10 @@ export type MailProps = {
   'welcome': {
     url: string;
   };
+  'gdpr-export-ready': {
+    fullName: string;
+    downloadLink: string;
+  };
 };
 
 /**
@@ -59,7 +63,7 @@ export type MailRequiredContentIDs = {
 };
 
 // prettier-ignore
-export type MailTemplate = /* @generated */ "booking" | "form-answers" | "group-board-updated" | "reset-password" | "signup-accepted" | "signup-done" | "signup-rejected" | "signup-verify-mail" | "verify-mail" | "welcome";
+export type MailTemplate = /* @generated */ "booking" | "form-answers" | "gdpr-export-ready" | "group-board-updated" | "reset-password" | "signup-accepted" | "signup-done" | "signup-rejected" | "signup-verify-mail" | "verify-mail" | "welcome";
 
 export const mailTemplatesDirectory = path.dirname(new URL(import.meta.url).pathname);
 

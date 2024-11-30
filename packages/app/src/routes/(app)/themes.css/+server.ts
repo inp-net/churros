@@ -1,9 +1,14 @@
-import { graphql, ThemesCSSFileStore, type ThemesCSSFile$result } from '$houdini';
+import {
+  graphql,
+  ThemesCSSFileStore,
+  type ThemesCSSFile$result,
+  type ThemeVariable$options,
+} from '$houdini';
 import { THEME_CSS_VARIABLE_NAMES } from '$lib/theme.js';
 
 graphql(`
   query ThemesCSSFile {
-    themes {
+    themes(all: true) {
       localID
       name
       author {
@@ -34,6 +39,10 @@ export async function GET(event) {
   });
 }
 
+function isImageVariable(variable: ThemeVariable$options): boolean {
+  return variable.startsWith('Image') || variable.startsWith('Pattern');
+}
+
 function themeCSSDeclaration(theme: ThemesCSSFile$result['themes'][number]): string {
   return `
 /** Thème “${theme.name}” ${theme.author ? `par @${theme.author.uid}` : ''} */
@@ -42,7 +51,7 @@ function themeCSSDeclaration(theme: ThemesCSSFile$result['themes'][number]): str
 :root[data-theme="${theme.localID}"][data-theme-variant="light"],
 dialog[data-theme="${theme.localID}"][data-theme-variant="light"],
 dialog[data-theme="${theme.localID}"][data-theme-variant="light"]::backdrop {
-    ${theme.light.map(({ variable, value }) => `--${THEME_CSS_VARIABLE_NAMES[variable]}: ${value};`).join('\n')}
+    ${theme.light.map(({ variable, value }) => `--${THEME_CSS_VARIABLE_NAMES[variable]}: ${isImageVariable(variable) ? `url('${value}')` : value};`).join('\n')}
     --theme-id: "${theme.localID}";
 }
 
@@ -50,7 +59,7 @@ dialog[data-theme="${theme.localID}"][data-theme-variant="light"]::backdrop {
 :root[data-theme="${theme.localID}"][data-theme-variant="dark"],
 dialog[data-theme="${theme.localID}"][data-theme-variant="dark"],
 dialog[data-theme="${theme.localID}"][data-theme-variant="dark"]::backdrop {
-    ${theme.dark.map(({ variable, value }) => `--${THEME_CSS_VARIABLE_NAMES[variable]}: ${value};`).join('\n')}
+    ${theme.dark.map(({ variable, value }) => `--${THEME_CSS_VARIABLE_NAMES[variable]}: ${isImageVariable(variable) ? `url('${value}')` : value};`).join('\n')}
     --theme-id: "${theme.localID}";
 }
     

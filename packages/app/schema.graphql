@@ -645,9 +645,13 @@ type Bookmark implements Node {
   """
   localID: LocalID!
   """
-  Chemin de la page
+  Chemin de la page, ou identifiant global pour les services épinglés. Voir aussi Bookmark.url
   """
   path: String!
+  """
+  URL vers la page. Pratique notamment pour les services épinglés, qui n'ont pas de valeur utile pour Bookmark.path.
+  """
+  url: URL!
   user: User!
 }
 
@@ -682,6 +686,14 @@ type BuildInfo @graphinx(module: "global") {
   version: String!
 }
 
+type CanBookExplanation @graphinx(module: "ticketing") {
+  can: Boolean!
+  """
+  Explication de pourquoi l'on ne peut pas réserver
+  """
+  why: String!
+}
+
 """
 Un entier positif ou 'Unlimited' pour une capacité sans limite
 """
@@ -711,6 +723,13 @@ type ChangelogRelease {
   The version of the release
   """
   version: String!
+}
+
+"""
+An error raised when an operation is in progress and should be retried later.
+"""
+type CheckBackLaterError implements ErrorInterface {
+  message: String!
 }
 
 """
@@ -2421,6 +2440,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     group: UID!
     title: ShortString!
   ): MutationCreateEventResult!
+  """
+  Créer une demande d'export RGPD de données personnelles pour la peronne connectée. Renvoie le lien a télécharger quand un export est prêt. Voir aussi User.gdprExport pour récupérer un lien sans émettre une nouvelle demande.
+  """
+  createGdprExport(
+    """
+    Forcer la création d'une nouvelle demande d'export de données personnelles RGPD. Par défaut, une nouvelle demande est créée si l'export date de plus de 24 heures.
+    """
+    force: Boolean! = false
+  ): MutationCreateGdprExportResult! @rateLimit(duration: 3600, limit: 10)
   createGitlabIssue(description: String!, isBug: Boolean!, title: String!): Int!
   """
   Créer un pass Google Wallet pour une réservation donnée. Renvoie l'URL a utiliser pour ajouter le pass à Google Wallet.
@@ -2509,7 +2537,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
   deleteAnnouncement(id: ID!): Boolean!
-  deleteArticle(id: ID!): Boolean!
+  """
+  Supprimer un post
+  """
+  deleteArticle(id: LocalID!): MutationDeleteArticleResult!
   deleteArticlePicture(id: ID!): Boolean!
   deleteComment(id: ID!): Comment!
   """
@@ -2583,6 +2614,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Supprime un service
   """
   deleteService(id: LocalID!): MutationDeleteServiceResult!
+  """
+  Supprimer un thème
+  """
+  deleteTheme(id: LocalID!): MutationDeleteThemeResult!
   deleteTicket(
     """
     Supprimer le billet même s'il existe des réservations
@@ -2690,7 +2725,14 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     URL vers laquelle faire pointer le lien de validation de la nouvelle adresse email. [token] sera remplacé par le token d'activation.
     """
     callbackURL: URL!
-    email: Email!
+    """
+    Nouvelle addresse e-mail
+    """
+    newEmail: Email!
+    """
+    Personne à qui changer l'adresse email
+    """
+    user: UID!
   ): MutationRequestEmailChangeResult!
   resetPassword(
     disconnectAll: Boolean!
@@ -3087,6 +3129,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     Contraintes pour limiter la réservation du billet. Les différentes contraintes sont appliquées avec un “ET logique”: il faut que chacune des contraintes spécificées soient remplies par la personne voulant réserver.
     """
     constraints: TicketConstraintsInput!
+    """
+    Lors d'un passage de TicketConstraintsInput.invitesOnly à false, supprime les invitations existantes, enlevant l'accès au billet aux personnes ayant utilisé le lien d'invitation avant qu'il soit retiré
+    """
+    kickInvited: Boolean! = true
     ticket: LocalID!
   ): MutationUpdateTicketConstraintsResult!
   updateUser(
@@ -3305,12 +3351,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Créer ou modifier un thème
   """
   upsertTheme(
-    autodeploy: Boolean!
-    endsAt: DateTime!
+    autodeploy: Boolean
+    endsAt: DateTime
     group: UID!
     id: LocalID
     name: String!
-    startsAt: DateTime!
+    """
+    Quand on crée un nouveau thème, remplir toutes les variables avec des valeurs par défaut
+    """
+    prefill: Boolean! = false
+    startsAt: DateTime
   ): MutationUpsertThemeResult!
   upsertTicketGroup(
     capacity: Int
@@ -3331,6 +3381,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     code: String!
   ): MutationUseEventManagerInviteResult!
   usePasswordReset(newPassword: String!, token: String!): MutationUsePasswordResetResult!
+  """
+  Utiliser un code d'invitation pour gagner accès à un billet
+  """
+  useTicketInviteCode(code: String!): MutationUseTicketInviteCodeResult!
   validateEmail(token: String!): MutationValidateEmailResult!
   verifyBooking(
     """
@@ -3456,6 +3510,16 @@ type MutationCreateEventSuccess {
   data: Event!
 }
 
+union MutationCreateGdprExportResult =
+  | CheckBackLaterError
+  | Error
+  | MutationCreateGdprExportSuccess
+  | ZodError
+
+type MutationCreateGdprExportSuccess {
+  data: URL!
+}
+
 union MutationCreateGoogleWalletPassResult =
   | Error
   | MutationCreateGoogleWalletPassSuccess
@@ -3512,6 +3576,12 @@ union MutationDeduplicateBookingsResult = Error | MutationDeduplicateBookingsSuc
 
 type MutationDeduplicateBookingsSuccess {
   data: Int!
+}
+
+union MutationDeleteArticleResult = Error | MutationDeleteArticleSuccess | ZodError
+
+type MutationDeleteArticleSuccess {
+  data: Article!
 }
 
 union MutationDeleteContributionResult = Error | MutationDeleteContributionSuccess | ZodError
@@ -3579,6 +3649,12 @@ union MutationDeleteServiceResult = Error | MutationDeleteServiceSuccess | ZodEr
 
 type MutationDeleteServiceSuccess {
   data: Service!
+}
+
+union MutationDeleteThemeResult = Error | MutationDeleteThemeSuccess | ZodError
+
+type MutationDeleteThemeSuccess {
+  data: Theme!
 }
 
 union MutationDeleteTicketGroupResult = Error | MutationDeleteTicketGroupSuccess | ZodError
@@ -4070,6 +4146,12 @@ union MutationUsePasswordResetResult = Error | MutationUsePasswordResetSuccess |
 
 type MutationUsePasswordResetSuccess {
   data: Boolean!
+}
+
+union MutationUseTicketInviteCodeResult = Error | MutationUseTicketInviteCodeSuccess | ZodError
+
+type MutationUseTicketInviteCodeSuccess {
+  data: Event!
 }
 
 union MutationValidateEmailResult = Error | MutationValidateEmailSuccess | ZodError
@@ -4652,6 +4734,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     lastName: String!
   ): String!
+  """
+  Récupérer un thème par son ID
+  """
+  theme(id: LocalID!): Theme
   themes(
     """
     Récupérer tous les thèmes auquel ont a accès, même ceux qui sont passés
@@ -6086,14 +6172,14 @@ type Theme implements Node {
   """
   canEdit: Boolean!
   createdAt: DateTime!
-  endsAt: DateTime!
+  endsAt: DateTime
   id: ID!
   """
   L'identifiant local de la ressource (sans préfixe)
   """
   localID: LocalID!
   name: String!
-  startsAt: DateTime!
+  startsAt: DateTime
   updatedAt: DateTime!
   values(
     """
@@ -6257,6 +6343,23 @@ type Ticket implements Node {
   group: TicketGroup
   id: ID!
   """
+  Code d'invitation pour ce billet. Uniquement visibles par celleux qui peuvent modifier les billets de l'événement
+  """
+  inviteCode: String
+  """
+  On a été invité à réserver ce billet
+  """
+  invited(
+    """
+    Qui possède ce code d'invitation
+    """
+    code: String
+  ): Boolean!
+  """
+  Personnes ayant utilisé un code d'invitation pour accéder à ce billet
+  """
+  invitedUsers(after: String, before: String, first: Int, last: Int): TicketInvitedUsersConnection!
+  """
   Ce billet appartient au groupe de billet donné
   """
   isInGroup(
@@ -6349,6 +6452,10 @@ input TicketConstraintsInput {
   """
   groupMembers: [UID!]
   """
+  Réservable uniquement via un code d'invitation. Quand true, génère un code d'invitation récupérable avec Ticket.inviteCode. Quand false, supprime un éventuel code d'invitation existant. Quand false, supprime un éventuel code d'invitation existant
+  """
+  invitesOnly: Boolean
+  """
   Étudiant·e·s de certaines filières
   """
   majors: [UID!]
@@ -6401,6 +6508,18 @@ input TicketGroupInput {
   capacity: Int!
   id: ID
   name: String!
+}
+
+type TicketInvitedUsersConnection {
+  edges: [TicketInvitedUsersConnectionEdge!]!
+  nodes: [User!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TicketInvitedUsersConnectionEdge {
+  cursor: String!
+  node: User!
 }
 
 """
@@ -6467,13 +6586,23 @@ type User implements Node & Pictured {
   Les affiliations de l'utilisateur à des groupes dont iel est au bureau
   """
   boardMemberships: [GroupMember!]!
+  """
+  L'utilisateur·ice a réservé un billet pour un évènement donné
+  """
+  bookedTo(
+    event: LocalID!
+    """
+    En utilisant ce billet spécifiquement
+    """
+    using: LocalID
+  ): Boolean!
   booking(
     """
     Identifiant complet (avec le préfixe) pour un bénéficiaire avec compte Churros, ou texte libre pour un bénéficiaire externe
     """
     beneficiary: String
-    event: ID!
-  ): Registration!
+    event: LocalID!
+  ): Registration
   bookings(
     after: String
     before: String
@@ -6496,6 +6625,15 @@ type User implements Node & Pictured {
   canAddMembersTo: [Group!]!
   canBeEdited: Boolean!
   """
+  L'utilisateur·ice peut réserver un billet pour un évènement donné
+  """
+  canBookTicket(
+    """
+    Le billet à vérifier
+    """
+    id: LocalID!
+  ): CanBookExplanation!
+  """
   Les AEs pour lesquelles la personne peut cotiser
   """
   canContributeTo: [StudentAssociation!]!
@@ -6511,6 +6649,10 @@ type User implements Node & Pictured {
   Groupes sur lesquels l'utilisateur·ice peut créer des posts
   """
   canCreatePostsOn: [Group!]!
+  """
+  Groupes sur lesquels l'utilisateur·ice peut créer des thèmes
+  """
+  canCreateThemesOn: [Group!]!
   """
   Vrai si cette personne peut éditer le groupe donné
   """
@@ -6564,6 +6706,10 @@ type User implements Node & Pictured {
   familyTree: FamilyTree!
   firstName: String!
   fullName: String!
+  """
+  Lien de téléchargement de l'export RGPD de données personnelles. Si aucun export n'existe, renvoie null. Voir Mutation.createGdprExport pour créer un export.
+  """
+  gdprExport: URL
   godchildren: [User!]!
   godparent: User
   graduationYear: Int!
@@ -6636,6 +6782,10 @@ type User implements Node & Pictured {
     """
     timestamp: Boolean! = true
   ): String!
+  """
+  Pronoms de l'utilisateur·ice
+  """
+  pronouns: String!
   schoolEmail: Email
   schoolUid: String
   """
@@ -6760,6 +6910,7 @@ input UserProfileInput {
   Pour effacer, mettre unsetPhone à `true`
   """
   phone: PhoneNumber
+  pronouns: String
   """
   Supprimer une date d'anniversaire existante
   """

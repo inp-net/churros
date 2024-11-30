@@ -1,4 +1,4 @@
-import { builder, toHtml } from '#lib';
+import { builder, ENV, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { IssueCommentType, IssueState, IssueStateType, type IssueComment } from '../index.js';
 
@@ -41,7 +41,7 @@ export const IssueType = builder.objectRef<Issue>('Issue').implement({
     number: t.exposeInt('number'),
     url: t.string({
       resolve({ number }) {
-        return `https://git.inpt.fr/inp-net/churros/-/issues/${number}`;
+        return `${ENV.PUBLIC_REPOSITORY_URL}/-/issues/${number}`;
       },
     }),
     deployedIn: t.exposeString('deployedIn'),
