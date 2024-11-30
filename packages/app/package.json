@@ -95,7 +95,7 @@
     "svelte-local-storage-store": "^0.6.4",
     "svelte-preprocess": "^6.0.3",
     "svelte-seo": "^1.6.1",
-    "svelte-store2storage": "^1.0.0",
+    "svelte-store2storage": "^2.0.0",
     "sveltekit-search-params": "^3.0.0",
     "tslib": "^2.8.1",
     "tsx": "^4.19.2",
