@@ -7910,7 +7910,7 @@ __metadata:
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-svelte: "npm:^2.46.0"
     eslint-plugin-unicorn: "npm:^56.0.1"
-    execa: "npm:^9.4.1"
+    execa: "npm:^9.5.1"
     husky: "npm:^9.1.7"
     kleur: "npm:^4.1.5"
     lint-staged: "npm:^15.2.10"
@@ -10583,7 +10583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^9.3.0, execa@npm:^9.4.1, execa@npm:^9.5.1":
+"execa@npm:^9.3.0, execa@npm:^9.5.1":
   version: 9.5.1
   resolution: "execa@npm:9.5.1"
   dependencies:
