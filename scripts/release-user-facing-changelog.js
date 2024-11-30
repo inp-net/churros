@@ -34,7 +34,7 @@ let newChangelog = changelog.replace(
 // Start by deleting all lines after ^[unreleased]: https://....$
 
 const tagsStartLineIndex = newChangelog.search(
-  /\[Unreleased\]: https:\/\/git.inpt.fr\/churros\/churros\/-\/compare\/v.*\.\.\.main/,
+  /\[Unreleased\]: https:\/\/git.inpt.fr\/churros\/churros\/-\/compare\/.*/,
 );
 
 newChangelog = newChangelog.slice(0, tagsStartLineIndex);
