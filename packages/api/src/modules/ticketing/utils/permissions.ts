@@ -37,6 +37,7 @@ export const canSeeTicketPrismaIncludes = {
   openToGroups: true,
   openToSchools: true,
   openToMajors: true,
+  invited: true,
   event: {
     include: {
       managers: { include: { user: true } },
@@ -69,6 +70,8 @@ export function canSeeTicket(
     openToContributors,
     openToApprentices,
     openToExternal,
+    invited,
+    inviteCode,
   } = ticket;
 
   // Admins can see everything
@@ -80,6 +83,9 @@ export function canSeeTicket(
 
   // Banned users cannot see any ticket
   if (event.bannedUsers.some(({ id }) => id === user?.id)) return false;
+
+  // When the ticket has an invite code only invited users can see it
+  if (inviteCode && !invited.some(({ id }) => id === user?.id)) return false;
 
   // External accounts or logged-out users can only see tickets not excluded from external users
   if (openToExternal === false && !user?.major) return false;
@@ -356,6 +362,7 @@ canBookTicket.prismaIncludes = {
   openToSchools: true,
   openToMajors: true,
   registrations: true,
+  invited: true,
 } as const satisfies Prisma.TicketInclude;
 
 canBookTicket.userPrismaIncludes = {

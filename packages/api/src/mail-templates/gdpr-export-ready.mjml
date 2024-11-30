@@ -1,0 +1,26 @@
+
+<mjml>
+  <mj-head>
+    <mj-title>
+      Ton export de données personnelles Churros est prêt
+    </mj-title>
+    <mj-include path="./_head.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml" />
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Salut {{fullName}}, tu as fait une demande d'export de tes données personnelles. L'export est prêt à être téléchargé!
+        </mj-text>
+        <mj-button href="{{downloadLink}}">
+          Télécharger mes données
+        </mj-button>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml" />
+  </mj-body>
+</mjml>

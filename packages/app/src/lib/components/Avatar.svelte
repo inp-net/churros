@@ -17,7 +17,7 @@
 </script>
 
 <svelte:element
-  this={enlarge ? 'div' : 'a'}
+  this={enlarge || !href ? 'div' : 'a'}
   class="avatar"
   class:selectable
   class:selected

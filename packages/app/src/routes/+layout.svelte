@@ -10,7 +10,7 @@
   import { setupIsMobile } from '$lib/mobile';
   import '$lib/polyfills';
   import { setSentryUser } from '$lib/sentry';
-  import { theme } from '$lib/theme.js';
+  import { editingTheme, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
@@ -38,6 +38,9 @@
   }
 
   $: setSentryUser($RootLayout.data?.me ?? null);
+
+  $: if (browser && $editingTheme)
+    RootLayout.fetch({ variables: { editingThemeId: $editingTheme.id, editingTheme: true } });
 
   // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);
@@ -99,6 +102,7 @@
       });
     }
   });
+
   let openIssueReport: () => void;
 </script>
 
@@ -160,6 +164,9 @@
 
   [data-vaul-drawer-wrapper] {
     position: relative;
-    background-color: var(--bg);
+    background: var(--bg);
+    background-image: var(--bg-pattern);
+    background-attachment: fixed;
+    transition: ease 1s background-image;
   }
 </style>

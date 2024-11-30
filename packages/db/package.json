@@ -1,11 +1,10 @@
 {
   "name": "@churros/db",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "scripts": {
     "prisma": "prisma",
     "generate": "run-s \"generate:*\"",
     "generate:prisma": "prisma generate",
-    "generate:patch": "patch src/client/runtime/library.d.ts < patches/runtime_library.patch",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio",
     "format": "prettier --write .",
@@ -13,18 +12,18 @@
     "check": "exit 0"
   },
   "dependencies": {
-    "prisma": "^5.20.0"
+    "prisma": "^5.22.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.0.3",
-    "@pothos/core": "^4.2.0",
-    "@pothos/plugin-prisma": "^4.2.1",
-    "@prisma/client": "^5.20.0",
+    "@faker-js/faker": "^9.2.0",
+    "@pothos/core": "^4.3.0",
+    "@pothos/plugin-prisma": "^4.4.0",
+    "@prisma/client": "^5.22.0",
     "graphql": "^16.9.0",
     "ioredis": "^5.4.1",
-    "npm-run-all2": "^6.2.3",
+    "npm-run-all2": "^7.0.1",
     "npm-upgrade": "^3.1.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.7.2"
   },
   "prisma": {
     "seed": "tsx ./seed/index.ts"

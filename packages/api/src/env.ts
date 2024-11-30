@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const environmentSchema = z.object({
-  DATABASE_URL: uri('postgres').describe(
+  DATABASE_URL: uri('postgres', 'postgresql').describe(
     'Database connection string. See https://www.prisma.io/docs/reference/database-reference/connection-urls',
   ),
   REDIS_URL: uri('redis').describe('Redis connection string.'),
@@ -59,10 +59,15 @@ export const environmentSchema = z.object({
   PUBLIC_VAPID_KEY: z.string().describe('Public VAPID key. Used to send push notifications.'),
   VAPID_PRIVATE_KEY: z.string().describe('Private VAPID key. Used to send push notifications.'),
   PUBLIC_CONTACT_EMAIL: z.string().email().describe('Contact email.'),
+  PUBLIC_REPOSITORY_URL: uri()
+    .describe('URL to the Churros repository. Must be hosted on a Gitlab instance')
+    .default('https://git.inpt.fr/churros/churros'),
   GITLAB_PROJECT_ID: z
     .string()
     .regex(/^\d+$/)
-    .describe("Internal ID of the Churros project's repo, at https://git.inpt.fr/inp-net/churros.")
+    .describe(
+      "Internal ID of the Churros project's repo, must correspond to the repository configured with PUBLIC_REPOSITORY_URL.",
+    )
     .default('1013'),
   GITLAB_SUDO_TOKEN: z
     .string()

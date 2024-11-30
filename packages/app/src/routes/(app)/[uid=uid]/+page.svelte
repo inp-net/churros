@@ -34,6 +34,7 @@
   import IconEmail from '~icons/msl/mail-outline';
   import IconAddress from '~icons/msl/map-outline';
   import IconOtherEmails from '~icons/msl/stacked-email-outline';
+  import IconNickname from '~icons/msl/signature';
   import type { PageData } from './$houdini';
 
   const formatPhoneNumber = (phone: string) =>
@@ -102,6 +103,11 @@
       </Submenu>
     {:else if profile.__typename === 'User' && tab === 'infos'}
       <Submenu>
+        {#if profile.nickname}
+          <SubmenuItem icon={IconNickname} subtext="Surnom">
+            <LoadingText value={profile.nickname} />
+          </SubmenuItem>
+        {/if}
         {#if profile.phone}
           <SubmenuItem
             icon={IconPhone}

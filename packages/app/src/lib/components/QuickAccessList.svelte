@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fragment, graphql, type QuickAccessList } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { page } from '$app/stores';
   import ButtonInk from '$lib/components/ButtonInk.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
@@ -27,6 +28,7 @@
         bookmarks @list(name: "List_Bookmarks") {
           id
           path
+          url
         }
       }
     `),
@@ -39,6 +41,12 @@
       }
     }
   `);
+
+  function bookmarkHref({ url, path }: { url: URL | null; path: string }): string {
+    if (!url) return path;
+    if (url.origin === $page.url.origin) return addReferrer(url.pathname);
+    return url.toString();
+  }
 
   export let editing = false;
 
@@ -66,9 +74,9 @@
     </h2>
 
     <ul class="nobullet cards">
-      {#each $data?.bookmarks ?? [] as { path, id } (id)}
+      {#each $data?.bookmarks ?? [] as { path, id, url } (id)}
         <li class="card" transition:scale={{ duration: 200 }}>
-          <a href={addReferrer(path)}>
+          <a href={bookmarkHref({ path, url })}>
             {#await pinDisplay(path)}
               <LoadingText>{path}</LoadingText>
             {:then data}
@@ -93,9 +101,14 @@
       {:else}
         <li class="muted">
           <p>
-            Aucune page épinglée à l'accès rapide. Utilise
-            <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
-            ajouter.
+            <!-- the if condition is to prevent showing the bigass explanation message on mobile when not editing -->
+            {#if !mobile || editing}
+              Aucune page épinglée à l'accès rapide. Rends-toi sur la page à épingler, puis
+              <IconDots></IconDots> et <IconBookmark></IconBookmark>&nbsp;Accès rapide pour
+              l'ajouter.
+            {:else}
+              Aucune page épinglée.
+            {/if}
           </p>
         </li>
       {/each}
@@ -117,7 +130,7 @@
       class:editing
       class:empty={($data?.bookmarks.filter(allLoaded)?.length ?? 0) === 0}
     >
-      {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id } (id)}
+      {#each $data?.bookmarks.filter(allLoaded) ?? [] as { path, id, url } (id)}
         <li class="item" transition:fly={{ x: -50, duration: 200 }}>
           <div class="remove-button">
             <ButtonGhost
@@ -138,7 +151,7 @@
               </svelte:fragment>
             </ButtonGhost>
           </div>
-          <a href={addReferrer(path)}>
+          <a href={bookmarkHref({ url, path })}>
             {#await pinDisplay(path)}
               <LoadingText>{path}</LoadingText>
             {:then data}
@@ -163,9 +176,8 @@
       {:else}
         <li class="muted">
           <p>
-            Aucune page épinglée à l'accès rapide. Utilise
-            <IconDots></IconDots> puis <IconBookmark></IconBookmark>&nbsp;Accès rapide pour en
-            ajouter.
+            Aucune page épinglée à l'accès rapide. Rends-toi sur la page à épingler, puis
+            <IconDots></IconDots> et <IconBookmark></IconBookmark>&nbsp;Accès rapide pour l'ajouter.
           </p>
         </li>
       {/each}
@@ -180,6 +192,11 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
+  }
+
+  .remove-button,
+  .icon {
+    font-size: 1.2em;
   }
 
   .bookmarks {
@@ -250,11 +267,6 @@
     height: 1em;
     overflow: hidden;
     border-radius: 10000px;
-  }
-
-  .remove-button,
-  .icon {
-    font-size: 1.2em;
   }
 
   .items {

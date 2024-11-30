@@ -18,7 +18,6 @@ export async function googleSheetsClient(userId: string): Promise<sheets_v4.Shee
     refresh_token: googleCredential.refresh,
   });
 
-  // @ts-expect-error googleapi is typed weirdly
   return google.sheets({
     version: 'v4',
     auth: authClient,
