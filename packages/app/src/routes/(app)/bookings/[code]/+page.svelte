@@ -197,7 +197,7 @@
               "Impossible d'ajouter le pass à Google Wallet",
             )
           )
-            window.location.href = result.data.createGoogleWalletPass.data;
+            globalThis.location.href = result.data.createGoogleWalletPass.data;
         }}
       />
       <ButtonAddToAppleWallet
@@ -213,7 +213,7 @@
               "Impossible d'ajouter le pass à Apple Wallet",
             )
           )
-            window.location.href = result.data.createAppleWalletPass.data;
+            globalThis.location.href = result.data.createAppleWalletPass.data;
         }}
       />
     </section>
