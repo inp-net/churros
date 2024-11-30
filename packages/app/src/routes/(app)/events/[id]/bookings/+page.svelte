@@ -65,7 +65,7 @@
     loaded($PageEventAllBookings.data.event.bookingsCounts.total)
   ) {
     const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', {
         detail: `${total} réservation${total > 1 ? 's' : ''}`,
       }),
@@ -284,7 +284,7 @@
 
   .booking:hover,
   .booking:focus-visible {
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   .code {

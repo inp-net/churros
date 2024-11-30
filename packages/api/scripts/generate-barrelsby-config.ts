@@ -76,7 +76,7 @@ const main = () => {
  */
 
 // organize-imports-ignore
-${existsSync(`${modulePath}/types/index.ts`) ? `export * from './types/index.js';\n` : ''}${existsSync(`${modulePath}/resolvers/index.ts`) ? `export * from './resolvers/index.js';\n\n` : ''}`;
+${existsSync(`${modulePath}/types/`) ? `export * from './types/index.js';\n` : ''}${existsSync(`${modulePath}/resolvers/`) ? `export * from './resolvers/index.js';\n\n` : ''}`;
 
     writeFileSync(`${modulePath}/index.ts`, moduleIndexContent);
 

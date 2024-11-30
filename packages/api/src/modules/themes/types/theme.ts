@@ -1,15 +1,12 @@
 import { builder } from '#lib';
 import { DateTimeScalar, VisibilityEnum } from '#modules/global';
-import { canEditTheme, canSeeTheme, canSetThemeVisibility } from '#modules/themes/utils';
+import { canEditTheme, canSetThemeVisibility } from '#modules/themes/utils';
 import { ThemeVariantType } from './theme-variant.js';
 
 export const ThemeType = builder.prismaNode('Theme', {
   id: { field: 'id' },
   include: {
     author: true,
-  },
-  authScopes(theme, { user }) {
-    return canSeeTheme(user, theme);
   },
   fields: (t) => ({
     name: t.exposeString('name'),
@@ -29,8 +26,8 @@ export const ThemeType = builder.prismaNode('Theme', {
       }),
     }),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
-    startsAt: t.expose('startsAt', { type: DateTimeScalar }),
-    endsAt: t.expose('endsAt', { type: DateTimeScalar }),
+    startsAt: t.expose('startsAt', { type: DateTimeScalar, nullable: true }),
+    endsAt: t.expose('endsAt', { type: DateTimeScalar, nullable: true }),
     author: t.relation('author', { nullable: true }),
     canEdit: t.boolean({
       description: "Si l'utilisateur·ice connecté·e peut éditer (modifier ou supprimer) le thème",

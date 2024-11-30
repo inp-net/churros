@@ -63,7 +63,7 @@
     display: flex;
     gap: 1rem;
     padding: 1rem 1.5rem;
-    background-color: var(--bg);
+    background: var(--bg);
     border-radius: var(--radius-block);
   }
 
