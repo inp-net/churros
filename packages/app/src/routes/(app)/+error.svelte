@@ -43,7 +43,7 @@
     <div class="actions">
       <ButtonSecondary
         on:click={() => {
-          window.location.reload();
+          globalThis.location.reload();
         }}>Recharger</ButtonSecondary
       >
       <ButtonSecondary noClientSideNavigation href={loginRedirection({ explain: false })}
@@ -92,7 +92,7 @@
     height: 100%;
     font-family: var(--font-mono);
     color: var(--text);
-    background-color: var(--bg);
+    background: var(--bg);
 
     --bg: black;
     --text: #3edb46;

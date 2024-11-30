@@ -2,6 +2,7 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { LocalID } from '#modules/global';
 import { TicketType } from '#modules/ticketing/types';
+import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
 import type { BooleanConstraint } from '../types/boolean-constraint.js';
 import { TicketConstraintsInput } from '../types/ticket-constraints-input.js';
@@ -29,6 +30,11 @@ builder.mutationField('updateTicketConstraints', (t) =>
           'Contraintes pour limiter la réservation du billet. Les différentes contraintes sont appliquées avec un “ET logique”: il faut que chacune des contraintes spécificées soient remplies par la personne voulant réserver.',
         type: TicketConstraintsInput,
       }),
+      kickInvited: t.arg.boolean({
+        description:
+          "Lors d'un passage de TicketConstraintsInput.invitesOnly à false, supprime les invitations existantes, enlevant l'accès au billet aux personnes ayant utilisé le lien d'invitation avant qu'il soit retiré",
+        defaultValue: true,
+      }),
     },
     async authScopes(_, { ticket: ticketId }, { user }) {
       const event = await prisma.ticket
@@ -42,8 +48,19 @@ builder.mutationField('updateTicketConstraints', (t) =>
     },
     async resolve(query, _, args, { user, caveats }) {
       const id = ensureGlobalId(args.ticket, 'Ticket');
-      await log('ticketing', 'update-ticket-constraints', args, id, user);
       const { constraints } = args;
+      const inviteCode = constraints.invitesOnly
+        ? nanoid(8)
+        : constraints.invitesOnly === false
+          ? null
+          : undefined;
+      await log(
+        'ticketing',
+        'update-ticket-constraints',
+        { ...args, generatedInviteCode: inviteCode },
+        id,
+        user,
+      );
       const ticket = await prisma.ticket.update({
         ...query,
         where: { id },
@@ -60,6 +77,8 @@ builder.mutationField('updateTicketConstraints', (t) =>
           openToMajors: connectByUID(constraints.majors),
           openToGroups: connectByUID(constraints.groupMembers),
           onlyManagersCanProvide: constraints.managersOnly ?? undefined,
+          inviteCode,
+          invited: constraints.invitesOnly === false && args.kickInvited ? { set: [] } : undefined,
         },
       });
 

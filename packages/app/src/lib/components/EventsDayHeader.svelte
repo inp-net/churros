@@ -41,11 +41,11 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.25em 1em;
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   header.primary {
-    background-color: var(--bg);
+    background: var(--bg);
   }
 
   .day,

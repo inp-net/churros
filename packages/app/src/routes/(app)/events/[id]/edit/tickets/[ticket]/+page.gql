@@ -50,6 +50,7 @@ query PageEventEditTicket($id: LocalID!, $ticket: LocalID!) {
         }
       }
       openToPromotions
+      inviteCode
       onlyManagersCanProvide
       countingPolicy
     }

@@ -12,6 +12,7 @@
   import InputToggle from '$lib/components/InputToggle.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import IconInviteOnly from '~icons/msl/share-outline';
   import PickGroup from '$lib/components/PickGroup.svelte';
   import PickMajor from '$lib/components/PickMajor.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
@@ -88,7 +89,7 @@
 
   $: ticketName = loading($PageEventEditTicket?.data?.event.ticket?.name, '');
   $: if (ticketName && browser) {
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
     );
   }
@@ -472,6 +473,24 @@
             >
               Externes
             </SubmenuItemBooleanConstraint>
+            <SubmenuItem
+              href={route('/events/[id]/edit/tickets/[ticket]/invited', {
+                id: $page.params.id,
+                ticket: $page.params.ticket,
+              })}
+              icon={IconInviteOnly}
+            >
+              Sur invitation
+              <svelte:fragment slot="subtext">
+                {#if !loaded(event.ticket.inviteCode)}
+                  <LoadingText />
+                {:else if event.ticket.inviteCode}
+                  <strong class="primary">Code d'invitation {event.ticket.inviteCode} actif</strong>
+                {:else}
+                  <span class="muted">Désactivé</span>
+                {/if}
+              </svelte:fragment>
+            </SubmenuItem>
             <PickGroup
               multiple
               let:open
@@ -557,6 +576,7 @@
             </PickMajor>
 
             <SubmenuItem
+              wideRightPart
               icon={IconPromotion}
               subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
                 if (names.length === 0) return 'Aucune contrainte';
@@ -567,9 +587,10 @@
               })}
               >Promos
               <InputCheckboxes
+                --checkboxes-direction="row-reverse"
                 value={mapAllLoading(event.ticket.openToPromotions, (...promos) => promos)}
                 slot="right"
-                options={[0, 1, 2].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
+                options={[3, 2, 1, 0].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
                 on:change={async ({ detail }) => {
                   if (!event.ticket) return;
                   toasts.mutation(

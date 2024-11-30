@@ -25,7 +25,7 @@ import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
-import { default as parseUserAgent } from 'ua-parser-js';
+import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { ZodError } from 'zod';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';

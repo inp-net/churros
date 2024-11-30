@@ -12,20 +12,20 @@
     type PaymentMethod$options,
     type SubmitBookingPayment$input,
   } from '$houdini';
-  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import Alert from '$lib/components/Alert.svelte';
+  import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
+  import InputScale from '$lib/components/InputScale.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import PillLink from '$lib/components/PillLink.svelte';
   import { DISPLAY_PAYMENT_METHODS, formatEUR, ICONS_PAYMENT_METHODS } from '$lib/display';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
   import { allLoaded, loaded } from '$lib/loading';
   import IconBack from '~icons/msl/arrow-left-alt';
   import IconOpenInNew from '~icons/msl/open-in-new';
-  import PillLink from '$lib/components/PillLink.svelte';
-  import InputScale from '$lib/components/InputScale.svelte';
 
   export let me;
   $: dataMe = fragment(
@@ -142,6 +142,7 @@
   $: if (loaded($data?.wantsToPay) && allLoaded($data.ticket))
     wantsToPay ??= $data?.wantsToPay ?? $data?.ticket.actualMinimumPrice;
 
+  /** User interacted with the modal */
   let dirty = false;
   let historyStack: Array<Step> = ['method'];
   $: step = historyStack.at(-1)!;
@@ -187,24 +188,21 @@
   }
 </script>
 
-<ModalOrDrawer bind:open={_open} let:close>
-  <header slot="header">
-    <h2>
-      {#if paymentError}
-        Erreur
-      {:else if paymentInProgress}
-        Paiement en cours...
-      {:else if step === 'price'}
-        Prix solidaire
-      {:else if step === 'method'}
-        Moyen de paiement
-      {:else if step === 'lydia'}
-        Paiement par Lydia
-      {:else}
-        Paiement
-      {/if}
-    </h2>
-  </header>
+<ModalOrDrawer
+  title={paymentError
+    ? 'Erreur'
+    : paymentInProgress
+      ? 'Paiement en cours...'
+      : step === 'price'
+        ? 'Prix solidaire'
+        : step === 'method'
+          ? 'Moyen de paiement'
+          : step === 'lydia'
+            ? 'Paiement par Lydia'
+            : 'Paiement'}
+  bind:open={_open}
+  let:close
+>
   <div class="contents">
     {#if paymentError}
       <Alert theme="danger">{paymentError}</Alert>
@@ -285,7 +283,7 @@
         >
         <ButtonSecondary
           on:click={() => {
-            window.location.reload();
+            globalThis.location.reload();
           }}>Re-vérifier</ButtonSecondary
         >
       </div>

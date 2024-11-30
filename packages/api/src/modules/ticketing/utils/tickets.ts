@@ -16,6 +16,7 @@ export async function getTicketsWithConstraints(
       openToGroups: true,
       openToSchools: true,
       openToMajors: true,
+      invited: true,
       event: {
         include: {
           managers: { include: { user: true } },

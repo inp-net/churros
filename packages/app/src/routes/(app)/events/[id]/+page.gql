@@ -1,4 +1,5 @@
 query PageEventDetail($id: LocalID!) @loading {
+  loggedIn
   me {
     ...ModalBookTicketMe
   }

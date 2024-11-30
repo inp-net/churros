@@ -52,7 +52,7 @@
 
   label[aria-checked='true'] {
     color: var(--primary);
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
     border-color: var(--primary);
   }
 

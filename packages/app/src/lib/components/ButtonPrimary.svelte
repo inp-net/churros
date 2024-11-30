@@ -52,7 +52,7 @@
     padding: 0.25rem 0.75rem;
     color: var(--original-bg);
     cursor: pointer;
-    background-color: var(--primary);
+    background: var(--primary);
     border: var(--border-block) solid var(--primary);
     border-radius: 5px;
 
@@ -68,7 +68,7 @@
   }
 
   .button-primary.danger {
-    background-color: var(--danger);
+    background: var(--danger);
     border-color: var(--danger);
   }
 

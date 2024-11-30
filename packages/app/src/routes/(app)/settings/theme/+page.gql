@@ -1,0 +1,13 @@
+query PageSettingsTheme @loading {
+  themes(all: true) {
+    localID
+    id
+    ...ThemePreviewCard
+  }
+
+  me {
+    canCreateThemesOn {
+      ...PickGroup @mask_disable
+    }
+  }
+}

@@ -67,7 +67,7 @@
   }
 
   dialog[data-theme-variant='dark'] {
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   dialog.tall {
@@ -98,7 +98,7 @@
 
   dialog[open]::backdrop {
     overscroll-behavior: contain;
-    background-color: var(--backdrop);
+    background: var(--backdrop);
     backdrop-filter: blur(10px);
     animation: fade-in 0.75s ease;
   }
@@ -122,7 +122,7 @@
     }
 
     to {
-      background-color: var(--backdrop);
+      background: var(--backdrop);
       backdrop-filter: blur(10px);
     }
   }

@@ -79,7 +79,11 @@
   let openCancellationConfirmation: () => void;
   let openPaymentModal: (step?: Step) => void;
 
-  $: if (loading($PageBooking.data?.booking.awaitingPayment, false)) openPaymentModal?.();
+  $: if (
+    !$page.url.searchParams.has('dontpay') &&
+    loading($PageBooking.data?.booking.awaitingPayment, false)
+  )
+    openPaymentModal?.();
 </script>
 
 <svelte:window
@@ -90,8 +94,7 @@
   }}
 />
 
-<ModalOrDrawer bind:open={openCancellationConfirmation}>
-  <h2 slot="header">Es-tu sûr·e ?</h2>
+<ModalOrDrawer title="Es-tu sûr·e" narrow bind:open={openCancellationConfirmation}>
   <div class="confirm-cancellation">
     <p class="explainer">
       Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place (s'il en
@@ -112,7 +115,7 @@
             "Impossible d'annuler la place",
           )
         )
-          await goto(route('/bookings'));
+          await goto($page.url.searchParams.get('from') ?? route('/bookings'));
       }}>Oui, je confirme</ButtonPrimary
     >
   </div>
@@ -194,7 +197,7 @@
               "Impossible d'ajouter le pass à Google Wallet",
             )
           )
-            window.location.href = result.data.createGoogleWalletPass.data;
+            globalThis.location.href = result.data.createGoogleWalletPass.data;
         }}
       />
       <ButtonAddToAppleWallet
@@ -210,7 +213,7 @@
               "Impossible d'ajouter le pass à Apple Wallet",
             )
           )
-            window.location.href = result.data.createAppleWalletPass.data;
+            globalThis.location.href = result.data.createAppleWalletPass.data;
         }}
       />
     </section>
@@ -258,7 +261,7 @@
       <section class="cancel">
         <ButtonSecondary track="booking-cancel-start" danger on:click={openCancellationConfirmation}
           ><IconCancel />
-          {#if loading(booking.paid, false)}Libérer{:else}Annuler{/if} ma place</ButtonSecondary
+          {#if loading(booking.paid, false)}Libérer{:else}Annuler{/if} cette place</ButtonSecondary
         >
       </section>
     {/if}

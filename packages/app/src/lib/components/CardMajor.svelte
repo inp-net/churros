@@ -27,7 +27,7 @@
   a:hover,
   a:focus-visible {
     article {
-      background-color: var(--primary-bg);
+      background: var(--primary-bg);
       border-color: var(--border);
     }
   }

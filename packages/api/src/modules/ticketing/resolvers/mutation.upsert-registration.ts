@@ -56,6 +56,7 @@ builder.mutationField('upsertRegistration', (t) =>
               tickets: true,
             },
           },
+          invited: true,
           openToGroups: true,
           openToSchools: true,
           openToMajors: true,

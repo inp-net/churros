@@ -54,7 +54,7 @@
     overflow: hidden;
     color: var(--muted-text);
     text-align: center;
-    background-color: var(--muted-bg);
+    background: var(--muted-bg);
   }
 
   .carousel-image {
@@ -82,7 +82,7 @@
     font-size: 1.3rem;
     color: inherit;
     cursor: pointer;
-    background-color: var(--bg);
+    background: var(--bg);
     border: none;
     border-radius: 50%;
     box-shadow: var(--shadow);

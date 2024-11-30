@@ -1,0 +1,28 @@
+query PageEventEditTicketInvited($id: LocalID!, $ticket: LocalID!) @loading {
+  event(id: $id) {
+    canEdit(assert: "Tu n'a pas les droits pour gérer les invitations de ce billet")
+    ticket(id: $ticket) {
+      inviteCode
+      invitedUsers(first: 10) @paginate @loading(count: 10) {
+        totalCount
+        edges {
+          node {
+            id
+            ...AvatarUser
+            fullName
+            bookedWithThisTicket: bookedTo(event: $id, using: $ticket)
+            booked: bookedTo(event: $id)
+            canBook: canBookTicket(id: $ticket) {
+              can
+              why
+            }
+            booking(event: $id) {
+              code
+              ...BookingStatus
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,8 @@
   nav {
     display: flex;
     flex-direction: column;
+    container-name: submenu;
+    container-type: inline-size;
   }
 
   nav > :global(*:not(h2, h3, h4)) {

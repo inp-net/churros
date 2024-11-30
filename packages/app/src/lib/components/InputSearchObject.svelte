@@ -85,7 +85,7 @@
 
   .input-container :global(.autocomplete .autocomplete-list) {
     color: var(--text);
-    background-color: var(--bg);
+    background: var(--bg);
     border: var(--border-block) solid;
     border-top: none;
     border-radius: var(--radius-block);

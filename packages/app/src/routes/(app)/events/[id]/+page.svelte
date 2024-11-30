@@ -1,15 +1,17 @@
 <script lang="ts">
   import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
-  import CardBooking from '$lib/components/CardBooking.svelte';
-  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
+  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
+  import CardBooking from '$lib/components/CardBooking.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import HTMLContent from '$lib/components/HTMLContent.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
   import { sentenceJoin } from '$lib/i18n';
@@ -19,11 +21,9 @@
   import IconLocation from '~icons/msl/location-on-outline';
   import type { PageData } from './$houdini';
   import ModalBookTicket from './ModalBookTicket.svelte';
-  import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
-  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
   export let data: PageData;
 
-  $: ({ PageEventDetail, RootLayout } = data);
+  $: ({ PageEventDetail } = data);
 
   const ORGANIZERS_LIMIT = 3;
 
@@ -45,7 +45,7 @@
   }}
 />
 
-<MaybeError result={$PageEventDetail} let:data={{ event, me }}>
+<MaybeError result={$PageEventDetail} let:data={{ event, me, loggedIn }}>
   {@const highlightedBooking = event.highlightedBooking.at(0)}
   {@const tooManyOrganizers = [event.organizer, ...event.coOrganizers].length > ORGANIZERS_LIMIT}
   {#if tooManyOrganizers}
@@ -133,6 +133,7 @@
       {/if}
       {#each event.tickets as ticket}
         <CardTicket
+          highlighted={$page.url.searchParams.get('ticket') === ticket.localID}
           on:book={({ detail }) => {
             bookingTicketId = detail;
             bookTicket?.();
@@ -142,7 +143,7 @@
           places={ticket}
         />
       {:else}
-        {#if !$RootLayout.data?.loggedIn}
+        {#if !loggedIn}
           <Alert theme="warning">
             Il est possible que tu doive <a data-sveltekit-reload href={refroute('/login')}
               >te connecter</a

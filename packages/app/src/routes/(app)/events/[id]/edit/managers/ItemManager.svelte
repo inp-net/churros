@@ -77,11 +77,12 @@
     <AvatarUser
       href={$data
         ? mapAllLoading([$data], ({ user, ...d }) => {
-            if (d.__typename === 'InheritedEventManager')
-              {return (
+            if (d.__typename === 'InheritedEventManager') {
+              return (
                 refroute('/groups/[uid]/members', d.groupMember.group.uid ?? '') +
                 `#${user.uid ?? ''}`
-              );}
+              );
+            }
             return refroute('/[uid=uid]', user.uid ?? '');
           })
         : ''}

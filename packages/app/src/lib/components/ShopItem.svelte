@@ -48,13 +48,13 @@
   .container {
     display: flex;
     flex: 0 0 auto;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
     width: 18em;
     max-width: 18em;
     height: auto;
     overflow: hidden;
-    background-color: var(--muted-bg);
+    background: var(--muted-bg);
     border-radius: 14px;
   }
 
@@ -70,8 +70,8 @@
 
   .info {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
     justify-content: space-between;
     padding: 1em;
   }

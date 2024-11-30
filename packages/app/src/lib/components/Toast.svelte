@@ -107,7 +107,7 @@
     align-items: center;
     padding: 0.5rem 0.75rem;
     overflow: hidden;
-    background-color: var(--bg);
+    background: var(--bg);
     border-radius: var(--radius-block);
   }
 

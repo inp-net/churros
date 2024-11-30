@@ -21,7 +21,7 @@
         if (!(currentTarget instanceof HTMLTextAreaElement)) return;
         const result = await mutate(UpdateUserOtherEmails, {
           uid: $page.params.uid,
-          emails: currentTarget.value.split('\r\n'),
+          emails: currentTarget.value.split(/\r\n|\r|\n/),
         });
         toasts.mutation(
           result,
@@ -30,11 +30,7 @@
           'Impossible de mettre à jour les adresses email',
         );
       }}
-      value={onceAllLoaded(
-        user.otherEmails ?? [],
-        (...emails) => emails.join('\r\n'),
-        'Chargement…',
-      )}
+      value={onceAllLoaded(user.otherEmails ?? [], (...emails) => emails.join('\n'), 'Chargement…')}
     ></InputLongText>
   </div>
 </MaybeError>
