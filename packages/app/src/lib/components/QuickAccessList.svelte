@@ -194,6 +194,11 @@
     margin-bottom: 1rem;
   }
 
+  .remove-button,
+  .icon {
+    font-size: 1.2em;
+  }
+
   .bookmarks {
     display: flex;
     flex-direction: column;

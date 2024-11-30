@@ -122,7 +122,7 @@
 
   .submenu-item.current {
     color: var(--primary);
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   .submenu-item.highlighted {
