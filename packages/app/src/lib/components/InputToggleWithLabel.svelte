@@ -10,7 +10,7 @@
 
 <label class="switch-container">
   <slot name="label" {label}><LoadingText value={label}></LoadingText></slot>
-  <InputToggle bind:value on:change />
+  <InputToggle twoway bind:value on:change />
 </label>
 
 <style>

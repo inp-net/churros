@@ -10,7 +10,7 @@
   import { setupIsMobile } from '$lib/mobile';
   import '$lib/polyfills';
   import { setSentryUser } from '$lib/sentry';
-  import { theme } from '$lib/theme.js';
+  import { editingTheme, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
   import '../design/app.scss';
@@ -38,6 +38,9 @@
   }
 
   $: setSentryUser($RootLayout.data?.me ?? null);
+
+  $: if (browser && $editingTheme)
+    RootLayout.fetch({ variables: { editingThemeId: $editingTheme.id, editingTheme: true } });
 
   // @ts-expect-error houdini's $type does not include layout data from server load
   setupIsMobile(data.mobile);
@@ -72,7 +75,7 @@
     theme.subscribe(($theme) => {
       const selectedVariant =
         $theme.variant === 'auto'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? globalThis.matchMedia('(prefers-color-scheme: dark)').matches
             ? 'dark'
             : 'light'
           : $theme.variant;
@@ -80,7 +83,7 @@
       document.documentElement.dataset.themeVariant = selectedVariant;
     });
 
-    if (browser && window.location.hostname === 'staging-churros.inpt.fr') {
+    if (browser && globalThis.location.hostname === 'staging-churros.inpt.fr') {
       toasts.warn(
         "T'es en staging",
         'Tu sais pas ce que ça veut dire? reviens sur churros.inpt.fr.',
@@ -92,13 +95,14 @@
       );
     }
 
-    if (browser && window.location.hostname === 'localhost') {
+    if (browser && globalThis.location.hostname === 'localhost') {
       toasts.debug("T'es en dev", '', {
         data: {},
         lifetime: 2000,
       });
     }
   });
+
   let openIssueReport: () => void;
 </script>
 
@@ -160,6 +164,9 @@
 
   [data-vaul-drawer-wrapper] {
     position: relative;
-    background-color: var(--bg);
+    background: var(--bg);
+    background-image: var(--bg-pattern);
+    background-attachment: fixed;
+    transition: ease 1s background-image;
   }
 </style>

@@ -1,3 +1,5 @@
+import { loading, type MaybeLoading } from '$lib/loading';
+
 const SENTENCE_JOINS = {
   fr: {
     and: 'et',
@@ -47,6 +49,7 @@ export function pluralize(singular: string, count: number, plural?: string): str
  * @param count the amount of things there is
  * @returns a sentence part that says how many things there are
  */
-export function countThing(thing: string, count: number): string {
-  return `${count} ${pluralize(thing, count)}`;
+export function countThing(thing: string, count: MaybeLoading<number>): string {
+  const _count = loading(count, 3);
+  return `${_count} ${pluralize(thing, _count)}`;
 }

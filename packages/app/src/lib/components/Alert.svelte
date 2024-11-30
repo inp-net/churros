@@ -32,7 +32,7 @@
 
   onMount(() => {
     if (!element) return;
-    if (!mobile && !window.matchMedia('(max-width: 900px)')) return;
+    if (!mobile && !globalThis.matchMedia('(max-width: 900px)')) return;
     if (element.getBoundingClientRect().left < 1) element.style.borderRadius = '0';
   });
 </script>
@@ -63,7 +63,7 @@
     display: flex;
     gap: 1rem;
     padding: 1rem 1.5rem;
-    background-color: var(--bg);
+    background: var(--bg);
     border-radius: var(--radius-block);
   }
 
