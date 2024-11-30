@@ -88,7 +88,7 @@
     loaded($PageEventAllBookings.data.event.bookingsCounts.total)
   ) {
     const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', {
         detail: `${total} réservation${total > 1 ? 's' : ''}`,
       }),

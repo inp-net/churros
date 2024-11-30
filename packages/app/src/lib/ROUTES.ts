@@ -8,7 +8,7 @@
 /**
  * PAGES
  */
-const PAGES = {
+export const PAGES = {
   '/': `/`,
   '/[uid=uid]': (
     uid: Parameters<typeof import('../params/uid.ts').match>[0],
@@ -270,6 +270,7 @@ const PAGES = {
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
+  '/settings/theme': `/settings/theme`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -340,7 +341,7 @@ const PAGES = {
 /**
  * SERVERS
  */
-const SERVERS = {
+export const SERVERS = {
   'GET /[entity=entity_handle]': (
     entity: Parameters<typeof import('../params/entity_handle.ts').match>[0],
     params?: {},
@@ -400,14 +401,14 @@ const SERVERS = {
 /**
  * ACTIONS
  */
-const ACTIONS = {
+export const ACTIONS = {
   'default /login': `/login`,
 };
 
 /**
  * LINKS
  */
-const LINKS = {};
+export const LINKS = {};
 
 type ParamValue = string | number | undefined;
 
@@ -606,6 +607,7 @@ export type KIT_ROUTES = {
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;
+    '/settings/theme': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';

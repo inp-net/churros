@@ -89,7 +89,7 @@
 
   $: ticketName = loading($PageEventEditTicket?.data?.event.ticket?.name, '');
   $: if (ticketName && browser) {
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
     );
   }

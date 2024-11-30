@@ -283,7 +283,7 @@
         >
         <ButtonSecondary
           on:click={() => {
-            window.location.reload();
+            globalThis.location.reload();
           }}>Re-vérifier</ButtonSecondary
         >
       </div>
