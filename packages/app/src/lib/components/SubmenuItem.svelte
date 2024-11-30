@@ -13,6 +13,7 @@
 
   /** The submenu item is a form */
   export let form = false;
+
   /** Widen the space available to the right slot */
   export let wideRightPart = false;
 
