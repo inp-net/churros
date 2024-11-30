@@ -43,10 +43,8 @@ export const PAGES = {
   '/backrooms': `/backrooms`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
-  '/bookings/[code]': (code: string | number, params?: { dontpay?: undefined | '1' }) => {
-    params = params ?? {};
-    params.dontpay = params.dontpay ?? undefined;
-    return `/bookings/${code}${appendSp({ dontpay: params.dontpay })}`;
+  '/bookings/[code]': (code: string | number, params?: {}) => {
+    return `/bookings/${code}`;
   },
   '/changelog': `/changelog`,
   '/claim-code': `/claim-code`,
@@ -98,10 +96,8 @@ export const PAGES = {
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
     return `/events${params?.week ? `/${params?.week}` : ''}`;
   },
-  '/events/[id]': (id: string | number, params?: { ticket?: string | undefined }) => {
-    params = params ?? {};
-    params.ticket = params.ticket ?? undefined;
-    return `/events/${id}${appendSp({ ticket: params.ticket })}`;
+  '/events/[id]': (id: string | number, params?: {}) => {
+    return `/events/${id}`;
   },
   '/events/[id]/bookings': (
     id: string | number,
@@ -274,6 +270,7 @@ export const PAGES = {
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
+  '/settings/theme': `/settings/theme`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -610,6 +607,7 @@ export type KIT_ROUTES = {
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;
+    '/settings/theme': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';
@@ -666,14 +664,13 @@ export type KIT_ROUTES = {
     page: never;
     id: never;
     code: never;
-    dontpay: never;
     major: never;
     yearTier: never;
     subject: never;
     document: never;
     week: never;
-    ticket: never;
     group: never;
+    ticket: never;
     bypass_oauth: never;
     token: never;
     number: never;

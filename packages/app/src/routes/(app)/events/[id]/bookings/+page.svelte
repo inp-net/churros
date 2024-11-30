@@ -284,7 +284,7 @@
 
   .booking:hover,
   .booking:focus-visible {
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   .code {
