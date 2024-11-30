@@ -172,12 +172,12 @@ ul.nobullet {
 ins {
   color: var(--success);
   text-decoration: none;
-  background-color: var(--success-bg);
+  background: var(--success-bg);
 }
 
 del {
   color: var(--danger);
-  background-color: var(--danger-bg);
+  background: var(--danger-bg);
 }
 
 hr {
@@ -219,7 +219,7 @@ a.user-mention:focus-visible {
 }
 
 div.skeleton-effect-wave {
-  background-color: var(--skeleton-ui-bg);
+  background: var(--skeleton-ui-bg);
 }
 
 @keyframes skeleton-effect-wave {
