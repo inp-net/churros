@@ -194,6 +194,11 @@
     margin-bottom: 1rem;
   }
 
+  .remove-button,
+  .icon {
+    font-size: 1.2em;
+  }
+
   .bookmarks {
     display: flex;
     flex-direction: column;
@@ -262,11 +267,6 @@
     height: 1em;
     overflow: hidden;
     border-radius: 10000px;
-  }
-
-  .remove-button,
-  .icon {
-    font-size: 1.2em;
   }
 
   .items {
