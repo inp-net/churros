@@ -10,7 +10,7 @@ import { LogType } from '#modules/logs';
 import { ProfitsBreakdownType, PromotionTypeEnum } from '#modules/payments';
 import { BooleanMapScalar, CountsScalar, ReactableInterface } from '#modules/reactions';
 import { prismaQueryAccessibleArticles } from '#permissions';
-import { PaymentMethod } from '@churros/db/prisma';
+import { PaymentMethod, Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
 import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
@@ -21,9 +21,17 @@ import {
   canSeeEventLogs,
 } from '../utils/index.js';
 
+export const EventTypePrismaIncludes = {
+  managers: true,
+  group: true,
+  tickets: true,
+  links: true,
+  reactions: true,
+} as const satisfies Prisma.EventInclude;
+
 export const EventType = builder.prismaNode('Event', {
   id: { field: 'id' },
-  include: { managers: true, group: true, tickets: true, links: true, reactions: true },
+  include: EventTypePrismaIncludes,
   interfaces: [
     PicturedInterface,
     ReactableInterface,
@@ -117,6 +125,9 @@ export const EventType = builder.prismaNode('Event', {
     }),
     showPlacesLeft: t.exposeBoolean('showPlacesLeft', {
       description: 'Vrai si le nombre de places restantes doit être affiché',
+    }),
+    showCapacity: t.exposeBoolean('showCapacity', {
+      description: 'Vrai si les capacités des billets doivent être affichées',
     }),
     shares: t.int({
       async resolve({ id }) {

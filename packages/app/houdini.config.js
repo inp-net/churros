@@ -71,6 +71,12 @@ const config = {
         queryField: 'ticketGroup',
       },
     },
+    Theme: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'theme',
+      },
+    },
   },
   scalars: {
     DateTime: {
@@ -156,9 +162,7 @@ const config = {
       type: 'number',
     },
     Capacity: {
-      type: 'number | null',
-      marshal: (x) => (x === null ? 'Unlimited' : x),
-      unmarshal: (x) => (x === 'Unlimited' ? null : x),
+      type: 'number | App.CapacityUnlimitedValue',
     },
     URL: {
       type: 'URL | null',

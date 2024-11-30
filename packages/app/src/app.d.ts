@@ -10,6 +10,8 @@ declare namespace App {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   type XSSSafeHTMLString = import('ts-opaque').Opaque<string, 'XSSSafeHTMLString'>;
 
+  type CapacityUnlimitedValue = 'Unlimited';
+
   interface Locals {
     mobile: boolean;
   }
@@ -97,6 +99,7 @@ declare namespace svelteHTML {
     'on:NAVTOP_COPY_ID'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_CREATE_POST_ON_EVENT'?: (event: CustomEvent<undefined>) => Promise<void> | void;
+    'on:THEME_FORCE_RELOAD'?: (event: CustomEvent<undefined>) => Promise<void> | void;
   }
 }
 

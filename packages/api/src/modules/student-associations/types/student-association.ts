@@ -82,10 +82,11 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
     hasPendingContribution: t.boolean({
       description: "Si l'utilisateur·ice connecté·e a une cotisation en attente de paiement",
       async resolve({ id }, _, { user }) {
+        if (!user) return false;
         return Boolean(
           await prisma.contribution.count({
             where: {
-              user: { uid: user?.uid },
+              user: { uid: user.uid },
               option: { paysFor: { some: { id } } },
               paid: false,
             },

@@ -6,7 +6,10 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import PickMajor from '$lib/components/PickMajor.svelte';
   import { loading, type MaybeLoading } from '$lib/loading';
+  import { createEventDispatcher } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
+
+  const dispatch = createEventDispatcher<{ open: undefined }>();
 
   /** Selected major uid */
   export let major: string;
@@ -96,6 +99,7 @@
           <slot name="clear-button">
             <ButtonSecondary
               on:click={() => {
+                dispatch('open');
                 major = '';
               }}
             >
@@ -103,7 +107,12 @@
             </ButtonSecondary>
           </slot>
         {/if}
-        <ButtonSecondary on:click={open}>
+        <ButtonSecondary
+          on:click={() => {
+            open?.();
+            dispatch('open');
+          }}
+        >
           {#if major || clearable}Changer{:else}Choisir{/if}
         </ButtonSecondary>
       </PickMajor>

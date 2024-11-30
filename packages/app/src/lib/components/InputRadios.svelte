@@ -67,7 +67,7 @@
   }
 
   label::before {
-    background-color: var(--bg);
+    background: var(--bg);
     border: var(--border-block) solid var(--text);
   }
 

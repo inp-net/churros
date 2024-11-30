@@ -12,9 +12,10 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { page } from '$app/stores';
-  import { default as parseUserAgent } from 'ua-parser-js';
+  import { UAParser as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import { env } from '$env/dynamic/public';
 
   let title = '';
   let description = '';
@@ -25,7 +26,7 @@
   let includeCurrentPageURL = true;
   let errored = false;
 
-  $: link = issueNumber ? `https://git.inpt.fr/inp-net/churros/-/issues/${issueNumber}` : '';
+  $: link = issueNumber ? `${env.PUBLIC_REPOSITORY_URL}/-/issues/${issueNumber}` : '';
   $: innerWidth = undefined;
   $: innerHeight = undefined;
   function formatMetadata(metadata: Record<string, string>): string {
@@ -98,8 +99,7 @@
       >Impossible de créer l'issue. <ButtonSecondary
         insideProse
         newTab
-        href="https://git.inpt.fr/inp-net/churros/-/issues/new"
-        >Créer l'issue sur le site</ButtonSecondary
+        href="{env.PUBLIC_REPOSITORY_URL}/-/issues/new">Créer l'issue sur le site</ButtonSecondary
       >
     </Alert>
   {/if}
@@ -144,7 +144,9 @@
         <ButtonPrimary {loading} submits>Envoyer</ButtonPrimary>
         <p class="typo-details">
           Envoyer ce rapport créera une issue Gitlab en ton nom sur le dépot
-          <a href="https://git.inpt.fr/inp-net/churros">git.inpt.fr/inp-net/churros</a>
+          <a href={env.PUBLIC_REPOSITORY_URL}>
+            {env.PUBLIC_REPOSITORY_URL.replace(/https?:\/\//, '')}
+          </a>
         </p>
       </section>
     </form>
