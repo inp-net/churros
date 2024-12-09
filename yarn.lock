@@ -961,7 +961,7 @@ __metadata:
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.2"
     ua-parser-js: "npm:^2.0.0"
-    unplugin-icons: "npm:^0.20.2"
+    unplugin-icons: "npm:^0.21.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.11"
     vite-plugin-kit-routes: "npm:^0.7.0"
@@ -21954,9 +21954,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin-icons@npm:^0.20.2":
-  version: 0.20.2
-  resolution: "unplugin-icons@npm:0.20.2"
+"unplugin-icons@npm:^0.21.0":
+  version: 0.21.0
+  resolution: "unplugin-icons@npm:0.21.0"
   dependencies:
     "@antfu/install-pkg": "npm:^0.5.0"
     "@antfu/utils": "npm:^0.7.10"
@@ -21985,7 +21985,7 @@ __metadata:
       optional: true
     vue-template-es2015-compiler:
       optional: true
-  checksum: 10c0/b8e61756f15033f8b99715d2f955c53e117244b6cbd78482c0df54c483f5e300e194409a756c0eec5abe50b6335f08256512c8dde38999b635438391454abf61
+  checksum: 10c0/7f085d111f4a3401c1e80273240672f4bc567098db2a0b7f5e57ab21bf2a2ec848b66d5408dbc56e86a9d4945fe5f84997e15d9f7bc9af415d55ec64e1405c87
   languageName: node
   linkType: hard
 
