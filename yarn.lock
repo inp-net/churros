@@ -944,7 +944,7 @@ __metadata:
     simple-svelte-autocomplete: "npm:^2.5.2"
     slugify: "npm:^1.6.6"
     svelte: "npm:^4.2.19"
-    svelte-check: "npm:^4.1.0"
+    svelte-check: "npm:^4.1.1"
     svelte-gestures: "npm:^5.0.6"
     svelte-json-tree: "npm:^2.2.0"
     svelte-lightbox: "npm:^1.1.6"
@@ -20838,9 +20838,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-check@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "svelte-check@npm:4.1.0"
+"svelte-check@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "svelte-check@npm:4.1.1"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     chokidar: "npm:^4.0.1"
@@ -20852,7 +20852,7 @@ __metadata:
     typescript: ">=5.0.0"
   bin:
     svelte-check: bin/svelte-check
-  checksum: 10c0/ee04862f790703c8bb759d96cd0bb1c8b606bea0617d4e8dcab1116640e1a407d578f272d0bed870476b07edc704db0c66075956e7371e08b1460edceff9d7ea
+  checksum: 10c0/e94b4fc24a2e8322405ebe975b2d8cce7732d7ff11a15fc357ff97046b2a3039c24e863ee713003643a6019c7479966a4418d997de4c0da7cbc03a06092b480e
   languageName: node
   linkType: hard
 
