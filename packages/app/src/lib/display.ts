@@ -4,9 +4,10 @@ import {
   type EventFrequency$options,
   type EventManagerPowerLevel$options,
   type GroupType$options,
-  type IssueState$options,
   type NotificationChannel$options,
   type PaymentMethod$options,
+  type ThemeVariable$options,
+  type ThemeVariant$options,
   type TicketCountingPolicy$options,
   type Visibility$options,
 } from '$houdini';
@@ -248,12 +249,6 @@ export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡'
 //   }
 // }
 
-export const ISSUE_STATE_DISPLAY = new Map<IssueState$options, string>([
-  ['Closed', 'Terminé'],
-  ['Open', 'En cours'],
-  ['Deployed', 'En ligne'],
-]);
-
 export function orderedDisplay<T extends string | number | symbol>(
   order: T[],
   display: Record<T, string>,
@@ -330,6 +325,33 @@ export const DISPLAY_GROUP_MEMBER_PERMISSIONS: Record<
   canScanEvents: 'Scan de billets',
 };
 
+export const DISPLAY_THEME_VARIANT: Record<ThemeVariant$options, string> = {
+  Dark: 'Sombre',
+  Light: 'Clair',
+};
+
+export const DISPLAY_THEME_VARIABLE: Record<ThemeVariable$options, string> = {
+  ColorBackground: 'Couleur de fond',
+  ColorBackground2: 'Couleur de fond moins intense',
+  ColorBackground3: 'Couleur de fond moins intense que ColorBackground2',
+  ColorBackground4: 'Couleur de fond moins intense que ColorBackground3',
+  ColorDanger: 'Couleur des erreurs ou choses dangereuses (souvent rouge)',
+  ColorDangerBackground: 'Couleur de fond pour ColorDanger',
+  ColorForeground: "Couleur d'avant plan",
+  ColorMuted: "Couleur d'avant plan moins intense",
+  ColorPrimary: 'Couleur principale',
+  ColorPrimaryBackground: 'Couleur de fond pour ColorPrimary',
+  ColorShy: "Couleur d'avant plan moins intense que ColorMuted",
+  ColorSuccess: 'Couleur des éléments de succès (souvent vert)',
+  ColorSuccessBackground: 'Couleur de fond pour ColorSuccess',
+  ColorWarning: 'Couleurs des avertissements',
+  ColorWarningBackground: 'Couleur de fond pour ColorWarning',
+  ImageLogoNavbarTop: 'Logo de la barre de navigation en haut',
+  ImageLogoNavbarSide: 'Logo de la barre de navigation sur le côté',
+  ImageBackgroundNavbarBottom: 'Fond de la barre de navigation en bas',
+  ImageBackgroundNavbarTop: 'Fond de la barre de navigation en haut',
+  PatternBackground: 'Fond avec motif',
+};
 export function stringifyCapacity(
   capacity: null | number | App.CapacityUnlimitedValue,
   fallback = '',

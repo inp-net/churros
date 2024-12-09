@@ -9,7 +9,7 @@
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import { LoadingText, loaded, loading } from '$lib/loading';
-  import { mutate } from '$lib/mutations';
+  import { mutate, mutateAndToast } from '$lib/mutations';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import IconBirthday from '~icons/msl/cake-outline';
@@ -31,6 +31,7 @@
     SetUserPhone,
     UpdateUserAddress,
     UpdateUserNickname,
+    UpdateUserPronouns,
   } from './mutations';
 
   export let data: LayoutData;
@@ -53,6 +54,23 @@
           label="Surnom (optionnel)"
           placeholder="Surnom (optionnel)"
           value={loading(user.nickname, 'Chargement…')}
+        ></InputTextGhost>
+        <InputTextGhost
+          on:blur={async ({ detail }) => {
+            await mutateAndToast(
+              UpdateUserPronouns,
+              {
+                uid: $page.params.uid,
+                pronouns: detail,
+              },
+              {
+                error: 'Impossible de changer de pronoms',
+              },
+            );
+          }}
+          label="Pronoms (optionnel)"
+          placeholder="Pronoms (optionnel)"
+          value={loading(user.pronouns, 'Chargement…')}
         ></InputTextGhost>
       </section>
       <Submenu>

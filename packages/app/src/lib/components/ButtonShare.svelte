@@ -6,11 +6,17 @@
   import IconShare from '~icons/msl/ios-share';
   import GhostButton from './ButtonGhost.svelte';
   import ButtonInk from './ButtonInk.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
 
   export let white = false;
   export let url = '';
   export let path = '';
-  export let text: boolean | string = false;
+
+  /** Uses ButtonSecondary when shape=block, subtle uses ButtonGhost or ButtonInk (depending on if text is truthy) */
+  export let shape: 'block' | 'subtle' = 'subtle';
+
+  /** Use text with the button. A string can be used to change the displayed text. By default it's dependent on whether the WebShare API is available */
+  export let text: string | boolean = false;
 
   /** Resource that was shared. Useful to display the share count (and count up new shares) */
   export let resource: ButtonShare | null = null;
@@ -37,7 +43,13 @@
 {#if $$slots.default}
   <slot {share}></slot>
 {:else if text}
-  <ButtonInk track="share" trackData={{ url }} on:click={share} icon={IconShare}>
+  <svelte:component
+    this={shape === 'block' ? ButtonSecondary : ButtonInk}
+    track="share"
+    trackData={{ url }}
+    on:click={share}
+    icon={IconShare}
+  >
     {#if typeof text === 'string'}
       {text}
     {:else}
@@ -51,7 +63,7 @@
         {/if}
       {/await}
     {/if}
-  </ButtonInk>
+  </svelte:component>
 {:else}
   <GhostButton
     track="share"

@@ -68,9 +68,9 @@
     }}
   />
   <section class="submit">
-    <ButtonPrimary submits
-      >{#if migratingPassword}Migrer{:else}Se connecter{/if}</ButtonPrimary
-    >
+    <ButtonPrimary submits>
+      {#if migratingPassword}Migrer{:else}Se connecter{/if}
+    </ButtonPrimary>
   </section>
 
   <hr />

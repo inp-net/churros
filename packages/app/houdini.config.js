@@ -72,6 +72,12 @@ const config = {
         queryField: 'ticketGroup',
       },
     },
+    Theme: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'theme',
+      },
+    },
   },
   scalars: {
     DateTime: {

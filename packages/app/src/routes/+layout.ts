@@ -1,9 +1,13 @@
+import { browser } from '$app/environment';
 import { load_RootLayout } from '$houdini';
 import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { addYears, setDefaultOptions } from 'date-fns';
+import { editingTheme } from '$lib/theme';
+import { setDefaultOptions } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
+import { get } from 'svelte/store';
 
 export const ssr = false;
 
@@ -14,11 +18,13 @@ export async function load(event) {
     weekStartsOn: 1,
     locale: fr,
   });
+
   App.addListener('backButton', (event) => {
     // TODO close open drawer when there's one, instead of going back in history
     if (event.canGoBack) window.history.back();
     else App.exitApp();
   });
+
   if (Capacitor.isNativePlatform()) {
     // Expose token to cookies so that houdini client can use it (its fetchParams function is synchronous so there's no way to call Preferences.get there)
     await CapacitorCookies.setCookie({
@@ -29,5 +35,12 @@ export async function load(event) {
       path: '/',
     });
   }
-  return await load_RootLayout({ event });
+
+  return await load_RootLayout({
+    event,
+    variables: {
+      editingThemeId: browser ? (get(editingTheme)?.id ?? 'none') : 'none',
+      editingTheme: browser ? Boolean(get(editingTheme)) : false,
+    },
+  });
 }

@@ -72,6 +72,7 @@ export default mergeConfig(
         format_short: true,
         format: 'route(path)',
         post_update_run: 'yarn format-at ./src/lib/ROUTES.ts',
+        exportObjects: true,
         PAGES: {
           '/login': {
             explicit_search_params: {
