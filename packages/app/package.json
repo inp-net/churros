@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@iconify-json/material-symbols": "^1.2.8",
+    "@iconify-json/material-symbols": "^1.2.10",
     "@iconify-json/material-symbols-light": "^1.2.10",
     "@iconify-json/mdi": "^1.2.1",
     "@iconify-json/simple-icons": "^1.2.15",
