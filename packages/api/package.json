@@ -46,7 +46,7 @@
     "dichotomid": "^0.0.3",
     "envelop-trim-inputs": "^0.0.3",
     "execa": "^9.5.1",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "express-session": "^1.18.1",
     "extract-files": "^13.0.0",
     "firebase-admin": "^12.6.0",
