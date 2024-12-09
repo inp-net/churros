@@ -1,5 +1,22 @@
 # @churros/app
 
+## 3.1.0
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 45d7615: allow setting 4th yeartier on graduation year constraint (closes #1194)
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- a0b3b27: clicking Voir plus on event cards would cause a double navigation to the event detail page
+- e1262b7: upgrade dependencies
+- Updated dependencies [e1262b7]
+  - arborist@0.1.2
+
 ## 3.0.1
 
 ### Patch Changes

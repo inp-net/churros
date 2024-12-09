@@ -699,7 +699,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/api@workspace:packages/api"
   dependencies:
-    "@churros/db": "workspace:^3.1.0"
+    "@churros/db": "workspace:^3.2.0"
     "@clack/prompts": "npm:^0.8.2"
     "@envelop/core": "npm:^5.0.2"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
@@ -728,7 +728,7 @@ __metadata:
     "@types/bunyan": "npm:^1.8.11"
     "@types/cli": "npm:^0.11.25"
     "@types/cli-progress": "npm:^3.11.6"
-    "@types/cookie": "npm:^0.6.0"
+    "@types/cookie": "npm:^1.0.0"
     "@types/cors": "npm:^2.8.17"
     "@types/cron": "npm:^2.4.3"
     "@types/express": "npm:^4.17.21"
@@ -759,7 +759,7 @@ __metadata:
     "@zxcvbn-ts/language-common": "npm:^3.0.4"
     "@zxcvbn-ts/language-en": "npm:^3.0.2"
     "@zxcvbn-ts/language-fr": "npm:^3.0.2"
-    arborist: "workspace:^0.1.1"
+    arborist: "workspace:^0.1.2"
     argon2: "npm:^0.41.1"
     barrelsby: "npm:^2.8.1"
     bunyan: "npm:^1.8.15"
@@ -768,7 +768,7 @@ __metadata:
     cli: "npm:^1.0.1"
     cli-progress: "npm:^3.12.0"
     colord: "npm:^2.9.3"
-    concurrently: "npm:^9.0.1"
+    concurrently: "npm:^9.1.0"
     connect-redis: "npm:^7.1.1"
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
@@ -791,7 +791,7 @@ __metadata:
     graphql-rate-limit-directive: "npm:^2.0.5"
     graphql-scalars: "npm:^1.24.0"
     graphql-ws: "npm:^5.16.0"
-    graphql-yoga: "npm:^5.10.3"
+    graphql-yoga: "npm:^5.10.4"
     handlebars: "npm:^4.7.8"
     helmet: "npm:^8.0.0"
     html-to-text: "npm:^9.0.5"
@@ -884,7 +884,7 @@ __metadata:
     "@swc/core": "npm:^1.9.2"
     "@swc/wasm": "npm:^1.9.2"
     "@types/blob-stream": "npm:^0.1.33"
-    "@types/cookie": "npm:^0.6.0"
+    "@types/cookie": "npm:^1.0.0"
     "@types/cytoscape": "npm:^3.21.8"
     "@types/html-to-text": "npm:^9.0.4"
     "@types/js-cookie": "npm:^3.0.6"
@@ -903,7 +903,7 @@ __metadata:
     blob-stream: "npm:^0.1.3"
     calendar-link: "npm:^2.7.0"
     colord: "npm:^2.9.3"
-    cookie: "npm:^1.0.1"
+    cookie: "npm:^1.0.2"
     cytoscape: "npm:^3.30.4"
     date-fns: "npm:^2.30.0"
     dotenv: "npm:^16.4.5"
@@ -973,7 +973,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^, @churros/db@workspace:^3.1.0, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^, @churros/db@workspace:^3.2.0, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
@@ -5146,6 +5146,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/cookie@npm:1.0.0"
+  dependencies:
+    cookie: "npm:*"
+  checksum: 10c0/d471539d289c6d9c6ab2986a881b10a55c9e489c2d35da0d1bdbbabdca9a8125de4cbc007bb525060265c64c14288c690f991ba6d84eea8c6ddacaa150179557
+  languageName: node
+  linkType: hard
+
 "@types/cookies@npm:*":
   version: 0.9.0
   resolution: "@types/cookies@npm:0.9.0"
@@ -6808,7 +6817,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arborist@workspace:^, arborist@workspace:^0.1.1, arborist@workspace:packages/arborist":
+"arborist@workspace:^, arborist@workspace:^0.1.2, arborist@workspace:packages/arborist":
   version: 0.0.0-use.local
   resolution: "arborist@workspace:packages/arborist"
   dependencies:
@@ -7903,14 +7912,14 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.16.0"
     changesets-gitlab: "npm:^0.12.1"
     chokidar: "npm:^4.0.1"
-    concurrently: "npm:^9.0.1"
+    concurrently: "npm:^9.1.0"
     dotenv-cli: "npm:^7.4.4"
     dotenv-parser-serializer: "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch"
     eslint: "npm:^8.57.1"
     eslint-config-prettier: "npm:^9.1.0"
-    eslint-plugin-svelte: "npm:^2.46.0"
+    eslint-plugin-svelte: "npm:^2.46.1"
     eslint-plugin-unicorn: "npm:^56.0.1"
-    execa: "npm:^9.4.1"
+    execa: "npm:^9.5.1"
     husky: "npm:^9.1.7"
     kleur: "npm:^4.1.5"
     lint-staged: "npm:^15.2.10"
@@ -7926,7 +7935,7 @@ __metadata:
     stylelint-config-prettier: "npm:^9.0.5"
     stylelint-config-recess-order: "npm:^5.1.1"
     stylelint-config-standard: "npm:^36.0.1"
-    stylelint-config-standard-scss: "npm:^13.1.0"
+    stylelint-config-standard-scss: "npm:^14.0.0"
     svelte: "npm:^4.2.19"
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.2"
@@ -8402,9 +8411,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "concurrently@npm:9.0.1"
+"concurrently@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "concurrently@npm:9.1.0"
   dependencies:
     chalk: "npm:^4.1.2"
     lodash: "npm:^4.17.21"
@@ -8416,7 +8425,7 @@ __metadata:
   bin:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: 10c0/e2c3d3f3d1b1457ccd27e69f0d840ba4915d571fae4e1088498234ec1174fd547c127de0df6dbe5eb71b2df973b26a6fdc931a9e7e3658f25287ef2106bdb413
+  checksum: 10c0/f2f42f94dde508bfbaf47b5ac654db9e8a4bf07d3d7b6267dd058ae6f362eec677ae7c8ede398d081e5fd0d1de5811dc9a53e57d3f1f68e72ac6459db9e0896b
   languageName: node
   linkType: hard
 
@@ -8592,6 +8601,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie@npm:*, cookie@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "cookie@npm:1.0.2"
+  checksum: 10c0/fd25fe79e8fbcfcaf6aa61cd081c55d144eeeba755206c058682257cb38c4bd6795c6620de3f064c740695bb65b7949ebb1db7a95e4636efb8357a335ad3f54b
+  languageName: node
+  linkType: hard
+
 "cookie@npm:0.7.1":
   version: 0.7.1
   resolution: "cookie@npm:0.7.1"
@@ -8610,13 +8626,6 @@ __metadata:
   version: 0.6.0
   resolution: "cookie@npm:0.6.0"
   checksum: 10c0/f2318b31af7a31b4ddb4a678d024514df5e705f9be5909a192d7f116cfb6d45cbacf96a473fa733faa95050e7cff26e7832bb3ef94751592f1387b71c8956686
-  languageName: node
-  linkType: hard
-
-"cookie@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "cookie@npm:1.0.2"
-  checksum: 10c0/fd25fe79e8fbcfcaf6aa61cd081c55d144eeeba755206c058682257cb38c4bd6795c6620de3f064c740695bb65b7949ebb1db7a95e4636efb8357a335ad3f54b
   languageName: node
   linkType: hard
 
@@ -10283,7 +10292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-svelte@npm:^2.46.0":
+"eslint-plugin-svelte@npm:^2.46.1":
   version: 2.46.1
   resolution: "eslint-plugin-svelte@npm:2.46.1"
   dependencies:
@@ -10583,7 +10592,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^9.3.0, execa@npm:^9.4.1, execa@npm:^9.5.1":
+"execa@npm:^9.3.0, execa@npm:^9.5.1":
   version: 9.5.1
   resolution: "execa@npm:9.5.1"
   dependencies:
@@ -12002,7 +12011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-yoga@npm:^5.10.3":
+"graphql-yoga@npm:^5.10.4":
   version: 5.10.4
   resolution: "graphql-yoga@npm:5.10.4"
   dependencies:
@@ -20604,7 +20613,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-recommended-scss@npm:^14.0.0":
+"stylelint-config-recommended-scss@npm:^14.1.0":
   version: 14.1.0
   resolution: "stylelint-config-recommended-scss@npm:14.1.0"
   dependencies:
@@ -20630,23 +20639,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-standard-scss@npm:^13.1.0":
-  version: 13.1.0
-  resolution: "stylelint-config-standard-scss@npm:13.1.0"
+"stylelint-config-standard-scss@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "stylelint-config-standard-scss@npm:14.0.0"
   dependencies:
-    stylelint-config-recommended-scss: "npm:^14.0.0"
-    stylelint-config-standard: "npm:^36.0.0"
+    stylelint-config-recommended-scss: "npm:^14.1.0"
+    stylelint-config-standard: "npm:^36.0.1"
   peerDependencies:
     postcss: ^8.3.3
-    stylelint: ^16.3.1
+    stylelint: ^16.11.0
   peerDependenciesMeta:
     postcss:
       optional: true
-  checksum: 10c0/d07cae806ee8b3e77684f019a8b22cc32642373da8053e6ae7ed716f8ddbe6ea1f7323633a6a1bbc9aa08c6a3dceb1dcf053d83fdd10d076b5a01da6e86801ae
+  checksum: 10c0/b885f02d955060a8e0214fd8dc30bfc6d84cbdeb870d34ce0761b258914857bd22d537ac1c8ee9755bf4cd5b1f3b94f4ad0270c2ff4362df7d5eb8d95b35db5e
   languageName: node
   linkType: hard
 
-"stylelint-config-standard@npm:^36.0.0, stylelint-config-standard@npm:^36.0.1":
+"stylelint-config-standard@npm:^36.0.1":
   version: 36.0.1
   resolution: "stylelint-config-standard@npm:36.0.1"
   dependencies:

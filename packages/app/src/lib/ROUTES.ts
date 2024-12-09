@@ -255,10 +255,6 @@ export const PAGES = {
   '/quick-signups/qr/[code]': (code: string | number, params?: {}) => {
     return `/quick-signups/qr/${code}`;
   },
-  '/reports': `/reports`,
-  '/reports/[number]': (number: string | number, params?: {}) => {
-    return `/reports/${number}`;
-  },
   '/search': (params?: { q?: string | number }) => {
     return `/search${params?.q ? `/${params?.q}` : ''}`;
   },
@@ -598,8 +594,6 @@ export type KIT_ROUTES = {
     '/quick-signups/create': never;
     '/quick-signups/manage': never;
     '/quick-signups/qr/[code]': 'code';
-    '/reports': never;
-    '/reports/[number]': 'number';
     '/search': 'q';
     '/services': never;
     '/services/[id]/edit': 'id';
@@ -673,7 +667,6 @@ export type KIT_ROUTES = {
     ticket: never;
     bypass_oauth: never;
     token: never;
-    number: never;
     q: never;
     email: never;
     componentName: never;

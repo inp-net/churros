@@ -77,7 +77,6 @@ modules:
     - links
     - announcements
     - payments
-    - gitlab
     - changelogs
     - logs
     - health-checks
