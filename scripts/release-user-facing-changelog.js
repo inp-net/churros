@@ -26,7 +26,7 @@ console.info(`Updating changelog to version ${newVersion}`);
 
 let newChangelog = changelog.replace(
   /^## \[Unreleased\]/m,
-  `## [Unreleased]\n\n<!-- Rien pour l'instant... -->\n\n## [${newVersion}] - ${new Date().toISOString().split('T')[0]}`,
+  `## [Unreleased]\n\n## [${newVersion}] - ${new Date().toISOString().split('T')[0]}`,
 );
 
 // regenerate [version]: https://git.inpt.fr/churros/churros/-/releases/tag/v[version]
