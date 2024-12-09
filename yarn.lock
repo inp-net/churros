@@ -891,7 +891,7 @@ __metadata:
     "@types/lodash.debounce": "npm:^4.0.9"
     "@types/lodash.groupby": "npm:^4.6.9"
     "@types/lodash.throttle": "npm:^4.1.9"
-    "@types/pdfmake": "npm:^0.2.9"
+    "@types/pdfmake": "npm:^0.2.10"
     "@types/semver": "npm:^7.5.8"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@zxcvbn-ts/core": "npm:^3.0.4"
@@ -5946,13 +5946,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pdfmake@npm:^0.2.9":
-  version: 0.2.9
-  resolution: "@types/pdfmake@npm:0.2.9"
+"@types/pdfmake@npm:^0.2.10":
+  version: 0.2.10
+  resolution: "@types/pdfmake@npm:0.2.10"
   dependencies:
     "@types/node": "npm:*"
     "@types/pdfkit": "npm:*"
-  checksum: 10c0/6b76e101f078882190064edeaa9f0c99de2212f94484fba17b92dad9e93007f939e1ff201f9934ae1f878efbeedead66ba41e497fd292914511236a1823af495
+  checksum: 10c0/44f216c3d285c642b9a697268455b57981ee1a358f9c0d3983437ff8a743bacb6f30b3c1637984ee14cb3a30b3f52bc2236dcc1c841c65093b5dc64939078e86
   languageName: node
   linkType: hard
 
