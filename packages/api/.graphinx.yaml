@@ -72,7 +72,6 @@ modules:
     - pages
     - schools
     - curriculum
-    - comments
     - reactions
     - links
     - announcements

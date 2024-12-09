@@ -6,7 +6,6 @@ import path from 'node:path';
 
 import '#modules/announcements';
 import '#modules/changelogs';
-import '#modules/comments';
 import '#modules/curriculum';
 import '#modules/documents';
 import '#modules/events';

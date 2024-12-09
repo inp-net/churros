@@ -37,7 +37,6 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   ue: 'TeachingUnit',
   subj: 'Subject',
   doc: 'Document',
-  comment: 'Comment',
   reac: 'Reaction',
   promocode: 'PromotionCode',
   promo: 'Promotion',
