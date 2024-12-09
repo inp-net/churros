@@ -1947,54 +1947,6 @@ type InheritedEventManager {
   user: User!
 }
 
-"""
-A Gitlab issue
-"""
-type Issue {
-  body: String!
-  bodyHtml: String!
-  comments: [IssueComment!]!
-  deployedIn: String!
-  """
-  Expressed from 0 to 1
-  """
-  difficulty: Float
-  duplicatedFrom: Int
-  """
-  Expressed from 0 to 1
-  """
-  importance: Float
-  number: Int!
-  state: IssueState!
-  """
-  The date at which the issue was submitted
-  """
-  submittedAt: DateTime!
-  title: String!
-  url: String!
-}
-
-"""
-A Gitlab issue comment
-"""
-type IssueComment {
-  """
-  The date at which the comment was added
-  """
-  addedAt: DateTime!
-  authorAvatarUrl: String!
-  authorGitlabUrl: String!
-  authorName: String!
-  body: String!
-  bodyHtml: String!
-}
-
-enum IssueState {
-  Closed
-  Deployed
-  Open
-}
-
 type LdapHealthCheck @graphinx(module: "health-checks") {
   """
   Whether the LDAP internal client is ready
@@ -4321,7 +4273,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     version: String
   ): ChangelogRelease!
-  codeContributors: QueryCodeContributorsResult!
   """
   A changelog for multiple versions.
   Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**.
@@ -4403,8 +4354,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   Gets the homepage articles, customized if the user is logged in.
   """
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
-  issue(number: Int!): Issue!
-  issuesByUser: [Issue!]!
   kioskReload: Boolean!
   """
   Vrai si l'utilisateur·ice est connecté·e
@@ -4626,12 +4575,6 @@ type QueryAnnouncementsConnection {
 type QueryAnnouncementsConnectionEdge {
   cursor: String!
   node: Announcement!
-}
-
-union QueryCodeContributorsResult = Error | QueryCodeContributorsSuccess | ZodError
-
-type QueryCodeContributorsSuccess {
-  data: [User!]!
 }
 
 union QueryCombinedChangelogResult = Error | QueryCombinedChangelogSuccess | ZodError
