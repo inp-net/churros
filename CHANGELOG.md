@@ -11,8 +11,6 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-<!-- Rien pour l'instant... -->
-
 ## [3.1.0] - 2024-11-30
 
 ### Nouveautés
