@@ -879,7 +879,7 @@ __metadata:
     "@paypal/paypal-js": "npm:^8.1.2"
     "@sentry/sveltekit": "npm:^8.41.0"
     "@sveltejs/adapter-node": "npm:^5.2.9"
-    "@sveltejs/kit": "npm:^2.9.0"
+    "@sveltejs/kit": "npm:^2.9.1"
     "@sveltejs/vite-plugin-svelte": "npm:^3.1.2"
     "@swc/core": "npm:^1.9.2"
     "@swc/wasm": "npm:^1.9.2"
@@ -4701,9 +4701,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "@sveltejs/kit@npm:2.9.0"
+"@sveltejs/kit@npm:^2.9.1":
+  version: 2.9.1
+  resolution: "@sveltejs/kit@npm:2.9.1"
   dependencies:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.6.0"
@@ -4723,7 +4723,7 @@ __metadata:
     vite: ^5.0.3 || ^6.0.0
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/40630b15534cb695869795533aab05fad8faff5334a25ca22e4e1bab46109d777ebee47a284e67ee1900ce2973fd5987ae5fa39dabe9a56d093b6b1460269ed7
+  checksum: 10c0/0a17d0d51c682d1a3dc03aa6c12082a4b4525a524be10f34e2309babc80c19f1ae6003a3c366807d64992b810a4f690d9ce430c636d3a0690f5659608602c1ea
   languageName: node
   linkType: hard
 
