@@ -45,7 +45,7 @@
     <div class="actions">
       <ButtonSecondary
         on:click={() => {
-          window.location.reload();
+          globalThis.location.reload();
         }}>Recharger</ButtonSecondary
       >
       <ButtonSecondary noClientSideNavigation href={refroute('/login')}

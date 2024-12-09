@@ -75,7 +75,7 @@
     theme.subscribe(($theme) => {
       const selectedVariant =
         $theme.variant === 'auto'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? globalThis.matchMedia('(prefers-color-scheme: dark)').matches
             ? 'dark'
             : 'light'
           : $theme.variant;
@@ -83,7 +83,7 @@
       document.documentElement.dataset.themeVariant = selectedVariant;
     });
 
-    if (browser && window.location.hostname === 'staging-churros.inpt.fr') {
+    if (browser && globalThis.location.hostname === 'staging-churros.inpt.fr') {
       toasts.warn(
         "T'es en staging",
         'Tu sais pas ce que ça veut dire? reviens sur churros.inpt.fr.',
@@ -95,7 +95,7 @@
       );
     }
 
-    if (browser && window.location.hostname === 'localhost') {
+    if (browser && globalThis.location.hostname === 'localhost') {
       toasts.debug("T'es en dev", '', {
         data: {},
         lifetime: 2000,

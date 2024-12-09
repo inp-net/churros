@@ -115,7 +115,7 @@
       <ButtonGhost
         --text="var(--danger)"
         on:click={() => {
-          window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+          globalThis.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
         }}
       >
         <IconBugReport></IconBugReport>
