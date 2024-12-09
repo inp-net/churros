@@ -73,11 +73,11 @@ if (browser) {
     localStorage.setItem('theme', $theme.id);
     localStorage.setItem('themeVariant', $theme.variant);
     if ($theme.variant === 'auto')
-      isDark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      isDark.set(globalThis.matchMedia('(prefers-color-scheme: dark)').matches);
     else isDark.set($theme.variant === 'dark');
   });
 
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
+  globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
     if ((localStorage.getItem('themeVariant') ?? 'auto') === 'auto') isDark.set(matches);
   });
 
@@ -223,5 +223,5 @@ export function themeCurrentValueURL(variable: ThemeVariable$options): string {
 /** Forces reloading the theme. Useful for theme value changes that imply JS computations, that can't be simply updated by the CSS variable's value changing (most likely, URLs) */
 export function forceReloadTheme() {
   if (!browser) return;
-  window.dispatchEvent(new CustomEvent('THEME_FORCE_RELOAD'));
+  globalThis.dispatchEvent(new CustomEvent('THEME_FORCE_RELOAD'));
 }
