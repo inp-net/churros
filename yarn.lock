@@ -788,7 +788,7 @@ __metadata:
     graph-cycles: "npm:^3.0.0"
     graphinx: "npm:^0.12.1"
     graphql: "npm:^16.9.0"
-    graphql-rate-limit-directive: "npm:^2.0.5"
+    graphql-rate-limit-directive: "npm:^2.0.6"
     graphql-scalars: "npm:^1.24.0"
     graphql-ws: "npm:^5.16.0"
     graphql-yoga: "npm:^5.10.4"
@@ -11944,14 +11944,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-rate-limit-directive@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "graphql-rate-limit-directive@npm:2.0.5"
+"graphql-rate-limit-directive@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "graphql-rate-limit-directive@npm:2.0.6"
   peerDependencies:
     "@graphql-tools/utils": ^8.0.0 || ^9.0.0 || ^10.0.0
     graphql: ^16.0.0
-    rate-limiter-flexible: ^2.0.0 || ^3.0.0 || ^4.0.0
-  checksum: 10c0/fb0ca7b26987c5a8296d23bd81b1abb2bbde6dfa0905e3877e5607b30475b3d4204a9ec443851c2fdec234a0cb7cb474172b929b70071cad13d78c9d1f31753d
+    rate-limiter-flexible: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
+  checksum: 10c0/8fc3f7936944fc7f7380d3b88ddec1215e328a733fb44f45f7c695a785322a9f603cb4b9977d25bad65b1fe41e88610ec80d25cc4cd0fb4583da48ce47a03403
   languageName: node
   linkType: hard
 
