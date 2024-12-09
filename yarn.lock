@@ -754,7 +754,7 @@ __metadata:
     "@types/web-push": "npm:^3.6.4"
     "@types/which": "npm:^3.0.4"
     "@types/ws": "npm:^8.5.13"
-    "@vizdom/vizdom-ts-node": "npm:^0.1.17"
+    "@vizdom/vizdom-ts-node": "npm:^0.1.18"
     "@zxcvbn-ts/core": "npm:^3.0.4"
     "@zxcvbn-ts/language-common": "npm:^3.0.4"
     "@zxcvbn-ts/language-en": "npm:^3.0.2"
@@ -6364,10 +6364,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vizdom/vizdom-ts-node@npm:^0.1.17":
-  version: 0.1.17
-  resolution: "@vizdom/vizdom-ts-node@npm:0.1.17"
-  checksum: 10c0/d87d55630c234cdddcced090b0363d4297f3a59e06b5f53fb2177e1184401278bc338d8c48707f78b24121dee53dde48a308cbf17f8a705c0247c9b548894969
+"@vizdom/vizdom-ts-node@npm:^0.1.18":
+  version: 0.1.18
+  resolution: "@vizdom/vizdom-ts-node@npm:0.1.18"
+  checksum: 10c0/2a090568cf1a5794425c1d94997d2e9f1b026b64619469827c42c657c680c34e9a6de9eb95da5438a1262fc546c834116a66bab9b07936dbd7378af3557b2a76
   languageName: node
   linkType: hard
 
