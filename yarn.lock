@@ -804,7 +804,7 @@ __metadata:
     keep-a-changelog: "npm:^2.5.3"
     ldap-authentication: "npm:^3.2.4"
     ldapjs: "npm:^3.0.7"
-    linkify-html: "npm:^4.1.4"
+    linkify-html: "npm:^4.2.0"
     linkify-plugin-mention: "npm:^4.1.4"
     linkifyjs: "npm:^4.1.4"
     lodash.countby: "npm:^4.6.0"
@@ -14194,12 +14194,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkify-html@npm:^4.1.4":
-  version: 4.1.4
-  resolution: "linkify-html@npm:4.1.4"
+"linkify-html@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "linkify-html@npm:4.2.0"
   peerDependencies:
     linkifyjs: ^4.0.0
-  checksum: 10c0/44ce32cb4944bcd04d9e4d49fa5033686993174d72e7693917b8392b3071f5ebdf41ff0ee44712c024296c8e2579cdb528bb8d5e6099f519161e9e27a6634a9f
+  checksum: 10c0/445a48fa16783f6984e8aa59a9309c2bb4d15f37dc1d4252382e590a265ce25ed964d1c61d3ff7e95c8ed644da453eed478fd39ed22d37fbb7c1ed897fc352e9
   languageName: node
   linkType: hard
 
