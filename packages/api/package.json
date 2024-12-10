@@ -72,7 +72,7 @@
     "ldap-authentication": "^3.2.4",
     "ldapjs": "^3.0.7",
     "linkify-html": "^4.1.4",
-    "linkify-plugin-mention": "^4.1.4",
+    "linkify-plugin-mention": "^4.2.0",
     "linkifyjs": "^4.1.4",
     "lodash.countby": "^4.6.0",
     "lodash.get": "^4.4.2",
