@@ -32,7 +32,7 @@
 
   onMount(() => {
     if (!element) return;
-    if (!mobile && !window.matchMedia('(max-width: 900px)')) return;
+    if (!mobile && !globalThis.matchMedia('(max-width: 900px)')) return;
     if (element.getBoundingClientRect().left < 1) element.style.borderRadius = '0';
   });
 </script>

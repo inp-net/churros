@@ -20,7 +20,7 @@ datasource db {
 
 /// Users are the people who use the app
 model User {
-  id        String   @id @default(dbgenerated("nanoid('u:')"))
+  id        String   @id @default(dbgenerated("nanoid('u:'::text)"))
   uid       String   @unique @db.VarChar(255)
   createdAt DateTime @default(now())
 
@@ -86,7 +86,6 @@ model User {
   cancellations              Registration[]             @relation("cancelledBy")
   receivedBookings           Registration[]             @relation("beneficiaryOf")
   documents                  Document[]
-  comments                   Comment[]
   bannedFromEvents           Event[]                    @relation("bannedFromEvents")
   reactions                  Reaction[]
   formAnswers                Answer[]
@@ -114,7 +113,7 @@ model User {
 
 /// A bookmarked page, used to make personal quick access links
 model Bookmark {
-  id        String   @id @default(dbgenerated("nanoid('bookmark:')"))
+  id        String   @id @default(dbgenerated("nanoid('bookmark:'::text)"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -127,7 +126,7 @@ model Bookmark {
 
 /// Requests to become someone's godchild. Gets deleted once the request has been accepted (or denied). godchild is the requester, godparent is the requested.
 model GodparentRequest {
-  id        String   @id @unique @default(dbgenerated("nanoid('godparentreq:')"))
+  id        String   @id @default(dbgenerated("nanoid('godparentreq:'::text)"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -141,7 +140,7 @@ model GodparentRequest {
 
 /// UserCandidates are users in the registration process
 model UserCandidate {
-  id        String   @id @default(dbgenerated("nanoid('candidate:')"))
+  id        String   @id @default(dbgenerated("nanoid('candidate:'::text)"))
   token     String   @unique
   createdAt DateTime @default(now())
 
@@ -168,7 +167,7 @@ model UserCandidate {
 
 /// A password reset token
 model PasswordReset {
-  id        String    @id @default(dbgenerated("nanoid('passreset:')"))
+  id        String    @id @default(dbgenerated("nanoid('passreset:'::text)"))
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -178,7 +177,7 @@ model PasswordReset {
 
 /// A email validation request
 model EmailChange {
-  id        String    @id @default(dbgenerated("nanoid('emailchange:')"))
+  id        String    @id @default(dbgenerated("nanoid('emailchange:'::text)"))
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   email     String
@@ -187,11 +186,11 @@ model EmailChange {
   userId    String
   pending   Boolean   @default(true)
   // token is not exposed to the API, whereas id has to be
-  token     String    @unique @default(dbgenerated("nanoid('', 30)"))
+  token     String    @unique @default(dbgenerated("nanoid(''::text, 30)"))
 }
 
 model QuickSignup {
-  id         String          @id @default(dbgenerated("nanoid('quicksignup:', 6)"))
+  id         String          @id @default(dbgenerated("nanoid('quicksignup:'::text, 6)"))
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   validUntil DateTime
@@ -210,7 +209,7 @@ enum LogoSourceType {
 
 /// A service
 model Service {
-  id                   String              @id @default(dbgenerated("nanoid('service:')"))
+  id                   String              @id @default(dbgenerated("nanoid('service:'::text)"))
   name                 String              @db.VarChar(255)
   url                  String              @default("") @db.VarChar(255)
   description          String              @default("") @db.VarChar(255)
@@ -231,7 +230,7 @@ model Service {
 
 /// A single external link
 model Link {
-  id        String   @id @default(dbgenerated("nanoid('link:')"))
+  id        String   @id @default(dbgenerated("nanoid('link:'::text)"))
   name      String   @db.VarChar(255)
   value     String   @db.VarChar(255)
   createdAt DateTime @default(now())
@@ -267,7 +266,7 @@ model Link {
 
 /// A school syllabus
 model Major {
-  id            String   @id @default(dbgenerated("nanoid('major:')"))
+  id            String   @id @default(dbgenerated("nanoid('major:'::text)"))
   uid           String   @unique @db.VarChar(255)
   name          String   @db.VarChar(255)
   shortName     String   @default("") @db.VarChar(255)
@@ -287,7 +286,7 @@ model Major {
 }
 
 model Minor {
-  id        String    @id @default(dbgenerated("nanoid('minor:')"))
+  id        String    @id @default(dbgenerated("nanoid('minor:'::text)"))
   name      String
   shortName String    @default("")
   slug      String
@@ -300,12 +299,12 @@ model Minor {
 }
 
 model School {
-  id                String   @id @default(dbgenerated("nanoid('school:')"))
+  id                String   @id @default(dbgenerated("nanoid('school:'::text)"))
   uid               String   @unique @db.VarChar(255)
   name              String   @db.VarChar(255)
   color             String   @db.VarChar(7)
   studentMailDomain String   @default("") @db.VarChar(255)
-  aliasMailDomains  String[] @default([]) @db.VarChar(255)
+  aliasMailDomains  String[] @default([])
   description       String   @default("") @db.Text
   address           String   @default("") @db.VarChar(255)
   pictureFile       String   @default("") @db.VarChar(255)
@@ -328,7 +327,7 @@ enum CredentialType {
 
 /// A credential is a way to authenticate a user
 model Credential {
-  id        String         @id @default(dbgenerated("nanoid('credential:')"))
+  id        String         @id @default(dbgenerated("nanoid('credential:'::text)"))
   userId    String?
   groupId   String?
   name      String         @default("") @db.VarChar(255)
@@ -345,7 +344,7 @@ model Credential {
 
 /// There is one student association per school
 model StudentAssociation {
-  id                  String @id @default(dbgenerated("nanoid('ae:')"))
+  id                  String @id @default(dbgenerated("nanoid('ae:'::text)"))
   uid                 String @unique @db.VarChar(255)
   description         String @default("") @db.Text
   schoolId            String
@@ -374,7 +373,7 @@ model StudentAssociation {
 }
 
 model Contribution {
-  id            String             @id @default(dbgenerated("nanoid('contribution:')"))
+  id            String             @id @default(dbgenerated("nanoid('contribution:'::text)"))
   option        ContributionOption @relation(fields: [optionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   optionId      String
   transaction   LydiaTransaction?
@@ -387,7 +386,7 @@ model Contribution {
 }
 
 model ContributionOption {
-  id             String               @id @default(dbgenerated("nanoid('contributionoption:')"))
+  id             String               @id @default(dbgenerated("nanoid('contributionoption:'::text)"))
   offeredIn      School               @relation(fields: [offeredInId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   offeredInId    String
   paysFor        StudentAssociation[]
@@ -411,7 +410,7 @@ enum GroupType {
 
 /// A group is a collection of users
 model Group {
-  id                   String    @id @default(dbgenerated("nanoid('g:')"))
+  id                   String    @id @default(dbgenerated("nanoid('g:'::text)"))
   uid                  String    @unique @db.VarChar(255)
   parentId             String?
   /// Helper field to get a whole tree without processing all groups
@@ -504,7 +503,7 @@ model GroupMember {
 
 /// An article is a post in a group
 model Article {
-  id          String     @id @default(dbgenerated("nanoid('a:')"))
+  id          String     @id @default(dbgenerated("nanoid('a:'::text)"))
   authorId    String?
   groupId     String
   slug        String     @db.VarChar(255) // TODO remove
@@ -517,7 +516,6 @@ model Article {
   notifiedAt  DateTime?  @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   pictureFile String     @default("") @db.VarChar(255)
   links       Link[]
-  comments    Comment[]
 
   author    User?      @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   group     Group      @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -541,16 +539,16 @@ enum EventFrequency {
 
 /// An event is a date, time and place, as well as an optional ticket
 model Event {
-  id                    String               @id @default(dbgenerated("nanoid('e:')"))
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @default(now()) @updatedAt
-  authorId              String?
-  groupId               String
-  contactMail           String
-  beneficiary           LydiaAccount?        @relation(fields: [lydiaAccountId], references: [id])
-  description           String               @db.Text
-  slug                  String               @db.VarChar(255)
-  title                 String               @db.VarChar(255)
+  id               String         @id @default(dbgenerated("nanoid('e:'::text)"))
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  authorId         String?
+  groupId          String
+  contactMail      String
+  beneficiary      LydiaAccount?  @relation(fields: [lydiaAccountId], references: [id])
+  description      String         @db.Text
+  slug             String         @db.VarChar(255)
+  title            String         @db.VarChar(255)
   // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
   startsAt              DateTime?
   endsAt                DateTime?
@@ -620,7 +618,7 @@ model EventManagerInvite {
 
 /// An event manager is a user that can scan tickets, and may be able to manage the event
 model EventManager {
-  id                     String  @id @default(dbgenerated("nanoid('em:')"))
+  id                     String  @id @default(dbgenerated("nanoid('em:'::text)"))
   eventId                String
   userId                 String
   canVerifyRegistrations Boolean @default(true) // Can scan tickets
@@ -635,7 +633,7 @@ model EventManager {
 
 /// A ticket group allows for conditions on multiple tickets, such as an upper limit on the sum of registrations in the sub-tickets
 model TicketGroup {
-  id      String @id @default(dbgenerated("nanoid('tg:')"))
+  id      String @id @default(dbgenerated("nanoid('tg:'::text)"))
   eventId String
   name    String @db.VarChar(255)
 
@@ -654,7 +652,7 @@ enum TicketCountingPolicy {
 
 /// A ticket is a way to register for an event. May include a price and conditions.
 model Ticket {
-  id                    String               @id @default(dbgenerated("nanoid('t:')"))
+  id                    String               @id @default(dbgenerated("nanoid('t:'::text)"))
   slug                  String
   eventId               String
   ticketGroupId         String?
@@ -694,7 +692,7 @@ model Ticket {
 
 /// A reservation is a user's registration for a ticket
 model Registration {
-  id                    String         @id @default(dbgenerated("nanoid('r:')"))
+  id                    String         @id @default(dbgenerated("nanoid('r:'::text)"))
   ticketId              String
   externalBeneficiary   String?
   internalBeneficiary   User?          @relation(fields: [internalBeneficiaryId], references: [id], onUpdate: Cascade, onDelete: SetNull, name: "beneficiaryOf")
@@ -745,7 +743,7 @@ enum PaymentMethod {
 
 /// A log entry is a log of an action that happened on the website
 model LogEntry {
-  id         String   @id @default(dbgenerated("nanoid('log:')"))
+  id         String   @id @default(dbgenerated("nanoid('log:'::text)"))
   happenedAt DateTime @default(now())
   userId     String?
   area       String   @db.VarChar(255) // billeterie, gestion clubs, etc. à typer, mais pas dans la DB (pour être plus flexible)
@@ -758,7 +756,7 @@ model LogEntry {
 
 /// A Lydia account
 model LydiaAccount {
-  id                   String               @id @default(dbgenerated("nanoid('lydia:')"))
+  id                   String               @id @default(dbgenerated("nanoid('lydia:'::text)"))
   groupId              String?
   group                Group?               @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   name                 String               @default("") @db.VarChar(255)
@@ -774,7 +772,7 @@ model LydiaAccount {
 
 // Lydia payment
 model LydiaTransaction {
-  id                               String        @id @default(dbgenerated("nanoid('lydiapayment:')"))
+  id                               String        @id @default(dbgenerated("nanoid('lydiapayment:'::text)"))
   phoneNumber                      String        @default("") @db.VarChar(255)
   registrationId                   String?       @unique
   registration                     Registration? @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -800,7 +798,7 @@ enum PayPalTransactionStatus {
 
 /// Paypal payment
 model PaypalTransaction {
-  id             String                   @id @default(dbgenerated("nanoid('paypalpayment:')"))
+  id             String                   @id @default(dbgenerated("nanoid('paypalpayment:'::text)"))
   emailAddress   String                   @default("") @db.VarChar(255)
   registrationId String?                  @unique
   registration   Registration?            @relation(fields: [registrationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -814,7 +812,7 @@ model PaypalTransaction {
 
 /// A NotificationSubscription stores a user's subscription to push notifications on a user agent
 model NotificationSubscription {
-  id            String         @id @default(dbgenerated("nanoid('notifsub:')"))
+  id            String         @id @default(dbgenerated("nanoid('notifsub:'::text)"))
   name          String         @default("") @db.VarChar(255)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -829,7 +827,7 @@ model NotificationSubscription {
 
 /// A notification is a push notification that was sent to a user
 model Notification {
-  id             String                   @id @default(dbgenerated("nanoid('notif:')"))
+  id             String                   @id @default(dbgenerated("nanoid('notif:'::text)"))
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
   timestamp      DateTime?
@@ -863,7 +861,7 @@ enum NotificationChannel {
 
 /// Announcement is a way to get a message accross the entire site, such as for maintenance announcements.
 model Announcement {
-  id        String   @id @default(dbgenerated("nanoid('ann:')"))
+  id        String   @id @default(dbgenerated("nanoid('ann:'::text)"))
   by        User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId    String?
   title     String   @db.VarChar(255)
@@ -876,7 +874,7 @@ model Announcement {
 }
 
 model TeachingUnit {
-  id         String    @id @default(dbgenerated("nanoid('ue:')"))
+  id         String    @id @default(dbgenerated("nanoid('ue:'::text)"))
   name       String    @db.VarChar(255)
   shortName  String    @default("") @db.VarChar(255)
   apogeeCode String?   @db.VarChar(255)
@@ -884,7 +882,7 @@ model TeachingUnit {
 }
 
 model Subject {
-  id             String        @id @default(dbgenerated("nanoid('subj:')"))
+  id             String        @id @default(dbgenerated("nanoid('subj:'::text)"))
   name           String
   slug           String
   shortName      String        @default("") @db.VarChar(255)
@@ -922,7 +920,7 @@ enum DocumentType {
 }
 
 model Document {
-  id         String   @id @default(dbgenerated("nanoid('doc:')"))
+  id         String   @id @default(dbgenerated("nanoid('doc:'::text)"))
   slug       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -940,7 +938,6 @@ model Document {
   uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   uploaderId String?
 
-  comments  Comment[]
   reactions Reaction[]
 
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
@@ -949,27 +946,8 @@ model Document {
   @@index([search], type: Gin)
 }
 
-model Comment {
-  id        String   @id @default(dbgenerated("nanoid('comment:')"))
-  authorId  String?
-  body      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User?    @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  documentId String?
-  article    Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  articleId  String?
-
-  inReplyTo   Comment?   @relation(name: "reply", fields: [inReplyToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  inReplyToId String?
-  replies     Comment[]  @relation(name: "reply")
-  reactions   Reaction[]
-}
-
 model Reaction {
-  id    String @id @default(dbgenerated("nanoid('reac:')"))
+  id    String @id @default(dbgenerated("nanoid('reac:'::text)"))
   emoji String
 
   createdAt DateTime @default(now())
@@ -983,13 +961,10 @@ model Reaction {
   articleId  String?
   event      Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   eventId    String?
-  comment    Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  commentId  String?
 
   @@unique([emoji, authorId, documentId])
   @@unique([emoji, authorId, articleId])
   @@unique([emoji, authorId, eventId])
-  @@unique([emoji, authorId, commentId])
 }
 
 enum PromotionType {
@@ -998,7 +973,7 @@ enum PromotionType {
 }
 
 model PromotionCode {
-  id          String    @id @default(dbgenerated("nanoid('promocode:')"))
+  id          String    @id @default(dbgenerated("nanoid('promocode:'::text)"))
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   claimedAt   DateTime?
@@ -1010,7 +985,7 @@ model PromotionCode {
 }
 
 model Promotion {
-  id               String          @id @default(dbgenerated("nanoid('promo:')"))
+  id               String          @id @default(dbgenerated("nanoid('promo:'::text)"))
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   validUntil       DateTime?
@@ -1024,7 +999,7 @@ model Promotion {
 }
 
 model Form {
-  id          String     @id @default(dbgenerated("nanoid('form:')"))
+  id          String     @id @default(dbgenerated("nanoid('form:'::text)"))
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   createdBy   User?      @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -1058,7 +1033,7 @@ model Form {
 }
 
 model FormSection {
-  id          String     @id @default(dbgenerated("nanoid('formsection:')"))
+  id          String     @id @default(dbgenerated("nanoid('formsection:'::text)"))
   order       Int
   form        Form       @relation(fields: [formId], references: [id], onDelete: Cascade)
   formId      String
@@ -1076,7 +1051,7 @@ model FormSection {
 
 /// Represent a jump condition: answering a certain value of a certain question changes what section of the form is shown next
 model FormJump {
-  id         String      @id @default(dbgenerated("nanoid('formjump:')"))
+  id         String      @id @default(dbgenerated("nanoid('formjump:'::text)"))
   question   Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId String
   value      String
@@ -1085,7 +1060,7 @@ model FormJump {
 }
 
 model Question {
-  id        String      @id @default(dbgenerated("nanoid('question:')"))
+  id        String      @id @default(dbgenerated("nanoid('question:'::text)"))
   section   FormSection @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   sectionId String
   order     Int
@@ -1125,7 +1100,7 @@ enum QuestionKind {
 }
 
 model Answer {
-  id         String   @id @default(dbgenerated("nanoid('answer:')"))
+  id         String   @id @default(dbgenerated("nanoid('answer:'::text)"))
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId String
 
@@ -1153,7 +1128,7 @@ model Answer {
 
 /// A user-defined markdown page, useful for custom pages, only liked to student associations for now.
 model Page {
-  id String @id @default(dbgenerated("nanoid('page:')"))
+  id String @id @default(dbgenerated("nanoid('page:'::text)"))
 
   // Paths are unique per linked resource, final URL of the page should therefore be namespaced
   path                 String                  @db.VarChar(255)
@@ -1183,7 +1158,7 @@ model BlockedUid {
 }
 
 model Theme {
-  id         String       @id @default(dbgenerated("nanoid('theme:')"))
+  id         String       @id @default(dbgenerated("nanoid('theme:'::text)"))
   name       String       @db.VarChar(255)
   values     ThemeValue[]
   createdAt  DateTime     @default(now())
@@ -1229,7 +1204,7 @@ enum ThemeVariable {
 }
 
 model ThemeValue {
-  id       String        @id @default(dbgenerated("nanoid('themeval:')"))
+  id       String        @id @default(dbgenerated("nanoid('themeval:'::text)"))
   variable ThemeVariable
   value    String        @db.VarChar(500)
   theme    Theme         @relation(fields: [themeId], references: [id], onDelete: Cascade, onUpdate: Cascade)

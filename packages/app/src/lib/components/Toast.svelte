@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TOAST_LIFETIME_MS, toasts } from '$lib/toasts';
+  import { TOAST_LIFETIME_MS, toasts, type Toast } from '$lib/toasts';
   import { fade, slide } from 'svelte/transition';
   import ButtonGhost from './ButtonGhost.svelte';
   import IconClose from '~icons/msl/close';
@@ -13,17 +13,21 @@
 
   const dispatch = createEventDispatcher();
 
-  export let id: string;
-  export let title: string;
-  export let body: string;
-  export let type: 'info' | 'warning' | 'error' | 'success' | 'debug' = 'info';
-  export let action = '';
-  export let closeLabel = '';
-  export let showLifetime = false;
-  export let addedAt: Date;
-  export let lifetime = TOAST_LIFETIME_MS;
+  type ToastData = $$Generic;
+  export let toast: Toast<ToastData>;
 
-  let timeLeftMs = addedAt.getTime() + lifetime - Date.now();
+  $: ({
+    id,
+    title,
+    labels,
+    body,
+    type,
+    showLifetime,
+    addedAt = new Date(),
+    lifetime = TOAST_LIFETIME_MS,
+  } = toast);
+
+  $: timeLeftMs = addedAt.getTime() + lifetime - Date.now();
 
   onMount(() => {
     void new Promise((resolve, reject) => {
@@ -75,22 +79,24 @@
     </div>
   </div>
   <div class="rightside">
-    {#if action}
+    {#if labels.action}
       <div class="action">
         <ButtonInk
           on:click={() => {
             dispatch('action');
-          }}>{action}</ButtonInk
+          }}>{labels.action}</ButtonInk
         >
       </div>
     {/if}
     <div class="close">
-      {#if closeLabel}
-        <ButtonInk on:click={async () => toasts.remove(id)}>{closeLabel}</ButtonInk>
+      {#if labels.close}
+        <ButtonInk on:click={async () => toasts.remove(id)}>
+          {labels.close}
+        </ButtonInk>
       {:else}
-        <ButtonGhost class={theme} on:click={async () => toasts.remove(id)}
-          ><IconClose /></ButtonGhost
-        >
+        <ButtonGhost class={theme} on:click={async () => toasts.remove(id)}>
+          <IconClose />
+        </ButtonGhost>
       {/if}
     </div>
   </div>

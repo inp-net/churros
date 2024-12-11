@@ -1,11 +1,6 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { isDark } from '$lib/theme';
-  import type { PageData } from './$types';
-
-  export let data: PageData;
-  const { codeContributors } = data;
 </script>
 
 <div class="content">
@@ -22,16 +17,6 @@
         small
       ></AvatarPerson>
     </div>
-    <ul class="nobullet">
-      {#each codeContributors as contributor (contributor.uid)}
-        <li>
-          <AvatarPerson
-            href="{new URL(env.PUBLIC_REPOSITORY_URL).origin}/users/{contributor.uid}/activity"
-            {...contributor}
-          ></AvatarPerson>
-        </li>
-      {/each}
-    </ul>
   </section>
 </div>
 

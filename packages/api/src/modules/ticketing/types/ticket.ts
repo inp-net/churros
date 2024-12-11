@@ -4,8 +4,8 @@ import { CapacityScalar, canEditEvent, canEditEventPrismaIncludes } from '#modul
 import { DateTimeScalar, LocalID } from '#modules/global';
 import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
-import { canBookTicket, canSeeTicketCapacity, shotgunIsOpen } from '#modules/ticketing/utils';
 import type { Prisma } from '@churros/db/prisma';
+import { canBookTicket, canSeeTicketCapacity, shotgunIsOpen } from '../utils/index.js';
 import { TicketCountingPolicyEnum } from './ticket-counting-policy.js';
 
 export const TicketTypePrismaIncludes = {

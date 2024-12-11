@@ -86,23 +86,6 @@ export const load: PageLoad = async (event) => {
           pictureFile
           fullName
         }
-        comments {
-          edges {
-            node {
-              id
-              author {
-                uid
-                fullName
-                pictureFile
-              }
-              bodyHtml
-              body
-              inReplyToId
-              createdAt
-              updatedAt
-            }
-          }
-        }
       }
     }
   `)
