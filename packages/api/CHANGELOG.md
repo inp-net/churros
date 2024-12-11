@@ -1,5 +1,30 @@
 # @churros/api
 
+## 7.0.0
+
+### Major Changes
+
+- 4589b01: User.booking takes a `event: LocalID!` instead of `event: ID!`, and is now nullable instead of throwing an error
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 465ebe1: dedupe profile email addresses
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- 4589b01: User.booking now correctly returns the User object's booking instead of the logged-in user's
+- e1262b7: upgrade dependencies
+- Updated dependencies [4589b01]
+- Updated dependencies [85bc631]
+- Updated dependencies [e1262b7]
+- Updated dependencies [93f7dd6]
+  - @churros/db@3.2.0
+  - arborist@0.1.2
+
 ## 6.0.0
 
 ### Major Changes

@@ -529,7 +529,7 @@ type AnswersOfUser {
 """
 An article is a post in a group
 """
-type Article implements Commentable & Node & Pictured & Reactable & Shareable {
+type Article implements Node & Pictured & Reactable & Shareable {
   author: User
   authorId: ID
   body: String!
@@ -547,7 +547,6 @@ type Article implements Commentable & Node & Pictured & Reactable & Shareable {
   Vrai si l'utilisateur·ice connecté·e peut éditer le post (en considérant qu'iel ne va pas changer l'auteur·ice ou le groupe du post)
   """
   canEdit(assert: String): Boolean!
-  comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
   createdAt: DateTime!
   event: Event
   eventId: ID
@@ -737,55 +736,6 @@ Une couleur. En entrée, un code héxadécimal avec '#', ou un nom de couleur CS
 """
 scalar Color
 
-type Comment implements Node & Reactable {
-  author: User
-  authorId: ID
-  body: String!
-  bodyHtml: String!
-  createdAt: DateTime!
-  document: Document
-  documentId: ID
-  id: ID!
-  inReplyTo: Comment
-  inReplyToId: ID
-  """
-  L'identifiant local de la ressource (sans préfixe)
-  """
-  localID: LocalID!
-  """
-  Vrai si l’utilisateur·ice connecté·e a réagi avec cet emoji
-  """
-  reacted(emoji: String!): Boolean!
-  """
-  Nombre total de réactions avec cet emoji
-  """
-  reactions(emoji: String!): Int!
-  replies: [Comment!]!
-  updatedAt: DateTime!
-}
-
-"""
-Une resource pouvant être commentée par les utilisateur·ice·s
-"""
-interface Commentable {
-  comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
-  """
-  L’identifiant de la resource commentée
-  """
-  id: ID!
-}
-
-type CommentsConnection {
-  edges: [CommentsEdge!]!
-  nodes: [Comment!]!
-  pageInfo: PageInfo!
-}
-
-type CommentsEdge {
-  cursor: String!
-  node: Comment!
-}
-
 type ContributionOption implements Node {
   """
   On peut marquer une cotisation de cette option comme payée
@@ -873,8 +823,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-type Document implements Commentable & Node & Reactable {
-  comments(after: String, before: String, first: Int, last: Int): CommentsConnection!
+type Document implements Node & Reactable {
   createdAt: DateTime!
   description: String!
   descriptionHtml: String!
@@ -2005,54 +1954,6 @@ type InheritedEventManager {
   user: User!
 }
 
-"""
-A Gitlab issue
-"""
-type Issue {
-  body: String!
-  bodyHtml: String!
-  comments: [IssueComment!]!
-  deployedIn: String!
-  """
-  Expressed from 0 to 1
-  """
-  difficulty: Float
-  duplicatedFrom: Int
-  """
-  Expressed from 0 to 1
-  """
-  importance: Float
-  number: Int!
-  state: IssueState!
-  """
-  The date at which the issue was submitted
-  """
-  submittedAt: DateTime!
-  title: String!
-  url: String!
-}
-
-"""
-A Gitlab issue comment
-"""
-type IssueComment {
-  """
-  The date at which the comment was added
-  """
-  addedAt: DateTime!
-  authorAvatarUrl: String!
-  authorGitlabUrl: String!
-  authorName: String!
-  body: String!
-  bodyHtml: String!
-}
-
-enum IssueState {
-  Closed
-  Deployed
-  Open
-}
-
 type LdapHealthCheck @graphinx(module: "health-checks") {
   """
   Whether the LDAP internal client is ready
@@ -2488,7 +2389,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deleteArticle(id: LocalID!): MutationDeleteArticleResult!
   deleteArticlePicture(id: ID!): Boolean!
-  deleteComment(id: ID!): Comment!
   """
   Supprimer une cotisation
   """
@@ -2538,13 +2438,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     studentAssociation: String
   ): MutationDeletePageResult!
   deleteQuickSignup(code: String!): QuickSignup!
-  deleteReaction(
-    articleId: ID
-    commentId: ID
-    documentId: ID
-    emoji: String!
-    eventId: ID
-  ): Boolean!
+  deleteReaction(articleId: ID, documentId: ID, emoji: String!, eventId: ID): Boolean!
   deleteSchoolPicture(id: String!): String!
   """
   Supprime un service
@@ -2897,13 +2791,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   ): MutationSubscribeToNotificationsResult!
   syncUserLdap(uid: String!): Boolean!
   testNotification(subscriptionEndpoint: String!): Boolean!
-  toggleReaction(
-    articleId: ID
-    commentId: ID
-    documentId: ID
-    emoji: String!
-    eventId: ID
-  ): Reactable!
+  toggleReaction(articleId: ID, documentId: ID, emoji: String!, eventId: ID): Reactable!
   """
   Marque une ressource comme partagée par l'utilisateur·ice connecté·e
   """
@@ -3168,7 +3056,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Crée ou met à jour un post
   """
   upsertArticleV2(group: UID, id: LocalID, input: PostInput!): MutationUpsertArticleV2Result!
-  upsertComment(body: String!, id: ID, inReplyToId: ID, resourceId: ID): Comment!
   upsertDocument(
     description: String!
     id: ID
@@ -4391,7 +4278,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     version: String
   ): ChangelogRelease!
-  codeContributors: QueryCodeContributorsResult!
   """
   A changelog for multiple versions.
   Be careful, this range is (from, to]. I.e. **the first version is excluded, and the last is included**.
@@ -4473,8 +4359,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   Gets the homepage articles, customized if the user is logged in.
   """
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
-  issue(number: Int!): Issue!
-  issuesByUser: [Issue!]!
   kioskReload: Boolean!
   """
   Vrai si l'utilisateur·ice est connecté·e
@@ -4696,12 +4580,6 @@ type QueryAnnouncementsConnection {
 type QueryAnnouncementsConnectionEdge {
   cursor: String!
   node: Announcement!
-}
-
-union QueryCodeContributorsResult = Error | QueryCodeContributorsSuccess | ZodError
-
-type QueryCodeContributorsSuccess {
-  data: [User!]!
 }
 
 union QueryCombinedChangelogResult = Error | QueryCombinedChangelogSuccess | ZodError
@@ -5439,8 +5317,6 @@ interface Reactable {
 type Reaction implements Node {
   author: User
   authorId: ID
-  comment: Comment
-  commentId: ID
   createdAt: DateTime!
   document: Document
   documentId: ID
