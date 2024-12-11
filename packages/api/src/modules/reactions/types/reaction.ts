@@ -9,8 +9,6 @@ export const ReactionType = builder.prismaNode('Reaction', {
     emoji: t.exposeString('emoji'),
     document: t.relation('document', { nullable: true }),
     documentId: t.exposeID('documentId', { nullable: true }),
-    comment: t.relation('comment', { nullable: true }),
-    commentId: t.exposeID('commentId', { nullable: true }),
     author: t.relation('author', { nullable: true }),
     authorId: t.exposeID('authorId', { nullable: true }),
   }),

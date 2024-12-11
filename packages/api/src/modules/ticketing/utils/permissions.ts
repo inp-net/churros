@@ -1,10 +1,10 @@
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { fullName, log, type Capacity, type Context } from '#lib';
 import { actualPrice } from '#modules/payments';
-import { placesLeft } from '#modules/ticketing';
 import { userIsAdminOf } from '#permissions';
 import type { Prisma, User } from '@churros/db/prisma';
 import { isFuture, isPast } from 'date-fns';
+import { placesLeft } from '../index.js';
 
 export const canScanBookingsPrismaIncludes = {
   managers: true,

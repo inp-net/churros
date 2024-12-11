@@ -18,9 +18,6 @@ export function whereClause({
     case 'Article': {
       return { emoji_authorId_articleId: { emoji, authorId, articleId: id } };
     }
-    case 'Comment': {
-      return { emoji_authorId_commentId: { emoji, authorId, commentId: id } };
-    }
     case 'Event': {
       return { emoji_authorId_eventId: { emoji, authorId, eventId: id } };
     }
@@ -37,9 +34,6 @@ export function connection(id: string): Omit<Prisma.ReactionCreateInput, 'emoji'
     }
     case 'Article': {
       return { article: { connect: { id } } };
-    }
-    case 'Comment': {
-      return { comment: { connect: { id } } };
     }
     case 'Event': {
       return { event: { connect: { id } } };
