@@ -278,28 +278,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/charts-svelte@npm:^1.22.3":
-  version: 1.22.4
-  resolution: "@carbon/charts-svelte@npm:1.22.4"
+"@carbon/charts-svelte@npm:^1.22.11":
+  version: 1.22.11
+  resolution: "@carbon/charts-svelte@npm:1.22.11"
   dependencies:
-    "@carbon/charts": "npm:1.22.4"
+    "@carbon/charts": "npm:1.22.11"
     "@ibm/telemetry-js": "npm:^1.8.0"
   peerDependencies:
     svelte: ^4.0.0 || ^5.1.0
-  checksum: 10c0/3ba7134fd4b41b62e2ced2bf49b1cdb946b4ff847d1099b71898603d2f1f9e08899edd976388487822ed41e954f0d7073dec30867e62860d16fc9152032b9f34
+  checksum: 10c0/cbee8261945b2a58a21235650a3786b6f9e9ffd904fa2329f76b38e0b93284dffe7244aef5ef91287bcacd3acfe52fdbee6dc91ccbdfd7db5cf3497ec3103c30
   languageName: node
   linkType: hard
 
-"@carbon/charts@npm:1.22.4":
-  version: 1.22.4
-  resolution: "@carbon/charts@npm:1.22.4"
+"@carbon/charts@npm:1.22.11":
+  version: 1.22.11
+  resolution: "@carbon/charts@npm:1.22.11"
   dependencies:
     "@carbon/colors": "npm:^11.28.0"
     "@carbon/utils-position": "npm:^1.3.0"
     "@ibm/telemetry-js": "npm:^1.8.0"
     "@types/d3": "npm:^7.4.3"
     "@types/topojson": "npm:^3.2.6"
-    carbon-components: "npm:^10.59.0"
     d3: "npm:^7.9.0"
     d3-cloud: "npm:^1.2.7"
     d3-sankey: "npm:^0.12.3"
@@ -309,7 +308,7 @@ __metadata:
     lodash-es: "npm:^4.17.21"
     topojson-client: "npm:^3.1.0"
     tslib: "npm:^2.8.1"
-  checksum: 10c0/295474e17316e9cda73651dd997360e9ae015c70ae471d6a1cde5bf1f6f6f06b111931d5e4f4dd3d4f14cf8c3b90bc53139b927736c6053dcf9fb86c800c8f76
+  checksum: 10c0/3e146c44ab382df1fb2d9e75e208f2f695fb40e4654123bad07b375972b7dd1582f20f113f93060bfea29852eeed66ef47f6710415abf0d6c9eadbcd7b75780e
   languageName: node
   linkType: hard
 
@@ -319,15 +318,6 @@ __metadata:
   dependencies:
     "@ibm/telemetry-js": "npm:^1.5.0"
   checksum: 10c0/7d7c8eecf7ae1a6e4a6cc1244be7015d5cfbe186f79b97091ddc0420f7c740a0f0d67cc31a7234d9e1819bb1a36e76695fbd568b28096990e6f6a552f7251505
-  languageName: node
-  linkType: hard
-
-"@carbon/telemetry@npm:0.1.0":
-  version: 0.1.0
-  resolution: "@carbon/telemetry@npm:0.1.0"
-  bin:
-    carbon-telemetry: bin/carbon-telemetry.js
-  checksum: 10c0/63ccb4de06beab043d8366da6391ba30e11e86479d84e58f3c486695cde5d93a5615034b3e5c802c50a54b18fe916cdcad075859d29510ea985b175974603c9e
   languageName: node
   linkType: hard
 
@@ -869,7 +859,7 @@ __metadata:
   resolution: "@churros/app@workspace:packages/app"
   dependencies:
     "@babel/core": "npm:^7.26.0"
-    "@carbon/charts-svelte": "npm:^1.22.3"
+    "@carbon/charts-svelte": "npm:^1.22.11"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.3"
     "@iconify-json/material-symbols": "npm:^1.2.10"
@@ -7690,18 +7680,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"carbon-components@npm:^10.59.0":
-  version: 10.59.0
-  resolution: "carbon-components@npm:10.59.0"
-  dependencies:
-    "@carbon/telemetry": "npm:0.1.0"
-    flatpickr: "npm:4.6.1"
-    lodash.debounce: "npm:^4.0.8"
-    warning: "npm:^3.0.0"
-  checksum: 10c0/ac2769774148c13dd1b3fef4442afd24d5339bb989bccaf11f6e1963559d41558bfc67ab44cf82938b1aac55b8211b8c1720760aca6aaa8aced479106f98b12a
-  languageName: node
-  linkType: hard
-
 "caseless@npm:~0.12.0":
   version: 0.12.0
   resolution: "caseless@npm:0.12.0"
@@ -11188,13 +11166,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatpickr@npm:4.6.1":
-  version: 4.6.1
-  resolution: "flatpickr@npm:4.6.1"
-  checksum: 10c0/b2beaaffdbf81c63db4f22f6ab7a3844d9b98b14929a9b0c1a4d8c10e1e8e0932deeaf89598e58cadda9931815f96acc538aa060b363ce1a205b4c50d0bb34d2
-  languageName: node
-  linkType: hard
-
 "flatted@npm:^3.2.9, flatted@npm:^3.3.1":
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
@@ -14630,7 +14601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0":
+"loose-envify@npm:^1.1.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -22399,15 +22370,6 @@ __metadata:
   bin:
     wait-port: bin/wait-port.js
   checksum: 10c0/1bf321c27ec31b71d2ddb16251bd9bdc3bcdb604a2f895ff780f53b1b97302a1823e4762d0c99954be9ada63d6d2a77e74928e06f11dcd01b9ed1f26eb60b353
-  languageName: node
-  linkType: hard
-
-"warning@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "warning@npm:3.0.0"
-  dependencies:
-    loose-envify: "npm:^1.0.0"
-  checksum: 10c0/6a2a56ab3139d3927193d926a027e74e1449fa47cc692feea95f8a81a4bb5b7f10c312def94cce03f3b58cb26ba3247858e75d17d596451d2c483a62e8204705
   languageName: node
   linkType: hard
 
