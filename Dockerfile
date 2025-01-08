@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:22.13.0-alpine AS builder
 
 ARG TAG=dev
 
@@ -50,7 +50,7 @@ WORKDIR /app
 RUN yarn workspace @churros/db generate
 RUN yarn workspace @churros/sync build
 
-FROM node:20-alpine AS base
+FROM node:22.13.0-alpine AS base
 
 WORKDIR /app
 
@@ -124,7 +124,7 @@ WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
-FROM node:20-alpine AS prisma
+FROM node:22.13.0-alpine AS prisma
 
 WORKDIR /app
 COPY packages/db/prisma/ /app/packages/db/prisma/
