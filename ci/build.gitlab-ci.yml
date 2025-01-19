@@ -9,8 +9,17 @@
     TAG: export TAG=latest-$(date +%Y%m%d%H%m)
     DEPLOY: 'false'
   before_script:
-    - mkdir ~/.docker
-    - cp $HARBOR_CONFIG_JSON ~/.docker/config.json
+    - |
+      mkdir -p ~/.docker && cat > ~/.docker/config.json <<EOF
+      {
+        "auths": {
+          "$CI_REGISTRY": {
+            "auth": "$(echo -n "$CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD" | base64)"
+          }
+        }
+      }
+      EOF
+
   script:
     - eval $TAG
     - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
@@ -22,12 +31,12 @@
           --opt target=$TARGET \
           --opt build-arg:TAG=$TAG \
           $BUILD_SECRET_SENTRY \
-          --output type=image,name=$HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
+          --output type=image,name=$CI_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
     - |
       if [ "$DEPLOY" == "true" ]; then \
-        echo "Successfully built and pushed $HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG"; \
+        echo "Successfully built and pushed $CI_REGISTRY_IMAGE/$TARGET:v$TAG"; \
       else \
-        echo "Successfully built $HARBOR_REGISTRY_IMAGE/$TARGET:v$TAG"; \
+        echo "Successfully built $CI_REGISTRY_IMAGE/$TARGET:v$TAG"; \
       fi
 
 include:
