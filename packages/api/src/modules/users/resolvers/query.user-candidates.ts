@@ -9,7 +9,7 @@ builder.queryField('userCandidates', (t) =>
     cursor: 'id',
     async totalCount(_, {}, { user }) {
       return prisma.userCandidate.count({
-        where: whereQuery(user),
+        where: prismaQueryUserCandidatesForUser(user),
       });
     },
     async resolve(query, _, {}, { user }) {
@@ -20,17 +20,3 @@ builder.queryField('userCandidates', (t) =>
     },
   }),
 );
-
-const whereQuery = (user: Context['user']) => ({
-  emailValidated: true,
-  ...(user?.admin
-    ? {}
-    : // only return signups for the student association the user is admin of
-      {
-        major: {
-          schools: {
-            some: { studentAssociations: { some: { admins: { some: { id: user?.id } } } } },
-          },
-        },
-      }),
-});
