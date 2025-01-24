@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Le nombre de total de résas non payées ne prenait pas en compte les résas sans mode de paiement choisi, ce qui faisait une situation bizarre où on avait `total ≠ payées + non payées` (#1254)
+
 ## [3.1.0] - 2024-11-30
 
 ### Nouveautés
