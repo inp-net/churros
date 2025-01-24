@@ -1,5 +1,6 @@
-import { builder, prisma, type Context } from '#lib';
-import { UserCandidateType } from '../index.js';
+import { builder, prisma } from '#lib';
+
+import { prismaQueryUserCandidatesForUser, UserCandidateType } from '../index.js';
 
 builder.queryField('userCandidates', (t) =>
   t.prismaConnection({
@@ -14,7 +15,7 @@ builder.queryField('userCandidates', (t) =>
     async resolve(query, _, {}, { user }) {
       return prisma.userCandidate.findMany({
         ...query,
-        where: whereQuery(user),
+        where: prismaQueryUserCandidatesForUser(user),
       });
     },
   }),

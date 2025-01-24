@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import type { MaybeLoading } from '$lib/loading';
+  import { loading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
   import type { SvelteComponent } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
@@ -11,11 +11,17 @@
 
   export let subtext: MaybeLoading<string> = '';
 
+  /** The submenu item is a form */
+  export let form = false;
+
   /** Widen the space available to the right slot */
   export let wideRightPart = false;
 
   /** Whether to allow overflows, could be useful when the icon slot requires so. */
   export let overflow = false;
+
+  /** Show a little red dot next to the icon to grab the user's attention */
+  export let badge: MaybeLoading<boolean> = false;
 
   /** Whether to show a right chevron icon on the right side of the item. Useful to indicate that the item leads to another page. Defaults to true if href is set. */
   export let chevron: boolean | undefined = undefined;
@@ -53,9 +59,10 @@
 </script>
 
 <svelte:element
-  this={href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
+  this={form ? 'form' : href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
   {href}
   on:click
+  on:submit
   role="menuitem"
   tabindex="-1"
   class:wide-right-part={wideRightPart}
@@ -66,7 +73,7 @@
   use:tooltip={help}
 >
   <div class="left" class:allow-overflow={overflow}>
-    <div class="icon">
+    <div class="icon" class:has-red-dot={loading(badge, false)}>
       {#if icon}
         <svelte:component this={icon}></svelte:component>
       {:else}
@@ -150,10 +157,22 @@
   }
 
   .icon {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+  }
+
+  .icon.has-red-dot::before {
+    position: absolute;
+    top: -0.125em;
+    right: -0.125em;
+    width: 0.5em;
+    height: 0.5em;
+    content: '';
+    background-color: var(--danger);
+    border-radius: 50%;
   }
 
   .text {

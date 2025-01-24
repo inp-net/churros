@@ -50,7 +50,6 @@ builder.mutationField('upsertReaction', (t) =>
         update: upsertData,
         include: {
           author: true,
-          comment: { include: { author: true } },
           document: {
             include: {
               subject: { include: { majors: true, minors: { include: { majors: true } } } },
@@ -61,7 +60,7 @@ builder.mutationField('upsertReaction', (t) =>
       });
 
       return prisma.reaction.count({
-        where: { emoji, documentId, articleId, commentId, eventId },
+        where: { emoji, documentId, articleId, eventId },
       });
     },
   }),

@@ -50,3 +50,6 @@ packages/api/apple-wallet-cert.pem
 
 # MacOS folder
 .DS_Store
+
+# Ignore non-needed ci files
+!ci/build

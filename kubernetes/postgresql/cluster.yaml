@@ -17,3 +17,7 @@ spec:
     requests:
       memory: '600Mi'
       cpu: '200m'
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required

@@ -121,9 +121,7 @@
           on:action={async () => {
             if (toast.callbacks.action) await toast.callbacks.action(toast);
           }}
-          action={toast.labels.action}
-          closeLabel={toast.labels.close}
-          {...toast}
+          {toast}
         ></Toast>
       {/each}
     </section>
