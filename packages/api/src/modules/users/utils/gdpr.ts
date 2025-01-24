@@ -46,9 +46,6 @@ export const GDPR_EXPORT_INCLUDES = {
   notificationSubscriptions: true,
   notifications: true,
   documents: true,
-  comments: {
-    include: { inReplyTo: true },
-  },
   reactions: true,
   claimedPromotions: true,
   formAnswers: true,
