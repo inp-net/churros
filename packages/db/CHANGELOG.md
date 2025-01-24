@@ -1,5 +1,15 @@
 # @churros/db
 
+## 4.0.0
+
+### Major Changes
+
+- 50ffbd7: drop comments table
+
+### Patch Changes
+
+- 5b6b6ba: drop superfluous unique constraint of GodparentRequest's id, switch School.aliasMailDomains to text array
+
 ## 3.2.0
 
 ### Minor Changes
