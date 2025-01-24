@@ -1,5 +1,7 @@
 .changesets:
-  image: harbor.k8s.inpt.fr/net7_public/changeset-gitlab
+  image: 
+    name: registry.inpt.fr/inp-net/changesets-gitlab-docker
+    entrypoint: [""]
   before_script:
     - export GITLAB_TOKEN=$CHANGESETS_TOKEN
     - |

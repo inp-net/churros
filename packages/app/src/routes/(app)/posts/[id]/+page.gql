@@ -1,8 +1,4 @@
 query PagePostDetail($id: LocalID!) @loading {
-  me {
-    ...AreaCommentsUser
-  }
-
   post: article(id: $id) {
     id
     localID
@@ -17,7 +13,6 @@ query PagePostDetail($id: LocalID!) @loading {
     group {
       ...AvatarGroup
     }
-    ...AreaComments
     event {
       ...CardEvent
     }
