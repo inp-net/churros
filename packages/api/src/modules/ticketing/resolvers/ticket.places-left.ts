@@ -1,6 +1,7 @@
 import { builder, type Capacity, CapacityUnlimitedValue, prisma, subscriptionName } from '#lib';
 import { CapacityScalar } from '#modules/events';
-import { canSeePlacesLeftCount, placesLeft, TicketType } from '../index.js';
+import { TicketType } from '../types/ticket.js';
+import { canSeePlacesLeftCount, placesLeft } from '../utils/index.js';
 
 builder.prismaObjectField(TicketType, 'placesLeft', (t) =>
   t.field({
