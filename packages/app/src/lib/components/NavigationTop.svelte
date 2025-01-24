@@ -111,14 +111,16 @@
     {/if}
   </div>
   <div class="actions">
-    <button
-      class="bug-report"
-      on:click={() => {
-        globalThis.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
-      }}
-    >
-      <IconBugReport></IconBugReport>
-    </button>
+    <div class="bug-report">
+      <ButtonGhost
+        --text="var(--danger)"
+        on:click={() => {
+          globalThis.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+        }}
+      >
+        <IconBugReport></IconBugReport>
+      </ButtonGhost>
+    </div>
     {#if quickAction && !quickAction.disabled && !quickAction.hidden && !(quickAction.mobileOnly && !mobile)}
       {#if 'overflow' in quickAction && quickAction.overflow && 'icon' in quickAction}
         <OverflowMenu actions={quickAction.overflow}>
@@ -182,10 +184,6 @@
     max-width: 130px;
     height: 2rem;
     overflow: visible;
-  }
-
-  .bug-report {
-    color: var(--danger);
   }
 
   @media (min-width: 900px) {

@@ -1,78 +1,53 @@
-import { loadQuery, makeMutation } from '$lib/zeus.js';
+import { graphql, load_PageKiosk } from '$houdini';
+import { mutationSucceeded } from '$lib/errors.js';
 import { error } from '@sveltejs/kit';
 
-export async function load({ fetch, url }) {
-  const email = url.searchParams.get('user');
-  const password = url.searchParams.get('password');
+export async function load(event) {
+  const email = event.url.searchParams.get('user');
+  const password = event.url.searchParams.get('password');
 
   if (!email || !password)
     error(400, 'Paramètres manquants: user, password. Utiliser un compte de bot kiosque');
 
-  const { login } = await makeMutation(
-    {
-      login: [
-        { email, password },
-        {
-          '...on MutationLoginSuccess': {
-            data: { token: true },
-          },
-          '...on AwaitingValidationError': {
-            message: true,
-          },
-          '...on Error': {
-            message: true,
-          },
-          '...on ZodError': {
-            message: true,
-          },
-        },
-      ],
-    },
-    { fetch },
-  );
+  const result = await KioskLogin.mutate({ email, password });
 
-  if ('message' in login) error(401, login.message);
+  if (!mutationSucceeded('login', result)) error(401, 'Connexion échouée');
 
-  const { events } = await loadQuery(
-    {
-      events: [
-        {
-          future: true,
-          first: Number.parseInt(url.searchParams.get('count') || '5'),
-          kiosk: true,
-        },
-        {
-          nodes: {
-            id: true,
-            uid: true,
-            title: true,
-            startsAt: true,
-            endsAt: true,
-            location: true,
-            pictureURL: [{ dark: false, timestamp: true }, true],
-            group: {
-              id: true,
-              name: true,
-              uid: true,
-              pictureFile: true,
-              pictureFileDark: true,
-            },
-            coOrganizers: {
-              id: true,
-              name: true,
-              uid: true,
-              pictureFile: true,
-              pictureFileDark: true,
-            },
-          },
-        },
-      ],
-    },
-    { fetch, token: login.data.token },
-  );
-
-  if (events.nodes.length === 0)
-    error(400, "Aucun évènement à venir n'est éligible au mode kiosque");
-
-  return { ...login.data, events };
+  return await load_PageKiosk({
+    variables: { count: Number.parseInt(event.url.searchParams.get('count') || '5') },
+    metadata: { tokenOverride: result.data.login.data.token },
+  });
 }
+graphql(`
+  query PageKiosk($count: Int!) @blocking {
+    events(future: true, first: $count, kiosk: true) {
+      nodes {
+        id
+        title
+        startsAt
+        endsAt
+        location
+        pictureURL
+        organizer {
+          ...AvatarGroup
+        }
+        coOrganizers {
+          ...AvatarGroup
+        }
+      }
+    }
+  }
+`);
+
+const KioskLogin = graphql(`
+  mutation KioskLogin($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      ... on MutationLoginSuccess {
+        data {
+          token
+        }
+      }
+      ...MutationErrors
+    }
+  }
+`);
