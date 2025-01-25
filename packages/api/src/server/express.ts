@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/prefer-module */
-import { context, ENV } from '#lib';
+import { context, ENV, updateUserLastSeen } from '#lib';
 import { checkHealth } from '#modules/health-checks/utils';
 import cors from 'cors';
 import { minutesToMilliseconds } from 'date-fns';
@@ -36,6 +36,8 @@ api.use(
   passport.initialize(),
   passport.session(),
   passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  // Last login date middleware
+  updateUserLastSeen,
 );
 
 export async function startApiServer() {
