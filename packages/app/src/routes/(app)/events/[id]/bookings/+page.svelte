@@ -106,14 +106,14 @@
   <ModalBookingDetails {event} bind:open={openBookingDetailModal} />
   <div class="contents">
     <header>
-      {#if newBookingsCount}
-        <Alert theme="primary">
-          {newBookingsCount} nouvelles réservations
-          <ButtonSecondary on:click={async () => PageEventAllBookings.fetch()}>
-            Charger
-          </ButtonSecondary>
-        </Alert>
-      {/if}
+      <InputSearchQuery
+        placeholder="Rechercher par nom, code, email..."
+        q={initialQ}
+        on:debouncedInput={async ({ detail }) => {
+          $q = detail;
+        }}
+      ></InputSearchQuery>
+
       <NavigationTabs
         tabs={FILTERS.map((name) => ({
           name,
@@ -149,14 +149,6 @@
           </div>
         </div>
       </NavigationTabs>
-
-      <InputSearchQuery
-        placeholder="Rechercher par nom, code, email..."
-        q={initialQ}
-        on:debouncedInput={async ({ detail }) => {
-          $q = detail;
-        }}
-      ></InputSearchQuery>
 
       {#if newBookingsCount}
         <Alert theme="primary">
@@ -218,7 +210,7 @@
     gap: 0.5rem;
   }
 
-  .tab .subtitle {
+  .subtitle {
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-size: 0.8em;
