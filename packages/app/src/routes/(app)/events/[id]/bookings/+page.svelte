@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql, type PageEventAllBookings$result } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
@@ -14,6 +13,7 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
   import { allLoaded, loaded, loading, LoadingText, mapLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
@@ -23,6 +23,7 @@
   import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
   import { tabToFilter } from './filters';
+  import { countThing } from '$lib/i18n';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
@@ -59,18 +60,9 @@
         ),
     ).length ?? 0;
 
-  $: if (
-    browser &&
-    $PageEventAllBookings.data &&
-    loaded($PageEventAllBookings.data.event.bookingsCounts.total)
-  ) {
-    const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    globalThis.dispatchEvent(
-      new CustomEvent('NAVTOP_UPDATE_TITLE', {
-        detail: `${total} réservation${total > 1 ? 's' : ''}`,
-      }),
-    );
-  }
+  $: if ($PageEventAllBookings.data) 
+    updateTitle(countThing('réservation', $PageEventAllBookings.data.event.bookingsCounts.total));
+  
 </script>
 
 <ModalOrDrawer bind:open={openBookingDetailModal}>

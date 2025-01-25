@@ -15,8 +15,10 @@
   import IconQuickSignups from '~icons/msl/qr-code-2';
   import IconLogs from '~icons/msl/receipt-long-outline';
   import IconSignups from '~icons/msl/switch-account-outline';
+  import IconAnnouncements from '~icons/msl/campaign-outline';
   import IconEditServices from '~icons/msl/widgets-outline';
   import type { PageData } from './$houdini';
+  import { route } from '$lib/ROUTES';
 
   export let data: PageData;
   $: ({ PageBackrooms } = data);
@@ -42,10 +44,20 @@
         <SubmenuItem icon={IconLogs} chevron subtext={PendingValue}>
           <LoadingText />
         </SubmenuItem>
+        <SubmenuItem icon={IconLogs} chevron subtext={PendingValue}>
+          <LoadingText />
+        </SubmenuItem>
       {:else if me?.admin}
-        <SubmenuItem subtext="Good luck :p" href={refroute('/logs')} icon={IconLogs}
-          >Logs</SubmenuItem
+        <SubmenuItem subtext="Good luck :p" href={refroute('/logs')} icon={IconLogs}>
+          Logs
+        </SubmenuItem>
+        <SubmenuItem
+          href={route('/announcements')}
+          subtext="Afficher un message pour tout le monde"
+          icon={IconAnnouncements}
         >
+          Annonces
+        </SubmenuItem>
       {/if}
       {#if !loaded(isAdmin)}
         <SubmenuItem icon={IconEditServices} chevron subtext={PendingValue}>

@@ -8,6 +8,8 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import IconAnnouncements from '~icons/msl/campaign-outline';
+  import { hiddenAnnouncements } from '../Announcements.svelte';
   import Split from '$lib/components/Split.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
@@ -154,6 +156,16 @@
         <SubmenuItem icon={IconDebug} label>
           Mode debug
           <InputCheckbox slot="right" label="" bind:value={$debugging}></InputCheckbox>
+        </SubmenuItem>
+        <SubmenuItem
+          clickable
+          on:click={() => {
+            $hiddenAnnouncements = [];
+          }}
+          icon={IconAnnouncements}
+          subtext="Utile si tu en as ignoré par erreur"
+        >
+          Réafficher toutes les annonces en cours
         </SubmenuItem>
       </Submenu>
       <ModalOrDrawer bind:open={deleteAccountModal}>
