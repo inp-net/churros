@@ -33,6 +33,7 @@ import {
 } from '~icons/msl/notifications-outline';
 import IconPostAdd from '~icons/msl/post-add';
 import IconScanQR from '~icons/msl/qr-code-scanner';
+import IconRefresh from '~icons/msl/refresh';
 import IconCog from '~icons/msl/settings-outline';
 import IconPost from '~icons/msl/text-ad-outline';
 import IconBookingsList from '~icons/msl/view-list-outline';
@@ -63,7 +64,7 @@ export function addReferrer(
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
 export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT'}`;
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT' | 'RELOAD'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   globalThis.dispatchEvent(new CustomEvent(eventID));
 };
@@ -168,6 +169,13 @@ const commonActions = {
     icon: IconXML,
     do() {
       navigationTopActionEventDispatcher('NAVTOP_COPY_ID');
+    },
+  },
+  reload: {
+    label: 'Rafraîchir',
+    icon: IconRefresh,
+    do() {
+      navigationTopActionEventDispatcher('NAVTOP_RELOAD');
     },
   },
 } as const;
@@ -754,6 +762,17 @@ export const topnavConfigs: Partial<{
     back: route('/announcements'),
     actions: [commonActions.delete],
   },
+  '/(app)/signups': {
+    title: '… inscriptions en attente',
+    back: route('/backrooms'),
+    quickAction: commonActions.reload,
+    actions: rootPagesActions,
+  },
+  '/(app)/signups/edit/[email]': ({ params: { email } }) => ({
+    title: `Inscription de ${email}`,
+    back: route('/signups'),
+    actions: [],
+  }),
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';

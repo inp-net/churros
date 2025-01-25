@@ -6,12 +6,10 @@ import path from 'node:path';
 
 import '#modules/announcements';
 import '#modules/changelogs';
-import '#modules/comments';
 import '#modules/curriculum';
 import '#modules/documents';
 import '#modules/events';
 import '#modules/forms';
-import '#modules/gitlab';
 import '#modules/global';
 import '#modules/groups';
 import '#modules/health-checks';

@@ -1471,4 +1471,25 @@ await prisma.ticket
     }
   });
 
+await prisma.userCandidate.createMany({
+  data: await Promise.all(Array.from({length: 50}).map(async () => {
+    const name =  {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+    }
+    return {
+      ...name,
+      email: faker.internet.email(),
+      churrosPassword: await hash('hahahaha'),
+      ldapPassword: await hash('hahahaha'),
+      uid: faker.internet.userName(name),
+      majorId: randomChoice(majors).id,
+      apprentice: faker.datatype.boolean(),
+      graduationYear: faker.number.int({min: 2022, max: 2026}),
+      token: faker.string.uuid(),
+      emailValidated: faker.datatype.boolean(0.8)
+    } as Prisma.UserCandidateCreateInput
+  }))
+})
+
 exit(0);

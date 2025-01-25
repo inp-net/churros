@@ -34,7 +34,7 @@ export const GDPR_EXPORT_INCLUDES = {
   managedEvents: {
     include: { event: true },
   },
-  bookings: {
+  Reservation: {
     include: { ticket: true },
   },
   seenBookings: {
@@ -46,14 +46,11 @@ export const GDPR_EXPORT_INCLUDES = {
   notificationSubscriptions: true,
   notifications: true,
   documents: true,
-  comments: {
-    include: { inReplyTo: true },
-  },
   reactions: true,
   claimedPromotions: true,
   formAnswers: true,
   partiallyCompletedForms: true,
-} as Prisma.UserInclude;
+} satisfies Prisma.UserInclude;
 
 export async function createGdprExport(user: Context['user']) {
   if (!user) throw new UnauthorizedError();
