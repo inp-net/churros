@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM git.inpt.fr/churros/dependency_proxy/containers/node:20-alpine AS builder
 
 ARG TAG=dev
 
@@ -51,7 +51,7 @@ WORKDIR /app
 RUN yarn workspace @churros/db generate
 RUN yarn workspace @churros/sync build
 
-FROM node:20-alpine AS base
+FROM git.inpt.fr/churros/dependency_proxy/containers/node:20-alpine AS base
 
 WORKDIR /app
 
@@ -129,7 +129,7 @@ WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
-FROM node:20-alpine AS prisma
+FROM git.inpt.fr/churros/dependency_proxy/containers/node:20-alpine AS prisma
 
 RUN apk add --update --no-cache openssl
 
