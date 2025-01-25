@@ -1482,7 +1482,7 @@ await prisma.userCandidate.createMany({
       email: faker.internet.email(),
       churrosPassword: await hash('hahahaha'),
       ldapPassword: await hash('hahahaha'),
-      uid: faker.internet.userName(name),
+      uid: faker.internet.username(name),
       majorId: randomChoice(majors).id,
       apprentice: faker.datatype.boolean(),
       graduationYear: faker.number.int({min: 2022, max: 2026}),

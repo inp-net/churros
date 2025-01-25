@@ -28,6 +28,8 @@
 </script>
 
 <script lang="ts" generics="IconType extends SvelteComponent<SvelteHTMLElements['svg']>">
+  import { afterNavigate } from '$app/navigation';
+
   import { isMobile } from '$lib/mobile';
 
   import OverflowMenuItem from '$lib/components/OverflowMenuItem.svelte';
@@ -40,12 +42,18 @@
 
   /** Show a red dot to get the user's attention (most likely because an overflow menu item inside has a red dot itself) */
   let hasBadge = false;
-  $: Promise.all(
-    actions.map(async (action) => {
-      const data = typeof action === 'function' ? await action($page) : action;
-      if (await data.badge?.()) hasBadge = true;
-    }),
-  );
+  async function updateHasBadge(actions: Array<OverflowMenuAction<IconType>>) {
+    await Promise.all(
+      actions.map(async (action) => {
+        const data = typeof action === 'function' ? await action($page) : action;
+        if (data.hidden || data.disabled) return;
+        if (await data.badge?.()) hasBadge = true;
+      }),
+    );
+  }
+
+  $: updateHasBadge(actions);
+  afterNavigate(() => updateHasBadge(actions));
 
   type FlyAndScaleParams = {
     y?: number;

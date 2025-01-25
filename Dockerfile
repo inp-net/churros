@@ -1,4 +1,6 @@
-FROM node:20-alpine AS builder
+ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.inpt.fr/churros/dependency_proxy/containers, for example
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS builder
 
 ARG TAG=dev
 
@@ -51,7 +53,7 @@ WORKDIR /app
 RUN yarn workspace @churros/db generate
 RUN yarn workspace @churros/sync build
 
-FROM node:20-alpine AS base
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS base
 
 WORKDIR /app
 
@@ -114,6 +116,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 FROM base AS sync
 
+RUN apk add --update --no-cache openssl
+
 ENV NODE_ENV="production"
 COPY --from=builder-sync /app/packages/db/src/ /app/packages/db/src/
 COPY --from=builder-sync /app/packages/db/package.json /app/packages/db/
@@ -127,7 +131,7 @@ WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
-FROM node:20-alpine AS prisma
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS prisma
 
 RUN apk add --update --no-cache openssl
 

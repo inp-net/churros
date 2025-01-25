@@ -146,7 +146,7 @@
       readonly={readonly || undefined}
       {autocomplete}
       {placeholder}
-      {autofocus}
+      autofocus={autofocus || undefined}
       {...$$restProps}
       on:input={(e) => {
         if (!(e.target instanceof HTMLInputElement)) return;
