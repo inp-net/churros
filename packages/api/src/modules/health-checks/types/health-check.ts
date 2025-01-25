@@ -16,6 +16,7 @@ export type HealthCheck = {
     oauth: boolean;
     mailman: boolean;
     notifications: boolean;
+    housekeeper: boolean;
   };
 };
 
@@ -145,6 +146,10 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
           notifications: t.boolean({
             description: 'Whether notifications are configured',
             resolve: ({ notifications }) => notifications,
+          housekeeper: t.boolean({
+            description: 'Whether the housekeeper is configured',
+            authScopes: { admin: true },
+            resolve: ({ housekeeper }) => housekeeper,
           }),
         }),
       }),

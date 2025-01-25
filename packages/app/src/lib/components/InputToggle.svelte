@@ -8,8 +8,11 @@
 
   export let value: Value;
 
+  /** Assert that you'll use two-way binding on value (i.e. do bind:value instead of value) */
+  export let twoway = false;
+
   let _value: boolean;
-  $: if (_value === undefined && loaded(value)) _value = value as boolean;
+  $: if ((!twoway || _value === undefined) && loaded(value)) _value = value as boolean;
 </script>
 
 <div class="switch">
@@ -56,18 +59,18 @@
     width: 1.5em;
     height: 1.5em;
     content: '';
-    background-color: var(--disabled-text);
+    background: var(--disabled-text);
     border-radius: 50%;
     transition: 0.125s;
     transform: translate(0%, -25%);
   }
 
   input:checked + .slider {
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
   }
 
   input:checked + .slider::before {
-    background-color: var(--primary);
+    background: var(--primary);
 
     /* transform: translate(100%, -25%); */
     transform: translate(calc(2.3em - 1.5em), -25%);

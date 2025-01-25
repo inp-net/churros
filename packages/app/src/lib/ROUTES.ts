@@ -8,7 +8,7 @@
 /**
  * PAGES
  */
-const PAGES = {
+export const PAGES = {
   '/': `/`,
   '/[uid=uid]': (
     uid: Parameters<typeof import('../params/uid.ts').match>[0],
@@ -39,7 +39,6 @@ const PAGES = {
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
   },
-  '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
@@ -52,6 +51,7 @@ const PAGES = {
     return `/claim-code/${code}`;
   },
   '/credits': `/credits`,
+  '/delete-account': `/delete-account`,
   '/documents': `/documents`,
   '/documents/[major]': (major: string | number, params?: {}) => {
     return `/documents/${major}`;
@@ -158,6 +158,12 @@ const PAGES = {
   }) => {
     return `/events/${params.id}/edit/tickets/${params.ticket}/group`;
   },
+  '/events/[id]/edit/tickets/[ticket]/invited': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params.id}/edit/tickets/${params.ticket}/invited`;
+  },
   '/events/[id]/edit/tickets/[ticket]/links': (params: {
     id: string | number;
     ticket: string | number;
@@ -172,6 +178,9 @@ const PAGES = {
   },
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
+  },
+  '/events/[id]/join/[code]': (params: { id: string | number; code: string | number }) => {
+    return `/events/${params.id}/join/${params.code}`;
   },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
@@ -207,6 +216,9 @@ const PAGES = {
     return `/groups/${uid}/members`;
   },
   '/help': `/help`,
+  '/join-managers/[code]': (code: string | number, params?: {}) => {
+    return `/join-managers/${code}`;
+  },
   '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
     params = params ?? {};
     params.bypass_oauth = params.bypass_oauth ?? undefined;
@@ -217,7 +229,11 @@ const PAGES = {
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
   },
-  '/logout': `/logout`,
+  '/logout': (params?: { userWasDeleted?: '1' | undefined }) => {
+    params = params ?? {};
+    params.userWasDeleted = params.userWasDeleted ?? undefined;
+    return `/logout${appendSp({ userWasDeleted: params.userWasDeleted })}`;
+  },
   '/logs': `/logs`,
   '/notifications': `/notifications`,
   '/posts/[id]': (id: string | number, params?: {}) => {
@@ -246,10 +262,6 @@ const PAGES = {
   '/quick-signups/qr/[code]': (code: string | number, params?: {}) => {
     return `/quick-signups/qr/${code}`;
   },
-  '/reports': `/reports`,
-  '/reports/[number]': (number: string | number, params?: {}) => {
-    return `/reports/${number}`;
-  },
   '/search': (params?: { q?: string | number }) => {
     return `/search${params?.q ? `/${params?.q}` : ''}`;
   },
@@ -261,6 +273,7 @@ const PAGES = {
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
+  '/settings/theme': `/settings/theme`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -331,7 +344,7 @@ const PAGES = {
 /**
  * SERVERS
  */
-const SERVERS = {
+export const SERVERS = {
   'GET /[entity=entity_handle]': (
     entity: Parameters<typeof import('../params/entity_handle.ts').match>[0],
     params?: {},
@@ -391,14 +404,14 @@ const SERVERS = {
 /**
  * ACTIONS
  */
-const ACTIONS = {
+export const ACTIONS = {
   'default /login': `/login`,
 };
 
 /**
  * LINKS
  */
-const LINKS = {};
+export const LINKS = {};
 
 type ParamValue = string | number | undefined;
 
@@ -511,7 +524,6 @@ export type KIT_ROUTES = {
     '/[uid=uid]/[...page]': 'uid' | 'page';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
-    '/announcements/create': never;
     '/backrooms': never;
     '/birthdays': never;
     '/bookings': never;
@@ -520,6 +532,7 @@ export type KIT_ROUTES = {
     '/claim-code': never;
     '/claim-code/[code]': 'code';
     '/credits': never;
+    '/delete-account': never;
     '/documents': never;
     '/documents/[major]': 'major';
     '/documents/[major]/[yearTier=display_year_tier]': 'major' | 'yearTier';
@@ -555,9 +568,11 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/counting': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/group': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/invited': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
+    '/events/[id]/join/[code]': 'id' | 'code';
     '/events/[id]/scan': 'id';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -569,6 +584,7 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/type': 'uid';
     '/groups/[uid]/members': 'uid';
     '/help': never;
+    '/join-managers/[code]': 'code';
     '/login': never;
     '/login/done': never;
     '/login/forgotten': never;
@@ -586,8 +602,6 @@ export type KIT_ROUTES = {
     '/quick-signups/create': never;
     '/quick-signups/manage': never;
     '/quick-signups/qr/[code]': 'code';
-    '/reports': never;
-    '/reports/[number]': 'number';
     '/search': 'q';
     '/services': never;
     '/services/[id]/edit': 'id';
@@ -595,6 +609,7 @@ export type KIT_ROUTES = {
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;
+    '/settings/theme': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';
@@ -660,7 +675,7 @@ export type KIT_ROUTES = {
     ticket: never;
     bypass_oauth: never;
     token: never;
-    number: never;
+    userWasDeleted: never;
     q: never;
     email: never;
     componentName: never;

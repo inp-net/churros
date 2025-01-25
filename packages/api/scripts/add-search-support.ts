@@ -1,5 +1,4 @@
 import { PrismaClient } from '@churros/db/prisma';
-// run yarn workspace @churros/db generate:patch if you get a type error here
 import { type RuntimeDataModel } from '@churros/db/prisma/runtime/library';
 import * as p from '@clack/prompts';
 import { glob } from 'glob';

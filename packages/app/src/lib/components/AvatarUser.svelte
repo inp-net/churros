@@ -25,7 +25,11 @@
 </script>
 
 {#if name}
-  <a class="avatar-user" href={loading(href, '')}>
+  <svelte:element
+    this={loading(href, '') ? 'a' : 'span'}
+    class="avatar-user"
+    href={loading(href, '')}
+  >
     <Avatar
       {...$$restProps}
       src={$data?.pictureURL}
@@ -34,7 +38,7 @@
       help={$data?.uid}
     />
     <LoadingText value={$data?.fullName} />
-  </a>
+  </svelte:element>
 {:else}
   <Avatar
     {...$$restProps}

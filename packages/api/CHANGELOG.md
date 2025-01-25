@@ -1,5 +1,113 @@
 # @churros/api
 
+## 9.0.0
+
+### Major Changes
+
+- d46f5c7: Change return types of Mutation.{accept,refuse}Registration; change arguments to Mutation.updateUserCandidate
+- a0721d8: Event.placesLeft and Ticket.placesLeft are now of type Capacity and not Int. Instead of -1 to represent infinity, the Capacity scalar is used
+- d46f5c7: rename Mutation.{accept,refuse}Registration to Mutation.{accept,refuse}UserCandidate
+- a09feb9: - add required argument bookingUrl to Mutation.bookEvent,
+  - add optional arguments authorName and pointOfContact to Mutation.bookEvent
+  - add Registration.pointOfContact and Registration.authorName.
+  - add Event.enforcePointOfContact and argument enforcePointOfContact to Mutation.updateEvent
+- 50bc062: remove deprecated Mutation.upsertRegistration
+- a50aec4: Make Mutation.deleteAnnouncement return a Result<Announcement> instead of Boolean
+
+### Minor Changes
+
+- dda7171: Add FeaturesHealthCheck.housekeeper
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Add Query.userCandidatesCount
+- 8f63ff5: show event managers inherited from group memberships
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- dda7171: Add Mutation.housekeep to clear out old ressources
+- b114902: only Edit-level managers can now see places left count and capacities when they are hidden
+- 2aebc49: allow search for bookings in /event/:id/bookings
+
+### Patch Changes
+
+- Updated dependencies [89f386f]
+- Updated dependencies [5880beb]
+- Updated dependencies [a09feb9]
+- Updated dependencies [072d7f5]
+- Updated dependencies [2aebc49]
+  - @churros/db@4.1.0
+
+## 8.0.0
+
+### Major Changes
+
+- a451d73: remove Query.issuesByUser, Query.codeContributors, Query.issue and types related to gitlab issues
+- df8fb24: Remove Mutation.kioskReload and Subscription.kioskReload
+- 50ffbd7: drop type Comment, interface Commentable, fields .comments, .comment and .commentId where they exist, Mutation.{upsert,delete}Comment and remove commentId argument from fields that take it
+
+### Minor Changes
+
+- df8fb24: Add Query.userCandidatesCount
+
+### Patch Changes
+
+- 03a5a4f: gdpr exports could not be created
+- 788844c: fix(ticketing): nombre de places non payées ne prend pas en compte les places sans mode de paiement choisi (closes #1254)
+- 8322cc9: school-restricted events can be accessed by other school's students if some tickets are opened to them
+- Updated dependencies [5b6b6ba]
+- Updated dependencies [50ffbd7]
+  - @churros/db@4.0.0
+
+## 7.0.0
+
+### Major Changes
+
+- 4589b01: User.booking takes a `event: LocalID!` instead of `event: ID!`, and is now nullable instead of throwing an error
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 465ebe1: dedupe profile email addresses
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- 4589b01: User.booking now correctly returns the User object's booking instead of the logged-in user's
+- e1262b7: upgrade dependencies
+- Updated dependencies [4589b01]
+- Updated dependencies [85bc631]
+- Updated dependencies [e1262b7]
+- Updated dependencies [93f7dd6]
+  - @churros/db@3.2.0
+  - arborist@0.1.2
+
+## 6.0.0
+
+### Major Changes
+
+- bba3e47: change return type and argument type for Mutation.deleteArticle
+- f09cd52: Change arguments for Mutation.requestEmailChange: email is now newEmail and there's an additional user argument
+- 02fa1a0: Event.placesLeft and Ticket.placesLeft are now of type Capacity and not Int. Instead of -1 to represent infinity, the Capacity scalar is used
+
+### Minor Changes
+
+- 6e11d67: Add Bookmark.url, useful for bookmarking services
+- 02fa1a0: allow hiding capacity on tickets
+- f09cd52: fix and improve email change request flow (wording in email, appearance of error state, and making request creating actually work)
+- 02fa1a0: show event managers inherited from group memberships
+- 02fa1a0: only Edit-level managers can now see places left count and capacities when they are hidden
+- aee5a3a: make repository url to the churros repo env-configurable, defaults to https://git.inpt.fr/churros/churros
+
+### Patch Changes
+
+- 12d9dec: fix(profile): paiement en attente sur le profil d'ae quand loggedout (closes #1176)
+- eecc2c9: fix Mutation.updateGroupMember createdAt not doing anything
+- Updated dependencies [02fa1a0]
+  - @churros/db@3.1.0
+
 ## 5.0.1
 
 ### Patch Changes

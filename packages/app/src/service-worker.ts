@@ -4,7 +4,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 import * as $serviceWorker from '$service-worker';
-import { default as parseUserAgent } from 'ua-parser-js';
+import { UAParser as parseUserAgent } from 'ua-parser-js';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 type PushNotification = NotificationOptions & {
@@ -13,7 +13,7 @@ type PushNotification = NotificationOptions & {
 };
 
 // can't import from $env/dynamic/public in service worker
-const PUBLIC_STORAGE_URL = /* @generated */ `https://${sw.location.hostname}/storage`;
+const PUBLIC_STORAGE_URL = `https://${sw.location.hostname}/storage`;
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${$serviceWorker.version}`;

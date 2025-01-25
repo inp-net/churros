@@ -121,5 +121,6 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
     ),
     mailman: Boolean(ENV.MAILMAN_API_URL && ENV.MAILMAN_API_TOKEN),
     notifications: Boolean(ENV.NOTELLA_HEALTHCHECK_ENDPOINT && ENV.NOTELLA_NATS_URL),
+    housekeeper: Boolean(ENV.HOUSEKEEPER_TOKEN),
   },
 });

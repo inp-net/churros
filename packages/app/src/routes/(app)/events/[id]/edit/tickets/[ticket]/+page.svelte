@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import ButtonInk from '$lib/components/ButtonInk.svelte';
+  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import IconLinkVariant from '$lib/components/IconLinkVariant.svelte';
+  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
   import InputCheckboxes from '$lib/components/InputCheckboxes.svelte';
   import InputDateTime from '$lib/components/InputDateTime.svelte';
   import InputDateTimeRange from '$lib/components/InputDateTimeRange.svelte';
@@ -12,6 +14,8 @@
   import InputToggle from '$lib/components/InputToggle.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
+  import IconInviteOnly from '~icons/msl/share-outline';
   import PickGroup from '$lib/components/PickGroup.svelte';
   import PickMajor from '$lib/components/PickMajor.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
@@ -43,21 +47,18 @@
   import IconContributor from '~icons/msl/contact-emergency-outline';
   import IconApprentice from '~icons/msl/enterprise-outline';
   import IconPrice from '~icons/msl/euro';
+  import IconHeart from '~icons/msl/favorite-outline';
   import IconCapacity from '~icons/msl/file-copy-outline';
   import IconExternalUser from '~icons/msl/globe';
-  import IconCountingPolicy from '~icons/msl/toll-outline';
   import IconGroupMember from '~icons/msl/group-outline';
   import IconHelp from '~icons/msl/help-outline';
   import IconGodson from '~icons/msl/hub-outline';
   import IconTicketGroup from '~icons/msl/inventory-2-outline';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import InputCheckbox from '$lib/components/InputCheckbox.svelte';
-  import IconHeart from '~icons/msl/favorite-outline';
   import IconShotgunOpen from '~icons/msl/lock-open-outline';
   import IconShotgunClose from '~icons/msl/lock-outline';
   import IconAlumni from '~icons/msl/school-outline';
   import IconManagersOnly from '~icons/msl/shield-outline';
+  import IconCountingPolicy from '~icons/msl/toll-outline';
   import IconWarning from '~icons/msl/warning-outline';
   import type { PageData } from './$houdini';
   import ModalDelete from './ModalDelete.svelte';
@@ -87,11 +88,7 @@
   let openGodsonHelp: () => void;
 
   $: ticketName = loading($PageEventEditTicket?.data?.event.ticket?.name, '');
-  $: if (ticketName && browser) {
-    window.dispatchEvent(
-      new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: `Billet ${ticketName}` }),
-    );
-  }
+  $: if (ticketName) updateTitle(`Billet ${ticketName}`);
 
   let openDeleteModal: () => void;
 </script>
@@ -472,6 +469,24 @@
             >
               Externes
             </SubmenuItemBooleanConstraint>
+            <SubmenuItem
+              href={route('/events/[id]/edit/tickets/[ticket]/invited', {
+                id: $page.params.id,
+                ticket: $page.params.ticket,
+              })}
+              icon={IconInviteOnly}
+            >
+              Sur invitation
+              <svelte:fragment slot="subtext">
+                {#if !loaded(event.ticket.inviteCode)}
+                  <LoadingText />
+                {:else if event.ticket.inviteCode}
+                  <strong class="primary">Code d'invitation {event.ticket.inviteCode} actif</strong>
+                {:else}
+                  <span class="muted">Désactivé</span>
+                {/if}
+              </svelte:fragment>
+            </SubmenuItem>
             <PickGroup
               multiple
               let:open
@@ -557,6 +572,7 @@
             </PickMajor>
 
             <SubmenuItem
+              wideRightPart
               icon={IconPromotion}
               subtext={mapAllLoading(event.ticket.openToPromotions, (...names) => {
                 if (names.length === 0) return 'Aucune contrainte';
@@ -567,9 +583,10 @@
               })}
               >Promos
               <InputCheckboxes
+                --checkboxes-direction="row-reverse"
                 value={mapAllLoading(event.ticket.openToPromotions, (...promos) => promos)}
                 slot="right"
-                options={[0, 1, 2].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
+                options={[3, 2, 1, 0].map((i) => [fromYearTier(i + 1), `${i + 1}A`])}
                 on:change={async ({ detail }) => {
                   if (!event.ticket) return;
                   toasts.mutation(

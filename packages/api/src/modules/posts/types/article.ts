@@ -1,5 +1,4 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
-import { CommentableInterface } from '#modules/comments';
 import {
   DateTimeScalar,
   HTMLScalar,
@@ -16,8 +15,6 @@ export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
   include: { reactions: true },
   interfaces: [
-    // @ts-expect-error dunno why it complainnns
-    CommentableInterface,
     PicturedInterface,
     ReactableInterface,
     // FIXME: Gives a "not implemented" error
