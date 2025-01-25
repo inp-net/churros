@@ -772,7 +772,7 @@ __metadata:
     connect-redis: "npm:^7.1.1"
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     date-fns: "npm:^2.30.0"
     date-fns-tz: "npm:^2.0.1"
     dichotomid: "npm:^0.0.3"
@@ -9266,10 +9266,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "dataloader@npm:2.2.2"
-  checksum: 10c0/125ec69f821478cf7c6b4360095db6cab939fe57876a0d2060c428091a8deee7152345189923b71a6afa694aaec463779f34b585317164016fd6f54f52cd94ba
+"dataloader@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "dataloader@npm:2.2.3"
+  checksum: 10c0/9b9a056fbc863ca86da87d59e053e871e263b4966aa4d55e40d61a65e96815fae5530ca220629064ca5f8e3000c0c4ec93292e170c38ff393fb34256b4d7c1aa
   languageName: node
   linkType: hard
 

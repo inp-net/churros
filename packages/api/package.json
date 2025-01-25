@@ -40,7 +40,7 @@
     "connect-redis": "^7.1.1",
     "cors": "^2.8.5",
     "croner": "^8.1.2",
-    "dataloader": "^2.2.2",
+    "dataloader": "^2.2.3",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.1",
     "dichotomid": "^0.0.3",
