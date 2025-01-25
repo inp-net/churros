@@ -1,5 +1,24 @@
 # @churros/app
 
+## 4.0.0
+
+### Major Changes
+
+- a451d73: remove /reports/ pages, remove code contributors from /credits
+- 50ffbd7: remove comments
+
+### Minor Changes
+
+- 896707d: The checks.websocket property of /health's response is always true and is now deprecated
+- df8fb24: Redesign /backrooms
+- df8fb24: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- 7f63be5: fix group member list infinite scroll
+- f791fd5: toast using callbacks or labels triggered Svelte warnings about unknown props in console
+- df8fb24: /kiosk should now work even on devices without websocket support
+
 ## 3.1.0
 
 ### Minor Changes

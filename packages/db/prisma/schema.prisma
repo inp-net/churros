@@ -2,6 +2,8 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
   output          = "../src/client"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+
 }
 
 // See https://pothos-graphql.dev/docs/plugins/prisma#setup
@@ -73,7 +75,7 @@ model User {
   events                     Event[]
   notificationSubscriptions  NotificationSubscription[]
   notifications              Notification[]
-  godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
+  godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id], onDelete: SetNull) // Le parrain ou la marraine
   godchildren                User[]                     @relation("mentorship") // Les filleul(e)s
   incomingGodparentRequests  GodparentRequest[]         @relation("godparent")
   outgoingGodparentRequests  GodparentRequest[]         @relation("godchild")
@@ -130,9 +132,9 @@ model GodparentRequest {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  godchild    User   @relation("godchild", fields: [godchildId], references: [id])
+  godchild    User   @relation("godchild", fields: [godchildId], references: [id], onDelete: Cascade)
   godchildId  String
-  godparent   User   @relation("godparent", fields: [godparentId], references: [id])
+  godparent   User   @relation("godparent", fields: [godparentId], references: [id], onDelete: Cascade)
   godparentId String
 
   @@unique([godchildId, godparentId])
@@ -236,7 +238,7 @@ model Link {
   createdAt DateTime @default(now())
 
   // All resources that can have links
-  User                 User?               @relation(fields: [userId], references: [id])
+  User                 User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId               String?
   StudentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id])
   studentAssociationId String?
@@ -715,17 +717,20 @@ model Registration {
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
   ticket            Ticket             @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt        DateTime?
   opposedBy         User?              @relation(name: "opposedBy", fields: [opposedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   opposedAt         DateTime?
-  cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   cancelledAt       DateTime?
   seenBy            User[]             @relation(name: "seenBy")
   formAnswer        Answer?
 
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  // Those are kept in sync by a trigger, and are used for fuzzy-matching in a full text search
+  authorFullName              String?                 @default("") @db.VarChar(255)
+  internalBeneficiaryFullName String?                 @default("") @db.VarChar(255)
+  search                      Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@index([search], type: Gin)
 }
@@ -842,7 +847,7 @@ model Notification {
   group          Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   groupId        String?
   channel        NotificationChannel      @default(Other)
-  user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  user           User?                    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId         String?
   goto           String                   @default("")
 }
@@ -935,7 +940,7 @@ model Document {
   paperPaths    String[] // le sujet
   solutionPaths String[] // la correction
 
-  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   uploaderId String?
 
   reactions Reaction[]
@@ -978,9 +983,9 @@ model PromotionCode {
   updatedAt   DateTime  @updatedAt
   claimedAt   DateTime?
   code        String    @unique
-  claimedBy   User?     @relation(fields: [claimedById], references: [id])
+  claimedBy   User?     @relation(fields: [claimedById], references: [id], onDelete: Cascade)
   claimedById String?
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   promotionId String
 }
 
@@ -1107,7 +1112,7 @@ model Answer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdById String?
 
   /// Only the first value is considered for all types except SelectMultiple.

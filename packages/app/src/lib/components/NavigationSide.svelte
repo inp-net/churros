@@ -1,16 +1,18 @@
 <script lang="ts">
   import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import { type NavigationSide, fragment, graphql } from '$houdini';
+  import { type NavigationSide, NavtopPendingSignupsCountStore, fragment, graphql } from '$houdini';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
   import ChurrosLogo from '$lib/components/LogoChurros.svelte';
-  import { allLoaded } from '$lib/loading';
+  import { allLoaded, onceAllLoaded } from '$lib/loading';
   import { route } from '$lib/ROUTES';
   import { themeCurrentValueURL } from '$lib/theme';
   import IconAccountFilled from '~icons/msl/account-circle';
   import IconAccount from '~icons/msl/account-circle-outline';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import IconEvents from '~icons/msl/calendar-today-outline';
+  import IconBackroomsFilled from '~icons/msl/dual-screen';
+  import IconBackrooms from '~icons/msl/dual-screen-outline';
   import IconEventsFilled from '~icons/msl/event';
   import IconHomeFilled from '~icons/msl/home';
   import IconHome from '~icons/msl/home-outline';
@@ -48,6 +50,16 @@
       animatingChurrosLogo = false;
     }, 1000);
   });
+
+  const PendingSignupsCount = new NavtopPendingSignupsCountStore();
+  $: if (
+    onceAllLoaded(
+      [$data?.admin, $data?.studentAssociationAdmin],
+      (admin, stu) => admin || stu,
+      false,
+    )
+  )
+    PendingSignupsCount.fetch();
 </script>
 
 <svelte:window
@@ -129,6 +141,23 @@
         icon={IconSettings}
         iconFilled={IconSettingsFilled}
       />
+      {#if $data.admin || $data.studentAssociationAdmin}
+        <ButtonNavigation
+          href={route('/backrooms')}
+          routeID={[
+            '/(app)/backrooms',
+            '/(app)/signups',
+            '/(app)/quick-signups/manage',
+            '/(app)/services/manage',
+            '/(app)/logs',
+          ]}
+          label="Backrooms"
+          tooltipsOn="left"
+          icon={IconBackrooms}
+          iconFilled={IconBackroomsFilled}
+          badge={($PendingSignupsCount?.data?.userCandidatesCount ?? 0) > 0}
+        />
+      {/if}
     {/if}
   </div>
 

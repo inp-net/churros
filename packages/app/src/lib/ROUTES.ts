@@ -39,7 +39,6 @@ export const PAGES = {
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
   },
-  '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
@@ -52,6 +51,7 @@ export const PAGES = {
     return `/claim-code/${code}`;
   },
   '/credits': `/credits`,
+  '/delete-account': `/delete-account`,
   '/documents': `/documents`,
   '/documents/[major]': (major: string | number, params?: {}) => {
     return `/documents/${major}`;
@@ -229,7 +229,11 @@ export const PAGES = {
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
   },
-  '/logout': `/logout`,
+  '/logout': (params?: { userWasDeleted?: '1' | undefined }) => {
+    params = params ?? {};
+    params.userWasDeleted = params.userWasDeleted ?? undefined;
+    return `/logout${appendSp({ userWasDeleted: params.userWasDeleted })}`;
+  },
   '/logs': `/logs`,
   '/notifications': `/notifications`,
   '/posts/[id]': (id: string | number, params?: {}) => {
@@ -520,7 +524,6 @@ export type KIT_ROUTES = {
     '/[uid=uid]/[...page]': 'uid' | 'page';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
-    '/announcements/create': never;
     '/backrooms': never;
     '/birthdays': never;
     '/bookings': never;
@@ -529,6 +532,7 @@ export type KIT_ROUTES = {
     '/claim-code': never;
     '/claim-code/[code]': 'code';
     '/credits': never;
+    '/delete-account': never;
     '/documents': never;
     '/documents/[major]': 'major';
     '/documents/[major]/[yearTier=display_year_tier]': 'major' | 'yearTier';
@@ -671,6 +675,8 @@ export type KIT_ROUTES = {
     ticket: never;
     bypass_oauth: never;
     token: never;
+    userWasDeleted: never;
+    number: never;
     q: never;
     email: never;
     componentName: never;

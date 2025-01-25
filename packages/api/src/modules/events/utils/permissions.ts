@@ -1,5 +1,5 @@
 import { type Context } from '#lib';
-import { onBoard, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
+import { onBoard, userCanAccessEvent, userIsAdminOf, userIsGroupEditorOf } from '#permissions';
 import type { Event, EventManager, Group, Prisma } from '@churros/db/prisma';
 
 export function canCreateEvents(
@@ -77,30 +77,7 @@ export function canAccessEvent(
   user: Context['user'],
   event: Prisma.EventGetPayload<{ include: typeof canAccessEvent.prismaIncludes }>,
 ) {
-  if (canEditEvent(event, user)) return true;
-
-  switch (event.visibility) {
-    case 'Unlisted':
-    case 'Public': {
-      return true;
-    }
-    case 'SchoolRestricted': {
-      if (!user) return false;
-      return [event.group, ...event.coOrganizers].some(({ studentAssociation: { school } }) =>
-        user.major?.schools.some((s) => s.uid === school.uid),
-      );
-    }
-    case 'GroupRestricted': {
-      if (!user) return false;
-      // TODO handle subgroups
-      return [event.group, ...event.coOrganizers].some(({ groupId }) =>
-        user.groups.some((g) => g.groupId === groupId),
-      );
-    }
-    case 'Private': {
-      return false;
-    }
-  }
+  return userCanAccessEvent(event, user);
 }
 
 canAccessEvent.prismaIncludes = {

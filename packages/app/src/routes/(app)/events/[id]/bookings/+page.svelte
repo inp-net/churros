@@ -1,15 +1,22 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { graphql, type PageEventAllBookings_ModalBookingDetails } from '$houdini';
+  import { graphql, type PageEventAllBookings_ModalBookingDetails, type PageEventAllBookings_ItemBooking$data } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import LoadingScreen from '$lib/components/LoadingScreen.svelte';
+  import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { loaded, loading, LoadingText, mapAllLoading, mapLoading } from '$lib/loading';
+  import { loaded, loading, LoadingText, mapAllLoading, mapLoading, type MaybeLoading } from '$lib/loading';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
+  import { formatDateTimeSmart } from '$lib/dates';
+  import { countThing } from '$lib/i18n';
+  import { refroute } from '$lib/navigation';
+  import { isPWA } from '$lib/pwa';
+  import { onMount } from 'svelte';
+  import { queryParam } from 'sveltekit-search-params';
+  import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
   import { downloadCsv } from './csv';
   import { tabToFilter } from './filters';
@@ -20,9 +27,29 @@
   $: ({ PageEventAllBookings } = data);
 
   const FILTERS = ['unpaid', 'paid', 'verified'] as const;
-  $: activeTab = ($page.url.searchParams.get('tab') ?? 'unpaid') as (typeof FILTERS)[number];
+  const DEFAULT_FILTER = 'unpaid';
+
+  const q = queryParam('q', {
+    encode: (v) => v || undefined,
+    decode: (v) => v ?? '',
+  });
+
+  // Using $q as the value of the input is really bad for performance,
+  // as every debounce will trigger a re-render of the input, which will trigger a re-render of the input's value. If someone types slow enough, the last character typed will be erased as $q updates with the previous value.
+  // This is called a "controlled input" and is generally a bad practice.
+  // Using this allows us to still fill the input value with the ?q query parameter in case we navigate to this page with a ?q set, but prevents the controlled input issues.
+  let initialQ = '';
+  onMount(() => {
+    initialQ = $q ?? '';
+  });
+
+  const activeTab = queryParam<(typeof FILTERS)[number]>('tab', {
+    encode: (v) => v || undefined,
+    decode: (v) => FILTERS.find((f) => f === v) ?? DEFAULT_FILTER,
+  });
 
   let openBookingDetailModal: (booking: PageEventAllBookings_ModalBookingDetails) => void;
+  let selectedBooking: PageEventAllBookings_ItemBooking$data | null = null;
 
   const updates = graphql(`
     subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
@@ -41,30 +68,37 @@
 
   $: updates.listen({
     id: $page.params.id,
-    filter: tabToFilter[activeTab],
+    filter: tabToFilter[$activeTab ?? DEFAULT_FILTER],
   });
 
   // Count new bookings by taking the length of the intersection of booking IDs from updates and PageEventAllBookings
   $: newBookingsCount =
     $updates.data?.event.bookings.nodes.filter(
       (fresh) =>
-        !$PageEventAllBookings.data?.event.bookings.edges.some(
+        !$PageEventAllBookings.data?.event.bookings?.edges.some(
           ({ node: existing }) => existing.id === fresh.id,
         ),
     ).length ?? 0;
 
-  $: if (
-    browser &&
-    $PageEventAllBookings.data &&
-    loaded($PageEventAllBookings.data.event.bookingsCounts.total)
-  ) {
-    const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    globalThis.dispatchEvent(
-      new CustomEvent('NAVTOP_UPDATE_TITLE', {
-        detail: `${total} réservation${total > 1 ? 's' : ''}`,
-      }),
-    );
-  }
+  $: showingSearchResults = Boolean($PageEventAllBookings.data?.event.searchBookings);
+
+  /** Array of booking objects */
+  $: bookings =
+    // ...if we're showing search results
+    $PageEventAllBookings.data?.event.searchBookings?.map((r) => ({
+      ...r.registration,
+      byCode: r.byCode as MaybeLoading<boolean>,
+    })) ??
+    // if we're not
+    $PageEventAllBookings.data?.event.bookings?.edges.map((e) => ({
+      ...e.node,
+      byCode: false,
+    })) ??
+    // if data hasn't been loaded yet
+    [];
+
+  $: if ($PageEventAllBookings.data) 
+    updateTitle(countThing('réservation', $PageEventAllBookings.data.event.bookingsCounts.total));
 </script>
 
 <svelte:window
@@ -86,13 +120,9 @@
         </Alert>
       {/if}
       <NavigationTabs
-        on:click={({ detail }) => {
-          // To change tabs visually before the page has even finished loading
-          activeTab = detail;
-        }}
         tabs={FILTERS.map((name) => ({
           name,
-          active: name === activeTab,
+          active: name === $activeTab,
           href: route('/events/[id]/bookings', $page.params.id, {
             tab: name,
           }),
@@ -124,33 +154,68 @@
           </div>
         </div>
       </NavigationTabs>
+
+      <InputSearchQuery
+        placeholder="Rechercher par nom, code, email..."
+        q={initialQ}
+        on:debouncedInput={async ({ detail }) => {
+          $q = detail;
+        }}
+      ></InputSearchQuery>
+
+      {#if newBookingsCount}
+        <Alert theme="primary">
+          {newBookingsCount} nouvelles réservations <ButtonSecondary
+            on:click={async () => PageEventAllBookings.fetch()}>Charger</ButtonSecondary
+          >
+        </Alert>
+      {/if}
     </header>
-    <ul class="bookings" use:infinitescroll={() => PageEventAllBookings.loadNextPage()}>
-      {#each event.bookings.nodes as booking}
+    <ul
+      class="bookings"
+      use:infinitescroll={async () => {
+        if (showingSearchResults) return;
+        await PageEventAllBookings.loadNextPage();
+      }}
+    >
+      {#each bookings as booking}
         <ItemBooking
-          on:openDetails={({ detail }) => openBookingDetailModal(detail)}
           {booking}
-          showTicketName={mapAllLoading(
-            event.tickets.map((t) => t.id),
-            (...ids) => ids.length > 1,
-          )}
+          highlightCode={loading(booking.byCode, false)}
+          showTicketNames={event.tickets.length > 1}
+          on:openDetails={({ detail }) => {
+            selectedBooking = detail;
+            openBookingDetailModal();
+          }}
         />
       {:else}
-        <li class="booking empty muted">Aucune réservation pour le moment</li>
+        {#if !showingSearchResults}
+          <li class="empty muted">Aucune résevation pour le moment</li>
+        {/if}
       {/each}
+      {#if loading(event.bookings?.pageInfo.hasNextPage, false)}
+        <ItemBooking showTicketNames={event.tickets.length > 1} booking={null} />
+      {/if}
     </ul>
-    {#if loading(event.bookings.pageInfo.hasNextPage, false)}
-      <!-- TODO: Move to ./ItemBooking.svelte and add a loading placeholder one here  -->
-      <div class="loading-more">
-        <LoadingScreen />
-      </div>
+    {#if showingSearchResults}
+      <section class="search-results-count">{countThing('résultat', bookings.length)}</section>
     {/if}
-  </div>
-</MaybeError>
+  </div></MaybeError
+>
 
 <style>
   .contents {
     padding: 0 1rem;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  header :global(> *) {
+    width: 100%;
   }
 
   .bookings {
@@ -163,5 +228,20 @@
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-size: 0.8em;
+  }
+
+  dl {
+    padding: 1rem 2rem;
+  }
+
+  dl dd {
+    display: flex;
+    gap: 0.5ch;
+    align-items: center;
+  }
+
+  .search-results-count {
+    padding: 1rem;
+    text-align: center;
   }
 </style>

@@ -31,6 +31,13 @@ const config = {
         queryField: 'page',
       },
     },
+    UserCandidate: {
+      resolve: {
+        queryField: 'userCandidateByEmail',
+        arguments: ({ email }) => ({ email }),
+      },
+      keys: ['email'],
+    },
     StudentAssociation: {
       resolve: {
         queryField: 'studentAssociation',
