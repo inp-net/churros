@@ -746,6 +746,11 @@ export const topnavConfigs: Partial<{
     back: route('/quick-signups/manage'),
     actions: [],
   },
+  '/(app)/delete-account': {
+    title: 'Supprimer son compte',
+    back: route('/settings'),
+    actions: [],
+  },
   '/(app)/announcements': {
     title: 'Annonces',
     back: route('/'),

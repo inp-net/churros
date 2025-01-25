@@ -10,7 +10,8 @@ export async function load(event) {
     }
   `)
     .fetch({ event })
-    .then((result) => result.data?.me);
+    .then((result) => result.data?.me)
+    .catch(() => null);
 
   if (SentryUser) Sentry.setUser({ id: SentryUser.uid });
 

@@ -59,9 +59,6 @@
 
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
-
-  export let deleteAccountModal: () => void;
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
 <MaybeError result={$LayoutSettings} let:data={{ me, themes }}>
@@ -150,7 +147,7 @@
             />
           </ButtonSecondary>
         </SubmenuItem>
-        <SubmenuItem clickable on:click={deleteAccountModal} icon={IconTrash}>
+        <SubmenuItem href={route('/delete-account')} icon={IconTrash}>
           Supprimer mon compte
         </SubmenuItem>
         <SubmenuItem icon={IconDebug} label>
@@ -168,9 +165,6 @@
           Réafficher toutes les annonces en cours
         </SubmenuItem>
       </Submenu>
-      <ModalOrDrawer bind:open={deleteAccountModal}>
-        <p>Veuillez contacter l'équipe administrative de votre AE pour supprimer votre compte.</p>
-      </ModalOrDrawer>
     </div>
     <slot slot="right"></slot>
   </Split>
