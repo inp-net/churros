@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto, pushState } from '$app/navigation';
+  import { pushState } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
   import { colorName } from '$lib/colors';
@@ -34,6 +34,7 @@
   import IconEmail from '~icons/msl/mail-outline';
   import IconAddress from '~icons/msl/map-outline';
   import IconOtherEmails from '~icons/msl/stacked-email-outline';
+  import IconNickname from '~icons/msl/signature';
   import type { PageData } from './$houdini';
 
   const formatPhoneNumber = (phone: string) =>
@@ -87,17 +88,7 @@
     {#if profile.__typename === 'User' && tab === 'groups'}
       <Submenu>
         {#each profile.memberOf as membership}
-          <GroupMember
-            chevron
-            on:click={async () => {
-              await goto(refroute('/groups/[uid]/members', loading(membership.group.uid, '')), {
-                state: {
-                  EDITING_GROUP_MEMBER: $page.params.uid,
-                },
-              });
-            }}
-            side="group"
-            {membership}
+          <GroupMember href={refroute('/[uid=uid]', membership.group.uid)} side="group" {membership}
           ></GroupMember>
         {/each}
         <SubmenuItem
@@ -112,6 +103,11 @@
       </Submenu>
     {:else if profile.__typename === 'User' && tab === 'infos'}
       <Submenu>
+        {#if profile.nickname}
+          <SubmenuItem icon={IconNickname} subtext="Surnom">
+            <LoadingText value={profile.nickname} />
+          </SubmenuItem>
+        {/if}
         {#if profile.phone}
           <SubmenuItem
             icon={IconPhone}
@@ -212,17 +208,7 @@
     {:else if profile.__typename === 'Group' && tab === 'members'}
       <Submenu>
         {#each profile.boardMembers as membership}
-          <GroupMember
-            chevron
-            on:click={async () => {
-              await goto(refroute('/groups/[uid]/members', $page.params.uid), {
-                state: {
-                  EDITING_GROUP_MEMBER: loading(membership.user.uid, ''),
-                },
-              });
-            }}
-            side="user"
-            {membership}
+          <GroupMember href={refroute('/[uid=uid]', membership.user.uid)} side="user" {membership}
           ></GroupMember>
         {/each}
       </Submenu>

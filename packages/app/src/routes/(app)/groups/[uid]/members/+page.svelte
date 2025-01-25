@@ -95,31 +95,31 @@
         <LoadingText value={group.membersCount} /> membres
       {/if}
     </p>
-    <div
-      class="infinite-scroll-wrapper"
-      use:infinitescroll={async () => {
-        await PageGroupMembers.loadNextPage();
-      }}
-    >
-      <Submenu>
-        <SubmenuItem
-          icon={IconAdd}
-          clickable
-          on:click={() => {
-            pushState('', {
-              NAVTOP_CREATING_GROUP_MEMBER: true,
-            });
-          }}
-        >
-          Ajouter un membre
-        </SubmenuItem>
-        <SubmenuItem
-          icon={IconAddBulk}
-          href={refroute('/groups/[uid]/edit/members/bulk', $page.params.uid)}
-          subtext="Pour ajouter pleins de gens d'un coup"
-        >
-          Ajouter en masse
-        </SubmenuItem>
+    <Submenu>
+      <SubmenuItem
+        icon={IconAdd}
+        clickable
+        on:click={() => {
+          pushState('', {
+            NAVTOP_CREATING_GROUP_MEMBER: true,
+          });
+        }}
+      >
+        Ajouter un membre
+      </SubmenuItem>
+      <SubmenuItem
+        icon={IconAddBulk}
+        href={refroute('/groups/[uid]/edit/members/bulk', $page.params.uid)}
+        subtext="Pour ajouter pleins de gens d'un coup"
+      >
+        Ajouter en masse
+      </SubmenuItem>
+      <div
+        class="infinite-scroll-wrapper"
+        use:infinitescroll={async () => {
+          await PageGroupMembers.loadNextPage();
+        }}
+      >
         {#each withPrevious($searchQuery && $SearchResults.data ? $SearchResults.data?.group.searchMembers.map((r) => r.membership) : group.members.edges.map((e) => e.node)) as [membership, previous]}
           {#if loaded(membership.createdAt) && (!previous || loaded(previous.createdAt))}
             {@const joinedRange = schoolYearRangeOf(membership.createdAt)}
@@ -128,12 +128,17 @@
                 ? schoolYearRangeOf(previous.createdAt)
                 : undefined}
             {#if !previousJoinedRange || joinedRange[0] !== previousJoinedRange[0]}
-              <h2
-                class="joined-year"
-                use:tooltip={`A rejoint dans l'année scolaire ${joinedRange.join('–')}`}
-              >
-                {joinedRange.join('–')}
-              </h2>
+              <div class="joined-range-header">
+                <h2
+                  class="joined-year"
+                  use:tooltip={`A rejoint dans l'année scolaire ${joinedRange.join('–')}`}
+                >
+                  {joinedRange.join('–')}
+                </h2>
+                {#if !previousJoinedRange}
+                  <p class="explain muted">Ont rejoint à cette année scolaire</p>
+                {/if}
+              </div>
             {/if}
           {/if}
           <GroupMember
@@ -147,13 +152,21 @@
             {membership}
           />
         {/each}
-      </Submenu>
-    </div>
+      </div>
+    </Submenu>
   </div>
 </MaybeError>
 
 <style>
   .content {
     padding: 1rem;
+  }
+
+  .joined-range-header {
+    margin: 2rem 0 1rem;
+  }
+
+  .joined-range-header .explain {
+    font-size: 0.8rem;
   }
 </style>

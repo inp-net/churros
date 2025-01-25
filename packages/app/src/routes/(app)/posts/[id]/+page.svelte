@@ -1,5 +1,4 @@
 <script lang="ts">
-  import AreaComments from '$lib/components/AreaComments.houdini.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
@@ -10,13 +9,16 @@
   import { LoadingText, loading } from '$lib/loading';
   import { Lightbox } from 'svelte-lightbox';
   import type { PageData } from './$houdini';
+  import { page } from '$app/stores';
+  import ModalDelete from './ModalDelete.svelte';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
-<MaybeError result={$PagePostDetail} let:data={{ post, me }}>
+<ModalDelete postId={$page.params.id} />
+
+<MaybeError result={$PagePostDetail} let:data={{ post }}>
   <div class="contents">
     <article>
       <header>
@@ -57,10 +59,6 @@
         <CardEvent referrer event={post.event} />
       </section>
     {/if}
-
-    <section class="comments">
-      <AreaComments user={me} comments={post} />
-    </section>
   </div>
 </MaybeError>
 

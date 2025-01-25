@@ -2,6 +2,7 @@
 import { fromYearTier } from '#lib';
 import bunyan from 'bunyan';
 import ldap from 'ldapjs';
+import { ENV } from './env.js';
 
 const logger = bunyan.createLogger({ name: 'CRI INP ldap', level: 'debug' });
 
@@ -12,13 +13,7 @@ export interface LdapUser {
   lastName?: string;
 }
 
-export const schoolLdapSettings = JSON.parse(process.env.LDAP_SCHOOL || '{}') as {
-  servers: Record<
-    string,
-    { url: string; filterAttribute: string; wholeEmail: boolean; attributesMap: LdapUser }
-  >;
-  emailDomains: Record<string, string>;
-};
+export const schoolLdapSettings = ENV.LDAP_SCHOOL;
 
 function parseN7ApprenticeAndMajor(groups: string[] | undefined):
   | undefined
@@ -32,6 +27,7 @@ function parseN7ApprenticeAndMajor(groups: string[] | undefined):
     if (group.startsWith('cn=n7etu_')) {
       const fragment = group.split(',')[0];
       if (!fragment) return undefined;
+      // TODO use document obtained after DSI ticket
       const parts = /n7etu_(?<major>SN|MF2E|3EA)_(?<yearTier>\d)A(_APP)?/.exec(fragment);
       if (!parts) return;
       return {
@@ -69,6 +65,8 @@ export const findSchoolUser = async (
     })
   | undefined
 > => {
+  if (!schoolLdapSettings) return;
+
   let ldapFilter = '';
   let schoolServer: string | undefined;
   console.log({ findSchoolUser: searchBy });

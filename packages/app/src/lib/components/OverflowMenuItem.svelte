@@ -27,7 +27,7 @@
   <div class="label">
     <span class="main"><LoadingText>Lorem ipsum dolor</LoadingText></span>
   </div>
-{:then { label, hidden, disabled, icon, help, 'do': do_, href }}
+{:then { label, badge, hidden, disabled, icon, help, 'do': do_, href }}
   {#if !hidden}
     <svelte:element
       this={disabled ? 'span' : href ? 'a' : 'button'}
@@ -44,7 +44,19 @@
       {href}
       role={href ? 'link' : 'button'}
     >
-      <svelte:component this={icon}></svelte:component>
+      {#await badge?.()}
+        <div class="icon">
+          <svelte:component this={icon} />
+        </div>
+      {:then hasBadge}
+        <div class="icon" class:has-badge={hasBadge}>
+          <svelte:component this={icon} />
+        </div>
+      {:catch}
+        <div class="icon">
+          <svelte:component this={icon} />
+        </div>
+      {/await}
       <div class="label">
         <span class="main">{label}</span>
         {#if help}
@@ -75,6 +87,23 @@
   .label .sub {
     font-size: 0.75em;
     color: var(--muted);
+  }
+
+  .icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon.has-badge::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0.5em;
+    height: 0.5em;
+    content: '';
+    background: var(--danger);
+    border-radius: 50%;
   }
 
   button {

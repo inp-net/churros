@@ -6,10 +6,15 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import PickMajor from '$lib/components/PickMajor.svelte';
   import { loading, type MaybeLoading } from '$lib/loading';
+  import { createEventDispatcher } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
 
+  const dispatch = createEventDispatcher<{ open: undefined; pick: undefined }>();
+
+  type MajorUid = $$Generic<string | null>;
+
   /** Selected major uid */
-  export let major: string;
+  export let major: MajorUid;
 
   /** Allow clearing selection */
   export let clearable = false;
@@ -17,7 +22,11 @@
   /** Text on the clear button */
   export let clearLabel: MaybeLoading<string> = 'Effacer';
 
-  export let initialSchool: InputMajorInitialSchool | null;
+  const clear = () => {
+    major = null as MajorUid;
+  };
+
+  export let initialSchool: InputMajorInitialSchool | null = null;
   $: dataInitialSchool = fragment(
     initialSchool,
     graphql(`
@@ -39,7 +48,7 @@
     loading($dataInitialSchool?.majors?.at(0)?.uid, null) &&
     $dataInitialSchool?.majors.length === 1
   )
-    major = $dataInitialSchool!.majors.at(0)!.uid;
+    major = $dataInitialSchool!.majors.at(0)!.uid as MajorUid;
 
   export let options: InputMajor | null;
   $: data = fragment(
@@ -86,6 +95,7 @@
       <PickMajor
         on:finish={({ detail }) => {
           major = detail;
+          dispatch('pick');
         }}
         value={major}
         options={$data.majors}
@@ -96,14 +106,20 @@
           <slot name="clear-button">
             <ButtonSecondary
               on:click={() => {
-                major = '';
+                dispatch('open');
+                clear();
               }}
             >
               <LoadingText value={clearLabel} />
             </ButtonSecondary>
           </slot>
         {/if}
-        <ButtonSecondary on:click={open}>
+        <ButtonSecondary
+          on:click={() => {
+            open?.();
+            dispatch('open');
+          }}
+        >
           {#if major || clearable}Changer{:else}Choisir{/if}
         </ButtonSecondary>
       </PickMajor>

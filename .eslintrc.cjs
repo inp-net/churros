@@ -32,6 +32,10 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-throw-literal': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
+    '@typescript-eslint/no-empty-object-type': [
+      'error',
+      { allowInterfaces: 'with-single-extends' },
+    ],
     '@typescript-eslint/no-unused-vars': [
       'error',
       {

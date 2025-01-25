@@ -1,4 +1,4 @@
-import { context, customErrorMap, inDevelopment } from '#lib';
+import { context, customErrorMap, ENV, inDevelopment } from '#lib';
 import { Prisma } from '@churros/db/prisma';
 import { usePrometheus } from '@envelop/prometheus';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
@@ -6,7 +6,7 @@ import { createFetch } from '@whatwg-node/fetch';
 import { useTrimInputs } from 'envelop-trim-inputs';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
-import { ZodError, z } from 'zod';
+import { z, ZodError } from 'zod';
 import { schema } from '../schema.js';
 import { api } from './express.js';
 
@@ -123,10 +123,10 @@ api.get('/', (req, res) => {
 <body>
   <h1>Churros API</h1>
   <p>Bienvenue ${user?.firstName ?? ''} sur l'API de Churros.</p>
-  <p><strong><a href="${new URL(process.env.PUBLIC_FRONTEND_ORIGIN).toString()}">
+  <p><strong><a href="${new URL(ENV.PUBLIC_FRONTEND_ORIGIN).toString()}">
     Retourner à l'accueil</a></strong></p>
   <p><a href="/graphql">GraphiQL (pour les développeurs et les curieux)</a></p>
-  <p><a href="https://git.inpt.fr/inp-net/churros">Code source</a></p>
+  <p><a href="${ENV.PUBLIC_REPOSITORY_URL}">Code source</a></p>
 </body>
 </html>`);
 });

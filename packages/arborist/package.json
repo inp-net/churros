@@ -1,13 +1,13 @@
 {
   "name": "arborist",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.16.10",
     "c8": "^10.1.2",
     "npm-upgrade": "^3.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.7.2"
   },
   "exports": {
     "types": "./index.ts",
@@ -19,7 +19,7 @@
     "index.ts",
     "package.json"
   ],
-  "homepage": "https://git.inpt.fr/inp-net/churros/-/tree/main/packages/arborist",
+  "homepage": "https://git.inpt.fr/churros/churros/-/tree/main/packages/arborist",
   "license": "MIT",
   "scripts": {
     "build": "tsc",

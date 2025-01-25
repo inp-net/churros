@@ -68,11 +68,10 @@
         <InputToggle
           slot="right"
           value={loading(user.canAccessDocuments, false)}
-          on:change={async ({ currentTarget }) => {
-            if (!(currentTarget instanceof HTMLInputElement)) return;
+          on:update={async ({ detail }) => {
             await mutateAndToast(SetCanAccessDocuments, {
               uid: $page.params.uid,
-              enabled: currentTarget.checked,
+              enabled: detail,
             });
           }}
         ></InputToggle>

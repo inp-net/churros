@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   export type Args = {
-    major: string;
+    major: string | null;
     graduationYear: number;
     apprentice: boolean;
     email: string;
@@ -97,7 +97,7 @@
     firstName: '',
     graduationYear: fromYearTier(1),
     lastName: '',
-    major: '',
+    major: null,
     password: '',
     passwordConfirmation: '',
     username: '',
@@ -105,6 +105,7 @@
 
   $: selectedMajor = args.major ? $Data.majors.find((m) => m.uid === args.major) : null;
 
+  let majorWasChosen = false;
   let loading = false;
   let success = false;
 </script>
@@ -172,7 +173,15 @@
   >
     <div class="curriculum">
       <div class="major">
+        {#if !majorWasChosen}
+          <p class="major-first-title">Premièrement, à quelle école appartient-tu?</p>
+        {/if}
         <InputMajor
+          on:open={() => {
+            setTimeout(() => {
+              majorWasChosen = true;
+            }, 200);
+          }}
           clearable={!$dataQuickSignup}
           clearLabel="Externe"
           options={$Data}
@@ -180,53 +189,57 @@
           initialSchool={$dataQuickSignup?.school ?? null}
         />
       </div>
-      <div class="promotion">
-        <InputRadios
-          bind:value={args.graduationYear}
-          options={[
-            [fromYearTier(1), '1re année'],
-            [fromYearTier(2), '2e année'],
-            [fromYearTier(3), '3e année'],
-          ]}
-        />
-      </div>
-      <div class="apprenticeship">
-        <InputRadios
-          value={args.apprentice ? 1 : 0}
-          on:change={({ detail }) => {
-            args.apprentice = Boolean(detail);
-          }}
-          options={[
-            [0, 'FISE (Étudiant.e.s)'],
-            [1, 'FISA (Apprenti.e.s)'],
-          ]}
-        />
-      </div>
+      {#if majorWasChosen}
+        <div class="promotion">
+          <InputRadios
+            bind:value={args.graduationYear}
+            options={[
+              [fromYearTier(1), '1re année'],
+              [fromYearTier(2), '2e année'],
+              [fromYearTier(3), '3e année'],
+            ]}
+          />
+        </div>
+        <div class="apprenticeship">
+          <InputRadios
+            value={args.apprentice ? 1 : 0}
+            on:change={({ detail }) => {
+              args.apprentice = Boolean(detail);
+            }}
+            options={[
+              [0, 'FISE (Étudiant.e.s)'],
+              [1, 'FISA (Apprenti.e.s)'],
+            ]}
+          />
+        </div>
+      {/if}
     </div>
-    <InputStudentEmail
-      major={selectedMajor ?? null}
-      usingQuickSignupCode={$dataQuickSignup !== null}
-      label="Ton email"
-      bind:value={args.email}
-    />
-    <div class="side-by-side">
-      <InputText bind:value={args.firstName} required label="Prénom" />
-      <InputText bind:value={args.lastName} required label="Nom de famille" />
-    </div>
-    <InputPassword label="Un mot de passe" bind:value={args.password} />
-    <InputPassword
-      hint=""
-      label="Le même mot de passe"
-      bind:value={args.passwordConfirmation}
-      errors={args.password &&
-      args.passwordConfirmation &&
-      args.password !== args.passwordConfirmation
-        ? ['Les mot de passes ne correspondent pas']
-        : []}
-    />
-    <section class="submit">
-      <ButtonPrimary submits>M'inscrire</ButtonPrimary>
-    </section>
+    {#if majorWasChosen}
+      <InputStudentEmail
+        major={selectedMajor ?? null}
+        usingQuickSignupCode={$dataQuickSignup !== null}
+        label="Ton email"
+        bind:value={args.email}
+      />
+      <div class="side-by-side">
+        <InputText bind:value={args.firstName} required label="Prénom" />
+        <InputText bind:value={args.lastName} required label="Nom de famille" />
+      </div>
+      <InputPassword label="Un mot de passe" bind:value={args.password} />
+      <InputPassword
+        hint=""
+        label="Le même mot de passe"
+        bind:value={args.passwordConfirmation}
+        errors={args.password &&
+        args.passwordConfirmation &&
+        args.password !== args.passwordConfirmation
+          ? ['Les mot de passes ne correspondent pas']
+          : []}
+      />
+      <section class="submit">
+        <ButtonPrimary submits>M'inscrire</ButtonPrimary>
+      </section>
+    {/if}
   </form>
 {/if}
 
@@ -277,6 +290,13 @@
     align-items: center;
   }
 
+  .major-first-title {
+    margin: 0 1rem 1rem;
+    font-weight: bold;
+    color: var(--primary);
+    text-align: center;
+  }
+
   .major {
     margin-bottom: 2rem;
   }
@@ -294,6 +314,10 @@
     width: 100%;
     max-width: 300px;
     max-height: 25vh;
+  }
+
+  header p {
+    text-align: center;
   }
 
   .check {

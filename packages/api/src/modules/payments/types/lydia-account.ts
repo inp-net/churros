@@ -8,6 +8,7 @@ export const LydiaAccountType = builder.prismaNode('LydiaAccount', {
     studentAssociation: t.relation('studentAssociation', { nullable: true }),
     studentAssociationId: t.exposeID('studentAssociationId', { nullable: true }),
     events: t.relation('events'),
+    eventsCount: t.relationCount('events'),
     name: t.exposeString('name'),
     // tokens are NOT EXPOSED, they should never quit the backend
   }),

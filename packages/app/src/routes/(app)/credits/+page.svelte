@@ -1,10 +1,6 @@
 <script lang="ts">
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import { isDark } from '$lib/theme';
-  import type { PageData } from './$types';
-
-  export let data: PageData;
-  const { codeContributors } = data;
 </script>
 
 <div class="content">
@@ -21,14 +17,6 @@
         small
       ></AvatarPerson>
     </div>
-    <ul class="nobullet">
-      {#each codeContributors as contributor (contributor.uid)}
-        <li>
-          <AvatarPerson href="https://git.inpt.fr/users/{contributor.uid}/activity" {...contributor}
-          ></AvatarPerson>
-        </li>
-      {/each}
-    </ul>
   </section>
 </div>
 

@@ -1,5 +1,99 @@
 # @churros/api
 
+## 8.0.0
+
+### Major Changes
+
+- a451d73: remove Query.issuesByUser, Query.codeContributors, Query.issue and types related to gitlab issues
+- df8fb24: Remove Mutation.kioskReload and Subscription.kioskReload
+- 50ffbd7: drop type Comment, interface Commentable, fields .comments, .comment and .commentId where they exist, Mutation.{upsert,delete}Comment and remove commentId argument from fields that take it
+
+### Minor Changes
+
+- df8fb24: Add Query.userCandidatesCount
+
+### Patch Changes
+
+- 03a5a4f: gdpr exports could not be created
+- 788844c: fix(ticketing): nombre de places non payées ne prend pas en compte les places sans mode de paiement choisi (closes #1254)
+- 8322cc9: school-restricted events can be accessed by other school's students if some tickets are opened to them
+- Updated dependencies [5b6b6ba]
+- Updated dependencies [50ffbd7]
+  - @churros/db@4.0.0
+
+## 7.0.0
+
+### Major Changes
+
+- 4589b01: User.booking takes a `event: LocalID!` instead of `event: ID!`, and is now nullable instead of throwing an error
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 465ebe1: dedupe profile email addresses
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- 4589b01: User.booking now correctly returns the User object's booking instead of the logged-in user's
+- e1262b7: upgrade dependencies
+- Updated dependencies [4589b01]
+- Updated dependencies [85bc631]
+- Updated dependencies [e1262b7]
+- Updated dependencies [93f7dd6]
+  - @churros/db@3.2.0
+  - arborist@0.1.2
+
+## 6.0.0
+
+### Major Changes
+
+- bba3e47: change return type and argument type for Mutation.deleteArticle
+- f09cd52: Change arguments for Mutation.requestEmailChange: email is now newEmail and there's an additional user argument
+- 02fa1a0: Event.placesLeft and Ticket.placesLeft are now of type Capacity and not Int. Instead of -1 to represent infinity, the Capacity scalar is used
+
+### Minor Changes
+
+- 6e11d67: Add Bookmark.url, useful for bookmarking services
+- 02fa1a0: allow hiding capacity on tickets
+- f09cd52: fix and improve email change request flow (wording in email, appearance of error state, and making request creating actually work)
+- 02fa1a0: show event managers inherited from group memberships
+- 02fa1a0: only Edit-level managers can now see places left count and capacities when they are hidden
+- aee5a3a: make repository url to the churros repo env-configurable, defaults to https://git.inpt.fr/churros/churros
+
+### Patch Changes
+
+- 12d9dec: fix(profile): paiement en attente sur le profil d'ae quand loggedout (closes #1176)
+- eecc2c9: fix Mutation.updateGroupMember createdAt not doing anything
+- Updated dependencies [02fa1a0]
+  - @churros/db@3.1.0
+
+## 5.0.1
+
+### Patch Changes
+
+- 3e47614: allow postgresql: protocol alongside postgres: protocol for database_url env variable
+
+## 5.0.0
+
+### Major Changes
+
+- 4f87c5e: improve groups' Lydia accounts management and fix bugs
+- 3fa8469: feat(shop): drop shops (shops will come back as a separate project)
+
+### Minor Changes
+
+- 78a786a: validate env vars before launching server
+
+### Patch Changes
+
+- 524ef98: don't try to sync bot accounts to ldap when logging in or updating profile/curriculum of the bot account
+- Updated dependencies [cfaed6e]
+- Updated dependencies [3fa8469]
+  - @churros/db@3.0.0
+
 ## 4.0.1
 
 ### Patch Changes

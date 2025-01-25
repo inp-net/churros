@@ -46,7 +46,7 @@ builder.mutationField('updateUserCurriculum', (t) =>
 
       // Unicorn est completement taré jvais pas faire un ternaire de ça wtf
       // eslint-disable-next-line unicorn/prefer-ternary
-      if (result.major) {
+      if (result.major && !result.bot) {
         await upsertLdapUser({
           uid: result.uid,
           school: result.major.schools.map((s) => s.uid),

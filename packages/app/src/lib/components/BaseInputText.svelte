@@ -12,6 +12,7 @@
   export let type: HTMLInputElement['type'];
   export let value: string | number | Date | null | undefined;
   export let autocomplete: string | undefined = undefined;
+  export let autofocus = false;
   export let name: string | undefined = undefined;
   export let initial: MaybeLoading<string | number | Date | null | undefined> = undefined;
   export let unit = '';
@@ -23,6 +24,7 @@
   export let closeKeyboardOnEnter = false;
   export let element: HTMLInputElement | undefined = undefined;
   export let focused = false;
+  export let readonly = false;
   export let help = '';
 
   // TODO use (HTMLInputElement).valueAsDate instead
@@ -120,6 +122,7 @@
         <slot {value} name="before" />
       </div>
     {/if}
+    <!-- svelte-ignore a11y-autofocus -->
     <input
       bind:this={element}
       class:danger={errored}
@@ -140,8 +143,10 @@
       {name}
       value={stringifyValue(value, type)}
       required={required || undefined}
+      readonly={readonly || undefined}
       {autocomplete}
       {placeholder}
+      autofocus={autofocus || undefined}
       {...$$restProps}
       on:input={(e) => {
         if (!(e.target instanceof HTMLInputElement)) return;
@@ -264,6 +269,7 @@
   .left-icon,
   .action,
   .reset {
+    display: flex;
     color: var(--text);
   }
 

@@ -15,12 +15,13 @@ import {
   type MailRequiredContentIDs,
   type MailTemplate,
 } from '../mail-templates/props.js';
+import { ENV } from './env.js';
 
 const compiledTemplates = await precompileTemplates();
 
 let mailer: ReturnType<typeof initializeMailer>;
 function initializeMailer() {
-  return createTransport(process.env.SMTP_URL || 'smtp://localhost');
+  return createTransport(ENV.SMTP_URL || 'smtp://localhost');
 }
 
 /**
@@ -44,7 +45,7 @@ export async function sendMail<Template extends MailTemplate>(
   to: string | string[],
   data: Template extends keyof MailProps ? MailProps[Template] : Record<string, never>,
   {
-    from = process.env.PUBLIC_SUPPORT_EMAIL,
+    from = ENV.PUBLIC_SUPPORT_EMAIL,
     attachments = {},
     subjectOverride = '',
   }: {

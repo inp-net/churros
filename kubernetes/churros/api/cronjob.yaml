@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: churros-housekeeping
+spec:
+  # run monthly at some low-traffic time
+  schedule: '7 4 2 * *'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: hello
+              image: curlimages/curl:latest
+              env:
+                - name: REQUEST
+                  # all thresholds are in days
+                  # WARNING: DON'T add identation. it'll make yaml keep newlines and break the JSON string
+                  value: >-
+                    mutation RunHousekeeper(\$token: String!) { 
+                    housekeep(token: \$token, thresholds: { 
+                    eventEndedAt: 356, 
+                    userLastLogin: 1825,
+                    logHappenedAt: 90,
+                    notificationSentAt: 30,
+                    gdprExportCreatedAt: 30,
+                    }) { 
+                    __typename 
+                    ...on Error { message } 
+                    ...on HousekeepingResult {
+                    deletedEvents
+                    deletedUsers
+                    deletedLogs
+                    deletedGdprExports
+                    warnedUsers
+                    deletedNotifications
+                    deletedAppleWalletFiles
+                    }
+                    } 
+                    }
+              envFrom:
+                - configMapRef:
+                    name: churros-config
+                - secretRef:
+                    name: churros-secrets
+              # call graphql mutation Mutation.housekeep
+              command:
+                - /bin/sh
+                - -c
+                - >
+                  curl 
+                  -X POST 
+                  -H 'Content-Type: application/json' 
+                  -d "{ \"query\": \"$(REQUEST)\", \"variables\": { \"token\": \"$(HOUSEKEEPER_TOKEN)\" }, \"operationName\": \"RunHousekeeper\" }" 
+                  https://churros.inpt.fr/graphql
+                  --trace-ascii -

@@ -23,6 +23,7 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   g: 'Group',
   a: 'Article',
   e: 'Event',
+  eminvite: 'EventManagerInvite',
   em: 'EventManager',
   tg: 'TicketGroup',
   t: 'Ticket',
@@ -37,15 +38,9 @@ export const ID_PREFIXES_TO_TYPENAMES = {
   ue: 'TeachingUnit',
   subj: 'Subject',
   doc: 'Document',
-  comment: 'Comment',
   reac: 'Reaction',
   promocode: 'PromotionCode',
   promo: 'Promotion',
-  picfile: 'Picture',
-  shopitem: 'ShopItem',
-  shoppayment: 'ShopPayment',
-  shopitemoption: 'ShopItemOption',
-  shopitemanswer: 'ShopItemAnswer',
   form: 'Form',
   formsection: 'FormSection',
   formjump: 'FormJump',
@@ -112,4 +107,14 @@ export function decodeGlobalID(globalID: string) {
     typename: ID_PREFIXES_TO_TYPENAMES[typename as keyof typeof ID_PREFIXES_TO_TYPENAMES],
     id: globalID,
   };
+}
+
+export function isGlobalID(id: string): boolean {
+  return Object.keys(TYPENAMES_TO_ID_PREFIXES).some((typename) =>
+    isGlobalIdOf(typename as keyof typeof TYPENAMES_TO_ID_PREFIXES, id),
+  );
+}
+
+export function isGlobalIdOf(typename: keyof typeof TYPENAMES_TO_ID_PREFIXES, id: string): boolean {
+  return id.startsWith(TYPENAMES_TO_ID_PREFIXES[typename] + ':');
 }

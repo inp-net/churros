@@ -1,9 +1,10 @@
-import { builder, prisma, subscriptionName } from '#lib';
-import { eventCapacity, EventType } from '#modules/events';
+import { builder, CapacityUnlimitedValue, prisma, subscriptionName, type Capacity } from '#lib';
+import { CapacityScalar, eventCapacity, EventType } from '#modules/events';
 import { canSeePlacesLeftCount } from '../index.js';
 
 builder.prismaObjectField(EventType, 'placesLeft', (t) =>
-  t.int({
+  t.field({
+    type: CapacityScalar,
     nullable: true,
     subscribe: (subs, { id }) => {
       subs.register(subscriptionName(id));
@@ -18,12 +19,12 @@ builder.prismaObjectField(EventType, 'placesLeft', (t) =>
         include: { ...canSeePlacesLeftCount.prismaIncludes, ...eventCapacity.prismaIncludes },
       });
 
-      let placesLeft = Math.max(
+      let placesLeft: Capacity = Math.max(
         0,
         eventCapacity(event) - registrations.filter((r) => !r.cancelledAt && !r.opposedAt).length,
       );
 
-      if (placesLeft === Number.POSITIVE_INFINITY) placesLeft = -1;
+      if (placesLeft === Number.POSITIVE_INFINITY) placesLeft = CapacityUnlimitedValue;
 
       return canSeePlacesLeftCount(event, user, placesLeft) ? placesLeft : null;
     },

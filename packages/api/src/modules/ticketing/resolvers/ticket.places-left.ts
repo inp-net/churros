@@ -1,8 +1,11 @@
-import { builder, prisma, subscriptionName } from '#lib';
-import { TicketType, canSeePlacesLeftCount, placesLeft } from '../index.js';
+import { builder, type Capacity, CapacityUnlimitedValue, prisma, subscriptionName } from '#lib';
+import { CapacityScalar } from '#modules/events';
+import { TicketType } from '../types/ticket.js';
+import { canSeePlacesLeftCount, placesLeft } from '../utils/index.js';
 
 builder.prismaObjectField(TicketType, 'placesLeft', (t) =>
-  t.int({
+  t.field({
+    type: CapacityScalar,
     nullable: true,
     description:
       "Nombre de places restantes. Null si l'information n'est pas disponible. N'est jamais null quand il n'y a plus de places disponibles (0)",
@@ -21,9 +24,9 @@ builder.prismaObjectField(TicketType, 'placesLeft', (t) =>
       });
       if (!ticket) return 0;
 
-      let places = placesLeft(ticket);
+      let places: Capacity = placesLeft(ticket);
       // TODO handle infinity at the scalar level
-      if (places === Number.POSITIVE_INFINITY) places = -1;
+      if (places === Number.POSITIVE_INFINITY) places = CapacityUnlimitedValue;
 
       return canSeePlacesLeftCount(event, user, places) ? places : null;
     },

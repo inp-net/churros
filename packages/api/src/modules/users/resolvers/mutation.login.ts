@@ -97,49 +97,33 @@ export async function login(
       },
     });
 
-    if (userCandidate) {
-      // Potential security risk, disabled for now
-      // if (!userCandidate.emailValidated) {
-      //   await log('login', 'fail', {
-      //     uidOrEmail,
-      //     err: "user's email is not validated yet",
-      //     userCandidate,
-      //   });
+    if (userCandidate && (await verifyPassword(userCandidate.churrosPassword, password))) {
+      if (needsManualValidation(userCandidate)) {
+        await log('login', 'fail-awaiting-validation', {
+          uidOrEmail,
+          err: 'user is awaiting validation',
+          userCandidate,
+        });
 
-      //   throw new Error(
-      //     `Ton adresse email n'est pas encore validée. Vérifie ta boîte mail (${userCandidate.email}), tu a du recevoir un mail de ${process.env.PUBLIC_SUPPORT_EMAIL}.`,
-      //   );
-      // }
+        throw new AwaitingValidationError();
+      } else {
+        await log('login', 'fail-stuck-in-limbo', {
+          uidOrEmail,
+          err: 'user does not need manual validation but no user was created from the userCandidate',
+          userCandidate,
+        });
 
-      // eslint-disable-next-line unicorn/no-lonely-if
-      if (await verifyPassword(userCandidate.churrosPassword, password)) {
-        if (needsManualValidation(userCandidate)) {
-          await log('login', 'fail-awaiting-validation', {
-            uidOrEmail,
-            err: 'user is awaiting validation',
-            userCandidate,
-          });
+        await notify(await prisma.user.findMany({ where: { admin: true } }), {
+          title: `${userCandidate.email} est bloqué dans une étape intermédiaire`,
+          body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
+          data: {
+            channel: NotificationChannel.Other,
+            goto: `/signups/edit/${userCandidate.email}`,
+            group: undefined,
+          },
+        });
 
-          throw new AwaitingValidationError();
-        } else {
-          await log('login', 'fail-stuck-in-limbo', {
-            uidOrEmail,
-            err: 'user does not need manual validation but no user was created from the userCandidate',
-            userCandidate,
-          });
-
-          await notify(await prisma.user.findMany({ where: { admin: true } }), {
-            title: `${userCandidate.email} est bloqué dans une étape intermédiaire`,
-            body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
-            data: {
-              channel: NotificationChannel.Other,
-              goto: `/signups/edit/${userCandidate.email}`,
-              group: undefined,
-            },
-          });
-
-          throw new GraphQLError("Ton compte n'est pas encore prêt. Réessaie plus tard.");
-        }
+        throw new GraphQLError("Ton compte n'est pas encore prêt. Réessaie plus tard.");
       }
     }
 
@@ -172,27 +156,29 @@ export async function login(
 
   for (const { value, userId } of credentials) {
     if (await verifyPassword(value, password)) {
-      // update the user's password in the new ldap
-      try {
-        await upsertLdapUser({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          uid: user.uid,
-          email: [user.email, ...user.otherEmails],
-          password: hashPassword(password),
-          school: user.major?.schools.map((school) => school.uid) ?? [],
-        });
-      } catch (error) {
-        await log(
-          'login',
-          'fail',
-          {
+      // update the user's password in the new ldap, unless it's a bot
+      if (!user.bot) {
+        try {
+          await upsertLdapUser({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            uid: user.uid,
+            email: [user.email, ...user.otherEmails],
+            password: hashPassword(password),
+            school: user.major?.schools.map((school) => school.uid) ?? [],
+          });
+        } catch (error) {
+          await log(
+            'login',
+            'fail',
+            {
+              uidOrEmail,
+              err: 'failed to update user in ldap',
+              ldapErr: error,
+            },
             uidOrEmail,
-            err: 'failed to update user in ldap',
-            ldapErr: error,
-          },
-          uidOrEmail,
-        );
+          );
+        }
       }
 
       return prisma.credential.create({

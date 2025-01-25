@@ -1,5 +1,6 @@
 import type { Context, GraphinxDirective, RateLimitDirective } from '#lib';
 import {
+  ENV,
   authScopes,
   decodeGlobalID,
   encodeGlobalID,
@@ -23,10 +24,14 @@ import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
+import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { ZodError } from 'zod';
 import { prisma } from './prisma.js';
 import { pubsub } from './pubsub.js';
 import { DEFAULT_RATE_LIMITS } from './ratelimit.js';
+
+export const CapacityUnlimitedValue = 'Unlimited' as const;
+export type Capacity = number | typeof CapacityUnlimitedValue;
 
 export interface PothosTypes {
   AuthContexts: AuthContexts;
@@ -87,8 +92,8 @@ export interface PothosTypes {
       Output: number;
     };
     Capacity: {
-      Input: number | null;
-      Output: number | 'Unlimited';
+      Input: Capacity;
+      Output: Capacity;
     };
     URL: {
       Input: URL;
@@ -195,7 +200,7 @@ builder.mutationType({
 
 builder.subscriptionType({
   description: `Permet de faire des requêtes de données temps-réel, via des _websockets_.
-L'endpoint pour le temps réel est \`${process.env.PUBLIC_API_WEBSOCKET_URL}\`. 
+L'endpoint pour le temps réel est \`${ENV.PUBLIC_API_WEBSOCKET_URL}\`. 
 
 Pour un client JavaScript, il y a par exemple [GraphQL-WebSocket](https://the-guild.dev/graphql/ws/get-started#use-the-client)`,
   directives: {

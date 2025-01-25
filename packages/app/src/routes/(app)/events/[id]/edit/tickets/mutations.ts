@@ -1,14 +1,32 @@
 import { graphql } from '$houdini';
 
-export const SetEventShowRemainingPlaces = graphql(`
-  mutation SetEventShowRemainingPlaces($id: LocalID!, $showRemainingPlaces: Boolean!) {
-    updateEvent(id: $id, showPlacesLeft: $showRemainingPlaces) {
+export const SetEventPlacesVisibility = graphql(`
+  mutation SetEventPlacesVisibility(
+    $id: LocalID!
+    $showRemainingPlaces: Boolean!
+    $showCapacity: Boolean!
+  ) {
+    updateEvent(id: $id, showPlacesLeft: $showRemainingPlaces, showCapacity: $showCapacity) {
       ... on MutationUpdateEventSuccess {
         data {
           showPlacesLeft
+          showCapacity
         }
       }
       ...MutationErrors
+    }
+  }
+`);
+
+export const SetEnforcePointOfContact = graphql(`
+  mutation SetEnforcePointOfContact($id: LocalID!, $enforce: Boolean!) {
+    updateEvent(id: $id, enforcePointOfContact: $enforce) {
+      ...MutationErrors
+      ... on MutationUpdateEventSuccess {
+        data {
+          enforcePointOfContact
+        }
+      }
     }
   }
 `);
