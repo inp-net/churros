@@ -6,7 +6,7 @@
     "@changesets/cli": "^2.27.12",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.14",
     "@types/lodash.uniqby": "^4.7.9",
     "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
