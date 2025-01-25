@@ -2,6 +2,8 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
   output          = "../src/client"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+
 }
 
 // See https://pothos-graphql.dev/docs/plugins/prisma#setup
@@ -20,9 +22,10 @@ datasource db {
 
 /// Users are the people who use the app
 model User {
-  id        String   @id @default(dbgenerated("nanoid('u:'::text)"))
-  uid       String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now())
+  id         String   @id @default(dbgenerated("nanoid('u:'::text)"))
+  uid        String   @unique @db.VarChar(255)
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
 
   // School details
   schoolServer String? @db.VarChar(255)
@@ -73,7 +76,7 @@ model User {
   events                     Event[]
   notificationSubscriptions  NotificationSubscription[]
   notifications              Notification[]
-  godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id]) // Le parrain ou la marraine
+  godparent                  User?                      @relation("mentorship", fields: [godparentId], references: [id], onDelete: SetNull) // Le parrain ou la marraine
   godchildren                User[]                     @relation("mentorship") // Les filleul(e)s
   incomingGodparentRequests  GodparentRequest[]         @relation("godparent")
   outgoingGodparentRequests  GodparentRequest[]         @relation("godchild")
@@ -86,7 +89,6 @@ model User {
   cancellations              Registration[]             @relation("cancelledBy")
   receivedBookings           Registration[]             @relation("beneficiaryOf")
   documents                  Document[]
-  comments                   Comment[]
   bannedFromEvents           Event[]                    @relation("bannedFromEvents")
   reactions                  Reaction[]
   formAnswers                Answer[]
@@ -98,6 +100,7 @@ model User {
   sharedPosts                Article[]                  @relation("shares")
   sharedEvents               Event[]                    @relation("shares")
   seenBookings               Registration[]             @relation("seenBy")
+  eventManagerInvites        EventManagerInvite[]       @relation("eventManagerInviteUses")
   invitedToTickets           Ticket[]                   @relation("invitedTo")
 
   // For full-text search
@@ -105,6 +108,7 @@ model User {
   claimedPromotions         PromotionCode[]
   formsWithMarkedCheckboxes Form[]                  @relation("formsWithMarkedCheckbox")
   createdPages              Page[]
+  pointOfContactFor         Registration[]          @relation("pointOfContactFor")
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
@@ -129,9 +133,9 @@ model GodparentRequest {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  godchild    User   @relation("godchild", fields: [godchildId], references: [id])
+  godchild    User   @relation("godchild", fields: [godchildId], references: [id], onDelete: Cascade)
   godchildId  String
-  godparent   User   @relation("godparent", fields: [godparentId], references: [id])
+  godparent   User   @relation("godparent", fields: [godparentId], references: [id], onDelete: Cascade)
   godparentId String
 
   @@unique([godchildId, godparentId])
@@ -235,7 +239,7 @@ model Link {
   createdAt DateTime @default(now())
 
   // All resources that can have links
-  User                 User?               @relation(fields: [userId], references: [id])
+  User                 User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId               String?
   StudentAssociation   StudentAssociation? @relation(fields: [studentAssociationId], references: [id])
   studentAssociationId String?
@@ -515,7 +519,6 @@ model Article {
   notifiedAt  DateTime?  @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
   pictureFile String     @default("") @db.VarChar(255)
   links       Link[]
-  comments    Comment[]
 
   author    User?      @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   group     Group      @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -550,35 +553,38 @@ model Event {
   slug             String         @db.VarChar(255)
   title            String         @db.VarChar(255)
   // events without dates are useful when they're "drafts", but they' can't appear in the calendar -  thus they're only visible by link
-  startsAt         DateTime?
-  endsAt           DateTime?
-  globalCapacity   Int?
-  notifiedAt       DateTime?      @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
-  location         String         @default("") @db.VarChar(255)
-  visibility       Visibility
-  frequency        EventFrequency @default(Once)
-  recurringUntil   DateTime?
-  pictureFile      String         @default("") @db.VarChar(255)
-  showPlacesLeft   Boolean        @default(true)
-  showCapacity     Boolean        @default(true)
-  managers         EventManager[]
-  author           User?          @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  includeInKiosk   Boolean        @default(false)
-  group            Group          @relation(fields: [groupId], references: [id])
-  coOrganizers     Group[]        @relation("coOrganizer")
-  tickets          Ticket[]
-  ticketGroups     TicketGroup[]
-  articles         Article[]
-  lydiaAccountId   String?
-  links            Link[]
-  bannedUsers      User[]         @relation("bannedFromEvents")
-  reactions        Reaction[]
-  forms            Form[]
-  sharedBy         User[]         @relation("shares")
-  applicableOffers Promotion[]
+  startsAt              DateTime?
+  endsAt                DateTime?
+  globalCapacity        Int?
+  notifiedAt            DateTime?            @default(now()) // to prevent old notifications before this was added. Another migration will remove this default value.
+  location              String               @default("") @db.VarChar(255)
+  visibility            Visibility
+  frequency             EventFrequency       @default(Once)
+  recurringUntil        DateTime?
+  pictureFile           String               @default("") @db.VarChar(255)
+  showPlacesLeft        Boolean              @default(true)
+  showCapacity          Boolean              @default(true)
+  managers              EventManager[]
+  author                User?                @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  includeInKiosk        Boolean              @default(false)
+  group                 Group                @relation(fields: [groupId], references: [id])
+  coOrganizers          Group[]              @relation("coOrganizer")
+  tickets               Ticket[]
+  ticketGroups          TicketGroup[]
+  articles              Article[]
+  lydiaAccountId        String?
+  links                 Link[]
+  bannedUsers           User[]               @relation("bannedFromEvents")
+  reactions             Reaction[]
+  forms                 Form[]
+  sharedBy              User[]               @relation("shares")
+  applicableOffers      Promotion[]
+  managerInvites        EventManagerInvite[]
+  // enfore providing a point of contact for external bookings
+  enforcePointOfContact Boolean              @default(false)
 
   // For full-text search
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  search                Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@index([search], type: Gin)
 }
@@ -589,6 +595,28 @@ enum Visibility {
   GroupRestricted
   SchoolRestricted
   Public
+}
+
+/// Used to make invite links to invite people as managers of an event
+model EventManagerInvite {
+  id        String   @id @default(dbgenerated("nanoid('eminvite:')"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Maximum number of uses
+  capacity  Int?
+  code      String    @unique
+  /// If null, should expire at the event's end date, not never expire
+  expiresAt DateTime?
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  canVerifyRegistrations Boolean @default(true) // Can scan tickets
+  canEdit                Boolean @default(false)
+  canEditPermissions     Boolean @default(false)
+
+  usedBy User[] @relation("eventManagerInviteUses")
 }
 
 /// An event manager is a user that can scan tickets, and may be able to manage the event
@@ -674,6 +702,7 @@ model Registration {
   internalBeneficiaryId String?
   authorId              String?
   authorEmail           String         @default("")
+  authorName            String         @default("")
   verifiedById          String?
   opposedById           String?
   cancelledById         String?
@@ -682,21 +711,27 @@ model Registration {
   paymentMethod         PaymentMethod?
   paid                  Boolean        @default(false)
   wantsToPay            Float?
+  // Person to refer to, especially for external beneficiaries, to handle misconducts at the event
+  pointOfContactId      String?
+  pointOfContact        User?          @relation(fields: [pointOfContactId], references: [id], onDelete: SetNull, name: "pointOfContactFor")
 
   lydiaTransaction  LydiaTransaction?
   paypalTransaction PaypalTransaction?
   ticket            Ticket             @relation(fields: [ticketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  author            User?              @relation(name: "author", fields: [authorId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedBy        User?              @relation(name: "verifiedBy", fields: [verifiedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   verifiedAt        DateTime?
   opposedBy         User?              @relation(name: "opposedBy", fields: [opposedById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   opposedAt         DateTime?
-  cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cancelledBy       User?              @relation(name: "cancelledBy", fields: [cancelledById], references: [id], onUpdate: Cascade, onDelete: SetNull)
   cancelledAt       DateTime?
   seenBy            User[]             @relation(name: "seenBy")
   formAnswer        Answer?
 
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  // Those are kept in sync by a trigger, and are used for fuzzy-matching in a full text search
+  authorFullName              String?                 @default("") @db.VarChar(255)
+  internalBeneficiaryFullName String?                 @default("") @db.VarChar(255)
+  search                      Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@index([search], type: Gin)
 }
@@ -813,7 +848,7 @@ model Notification {
   group          Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   groupId        String?
   channel        NotificationChannel      @default(Other)
-  user           User?                    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  user           User?                    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId         String?
   goto           String                   @default("")
 }
@@ -906,35 +941,15 @@ model Document {
   paperPaths    String[] // le sujet
   solutionPaths String[] // la correction
 
-  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   uploaderId String?
 
-  comments  Comment[]
   reactions Reaction[]
 
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@unique([subjectId, slug])
   @@index([search], type: Gin)
-}
-
-model Comment {
-  id        String   @id @default(dbgenerated("nanoid('comment:'::text)"))
-  authorId  String?
-  body      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User?    @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  documentId String?
-  article    Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  articleId  String?
-
-  inReplyTo   Comment?   @relation(name: "reply", fields: [inReplyToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  inReplyToId String?
-  replies     Comment[]  @relation(name: "reply")
-  reactions   Reaction[]
 }
 
 model Reaction {
@@ -952,13 +967,10 @@ model Reaction {
   articleId  String?
   event      Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   eventId    String?
-  comment    Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  commentId  String?
 
   @@unique([emoji, authorId, documentId])
   @@unique([emoji, authorId, articleId])
   @@unique([emoji, authorId, eventId])
-  @@unique([emoji, authorId, commentId])
 }
 
 enum PromotionType {
@@ -972,9 +984,9 @@ model PromotionCode {
   updatedAt   DateTime  @updatedAt
   claimedAt   DateTime?
   code        String    @unique
-  claimedBy   User?     @relation(fields: [claimedById], references: [id])
+  claimedBy   User?     @relation(fields: [claimedById], references: [id], onDelete: Cascade)
   claimedById String?
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   promotionId String
 }
 
@@ -1101,7 +1113,7 @@ model Answer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdById String?
 
   /// Only the first value is considered for all types except SelectMultiple.

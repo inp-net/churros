@@ -63,7 +63,7 @@ const logger: ClientPlugin = () => ({
     next(ctx);
   },
   afterNetwork(ctx, { resolve }) {
-    if (ctx.metadata) {
+    if (ctx.metadata?.queryTimestamps?.network) {
       console.info(
         `${ctx.name}: Hitting network: took ${Date.now() - ctx.metadata.queryTimestamps.network}ms`,
       );

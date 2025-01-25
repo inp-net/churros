@@ -18,6 +18,12 @@ const changelogPath = path.join(__dirname, '../CHANGELOG.md');
 
 const changelog = readFileSync(changelogPath, 'utf-8');
 
+// If changelog already contains the new version, exit
+if (new RegExp(`^## \\[${newVersion}\\]`, 'm').test(changelog)) {
+  console.error(`Changelog already contains version ${newVersion}, nothing to do.`);
+  process.exit(0);
+}
+
 // Update changelog
 
 console.info(`Updating changelog to version ${newVersion}`);
@@ -26,7 +32,7 @@ console.info(`Updating changelog to version ${newVersion}`);
 
 let newChangelog = changelog.replace(
   /^## \[Unreleased\]/m,
-  `## [Unreleased]\n\n<!-- Rien pour l'instant... -->\n\n## [${newVersion}] - ${new Date().toISOString().split('T')[0]}`,
+  `## [Unreleased]\n\n## [${newVersion}] - ${new Date().toISOString().split('T')[0]}`,
 );
 
 // regenerate [version]: https://git.inpt.fr/churros/churros/-/releases/tag/v[version]

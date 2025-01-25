@@ -1,5 +1,48 @@
 # @churros/app
 
+## 4.1.0
+
+### Minor Changes
+
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Redesign /backrooms
+- 8f63ff5: show event managers inherited from group memberships
+- a50aec4: redesign announcements management pages
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- 92a434c: clarify when someone can see places left and/or capacity of a ticket because they are managers
+- 2aebc49: allow search for bookings in /event/:id/bookings
+- ff0a9a9: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- a09feb9: CSV bookings export download button did not work in OAuth2-based sessions (see #1216)
+- a09feb9: payment method showed "undefined" when not yet selected (see #1094)
+- 0d0b17a: hide red dot from overflow menu if item that adds it is hidden and/or disabled
+- a9fe207: all inputs had autofocus
+
+## 4.0.0
+
+### Major Changes
+
+- a451d73: remove /reports/ pages, remove code contributors from /credits
+- 50ffbd7: remove comments
+
+### Minor Changes
+
+- 896707d: The checks.websocket property of /health's response is always true and is now deprecated
+- df8fb24: Redesign /backrooms
+- df8fb24: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- 7f63be5: fix group member list infinite scroll
+- f791fd5: toast using callbacks or labels triggered Svelte warnings about unknown props in console
+- df8fb24: /kiosk should now work even on devices without websocket support
+
 ## 3.1.0
 
 ### Minor Changes

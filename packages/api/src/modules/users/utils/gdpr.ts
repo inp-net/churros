@@ -34,7 +34,7 @@ export const GDPR_EXPORT_INCLUDES = {
   managedEvents: {
     include: { event: true },
   },
-  bookings: {
+  Reservation: {
     include: { ticket: true },
   },
   seenBookings: {
@@ -46,14 +46,11 @@ export const GDPR_EXPORT_INCLUDES = {
   notificationSubscriptions: true,
   notifications: true,
   documents: true,
-  comments: {
-    include: { inReplyTo: true },
-  },
   reactions: true,
   claimedPromotions: true,
   formAnswers: true,
   partiallyCompletedForms: true,
-} as Prisma.UserInclude;
+} satisfies Prisma.UserInclude;
 
 export async function createGdprExport(user: Context['user']) {
   if (!user) throw new UnauthorizedError();
@@ -129,4 +126,10 @@ export async function findExistingGdprExport(user: Context['user']) {
 
   const pattern = path.join(directory, `${user.uid}_*.json`);
   return globSync(pattern, { absolute: true }).sort().at(-1);
+}
+
+export async function getAllGdprExports() {
+  const directory = path.join(storageRoot(), GDPR_EXPORTS_STORAGE_DIRECTORY);
+  await mkdir(directory, { recursive: true });
+  return globSync('*.json', { absolute: true });
 }

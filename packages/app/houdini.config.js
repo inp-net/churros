@@ -32,6 +32,13 @@ const config = {
         queryField: 'page',
       },
     },
+    UserCandidate: {
+      resolve: {
+        queryField: 'userCandidateByEmail',
+        arguments: ({ email }) => ({ email }),
+      },
+      keys: ['email'],
+    },
     StudentAssociation: {
       resolve: {
         queryField: 'studentAssociation',
@@ -58,6 +65,13 @@ const config = {
       keys: ['id'],
       resolve: {
         queryField: 'eventManager',
+      },
+    },
+    EventManagerInvite: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'eventManagerInvite',
+        arguments: ({ id }) => ({ idOrCode: id }),
       },
     },
     Ticket: {

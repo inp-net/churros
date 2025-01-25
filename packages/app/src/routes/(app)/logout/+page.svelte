@@ -8,7 +8,7 @@
   export let data: PageData;
 
   onMount(async () => {
-    if (/^https?:\/\//.test(data.next)) {window.location.href = data.next;}
+    if (data.fullpageReload || /^https?:\/\//.test(data.next)) window.location.href = data.next;
     else {
       if (Capacitor.isNativePlatform() && data.next.startsWith('https://')) {
         await InAppBrowser.openWebView({

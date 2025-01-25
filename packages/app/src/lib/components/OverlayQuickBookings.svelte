@@ -77,7 +77,7 @@
   {#if booking && shouldShowBooking($hiddenBookings, booking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
-      use:swipe={{ touchAction }}
+      use:swipe={() => ({ touchAction })}
       on:swipemove={(event) => {
         const {
           target,

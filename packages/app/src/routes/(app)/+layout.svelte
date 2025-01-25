@@ -5,7 +5,6 @@
   import { env } from '$env/dynamic/public';
   import { graphql } from '$houdini';
   import { CURRENT_VERSION } from '$lib/buildinfo';
-  import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import ModalChangelog from '$lib/components/ModalChangelog.svelte';
   import ModalCreateGroup from '$lib/components/ModalCreateGroup.svelte';
@@ -26,11 +25,10 @@
   import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
   import { setContext } from 'svelte';
-  import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
-  import IconClose from '~icons/mdi/close';
   import '../../design/app.scss';
   import type { PageData } from './$houdini';
+  import Announcements from './Announcements.svelte';
 
   onNavigate(setupViewTransition);
 
@@ -48,26 +46,7 @@
 
   const now = new Date();
 
-  function announcementHiddenByUser(id: string, hiddenAnnouncements: string[]): boolean {
-    return !browser || hiddenAnnouncements.includes(id);
-  }
-  const hiddenAnnouncements = writable<string[]>([]);
-  if (browser) syncToLocalStorage(hiddenAnnouncements, 'hidden_announcements');
-
-  const announcements = graphql(`
-    subscription AnnoncementUpdates {
-      announcementsNow {
-        id
-        title
-        bodyHtml
-        warning
-      }
-    }
-  `);
-  $: announcements.listen();
-
   $: scanningTickets = $page.url.pathname.endsWith('/scan/');
-  $: showingTicket = /\/bookings\/\w+\/$/.exec($page.url.pathname);
 
   // Select which student association to create groups linked to.
   // We get all the student associations the logged-in user can create groups on,
@@ -85,7 +64,7 @@
 
   const CreateEvent = graphql(`
     mutation CreateEvent($group: UID!) {
-      createEvent(group: $group, title: "") {
+      createEvent(group: $group, title: "", createManagerInvite: true) {
         ... on MutationCreateEventSuccess {
           data {
             localID
@@ -204,26 +183,7 @@
     </header>
 
     <div id="scrollable-area" class="contents-and-announcements">
-      <section class="announcements fullsize">
-        {#if !scanningTickets && !showingTicket && $announcements.data?.announcementsNow}
-          {#each $announcements.data?.announcementsNow.filter(({ id }) => !announcementHiddenByUser(id, $hiddenAnnouncements)) as { title, bodyHtml, warning, id } (id)}
-            <article class="announcement {warning ? 'warning' : 'primary'}">
-              <div class="text">
-                <strong>{title}</strong>
-                <div class="body" data-user-html>
-                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                  {@html bodyHtml}
-                </div>
-              </div>
-              <ButtonGhost
-                on:click={() => {
-                  $hiddenAnnouncements = [...$hiddenAnnouncements, id];
-                }}><IconClose /></ButtonGhost
-              >
-            </article>
-          {/each}
-        {/if}
-      </section>
+      <Announcements />
       <div class="page-content">
         <slot />
       </div>
@@ -490,50 +450,6 @@
       border-right: solid 1px var(--scrollable-area-border-color);
       border-left: solid 1px var(--scrollable-area-border-color);
     }
-  }
-
-  .announcements {
-    display: flex;
-    flex-flow: column wrap;
-    width: 100%;
-    view-timeline-name: announcements;
-  }
-
-  .announcement {
-    display: flex;
-    column-gap: 1rem;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 2rem;
-    color: var(--text);
-    background: var(--bg);
-  }
-
-  @media (min-width: 900px) {
-    .announcements {
-      padding: 0 1rem;
-    }
-
-    .announcement:first-child {
-      border-top-left-radius: var(--radius-block);
-      border-top-right-radius: var(--radius-block);
-    }
-
-    .announcement:last-child {
-      border-bottom-right-radius: var(--radius-block);
-      border-bottom-left-radius: var(--radius-block);
-    }
-  }
-
-  .announcement:last-child {
-    margin-bottom: 2rem;
-  }
-
-  .announcement .text {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 1rem;
-    align-items: center;
   }
 
   @keyframes spinner {

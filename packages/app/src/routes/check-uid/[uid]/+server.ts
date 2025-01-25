@@ -1,5 +1,5 @@
 import { graphql, UIDIsAvailableStore } from '$houdini';
-import { ACTIONS, PAGES, SERVERS } from '$lib/ROUTES.js';
+import { PAGES, SERVERS } from '$lib/ROUTES.js';
 import { json } from '@sveltejs/kit';
 
 graphql(`
@@ -21,7 +21,7 @@ const additionalReservedUsernames = new Set(
       .filter((endpoint) => endpoint.startsWith('GET '))
       .map((endpoint) => endpoint.replace(/^GET /, '')),
     // ACTIONS: get the action's path (it's written as `actionName /path/to/action`)
-    ...Object.keys(ACTIONS).map((action) => action.split(' ', 2)[1]),
+    // ...Object.keys(ACTIONS).map((action) => action.split(' ', 2)[1]),
   ]
     // Get the first segment of the path (all paths start with '/' so it's [1])
     .map((path) => path.split('/')[1])

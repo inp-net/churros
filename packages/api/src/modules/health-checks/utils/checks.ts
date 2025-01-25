@@ -100,5 +100,6 @@ export const checkHealth = async (): Promise<HealthCheck> => ({
         ENV.PUBLIC_OAUTH_SCOPES,
     ),
     mailman: Boolean(ENV.MAILMAN_API_URL && ENV.MAILMAN_API_TOKEN),
+    housekeeper: Boolean(ENV.HOUSEKEEPER_TOKEN),
   },
 });

@@ -18,6 +18,19 @@ export const SetEventPlacesVisibility = graphql(`
   }
 `);
 
+export const SetEnforcePointOfContact = graphql(`
+  mutation SetEnforcePointOfContact($id: LocalID!, $enforce: Boolean!) {
+    updateEvent(id: $id, enforcePointOfContact: $enforce) {
+      ...MutationErrors
+      ... on MutationUpdateEventSuccess {
+        data {
+          enforcePointOfContact
+        }
+      }
+    }
+  }
+`);
+
 export const ChangeCapacity = graphql(`
   mutation ChangeEventGlobalCapacity($id: LocalID!, $capacity: Capacity!) {
     updateEvent(id: $id, globalCapacity: $capacity) {

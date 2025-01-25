@@ -1,11 +1,10 @@
 import { browser } from '$app/environment';
 import { load_RootLayout } from '$houdini';
+import { editingTheme } from '$lib/theme';
 import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { addYears, setDefaultOptions } from 'date-fns';
-import { editingTheme } from '$lib/theme';
-import { setDefaultOptions } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 import { get } from 'svelte/store';
 
@@ -21,7 +20,7 @@ export async function load(event) {
 
   App.addListener('backButton', (event) => {
     // TODO close open drawer when there's one, instead of going back in history
-    if (event.canGoBack) window.history.back();
+    if (event.canGoBack) globalThis.history.back();
     else App.exitApp();
   });
 

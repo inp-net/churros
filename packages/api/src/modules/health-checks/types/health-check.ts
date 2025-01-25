@@ -13,6 +13,7 @@ export type HealthCheck = {
     appleWallet: boolean;
     oauth: boolean;
     mailman: boolean;
+    housekeeper: boolean;
   };
 };
 
@@ -109,6 +110,11 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
             description: 'Whether Mailman automation is configured',
             authScopes: { admin: true, studentAssociationAdmin: true },
             resolve: ({ mailman }) => mailman,
+          }),
+          housekeeper: t.boolean({
+            description: 'Whether the housekeeper is configured',
+            authScopes: { admin: true },
+            resolve: ({ housekeeper }) => housekeeper,
           }),
         }),
       }),

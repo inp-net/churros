@@ -92,6 +92,14 @@ export default mergeConfig(
               },
             },
           },
+          '/logout': {
+            explicit_search_params: {
+              userWasDeleted: {
+                type: '"1" | undefined',
+                default: 'undefined',
+              },
+            },
+          },
         },
       }),
     ],

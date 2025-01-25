@@ -1,9 +1,9 @@
 import { browser } from '$app/environment';
+import { graphql } from '$houdini';
 import { loaded, type MaybeLoading } from '$lib/loading';
 import { toasts } from '$lib/toasts';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
-import { graphql } from 'graphql';
 import { get, type Readable } from 'svelte/store';
 
 export async function canShare() {

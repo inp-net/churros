@@ -1,0 +1,43 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{fullName}}, ton compte Churros sera bientôt supprimé</mj-title>
+  <mj-include path="./_head.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-include path="./_header.mjml" />
+    
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Salut {{fullName}}, tu ne t'es pas connecté·e sur Churros depuis un certain moment.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+       <mj-text>
+        D'apres notre <a href="{{privacyPolicyLink}}">politique de confidentialité</a>, et en vertu du RGPD, ton compte sera supprimé dans {{daysLeft)}} jours si tu ne te re-connectes pas à ton compte entre temps.
+       </mj-text> 
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-button href="{{loginLink}}">
+          Se connecter
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Note que tu peux toujours demander à ce que ton compte soit supprimé immédiatement
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./_footer.mjml" />
+  </mj-body>
+</mjml>

@@ -10,6 +10,7 @@ export type MailProps = {
     eventTitle: string;
     bookingLink: string;
     beneficiary: string | null;
+    pointOfContact: string | null;
   };
   'form-answers': {
     title: string;
@@ -52,6 +53,12 @@ export type MailProps = {
     fullName: string;
     downloadLink: string;
   };
+  'account-expires-soon': {
+    daysLeft: number;
+    fullName: string;
+    loginLink: string;
+    privacyPolicyLink: string;
+  };
 };
 
 /**
@@ -62,7 +69,7 @@ export type MailRequiredContentIDs = {
 };
 
 // prettier-ignore
-export type MailTemplate = /* @generated */ "booking" | "form-answers" | "gdpr-export-ready" | "group-board-updated" | "reset-password" | "signup-accepted" | "signup-done" | "signup-rejected" | "signup-verify-mail" | "verify-mail" | "welcome";
+export type MailTemplate = /* @generated */ | "account-expires-soon" | "booking" | "form-answers" | "gdpr-export-ready" | "group-board-updated" | "reset-password" | "signup-accepted" | "signup-done" | "signup-rejected" | "signup-verify-mail" | "verify-mail" | "welcome";
 
 export const mailTemplatesDirectory = path.dirname(new URL(import.meta.url).pathname);
 

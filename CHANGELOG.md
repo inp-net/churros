@@ -11,7 +11,35 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
-<!-- Rien pour l'instant... -->
+## [4.1.0] - 2025-01-25
+
+### Nouveautés
+
+- On peut maintenant supprimer son compte sans avoir à nous contacter :)
+- On peut ré-afficher des annonces qu'on aurait ignoré par erreur
+- Les managers d'un évènement peuvent être ajoutés via un lien d'invitation
+
+### Améliorations
+
+- La gestion des demandes d'inscriptions a été refaite
+- La gestion des annonces a été refaite
+- On peut rechercher dans la liste de réservations d'un évènement
+- Il est maintenant plus clair quand on peut réserver une place uniquement parce qu'on est manager
+
+### Corrections
+
+- Certains champs été automatiquement sélectionnés à leur apparition même lorsque cela n'était pas voulu
+- Le téléchargement du .csv des réservations ne fonctionnait pas
+
+### Technique
+
+- Une tâche de housekeeping est maintenant lançable via `Mutation.housekeep`
+
+## [4.0.0] - 2025-01-24
+
+### Corrections
+
+- Le nombre de total de résas non payées ne prenait pas en compte les résas sans mode de paiement choisi, ce qui faisait une situation bizarre où on avait `total ≠ payées + non payées` (#1254)
 
 ## [3.1.0] - 2024-11-30
 
@@ -875,7 +903,9 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
-[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/@churros%2Fapp@3.1.0...main
+[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/@churros%2Fapp@4.1.0...main
+[4.1.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.1.0
+[4.0.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.0.0
 [3.1.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@3.1.0
 [3.0.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@3.0.0
 [2.7.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@2.7.0
