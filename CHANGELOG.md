@@ -11,6 +11,25 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- On peut maintenant supprimer son compte sans avoir à nous contacter :)
+- On peut ré-afficher des annonces qu'on aurait ignoré par erreur
+
+### Améliorations
+
+- La gestion des demandes d'inscriptions a été refaite
+- La gestion des annonces a été refaite
+- On peut rechercher dans la liste de réservations d'un évènement
+
+### Corrections
+
+- Certains champs été automatiquement sélectionnés à leur apparition même lorsque cela n'était pas voulu
+
+### Technique
+
+- Une tâche de housekeeping est maintenant lançable via `Mutation.housekeep`
+
 ## [4.0.0] - 2025-01-24
 
 ### Corrections
