@@ -168,7 +168,7 @@
     font-size: 5rem;
     color: var(--muted);
     text-align: center;
-    background-color: var(--bg4);
+    background: var(--bg4);
   }
 
   .preview .no-img,
@@ -201,13 +201,13 @@
     padding: 0.5rem;
     color: var(--danger);
     cursor: pointer;
-    background-color: var(--bg);
+    background: var(--bg);
     border: var(--border-block) solid var(--danger);
     border-radius: 10000px;
   }
 
   .delete:focus-visible,
   .delete:hover {
-    background-color: var(--bg3);
+    background: var(--bg3);
   }
 </style>

@@ -51,8 +51,23 @@
 
 <style>
   .avatar-group {
-    display: inline-flex;
-    gap: 0.5ch;
-    align-items: center;
+    display: inline-block;
+    width: 1.2em;
+    min-width: 2rem;
+    height: 1.2em;
+    min-height: 2rem;
+    overflow: hidden;
+    font-weight: bold;
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--muted-bg);
+    border-radius: var(--radius-inline);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    font-size: 1rem;
+    object-fit: contain;
   }
 </style>

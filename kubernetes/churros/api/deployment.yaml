@@ -15,7 +15,7 @@ spec:
                   matchLabels:
                     app: churros-api
       containers:
-        - image: harbor.k8s.inpt.fr/net7/churros/api:latest
+        - image: registry.inpt.fr/churros/churros/api:latest
           imagePullPolicy: IfNotPresent
           name: api
           readinessProbe:
@@ -46,7 +46,7 @@ spec:
             - secretRef:
                 name: churros-secrets
       initContainers:
-        - image: harbor.k8s.inpt.fr/net7/churros/prisma:latest
+        - image: registry.inpt.fr/churros/churros/prisma:latest
           name: migrator
           imagePullPolicy: IfNotPresent
           env:

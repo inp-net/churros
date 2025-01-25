@@ -24,16 +24,16 @@
     }
   `);
 
-  $: if (!schoolUid && $PageQuickSignupCreate?.data && allLoaded($PageQuickSignupCreate.data))
-    schoolUid = $PageQuickSignupCreate.data.me?.major?.schools[0]?.uid;
+  $: if (!school && $PageQuickSignupCreate?.data && allLoaded($PageQuickSignupCreate.data))
+    school = $PageQuickSignupCreate.data.me?.major?.schools[0];
 </script>
 
 <MaybeError result={$PageQuickSignupCreate}>
   <div class="contents">
     <form
       on:submit|preventDefault={async () => {
-        if (!schoolUid) return;
-        const { data, errors } = await Create.mutate({ validUntil, school: schoolUid });
+        if (!school) return;
+        const { data, errors } = await Create.mutate({ validUntil, school: school.uid });
         if (data) {
           await goto(`../manage#${data.createQuickSignup.code}`);
         } else {

@@ -13,8 +13,19 @@ import { prismaQueryAccessibleArticles } from '#permissions';
 import { PaymentMethod, Prisma } from '@churros/db/prisma';
 import { GraphQLError } from 'graphql';
 import { ShareableInterface } from '../../global/types/shareable.js';
-import { CapacityScalar, EventFrequencyType, eventCapacity } from '../index.js';
-import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
+import {
+  canSeeEventManagerInvites,
+  CapacityScalar,
+  eventCapacity,
+  EventFrequencyType,
+  EventManagerInviteType,
+} from '../index.js';
+import {
+  allowedVisibilities,
+  canEditEvent,
+  canEditManagers,
+  canSeeEventLogs,
+} from '../utils/index.js';
 
 export const EventTypePrismaIncludes = {
   managers: true,
@@ -70,8 +81,25 @@ export const EventType = builder.prismaNode('Event', {
     endsAt: t.expose('endsAt', { type: DateTimeScalar, nullable: true }),
     location: t.exposeString('location'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
+    allowedVisibilities: t.field({
+      type: [VisibilityEnum],
+      description:
+        "Visibilités que l'on peut mettre sur l'évènement. C'est pas forcément toutes les visibilités, car par exemple si l'évènement n'a pas de dates, ou qu'il possède des billets ouverts aux externes, certaines visibilités ne sont pas autorisées. Voir Event.visibilityRestrictedWhy pour récupérer un message d'explication.",
+      resolve(event) {
+        const [vis] = allowedVisibilities(event);
+        return vis;
+      },
+    }),
+    visibilitiesRestrictedWhy: t.string({
+      description: 'Raison pour laquelle certaines visibilités ne sont pas autorisées',
+      resolve(event) {
+        const [, why] = allowedVisibilities(event);
+        return why;
+      },
+    }),
     managers: t.relation('managers'),
     banned: t.relation('bannedUsers'),
+    enforcePointOfContact: t.exposeBoolean('enforcePointOfContact'),
     ticketGroups: t.relation('ticketGroups'),
     articles: t.relation('articles', {
       query: (_, { user }) => ({ where: prismaQueryAccessibleArticles(user, 'wants') }),
@@ -241,6 +269,40 @@ export const EventType = builder.prismaNode('Event', {
             amount: sumUp(registrations.filter((r) => r.ticket.id === id)),
           })),
         };
+      },
+    }),
+    managerInvites: t.prismaField({
+      type: [EventManagerInviteType],
+      description:
+        "Invitations de manager pour l'évènement. Renvoie une liste vide si l'on n'a pas la permission de les voir",
+      async resolve(query, { id }, {}, { user }) {
+        const event = await prisma.event.findUniqueOrThrow({
+          where: { id },
+          include: canSeeEventManagerInvites.prismaIncludes,
+        });
+        if (!canSeeEventManagerInvites(event, user)) return [];
+        return prisma.eventManagerInvite.findMany({
+          ...query,
+          where: { eventId: id },
+          // Return valid invites first, then those that have no more uses left, then those that are expired
+          // This way of sorting is easier and fast because it's db-side, but it's not entirely accurate.
+          orderBy: [
+            {
+              expiresAt: {
+                sort: 'desc',
+                nulls: 'first',
+              },
+            },
+            {
+              capacity: 'desc',
+            },
+            {
+              usedBy: {
+                _count: 'asc',
+              },
+            },
+          ],
+        });
       },
     }),
   }),

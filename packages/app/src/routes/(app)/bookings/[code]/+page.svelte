@@ -41,6 +41,7 @@
     CreateGoogleWalletPass,
     MarkBookingAsPaid,
   } from './mutations';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
@@ -197,7 +198,7 @@
               "Impossible d'ajouter le pass à Google Wallet",
             )
           )
-            window.location.href = result.data.createGoogleWalletPass.data;
+            globalThis.location.href = result.data.createGoogleWalletPass.data;
         }}
       />
       <ButtonAddToAppleWallet
@@ -213,7 +214,7 @@
               "Impossible d'ajouter le pass à Apple Wallet",
             )
           )
-            window.location.href = result.data.createAppleWalletPass.data;
+            globalThis.location.href = result.data.createAppleWalletPass.data;
         }}
       />
     </section>
@@ -228,6 +229,16 @@
         <dd>
           <BookingAuthor {booking} />
         </dd>
+        {#if ticket.event.enforcePointOfContact || booking.pointOfContact}
+          <dt>Référent·e</dt>
+          <dd>
+            {#if booking.pointOfContact}
+              <AvatarUser name user={booking.pointOfContact} />
+            {:else}
+              <span class="muted">Aucun·e</span>
+            {/if}
+          </dd>
+        {/if}
         <dt>Place</dt>
         <dd><LoadingText value={ticket.name}></LoadingText></dd>
         <dt>Prix</dt>

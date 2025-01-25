@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, log, prisma } from '#lib';
+import { builder, ensureGlobalId, log, prisma, purgeSessionsUser } from '#lib';
 import { EventManagerType } from '#modules/events/types';
 import { canEditManagers, canEditManagersPrismaIncludes } from '#modules/events/utils';
 import { LocalID, UIDScalar } from '#modules/global';
@@ -45,11 +45,10 @@ builder.mutationField('removeEventManager', (t) =>
       if ((await prisma.eventManager.count({ where: { eventId: id } })) === 2) {
         const lastManager = await prisma.eventManager.findFirstOrThrow({
           where: { eventId: id, userId: { not: userId } },
-          select: { canEditPermissions: true, eventId: true, userId: true },
         });
         if (!lastManager.canEditPermissions) {
           await prisma.eventManager.update({
-            where: { eventId_userId: lastManager },
+            where: { id: lastManager.id },
             data: {
               canEdit: true,
               canEditPermissions: true,
@@ -64,12 +63,29 @@ builder.mutationField('removeEventManager', (t) =>
       if ((await prisma.eventManager.count({ where: { eventId: id } })) === 1)
         throw new GraphQLError('Un événement doit avoir au moins un manager');
 
-      return prisma.eventManager.delete({
-        ...query,
-        where: {
-          eventId_userId: { eventId: id, userId },
-        },
-      });
+      const linkedInvites = await prisma.eventManagerInvite.findMany({ where: { eventId: id } });
+
+      const [manager] = await prisma.$transaction([
+        prisma.eventManager.delete({
+          ...query,
+          where: {
+            eventId_userId: { eventId: id, userId },
+          },
+        }),
+        ...linkedInvites.map((invite) =>
+          prisma.eventManagerInvite.update({
+            where: {
+              id: invite.id,
+            },
+            data: {
+              usedBy: { disconnect: { id: userId } },
+            },
+          }),
+        ),
+      ]);
+      await purgeSessionsUser(args.user);
+
+      return manager;
     },
   }),
 );

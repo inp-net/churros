@@ -73,7 +73,7 @@
     &:hover,
     &.dragging {
       cursor: pointer;
-      background-color: var(--muted-bg);
+      background: var(--muted-bg);
       border-color: var(--primary);
       border-style: solid;
 

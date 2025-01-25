@@ -1,226 +1,205 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Alert from '$lib/components/Alert.svelte';
-
-  import { fieldErrorsToFormattedError } from '$lib/errors.js';
-  import { zeus } from '$lib/zeus.js';
-  import type { ZodFormattedError } from 'zod';
-  import type { PageData } from './$types';
-  import InputField from '$lib/components/InputField.svelte';
-  import InputText from '$lib/components/InputText.svelte';
-  import InputSearchObject from '$lib/components/InputSearchObject.svelte';
-  import Fuse from 'fuse.js';
-  import InputNumber from '$lib/components/InputNumber.svelte';
-  import InputDate from '$lib/components/InputDate.svelte';
+  import { graphql } from '$houdini';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
-  import IconCheck from '~icons/mdi/check';
-  import IconSave from '~icons/mdi/content-save-outline';
-  import IconDelete from '~icons/mdi/delete-outline';
-  import { toasts } from '$lib/toasts';
+  import InputField from '$lib/components/InputField.svelte';
+  import InputMajor from '$lib/components/InputMajor.svelte';
+  import InputNumber from '$lib/components/InputNumber.svelte';
+  import InputText from '$lib/components/InputText.svelte';
+  import LoadingScreen from '$lib/components/LoadingScreen.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
+  import { allLoaded } from '$lib/loading';
+  import { isMobile } from '$lib/mobile';
+  import { mutateAndToast } from '$lib/mutations';
+  import { route } from '$lib/ROUTES';
+  import IconSave from '~icons/msl/check-circle-outline';
+  import ModalRefuseReason from '../../ModalRefuseReason.svelte';
+  import { IconAccept, IconRefuse } from '../../shared';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageSignupsEdit } = data);
 
-  let {
-    birthday,
-    firstName,
-    graduationYear = new Date().getFullYear() + 3,
-    lastName,
-    majorId,
-  } = data.userCandidateByEmail;
-
-  // Waiting for https://github.com/graphql-editor/graphql-zeus/issues/262 to be fixed
-  graduationYear ??= new Date().getFullYear() + 3;
-
-  $: args = {
-    email: data.userCandidateByEmail.email,
-    birthday,
-    firstName,
-    graduationYear,
-    lastName,
-    majorId: majorId!,
-    cededImageRightsToTVn7: data.userCandidateByEmail.cededImageRightsToTVn7,
+  let args = {
+    email: '',
+    uid: null,
+    birthday: null as Date | null,
+    firstName: '',
+    graduationYear: null as unknown as number,
+    lastName: '',
+    major: null as string | null,
+    cededImageRightsToTVn7: null,
   };
 
-  let loading = false;
-  let loadingSave = false;
-  let loadingRegister = false;
-  let loadingRefuse = false;
-  let formErrors: ZodFormattedError<typeof args> | undefined;
-  const onSubmit = async ({ submitter }: SubmitEvent) => {
-    if (loading) return;
-    if (!submitter) return;
+  $: candidate = $PageSignupsEdit.data?.userCandidateByEmail;
+  let dirty = false;
+  $: if (candidate && allLoaded(candidate) && !dirty) {
+    args = {
+      email: candidate.email,
+      uid: null,
+      birthday: candidate.birthday,
+      firstName: candidate.firstName,
+      graduationYear: candidate.graduationYear,
+      lastName: candidate.lastName,
+      major: candidate.major?.uid ?? null,
+      cededImageRightsToTVn7: null,
+    };
+  }
 
-    const update = !submitter.dataset.refuse;
-
-    try {
-      loading = true;
-
-      if (update) {
-        const register = Boolean(submitter.dataset.register);
-        loadingRegister = register;
-        loadingSave = !register;
-        await updateUserCandidate(register);
-        if (register) await goto('../..');
-      } else {
-        loadingRefuse = true;
-        // eslint-disable-next-line no-alert
-        const reason = prompt('pk ?');
-        if (!reason) {
-          toasts.error('Il faut une raison pour refuser une inscription');
-          loading = false;
-          return;
+  const Update = graphql(`
+    mutation UpdateUserCandidate(
+      $register: Boolean!
+      $email: Email!
+      $input: UserCandidateUpdateInput!
+    ) {
+      updateUserCandidate(register: $register, email: $email, input: $input) {
+        ...MutationErrors
+        ... on MutationUpdateUserCandidateSuccess {
+          data {
+            ...LayoutManageSignups_UserCandidate
+          }
         }
-
-        await $zeus.mutate({
-          refuseRegistration: [{ email: data.userCandidateByEmail.email, reason }, true],
-        });
       }
-    } finally {
-      loading = false;
-      loadingSave = false;
-      loadingRegister = false;
-      loadingRefuse = false;
     }
-  };
+  `);
 
-  const updateUserCandidate = async (register: boolean) => {
-    try {
-      const { updateUserCandidate } = await $zeus.mutate({
-        updateUserCandidate: [
-          { register, ...args, uid: null }, // TODO support changing the requested UID (once this file has been houdinified)
-          {
-            '__typename': true,
-            '...on MutationUpdateUserCandidateSuccess': { data: true },
-            '...on Error': { message: true },
-            '...on ZodError': { message: true, fieldErrors: { path: true, message: true } },
+  const mobile = isMobile();
+
+  async function updateUserCandidate({ register = false, quiet = false } = {}) {
+    const { email, ...input } = args;
+    await mutateAndToast(
+      Update,
+      { register, email, input },
+      quiet
+        ? undefined
+        : {
+            error: "Impossible de mettre à jour l'inscription",
+            success: register
+              ? `${input.firstName} ${input.lastName} a été inscrit·e`
+              : 'Inscription sauvegardée',
           },
-        ],
-      });
+    );
 
-      if (updateUserCandidate.__typename === 'ZodError') {
-        formErrors = fieldErrorsToFormattedError(updateUserCandidate.fieldErrors);
-        return;
-      }
+    // Always come back on mobile since we don't have both sides of the split at the same time
+    if (register || mobile) 
+      await goto(route('/signups'));
+    
+  }
 
-      if (updateUserCandidate.__typename === 'Error')
-        formErrors = { _errors: [updateUserCandidate.message] };
-    } catch (error: unknown) {
-      formErrors = { _errors: [(error as Error).message ?? 'Une erreur est survenue'] };
-    }
-  };
-
-  const asmajor = (x: unknown) => x as (typeof data.schoolGroups)[number]['majors'][number];
+  let openRefusalReason: () => void;
 </script>
 
-<h1>
-  <ButtonBack go="../.." /> Demande d'inscription de
-  <strong>{data.userCandidateByEmail.email}</strong>
-</h1>
+<ModalRefuseReason bind:open={openRefusalReason} email={candidate?.email ?? ''} />
 
-<form title="Modifier une inscription" on:submit|preventDefault={onSubmit}>
-  <Alert theme="danger" closed={(formErrors?._errors ?? []).length === 0} inline>
-    <strong>{(formErrors?._errors ?? []).join(' ')}</strong>
-  </Alert>
-  <div class="side-by-side">
-    <InputText
-      label="Prénom"
-      errors={formErrors?.firstName?._errors}
-      maxlength={255}
-      bind:value={firstName}
-    />
-    <InputText
-      label="Nom de famille"
-      errors={formErrors?.lastName?._errors}
-      maxlength={255}
-      bind:value={lastName}
-    />
+<MaybeError result={$PageSignupsEdit} let:data>
+  {@const { userCandidateByEmail: candidate } = data}
+  <div class="contents">
+    {#if !allLoaded(candidate)}
+      <LoadingScreen />
+    {:else}
+      <div class="side-by-side">
+        <InputText
+          on:input={() => {
+            dirty = true;
+          }}
+          initial={candidate.firstName}
+          bind:value={args.firstName}
+          label="Prénom"
+        />
+        <InputText
+          on:input={() => {
+            dirty = true;
+          }}
+          initial={candidate.lastName}
+          bind:value={args.lastName}
+          label="Nom de famille"
+        />
+      </div>
+      <div class="curriculum side-by-side">
+        <InputField label="Filière & école">
+          <InputMajor
+            on:pick={() => {
+              dirty = true;
+            }}
+            clearable
+            clearLabel="Externe"
+            options={data}
+            bind:major={args.major}
+          />
+        </InputField>
+        <InputNumber
+          on:input={() => {
+            dirty = true;
+          }}
+          label="Promotion"
+          initial={candidate.graduationYear}
+          bind:value={args.graduationYear}
+        ></InputNumber>
+      </div>
+      <section class="submit">
+        <ButtonSecondary
+          danger
+          icon={IconRefuse}
+          help="Appliquer les changements et refuser l'inscription"
+          on:click={async () => {
+            await updateUserCandidate({ quiet: true });
+            openRefusalReason?.();
+          }}
+        >
+          Refuser
+        </ButtonSecondary>
+        <ButtonSecondary
+          icon={IconSave}
+          submits
+          help="Appliquer les modifications sans inscrire"
+          on:click={async () => {
+            await updateUserCandidate();
+          }}
+        >
+          Appliquer
+        </ButtonSecondary>
+        <ButtonSecondary
+          success
+          help="Inscrire avec les modifications effectuées"
+          icon={IconAccept}
+          submits
+          on:click={async () => {
+            await updateUserCandidate({ register: true });
+          }}
+        >
+          Inscrire
+        </ButtonSecondary>
+      </section>
+    {/if}
   </div>
-  <div class="side-by-side">
-    <InputField label="Filière">
-      <InputSearchObject
-        search={(q) =>
-          new Fuse(
-            data.schoolGroups.flatMap(({ majors }) => majors),
-            {
-              keys: ['name'],
-              threshold: 0.3,
-            },
-          )
-            .search(q)
-            .map(({ item }) => item)}
-        bind:value={majorId}
-        object={data.schoolGroups
-          .flatMap(({ majors }) => majors)
-          .find((major) => major.id === majorId)}
-        labelKey="name"
-      >
-        <svelte:fragment slot="item" let:item>
-          {asmajor(item).name} · {asmajor(item)
-            .schools.map(({ name }) => name)
-            .join(', ')}
-        </svelte:fragment>
-      </InputSearchObject>
-    </InputField>
-    <InputNumber
-      bind:value={graduationYear}
-      label="Promotion"
-      errors={formErrors?.graduationYear?._errors}
-    />
-  </div>
-  <InputDate
-    label="Date de naissance"
-    errors={formErrors?.birthday?._errors}
-    bind:value={birthday}
-  />
-
-  <div class="actions">
-    <ButtonSecondary icon={IconSave} submits data-save loading={loadingSave} disabled={loading}
-      >Sauvegarder</ButtonSecondary
-    >
-    <ButtonSecondary
-      icon={IconCheck}
-      submits
-      data-register
-      success
-      loading={loadingRegister}
-      disabled={loading}>Sauvegarder et inscrire</ButtonSecondary
-    >
-    <ButtonSecondary
-      icon={IconDelete}
-      submits
-      danger
-      disabled={loading}
-      loading={loadingRefuse}
-      data-refuse
-    >
-      Refuser
-    </ButtonSecondary>
-  </div>
-</form>
+</MaybeError>
 
 <style>
-  h1 {
+  .contents {
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 1rem;
   }
 
-  form {
-    display: flex;
-    flex-flow: column wrap;
-    gap: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .actions {
+  .side-by-side {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+    align-items: center;
+  }
+
+  .curriculum :global(> :last-child) {
+    max-width: 10rem;
+    margin: 0 auto;
+  }
+
+  .submit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 3rem;
   }
 </style>

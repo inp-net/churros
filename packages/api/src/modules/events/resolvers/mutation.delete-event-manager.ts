@@ -1,4 +1,4 @@
-import { builder, objectValuesFlat, prisma } from '#lib';
+import { builder, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 import { userIsAdminOf } from '#permissions';
 
 builder.mutationField('deleteEventManager', (t) =>
@@ -28,6 +28,7 @@ builder.mutationField('deleteEventManager', (t) =>
     },
     async resolve(_, { eventId, user }) {
       await prisma.eventManager.deleteMany({ where: { eventId, user: { uid: user } } });
+      await purgeSessionsUser(user);
       return true;
     },
   }),

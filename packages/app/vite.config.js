@@ -64,6 +64,7 @@ export default mergeConfig(
         format_short: true,
         format: 'route(path)',
         post_update_run: 'yarn format-at ./src/lib/ROUTES.ts',
+        exportObjects: true,
         PAGES: {
           '/login': {
             explicit_search_params: {
@@ -80,6 +81,14 @@ export default mergeConfig(
               tab: {
                 type: '"infos" | "members" | "family" | "see-also" | "groups" | "services" | "majors" | "subjects" | "boards"',
                 default: '"infos"',
+              },
+            },
+          },
+          '/logout': {
+            explicit_search_params: {
+              userWasDeleted: {
+                type: '"1" | undefined',
+                default: 'undefined',
               },
             },
           },

@@ -1,5 +1,11 @@
 # arborist
 
+## 0.1.2
+
+### Patch Changes
+
+- e1262b7: upgrade dependencies
+
 ## 0.1.1
 
 ### Patch Changes

@@ -281,7 +281,7 @@
 
   .search-result:hover,
   .search-result:focus-visible {
-    background-color: var(--bg3);
+    background: var(--bg3);
   }
 
   .pic {
@@ -300,7 +300,7 @@
     overflow: hidden;
     object-fit: cover;
     object-position: center;
-    background-color: var(--bg2);
+    background: var(--bg2);
     border-radius: var(--radius-block);
   }
 
@@ -319,7 +319,7 @@
 
   .name :global(mark) {
     color: var(--primary);
-    background-color: var(--primary-bg);
+    background: var(--primary-bg);
   }
 
   [data-typename='ArticleSearchResult'] .name span:nth-child(2) {

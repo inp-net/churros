@@ -1,6 +1,6 @@
 {
   "name": "@churros/sync",
-  "version": "1.71.7",
+  "version": "1.71.11",
   "dependencies": {
     "@churros/db": "workspace:^",
     "@inp-net/ldap7": "^1.0.12",
@@ -13,7 +13,7 @@
     "npm-run-all2": "^7.0.1",
     "npm-upgrade": "^3.1.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "scripts": {
     "start": "tsx src/index.ts",

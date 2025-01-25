@@ -30,6 +30,7 @@
   import IconChevronRight from '~icons/msl/chevron-right';
   import IconRemainingPlaces from '~icons/msl/clock-loader-90';
   import IconHideCapacity from '~icons/msl/close';
+  import IconPointOfContact from '~icons/msl/connect-without-contact';
   import IconCapacity from '~icons/msl/file-copy-outline';
   import IconHelp from '~icons/msl/help-outline';
   import IconCapacityOnly from '~icons/msl/stacks-outline';
@@ -42,8 +43,10 @@
     SetEventBeneficiary,
     SetEventPlacesVisibility,
     UnsetEventBeneficiary,
+    SetEnforcePointOfContact,
   } from './mutations';
   import { stringifyCapacity } from '$lib/display';
+  import InputToggle from '$lib/components/InputToggle.svelte';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
@@ -155,6 +158,28 @@
             </div>
           {/if}
         </svelte:fragment>
+      </SubmenuItem>
+      <SubmenuItem
+        icon={IconPointOfContact}
+        label
+        subtext={mapLoading(event.enforcePointOfContact, (enforced) =>
+          enforced ? 'Obligatoire pour les extés' : 'Désactivé',
+        )}
+      >
+        Demander un·e référent·e
+        <svelte:fragment slot="right">
+          {#if loaded(event.enforcePointOfContact)}
+            <InputToggle
+              value={event.enforcePointOfContact}
+              on:update={async ({ detail }) => {
+                await mutateAndToast(SetEnforcePointOfContact, {
+                  id: $page.params.id,
+                  enforce: detail,
+                });
+              }}
+            ></InputToggle>
+          {/if}</svelte:fragment
+        >
       </SubmenuItem>
       <SubmenuItem icon={IconCapacity} label subtext="Limite sur l'ensemble des places">
         Capacité totale
