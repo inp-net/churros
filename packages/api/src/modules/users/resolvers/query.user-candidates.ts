@@ -7,7 +7,12 @@ builder.queryField('userCandidates', (t) =>
     type: UserCandidateType,
     authScopes: { admin: true, studentAssociationAdmin: true },
     cursor: 'id',
-    resolve: async (query, _, {}, { user }) => {
+    async totalCount(_, {}, { user }) {
+      return prisma.userCandidate.count({
+        where: prismaQueryUserCandidatesForUser(user),
+      });
+    },
+    async resolve(query, _, {}, { user }) {
       return prisma.userCandidate.findMany({
         ...query,
         where: prismaQueryUserCandidatesForUser(user),
