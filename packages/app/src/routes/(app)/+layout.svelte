@@ -64,7 +64,7 @@
 
   const CreateEvent = graphql(`
     mutation CreateEvent($group: UID!) {
-      createEvent(group: $group, title: "") {
+      createEvent(group: $group, title: "", createManagerInvite: true) {
         ... on MutationCreateEventSuccess {
           data {
             localID

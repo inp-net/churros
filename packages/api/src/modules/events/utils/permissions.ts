@@ -80,4 +80,15 @@ export function canAccessEvent(
   return userCanAccessEvent(event, user);
 }
 
-canAccessEvent.prismaIncludes = userCanAccessEvent.prismaIncludes;
+canAccessEvent.prismaIncludes = {
+  ...userCanAccessEvent.prismaIncludes,
+} as const satisfies Prisma.EventInclude;
+
+export function canSeeEventManagerInvites(
+  event: Prisma.EventGetPayload<{ include: typeof canSeeEventManagerInvites.prismaIncludes }>,
+  user: Context['user'],
+) {
+  return canEditManagers(event, user);
+}
+
+canSeeEventManagerInvites.prismaIncludes = canEditManagersPrismaIncludes;

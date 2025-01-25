@@ -356,6 +356,7 @@ export function stringifyCapacity(
   capacity: null | number | App.CapacityUnlimitedValue,
   fallback = '',
 ): string {
+  if (capacity === undefined) return fallback;
   if (capacity === null) return fallback;
   if (capacity === 'Unlimited') return fallback;
   return capacity.toString();

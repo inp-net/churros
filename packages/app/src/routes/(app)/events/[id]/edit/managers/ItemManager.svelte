@@ -1,16 +1,33 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { fragment, graphql, type PageEventEditManagers_ItemManager } from '$houdini';
+  import {
+    cache,
+    fragment,
+    graphql,
+    PageEventEditManagersStore,
+    type PageEventEditManagers_ItemManager,
+  } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { DISPLAY_MANAGER_PERMISSION_LEVELS } from '$lib/display';
-  import { loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
+  import {
+    allLoaded,
+    loaded,
+    loading,
+    mapAllLoading,
+    mapLoading,
+    onceLoaded,
+    type MaybeLoading,
+  } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import IconRemove from '~icons/msl/do-not-disturb-on-outline';
+
+  export let highlightedInviteId = '';
 
   export let manager: PageEventEditManagers_ItemManager | null;
   $: data = fragment(
@@ -20,6 +37,10 @@
         __typename
         ... on EventManager {
           power
+          usedInvite {
+            id
+            localID
+          }
           user {
             uid
             ...AvatarUser
@@ -62,14 +83,33 @@
     mutation RemoveEventManager($user: UID!, $event: LocalID!) {
       removeEventManager(user: $user, event: $event) {
         ... on MutationRemoveEventManagerSuccess {
+          lastManagerPowerlevelChanged
           data {
             id @EventManager_delete
+            usedInvite {
+              usesLeft
+              unusable
+            }
           }
         }
         ...MutationErrors
       }
     }
   `);
+
+  /** Get the invitation code. Since websocket requests are not authenticated, updates to the manager list would cause the invite code to be "null". Here, we get the code from houdini's cache, as the event manager invite should've been loaded by the page load anyway. If the code is not found in the cache, we simply tell the user that the manager got here from *an* invitation link, without displaying the code */
+  function inviteCode(id: MaybeLoading<string>): string | null {
+    if (!loaded(id)) return null;
+    return (
+      cache.get('EventManagerInvite', { id })?.read({
+        fragment: graphql(`
+          fragment EventManagerInviteCodeFromId on EventManagerInvite {
+            code
+          }
+        `),
+      }).data?.code ?? null
+    );
+  }
 </script>
 
 <li>
@@ -89,6 +129,18 @@
       name
       user={$data?.user ?? null}
     />
+    {#if allLoaded($data) && $data?.__typename === 'EventManager' && $data.usedInvite}
+      <button
+        class="used-invite"
+        use:tooltip={`${$data.user.uid} a rejoint avec un lien d'invitation`}
+        on:click={() => {
+          if (!$data.usedInvite) return;
+          highlightedInviteId = $data.usedInvite.id;
+        }}
+      >
+        via {inviteCode($data.usedInvite.id) ?? 'invitation'}
+      </button>
+    {/if}
   </div>
   <div class="right">
     {#if readonly}
@@ -132,6 +184,15 @@
             `${loading($data?.user.uid, 'cette personne')} n'est plus manager`,
             `Impossible de retirer ${loading($data?.user.uid, 'cette personne')} des managers`,
           );
+          if (
+            result?.data?.removeEventManager.__typename === 'MutationRemoveEventManagerSuccess' &&
+            result.data.removeEventManager.lastManagerPowerlevelChanged
+          ) {
+            toasts.info(result.data.removeEventManager.lastManagerPowerlevelChanged);
+            await new PageEventEditManagersStore().fetch({
+              variables: { id: $page.params.id },
+            });
+          }
         }}><IconRemove></IconRemove></ButtonGhost
       >
     {/if}
@@ -163,5 +224,17 @@
 
   li {
     justify-content: space-between;
+  }
+
+  .used-invite {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: var(--border-inline) dashed transparent;
+  }
+
+  .used-invite:hover,
+  .used-invite:focus-visible {
+    border-bottom-color: var(--muted);
   }
 </style>

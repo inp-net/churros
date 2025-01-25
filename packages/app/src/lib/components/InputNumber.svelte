@@ -4,13 +4,15 @@
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
 
+  type Required = $$Generic<boolean>;
+
   export let name: string | undefined = undefined;
   export let hint = '';
   export let errors: string[] | undefined = [];
   export let initial: MaybeLoading<number> | undefined = undefined;
   export let placeholder: string | undefined = undefined;
   export let unit = '';
-  export let value: number;
+  export let value: Required extends true ? number : number | null;
   export let required = false;
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;

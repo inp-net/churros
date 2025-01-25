@@ -246,10 +246,11 @@ export function canBookTicket({
 
   d({ canSeeAllBookings: false });
 
-  if (!user && ticket.event.enforcePointOfContact && !pointOfContact)
-    {return dret([false, 'Veuillez renseigner un·e référent·e ou réserver avec un compte Churros'], {
+  if (!user && ticket.event.enforcePointOfContact && !pointOfContact) {
+    return dret([false, 'Veuillez renseigner un·e référent·e ou réserver avec un compte Churros'], {
       why: 'pointofContactCheck failed: no contact given',
-    });}
+    });
+  }
 
   if (
     !user &&
