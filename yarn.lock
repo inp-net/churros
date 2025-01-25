@@ -1129,9 +1129,9 @@ __metadata:
     "@carbon/charts-svelte": "npm:^1.22.3"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.3"
-    "@iconify-json/material-symbols": "npm:^1.2.10"
+    "@iconify-json/material-symbols": "npm:^1.2.13"
     "@iconify-json/material-symbols-light": "npm:^1.2.10"
-    "@iconify-json/mdi": "npm:^1.2.1"
+    "@iconify-json/mdi": "npm:^1.2.3"
     "@iconify-json/simple-icons": "npm:^1.2.15"
     "@paypal/paypal-js": "npm:^8.1.2"
     "@sentry/sveltekit": "npm:^8.51.0"
@@ -2541,7 +2541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/material-symbols@npm:^1.2.10":
+"@iconify-json/material-symbols@npm:^1.2.13":
   version: 1.2.13
   resolution: "@iconify-json/material-symbols@npm:1.2.13"
   dependencies:
@@ -2550,7 +2550,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/mdi@npm:^1.2.1":
+"@iconify-json/mdi@npm:^1.2.3":
   version: 1.2.3
   resolution: "@iconify-json/mdi@npm:1.2.3"
   dependencies:

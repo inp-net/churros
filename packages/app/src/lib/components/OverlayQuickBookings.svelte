@@ -64,8 +64,7 @@
   const hiddenBookings = writable([] as string[]);
   if (browser) syncToLocalStorage(hiddenBookings, 'hidden_quick_bookings');
 
-  // See https://github.com/Rezi/svelte-gestures/pull/21
-  const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
+  const touchActions = 'pan-y pinch-zoom'  as unknown as 'pan-y'
 </script>
 
 {#if $data && $data.nodes.some(notNull) && !$page.url.pathname.startsWith('/bookings')}
@@ -77,7 +76,7 @@
   {#if booking && shouldShowBooking($hiddenBookings, booking)}
     <section
       in:slide={{ axis: 'y', duration: 100 }}
-      use:swipe={{ touchAction }}
+      use:swipe={() => ({ touchAction })}
       on:swipemove={(event) => {
         const {
           target,
