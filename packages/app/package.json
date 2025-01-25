@@ -60,7 +60,7 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.26.7",
     "@iconify-json/material-symbols": "^1.2.10",
     "@iconify-json/material-symbols-light": "^1.2.10",
     "@iconify-json/mdi": "^1.2.1",
