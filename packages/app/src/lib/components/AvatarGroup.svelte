@@ -29,7 +29,11 @@
 </script>
 
 {#if name}
-  <a class="avatar-group" href={loading(href, '')}>
+  <svelte:element
+    this={loading(href, 'something') ? 'a' : 'span'}
+    class="avatar-group"
+    href={loading(href, '')}
+  >
     <Avatar
       {...$$restProps}
       {src}
@@ -38,7 +42,7 @@
       help={$data?.name}
     />
     <LoadingText value={$data?.name} />
-  </a>
+  </svelte:element>
 {:else}
   <Avatar
     {...$$restProps}
@@ -51,23 +55,8 @@
 
 <style>
   .avatar-group {
-    display: inline-block;
-    width: 1.2em;
-    min-width: 2rem;
-    height: 1.2em;
-    min-height: 2rem;
-    overflow: hidden;
-    font-weight: bold;
-    color: var(--muted-text);
-    text-align: center;
-    background: var(--muted-bg);
-    border-radius: var(--radius-inline);
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-    font-size: 1rem;
-    object-fit: contain;
+    display: inline-flex;
+    gap: 0.5ch;
+    align-items: center;
   }
 </style>
