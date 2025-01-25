@@ -696,7 +696,10 @@ model Registration {
   seenBy            User[]             @relation(name: "seenBy")
   formAnswer        Answer?
 
-  search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
+  // Those are kept in sync by a trigger, and are used for fuzzy-matching in a full text search
+  authorFullName              String?                 @default("") @db.VarChar(255)
+  internalBeneficiaryFullName String?                 @default("") @db.VarChar(255)
+  search                      Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@index([search], type: Gin)
 }

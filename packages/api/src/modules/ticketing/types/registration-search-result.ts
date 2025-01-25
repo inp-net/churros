@@ -6,7 +6,10 @@ import type { Registration } from '@churros/db/prisma';
 
 export const RegistrationSearchResultType = builder
   .objectRef<
-    SearchResult<{ registration: Registration }, ['beneficiary']>
+    SearchResult<
+      { registration: Registration },
+      ['authorEmail', 'externalBeneficiary', 'authorFullName', 'internalBeneficiaryFullName']
+    > & { byCode?: boolean }
   >('RegistrationSearchResult')
   .implement({
     fields: (t) => ({
@@ -17,8 +20,10 @@ export const RegistrationSearchResultType = builder
       }),
       rank: t.exposeFloat('rank', { nullable: true }),
       similarity: t.exposeFloat('similarity'),
-      highlightedBeneficiary: t.string({
-        resolve: ({ highlights }) => highlights.beneficiary,
+      byCode: t.boolean({
+        description:
+          "Le résultat de recherche apparaît car le code de réservation correspond à l'entrée de recherche",
+        resolve: ({ byCode }) => byCode ?? false,
       }),
     }),
   });

@@ -7,7 +7,7 @@
   export let shortName = false;
   $: nameProperty = (shortName ? 'uid' : 'fullName') as 'uid' | 'fullName';
 
-  export let booking: BookingBeneficiary;
+  export let booking: BookingBeneficiary|null;
   $: data = fragment(
     booking,
     graphql(`
@@ -29,7 +29,7 @@
 </script>
 
 <div class="booking-beneficiary">
-  {#if !allLoaded($data)}
+  {#if !$data || !allLoaded($data)}
     <LoadingText />
   {:else if $data.beneficiary}
     {$data.beneficiary}
