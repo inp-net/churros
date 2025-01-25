@@ -1,5 +1,26 @@
 # @churros/api
 
+## 8.0.0
+
+### Major Changes
+
+- a451d73: remove Query.issuesByUser, Query.codeContributors, Query.issue and types related to gitlab issues
+- df8fb24: Remove Mutation.kioskReload and Subscription.kioskReload
+- 50ffbd7: drop type Comment, interface Commentable, fields .comments, .comment and .commentId where they exist, Mutation.{upsert,delete}Comment and remove commentId argument from fields that take it
+
+### Minor Changes
+
+- df8fb24: Add Query.userCandidatesCount
+
+### Patch Changes
+
+- 03a5a4f: gdpr exports could not be created
+- 788844c: fix(ticketing): nombre de places non payées ne prend pas en compte les places sans mode de paiement choisi (closes #1254)
+- 8322cc9: school-restricted events can be accessed by other school's students if some tickets are opened to them
+- Updated dependencies [5b6b6ba]
+- Updated dependencies [50ffbd7]
+  - @churros/db@4.0.0
+
 ## 7.0.0
 
 ### Major Changes
