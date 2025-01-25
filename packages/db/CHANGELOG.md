@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.0.1
+
+### Patch Changes
+
+- 43754a2: fix runtime error when running migrator because of missing openssl package
+
 ## 4.0.0
 
 ### Major Changes
