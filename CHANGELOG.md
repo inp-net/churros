@@ -15,16 +15,19 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 - On peut maintenant supprimer son compte sans avoir à nous contacter :)
 - On peut ré-afficher des annonces qu'on aurait ignoré par erreur
+- Les managers d'un évènement peuvent être ajoutés via un lien d'invitation
 
 ### Améliorations
 
 - La gestion des demandes d'inscriptions a été refaite
 - La gestion des annonces a été refaite
 - On peut rechercher dans la liste de réservations d'un évènement
+- Il est maintenant plus clair quand on peut réserver une place uniquement parce qu'on est manager
 
 ### Corrections
 
 - Certains champs été automatiquement sélectionnés à leur apparition même lorsque cela n'était pas voulu
+- Le téléchargement du .csv des réservations ne fonctionnait pas
 
 ### Technique
 
