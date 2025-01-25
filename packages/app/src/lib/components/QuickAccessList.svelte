@@ -204,6 +204,11 @@
     flex-direction: column;
   }
 
+  .remove-button,
+  .icon {
+    font-size: 1.2em;
+  }
+
   .cards {
     display: flex;
     flex-wrap: wrap;

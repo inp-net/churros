@@ -30,8 +30,7 @@ ALTER TABLE "EmailChange" ALTER COLUMN "id" SET DEFAULT nanoid('emailchange:'),
 ALTER COLUMN "token" SET DEFAULT nanoid('', 30);
 
 -- AlterTable
-ALTER TABLE "Event" ADD COLUMN     "enforcePointOfContact" BOOLEAN NOT NULL DEFAULT false,
-ALTER COLUMN "id" SET DEFAULT nanoid('e:');
+ALTER TABLE "Event" ALTER COLUMN "id" SET DEFAULT nanoid('e:');
 
 -- AlterTable
 ALTER TABLE "EventManager" ALTER COLUMN "id" SET DEFAULT nanoid('em:');
@@ -100,8 +99,7 @@ ALTER TABLE "QuickSignup" ALTER COLUMN "id" SET DEFAULT nanoid('quicksignup:', 6
 ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
 
 -- AlterTable
-ALTER TABLE "Registration" ADD COLUMN     "pointOfContactId" TEXT,
-ALTER COLUMN "id" SET DEFAULT nanoid('r:');
+ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
 
 -- AlterTable
 ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:'),
@@ -132,10 +130,8 @@ ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
 ALTER TABLE "TicketGroup" ALTER COLUMN "id" SET DEFAULT nanoid('tg:');
 
 -- AlterTable
-ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
+ALTER TABLE "User" ADD COLUMN     "lastSeenAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 
 -- AlterTable
 ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
-
--- AddForeignKey
-ALTER TABLE "Registration" ADD CONSTRAINT "Registration_pointOfContactId_fkey" FOREIGN KEY ("pointOfContactId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -1,22 +1,18 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { graphql, type PageEventAllBookings_ModalBookingDetails, type PageEventAllBookings_ItemBooking$data } from '$houdini';
+  import { graphql, type PageEventAllBookings_ModalBookingDetails } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
-  import { loaded, loading, LoadingText, mapAllLoading, mapLoading, type MaybeLoading } from '$lib/loading';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
+  import { countThing } from '$lib/i18n';
+  import { loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
-  import { updateTitle } from '$lib/components/NavigationTop.svelte';
-  import { formatDateTimeSmart } from '$lib/dates';
-  import { countThing } from '$lib/i18n';
-  import { refroute } from '$lib/navigation';
-  import { isPWA } from '$lib/pwa';
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
-  import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
   import { downloadCsv } from './csv';
   import { tabToFilter } from './filters';
@@ -49,7 +45,6 @@
   });
 
   let openBookingDetailModal: (booking: PageEventAllBookings_ModalBookingDetails) => void;
-  let selectedBooking: PageEventAllBookings_ItemBooking$data | null = null;
 
   const updates = graphql(`
     subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
@@ -97,7 +92,7 @@
     // if data hasn't been loaded yet
     [];
 
-  $: if ($PageEventAllBookings.data) 
+  $: if ($PageEventAllBookings.data)
     updateTitle(countThing('réservation', $PageEventAllBookings.data.event.bookingsCounts.total));
 </script>
 
@@ -111,14 +106,14 @@
   <ModalBookingDetails {event} bind:open={openBookingDetailModal} />
   <div class="contents">
     <header>
-      {#if newBookingsCount}
-        <Alert theme="primary">
-          {newBookingsCount} nouvelles réservations
-          <ButtonSecondary on:click={async () => PageEventAllBookings.fetch()}>
-            Charger
-          </ButtonSecondary>
-        </Alert>
-      {/if}
+      <InputSearchQuery
+        placeholder="Rechercher par nom, code, email..."
+        q={initialQ}
+        on:debouncedInput={async ({ detail }) => {
+          $q = detail;
+        }}
+      ></InputSearchQuery>
+
       <NavigationTabs
         tabs={FILTERS.map((name) => ({
           name,
@@ -155,14 +150,6 @@
         </div>
       </NavigationTabs>
 
-      <InputSearchQuery
-        placeholder="Rechercher par nom, code, email..."
-        q={initialQ}
-        on:debouncedInput={async ({ detail }) => {
-          $q = detail;
-        }}
-      ></InputSearchQuery>
-
       {#if newBookingsCount}
         <Alert theme="primary">
           {newBookingsCount} nouvelles réservations <ButtonSecondary
@@ -182,10 +169,9 @@
         <ItemBooking
           {booking}
           highlightCode={loading(booking.byCode, false)}
-          showTicketNames={event.tickets.length > 1}
+          showTicketName={event.tickets.length > 1}
           on:openDetails={({ detail }) => {
-            selectedBooking = detail;
-            openBookingDetailModal();
+            openBookingDetailModal(detail);
           }}
         />
       {:else}
@@ -194,7 +180,7 @@
         {/if}
       {/each}
       {#if loading(event.bookings?.pageInfo.hasNextPage, false)}
-        <ItemBooking showTicketNames={event.tickets.length > 1} booking={null} />
+        <ItemBooking showTicketName={event.tickets.length > 1} booking={null} />
       {/if}
     </ul>
     {#if showingSearchResults}
@@ -224,20 +210,10 @@
     gap: 0.5rem;
   }
 
-  .tab .subtitle {
+  .subtitle {
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-size: 0.8em;
-  }
-
-  dl {
-    padding: 1rem 2rem;
-  }
-
-  dl dd {
-    display: flex;
-    gap: 0.5ch;
-    align-items: center;
   }
 
   .search-results-count {

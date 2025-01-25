@@ -1345,6 +1345,10 @@ type FeaturesHealthCheck @graphinx(module: "health-checks") {
   """
   googleWallet: Boolean!
   """
+  Whether the housekeeper is configured
+  """
+  housekeeper: Boolean!
+  """
   Whether Mailman automation is configured
   """
   mailman: Boolean!
@@ -1993,6 +1997,60 @@ type HealthCheck {
   redis: RedisHealthCheck!
 }
 
+input HousekeepingExpirationThresholds @graphinx(module: "global") {
+  """
+  Number of days since event's end to remove bookings
+  """
+  eventEndedAt: Int!
+  """
+  Number of days since a GDPR export was created to remove it
+  """
+  gdprExportCreatedAt: Int!
+  """
+  Number of days since a log was created to remove it
+  """
+  logHappenedAt: Int!
+  """
+  Number of days since a notification was sent to remove it
+  """
+  notificationSentAt: Int!
+  """
+  Number of days since last login to remove users
+  """
+  userLastLogin: Int!
+}
+
+type HousekeepingResult @graphinx(module: "global") {
+  """
+  Number of deleted Apple Wallet files
+  """
+  deletedAppleWalletFiles: Int!
+  """
+  Number of deleted events
+  """
+  deletedEvents: Int!
+  """
+  Number of deleted GDPR exports
+  """
+  deletedGdprExports: Int!
+  """
+  Number of deleted logs
+  """
+  deletedLogs: Int!
+  """
+  Number of deleted notifications
+  """
+  deletedNotifications: Int!
+  """
+  Number of deleted users
+  """
+  deletedUsers: Int!
+  """
+  Number of warned users
+  """
+  warnedUsers: Int!
+}
+
 """
 Un manager d'évènement hérité par ses permissions en tant que membre d'un groupe
 """
@@ -2541,6 +2599,16 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteUser: MutationDeleteUserResult!
   deleteUserPicture(uid: String!): Boolean!
   finishPaypalRegistrationPayment(orderId: String!): MutationFinishPaypalRegistrationPaymentResult!
+  """
+  Run housekeeping tasks: remove bookings on old events, remove old users (no login since a certain time), apple wallet pass files, etc.
+  """
+  housekeep(
+    thresholds: HousekeepingExpirationThresholds!
+    """
+    Housekeeper token
+    """
+    token: String!
+  ): MutationHousekeepResult!
   """
   Logs a user in and returns a session token.
   """
@@ -3586,6 +3654,8 @@ union MutationFinishPaypalRegistrationPaymentResult =
 type MutationFinishPaypalRegistrationPaymentSuccess {
   data: Boolean!
 }
+
+union MutationHousekeepResult = Error | HousekeepingResult | ZodError
 
 union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess | ZodError
 
