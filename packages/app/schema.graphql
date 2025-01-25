@@ -938,6 +938,10 @@ An event is a date, time and place, as well as an optional ticket
 """
 type Event implements Node & Pictured & Reactable & Shareable {
   """
+  Visibilités que l'on peut mettre sur l'évènement. C'est pas forcément toutes les visibilités, car par exemple si l'évènement n'a pas de dates, ou qu'il possède des billets ouverts aux externes, certaines visibilités ne sont pas autorisées. Voir Event.visibilityRestrictedWhy pour récupérer un message d'explication.
+  """
+  allowedVisibilities: [Visibility!]!
+  """
   Les promotions applicables à cet évènement
   """
   applicableOffers: [PromotionType!]!
@@ -1125,6 +1129,10 @@ type Event implements Node & Pictured & Reactable & Shareable {
   title: String!
   uid: String! @deprecated(reason: "Use `slug` instead. This field was never universally unique.")
   updatedAt: DateTime
+  """
+  Raison pour laquelle certaines visibilités ne sont pas autorisées
+  """
+  visibilitiesRestrictedWhy: String!
   visibility: Visibility!
 }
 
@@ -2130,7 +2138,7 @@ type Minor implements Node {
 }
 
 type Mutation @rateLimit(limit: 1200, duration: 600) {
-  acceptRegistration(email: String!): MutationAcceptRegistrationResult!
+  acceptUserCandidate(email: String!): MutationAcceptUserCandidateResult!
   """
   Marks the user as having seen the given version's changelog.
   """
@@ -2383,7 +2391,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Dédoublonne les réservations. Renvoie les réservations supprimées.
   """
   deduplicateBookings(event: LocalID!): MutationDeduplicateBookingsResult!
-  deleteAnnouncement(id: ID!): Boolean!
+  deleteAnnouncement(id: LocalID!): MutationDeleteAnnouncementResult!
   """
   Supprimer un post
   """
@@ -2469,12 +2477,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     token: String!
   ): MutationHousekeepResult!
-  kioskReload(
-    """
-    UID de l'AE sur laquelle on veut indiquer que les kiosques concernés doivent être re-chargés
-    """
-    studentAssociation: String!
-  ): Boolean!
   """
   Logs a user in and returns a session token.
   """
@@ -2541,7 +2543,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     target: ID!
   ): Reactable!
-  refuseRegistration(email: String!, reason: String!): Boolean!
+  refuseUserCandidate(email: String!, reason: String!): MutationRefuseUserCandidateResult!
   """
   Enregistrer un token OAuth2 Google pour l'utilisateur connecté.
   """
@@ -2991,21 +2993,15 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
       reason: "Use `updateUserProfile`, `requestEmailChange` and other `updateUser*` mutations instead"
     )
   updateUserCandidate(
-    birthday: DateTime
-    cededImageRightsToTVn7: Boolean!
-    email: String!
-    firstName: String!
-    graduationYear: Int!
-    lastName: String!
-    majorId: ID!
+    """
+    Adresse email de l'inscription à modifier. On ne peut pas modifier l'adresse e-mail d'une inscription.
+    """
+    email: Email!
+    input: UserCandidateUpdateInput!
     """
     Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte
     """
     register: Boolean!
-    """
-    Le @ souhaité
-    """
-    uid: UID!
   ): MutationUpdateUserCandidateResult!
   """
   Met à jour les infos sur le cursus scolaire de l'utilisateur.ice
@@ -3216,10 +3212,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   ): MutationVerifyBookingResult!
 }
 
-union MutationAcceptRegistrationResult = Error | MutationAcceptRegistrationSuccess | ZodError
+union MutationAcceptUserCandidateResult = Error | MutationAcceptUserCandidateSuccess | ZodError
 
-type MutationAcceptRegistrationSuccess {
-  data: User!
+type MutationAcceptUserCandidateSuccess {
+  data: UserCandidate!
 }
 
 union MutationAddFileToPageResult = Error | MutationAddFileToPageSuccess | ZodError
@@ -3392,6 +3388,12 @@ type MutationDeduplicateBookingsSuccess {
   data: Int!
 }
 
+union MutationDeleteAnnouncementResult = Error | MutationDeleteAnnouncementSuccess | ZodError
+
+type MutationDeleteAnnouncementSuccess {
+  data: Announcement!
+}
+
 union MutationDeleteArticleResult = Error | MutationDeleteArticleSuccess | ZodError
 
 type MutationDeleteArticleSuccess {
@@ -3526,6 +3528,12 @@ union MutationPayBookingResult = Error | MutationPayBookingSuccess | ZodError
 
 type MutationPayBookingSuccess {
   data: Registration!
+}
+
+union MutationRefuseUserCandidateResult = Error | MutationRefuseUserCandidateSuccess | ZodError
+
+type MutationRefuseUserCandidateSuccess {
+  data: UserCandidate!
 }
 
 union MutationRegisterGoogleCredentialResult =
@@ -3741,7 +3749,7 @@ type MutationUpdateTicketSuccess {
 union MutationUpdateUserCandidateResult = Error | MutationUpdateUserCandidateSuccess | ZodError
 
 type MutationUpdateUserCandidateSuccess {
-  data: Boolean!
+  data: UserCandidate!
 }
 
 union MutationUpdateUserCurriculumResult = Error | MutationUpdateUserCurriculumSuccess | ZodError
@@ -4359,7 +4367,6 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   Gets the homepage articles, customized if the user is logged in.
   """
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
-  kioskReload: Boolean!
   """
   Vrai si l'utilisateur·ice est connecté·e
   """
@@ -4546,6 +4553,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     first: Int
     last: Int
   ): QueryUserCandidatesConnection!
+  """
+  Nombre d'inscriptions à valider qui sont validables par la personne connectée
+  """
+  userCandidatesCount: Int!
   userServices: [Service!]! @deprecated(reason: "Use `services(mine: true)` instead")
 }
 
@@ -4731,6 +4742,7 @@ type QueryUserCandidatesConnection {
   edges: [QueryUserCandidatesConnectionEdge!]!
   nodes: [UserCandidate!]!
   pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type QueryUserCandidatesConnectionEdge {
@@ -5918,7 +5930,6 @@ type Subscription @rateLimit(limit: 600, duration: 600) {
   Gets the homepage articles, customized if the user is logged in.
   """
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
-  kioskReload: Boolean!
   registration(id: ID!): SubscriptionRegistrationResult!
 }
 
@@ -6648,6 +6659,22 @@ type UserCandidate implements Node {
   Vrai si l'utilisateur a été créé via un lien d'inscription rapide.
   """
   usingQuickSignup: Boolean!
+}
+
+input UserCandidateUpdateInput @graphinx(module: "users") {
+  birthday: DateTime
+  cededImageRightsToTVn7: Boolean
+  firstName: String
+  graduationYear: Int
+  lastName: String
+  """
+  UID de la filière
+  """
+  major: UID
+  """
+  Le @ souhaité.
+  """
+  uid: UID
 }
 
 type UserPartiallyAnsweredFormsConnection {

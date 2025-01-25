@@ -6,6 +6,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputTextGhost from '$lib/components/InputTextGhost.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
   import { onceLoaded } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
@@ -21,13 +22,7 @@
 
   $: eventTitle = onceLoaded($PageEventScanBookings?.data?.event.title, (t) => t || '', '');
 
-  $: if (browser && eventTitle) {
-    window.dispatchEvent(
-      new CustomEvent('NAVTOP_UPDATE_TITLE', {
-        detail: `Scanner pour ${eventTitle}`,
-      }),
-    );
-  }
+  $: if (eventTitle) updateTitle(`Scanner pour ${eventTitle}`);
 
   const SCAN_COOLDOWN_MS = 800;
   const lastScanTimestamp = 0;

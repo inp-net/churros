@@ -1,0 +1,20 @@
+query LayoutAnnouncementsList @loading {
+  announcements(first: 10) @paginate {
+    edges @loading(count: 10) {
+      node {
+        id
+        localID
+        title
+        bodyHtml
+        by {
+          uid
+          fullName
+          pictureFile
+        }
+        startsAt
+        endsAt
+        warning
+      }
+    }
+  }
+}

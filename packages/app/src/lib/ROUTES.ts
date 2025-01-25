@@ -39,7 +39,6 @@ export const PAGES = {
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
   },
-  '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
@@ -517,7 +516,6 @@ export type KIT_ROUTES = {
     '/[uid=uid]/[...page]': 'uid' | 'page';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
-    '/announcements/create': never;
     '/backrooms': never;
     '/birthdays': never;
     '/bookings': never;
