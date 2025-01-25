@@ -1,12 +1,20 @@
-import { builder, freeUidValidator, prisma, schoolYearStart } from '#lib';
-import { DateTimeScalar, UIDScalar } from '#modules/global';
+import {
+  builder,
+  freeUidValidator,
+  graphinx,
+  nullToUndefined,
+  prisma,
+  schoolYearStart,
+} from '#lib';
+import { DateTimeScalar, Email, UIDScalar } from '#modules/global';
 import { GraphQLError } from 'graphql';
+import omit from 'lodash.omit';
 import { ZodError } from 'zod';
-import { saveUser } from '../index.js';
+import { saveUser, UserCandidateType } from '../index.js';
 
 builder.mutationField('updateUserCandidate', (t) =>
-  t.field({
-    type: 'Boolean',
+  t.prismaField({
+    type: UserCandidateType,
     authScopes: { admin: true, studentAssociationAdmin: true },
     errors: { types: [ZodError] },
     args: {
@@ -14,55 +22,61 @@ builder.mutationField('updateUserCandidate', (t) =>
         description:
           "Inscrire définitivement l'utilisateur·ice si vrai. Si faux, mettre à jour la demande d'inscription sans créer de compte",
       }),
-      email: t.arg.string(),
-      uid: t.arg({
-        type: UIDScalar,
-        validate: freeUidValidator,
-        description: 'Le @ souhaité',
+      email: t.arg({
+        type: Email,
+        description:
+          "Adresse email de l'inscription à modifier. On ne peut pas modifier l'adresse e-mail d'une inscription.",
       }),
-      firstName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      lastName: t.arg.string({ validate: { minLength: 1, maxLength: 255 } }),
-      majorId: t.arg.id(),
-      graduationYear: t.arg.int({ validate: { min: 1900, max: 2100 } }),
-      birthday: t.arg({ type: DateTimeScalar, required: false }),
-      cededImageRightsToTVn7: t.arg.boolean(),
+      input: t.arg({
+        type: builder.inputType('UserCandidateUpdateInput', {
+          ...graphinx('users'),
+          fields: (t) => ({
+            uid: t.field({
+              type: UIDScalar,
+              validate: freeUidValidator,
+              description: 'Le @ souhaité.',
+              required: false,
+            }),
+            firstName: t.string({ required: false, validate: { minLength: 1, maxLength: 255 } }),
+            lastName: t.string({ required: false, validate: { minLength: 1, maxLength: 255 } }),
+            major: t.field({ type: UIDScalar, required: false, description: 'UID de la filière' }),
+            graduationYear: t.int({ validate: { min: 1900, max: 2100 }, required: false }),
+            birthday: t.field({ type: DateTimeScalar, required: false }),
+            cededImageRightsToTVn7: t.boolean({ required: false }),
+          }),
+        }),
+      }),
     },
-    async resolve(
-      _,
-      {
-        register,
-        email,
-        firstName,
-        lastName,
-        majorId,
-        uid,
-        graduationYear,
-        birthday,
-        cededImageRightsToTVn7,
-      },
-    ) {
-      const major = await prisma.major.findUnique({
-        where: { id: majorId },
+    async resolve(query, _, { register, email, input }, { user }) {
+      let candidate = await prisma.userCandidate.findUniqueOrThrow({
+        where: { email },
       });
-      if (graduationYear >= schoolYearStart().getFullYear() && major?.discontinued) {
+      const major =
+        input.major || candidate.majorId
+          ? await prisma.major.findFirst({
+              where: input.major ? { uid: input.major } : { id: candidate.majorId! },
+            })
+          : null;
+      if (
+        input.graduationYear &&
+        input.graduationYear >= schoolYearStart().getFullYear() &&
+        major?.discontinued &&
+        !(user?.admin || (user?.adminOfStudentAssociations?.length ?? 0) > 0)
+      ) {
         throw new GraphQLError(
-          "Cette filière n'existe plus, il n'est pas possible de s'y délarer comme étudiant·e (sauf avec une ancienne promo).",
+          "Cette filière n'existe plus, il n'est pas possible de s'y déclarer comme étudiant·e (sauf avec une ancienne promo).",
         );
       }
-      const candidate = await prisma.userCandidate.update({
+      candidate = await prisma.userCandidate.update({
+        ...query,
         where: { email },
         data: {
-          birthday,
-          uid,
-          firstName,
-          majorId,
-          graduationYear,
-          lastName,
-          cededImageRightsToTVn7,
+          ...nullToUndefined(omit(input, 'major')),
+          major: input.major ? { connect: { uid: input.major } } : undefined,
         },
       });
       if (register) await saveUser(candidate);
-      return true;
+      return candidate;
     },
   }),
 );

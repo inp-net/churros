@@ -33,6 +33,7 @@ import {
 } from '~icons/msl/notifications-outline';
 import IconPostAdd from '~icons/msl/post-add';
 import IconScanQR from '~icons/msl/qr-code-scanner';
+import IconRefresh from '~icons/msl/refresh';
 import IconCog from '~icons/msl/settings-outline';
 import IconPost from '~icons/msl/text-ad-outline';
 import IconBookingsList from '~icons/msl/view-list-outline';
@@ -63,7 +64,7 @@ export function addReferrer(
 export const refroute: typeof route = (...args) => addReferrer(route(...args));
 
 export type NavigationTopActionEvent =
-  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT'}`;
+  `NAVTOP_${'COPY_ID' | 'PIN_PAGE' | 'GOTO_EVENT_FROM_BOOKING' | 'FINISH_EDITING' | 'CREATE_EVENT' | 'CREATE_POST_ON_EVENT' | 'RELOAD'}`;
 const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) => {
   globalThis.dispatchEvent(new CustomEvent(eventID));
 };
@@ -71,7 +72,7 @@ const navigationTopActionEventDispatcher = (eventID: NavigationTopActionEvent) =
 export type ModalStateKeys = `EDITING_GROUP_MEMBER`;
 
 export type NavigationTopStateKeys =
-  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'SERVICE' | 'POST' | 'GROUP_MEMBER'}`}`;
+  `NAVTOP_${'NOTIFICATION_SETTINGS' | 'PINNING' | 'DELETING' | 'GO_TO_EVENT_DAY' | `CREATING_${'EVENT' | 'GROUP' | 'SERVICE' | 'POST' | 'GROUP_MEMBER' | 'ANNOUNCEMENT'}`}`;
 
 export type NavigationTopState = Partial<Record<NavigationTopStateKeys, boolean>>;
 
@@ -79,7 +80,7 @@ export type ModalState = {
   EDITING_GROUP_MEMBER?: string;
 };
 
-function navtopPushState(key: NavigationTopStateKeys | ModalStateKeys) {
+export function navtopPushState(key: NavigationTopStateKeys | ModalStateKeys) {
   pushState('', {
     [key]: true,
   } satisfies NavigationTopState & ModalState);
@@ -170,6 +171,13 @@ const commonActions = {
       navigationTopActionEventDispatcher('NAVTOP_COPY_ID');
     },
   },
+  reload: {
+    label: 'Rafraîchir',
+    icon: IconRefresh,
+    do() {
+      navigationTopActionEventDispatcher('NAVTOP_RELOAD');
+    },
+  },
 } as const;
 
 const quickActionConfigureNotfications: NavigationQuickAction = {
@@ -223,7 +231,10 @@ const quickActionAdd = {
       return {
         icon: IconAnnouncement,
         label: 'Annonce',
-        href: route('/announcements/create'),
+        do() {
+          setTimeout(() => navtopPushState('NAVTOP_CREATING_ANNOUNCEMENT'), 200);
+          goto(route('/announcements'));
+        },
         disabled: !me?.canManageAnnouncements,
       };
     },
@@ -269,7 +280,7 @@ const rootPagesActions = [
       badge: async () =>
         browser
           ? await graphql(`
-              query NavtopPendingSignupsCount {
+              query NavtopPendingSignupsCount @cache(policy: CacheOrNetwork) {
                 userCandidatesCount
               }
             `)
@@ -735,6 +746,33 @@ export const topnavConfigs: Partial<{
     back: route('/quick-signups/manage'),
     actions: [],
   },
+  '/(app)/announcements': {
+    title: 'Annonces',
+    back: route('/'),
+    quickAction: {
+      icon: IconAdd,
+      do() {
+        navtopPushState('NAVTOP_CREATING_ANNOUNCEMENT');
+      },
+    },
+    actions: rootPagesActions,
+  },
+  '/(app)/announcements/[id]/edit': {
+    title: 'Annonce',
+    back: route('/announcements'),
+    actions: [commonActions.delete],
+  },
+  '/(app)/signups': {
+    title: '… inscriptions en attente',
+    back: route('/backrooms'),
+    quickAction: commonActions.reload,
+    actions: rootPagesActions,
+  },
+  '/(app)/signups/edit/[email]': ({ params: { email } }) => ({
+    title: `Inscription de ${email}`,
+    back: route('/signups'),
+    actions: [],
+  }),
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';

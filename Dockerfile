@@ -129,6 +129,8 @@ ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
 FROM node:20-alpine AS prisma
 
+RUN apk add --update --no-cache openssl
+
 WORKDIR /app
 COPY packages/db/prisma/ /app/packages/db/prisma/
 COPY packages/db/prisma /app/prisma

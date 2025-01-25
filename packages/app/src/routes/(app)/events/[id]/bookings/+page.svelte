@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql, type PageEventBookings_ItemBooking$data } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
@@ -14,6 +13,7 @@
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
   import { formatDateTimeSmart } from '$lib/dates';
   import { countThing } from '$lib/i18n';
   import { loaded, loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
@@ -27,6 +27,7 @@
   import type { PageData } from './$houdini';
   import { tabToFilter } from './filters';
   import ItemBooking from './ItemBooking.svelte';
+  import { countThing } from '$lib/i18n';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
@@ -82,19 +83,6 @@
         ),
     ).length ?? 0;
 
-  $: if (
-    browser &&
-    $PageEventAllBookings.data &&
-    loaded($PageEventAllBookings.data.event.bookingsCounts.total)
-  ) {
-    const total = $PageEventAllBookings.data.event.bookingsCounts.total;
-    globalThis.dispatchEvent(
-      new CustomEvent('NAVTOP_UPDATE_TITLE', {
-        detail: `${total} réservation${total > 1 ? 's' : ''}`,
-      }),
-    );
-  }
-
   $: showingSearchResults = Boolean($PageEventAllBookings.data?.event.searchBookings);
 
   /** Array of booking objects */
@@ -111,6 +99,9 @@
     })) ??
     // if data hasn't been loaded yet
     [];
+
+  $: if ($PageEventAllBookings.data) 
+    updateTitle(countThing('réservation', $PageEventAllBookings.data.event.bookingsCounts.total));
 </script>
 
 <ModalOrDrawer bind:open={openBookingDetailModal}>
