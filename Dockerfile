@@ -1,4 +1,6 @@
-FROM git.inpt.fr/churros/dependency_proxy/containers/node:20-alpine AS builder
+ARG REGISTRY_PROXY=docker.io # override with git.inpt.fr/churros/dependency_proxy/containers, for example
+
+FROM $REGISTRY_PROXY/node:20-alpine AS builder
 
 ARG TAG=dev
 
@@ -51,7 +53,7 @@ WORKDIR /app
 RUN yarn workspace @churros/db generate
 RUN yarn workspace @churros/sync build
 
-FROM git.inpt.fr/churros/dependency_proxy/containers/node:20-alpine AS base
+FROM $REGISTRY_PROXY/node:20-alpine AS base
 
 WORKDIR /app
 
@@ -129,7 +131,7 @@ WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
-FROM git.inpt.fr/churros/dependency_proxy/containers/node:20-alpine AS prisma
+FROM $REGISTRY_PROXY/node:20-alpine AS prisma
 
 RUN apk add --update --no-cache openssl
 
