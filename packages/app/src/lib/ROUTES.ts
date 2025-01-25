@@ -672,7 +672,6 @@ export type KIT_ROUTES = {
     bypass_oauth: never;
     token: never;
     userWasDeleted: never;
-    number: never;
     q: never;
     email: never;
     componentName: never;
