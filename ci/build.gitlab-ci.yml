@@ -33,6 +33,7 @@
           --local dockerfile=. \
           --opt target=$TARGET \
           --opt build-arg:TAG=$TAG \
+          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
           $BUILD_SECRET_SENTRY \
           --output type=image,name=$CI_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
     - |
