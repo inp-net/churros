@@ -1,5 +1,43 @@
 # @churros/api
 
+## 9.0.0
+
+### Major Changes
+
+- d46f5c7: Change return types of Mutation.{accept,refuse}Registration; change arguments to Mutation.updateUserCandidate
+- a0721d8: Event.placesLeft and Ticket.placesLeft are now of type Capacity and not Int. Instead of -1 to represent infinity, the Capacity scalar is used
+- d46f5c7: rename Mutation.{accept,refuse}Registration to Mutation.{accept,refuse}UserCandidate
+- a09feb9: - add required argument bookingUrl to Mutation.bookEvent,
+  - add optional arguments authorName and pointOfContact to Mutation.bookEvent
+  - add Registration.pointOfContact and Registration.authorName.
+  - add Event.enforcePointOfContact and argument enforcePointOfContact to Mutation.updateEvent
+- 50bc062: remove deprecated Mutation.upsertRegistration
+- a50aec4: Make Mutation.deleteAnnouncement return a Result<Announcement> instead of Boolean
+
+### Minor Changes
+
+- dda7171: Add FeaturesHealthCheck.housekeeper
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Add Query.userCandidatesCount
+- 8f63ff5: show event managers inherited from group memberships
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- dda7171: Add Mutation.housekeep to clear out old ressources
+- b114902: only Edit-level managers can now see places left count and capacities when they are hidden
+- 2aebc49: allow search for bookings in /event/:id/bookings
+
+### Patch Changes
+
+- Updated dependencies [89f386f]
+- Updated dependencies [5880beb]
+- Updated dependencies [a09feb9]
+- Updated dependencies [072d7f5]
+- Updated dependencies [2aebc49]
+  - @churros/db@4.1.0
+
 ## 8.0.0
 
 ### Major Changes

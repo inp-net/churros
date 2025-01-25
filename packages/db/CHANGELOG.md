@@ -1,5 +1,15 @@
 # @churros/db
 
+## 4.1.0
+
+### Minor Changes
+
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 2aebc49: allow search for bookings in /event/:id/bookings
+
 ## 4.0.1
 
 ### Patch Changes
