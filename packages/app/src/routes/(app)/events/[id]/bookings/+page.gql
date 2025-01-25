@@ -1,4 +1,9 @@
-query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
+query PageEventAllBookings(
+  $id: LocalID!
+  $filter: BookingState!
+  $search: String!
+  $searching: Boolean!
+) @loading {
   event(id: $id) {
     canSeeAllBookings(
       assert: "Tu n'a pas les permissions pour voir la liste de réservations. Il faut être manager avec la permission “Scanner les billets”"
@@ -19,14 +24,23 @@ query PageEventAllBookings($id: LocalID!, $filter: BookingState!) @loading {
       allowedPaymentMethods
     }
     ...PageEventAllBookings_ModalBokingDetailsEvent
-    bookings(first: 30, only: $filter) @paginate {
+    bookings(first: 30, only: $filter) @paginate @skip(if: $searching) {
       pageInfo {
         hasNextPage
         endCursor
       }
-      nodes @loading(count: 30) {
-        id
-        ...PageEventAllBookings_ItemBooking
+      edges @loading(count: 30) {
+        node {
+          id
+          ...PageEventBookings_ItemBooking
+        }
+      }
+    }
+
+    searchBookings(q: $search, only: $filter) @include(if: $searching) {
+      byCode
+      registration {
+        ...PageEventBookings_ItemBooking
       }
     }
   }

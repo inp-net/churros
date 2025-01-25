@@ -1,5 +1,51 @@
 # @churros/api
 
+## 8.0.0
+
+### Major Changes
+
+- a451d73: remove Query.issuesByUser, Query.codeContributors, Query.issue and types related to gitlab issues
+- df8fb24: Remove Mutation.kioskReload and Subscription.kioskReload
+- 50ffbd7: drop type Comment, interface Commentable, fields .comments, .comment and .commentId where they exist, Mutation.{upsert,delete}Comment and remove commentId argument from fields that take it
+
+### Minor Changes
+
+- df8fb24: Add Query.userCandidatesCount
+
+### Patch Changes
+
+- 03a5a4f: gdpr exports could not be created
+- 788844c: fix(ticketing): nombre de places non payées ne prend pas en compte les places sans mode de paiement choisi (closes #1254)
+- 8322cc9: school-restricted events can be accessed by other school's students if some tickets are opened to them
+- Updated dependencies [5b6b6ba]
+- Updated dependencies [50ffbd7]
+  - @churros/db@4.0.0
+
+## 7.0.0
+
+### Major Changes
+
+- 4589b01: User.booking takes a `event: LocalID!` instead of `event: ID!`, and is now nullable instead of throwing an error
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 465ebe1: dedupe profile email addresses
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- 4589b01: User.booking now correctly returns the User object's booking instead of the logged-in user's
+- e1262b7: upgrade dependencies
+- Updated dependencies [4589b01]
+- Updated dependencies [85bc631]
+- Updated dependencies [e1262b7]
+- Updated dependencies [93f7dd6]
+  - @churros/db@3.2.0
+  - arborist@0.1.2
+
 ## 6.0.0
 
 ### Major Changes

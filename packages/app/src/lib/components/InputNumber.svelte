@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { MaybeLoading } from '$lib/loading';
   import type { SvelteComponent } from 'svelte';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
@@ -6,7 +7,7 @@
   export let name: string | undefined = undefined;
   export let hint = '';
   export let errors: string[] | undefined = [];
-  export let initial: string | undefined = undefined;
+  export let initial: MaybeLoading<number> | undefined = undefined;
   export let placeholder: string | undefined = undefined;
   export let unit = '';
   export let value: number;

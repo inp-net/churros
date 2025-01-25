@@ -33,8 +33,6 @@ builder.mutationField('deleteDocument', (t) =>
       await log('documents', 'delete', document, id, user);
       const { paperPaths, solutionPaths } = document;
       const paths = [...paperPaths, ...solutionPaths];
-      // Delete all comments
-      await prisma.comment.deleteMany({ where: { documentId: id } });
       // Delete all files on disk
       await Promise.all(
         paths.map(async (filepath) => await rm(path.join(new URL(ENV.STORAGE).pathname, filepath))),

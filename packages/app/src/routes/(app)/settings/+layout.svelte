@@ -8,6 +8,8 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import IconAnnouncements from '~icons/msl/campaign-outline';
+  import { hiddenAnnouncements } from '../Announcements.svelte';
   import Split from '$lib/components/Split.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
@@ -57,9 +59,6 @@
 
   export let data: LayoutData;
   $: ({ LayoutSettings } = data);
-
-  export let deleteAccountModal: () => void;
-  // HINT: Don't forget to add an entry in packages/app/src/lib/navigation.ts for the top navbar's title and/or action buttons
 </script>
 
 <MaybeError result={$LayoutSettings} let:data={{ me, themes }}>
@@ -148,17 +147,24 @@
             />
           </ButtonSecondary>
         </SubmenuItem>
-        <SubmenuItem clickable on:click={deleteAccountModal} icon={IconTrash}>
+        <SubmenuItem href={route('/delete-account')} icon={IconTrash}>
           Supprimer mon compte
         </SubmenuItem>
         <SubmenuItem icon={IconDebug} label>
           Mode debug
           <InputCheckbox slot="right" label="" bind:value={$debugging}></InputCheckbox>
         </SubmenuItem>
+        <SubmenuItem
+          clickable
+          on:click={() => {
+            $hiddenAnnouncements = [];
+          }}
+          icon={IconAnnouncements}
+          subtext="Utile si tu en as ignoré par erreur"
+        >
+          Réafficher toutes les annonces en cours
+        </SubmenuItem>
       </Submenu>
-      <ModalOrDrawer bind:open={deleteAccountModal}>
-        <p>Veuillez contacter l'équipe administrative de votre AE pour supprimer votre compte.</p>
-      </ModalOrDrawer>
     </div>
     <slot slot="right"></slot>
   </Split>

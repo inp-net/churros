@@ -10,11 +10,10 @@
   let loadingTextSlotContent: HTMLSpanElement | null = null;
 
   // Text to use as skeleton UI is either the text given in the default slot, or lines of lorem ipsum if lines is specified, or a fallback
-  function loadingTextLines() {
+  function loadingTextLines(slotContent: HTMLSpanElement | null) {
     let output: string[] = [];
     if (lines) output = LOREM_IPSUM.split('\n').slice(0, lines);
-    else if (loadingTextSlotContent?.textContent)
-      output = loadingTextSlotContent.textContent.split('\n');
+    else if (slotContent?.textContent) output = slotContent.textContent.split('\n');
 
     output = output.filter(Boolean);
     if (output.length > 0) return output;
@@ -28,7 +27,7 @@
     {...$$restProps}
     class="skeleton-text skeleton-effect-wave"
   >
-    {#each loadingTextLines() as line}
+    {#each loadingTextLines(loadingTextSlotContent) as line}
       <span>{line}</span>
       <br />
     {/each}

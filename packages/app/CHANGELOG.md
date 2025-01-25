@@ -1,5 +1,41 @@
 # @churros/app
 
+## 4.0.0
+
+### Major Changes
+
+- a451d73: remove /reports/ pages, remove code contributors from /credits
+- 50ffbd7: remove comments
+
+### Minor Changes
+
+- 896707d: The checks.websocket property of /health's response is always true and is now deprecated
+- df8fb24: Redesign /backrooms
+- df8fb24: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- 7f63be5: fix group member list infinite scroll
+- f791fd5: toast using callbacks or labels triggered Svelte warnings about unknown props in console
+- df8fb24: /kiosk should now work even on devices without websocket support
+
+## 3.1.0
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 45d7615: allow setting 4th yeartier on graduation year constraint (closes #1194)
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- a0b3b27: clicking Voir plus on event cards would cause a double navigation to the event detail page
+- e1262b7: upgrade dependencies
+- Updated dependencies [e1262b7]
+  - arborist@0.1.2
+
 ## 3.0.1
 
 ### Patch Changes

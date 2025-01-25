@@ -4,6 +4,8 @@
     graphql,
     type PageEventAllBookings_ItemBooking,
     type PageEventAllBookings_ItemBooking$data,
+    type PageEventBookings_ItemBooking,
+    type PageEventBookings_ItemBooking$data,
   } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
@@ -17,11 +19,14 @@
 
   export let showTicketName: MaybeLoading<boolean> = true;
 
+  /** Highlight the booking code */
+  export let highlightCode = false;
+
   export let booking: PageEventAllBookings_ItemBooking | null;
   $: data = fragment(
     booking,
     graphql(`
-      fragment PageEventAllBookings_ItemBooking on Registration {
+      fragment PageEventAllBookings_ItemBooking on Registration @loading {
         ...PageEventAllBookings_ModalBookingDetails
         id
         code
@@ -70,7 +75,7 @@
           {/if}
         </div>
       </div>
-      <div class="code">
+      <div class="code" class:highlight={highlightCode}>
         <LoadingText tag="code" value={$data?.code}></LoadingText>
       </div>
     </div>
@@ -93,6 +98,15 @@
 </li>
 
 <style>
+  .booking {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border-radius: var(--radius-block);
+  }
+
   .code {
     margin-left: auto;
     font-size: 0.8rem;
@@ -164,5 +178,10 @@
   .booking:hover,
   .booking:focus-visible {
     background-color: var(--bg2);
+  }
+
+  .code.highlight {
+    font-weight: bold;
+    color: var(--primary);
   }
 </style>
