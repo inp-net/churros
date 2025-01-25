@@ -216,6 +216,9 @@ export const PAGES = {
     return `/groups/${uid}/members`;
   },
   '/help': `/help`,
+  '/join-managers/[code]': (code: string | number, params?: {}) => {
+    return `/join-managers/${code}`;
+  },
   '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
     params = params ?? {};
     params.bypass_oauth = params.bypass_oauth ?? undefined;
@@ -581,6 +584,7 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/type': 'uid';
     '/groups/[uid]/members': 'uid';
     '/help': never;
+    '/join-managers/[code]': 'code';
     '/login': never;
     '/login/done': never;
     '/login/forgotten': never;

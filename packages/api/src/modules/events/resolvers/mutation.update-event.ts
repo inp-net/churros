@@ -95,10 +95,11 @@ builder.mutationField('updateEvent', (t) =>
           })
           .then(({ _count: { managers } }) => managers > 0);
 
-        if (!hasManagers)
-          {throw new GraphQLError(
+        if (!hasManagers) {
+          throw new GraphQLError(
             "Ajoutez des managers à l'évènement avant d'activer les référent·e·s",
-          );}
+          );
+        }
       }
       const results = await prisma.$transaction([
         ...(args.applicableOffers
