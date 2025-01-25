@@ -27,7 +27,6 @@
   import type { PageData } from './$houdini';
   import { tabToFilter } from './filters';
   import ItemBooking from './ItemBooking.svelte';
-  import { countThing } from '$lib/i18n';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
