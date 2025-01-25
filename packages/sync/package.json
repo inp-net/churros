@@ -1,6 +1,6 @@
 {
   "name": "@churros/sync",
-  "version": "1.71.9",
+  "version": "1.71.10",
   "dependencies": {
     "@churros/db": "workspace:^",
     "@inp-net/ldap7": "^1.0.12",
