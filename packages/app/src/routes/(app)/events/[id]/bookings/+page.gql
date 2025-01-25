@@ -32,7 +32,7 @@ query PageEventAllBookings(
       edges @loading(count: 30) {
         node {
           id
-          ...PageEventBookings_ItemBooking
+          ...PageEventAllBookings_ItemBooking
         }
       }
     }
@@ -40,7 +40,7 @@ query PageEventAllBookings(
     searchBookings(q: $search, only: $filter) @include(if: $searching) {
       byCode
       registration {
-        ...PageEventBookings_ItemBooking
+        ...PageEventAllBookings_ItemBooking
       }
     }
   }
