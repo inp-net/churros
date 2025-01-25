@@ -2,60 +2,48 @@
   import {
     fragment,
     graphql,
-    type PageEventBookings_ItemBooking,
-    type PageEventBookings_ItemBooking$data,
+    type PageEventAllBookings_ItemBooking,
+    type PageEventAllBookings_ItemBooking$data,
   } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
   import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
   import BookingStatus from '$lib/components/BookingStatus.svelte';
-  import { formatDateTimeSmart } from '$lib/dates';
-  import { loading, LoadingText, mapLoading } from '$lib/loading';
+  import { formatDateTimeShortSmart } from '$lib/dates';
+  import { loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{
-    openDetails: PageEventBookings_ItemBooking$data;
-  }>();
+  const dispatch = createEventDispatcher<{ openDetails: PageEventAllBookings_ItemBooking$data }>();
 
-  export let showTicketNames: boolean;
+  export let showTicketName: MaybeLoading<boolean> = true;
 
   /** Highlight the booking code */
   export let highlightCode = false;
 
-  export let booking: PageEventBookings_ItemBooking | null;
+  export let booking: PageEventAllBookings_ItemBooking | null;
   $: data = fragment(
     booking,
     graphql(`
-      fragment PageEventBookings_ItemBooking on Registration @loading {
+      fragment PageEventAllBookings_ItemBooking on Registration @loading {
+        ...PageEventAllBookings_ModalBookingDetails
         id
         code
         ...BookingBeneficiary
         ...BookingAuthor
+        pointOfContact {
+          ...AvatarUser
+        }
+        authorEmail
         ticket {
           name
         }
-        verifiedAt
-        verifiedBy {
-          ...AvatarUser
-          fullName
-        }
-        cancelledAt
-        cancelledBy {
-          ...AvatarUser
-          fullName
-        }
-        opposedAt
-        opposedBy {
-          ...AvatarUser
-          fullName
-        }
+
         updatedAt
         ...BookingPaymentMethod
         ...BookingStatus
         authorIsBeneficiary
         author {
           ...AvatarUser
-          fullName
         }
       }
     `),
@@ -76,9 +64,10 @@
           <BookingBeneficiary booking={$data} />
         </div>
         <div class="author desktop-only">
-          {#if $data?.author && loading($data.authorIsBeneficiary, false)}
-            Payé par <AvatarUser user={$data.author} />
-            <LoadingText value={$data.author.fullName} />
+          {#if $data?.author && !loading($data.authorIsBeneficiary, false)}
+            Payée par <AvatarUser name user={$data.author} />
+          {:else if $data?.authorEmail}
+            Payée par <LoadingText value={$data.authorEmail} />
           {:else}
             <p></p>
           {/if}
@@ -91,9 +80,9 @@
     <div class="bottom">
       <BookingStatus booking={$data} />
       <div class="date muted">
-        <LoadingText value={mapLoading($data?.updatedAt, formatDateTimeSmart)} />
+        <LoadingText value={mapLoading($data?.updatedAt, formatDateTimeShortSmart)} />
       </div>
-      {#if showTicketNames}
+      {#if showTicketName}
         <div class="ticket">
           <LoadingText value={$data?.ticket.name} />
         </div>
@@ -173,6 +162,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .booking {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border-radius: var(--border-block);
   }
 
   .booking:hover,

@@ -96,6 +96,7 @@ declare namespace svelteHTML {
     // FIXME does not work
     // [K: `on:${NavigationTopEventsKey}`]: (event: CustomEvent<{}>) => Promise<void> | void;
     'on:NAVTOP_UPDATE_TITLE'?: (event: CustomEvent<string>) => Promise<void> | void;
+    'on:NAVTOP_DOWNLOAD_CSV'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_GOTO_EVENT_FROM_BOOKING'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_COPY_ID'?: (event: CustomEvent<undefined>) => Promise<void> | void;
     'on:NAVTOP_REPORT_ISSUE'?: (event: CustomEvent<undefined>) => Promise<void> | void;

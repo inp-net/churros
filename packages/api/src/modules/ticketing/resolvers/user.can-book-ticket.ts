@@ -37,7 +37,13 @@ builder.prismaObjectField(UserType, 'canBookTicket', (t) =>
         include: canBookTicket.userPrismaIncludes,
       });
       const sessionUser = await getSessionUser(userAdditionalData.uid);
-      const [can, why] = canBookTicket(sessionUser, userAdditionalData, null, ticket);
+      const [can, why] = canBookTicket({
+        user: sessionUser,
+        userAdditionalData,
+        pointOfContact: null,
+        ticket,
+        beneficiary: null,
+      })
       return new CanBookExplanation(can, why);
     },
   }),

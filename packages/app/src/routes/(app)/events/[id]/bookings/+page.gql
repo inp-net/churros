@@ -23,7 +23,7 @@ query PageEventAllBookings(
       id
       allowedPaymentMethods
     }
-
+    ...PageEventAllBookings_ModalBokingDetailsEvent
     bookings(first: 30, only: $filter) @paginate @skip(if: $searching) {
       pageInfo {
         hasNextPage
@@ -32,7 +32,7 @@ query PageEventAllBookings(
       edges @loading(count: 30) {
         node {
           id
-          ...PageEventBookings_ItemBooking
+          ...PageEventAllBookings_ItemBooking
         }
       }
     }
@@ -40,7 +40,7 @@ query PageEventAllBookings(
     searchBookings(q: $search, only: $filter) @include(if: $searching) {
       byCode
       registration {
-        ...PageEventBookings_ItemBooking
+        ...PageEventAllBookings_ItemBooking
       }
     }
   }

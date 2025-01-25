@@ -10,6 +10,7 @@ export type MailProps = {
     eventTitle: string;
     bookingLink: string;
     beneficiary: string | null;
+    pointOfContact: string | null;
   };
   'form-answers': {
     title: string;

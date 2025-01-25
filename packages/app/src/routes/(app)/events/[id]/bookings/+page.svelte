@@ -1,32 +1,23 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { graphql, type PageEventBookings_ItemBooking$data } from '$houdini';
+  import { graphql, type PageEventAllBookings_ModalBookingDetails } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
-  import AvatarUser from '$lib/components/AvatarUser.svelte';
-  import BookingAuthor from '$lib/components/BookingAuthor.svelte';
-  import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
-  import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
-  import BookingStatus from '$lib/components/BookingStatus.svelte';
-  import ButtonCopyToClipboard from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import NavigationTabs from '$lib/components/NavigationTabs.svelte';
   import { updateTitle } from '$lib/components/NavigationTop.svelte';
-  import { formatDateTimeSmart } from '$lib/dates';
   import { countThing } from '$lib/i18n';
-  import { loaded, loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
-  import { refroute } from '$lib/navigation';
-  import { isPWA } from '$lib/pwa';
+  import { loading, LoadingText, mapLoading, type MaybeLoading } from '$lib/loading';
   import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
   import { onMount } from 'svelte';
   import { queryParam } from 'sveltekit-search-params';
-  import IconOpenTicketPage from '~icons/msl/open-in-new';
   import type { PageData } from './$houdini';
+  import { downloadCsv } from './csv';
   import { tabToFilter } from './filters';
   import ItemBooking from './ItemBooking.svelte';
+  import ModalBookingDetails from './ModalBookingDetails.svelte';
 
   export let data: PageData;
   $: ({ PageEventAllBookings } = data);
@@ -53,14 +44,16 @@
     decode: (v) => FILTERS.find((f) => f === v) ?? DEFAULT_FILTER,
   });
 
-  let openBookingDetailModal: () => void;
-  let selectedBooking: PageEventBookings_ItemBooking$data | null = null;
+  let openBookingDetailModal: (booking: PageEventAllBookings_ModalBookingDetails) => void;
 
   const updates = graphql(`
     subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
       event(id: $id) {
         bookings(first: 10, only: $filter) {
           nodes {
+            # we only _count_ new bookings, we don't need to load any data
+            # since loading them in would make a jump in the UI
+            # so we only show a notice that "n new bookings have been made, reload?"
             id
           }
         }
@@ -99,94 +92,28 @@
     // if data hasn't been loaded yet
     [];
 
-  $: if ($PageEventAllBookings.data) 
+  $: if ($PageEventAllBookings.data)
     updateTitle(countThing('réservation', $PageEventAllBookings.data.event.bookingsCounts.total));
 </script>
 
-<ModalOrDrawer bind:open={openBookingDetailModal}>
-  <svelte:fragment slot="header">
-    <h1 class="modal-detail-title">Détail</h1>
-    <ButtonSecondary
-      target={isPWA() ? undefined : '_blank'}
-      icon={IconOpenTicketPage}
-      href={(isPWA() ? refroute : route)('/bookings/[code]', loading(selectedBooking?.code, ''), {
-        dontpay: '1',
-      })}
-    >
-      Voir le billet
-    </ButtonSecondary>
-  </svelte:fragment>
-  {#if selectedBooking}
-    <dl>
-      <dt>Code de réservation</dt>
-      <dd>
-        <code>{selectedBooking.code}</code>
-        {#if loaded(selectedBooking.code)}
-          <ButtonCopyToClipboard text={selectedBooking.code}></ButtonCopyToClipboard>
-        {/if}
-      </dd>
-      <dt>Place pour</dt>
-      <dd>
-        <BookingBeneficiary booking={selectedBooking} />
-      </dd>
-      <dt>Payée par</dt>
-      <dd>
-        <BookingAuthor booking={selectedBooking} />
-      </dd>
-      {#if selectedBooking.verifiedAt || selectedBooking.verifiedBy}
-        <dt>Scannée</dt>
-        <dd>
-          {#if selectedBooking.verifiedAt}
-            <LoadingText value={mapLoading(selectedBooking.verifiedAt, formatDateTimeSmart)}
-            ></LoadingText>
-          {/if}
-          {#if selectedBooking.verifiedBy}
-            Par <AvatarUser user={selectedBooking.verifiedBy}></AvatarUser>
-            <LoadingText value={selectedBooking.verifiedBy.fullName} />
-          {/if}
-        </dd>
-      {/if}
-      {#if selectedBooking.cancelledAt || selectedBooking.cancelledBy}
-        <dt>Annulée</dt>
-        <dd>
-          {#if selectedBooking.cancelledAt}
-            <LoadingText value={mapLoading(selectedBooking.cancelledAt, formatDateTimeSmart)}
-            ></LoadingText>
-          {/if}
-          {#if selectedBooking.cancelledBy}
-            Par <AvatarUser user={selectedBooking.cancelledBy}></AvatarUser>
-            <LoadingText value={selectedBooking.cancelledBy.fullName} />
-          {/if}
-        </dd>
-      {/if}
-      {#if selectedBooking.opposedAt || selectedBooking.opposedBy}
-        <dt>Opposée</dt>
-        <dd>
-          {#if selectedBooking.opposedAt}
-            <LoadingText value={mapLoading(selectedBooking.opposedAt, formatDateTimeSmart)}
-            ></LoadingText>
-          {/if}
-          {#if selectedBooking.opposedBy}
-            Par <AvatarUser user={selectedBooking.opposedBy}></AvatarUser>
-            <LoadingText value={selectedBooking.opposedBy.fullName} />
-          {/if}
-        </dd>
-      {/if}
-      <dt>État</dt>
-      <dd>
-        <BookingStatus booking={selectedBooking} />
-      </dd>
-      <dt>Moyen de paiement</dt>
-      <dd>
-        <BookingPaymentMethod booking={selectedBooking} />
-      </dd>
-    </dl>
-  {/if}
-</ModalOrDrawer>
+<svelte:window
+  on:NAVTOP_DOWNLOAD_CSV={async () => {
+    await downloadCsv($page.params.id);
+  }}
+/>
 
 <MaybeError result={$PageEventAllBookings} let:data={{ event }}>
+  <ModalBookingDetails {event} bind:open={openBookingDetailModal} />
   <div class="contents">
     <header>
+      <InputSearchQuery
+        placeholder="Rechercher par nom, code, email..."
+        q={initialQ}
+        on:debouncedInput={async ({ detail }) => {
+          $q = detail;
+        }}
+      ></InputSearchQuery>
+
       <NavigationTabs
         tabs={FILTERS.map((name) => ({
           name,
@@ -223,14 +150,6 @@
         </div>
       </NavigationTabs>
 
-      <InputSearchQuery
-        placeholder="Rechercher par nom, code, email..."
-        q={initialQ}
-        on:debouncedInput={async ({ detail }) => {
-          $q = detail;
-        }}
-      ></InputSearchQuery>
-
       {#if newBookingsCount}
         <Alert theme="primary">
           {newBookingsCount} nouvelles réservations <ButtonSecondary
@@ -250,10 +169,9 @@
         <ItemBooking
           {booking}
           highlightCode={loading(booking.byCode, false)}
-          showTicketNames={event.tickets.length > 1}
+          showTicketName={event.tickets.length > 1}
           on:openDetails={({ detail }) => {
-            selectedBooking = detail;
-            openBookingDetailModal();
+            openBookingDetailModal(detail);
           }}
         />
       {:else}
@@ -262,7 +180,7 @@
         {/if}
       {/each}
       {#if loading(event.bookings?.pageInfo.hasNextPage, false)}
-        <ItemBooking showTicketNames={event.tickets.length > 1} booking={null} />
+        <ItemBooking showTicketName={event.tickets.length > 1} booking={null} />
       {/if}
     </ul>
     {#if showingSearchResults}
@@ -292,20 +210,10 @@
     gap: 0.5rem;
   }
 
-  .tab .subtitle {
+  .subtitle {
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-size: 0.8em;
-  }
-
-  dl {
-    padding: 1rem 2rem;
-  }
-
-  dl dd {
-    display: flex;
-    gap: 0.5ch;
-    align-items: center;
   }
 
   .search-results-count {
