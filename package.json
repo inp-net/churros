@@ -50,7 +50,7 @@
     "build": "yarn cp-env && yarn generate-buildinfo && yarn workspaces foreach --exclude @churros/docs --interlaced --topological-dev -Apv run build",
     "check": "yarn cp-env && yarn generate-buildinfo --stub && yarn workspaces foreach --exclude @churros/docs --interlaced --topological-dev -Apv run check",
     "cp-env": "test -f .env || cp .env.example .env && cp .env packages/api/ && cp .env packages/app/ && cp .env packages/db/",
-    "pre:dev": "yarn sync-with-example-dotenv && yarn cp-env && docker compose up -d",
+    "pre:dev": "yarn sync-with-example-dotenv && yarn cp-env && yarn @api barrelize && docker compose up -d",
     "dev:env": "yarn tsx scripts/watch-env.ts",
     "dev": "yarn pre:dev && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
     "format": "prettier . --write --ignore-unknown",
