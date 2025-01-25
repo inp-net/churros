@@ -163,7 +163,6 @@ export const environmentSchema = z.object({
     .string()
     .regex(/^[\d.a-z]+$/)
     .describe('App package ID (Android) and Bundle ID (iOS).'),
-<<<<<<< packages/api/src/env.ts
   HOUSEKEEPER_TOKEN: z
     .string()
     .min(10)
