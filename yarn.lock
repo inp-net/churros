@@ -975,7 +975,7 @@ __metadata:
     "@carbon/charts-svelte": "npm:^1.22.3"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.3"
-    "@iconify-json/material-symbols": "npm:^1.2.10"
+    "@iconify-json/material-symbols": "npm:^1.2.13"
     "@iconify-json/material-symbols-light": "npm:^1.2.10"
     "@iconify-json/mdi": "npm:^1.2.3"
     "@iconify-json/simple-icons": "npm:^1.2.15"
@@ -2540,12 +2540,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/material-symbols@npm:^1.2.10":
-  version: 1.2.10
-  resolution: "@iconify-json/material-symbols@npm:1.2.10"
+"@iconify-json/material-symbols@npm:^1.2.13":
+  version: 1.2.13
+  resolution: "@iconify-json/material-symbols@npm:1.2.13"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 10c0/74ac5c60a6c6abc190ebf5c68de26e3d90c178f787886c1ee35d9f523ddf0906fdbff30373c44b3d886c0fe9854524502e417c76915827c87031ac67e0d1783c
+  checksum: 10c0/9f429e42273bc29ba30a43b1a70661870f6234567e05d7637ace18d9516b11bba98248413026c87f73475dc6441a18cdb997467c1bf984cb7c0bcd80532e8b2d
   languageName: node
   linkType: hard
 
