@@ -18,6 +18,12 @@ const changelogPath = path.join(__dirname, '../CHANGELOG.md');
 
 const changelog = readFileSync(changelogPath, 'utf-8');
 
+// If changelog already contains the new version, exit
+if (new RegExp(`^## \\[${newVersion}\\]`, 'm').test(changelog)) {
+  console.error(`Changelog already contains version ${newVersion}, nothing to do.`);
+  process.exit(0);
+}
+
 // Update changelog
 
 console.info(`Updating changelog to version ${newVersion}`);

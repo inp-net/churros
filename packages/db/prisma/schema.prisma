@@ -22,9 +22,10 @@ datasource db {
 
 /// Users are the people who use the app
 model User {
-  id        String   @id @default(dbgenerated("nanoid('u:'::text)"))
-  uid       String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now())
+  id         String   @id @default(dbgenerated("nanoid('u:'::text)"))
+  uid        String   @unique @db.VarChar(255)
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
 
   // School details
   schoolServer String? @db.VarChar(255)

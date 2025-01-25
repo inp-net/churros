@@ -99,9 +99,7 @@ ALTER TABLE "QuickSignup" ALTER COLUMN "id" SET DEFAULT nanoid('quicksignup:', 6
 ALTER TABLE "Reaction" ALTER COLUMN "id" SET DEFAULT nanoid('reac:');
 
 -- AlterTable
-ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:'),
-ALTER COLUMN "authorFullName" DROP NOT NULL,
-ALTER COLUMN "internalBeneficiaryFullName" DROP NOT NULL;
+ALTER TABLE "Registration" ALTER COLUMN "id" SET DEFAULT nanoid('r:');
 
 -- AlterTable
 ALTER TABLE "School" ALTER COLUMN "id" SET DEFAULT nanoid('school:'),
@@ -132,7 +130,8 @@ ALTER TABLE "Ticket" ALTER COLUMN "id" SET DEFAULT nanoid('t:');
 ALTER TABLE "TicketGroup" ALTER COLUMN "id" SET DEFAULT nanoid('tg:');
 
 -- AlterTable
-ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT nanoid('u:');
+ALTER TABLE "User" ADD COLUMN     "lastSeenAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "id" SET DEFAULT nanoid('u:');
 
 -- AlterTable
 ALTER TABLE "UserCandidate" ALTER COLUMN "id" SET DEFAULT nanoid('candidate:');
