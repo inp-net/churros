@@ -1,17 +1,11 @@
 import { builder, ensureGlobalId, prisma, toHtml } from '#lib';
 import { MajorType } from '#modules/curriculum';
-import { CapacityScalar } from '#modules/events';
+import { CapacityScalar, canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { DateTimeScalar, LocalID } from '#modules/global';
 import { PaymentMethodEnum, actualPrice } from '#modules/payments';
 import { SchoolType } from '#modules/schools';
 import type { Prisma } from '@churros/db/prisma';
-import {
-  canBookTicket,
-  canEditEvent,
-  canEditEventPrismaIncludes,
-  canSeeTicketCapacity,
-  shotgunIsOpen,
-} from '../utils/index.js';
+import { canBookTicket, canSeeTicketCapacity, shotgunIsOpen } from '../utils/index.js';
 import { TicketCountingPolicyEnum } from './ticket-counting-policy.js';
 
 export const TicketTypePrismaIncludes = {
