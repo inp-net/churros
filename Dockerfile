@@ -34,6 +34,7 @@ RUN yarn workspace arborist build
 FROM builder AS builder-api
 
 WORKDIR /app
+RUN apk add --update --no-cache openssl
 RUN yarn workspace @churros/api build
 
 FROM builder AS builder-app
@@ -67,6 +68,8 @@ FROM base AS api
 WORKDIR /app
 
 ENV NODE_ENV="production"
+
+RUN apk add --update --no-cache openssl
 
 # Prisma
 COPY --from=builder-api /app/packages/db/prisma/ /app/packages/db/prisma/
@@ -125,6 +128,8 @@ WORKDIR /app
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
 FROM node:20-alpine AS prisma
+
+RUN apk add --update --no-cache openssl
 
 WORKDIR /app
 COPY packages/db/prisma/ /app/packages/db/prisma/

@@ -2,6 +2,8 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
   output          = "../src/client"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+
 }
 
 // See https://pothos-graphql.dev/docs/plugins/prisma#setup

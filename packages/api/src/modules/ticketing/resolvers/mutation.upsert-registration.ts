@@ -49,11 +49,8 @@ builder.mutationField('upsertRegistration', (t) =>
         include: {
           event: {
             include: {
-              coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
-              group: { include: { studentAssociation: { include: { school: true } } } },
-              managers: { include: { user: true } },
+              ...userCanAccessEvent.prismaIncludes,
               bannedUsers: true,
-              tickets: true,
             },
           },
           invited: true,
