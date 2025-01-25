@@ -1,11 +1,11 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { LocalID } from '#modules/global';
-import { TicketType } from '#modules/ticketing/types';
+import { BooleanConstraint, TicketConstraintsInput, TicketType } from '#modules/ticketing/types';
+import { Visibility } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
 import { nanoid } from 'nanoid';
 import { ZodError } from 'zod';
-import type { BooleanConstraint } from '../types/boolean-constraint.js';
-import { TicketConstraintsInput } from '../types/ticket-constraints-input.js';
 
 builder.mutationField('updateTicketConstraints', (t) =>
   t.prismaField({
@@ -49,11 +49,31 @@ builder.mutationField('updateTicketConstraints', (t) =>
     async resolve(query, _, args, { user, caveats }) {
       const id = ensureGlobalId(args.ticket, 'Ticket');
       const { constraints } = args;
+
+      // When changing ticket to allow externals, make sure they can acess the event: it must be public or unlisted
+      if (constraints.external && constraints.external !== 'Not') {
+        const event = await prisma.ticket
+          .findUniqueOrThrow({
+            where: { id },
+          })
+          .event();
+
+        if (
+          event.visibility === Visibility.GroupRestricted ||
+          event.visibility === Visibility.SchoolRestricted
+        ) {
+          throw new GraphQLError(
+            "L'évènement ne peut pas être restreint à l'école ou au groupe s'il a des billets ouverts aux extés",
+          );
+        }
+      }
+
       const inviteCode = constraints.invitesOnly
         ? nanoid(8)
         : constraints.invitesOnly === false
           ? null
           : undefined;
+
       await log(
         'ticketing',
         'update-ticket-constraints',
@@ -61,6 +81,7 @@ builder.mutationField('updateTicketConstraints', (t) =>
         id,
         user,
       );
+
       const ticket = await prisma.ticket.update({
         ...query,
         where: { id },
