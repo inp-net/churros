@@ -114,6 +114,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 FROM base AS sync
 
+RUN apk add --update --no-cache openssl
+
 ENV NODE_ENV="production"
 COPY --from=builder-sync /app/packages/db/src/ /app/packages/db/src/
 COPY --from=builder-sync /app/packages/db/package.json /app/packages/db/
