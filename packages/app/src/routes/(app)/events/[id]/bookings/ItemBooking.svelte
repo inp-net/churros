@@ -4,8 +4,6 @@
     graphql,
     type PageEventAllBookings_ItemBooking,
     type PageEventAllBookings_ItemBooking$data,
-    type PageEventBookings_ItemBooking,
-    type PageEventBookings_ItemBooking$data,
   } from '$houdini';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';

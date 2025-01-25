@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { graphql, type PageEventAllBookings_ModalBookingDetails, type PageEventBookings_ItemBooking$data } from '$houdini';
+  import { graphql, type PageEventAllBookings_ModalBookingDetails, type PageEventAllBookings_ItemBooking$data } from '$houdini';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputSearchQuery from '$lib/components/InputSearchQuery.svelte';
@@ -49,7 +49,7 @@
   });
 
   let openBookingDetailModal: (booking: PageEventAllBookings_ModalBookingDetails) => void;
-  let selectedBooking: PageEventBookings_ItemBooking$data | null = null;
+  let selectedBooking: PageEventAllBookings_ItemBooking$data | null = null;
 
   const updates = graphql(`
     subscription BookingsListUpdates($id: LocalID!, $filter: BookingState!) {
