@@ -81,9 +81,7 @@ export function canAccessEvent(
 }
 
 canAccessEvent.prismaIncludes = {
-  ...canEditEventPrismaIncludes,
-  group: { include: { studentAssociation: { include: { school: true } } } },
-  coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+  ...userCanAccessEvent.prismaIncludes,
 } as const satisfies Prisma.EventInclude;
 
 export function canSeeEventManagerInvites(

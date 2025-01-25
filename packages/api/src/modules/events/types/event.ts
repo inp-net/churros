@@ -20,7 +20,12 @@ import {
   EventFrequencyType,
   EventManagerInviteType,
 } from '../index.js';
-import { canEditEvent, canEditManagers, canSeeEventLogs } from '../utils/index.js';
+import {
+  allowedVisibilities,
+  canEditEvent,
+  canEditManagers,
+  canSeeEventLogs,
+} from '../utils/index.js';
 
 export const EventTypePrismaIncludes = {
   managers: true,
