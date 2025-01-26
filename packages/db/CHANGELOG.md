@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.1.2
+
+### Patch Changes
+
+- cfbb198: reorder migration user_last_seen_at
+
 ## 4.1.1
 
 ### Patch Changes
