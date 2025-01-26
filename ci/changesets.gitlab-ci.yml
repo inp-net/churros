@@ -28,8 +28,6 @@ renovate-changesets:
    - npm install
    - node scripts/generate-renovate-changesets
    - git push
-  only:
-    - main # Trigger only for the `main` branch
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: manual
