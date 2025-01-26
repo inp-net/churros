@@ -22,7 +22,11 @@ if (referenceType === 'prod') {
     .then((text) => text.split('\n'));
 } else {
   if (referenceType === 'main') {
-    execSync('git switch main --track origin/main');
+    try {
+      execSync('git switch main --track origin/main');
+    } catch {
+      execSync('git switch -c main --track origin/main');
+    }
   } else {
     // Get latest git tag starting with @churros/db@...
     const latestTag = execSync('git describe --abbrev=0 --tags --match "@churros/db@*"')
