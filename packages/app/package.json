@@ -65,7 +65,7 @@
     "@iconify-json/material-symbols-light": "^1.2.13",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.21",
-    "@sveltejs/adapter-node": "^5.2.9",
+    "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.9.1",
     "@types/blob-stream": "^0.1.33",
     "@types/cookie": "^1.0.0",
