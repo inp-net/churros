@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.1.4
+
+### Patch Changes
+
+- b779ec4: add back migration that was already applied in prod
+
 ## 4.1.3
 
 ### Patch Changes

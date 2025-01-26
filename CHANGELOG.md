@@ -11,6 +11,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [4.1.2] - 2025-01-26
+
 ### Corrections
 
 - Un message d'erreur empêchait d'accéder à la page de suppression de compte
@@ -911,7 +913,8 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
-[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/@churros%2Fapp@4.1.1...main
+[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/@churros%2Fapp@4.1.2...main
+[4.1.2]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.1.2
 [4.1.1]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.1.1
 [4.1.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.1.0
 [4.0.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.0.0
