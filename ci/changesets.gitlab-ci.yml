@@ -31,7 +31,7 @@ renovate-changesets:
   script:
     - echo "Running renovate changeset generator..."
     - node scripts/generate-renovate-changesets
-    - git push
+    - git push origin HEAD:main
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: manual
