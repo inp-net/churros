@@ -162,7 +162,7 @@
     "@types/ws": "^8.5.13",
     "@vizdom/vizdom-ts-node": "^0.1.18",
     "barrelsby": "^2.8.1",
-    "chokidar": "^4.0.1",
+    "chokidar": "^4.0.3",
     "concurrently": "^9.1.0",
     "graphinx": "^0.12.1"
   },
