@@ -1,0 +1,5 @@
+.test:
+  stage: test
+
+include:
+  - ci/test/db.gitlab-ci.yml
