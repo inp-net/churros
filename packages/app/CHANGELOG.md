@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.1.2
+
+### Patch Changes
+
+- 10c907b: dedupe & reorder sections in event managers page
+
 ## 4.1.1
 
 ### Patch Changes
