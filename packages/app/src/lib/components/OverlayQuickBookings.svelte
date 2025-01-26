@@ -64,7 +64,7 @@
   const hiddenBookings = writable([] as string[]);
   if (browser) syncToLocalStorage(hiddenBookings, 'hidden_quick_bookings');
 
-  const touchActions = 'pan-y pinch-zoom'  as unknown as 'pan-y'
+  const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 
 {#if $data && $data.nodes.some(notNull) && !$page.url.pathname.startsWith('/bookings')}
