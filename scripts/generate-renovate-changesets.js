@@ -65,5 +65,9 @@ for (const commitHash of mergeCommits) {
         flag: "a",
     });
 
-
+    // Stage the changeset file
+    exec(`git add ${changesetFile}`);
 }
+
+// Commit all staged changesets in a single commit
+exec(`git commit -m "chore(changesets): add changesets for renovate branches"`);
