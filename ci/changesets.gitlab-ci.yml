@@ -28,7 +28,6 @@ renovate-changesets:
    - apk add git
   script:
    - echo "Running renovate changeset generator..."
-   - npm install
    - node scripts/generate-renovate-changesets
    - git push
   rules:
