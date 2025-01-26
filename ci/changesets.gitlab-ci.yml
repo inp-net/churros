@@ -36,11 +36,11 @@ renovate-changesets:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: manual
-    - if: '$CI_COMMIT_REF_NAME == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
         - scripts/generate-renovate-changesets # Only run when this script is touched
-    - if: '$CI_COMMIT_REF_NAME == "main" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\//'
-      when: always # Runs only when a MR from a renovate/ branch is merged into main
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TITLE =~ /^Merge branch ''renovate\//'
+      when: always
 
 release:
   extends: .changesets
