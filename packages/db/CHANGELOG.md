@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.1.3
+
+### Patch Changes
+
+- 778280f: remove superfluous migration
+
 ## 4.1.2
 
 ### Patch Changes
