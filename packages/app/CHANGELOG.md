@@ -1,5 +1,45 @@
 # @churros/app
 
+## 4.1.1
+
+### Patch Changes
+
+- 2aadf87: chore(deps): update dependency @babel/core to ^7.26.7 (!415)
+- 2aadf87: fix(deps): update dependency @carbon/charts-svelte to ^1.22.15 (!391)
+- 2aadf87: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.13 (!410)
+- 6cdab09: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.13 (!416)
+- 2aadf87: chore(deps): update dependency @iconify-json/mdi to ^1.2.3 (!417)
+- 6cdab09: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.21 (!418)
+- 2aadf87: fix(deps): update dependency @sentry/sveltekit to ^8.51.0 (!403)
+- 84a508a: chore(deps): update dependency @sveltejs/adapter-node to ^5.2.12 (!419)
+- 3af8ad0: changelogs now include dependency updates
+- Updated dependencies [6cdab09]
+  - arborist@0.1.3
+
+## 4.1.0
+
+### Minor Changes
+
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Redesign /backrooms
+- 8f63ff5: show event managers inherited from group memberships
+- a50aec4: redesign announcements management pages
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- 92a434c: clarify when someone can see places left and/or capacity of a ticket because they are managers
+- 2aebc49: allow search for bookings in /event/:id/bookings
+- ff0a9a9: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- a09feb9: CSV bookings export download button did not work in OAuth2-based sessions (see #1216)
+- a09feb9: payment method showed "undefined" when not yet selected (see #1094)
+- 0d0b17a: hide red dot from overflow menu if item that adds it is hidden and/or disabled
+- a9fe207: all inputs had autofocus
+
 ## 4.0.0
 
 ### Major Changes

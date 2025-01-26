@@ -1,5 +1,11 @@
 ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.inpt.fr/churros/dependency_proxy/containers, for example
 
+
+#####
+# Common builder
+#####
+
+
 FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS builder
 
 ARG TAG=dev
@@ -33,6 +39,12 @@ RUN yarn generate-buildinfo
 # Build arborist
 RUN yarn workspace arborist build
 
+
+#####
+# Package-specific builders
+#####
+
+
 FROM builder AS builder-api
 
 WORKDIR /app
@@ -53,6 +65,14 @@ WORKDIR /app
 RUN yarn workspace @churros/db generate
 RUN yarn workspace @churros/sync build
 
+
+
+####
+# Runtime common base
+####
+
+
+
 FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS base
 
 WORKDIR /app
@@ -64,6 +84,16 @@ COPY package.json /app/
 
 # Builded arborist
 COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
+
+
+
+####
+# Final images
+####
+
+
+#### API
+
 
 FROM base AS api
 
@@ -96,6 +126,10 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
+
+### App
+
+
 FROM base AS app
 
 WORKDIR /app
@@ -114,6 +148,10 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
+
+### Sync
+
+
 FROM base AS sync
 
 RUN apk add --update --no-cache openssl
@@ -130,6 +168,10 @@ RUN yarn workspaces focus @churros/sync --production
 WORKDIR /app
 
 ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
+
+
+### Database
+
 
 FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS prisma
 

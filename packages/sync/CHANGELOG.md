@@ -1,5 +1,38 @@
 # @churros/sync
 
+## 1.71.14
+
+### Patch Changes
+
+- Updated dependencies [778280f]
+  - @churros/db@4.1.3
+
+## 1.71.13
+
+### Patch Changes
+
+- Updated dependencies [cfbb198]
+  - @churros/db@4.1.2
+
+## 1.71.12
+
+### Patch Changes
+
+- Updated dependencies [535587d]
+  - @churros/db@4.1.1
+
+## 1.71.11
+
+### Patch Changes
+
+- a28d084: install openssl into the docker image
+- Updated dependencies [89f386f]
+- Updated dependencies [5880beb]
+- Updated dependencies [a09feb9]
+- Updated dependencies [072d7f5]
+- Updated dependencies [2aebc49]
+  - @churros/db@4.1.0
+
 ## 1.71.10
 
 ### Patch Changes
