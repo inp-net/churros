@@ -15,6 +15,7 @@ if (!existsSync(changesetDir)) {
 
 // Get the latest tagged commit
 const latestTag = exec('git describe --tags --abbrev=0');
+console.info(`Latest tag: ${latestTag}`);
 
 // Get all merge commits from renovate branches until the latest tagged commit
 const mergeCommits = exec(
@@ -23,6 +24,7 @@ const mergeCommits = exec(
 
 for (const commitHash of mergeCommits) {
   if (!commitHash.trim()) continue;
+  console.info(`Processing merge commit: ${commitHash}`);
 
   // Extract the branch name from the merge commit's message
   const branchName = exec(`git show -s --format='%B' ${commitHash} | head -n 1`).replace(
@@ -50,6 +52,9 @@ for (const commitHash of mergeCommits) {
     }
   }
 
+  console.info(
+    `Changed packages: ${changedPackageNames} ${changedPackageNames.length === 0 ? '(note, root package is excluded)' : ''}`,
+  );
   if (!changedPackageNames.length) continue;
 
   writeFileSync(changesetFile, '---\n', { encoding: 'utf-8' });
