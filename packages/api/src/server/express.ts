@@ -53,11 +53,11 @@ export async function startApiServer() {
   } catch (error) {
     console.error('Failed to initialize GraphQL server', error);
   }
-  import('./gdpr.js');
   import('./log.js');
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');
+  import('./devtools.js');
 
   // Perform a health check and setup interval to run health checks every 5 minutes
   console.info('Performing initial health check...');

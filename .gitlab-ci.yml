@@ -8,3 +8,4 @@ include:
   - ci/changesets.gitlab-ci.yml
   - ci/volta.gitlab-ci.yml
   - ci/build.gitlab-ci.yml
+  - ci/test.gitlab-ci.yml
