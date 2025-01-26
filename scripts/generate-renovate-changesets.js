@@ -1,6 +1,6 @@
-const { execSync } = require("child_process");
-const { readFileSync, writeFileSync, existsSync, mkdirSync } = require("fs");
-const path = require("path");
+import { execSync } from "child_process";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import path from "path"
 
 // Helper to execute a shell command and return output as a trimmed string
 function exec(command) {
