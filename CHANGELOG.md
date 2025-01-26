@@ -14,6 +14,8 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 ### Corrections
 
 - Un message d'erreur empêchait d'accéder à la page de suppression de compte
+- La section "managers par permissions" de la page des managers apparaissait en double... oops!
+- Les liens d'invitations de managers sont maintenant affichés avant les managers par permissions sur le groupe, comme ça c'est plus facilement accessible
 
 ## [4.1.1] - 2025-01-26
 
