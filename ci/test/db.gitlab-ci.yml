@@ -8,13 +8,20 @@
       MIGRATION_NAMES_ENDPOINT=https://churros.inpt.fr/dump/migrations/names 
       node packages/db/scripts/check-migrations-coherence.js $CHECK_AGAINST
 
-test:db:migrations-coherence:
+test:db:migrations-coherence-with-last-release:
+  extends: .test:db
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    # used to make sure we reach the latest @churros/db tag
+    GIT_DEPTH: 400
+    CHECK_AGAINST: tag
+
+test:db:migrations-coherence-with-main:
   extends: .test:db
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
-    # used to make sure we reach the latest @churros/db tag
-    GIT_DEPTH: 400
     CHECK_AGAINST: main
 
 test:db:migration-coherence-with-prod:
