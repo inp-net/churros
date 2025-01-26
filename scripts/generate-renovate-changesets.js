@@ -46,7 +46,7 @@ for (const commitHash of mergeCommits) {
             const pkgPath = path.resolve(pkgFile);
             const pkgJson = JSON.parse(readFileSync(pkgPath, { encoding: "utf-8" }));
             const pkgName = pkgJson.name;
-            writeFileSync(changesetFile, `${pkgName}: patch\n`, {
+            writeFileSync(changesetFile, `'${pkgName}': patch\n`, {
                 encoding: "utf-8",
                 flag: "a",
             });
