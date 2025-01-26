@@ -59,6 +59,17 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
     yarn workspace @churros/app build
 
+FROM builder AS builder-android
+
+WORKDIR /app
+COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
+    BUILD_ADAPTER=static \
+    yarn workspace @churros/app build
+
+RUN yarn workspace @churros/app cap sync android
+
 FROM builder AS builder-sync
 
 WORKDIR /app
@@ -147,6 +158,25 @@ COPY packages/app/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
+
+
+### Android
+
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mingc/android-build-box AS android-assemble
+
+WORKDIR /app
+
+COPY --from=builder-android /app/packages/app/build/ /app/packages/app/build/
+COPY --from=builder-android /app/packages/app/package.json /app/packages/app/
+
+RUN cd packages/app/android && ./gradlew assembleDebug
+
+FROM scratch AS android
+
+# copy built apk from android-assemble
+COPY --from=android-assemble /app/packages/app/android/app/build/outputs/apk/debug/ .
+RUN mv app-debug.apk churros.apk
 
 
 ### Sync

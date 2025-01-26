@@ -48,3 +48,4 @@ include:
   - ci/build/app.gitlab-ci.yml
   - ci/build/db.gitlab-ci.yml
   - ci/build/sync.gitlab-ci.yml
+  - ci/build/android.gitlab-ci.yml
