@@ -1,7 +1,7 @@
 .changesets:
-  image: 
+  image:
     name: registry.inpt.fr/inp-net/changesets-gitlab-docker
-    entrypoint: [""]
+    entrypoint: ['']
   before_script:
     - export GITLAB_TOKEN=$CHANGESETS_TOKEN
     - |
@@ -25,19 +25,21 @@ renovate-changesets:
   image: node:20-alpine
   stage: changesets
   before_script:
-   - apk add git
+    - apk add git
+    - git config --global user.name gitlab
+    - git config --global user.email "git@noreply.inpt.fr"
   script:
-   - echo "Running renovate changeset generator..."
-   - node scripts/generate-renovate-changesets
-   - git push
+    - echo "Running renovate changeset generator..."
+    - node scripts/generate-renovate-changesets
+    - git push
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: manual
     - if: '$CI_COMMIT_REF_NAME == "main"'
       changes:
-      - scripts/generate-renovate-changesets # Only run when this script is touched
+        - scripts/generate-renovate-changesets # Only run when this script is touched
     - if: '$CI_COMMIT_REF_NAME == "main" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\//'
-      when: always # Runs only when a MR from a renovate/ branch is merged into main                                     
+      when: always # Runs only when a MR from a renovate/ branch is merged into main
 
 release:
   extends: .changesets
