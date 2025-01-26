@@ -1,6 +1,24 @@
 # @churros/db
 
-## 4.1.0
+## 4.1.3
+
+### Patch Changes
+
+- 778280f: remove superfluous migration
+
+## 4.1.2
+
+### Patch Changes
+
+- cfbb198: reorder migration user_last_seen_at
+
+## 4.1.1
+
+### Patch Changes
+
+- 535587d: fix migrations order: migration order of 4.1.0 was inconsistent with 4.0.1, which would cause a failed migration when applying
+
+## 4.1.0 - [YANKED]
 
 ### Minor Changes
 

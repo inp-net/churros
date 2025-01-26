@@ -1,5 +1,15 @@
 # @churros/api
 
+## 9.0.1
+
+### Patch Changes
+
+- 6cdab09: chore(deps): update dependency @types/jsonwebtoken to ^9.0.8 (!420)
+- Updated dependencies [6cdab09]
+- Updated dependencies [535587d]
+  - arborist@0.1.3
+  - @churros/db@4.1.1
+
 ## 9.0.0
 
 ### Major Changes

@@ -2535,7 +2535,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteEventManagerInvite(
     id: LocalID!
     """
-    Aussi enlever des managers celleux qui le sont devenu via cette invation
+    Aussi enlever des managers celleux qui le sont devenu via cette invitation
     """
     kickManagers: Boolean! = false
   ): MutationDeleteEventManagerInviteResult!
@@ -4122,7 +4122,7 @@ union MutationUseEventManagerInviteResult = Error | MutationUseEventManagerInvit
 
 type MutationUseEventManagerInviteSuccess {
   """
-  Message d'explication si jamais l'on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé
+  Message d'explication si on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé
   """
   alreadyManager: String
   data: EventManager!
