@@ -21,6 +21,24 @@ comment:
   script:
     - changesets-gitlab comment
 
+renovate-changesets:
+  stage: changesets
+  script:
+   - echo "Running renovate changeset generator..."
+   - npm install
+   - node scripts/generate-renovate-changesets
+   - git push
+  only:
+    - main # Trigger only for the `main` branch
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+      changes:
+      - scripts/generate-renovate-changesets # Only run when this script is touched
+    - if: '$CI_COMMIT_REF_NAME == "main" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\//'
+      when: always # Runs only when a MR from a renovate/ branch is merged into main                                     
+
 release:
   extends: .changesets
   stage: changesets
