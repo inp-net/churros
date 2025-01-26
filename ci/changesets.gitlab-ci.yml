@@ -24,6 +24,8 @@ comment:
 renovate-changesets:
   image: node:20-alpine
   stage: changesets
+  variables:
+    GIT_DEPTH: 400
   before_script:
     - apk add git
     - git config --global user.name gitlab
