@@ -1,0 +1,50 @@
+.build:
+  stage: build
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: ['sh', '-c']
+  variables:
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+    # Default parameters
+    TAG: export TAG=latest-$(date +%Y%m%d%H%m)
+    DEPLOY: 'false'
+  before_script:
+    - |
+      mkdir -p ~/.docker && cat > ~/.docker/config.json <<EOF
+      {
+        "auths": {
+          "$CI_REGISTRY": {
+            "auth": "$(echo -n "$CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD" | base64)"
+          },
+          "$CI_DEPENDENCY_PROXY_SERVER": {
+            "auth": "$(echo -n "$CI_DEPENDENCY_PROXY_USER:$CI_DEPENDENCY_PROXY_PASSWORD" | base64)"
+          }
+        }
+      }
+      EOF
+
+  script:
+    - eval $TAG
+    - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
+    - |
+      buildctl-daemonless.sh build \
+          --frontend=dockerfile.v0 \
+          --local context=. \
+          --local dockerfile=. \
+          --opt target=$TARGET \
+          --opt build-arg:TAG=$TAG \
+          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+          $BUILD_SECRET_SENTRY \
+          --output type=image,name=$CI_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
+    - |
+      if [ "$DEPLOY" == "true" ]; then \
+        echo "Successfully built and pushed $CI_REGISTRY_IMAGE/$TARGET:v$TAG"; \
+      else \
+        echo "Successfully built $CI_REGISTRY_IMAGE/$TARGET:v$TAG"; \
+      fi
+
+include:
+  - ci/build/api.gitlab-ci.yml
+  - ci/build/app.gitlab-ci.yml
+  - ci/build/db.gitlab-ci.yml
+  - ci/build/sync.gitlab-ci.yml

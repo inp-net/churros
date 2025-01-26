@@ -24,10 +24,10 @@
 > **NOTE:** Si vous souhaitez travailler sur le code et proposer des changements, faites un _fork_ et clonez celui-ci plutôt. (Voir [Merge requests](#merge-requests))
 
 ```
-git clone https://git.inpt.fr/inp-net/churros.git
+git clone https://git.inpt.fr/churros/churros.git
 ```
 
-> **NOTE:** Si vous utilisez VS Code, vous pouvez ouvrir le projet dans VS Code et lancher la tache "Setup environment" (<kbbd>Ctrl+Shift+P</kbd> puis taper "Run Task" et sélectionner "Setup environment"). C'est l'équivalent des commandes ci-dessous.
+> **NOTE:** Si vous utilisez VS Code, vous pouvez ouvrir le projet dans VS Code et lancer la tache "Setup environment" (<kbbd>Ctrl+Shift+P</kbd> puis taper "Run Task" et sélectionner "Setup environment"). C'est l'équivalent des commandes ci-dessous.
 
 2. Installer les dépendances (Volta s'occupera de Node et Yarn pour vous et installera automatiquement les bonnes versions au lancement de cette commande)
 
@@ -65,6 +65,8 @@ yarn reset
   yarn dev
   ```
 
+  On peut aussi lancer `yarn dev:env` pour automatiquement mettre à jour le `.env` de chaque paquet quand on modifie le `.env` à la racine.
+
 - Ou (c'est mieux), démarrer dans 2 terminaux indépendants les serveurs de dev de l'API et de l'application:
 
   1.
@@ -73,11 +75,11 @@ yarn reset
   docker compose up -d
   ```
 
-  2.  | Terminal 1      | Terminal 2      |
-      | --------------- | --------------- |
-      | `yarn @api dev` | `yarn @app dev` |
+  2.  | Terminal 1      | Terminal 2      | Terminal 3     |
+      | --------------- | --------------- | -------------- |
+      | `yarn @api dev` | `yarn @app dev` | `yarn dev:env` |
 
-      (sur VSCode: Run Task puis Develop)
+      (sur VSCode: Run Task puis Develop fait cela pour vous)
 
   Note que le faux serveur LDAP de l'école ne fonctionnera pas (il faut le lancer dans encore un autre terminal), mais ça ne pose pas de problème si l'on ne développe pas la partie inscriptions.
 
@@ -95,7 +97,7 @@ yarn prisma studio
 
 ## Développement
 
-[Voir le wiki](https://git.inpt.fr/inp-net/churros/-/wikis) pour se familiariser avec l'architecture du projet.
+[Voir le wiki](https://git.inpt.fr/churros/wiki) pour se familiariser avec l'architecture du projet.
 
 ### Résolution de problèmes
 
@@ -112,7 +114,7 @@ yarn reset
 
 Pour effectuer vos changements puis les proposer:
 
-1. [Créez un _fork_ de ce dépôt](https://git.inpt.fr/inp-net/churros/-/forks/new)
+1. [Créez un _fork_ de ce dépôt](https://git.inpt.fr/churros/churros/-/forks/new)
 2. Clonez ce _fork_ sur votre machine
 3. Faites vos commits sur ce _fork_
 4. Faites une _merge request_, demandant à intégrer les changements de _votre fork_ vers ce dépôt

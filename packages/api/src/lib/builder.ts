@@ -25,12 +25,15 @@ import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import { GraphQLError } from 'graphql';
-import { default as parseUserAgent } from 'ua-parser-js';
+import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { ZodError } from 'zod';
 import { prisma } from './prisma.js';
 import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
 import { DEFAULT_RATE_LIMITS } from './ratelimit.js';
+
+export const CapacityUnlimitedValue = 'Unlimited' as const;
+export type Capacity = number | typeof CapacityUnlimitedValue;
 
 export interface PothosTypes {
   AuthContexts: AuthContexts;
@@ -91,8 +94,8 @@ export interface PothosTypes {
       Output: number;
     };
     Capacity: {
-      Input: number | null;
-      Output: number | 'Unlimited';
+      Input: Capacity;
+      Output: Capacity;
     };
     URL: {
       Input: URL;

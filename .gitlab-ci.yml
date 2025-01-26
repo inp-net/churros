@@ -1,12 +1,11 @@
 stages:
   - changesets
-  - build
   - test
+  - build
   - deploy
 
 include:
   - ci/changesets.gitlab-ci.yml
   - ci/volta.gitlab-ci.yml
-  - ci/docker.gitlab-ci.yml
-# - ci/sast.gitlab-ci.yml
-# - ci/bot.gitlab-ci.yml
+  - ci/build.gitlab-ci.yml
+  - ci/test.gitlab-ci.yml

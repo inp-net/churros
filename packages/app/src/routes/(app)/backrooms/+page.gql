@@ -1,0 +1,10 @@
+query PageBackrooms @loading {
+  me {
+    admin
+    studentAssociationAdmin
+  }
+  userCandidatesCount
+  services(mine: false) {
+    id
+  }
+}

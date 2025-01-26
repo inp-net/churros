@@ -9,6 +9,9 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
     ...BookingBeneficiary
     ...BookingAuthor
     ...BookingPaymentMethod
+    pointOfContact {
+      ...AvatarUser
+    }
 
     canManage
 
@@ -38,6 +41,7 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
       event {
         localID
         title
+        enforcePointOfContact
         ...CardEvent
       }
     }

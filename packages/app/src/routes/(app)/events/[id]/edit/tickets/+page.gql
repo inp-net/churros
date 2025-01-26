@@ -4,9 +4,11 @@ query PageEditEventTickets($id: LocalID!) @loading {
     id
     localID
     showPlacesLeft
+    showCapacity
     globalCapacity
     startsAt
     endsAt
+    enforcePointOfContact
     organizer {
       lydiaAccounts {
         ...PickBeneficiary @mask_disable

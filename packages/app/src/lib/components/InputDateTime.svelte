@@ -13,8 +13,15 @@
   import { nanoid } from 'nanoid';
   import { createEventDispatcher } from 'svelte';
   import { format } from 'date-fns';
+  import { tooltip } from '$lib/tooltip';
 
   export let variant: 'ghost' | 'box';
+
+  /** Pour afficher une tooltip */
+  export let help = '';
+
+  /** Pour afficher une tooltip sur le bouton d'effacement */
+  export let clearHelp = '';
 
   export let readonly = false;
 
@@ -67,8 +74,8 @@
   }
 </script>
 
-<InputField {label} {required}>
-  <div class="date-time-input">
+<InputField {label} {required} aria-label={help && !label ? help : ''}>
+  <div class="date-time-input" use:tooltip={help}>
     <label for="{name}-date">
       {#if variant === 'ghost'}
         <InputTextGhost
@@ -145,6 +152,7 @@
     </label>
     {#if !required && !readonly}
       <ButtonGhost
+        help={clearHelp}
         on:click={() => {
           _valueDate = null;
           _valueTime = '';

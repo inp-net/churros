@@ -31,6 +31,13 @@ const config = {
         queryField: 'page',
       },
     },
+    UserCandidate: {
+      resolve: {
+        queryField: 'userCandidateByEmail',
+        arguments: ({ email }) => ({ email }),
+      },
+      keys: ['email'],
+    },
     StudentAssociation: {
       resolve: {
         queryField: 'studentAssociation',
@@ -59,6 +66,13 @@ const config = {
         queryField: 'eventManager',
       },
     },
+    EventManagerInvite: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'eventManagerInvite',
+        arguments: ({ id }) => ({ idOrCode: id }),
+      },
+    },
     Ticket: {
       keys: ['id'],
       resolve: {
@@ -69,6 +83,12 @@ const config = {
       keys: ['id'],
       resolve: {
         queryField: 'ticketGroup',
+      },
+    },
+    Theme: {
+      keys: ['id'],
+      resolve: {
+        queryField: 'theme',
       },
     },
   },
@@ -156,9 +176,7 @@ const config = {
       type: 'number',
     },
     Capacity: {
-      type: 'number | null',
-      marshal: (x) => (x === null ? 'Unlimited' : x),
-      unmarshal: (x) => (x === 'Unlimited' ? null : x),
+      type: 'number | App.CapacityUnlimitedValue',
     },
     URL: {
       type: 'URL | null',

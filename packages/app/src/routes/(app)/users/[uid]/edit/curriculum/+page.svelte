@@ -19,7 +19,7 @@
 
   let graduationYear: number;
   $: if (loaded(user?.graduationYear)) graduationYear ??= user?.graduationYear;
-  let majorUid: string;
+  let majorUid: string | null;
   $: if (loaded(user?.major?.uid)) majorUid ??= user?.major?.uid ?? '';
   let apprentice: boolean;
   $: if (loaded(user?.apprentice)) apprentice ??= user?.apprentice ?? false;
@@ -60,7 +60,7 @@
         >
           <ButtonSecondary
             on:click={() => {
-              majorUid = '';
+              majorUid = null;
             }}
             slot="clear-button"
             danger
@@ -68,7 +68,7 @@
             Rendre exté
           </ButtonSecondary>
         </InputMajor>
-        {#if majorUid !== ''}
+        {#if majorUid !== null}
           <InputNumber
             on:blur={async ({ currentTarget }) => {
               if (!(currentTarget instanceof HTMLInputElement)) return;

@@ -1,5 +1,7 @@
 .changesets:
-  image: harbor.k8s.inpt.fr/net7_public/changeset-gitlab
+  image:
+    name: registry.inpt.fr/inp-net/changesets-gitlab-docker
+    entrypoint: ['']
   before_script:
     - export GITLAB_TOKEN=$CHANGESETS_TOKEN
     - |
@@ -18,6 +20,22 @@ comment:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - changesets-gitlab comment
+
+renovate-changesets:
+  image: node:20-alpine
+  stage: changesets
+  variables:
+    GIT_DEPTH: 400
+  before_script:
+    - apk add git
+    - git config --global user.name gitlab
+    - git config --global user.email "git@noreply.inpt.fr"
+  script:
+    - sh -c 'git remote add gitlab_origin https://changesets:$CHANGESETS_TOKEN@$CI_SERVER_SHELL_SSH_HOST/$CI_PROJECT_PATH; node scripts/generate-renovate-changesets'
+    - git pull gitlab_origin main
+    - git push gitlab_origin HEAD:main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
 release:
   extends: .changesets

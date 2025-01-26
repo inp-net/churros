@@ -1,5 +1,119 @@
 # @churros/app
 
+## 4.1.2
+
+### Patch Changes
+
+- 10c907b: dedupe & reorder sections in event managers page
+
+## 4.1.1
+
+### Patch Changes
+
+- 2aadf87: chore(deps): update dependency @babel/core to ^7.26.7 (!415)
+- 2aadf87: fix(deps): update dependency @carbon/charts-svelte to ^1.22.15 (!391)
+- 2aadf87: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.13 (!410)
+- 6cdab09: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.13 (!416)
+- 2aadf87: chore(deps): update dependency @iconify-json/mdi to ^1.2.3 (!417)
+- 6cdab09: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.21 (!418)
+- 2aadf87: fix(deps): update dependency @sentry/sveltekit to ^8.51.0 (!403)
+- 84a508a: chore(deps): update dependency @sveltejs/adapter-node to ^5.2.12 (!419)
+- 3af8ad0: changelogs now include dependency updates
+- Updated dependencies [6cdab09]
+  - arborist@0.1.3
+
+## 4.1.0
+
+### Minor Changes
+
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Redesign /backrooms
+- 8f63ff5: show event managers inherited from group memberships
+- a50aec4: redesign announcements management pages
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- 92a434c: clarify when someone can see places left and/or capacity of a ticket because they are managers
+- 2aebc49: allow search for bookings in /event/:id/bookings
+- ff0a9a9: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- a09feb9: CSV bookings export download button did not work in OAuth2-based sessions (see #1216)
+- a09feb9: payment method showed "undefined" when not yet selected (see #1094)
+- 0d0b17a: hide red dot from overflow menu if item that adds it is hidden and/or disabled
+- a9fe207: all inputs had autofocus
+
+## 4.0.0
+
+### Major Changes
+
+- a451d73: remove /reports/ pages, remove code contributors from /credits
+- 50ffbd7: remove comments
+
+### Minor Changes
+
+- 896707d: The checks.websocket property of /health's response is always true and is now deprecated
+- df8fb24: Redesign /backrooms
+- df8fb24: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- 7f63be5: fix group member list infinite scroll
+- f791fd5: toast using callbacks or labels triggered Svelte warnings about unknown props in console
+- df8fb24: /kiosk should now work even on devices without websocket support
+
+## 3.1.0
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 45d7615: allow setting 4th yeartier on graduation year constraint (closes #1194)
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- a0b3b27: clicking Voir plus on event cards would cause a double navigation to the event detail page
+- e1262b7: upgrade dependencies
+- Updated dependencies [e1262b7]
+  - arborist@0.1.2
+
+## 3.0.1
+
+### Patch Changes
+
+- 45962da: make services in quick access list actually clickable
+
+## 3.0.0
+
+### Major Changes
+
+- bba3e47: Remove /posts/:group/create - the URL was not used anywhere in the UI anymore
+
+### Minor Changes
+
+- 02fa1a0: allow hiding capacity on tickets
+- f09cd52: fix and improve email change request flow (wording in email, appearance of error state, and making request creating actually work)
+- a73ec69: redesign quick signups management pages
+- 02fa1a0: show event managers inherited from group memberships
+- 0453154: fix(signup): force opening major picker before anything else (closes #1190)
+- 02fa1a0: clarify when someone can see places left and/or capacity of a ticket because they are managers
+- aee5a3a: make repository url to the churros repo env-configurable, defaults to https://git.inpt.fr/churros/churros
+
+### Patch Changes
+
+- 11d9947: fix(permissions): make documents access toggle actually trigger the mutation (fixes #1228)
+- b616da1: fix borked infinite scroll on /events/:id/bookings
+- eecc2c9: clarify what the date range headers are in group members list page
+- 6e11d67: make bookmarked services actually clickable
+- bba3e47: make delete button on posts work
+- 0453154: don't trigger form submissions when picking an option in a modal picker
+- 6e11d67: improve help message for empty state of bookmarks list
+
 ## 2.13.0
 
 ### Minor Changes

@@ -59,10 +59,15 @@ export const environmentSchema = z.object({
   PUBLIC_VAPID_KEY: z.string().describe('Public VAPID key. Used to send push notifications.'),
   VAPID_PRIVATE_KEY: z.string().describe('Private VAPID key. Used to send push notifications.'),
   PUBLIC_CONTACT_EMAIL: z.string().email().describe('Contact email.'),
+  PUBLIC_REPOSITORY_URL: uri()
+    .describe('URL to the Churros repository. Must be hosted on a Gitlab instance')
+    .default('https://git.inpt.fr/churros/churros'),
   GITLAB_PROJECT_ID: z
     .string()
     .regex(/^\d+$/)
-    .describe("Internal ID of the Churros project's repo, at https://git.inpt.fr/inp-net/churros.")
+    .describe(
+      "Internal ID of the Churros project's repo, must correspond to the repository configured with PUBLIC_REPOSITORY_URL.",
+    )
     .default('1013'),
   GITLAB_SUDO_TOKEN: z
     .string()
@@ -158,6 +163,14 @@ export const environmentSchema = z.object({
     .string()
     .regex(/^[\d.a-z]+$/)
     .describe('App package ID (Android) and Bundle ID (iOS).'),
+  HOUSEKEEPER_TOKEN: z
+    .string()
+    .min(10)
+    .optional()
+    .describe('Token to execute Mutation.housekeep. If left empty, the mutation is unavailable.'),
+  USER_DELETED_WEBHOOK: optionaluri().describe(
+    "When someone deletes their account, a GET request to this URL will be made with the user's UID as the ?user query parameter.",
+  ),
 });
 
 function googleServiceAccountKey() {

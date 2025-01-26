@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
-  import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import LogoChurros from '$lib/components/LogoChurros.svelte';
   import type { ActionData, OverflowMenuAction } from '$lib/components/OverflowMenu.svelte';
+  import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import { isMobile } from '$lib/mobile';
   import { topnavConfigs } from '$lib/navigation';
   import { SvelteComponent } from 'svelte';
@@ -35,12 +35,18 @@
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     actions: OverflowMenuAction<any>[];
   };
+
+  export function updateTitle(title: string) {
+    if (!browser) return;
+    window.dispatchEvent(new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: title }));
+  }
 </script>
 
 <script lang="ts">
   import { browser } from '$app/environment';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { themeCurrentValueURL } from '$lib/theme';
 
   export let scrolled = false;
 
@@ -66,6 +72,7 @@
   }
 
   $: backHref = $page.url.searchParams.get('from') ?? back;
+  $: themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarTop');
 
   const mobile = isMobile();
 </script>
@@ -73,6 +80,9 @@
 <svelte:window
   on:NAVTOP_UPDATE_TITLE={({ detail }) => {
     title = detail;
+  }}
+  on:THEME_FORCE_RELOAD={() => {
+    themedLogoUrl = themeCurrentValueURL('ImageLogoNavbarTop');
   }}
 />
 
@@ -97,19 +107,25 @@
       <div class="title">{title}</div>
     {:else}
       <a class="left logo" href="/">
-        <LogoChurros wordmark></LogoChurros>
+        {#if themedLogoUrl}
+          <img src={themedLogoUrl} alt="Churros" class="themed-logo" />
+        {:else}
+          <LogoChurros wordmark></LogoChurros>
+        {/if}
       </a>
     {/if}
   </div>
   <div class="actions">
-    <button
-      class="bug-report"
-      on:click={() => {
-        window.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
-      }}
-    >
-      <IconBugReport></IconBugReport>
-    </button>
+    <div class="bug-report">
+      <ButtonGhost
+        --text="var(--danger)"
+        on:click={() => {
+          globalThis.dispatchEvent(new CustomEvent('NAVTOP_REPORT_ISSUE'));
+        }}
+      >
+        <IconBugReport></IconBugReport>
+      </ButtonGhost>
+    </div>
     {#if quickAction && !quickAction.disabled && !quickAction.hidden && !(quickAction.mobileOnly && !mobile)}
       {#if 'overflow' in quickAction && quickAction.overflow && 'icon' in quickAction}
         <OverflowMenu actions={quickAction.overflow}>
@@ -173,10 +189,6 @@
     max-width: 130px;
     height: 2rem;
     overflow: visible;
-  }
-
-  .bug-report {
-    color: var(--danger);
   }
 
   @media (min-width: 900px) {

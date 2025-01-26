@@ -1,0 +1,13 @@
+query PageAppQuickSignupsManagePage @loading {
+  quickSignups(first: 10) @paginate {
+    nodes {
+      code
+      validUntil
+      expired
+      school {
+        name
+        ...AvatarSchool
+      }
+    }
+  }
+}

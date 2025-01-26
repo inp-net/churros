@@ -1,0 +1,35 @@
+.test:db:
+  extends: .test
+  image: node:20-alpine
+  before_script:
+    - apk add diffutils git # busybox diff has no -y option
+  script:
+    - >
+      MIGRATION_NAMES_ENDPOINT=https://churros.inpt.fr/dump/migrations/names 
+      node packages/db/scripts/check-migrations-coherence.js $CHECK_AGAINST
+
+test:db:migrations-coherence-with-last-release:
+  extends: .test:db
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "changeset-release/main"
+  variables:
+    # used to make sure we reach the latest @churros/db tag
+    GIT_DEPTH: 400
+    CHECK_AGAINST: tag
+
+test:db:migrations-coherence-with-main:
+  extends: .test:db
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    CHECK_AGAINST: main
+
+test:db:migration-coherence-with-prod:
+  extends: .test:db
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^@churros\/db@(\d+\.\d+\.\d+)/
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "changeset-release/main"
+  variables:
+    CHECK_AGAINST: prod

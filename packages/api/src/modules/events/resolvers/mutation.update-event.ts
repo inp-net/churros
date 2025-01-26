@@ -3,6 +3,7 @@ import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID } from '#modules/global';
 import { PromotionTypeEnum } from '#modules/payments';
+import { GraphQLError } from 'graphql';
 import omit from 'lodash.omit';
 import { ZodError } from 'zod';
 import { MarkdownScalar } from '../../global/types/markdown.js';
@@ -31,6 +32,11 @@ builder.mutationField('updateEvent', (t) =>
         description: 'Afficher le nombre de places restantes sur les billets',
         defaultValue: true,
       }),
+      showCapacity: t.arg.boolean({
+        required: false,
+        description: 'Afficher la capacité sur les billets',
+        defaultValue: true,
+      }),
       globalCapacity: t.arg({
         type: CapacityScalar,
         required: false,
@@ -50,6 +56,11 @@ builder.mutationField('updateEvent', (t) =>
         type: [PromotionTypeEnum],
         description:
           "Liste d'identifiants de promotions applicables à tout les billets de l'évènement",
+      }),
+      enforcePointOfContact: t.arg.boolean({
+        required: false,
+        description:
+          'Forcer celleux qui réservent sans compte Churros à renseigner un·e référent·e',
       }),
     },
     async authScopes(_, args, { user }) {
@@ -72,6 +83,24 @@ builder.mutationField('updateEvent', (t) =>
         where: { eventId: id },
         select: { id: true },
       });
+      if (args.enforcePointOfContact) {
+        const hasManagers = await prisma.event
+          .findUniqueOrThrow({
+            where: { id },
+            select: {
+              _count: {
+                select: { managers: true },
+              },
+            },
+          })
+          .then(({ _count: { managers } }) => managers > 0);
+
+        if (!hasManagers) {
+          throw new GraphQLError(
+            "Ajoutez des managers à l'évènement avant d'activer les référent·e·s",
+          );
+        }
+      }
       const results = await prisma.$transaction([
         ...(args.applicableOffers
           ? allOffers.map((offer) =>

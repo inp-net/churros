@@ -1,7 +1,0 @@
-query PagePostCreateWithGroup {
-  me: assertMe {
-    canCreatePostsOn {
-      ...FormArticleGroups @mask_disable
-    }
-  }
-}
