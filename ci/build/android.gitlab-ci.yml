@@ -2,6 +2,8 @@
   extends: .build
   variables:
     TARGET: android
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_PATHS: packages/app/android
   script:
     - eval $TAG
     - |
