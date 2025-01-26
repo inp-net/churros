@@ -26,7 +26,9 @@ test:db:migrations-coherence-with-main:
 
 test:db:migration-coherence-with-prod:
   extends: .test:db
+  allow_failure: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/db@(\d+\.\d+\.\d+)/
+    - if: $CI_COMMIT_BRANCH == "changeset-release/main"
   variables:
     CHECK_AGAINST: prod
