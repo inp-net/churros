@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Un message d'erreur empêchait d'accéder à la page de suppression de compte
+
 ## [4.1.1] - 2025-01-26
 
 ## [4.1.0] - 2025-01-25

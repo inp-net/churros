@@ -35,7 +35,6 @@ builder.prismaObjectField(UserType, 'deletionConsequences', (t) =>
             `${count} ${count > 1 ? plural : thing}`;
 
           const messages: string[] = [
-            countThing('commentaire', counts.comments),
             countThing('cotisation', counts.contributions),
             `${countThing('réponse', counts.formAnswers)} de formulaire`,
             `${countThing(
@@ -60,7 +59,6 @@ builder.prismaObjectField(UserType, 'deletionConsequences', (t) =>
 
 // TODO intersect with generation from searching for all lines with User .* onDelete: Cascade in the Prisma schema, to ensure we don't say sth will be deleted when it won't
 const deletionCountsSelection = {
-  comments: true,
   contributions: true,
   formAnswers: true,
   incomingGodparentRequests: true,
