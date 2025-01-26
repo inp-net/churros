@@ -28,7 +28,7 @@ renovate-changesets:
     - apk add git
     - git config --global user.name gitlab
     - git config --global user.email "git@noreply.inpt.fr"
-    - git remote add gitlab https://oauth2:$CHANGESETS_TOKEN@$CI_SERVER_SHELL_SSH_HOST/$CI_PROJECT_PATH_SLUG
+    - git remote add gitlab https://changesets:$CHANGESETS_TOKEN@$CI_SERVER_SHELL_SSH_HOST/$CI_PROJECT_PATH
   script:
     - echo "Running renovate changeset generator..."
     - node scripts/generate-renovate-changesets
