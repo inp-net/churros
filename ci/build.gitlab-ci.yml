@@ -8,6 +8,7 @@
     # Default parameters
     TAG: export TAG=latest-$(date +%Y%m%d%H%m)
     DEPLOY: 'false'
+    EXPORT: image
   before_script:
     - |
       mkdir -p ~/.docker && cat > ~/.docker/config.json <<EOF
@@ -26,6 +27,12 @@
   script:
     - eval $TAG
     - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
+    - | 
+      if [ "$EXPORT" == "image" ]; then \
+        export OUTPUT="type=image,name=$CI_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY"; \
+      else \
+        export OUTPUT="type=local,dest=."; \
+      fi
     - |
       buildctl-daemonless.sh build \
           --frontend=dockerfile.v0 \
@@ -35,7 +42,7 @@
           --opt build-arg:TAG=$TAG \
           --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
           $BUILD_SECRET_SENTRY \
-          --output type=image,name=$CI_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY
+          --output "$OUTPUT"
     - |
       if [ "$DEPLOY" == "true" ]; then \
         echo "Successfully built and pushed $CI_REGISTRY_IMAGE/$TARGET:v$TAG"; \
