@@ -5,7 +5,6 @@
   before_script:
     - !reference [.test, before_script]
     - yarn @app generate
-    - export NODE_OPTIONS="--max-old-space-size=4096"
 
 test:app:lint:
   extends: .test:app

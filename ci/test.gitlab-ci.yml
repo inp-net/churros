@@ -11,6 +11,7 @@
     - echo git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA
     - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA
     - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA | grep ^packages/$PACKAGE > changes.txt && cat changes.txt || echo No files changed in packages/$PACKAGE
+    - export NODE_OPTIONS="--max-old-space-size=4096"
 
 include:
   - ci/test/api.gitlab-ci.yml
