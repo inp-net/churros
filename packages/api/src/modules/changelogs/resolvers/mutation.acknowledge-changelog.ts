@@ -1,4 +1,4 @@
-import { CURRENT_VERSION, builder, prisma } from '#lib';
+import { builder, prisma } from '#lib';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
 
@@ -9,7 +9,6 @@ builder.mutationField('acknowledgeChangelog', (t) =>
     args: {
       version: t.arg.string({
         validate: { refine: (value) => Boolean(SemVer.valid(value, { loose: true })) },
-        defaultValue: CURRENT_VERSION,
       }),
     },
     async resolve(_, { version }, { user }) {

@@ -1,22 +1,39 @@
-test:api:schema-coherence:
+.test:api:schema:
   extends: .test
   image: node:20-alpine
   stage: post-build
   needs:
     - job: build:api
-  variables:
-    TARGET: graphql-schema
-    EXPORT: files
-  artifacts:
-    paths: [schema.graphql]
-    expire_in: 4 days
+  before_script:
+    - mv packages/app/schema.graphql declared.schema.graphql
+    - mv schema.graphql actual.schema.graphql
+    - npm i -g graphql-schema-diff
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/app/schema.graphql
+        - packages/api/**/*
+
+test:api:schema-coherence:
+  extends: .test:api:schema
+  script:
+    - graphql-schema-diff --fail-on-all-changes declared.schema.graphql actual.schema.graphql
+
+test:api:no-undeclared-breaking-changes:
+  extends: .test:api:schema
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/app/schema.graphql
         - packages/api/**/*
   script:
-    - mv packages/app/schema.graphql declared.schema.graphql
-    - mv schema.graphql actual.schema.graphql
-    - npm i -g graphql-schema-diff
-    - graphql-schema-diff --fail-on-all-changes declared.schema.graphql actual.schema.graphql
+    - apk add git wget
+    - mkdir -p .changeset
+    - wget -O main.schema.graphql $CI_PROJECT_URL/-/raw/main/packages/app/schema.graphql
+    # allow breaking changes if any file in .changeset/ has "'@churros/api': major" line in it
+    - |
+      if grep -q "'@churros/api': major" .changeset/*; then
+        echo "Breaking changes detected in changesets, skipping schema check";
+      else
+        graphql-schema-diff --fail-on-dangerous-changes --fail-on-breaking-changes main.schema.graphql declared.schema.graphql;
+      fi
