@@ -168,15 +168,15 @@ COPY package.json /app/
 COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
 
-RUN apt-get update && apt-get install -y curl git jq moreutils
-ENV VOLTA_HOME=/root/.volta
-ENV PATH=$VOLTA_HOME/bin:$PATH
-RUN curl https://get.volta.sh | bash -s -- --skip-setup
-RUN yarn config set enableGlobalCache false
-RUN yarn config set enableImmutableInstalls false
-RUN yarn install
-
-RUN yarn cap sync android
+RUN apt-get update && apt-get install -y curl git jq moreutils 
+RUN RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
+    apt-get install -y nodejs \
+    build-essential && \
+    node --version && \ 
+    npm --version
+RUN npm install @capacitor/cli
+RUN npx cap sync android
+RUN cap sync android
 RUN cd packages/app/android && ./gradlew assembleDebug
 
 FROM scratch AS android
