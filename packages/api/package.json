@@ -182,7 +182,7 @@
     "build:changelog": "run-s copy-changelog",
     "build:typenames": "tsx ./scripts/update-id-prefix-to-typename-map.ts",
     "build:api": "tsc",
-    "build:post": "tsx ./src/post-build.ts",
+    "build:post": "tsx ./src/post-build.ts && yarn format-at build/schema.graphql",
     "check": "yarn build",
     "copy-changelog": "cp ../../CHANGELOG.md ./static/CHANGELOG.md",
     "clean": "git clean -Xdf .",

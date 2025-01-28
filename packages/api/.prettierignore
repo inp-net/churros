@@ -1,4 +1,5 @@
 build/
+!build/schema.graphql
 node_modules/
 scripts/*.json
 storage/

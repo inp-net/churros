@@ -3,3 +3,4 @@
 
 include:
   - ci/test/db.gitlab-ci.yml
+  - ci/test/api.gitlab-ci.yml
