@@ -599,7 +599,7 @@ enum Visibility {
 
 /// Used to make invite links to invite people as managers of an event
 model EventManagerInvite {
-  id        String   @id @default(dbgenerated("nanoid('eminvite:')"))
+  id        String   @id @default(dbgenerated("nanoid('eminvite:'::text)"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

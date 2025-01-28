@@ -8,8 +8,25 @@ build:api:
   stage: build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
+      changes: [packages/api/**/*, packages/db/**/*, packages/sync/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
       when: manual
+  script:
+    - !reference [.build, script]
+    - |
+      buildctl-daemonless.sh build \
+          --frontend=dockerfile.v0 \
+          --local context=. \
+          --local dockerfile=. \
+          --opt target=graphql-schema \
+          --opt build-arg:TAG=$TAG \
+          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+          $BUILD_SECRET_SENTRY \
+          --output type=local,dest=.
+  artifacts:
+    paths: [schema.graphql]
+    expire_in: 4 days
+
 
 deploy:api:
   extends: .api

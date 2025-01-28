@@ -219,3 +219,12 @@ RUN npm install -g corepack
 RUN yarn install
 
 ENTRYPOINT ["./entrypoint.sh"]
+
+
+#####
+# Artifacts
+#####
+
+FROM scratch as graphql-schema
+
+COPY --from=builder-api /app/packages/api/build/schema.graphql /schema.graphql

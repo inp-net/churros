@@ -1,5 +1,27 @@
 # @churros/api
 
+## 9.1.0
+
+### Minor Changes
+
+- 104e3ab: remove /dump, add /dump/migrations/{names,list} to peek easily at the db migration state in production, useful for devops
+
+### Patch Changes
+
+- e41296f: User.deletionConsequence would try to count comments, but the table was removed
+- Updated dependencies [b779ec4]
+  - @churros/db@4.1.4
+
+## 9.0.1
+
+### Patch Changes
+
+- 6cdab09: chore(deps): update dependency @types/jsonwebtoken to ^9.0.8 (!420)
+- Updated dependencies [6cdab09]
+- Updated dependencies [535587d]
+  - arborist@0.1.3
+  - @churros/db@4.1.1
+
 ## 9.0.0
 
 ### Major Changes

@@ -1,5 +1,27 @@
 # @churros/app
 
+## 4.1.2
+
+### Patch Changes
+
+- 10c907b: dedupe & reorder sections in event managers page
+
+## 4.1.1
+
+### Patch Changes
+
+- 2aadf87: chore(deps): update dependency @babel/core to ^7.26.7 (!415)
+- 2aadf87: fix(deps): update dependency @carbon/charts-svelte to ^1.22.15 (!391)
+- 2aadf87: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.13 (!410)
+- 6cdab09: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.13 (!416)
+- 2aadf87: chore(deps): update dependency @iconify-json/mdi to ^1.2.3 (!417)
+- 6cdab09: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.21 (!418)
+- 2aadf87: fix(deps): update dependency @sentry/sveltekit to ^8.51.0 (!403)
+- 84a508a: chore(deps): update dependency @sveltejs/adapter-node to ^5.2.12 (!419)
+- 3af8ad0: changelogs now include dependency updates
+- Updated dependencies [6cdab09]
+  - arborist@0.1.3
+
 ## 4.1.0
 
 ### Minor Changes

@@ -2244,7 +2244,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   Marks the user as having seen the given version's changelog.
   """
-  acknowledgeChangelog(version: String! = "dev"): Boolean!
+  acknowledgeChangelog(version: String!): Boolean!
   """
   Ajouter un fichier à une page. Permet notamment d'ajouter des images pour s'en servir dans le contenu de la page.
   """
@@ -2530,7 +2530,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   deleteEventManagerInvite(
     id: LocalID!
     """
-    Aussi enlever des managers celleux qui le sont devenu via cette invation
+    Aussi enlever des managers celleux qui le sont devenu via cette invitation
     """
     kickManagers: Boolean! = false
   ): MutationDeleteEventManagerInviteResult!
@@ -4117,7 +4117,7 @@ union MutationUseEventManagerInviteResult = Error | MutationUseEventManagerInvit
 
 type MutationUseEventManagerInviteSuccess {
   """
-  Message d'explication si jamais l'on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé
+  Message d'explication si on est déjà manager de l'évènement. Dans ce cas, l'objet EventManager déjà existant est renvoyé
   """
   alreadyManager: String
   data: EventManager!
@@ -4461,7 +4461,7 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   buildInfo: BuildInfo!
   changelog(
     """
-    The version to request a changelog for. Defaults to the current version (dev).
+    The version to request a changelog for. Defaults to the current version.
     """
     version: String
   ): ChangelogRelease!
@@ -4477,9 +4477,9 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     from: String
     sort: SortDirection! = Ascending
     """
-    The version to end at, **inclusive**. Leave empty to end at the current version (dev).
+    The version to end at, **inclusive**. Leave empty to end at the current version.
     """
-    to: String! = "dev"
+    to: String!
   ): QueryCombinedChangelogResult!
   contributionOptions: [ContributionOption!]!
   document(slug: String!, subject: ID!): Document!
