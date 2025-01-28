@@ -1,0 +1,14 @@
+.test:sync:
+  extends: .test
+  variables:
+    PACKAGE: sync
+
+test:sync:lint:
+  extends: .test:sync
+  script:
+    - yarn eslint --cache=true $(cat changes.txt)
+
+test:sync:format:
+  extends: .test:sync
+  script:
+    - yarn prettier --check --ignore-unknown --no-error-on-unmatched-pattern $(cat changes.txt)

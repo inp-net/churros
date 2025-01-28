@@ -1,3 +1,18 @@
+.test:api:
+  extends: .test
+  variables:
+    PACKAGE: api
+
+test:api:lint:
+  extends: .test:api
+  script:
+    - yarn eslint --cache=true $(cat changes.txt)
+
+test:api:format:
+  extends: .test:api
+  script:
+    - yarn prettier --check --ignore-unknown --no-error-on-unmatched-pattern $(cat changes.txt)
+
 .test:api:schema:
   extends: .test
   image: node:20-alpine

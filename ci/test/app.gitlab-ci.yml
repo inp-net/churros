@@ -1,0 +1,23 @@
+.test:app:
+  extends: .test
+  variables:
+    PACKAGE: app
+  before_script:
+    - !reference [.test, before_script]
+    - yarn @app generate
+    - export NODE_OPTIONS="--max-old-space-size=4096"
+
+test:app:lint:
+  extends: .test:app
+  script:
+    - yarn eslint --cache=true $(cat changes.txt)
+
+test:app:format:
+  extends: .test:app
+  script:
+    - yarn prettier --check --ignore-unknown --no-error-on-unmatched-pattern $(cat changes.txt)
+
+test:app:svelte-check:
+  extends: .test:app
+  script:
+    - yarn @app verify

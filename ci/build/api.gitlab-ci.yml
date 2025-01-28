@@ -6,6 +6,11 @@
 build:api:
   extends: .api
   stage: build
+  needs: 
+    - job: test:api:lint
+      optional: true
+    - job: test:api:format 
+      optional: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
       changes: [packages/api/**/*, packages/db/**/*, packages/sync/**/*]
