@@ -1,5 +1,6 @@
 test:api:schema-coherence:
-  extends: .build
+  extends: .test
+  image: node:20-alpine
   stage: post-build
   needs:
     - job: build:api
@@ -15,7 +16,7 @@ test:api:schema-coherence:
         - packages/app/schema.graphql
         - packages/api/**/*
   script:
-    - !reference [.build, script]
     - mv packages/app/schema.graphql declared.schema.graphql
     - mv schema.graphql actual.schema.graphql
-    - diff -u declared.schema.graphql actual.schema.graphql
+    - npm i -g graphql-schema-diff
+    - graphql-schema-diff --fail-on-all-changes declared.schema.graphql actual.schema.graphql
