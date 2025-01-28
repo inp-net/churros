@@ -13,9 +13,7 @@ builder.mutationField('testNotification', (t) =>
       const subscription = await prisma.notificationSubscription.findUnique({
         where: { endpoint: subscriptionEndpoint },
       });
-      if (!subscription) 
-        throw new GraphQLError('Subscription not found');
-      
+      if (!subscription) throw new GraphQLError('Subscription not found');
 
       await queueNotification({
         title: 'Test notification',

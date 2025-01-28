@@ -2,7 +2,7 @@ import { log, prisma, publish } from '#lib';
 import { queueNotification } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import { Event as NotellaEvent } from '@inp-net/notella';
-import express  from 'express';
+import express from 'express';
 import { z } from 'zod';
 
 export const lydiaWebhook = express();
