@@ -1,7 +1,7 @@
 import { log, prisma, publish } from '#lib';
 import { notify } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
-import express, { type Request, type Response } from 'express';
+import express from 'express';
 import multer from 'multer';
 
 export const lydiaWebhook = express();
@@ -12,10 +12,7 @@ lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
   res.sendStatus(200);
 });
 
-lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
-  lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
-    res.sendStatus(200);
-  });
+lydiaWebhook.post('/lydia-webhook', upload.none(), async (req, res) => {
   // Retrieve the params from the request
   const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
     req.body as {

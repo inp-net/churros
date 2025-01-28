@@ -75,6 +75,7 @@ export async function startApiServer() {
       path: '/graphql',
     });
 
+    // @ts-expect-error weird typing issue for useServer's ws argument: Type 'typeof import("/app/node_modules/@types/ws/index", { with: { "resolution-mode": "import" } }).default | undefined' is not assignable to type 'typeof import("/app/node_modules/@types/ws/index") | undefined'.
     GraphQLWS.useServer({ schema, context }, apiWebsocket);
     console.info('Websocket ready at ws://localhost:4000');
   });
