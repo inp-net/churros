@@ -169,8 +169,8 @@ COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
 
 RUN apt-get update && apt-get install -y curl git jq moreutils 
-RUN RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
-    apt-get install -y nodejs \
+RUN RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs npm \
     build-essential && \
     node --version && \ 
     npm --version
