@@ -1,4 +1,4 @@
-import { CURRENT_VERSION, builder, prisma } from '#lib';
+import { builder, prisma } from '#lib';
 import { SortDirection, SortDirectionEnum } from '#modules/global';
 import { GraphQLError } from 'graphql';
 import * as SemVer from 'semver';
@@ -33,7 +33,6 @@ This is way more useful for querying a range of versions for a changelog, but no
         // validate: {
         //   refine: (value) => Boolean(SemVer.valid(value, { loose: true })),
         // },
-        defaultValue: CURRENT_VERSION,
       }),
     },
     async resolve(_, { from, to, sort }, { user }) {

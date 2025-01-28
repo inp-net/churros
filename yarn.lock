@@ -868,7 +868,7 @@ __metadata:
     "@paypal/paypal-js": "npm:^8.1.2"
     "@sentry/sveltekit": "npm:^8.51.0"
     "@sveltejs/adapter-node": "npm:^5.2.12"
-    "@sveltejs/kit": "npm:^2.9.1"
+    "@sveltejs/kit": "npm:^2.16.1"
     "@sveltejs/vite-plugin-svelte": "npm:^3.1.2"
     "@swc/core": "npm:^1.9.2"
     "@swc/wasm": "npm:^1.9.2"
@@ -953,7 +953,7 @@ __metadata:
     unplugin-icons: "npm:^0.21.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.11"
-    vite-plugin-kit-routes: "npm:^0.7.0"
+    vite-plugin-kit-routes: "npm:^0.7.6"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.10"
     ws: "npm:^8.18.0"
@@ -4368,7 +4368,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^2.9.1":
+"@sveltejs/kit@npm:^2.16.1":
   version: 2.16.1
   resolution: "@sveltejs/kit@npm:2.16.1"
   dependencies:
@@ -21665,7 +21665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.7.0":
+"vite-plugin-kit-routes@npm:^0.7.6":
   version: 0.7.6
   resolution: "vite-plugin-kit-routes@npm:0.7.6"
   dependencies:
