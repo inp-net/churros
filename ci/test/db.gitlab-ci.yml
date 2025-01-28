@@ -22,6 +22,7 @@ test:db:migrations-coherence-with-main:
   extends: .test:db
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/db/**/*]
   variables:
     CHECK_AGAINST: main
 
