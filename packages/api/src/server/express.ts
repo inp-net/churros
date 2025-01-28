@@ -20,6 +20,7 @@ import('./auth/bearer.js');
 
 api.use(
   // Allow any origin, this is a public API :)
+  // @ts-expect-error weird typing issue
   cors({
     credentials: true,
     origin: true,
