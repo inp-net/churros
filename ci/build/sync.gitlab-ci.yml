@@ -6,6 +6,11 @@
 build:sync:
   extends: .sync
   stage: build
+  needs: 
+    - job: test:sync:lint
+      optional: true
+    - job: test:sync:format
+      optional: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
       changes: [packages/sync/**/*, packages/db/**/*]

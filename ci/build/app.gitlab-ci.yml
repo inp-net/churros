@@ -6,7 +6,14 @@
 build:app:
   extends: .app
   stage: build
-  rules:
+  needs: 
+    - job: test:app:lint
+      optional: true
+    - job: test:app:format
+      optional: true
+    - job: test:app:svelte-check
+      optional: true
+  rules: 
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
       changes: [packages/app/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/

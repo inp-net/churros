@@ -1,6 +1,22 @@
 .test:
+  extends: .volta
   stage: test
+  variables:
+    PACKAGE: null
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: ['packages/$PACKAGE/{src,prisma}/**/*']
+  before_script:
+    - !reference [.volta, before_script]
+    - echo git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA
+    - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA
+    - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA | grep ^packages/$PACKAGE > changes.txt && cat changes.txt || echo No files changed in packages/$PACKAGE
+    - cp .env.example .env
+    - yarn cp-env
+    - export NODE_OPTIONS="--max-old-space-size=4096"
 
 include:
-  - ci/test/db.gitlab-ci.yml
   - ci/test/api.gitlab-ci.yml
+  - ci/test/app.gitlab-ci.yml
+  - ci/test/db.gitlab-ci.yml
+  - ci/test/sync.gitlab-ci.yml
