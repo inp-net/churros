@@ -169,6 +169,7 @@ COPY package.json /app/
 
 COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
+COPY --from=builder-app /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
 
 RUN cd packages/app/android && ./gradlew assembleDebug
 

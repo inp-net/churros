@@ -120,7 +120,7 @@
   },
   "scripts": {
     "generate": "svelte-kit sync && yarn zeus && houdini generate",
-    "build": "yarn generate && yarn verify --threshold warning && vite build",
+    "build": "yarn generate && vite build",
     "verify": "svelte-check --tsconfig ./tsconfig.json",
     "check": "yarn generate && yarn verify",
     "clean": "git clean -Xdf .",
