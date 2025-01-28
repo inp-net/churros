@@ -101,7 +101,7 @@ WORKDIR /app
 
 ENV NODE_ENV="production"
 
-RUN apk add --update --no-cache openssl
+RUN apk add --update --no-cache openssl git
 
 # Prisma
 COPY --from=builder-api /app/packages/db/prisma/ /app/packages/db/prisma/
