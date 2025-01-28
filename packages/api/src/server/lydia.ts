@@ -2,17 +2,15 @@ import { log, prisma, publish } from '#lib';
 import { notify } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express from 'express';
-import multer from 'multer';
 
 export const lydiaWebhook = express();
-const upload: multer.Multer = multer();
 
 // Lydia webhook
 lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
   res.sendStatus(200);
 });
 
-lydiaWebhook.post('/lydia-webhook', upload.none(), async (req, res) => {
+lydiaWebhook.post('/lydia-webhook', async (req, res) => {
   // Retrieve the params from the request
   const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
     req.body as {
