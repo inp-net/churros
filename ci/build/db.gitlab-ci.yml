@@ -6,6 +6,11 @@
 build:prisma:
   extends: .prisma
   stage: build
+  needs: 
+    - job: test:prisma:format
+      optional: true
+    - job: test:prisma:migrations-coherence-with-main
+      optional: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
       changes: [packages/db/**/*]
