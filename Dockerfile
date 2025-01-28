@@ -171,7 +171,12 @@ COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
 COPY --from=builder-app /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
 
+RUN du -hs .
+RUN df -h 
+
 RUN cd packages/app/android && ./gradlew assembleDebug
+
+RUN du -hs .
 
 FROM scratch AS android
 
