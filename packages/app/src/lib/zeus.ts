@@ -2,7 +2,6 @@
 // @ts-nocheck
 
 import { page } from '$app/stores';
-import { env } from '$env/dynamic/public';
 import { error, type LoadEvent, type NumericRange } from '@sveltejs/kit';
 import {
   Thunder,
@@ -15,11 +14,11 @@ import {
 // @ts-expect-error This file is not typed
 import extractFiles from 'extract-files/extractFiles.mjs';
 // @ts-expect-error This file is not typed
+import { API_URL } from '$lib/env';
 import isFile from 'extract-files/isExtractableFile.mjs';
 import { GraphQLError } from 'graphql';
 import { derived } from 'svelte/store';
 import { aled } from './session';
-import { API_URL } from '$lib/env';
 
 export * from '../zeus/index.js';
 

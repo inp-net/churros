@@ -6,6 +6,7 @@ build-node/
 node_modules/
 packages/api/scripts/*.json
 packages/api/storage/
+packages/app/src/zeus/
 packages/app/$houdini/
 .venv/
 *.mjml
