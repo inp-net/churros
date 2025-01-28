@@ -22,10 +22,8 @@ test:api:schema-coherence:
 test:api:no-undeclared-breaking-changes:
   extends: .test:api:schema
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "changeset-release/main"
-      changes:
-        - packages/app/schema.graphql
-        - packages/api/**/*
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/app/schema.graphql]
   script:
     - apk add git wget
     - mkdir -p .changeset
