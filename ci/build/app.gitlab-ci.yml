@@ -17,6 +17,9 @@ build:app:
       changes: [packages/app/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
       when: manual
+  artifacts:
+    expire_in: 4 days
+    paths: [churros.apk, output-metadata.json]
   script:
     - !reference [.build, script]
     - |
@@ -29,6 +32,12 @@ build:app:
           --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
           $BUILD_SECRET_SENTRY \
           --output type=local,dest=.
+    - mv app-debug.apk churros.apk
+    - apk add curl
+    - |
+      curl https://upload.diawi.com/ -F token='$DIAWI_TOKEN' \
+        -F file=@churros.apk \
+        -F callback_emails='contact@net7.dev'
 
 deploy:app:
   extends: .app

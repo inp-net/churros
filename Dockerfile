@@ -55,6 +55,7 @@ FROM builder AS builder-app
 
 WORKDIR /app
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
     yarn workspace @churros/app build
@@ -152,22 +153,36 @@ ENTRYPOINT ["./entrypoint.sh"]
 ### Android
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mingc/android-build-box AS android-assemble
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mobiledevops/android-sdk-image AS android-assemble
 
 WORKDIR /app
 
-COPY --from=builder-app /app/packages/app/build-static/ /app/packages/app/build-static/
-COPY --from=builder-app /app/packages/app/package.json /app/packages/app/
+# Yarn
+COPY .yarn/ /app/.yarn/
+COPY .yarnrc.yml /app/
+COPY yarn.lock /app/
 
-RUN cd packages/app/ && yarn cap sync android
+# packages
+COPY package.json /app/
 
+COPY packages/arborist /app/packages/arborist
+COPY --from=builder-app /app/packages/app/ /app/packages/app/
+
+RUN apt-get update && apt-get install -y curl git jq moreutils
+ENV VOLTA_HOME=/root/.volta
+ENV PATH=$VOLTA_HOME/bin:$PATH
+RUN curl https://get.volta.sh | bash -s -- --skip-setup
+RUN yarn config set enableGlobalCache false
+RUN yarn config set enableImmutableInstalls false
+RUN yarn install
+
+RUN yarn cap sync android
 RUN cd packages/app/android && ./gradlew assembleDebug
 
 FROM scratch AS android
 
 # copy built apk from android-assemble
 COPY --from=android-assemble /app/packages/app/android/app/build/outputs/apk/debug/ .
-RUN mv app-debug.apk churros.apk
 
 
 ### Sync
