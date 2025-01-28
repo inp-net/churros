@@ -60,6 +60,8 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
     yarn workspace @churros/app build
 
+RUN yarn cap sync android
+
 FROM builder AS builder-sync
 
 WORKDIR /app
@@ -168,15 +170,6 @@ COPY package.json /app/
 COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
 
-RUN apt-get update && apt-get install -y curl git jq moreutils 
-RUN RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs npm \
-    build-essential && \
-    node --version && \ 
-    npm --version
-RUN npm install @capacitor/cli
-RUN npx cap sync android
-RUN cap sync android
 RUN cd packages/app/android && ./gradlew assembleDebug
 
 FROM scratch AS android
