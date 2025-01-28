@@ -8,7 +8,7 @@ builder.queryField('changelog', (t) =>
     args: {
       version: t.arg.string({
         required: false,
-        description: `The version to request a changelog for. Defaults to the current version (${CURRENT_VERSION}).`,
+        description: `The version to request a changelog for. Defaults to the current version.`,
         validate: {
           refine: (value) =>
             Boolean(

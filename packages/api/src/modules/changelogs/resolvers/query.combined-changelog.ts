@@ -29,7 +29,7 @@ This is way more useful for querying a range of versions for a changelog, but no
         },
       }),
       to: t.arg.string({
-        description: `The version to end at, **inclusive**. Leave empty to end at the current version (${CURRENT_VERSION}).`,
+        description: `The version to end at, **inclusive**. Leave empty to end at the current version.`,
         // validate: {
         //   refine: (value) => Boolean(SemVer.valid(value, { loose: true })),
         // },
