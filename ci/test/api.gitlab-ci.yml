@@ -1,0 +1,21 @@
+test:api:schema-coherence:
+  extends: .build
+  stage: post-build
+  needs:
+    - job: build:api
+  variables:
+    TARGET: graphql-schema
+    EXPORT: files
+  artifacts:
+    paths: [schema.graphql]
+    expire_in: 4 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/app/schema.graphql
+        - packages/api/**/*
+  script:
+    - !reference [.build, script]
+    - mv packages/app/schema.graphql declared.schema.graphql
+    - mv schema.graphql actual.schema.graphql
+    - diff -u declared.schema.graphql actual.schema.graphql

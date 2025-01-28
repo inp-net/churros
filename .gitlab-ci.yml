@@ -2,6 +2,7 @@ stages:
   - changesets
   - test
   - build
+  - post-build
   - deploy
 
 include:
