@@ -955,7 +955,7 @@ __metadata:
     unplugin-icons: "npm:^0.21.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.11"
-    vite-plugin-kit-routes: "npm:^0.7.0"
+    vite-plugin-kit-routes: "npm:^0.7.6"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.10"
     ws: "npm:^8.18.0"
@@ -22291,7 +22291,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.7.0":
+"vite-plugin-kit-routes@npm:^0.7.6":
   version: 0.7.6
   resolution: "vite-plugin-kit-routes@npm:0.7.6"
   dependencies:
