@@ -27,7 +27,7 @@ test:api:format:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/app/schema.graphql
-        - packages/api/**/*
+        - packages/api/src/**/*
 
 test:api:schema-coherence:
   extends: .test:api:schema
