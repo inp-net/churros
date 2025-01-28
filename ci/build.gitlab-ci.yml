@@ -27,7 +27,7 @@
   script:
     - eval $TAG
     - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
-    - | 
+    - |
       if [ "$EXPORT" == "image" ]; then \
         export OUTPUT="type=image,name=$CI_REGISTRY_IMAGE/$TARGET:v$TAG,push=$DEPLOY"; \
       else \
@@ -55,4 +55,3 @@ include:
   - ci/build/app.gitlab-ci.yml
   - ci/build/db.gitlab-ci.yml
   - ci/build/sync.gitlab-ci.yml
-  - ci/build/android.gitlab-ci.yml

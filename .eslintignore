@@ -1,6 +1,8 @@
 .svelte-kit/
 .yarn/
 build/
+build-static/
+build-node/
 node_modules/
 zeus/
 

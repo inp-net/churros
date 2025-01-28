@@ -532,10 +532,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bcoe/v8-coverage@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@bcoe/v8-coverage@npm:0.2.3"
-  checksum: 10c0/6b80ae4cb3db53f486da2dc63b6e190a74c8c3cca16bb2733f234a0b6a9382b09b146488ae08e2b22cf00f6c83e20f3e040a2f7894f05c045c946d6a090b1d52
+"@bcoe/v8-coverage@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "@bcoe/v8-coverage@npm:1.0.2"
+  checksum: 10c0/1eb1dc93cc17fb7abdcef21a6e7b867d6aa99a7ec88ec8207402b23d9083ab22a8011213f04b2cf26d535f1d22dc26139b7929e6c2134c254bd1e14ba5e678c3
   languageName: node
   linkType: hard
 
@@ -1117,7 +1117,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/api@workspace:packages/api"
   dependencies:
-    "@churros/db": "workspace:^4.1.0"
+    "@churros/db": "workspace:^4.1.4"
     "@clack/prompts": "npm:^0.8.2"
     "@envelop/core": "npm:^5.0.2"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
@@ -1152,7 +1152,7 @@ __metadata:
     "@types/express": "npm:^4.17.21"
     "@types/express-session": "npm:^1.18.1"
     "@types/is-plain-object": "npm:^2.0.4"
-    "@types/jsonwebtoken": "npm:^9.0.7"
+    "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ldapjs": "npm:^3.0.6"
     "@types/lodash.countby": "npm:^4.6.9"
     "@types/lodash.get": "npm:^4.4.9"
@@ -1177,12 +1177,12 @@ __metadata:
     "@zxcvbn-ts/language-common": "npm:^3.0.4"
     "@zxcvbn-ts/language-en": "npm:^3.0.2"
     "@zxcvbn-ts/language-fr": "npm:^3.0.2"
-    arborist: "workspace:^0.1.2"
+    arborist: "workspace:^0.1.3"
     argon2: "npm:^0.41.1"
     barrelsby: "npm:^2.8.1"
     bunyan: "npm:^1.8.15"
     chalk: "npm:^5.3.0"
-    chokidar: "npm:^4.0.1"
+    chokidar: "npm:^4.0.3"
     cli: "npm:^1.0.1"
     cli-progress: "npm:^3.12.0"
     colord: "npm:^2.9.3"
@@ -1302,14 +1302,14 @@ __metadata:
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.3"
     "@iconify-json/material-symbols": "npm:^1.2.13"
-    "@iconify-json/material-symbols-light": "npm:^1.2.10"
+    "@iconify-json/material-symbols-light": "npm:^1.2.13"
     "@iconify-json/mdi": "npm:^1.2.3"
-    "@iconify-json/simple-icons": "npm:^1.2.15"
+    "@iconify-json/simple-icons": "npm:^1.2.21"
     "@paypal/paypal-js": "npm:^8.1.2"
     "@sentry/sveltekit": "npm:^8.51.0"
-    "@sveltejs/adapter-node": "npm:^5.2.9"
+    "@sveltejs/adapter-node": "npm:^5.2.12"
     "@sveltejs/adapter-static": "npm:^3.0.4"
-    "@sveltejs/kit": "npm:^2.9.1"
+    "@sveltejs/kit": "npm:^2.16.1"
     "@sveltejs/vite-plugin-svelte": "npm:^3.1.2"
     "@swc/core": "npm:^1.9.2"
     "@swc/wasm": "npm:^1.9.2"
@@ -1374,7 +1374,7 @@ __metadata:
     simple-svelte-autocomplete: "npm:^2.5.2"
     slugify: "npm:^1.6.6"
     svelte: "npm:^4.2.19"
-    svelte-check: "npm:^4.1.1"
+    svelte-check: "npm:^4.1.4"
     svelte-gestures: "npm:^5.0.6"
     svelte-json-tree: "npm:^2.2.0"
     svelte-lightbox: "npm:^1.1.6"
@@ -1394,7 +1394,7 @@ __metadata:
     unplugin-icons: "npm:^0.21.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.11"
-    vite-plugin-kit-routes: "npm:^0.7.0"
+    vite-plugin-kit-routes: "npm:^0.7.6"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.10"
     ws: "npm:^8.18.0"
@@ -1403,7 +1403,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^, @churros/db@workspace:^4.1.0, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^, @churros/db@workspace:^4.1.4, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
@@ -2891,7 +2891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/material-symbols-light@npm:^1.2.10":
+"@iconify-json/material-symbols-light@npm:^1.2.13":
   version: 1.2.13
   resolution: "@iconify-json/material-symbols-light@npm:1.2.13"
   dependencies:
@@ -2918,12 +2918,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/simple-icons@npm:^1.2.15":
-  version: 1.2.21
-  resolution: "@iconify-json/simple-icons@npm:1.2.21"
+"@iconify-json/simple-icons@npm:^1.2.21":
+  version: 1.2.22
+  resolution: "@iconify-json/simple-icons@npm:1.2.22"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 10c0/6ec7e94bafdf3363ba23713c5a004bf6dd2eef89daf4363d1aa6800f9bf58ff912caa22a66dde9ab836d7b1d2a89d2c5ffc150bfdea1bb1074b1a24bc43d4800
+  checksum: 10c0/8c2c8ee68644702a8bea4d6cf47a6b3cccc8047a8aba732a4f1e9c6dbcc9207c130a8ab363c927a61ef7e8e6fa72193ea8dbc9c3cd467c95edb4a0b5b8737a71
   languageName: node
   linkType: hard
 
@@ -5640,7 +5640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-node@npm:^5.2.9":
+"@sveltejs/adapter-node@npm:^5.2.12":
   version: 5.2.12
   resolution: "@sveltejs/adapter-node@npm:5.2.12"
   dependencies:
@@ -5663,7 +5663,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^2.9.1":
+"@sveltejs/kit@npm:^2.16.1":
   version: 2.16.1
   resolution: "@sveltejs/kit@npm:2.16.1"
   dependencies:
@@ -6635,12 +6635,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^9.0.2, @types/jsonwebtoken@npm:^9.0.7":
+"@types/jsonwebtoken@npm:^9.0.2":
   version: 9.0.7
   resolution: "@types/jsonwebtoken@npm:9.0.7"
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/e1cd0e48fcae21b1d4378887a23453bd7212b480a131b11bcda2cdeb0687d03c9646ee5ba592e04cfaf76f7cc80f179950e627cdb3ebc90a5923bce49a35631a
+  languageName: node
+  linkType: hard
+
+"@types/jsonwebtoken@npm:^9.0.8":
+  version: 9.0.8
+  resolution: "@types/jsonwebtoken@npm:9.0.8"
+  dependencies:
+    "@types/ms": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/dd3ccea05115ad9c4458d0c2a487179b1abf8886eaa8cc77d64031a8ef47abd3ff038cdde26e76893372238c8612e4f5fd578b3400e525b65c0e8d3abefe5282
   languageName: node
   linkType: hard
 
@@ -6780,10 +6790,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.17.13":
-  version: 4.17.14
-  resolution: "@types/lodash@npm:4.17.14"
-  checksum: 10c0/343c6f722e0b39969036a885ad5aad6578479ead83987128c9b994e6b7f2fb9808244d802d4d332396bb09096f720a6c7060de16a492f5460e06a44560360322
+"@types/lodash@npm:^4.17.14":
+  version: 4.17.15
+  resolution: "@types/lodash@npm:4.17.15"
+  checksum: 10c0/2eb2dc6d231f5fb4603d176c08c8d7af688f574d09af47466a179cd7812d9f64144ba74bb32ca014570ffdc544eedc51b7a5657212bad083b6eecbd72223f9bb
   languageName: node
   linkType: hard
 
@@ -7922,13 +7932,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arborist@workspace:^, arborist@workspace:^0.1.2, arborist@workspace:packages/arborist":
+"arborist@workspace:^, arborist@workspace:^0.1.3, arborist@workspace:packages/arborist":
   version: 0.0.0-use.local
   resolution: "arborist@workspace:packages/arborist"
   dependencies:
     "@tsconfig/node20": "npm:^20.1.4"
     "@types/node": "npm:^20.16.10"
-    c8: "npm:^10.1.2"
+    c8: "npm:^10.1.3"
     npm-upgrade: "npm:^3.1.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
@@ -8784,11 +8794,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"c8@npm:^10.1.2":
-  version: 10.1.2
-  resolution: "c8@npm:10.1.2"
+"c8@npm:^10.1.3":
+  version: 10.1.3
+  resolution: "c8@npm:10.1.3"
   dependencies:
-    "@bcoe/v8-coverage": "npm:^0.2.3"
+    "@bcoe/v8-coverage": "npm:^1.0.1"
     "@istanbuljs/schema": "npm:^0.1.3"
     find-up: "npm:^5.0.0"
     foreground-child: "npm:^3.1.1"
@@ -8806,7 +8816,7 @@ __metadata:
       optional: true
   bin:
     c8: bin/c8.js
-  checksum: 10c0/882903f22c08f9053b7b274ba31c374cf141d027c46cda57e6472798f82437c5d73fe25bd25b60d6b01c9de383615ae932e6c4d7d4acd7ea231216215f207217
+  checksum: 10c0/1265ddbcb0e624fe200978e9263faf948cb9694ce8e6b858adbb14f1186de2e6c451aa4aabb821e9eb7f1972859e14691eaf2ff12ad96be7a3fc0e39946fc569
   languageName: node
   linkType: hard
 
@@ -9163,6 +9173,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chokidar@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "chokidar@npm:4.0.3"
+  dependencies:
+    readdirp: "npm:^4.0.1"
+  checksum: 10c0/a58b9df05bb452f7d105d9e7229ac82fa873741c0c40ddcc7bb82f8a909fbe3f7814c9ebe9bc9a2bef9b737c0ec6e2d699d179048ef06ad3ec46315df0ebe6ad
+  languageName: node
+  linkType: hard
+
 "chownr@npm:^1.1.1":
   version: 1.1.4
   resolution: "chownr@npm:1.1.4"
@@ -9193,13 +9212,13 @@ __metadata:
     "@changesets/cli": "npm:^2.27.12"
     "@commitlint/cli": "npm:^19.6.1"
     "@commitlint/config-conventional": "npm:^19.6.0"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.14"
     "@types/lodash.uniqby": "npm:^4.7.9"
     "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch"
     "@typescript-eslint/eslint-plugin": "npm:^8.18.0"
     "@typescript-eslint/parser": "npm:^8.18.0"
     changesets-gitlab: "npm:^0.12.1"
-    chokidar: "npm:^4.0.1"
+    chokidar: "npm:^4.0.3"
     concurrently: "npm:^9.1.0"
     dotenv-cli: "npm:^7.4.4"
     dotenv-parser-serializer: "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch"
@@ -9210,14 +9229,14 @@ __metadata:
     execa: "npm:^9.5.2"
     husky: "npm:^9.1.7"
     kleur: "npm:^4.1.5"
-    lint-staged: "npm:^15.2.10"
+    lint-staged: "npm:15.2.5"
     npm-run-all2: "npm:^7.0.1"
     npm-upgrade: "npm:^3.1.0"
     postcss-html: "npm:^1.7.0"
     prettier: "npm:^3.4.2"
-    prettier-plugin-jsdoc: "npm:^1.3.0"
+    prettier-plugin-jsdoc: "npm:^1.3.2"
     prettier-plugin-organize-imports: "npm:^4.1.0"
-    prettier-plugin-svelte: "npm:^3.3.2"
+    prettier-plugin-svelte: "npm:^3.3.3"
     stylelint: "npm:^16.11.0"
     stylelint-config-html: "npm:^1.1.0"
     stylelint-config-prettier: "npm:^9.0.5"
@@ -10835,7 +10854,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:~4.3.6":
+"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5":
   version: 4.3.6
   resolution: "debug@npm:4.3.6"
   dependencies:
@@ -10868,7 +10887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.3.3, debug@npm:~4.3.7":
+"debug@npm:^4.3.3, debug@npm:~4.3.4, debug@npm:~4.3.7":
   version: 4.3.7
   resolution: "debug@npm:4.3.7"
   dependencies:
@@ -16081,10 +16100,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lilconfig@npm:~3.1.2":
-  version: 3.1.2
-  resolution: "lilconfig@npm:3.1.2"
-  checksum: 10c0/f059630b1a9bddaeba83059db00c672b64dc14074e9f232adce32b38ca1b5686ab737eb665c5ba3c32f147f0002b4bee7311ad0386a9b98547b5623e87071fbe
+"lilconfig@npm:~3.1.1":
+  version: 3.1.3
+  resolution: "lilconfig@npm:3.1.3"
+  checksum: 10c0/f5604e7240c5c275743561442fbc5abf2a84ad94da0f5adc71d25e31fa8483048de3dcedcb7a44112a942fed305fd75841cdf6c9681c7f640c63f1049e9a5dcc
   languageName: node
   linkType: hard
 
@@ -16136,29 +16155,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^15.2.10":
-  version: 15.2.10
-  resolution: "lint-staged@npm:15.2.10"
+"lint-staged@npm:15.2.5":
+  version: 15.2.5
+  resolution: "lint-staged@npm:15.2.5"
   dependencies:
     chalk: "npm:~5.3.0"
     commander: "npm:~12.1.0"
-    debug: "npm:~4.3.6"
+    debug: "npm:~4.3.4"
     execa: "npm:~8.0.1"
-    lilconfig: "npm:~3.1.2"
-    listr2: "npm:~8.2.4"
-    micromatch: "npm:~4.0.8"
+    lilconfig: "npm:~3.1.1"
+    listr2: "npm:~8.2.1"
+    micromatch: "npm:~4.0.7"
     pidtree: "npm:~0.6.0"
     string-argv: "npm:~0.3.2"
-    yaml: "npm:~2.5.0"
+    yaml: "npm:~2.4.2"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10c0/6ad7b41f5e87a84fa2eb1990080ea3c68a2f2031b4e81edcdc2a458cc878538eedb310e6f98ffd878a1287e1a52ac968e540ee8a0e96c247e04b0cbc36421cdd
+  checksum: 10c0/89c54489783510f86df15756659facade82e849c0cbfb564fe047b82be91c5d2b1b5608a4bfc5237bd7b9fd0e1206e66aa3e4f8cad3ac51e37a098b8492c2fa6
   languageName: node
   linkType: hard
 
-"listr2@npm:~8.2.4":
-  version: 8.2.4
-  resolution: "listr2@npm:8.2.4"
+"listr2@npm:~8.2.1":
+  version: 8.2.5
+  resolution: "listr2@npm:8.2.5"
   dependencies:
     cli-truncate: "npm:^4.0.0"
     colorette: "npm:^2.0.20"
@@ -16166,7 +16185,7 @@ __metadata:
     log-update: "npm:^6.1.0"
     rfdc: "npm:^1.4.1"
     wrap-ansi: "npm:^9.0.0"
-  checksum: 10c0/df5b129e9767de1997973cec6103cd4bd6fc3b3367685b7c23048d12b61d5b7e44fecd8a3d3534c0e1c963bd5ac43ca501d14712f46fa101050037be323a5c16
+  checksum: 10c0/f5a9599514b00c27d7eb32d1117c83c61394b2a985ec20e542c798bf91cf42b19340215701522736f5b7b42f557e544afeadec47866e35e5d4f268f552729671
   languageName: node
   linkType: hard
 
@@ -17545,7 +17564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:4.0.8, micromatch@npm:^4.0.2, micromatch@npm:^4.0.8, micromatch@npm:~4.0.8":
+"micromatch@npm:4.0.8, micromatch@npm:^4.0.2, micromatch@npm:^4.0.8, micromatch@npm:~4.0.7":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -20343,16 +20362,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-jsdoc@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "prettier-plugin-jsdoc@npm:1.3.0"
+"prettier-plugin-jsdoc@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "prettier-plugin-jsdoc@npm:1.3.2"
   dependencies:
     binary-searching: "npm:^2.0.5"
     comment-parser: "npm:^1.4.0"
     mdast-util-from-markdown: "npm:^2.0.0"
   peerDependencies:
     prettier: ^3.0.0
-  checksum: 10c0/c716ba9257765a33a9e8e3e9302724287f50efccba47602bc73b20a873dc2bb68244e8c600ed993580d5a9948d1db5b5c72766f89e11fe40da43b190fbcc52e1
+  checksum: 10c0/53d15897b75077f172d52e61e17e7f39314c9268e6c65128f825e56fd7b59669b06a286a88bec6742149b456b7c3d8f88ca0c2ab7797a623c0524c821e2d2f60
   languageName: node
   linkType: hard
 
@@ -20370,7 +20389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-svelte@npm:^3.3.2":
+"prettier-plugin-svelte@npm:^3.3.3":
   version: 3.3.3
   resolution: "prettier-plugin-svelte@npm:3.3.3"
   peerDependencies:
@@ -23463,7 +23482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-check@npm:^4.1.1":
+"svelte-check@npm:^4.1.4":
   version: 4.1.4
   resolution: "svelte-check@npm:4.1.4"
   dependencies:
@@ -25087,7 +25106,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.7.0":
+"vite-plugin-kit-routes@npm:^0.7.6":
   version: 0.7.6
   resolution: "vite-plugin-kit-routes@npm:0.7.6"
   dependencies:
@@ -25677,12 +25696,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:~2.5.0":
-  version: 2.5.0
-  resolution: "yaml@npm:2.5.0"
+"yaml@npm:~2.4.2":
+  version: 2.4.5
+  resolution: "yaml@npm:2.4.5"
   bin:
     yaml: bin.mjs
-  checksum: 10c0/771a1df083c8217cf04ef49f87244ae2dd7d7457094425e793b8f056159f167602ce172aa32d6bca21f787d24ec724aee3cecde938f6643564117bd151452631
+  checksum: 10c0/e1ee78b381e5c710f715cc4082fd10fc82f7f5c92bd6f075771d20559e175616f56abf1c411f545ea0e9e16e4f84a83a50b42764af5f16ec006328ba9476bb31
   languageName: node
   linkType: hard
 

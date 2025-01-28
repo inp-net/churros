@@ -11,11 +11,6 @@ const CURRENT_VERSION = 'dev';
 
 const here = dirname(new URL(import.meta.url).pathname);
 
-const adapter = process.env.BUILD_ADAPTER === 'static' ? adapterStatic : adapterNode;
-
-console.log(adapter);
-console.info(`Using ${process.env.BUILD_ADAPTER === 'static' ? 'static' : 'node'} adapter`);
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   preprocess: [
@@ -29,10 +24,17 @@ const config = {
   ],
 
   kit: {
-    adapter: adapter({
-      strict: false,
-      fallback: 'index.html',
-    }),
+    adapter: multiAdapter([
+      adapterNode({
+        out: 'build-node',
+      }),
+      adapterStatic({
+        strict: false,
+        fallback: 'index.html',
+        pages: 'build-static',
+        assets: 'build-static',
+      }),
+    ]),
     alias: {
       $houdini: resolve(here, '$houdini'),
     },
@@ -42,5 +44,16 @@ const config = {
     },
   },
 };
+
+function multiAdapter(adapters) {
+  return {
+    name: 'multi-adapter',
+    async adapt(argument) {
+      await Promise.all(
+        adapters.map((item) => Promise.resolve(item).then((resolved) => resolved.adapt(argument))),
+      );
+    },
+  };
+}
 
 export default config;

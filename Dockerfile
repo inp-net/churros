@@ -59,17 +59,6 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
     yarn workspace @churros/app build
 
-FROM builder AS builder-android
-
-WORKDIR /app
-COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
-    SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
-    BUILD_ADAPTER=static \
-    yarn workspace @churros/app build
-
-RUN yarn workspace @churros/app cap sync android
-
 FROM builder AS builder-sync
 
 WORKDIR /app
@@ -147,7 +136,7 @@ WORKDIR /app
 
 # Builded app
 ENV NODE_ENV="production"
-COPY --from=builder-app /app/packages/app/build/ /app/packages/app/build/
+COPY --from=builder-app /app/packages/app/build-node/ /app/packages/app/build-node/
 COPY --from=builder-app /app/packages/app/package.json /app/packages/app/
 
 # Install dependencies
@@ -167,8 +156,10 @@ FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mingc/android-build-box AS a
 
 WORKDIR /app
 
-COPY --from=builder-android /app/packages/app/build/ /app/packages/app/build/
-COPY --from=builder-android /app/packages/app/package.json /app/packages/app/
+COPY --from=builder-app /app/packages/app/build-static/ /app/packages/app/build-static/
+COPY --from=builder-app /app/packages/app/package.json /app/packages/app/
+
+RUN cd packages/app/ && yarn cap sync android
 
 RUN cd packages/app/android && ./gradlew assembleDebug
 

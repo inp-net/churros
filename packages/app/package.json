@@ -127,7 +127,7 @@
     "dev": "wait-port 4000 && yarn zeus; vite dev --host",
     "preview": "vite preview",
     "format-at": "prettier --write",
-    "start": "node ./build/index.js",
+    "start": "node ./build-node/index.js",
     "zeus": "zeus ./schema.graphql ./src --es --subscriptions",
     "build:android": "BUILD_ADAPTER=static yarn generate && BUILD_ADAPTER=static vite build && yarn cap sync android && cd ./android && ./gradlew assembleDebug",
     "build:native-assets": "npx @capacitor/assets generate --iconBackgroundColor '#2E55C1' --iconBackgroundColorDark '#222222' --splashBackgroundColor '#2E55C1' --splashBackgroundColorDark '#111111' --assetPath static --pwaManifestPath static/manifest.json"

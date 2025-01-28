@@ -2,6 +2,12 @@
   extends: .build
   variables:
     TARGET: app
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_FORCE_HTTPS: "true"
+  artifacts:
+    paths:
+      - churros.apk
+      - output-metadata.json
 
 build:app:
   extends: .app
@@ -11,6 +17,18 @@ build:app:
       changes: [packages/app/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
       when: manual
+  script:
+    - !reference [.build, script]
+    - |
+      buildctl-daemonless.sh build \
+          --frontend=dockerfile.v0 \
+          --local context=. \
+          --local dockerfile=. \
+          --opt target=android \
+          --opt build-arg:TAG=$TAG \
+          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+          $BUILD_SECRET_SENTRY \
+          --output type=local,dest=.
 
 deploy:app:
   extends: .app
@@ -25,3 +43,15 @@ deploy:app:
   environment:
     name: $ENV
     url: $URL
+  script:
+    - !reference [.build, script]
+    - |
+      buildctl-daemonless.sh build \
+          --frontend=dockerfile.v0 \
+          --local context=. \
+          --local dockerfile=. \
+          --opt target=android \
+          --opt build-arg:TAG=$TAG \
+          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+          $BUILD_SECRET_SENTRY \
+          --output type=local,dest=.
