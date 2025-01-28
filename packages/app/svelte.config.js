@@ -49,9 +49,9 @@ function multiAdapter(adapters) {
   return {
     name: 'multi-adapter',
     async adapt(argument) {
-      await Promise.all(
-        adapters.map((item) => Promise.resolve(item).then((resolved) => resolved.adapt(argument))),
-      );
+      for (const adapter of adapters) {
+        await Promise.resolve(adapter).then((resolved) => resolved.adapt(argument));
+      }
     },
   };
 }
