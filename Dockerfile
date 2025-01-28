@@ -170,6 +170,7 @@ COPY package.json /app/
 COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
 COPY --from=builder-app /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
+COPY --from=builder-app /app/node_modules/@capgo/ /app/node_modules/@capgo/
 
 RUN du -hs .
 RUN df -h 
@@ -177,6 +178,7 @@ RUN df -h
 RUN cd packages/app/android && ./gradlew assembleDebug
 
 RUN du -hs .
+RUN df -h
 
 FROM scratch AS android
 
