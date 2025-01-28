@@ -1,4 +1,4 @@
-.test:db:
+.test:prisma:
   extends: .test
   image: node:20-alpine
   before_script:
@@ -8,8 +8,8 @@
       MIGRATION_NAMES_ENDPOINT=https://churros.inpt.fr/dump/migrations/names 
       node packages/db/scripts/check-migrations-coherence.js $CHECK_AGAINST
 
-test:db:migrations-coherence-with-last-release:
-  extends: .test:db
+test:prisma:migrations-coherence-with-last-release:
+  extends: .test:prisma
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "changeset-release/main"
@@ -18,19 +18,31 @@ test:db:migrations-coherence-with-last-release:
     GIT_DEPTH: 400
     CHECK_AGAINST: tag
 
-test:db:migrations-coherence-with-main:
-  extends: .test:db
+test:prisma:migrations-coherence-with-main:
+  extends: .test:prisma
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: [packages/db/**/*]
   variables:
     CHECK_AGAINST: main
 
-test:db:migration-coherence-with-prod:
-  extends: .test:db
+test:prisma:migration-coherence-with-prod:
+  extends: .test:prisma
   allow_failure: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/db@(\d+\.\d+\.\d+)/
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "changeset-release/main"
   variables:
     CHECK_AGAINST: prod
+
+test:prisma:format:
+  extends: .volta
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/db/prisma/schema.prisma]
+  script:
+    - cp packages/db/prisma/schema.prisma before.schema.prisma
+    - yarn prisma format
+    - cp packages/db/prisma/schema.prisma after.schema.prisma
+    - diff -y before.schema.prisma after.schema.prisma

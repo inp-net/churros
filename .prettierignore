@@ -14,3 +14,4 @@ packages/db/
 
 packages/app/android/
 packages/app/ios/
+*.generated.*
