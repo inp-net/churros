@@ -1,5 +1,5 @@
 import { prisma } from '#lib';
-import { api } from './express';
+import { api } from './express.js';
 
 api.get('/dump/migrations/list', async (_, res) => {
   const migrations: Array<{ migration_name: string; checksum: string }> =
