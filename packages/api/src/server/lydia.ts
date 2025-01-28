@@ -2,6 +2,7 @@ import { log, prisma, publish } from '#lib';
 import { notify } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import express from 'express';
+import { z } from 'zod';
 
 export const lydiaWebhook = express();
 
@@ -12,25 +13,19 @@ lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
 
 lydiaWebhook.post('/lydia-webhook', async (req, res) => {
   // Retrieve the params from the request
-  const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
-    req.body as {
-      request_id: string;
-      amount: string;
-      currency: string;
-      sig: string;
-      signed: string;
-      transaction_identifier: string;
-      vendor_token: string;
-    };
+  const signatureParameters = z
+    .object({
+      request_id: z.string(),
+      amount: z.string(),
+      currency: z.string(),
+      sig: z.string(),
+      signed: z.string(),
+      transaction_identifier: z.string(),
+      vendor_token: z.string(),
+    })
+    .parse(req.body);
 
-  const signatureParameters = {
-    currency,
-    request_id,
-    amount,
-    signed,
-    transaction_identifier,
-    vendor_token,
-  };
+  const { request_id, sig, transaction_identifier } = signatureParameters;
 
   try {
     const { verified, transaction } = await verifyLydiaTransaction(
