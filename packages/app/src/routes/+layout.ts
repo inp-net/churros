@@ -1,9 +1,10 @@
 import { browser } from '$app/environment';
-import { load_RootLayout } from '$houdini';
+import { graphql, load_RootLayout } from '$houdini';
 import { editingTheme } from '$lib/theme';
 import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import * as Sentry from '@sentry/sveltekit';
 import { addYears, setDefaultOptions } from 'date-fns';
 import fr from 'date-fns/locale/fr/index.js';
 import { get } from 'svelte/store';
@@ -34,6 +35,19 @@ export async function load(event) {
       path: '/',
     });
   }
+
+  const SentryUser = await graphql(`
+    query RootLayoutSentryUser {
+      me {
+        ...SentryUser @mask_disable
+      }
+    }
+  `)
+    .fetch({ event })
+    .then((result) => result.data?.me)
+    .catch(() => null);
+
+  if (SentryUser) Sentry.setUser({ id: SentryUser.uid });
 
   return await load_RootLayout({
     event,
