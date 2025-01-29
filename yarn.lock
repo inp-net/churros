@@ -758,7 +758,7 @@ __metadata:
     cli: "npm:^1.0.1"
     cli-progress: "npm:^3.12.0"
     colord: "npm:^2.9.3"
-    concurrently: "npm:^9.1.0"
+    concurrently: "npm:^9.1.2"
     connect-redis: "npm:^7.1.1"
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
@@ -7900,7 +7900,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.18.0"
     changesets-gitlab: "npm:^0.12.1"
     chokidar: "npm:^4.0.3"
-    concurrently: "npm:^9.1.0"
+    concurrently: "npm:^9.1.2"
     dotenv-cli: "npm:^7.4.4"
     dotenv-parser-serializer: "patch:dotenv-parser-serializer@npm%3A1.0.2#~/.yarn/patches/dotenv-parser-serializer-npm-1.0.2-e32bb8ac9d.patch"
     eslint: "npm:^8.57.1"
@@ -8406,7 +8406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^9.1.0":
+"concurrently@npm:^9.1.2":
   version: 9.1.2
   resolution: "concurrently@npm:9.1.2"
   dependencies:
