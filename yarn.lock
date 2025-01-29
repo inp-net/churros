@@ -867,7 +867,7 @@ __metadata:
     "@iconify-json/material-symbols-light": "npm:^1.2.13"
     "@iconify-json/mdi": "npm:^1.2.3"
     "@iconify-json/simple-icons": "npm:^1.2.22"
-    "@paypal/paypal-js": "npm:^8.1.2"
+    "@paypal/paypal-js": "npm:^8.2.0"
     "@sentry/sveltekit": "npm:^8.51.0"
     "@sveltejs/adapter-node": "npm:^5.2.12"
     "@sveltejs/kit": "npm:^2.16.1"
@@ -3638,7 +3638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paypal/paypal-js@npm:^8.1.2":
+"@paypal/paypal-js@npm:^8.2.0":
   version: 8.2.0
   resolution: "@paypal/paypal-js@npm:8.2.0"
   dependencies:
