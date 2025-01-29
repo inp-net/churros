@@ -9,6 +9,7 @@
     TAG: export TAG=latest-$(date +%Y%m%d%H%m)
     DEPLOY: 'false'
     EXPORT: image
+  interruptible: true
   before_script:
     - |
       mkdir -p ~/.docker && cat > ~/.docker/config.json <<EOF

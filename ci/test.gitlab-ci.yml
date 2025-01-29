@@ -3,6 +3,7 @@
   stage: test
   variables:
     PACKAGE: null
+  interruptible: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: ['packages/$PACKAGE/{src,prisma}/**/*']
