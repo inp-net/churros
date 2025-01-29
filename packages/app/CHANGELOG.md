@@ -1,5 +1,16 @@
 # @churros/app
 
+## 4.1.3
+
+### Patch Changes
+
+- f68a9a1: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.22 (!440)
+- 691b29c: correct radio buttons in events visibility are now disabled
+- 4143201: chore(deps): update dependency svelte-check to ^4.1.4 (!431)
+- 92d9bf5: chore(deps): update dependency @sveltejs/kit to ^2.16.1 (!437)
+- f68a9a1: chore(deps): update dependency vite to v5.4.14 (!435)
+- 92d9bf5: chore(deps): update dependency vite-plugin-kit-routes to ^0.7.6 (!436)
+
 ## 4.1.2
 
 ### Patch Changes
