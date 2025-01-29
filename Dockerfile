@@ -8,7 +8,7 @@ ARG REPOSITORY_URL=https://git.inpt.fr/churros/churros
 #####
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS builder
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS builder
 
 ARG TAG=dev
 
@@ -75,7 +75,7 @@ RUN yarn workspace @churros/sync build
 
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS base
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS base
 
 WORKDIR /app
 
@@ -181,7 +181,7 @@ ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 ### Database
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS prisma
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS prisma
 
 LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/db
 
