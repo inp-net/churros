@@ -4,7 +4,7 @@
   "dependencies": {
     "@churros/db": "workspace:^4.1.4",
     "@clack/prompts": "^0.8.2",
-    "@envelop/core": "^5.0.2",
+    "@envelop/core": "^5.0.3",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@graphql-yoga/node": "^3.9.1",
     "@graphql-yoga/redis-event-target": "^3.0.1",
