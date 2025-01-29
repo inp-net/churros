@@ -64,7 +64,7 @@
     "html-to-text": "^9.0.5",
     "i18next": "^23.16.8",
     "image-type": "^5.2.0",
-    "ioredis": "^5.4.1",
+    "ioredis": "^5.4.2",
     "is-plain-object": "^5.0.0",
     "is-valid-domain": "^0.1.6",
     "jsonwebtoken": "^9.0.2",
