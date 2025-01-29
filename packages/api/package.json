@@ -162,7 +162,7 @@
     "@types/web-push": "^3.6.4",
     "@types/which": "^3.0.4",
     "@types/ws": "^8.5.14",
-    "@vizdom/vizdom-ts-node": "^0.1.18",
+    "@vizdom/vizdom-ts-node": "^0.1.19",
     "barrelsby": "^2.8.1",
     "chokidar": "^4.0.3",
     "concurrently": "^9.1.2",
