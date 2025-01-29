@@ -743,7 +743,7 @@ __metadata:
     "@types/slug": "npm:^5.0.9"
     "@types/web-push": "npm:^3.6.4"
     "@types/which": "npm:^3.0.4"
-    "@types/ws": "npm:^8.5.13"
+    "@types/ws": "npm:^8.5.14"
     "@vizdom/vizdom-ts-node": "npm:^0.1.18"
     "@zxcvbn-ts/core": "npm:^3.0.4"
     "@zxcvbn-ts/language-common": "npm:^3.0.4"
@@ -6152,7 +6152,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.5.13":
+"@types/ws@npm:^8.5.14":
   version: 8.5.14
   resolution: "@types/ws@npm:8.5.14"
   dependencies:
