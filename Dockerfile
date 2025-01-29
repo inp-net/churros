@@ -1,4 +1,6 @@
 ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.inpt.fr/churros/dependency_proxy/containers, for example
+ARG REPOSITORY_URL=https://git.inpt.fr/churros/churros
+
 
 
 #####
@@ -97,6 +99,8 @@ COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
 
 FROM base AS api
 
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/api
+
 WORKDIR /app
 
 ENV NODE_ENV="production"
@@ -132,6 +136,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 FROM base AS app
 
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/app
+
 WORKDIR /app
 
 # Builded app
@@ -154,6 +160,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 FROM base AS sync
 
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/sync
+
 RUN apk add --update --no-cache openssl
 
 ENV NODE_ENV="production"
@@ -174,6 +182,8 @@ ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 
 
 FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS prisma
+
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/db
 
 RUN apk add --update --no-cache openssl
 
