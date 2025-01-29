@@ -1,5 +1,17 @@
 # @churros/api
 
+## 10.0.0
+
+### Major Changes
+
+- c1e9496: default value for Mutation.acknowledgeChangelog:version and Query.combinedChangelog:to were removed
+
+### Patch Changes
+
+- 4143201: chore(deps): update dependency chokidar to ^4.0.3 (!425)
+- f68a9a1: chore(deps): update dependency concurrently to ^9.1.2 (!426)
+- f68a9a1: chore(deps): update dependency @types/ws to ^8.5.14 (!422)
+
 ## 9.1.0
 
 ### Minor Changes
