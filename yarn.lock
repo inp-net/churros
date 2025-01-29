@@ -930,7 +930,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     sanitize.css: "npm:^13.0.0"
-    sass: "npm:^1.82.0"
+    sass: "npm:^1.83.4"
     sass-embedded: "npm:^1.82.0"
     simple-svelte-autocomplete: "npm:^2.5.2"
     slugify: "npm:^1.6.6"
@@ -19629,7 +19629,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.82.0":
+"sass@npm:^1.83.4":
   version: 1.83.4
   resolution: "sass@npm:1.83.4"
   dependencies:
