@@ -40,7 +40,14 @@ build:app:
           $BUILD_SECRET_SENTRY \
           --output type=local,dest=.
     - mv app-debug.apk churros.apk
-    - apk add curl
+
+deploy:apk:
+  stage: deploy
+  needs: [build:app]
+  image: curlimages/curl
+  rules:
+    - when: manual
+  script:
     - |
       curl https://upload.diawi.com/ -F token='$DIAWI_TOKEN' \
         -F file=@churros.apk \
