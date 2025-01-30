@@ -56,7 +56,7 @@
     "ts-opaque": "^3.0.1",
     "ua-parser-js": "^2.0.0",
     "vaul-svelte": "^0.3.2",
-    "write-excel-file": "^2.0.10",
+    "write-excel-file": "^2.0.11",
     "xss": "^1.0.15"
   },
   "devDependencies": {
