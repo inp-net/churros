@@ -876,7 +876,7 @@ __metadata:
     "@swc/wasm": "npm:^1.9.2"
     "@types/blob-stream": "npm:^0.1.33"
     "@types/cookie": "npm:^1.0.0"
-    "@types/cytoscape": "npm:^3.21.8"
+    "@types/cytoscape": "npm:^3.21.9"
     "@types/html-to-text": "npm:^9.0.4"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/lodash.debounce": "npm:^4.0.9"
@@ -895,7 +895,7 @@ __metadata:
     calendar-link: "npm:^2.8.0"
     colord: "npm:^2.9.3"
     cookie: "npm:^1.0.2"
-    cytoscape: "npm:^3.30.4"
+    cytoscape: "npm:^3.31.0"
     date-fns: "npm:^2.30.0"
     dotenv: "npm:^16.4.7"
     extract-files: "npm:^13.0.0"
@@ -5103,10 +5103,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape@npm:^3.21.8":
-  version: 3.21.8
-  resolution: "@types/cytoscape@npm:3.21.8"
-  checksum: 10c0/60992862c01724d8a66d55b211927cfe786476b6b18cea313d4cf408271a1269bd0a8b9ef1d4021b02313158b5c6d505a2f28725d60b61d2ef44ef0f307756d1
+"@types/cytoscape@npm:^3.21.9":
+  version: 3.21.9
+  resolution: "@types/cytoscape@npm:3.21.9"
+  checksum: 10c0/49c25b18322c405166982ae60ea6618e07329931e7b8824c84ee418ba705ac178d6a47886089bc3087167493c4dfe297a1b20fbc964fc22d662ee83f377d8f5b
   languageName: node
   linkType: hard
 
@@ -8875,7 +8875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape@npm:^3.30.4":
+"cytoscape@npm:^3.31.0":
   version: 3.31.0
   resolution: "cytoscape@npm:3.31.0"
   checksum: 10c0/2ed2e58b85e2078ef7bbc176e30f1c992984197cf1f4b38bd578da84a221a25fb81b0b6a0c3777185557bf89dca3c05c114be835039804e7b9897d25db8abcd0
