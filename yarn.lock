@@ -690,7 +690,7 @@ __metadata:
   resolution: "@churros/api@workspace:packages/api"
   dependencies:
     "@churros/db": "workspace:^4.1.4"
-    "@clack/prompts": "npm:^0.8.2"
+    "@clack/prompts": "npm:^0.9.1"
     "@envelop/core": "npm:^5.0.3"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@graphql-yoga/node": "npm:^3.9.1"
@@ -1011,7 +1011,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@clack/core@npm:0.3.5, @clack/core@npm:^0.3.2, @clack/core@npm:^0.3.3":
+"@clack/core@npm:0.4.1":
+  version: 0.4.1
+  resolution: "@clack/core@npm:0.4.1"
+  dependencies:
+    picocolors: "npm:^1.0.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10c0/60c59e2d0017ce81567566c4f2a288f1738ef6356e25d9c56055be68aa449f75b6a7271b32c335213eb3a7af4b02db90de88c6999c432f09ca00c3d8004ea95b
+  languageName: node
+  linkType: hard
+
+"@clack/core@npm:^0.3.2, @clack/core@npm:^0.3.3":
   version: 0.3.5
   resolution: "@clack/core@npm:0.3.5"
   dependencies:
@@ -1045,14 +1055,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@clack/prompts@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "@clack/prompts@npm:0.8.2"
+"@clack/prompts@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "@clack/prompts@npm:0.9.1"
   dependencies:
-    "@clack/core": "npm:0.3.5"
+    "@clack/core": "npm:0.4.1"
     picocolors: "npm:^1.0.0"
     sisteransi: "npm:^1.0.5"
-  checksum: 10c0/7ac6e7e0fba1c958847e6e3ef9415d9c2184fb424b31691aaef64fd06042d243e859c157b941ca1c9f73e9cb649413fab487a602b981e300acfbec4a111d7562
+  checksum: 10c0/6cda9f56963dcbbfca4d9a64c82cf57e7f00dd563cd9e9ad28973b10ac761723fc21453254effbf08d5862efd57bad41d48008316c345202b74035ae905329cf
   languageName: node
   linkType: hard
 
