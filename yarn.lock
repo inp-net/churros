@@ -772,7 +772,7 @@ __metadata:
     express-session: "npm:^1.18.1"
     extract-files: "npm:^13.0.0"
     firebase-admin: "npm:^12.6.0"
-    glob: "npm:^11.0.0"
+    glob: "npm:^11.0.1"
     google-auth-library: "npm:^9.15.0"
     googleapis: "npm:144.0.0"
     graph-cycles: "npm:^3.0.0"
