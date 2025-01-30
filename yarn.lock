@@ -219,7 +219,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.17.9, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5":
+"@babel/runtime@npm:^7.17.9, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5":
   version: 7.26.7
   resolution: "@babel/runtime@npm:7.26.7"
   dependencies:
@@ -763,7 +763,7 @@ __metadata:
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
     dataloader: "npm:^2.2.3"
-    date-fns: "npm:^2.30.0"
+    date-fns: "npm:^4.1.0"
     date-fns-tz: "npm:^2.0.1"
     dichotomid: "npm:^0.0.3"
     envelop-trim-inputs: "npm:^0.0.3"
@@ -896,7 +896,7 @@ __metadata:
     colord: "npm:^2.9.3"
     cookie: "npm:^1.0.2"
     cytoscape: "npm:^3.31.0"
-    date-fns: "npm:^2.30.0"
+    date-fns: "npm:^4.1.0"
     dotenv: "npm:^16.4.7"
     extract-files: "npm:^13.0.0"
     fuse.js: "npm:^7.0.0"
@@ -9287,15 +9287,6 @@ __metadata:
   peerDependencies:
     date-fns: 2.x
   checksum: 10c0/f860dda9e3d38bc99dc325c678cafb94b3a18c12b1fea0e2f4e451396ea6c4cacced683066c669a67ec380f64fdda83aa4c414a207029b647faa2b76b2a5c6e3
-  languageName: node
-  linkType: hard
-
-"date-fns@npm:^2.30.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/e4b521fbf22bc8c3db332bbfb7b094fd3e7627de0259a9d17c7551e2d2702608a7307a449206065916538e384f37b181565447ce2637ae09828427aed9cb5581
   languageName: node
   linkType: hard
 

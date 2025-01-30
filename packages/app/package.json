@@ -21,7 +21,7 @@
     "colord": "^2.9.3",
     "cookie": "^1.0.2",
     "cytoscape": "^3.31.0",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "extract-files": "^13.0.0",
     "fuse.js": "^7.0.0",
     "google-auth-library": "^9.15.0",
