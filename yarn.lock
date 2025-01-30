@@ -823,7 +823,7 @@ __metadata:
     prometheus-query: "npm:^3.4.1"
     qr-code-generator-lib: "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch"
     qrcode: "npm:^1.5.4"
-    rate-limiter-flexible: "npm:^5.0.4"
+    rate-limiter-flexible: "npm:^5.0.5"
     rehype-highlight: "npm:^7.0.1"
     rehype-katex: "npm:^7.0.1"
     rehype-sanitize: "npm:^6.0.0"
@@ -18510,7 +18510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rate-limiter-flexible@npm:^5.0.4":
+"rate-limiter-flexible@npm:^5.0.5":
   version: 5.0.5
   resolution: "rate-limiter-flexible@npm:5.0.5"
   checksum: 10c0/ae7cba6a46a2133bfbd310d3f83c65b3b732deab84e0c79b4fda78cd1d6578f69111bb37f09401ea45334eb75b8e40637ab0a8a9fd3efbb0b54084d6cd3b4ead

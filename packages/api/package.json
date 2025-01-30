@@ -100,7 +100,7 @@
     "prometheus-query": "^3.4.1",
     "qr-code-generator-lib": "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch",
     "qrcode": "^1.5.4",
-    "rate-limiter-flexible": "^5.0.4",
+    "rate-limiter-flexible": "^5.0.5",
     "rehype-highlight": "^7.0.1",
     "rehype-katex": "^7.0.1",
     "rehype-sanitize": "^6.0.0",
