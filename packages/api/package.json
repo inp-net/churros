@@ -93,7 +93,7 @@
     "passport-http-bearer": "^1.0.1",
     "passport-oauth2": "^1.8.0",
     "pdfmake": "^0.2.15",
-    "phone": "^3.1.55",
+    "phone": "^3.1.58",
     "prettier": "^3.4.2",
     "prisma": "5.22.0",
     "prom-client": "^15.1.3",
