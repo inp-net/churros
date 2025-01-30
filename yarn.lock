@@ -862,7 +862,7 @@ __metadata:
     "@babel/core": "npm:^7.26.7"
     "@carbon/charts-svelte": "npm:^1.22.15"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
-    "@iconify-json/logos": "npm:^1.2.3"
+    "@iconify-json/logos": "npm:^1.2.4"
     "@iconify-json/material-symbols": "npm:^1.2.13"
     "@iconify-json/material-symbols-light": "npm:^1.2.13"
     "@iconify-json/mdi": "npm:^1.2.3"
@@ -2356,7 +2356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/logos@npm:^1.2.3":
+"@iconify-json/logos@npm:^1.2.4":
   version: 1.2.4
   resolution: "@iconify-json/logos@npm:1.2.4"
   dependencies:
