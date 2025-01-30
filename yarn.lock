@@ -773,7 +773,7 @@ __metadata:
     extract-files: "npm:^13.0.0"
     firebase-admin: "npm:^12.6.0"
     glob: "npm:^11.0.1"
-    google-auth-library: "npm:^9.15.0"
+    google-auth-library: "npm:^9.15.1"
     googleapis: "npm:144.0.0"
     graph-cycles: "npm:^3.0.0"
     graphinx: "npm:^0.12.1"
@@ -901,7 +901,7 @@ __metadata:
     extract-files: "npm:^13.0.0"
     fuse.js: "npm:^7.0.0"
     git-root-path: "npm:^1.0.0"
-    google-auth-library: "npm:^9.15.0"
+    google-auth-library: "npm:^9.15.1"
     graphql: "npm:^16.10.0"
     graphql-ws: "npm:^5.16.0"
     graphql-zeus: "npm:^5.3.3"
@@ -11794,7 +11794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.15.0, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3, google-auth-library@npm:^9.7.0":
+"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.15.1, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3, google-auth-library@npm:^9.7.0":
   version: 9.15.1
   resolution: "google-auth-library@npm:9.15.1"
   dependencies:
