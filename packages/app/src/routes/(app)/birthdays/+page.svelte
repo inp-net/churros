@@ -2,7 +2,7 @@
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import { format, parse } from 'date-fns';
-  import fr from 'date-fns/locale/fr/index.js';
+  import { fr } from 'date-fns/locale';
   import type { PageData } from './$houdini';
   import { notNull } from '$lib/typing';
   import { loaded } from '$lib/loading';
