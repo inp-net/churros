@@ -1,7 +1,7 @@
 import { builder, localID, prisma } from '#lib';
 import { URLScalar } from '#modules/global';
 import { RegistrationType } from '#modules/ticketing';
-import { renderURL } from '../utils';
+import { renderURL } from '../utils/index.js';
 
 builder.prismaObjectField(RegistrationType, 'linkURLs', (t) =>
   t.field({

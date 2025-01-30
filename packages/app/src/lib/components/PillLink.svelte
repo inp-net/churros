@@ -5,7 +5,7 @@
   import IconEmail from '~icons/msl/mail-outline';
   import IconPhone from '~icons/msl/call-outline';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import { loading, mapAllLoading, mapLoading, onceLoaded } from '$lib/loading';
+  import { loading, mapAllLoading, mapLoading, onceLoaded, type MaybeLoading } from '$lib/loading';
   import { socials } from '$lib/social.generated';
 
   function socialSiteFromURL(url: URL) {
@@ -34,8 +34,8 @@
   $: socialSite = social && $data?.url ? mapLoading($data.url, socialSiteFromURL) : undefined;
   $: socialLogo = onceLoaded(socialSite, (s) => s?.icon, undefined);
 
-  export let url: URL | undefined = undefined;
-  export let text: string | undefined = undefined;
+  export let url: MaybeLoading<URL> | undefined = undefined;
+  export let text: MaybeLoading<string> | undefined = undefined;
 
   export let link: PillLink | null = null;
   $: data = fragment(
@@ -53,7 +53,9 @@
 </script>
 
 <a
-  href={url?.toString() ?? onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}
+  href={url
+    ? onceLoaded(url, (u) => u.toString(), '')
+    : onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}
   {...umamiAttributes(track, { url: loading($data?.rawURL, '(not loaded)') })}
 >
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
@@ -67,8 +69,8 @@
       <IconLinkVariant></IconLinkVariant>
     {/if}
   </div>
-  {#if text}
-    {text}
+  {#if loading(text, '')}
+    <LoadingText value={text} />
   {:else}
     <LoadingText
       value={socialSite || social
