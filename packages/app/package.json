@@ -48,7 +48,7 @@
     "qr-scanner": "^1.4.2",
     "simple-svelte-autocomplete": "^2.5.2",
     "slugify": "^1.6.6",
-    "svelte-gestures": "^5.0.6",
+    "svelte-gestures": "^5.1.3",
     "svelte-json-tree": "^2.2.0",
     "svelte-lightbox": "^1.1.6",
     "svelte-tenor": "^0.2.0",
