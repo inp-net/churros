@@ -34,7 +34,7 @@
   $: socialSite = social && $data?.url ? mapLoading($data.url, socialSiteFromURL) : undefined;
   $: socialLogo = onceLoaded(socialSite, (s) => s?.icon, undefined);
 
-  export let url: MaybeLoading<URL> | undefined = undefined;
+  export let url: MaybeLoading<URL | string> | undefined = undefined;
   export let text: MaybeLoading<string> | undefined = undefined;
 
   export let link: PillLink | null = null;

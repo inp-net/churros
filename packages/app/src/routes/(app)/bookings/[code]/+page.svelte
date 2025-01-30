@@ -159,8 +159,12 @@
 
     {#if booking.linkURLs.length > 0}
       <section class="links">
-        {#each booking.linkURLs.map((l, i) => [l, booking.linkNames[i]]) as [url, text]}
-          <PillLink track="link-from-booking" {url} {text} />
+        {#each Array.from({ length: booking.linkURLs.length }) as _, i}
+          <PillLink
+            track="link-from-booking"
+            url={booking.linkURLs[i]}
+            text={booking.linkNames[i]}
+          />
         {/each}
       </section>
     {/if}
