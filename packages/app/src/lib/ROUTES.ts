@@ -26,14 +26,14 @@ export const PAGES = {
     },
   ) => {
     params = params ?? {};
-    params.tab = params.tab ?? 'infos';
-    return `/${uid}${appendSp({ tab: params.tab })}`;
+    params['tab'] = params['tab'] ?? 'infos';
+    return `/${uid}${appendSp({ tab: params['tab'] })}`;
   },
   '/[uid=uid]/[...page]': (params: {
     uid: Parameters<typeof import('../params/uid.ts').match>[0];
     page: (string | number)[];
   }) => {
-    return `/${params.uid}/${params.page?.join('/')}`;
+    return `/${params['uid']}/${params['page']?.join('/')}`;
   },
   '/announcements': `/announcements`,
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
@@ -60,14 +60,14 @@ export const PAGES = {
     major: string | number;
     yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
   }) => {
-    return `/documents/${params.major}/${params.yearTier}`;
+    return `/documents/${params['major']}/${params['yearTier']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]': (params: {
     major: string | number;
     yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
     subject: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]': (params: {
     major: string | number;
@@ -75,7 +75,7 @@ export const PAGES = {
     subject: string | number;
     document: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}/${params.document}`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/${params['document']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit': (params: {
     major: string | number;
@@ -83,18 +83,18 @@ export const PAGES = {
     subject: string | number;
     document: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}/${params.document}/edit`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/${params['document']}/edit`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/create': (params: {
     major: string | number;
     yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
     subject: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}/create`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/create`;
   },
   '/documents/create': `/documents/create`,
   '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
-    return `/events${params?.week ? `/${params?.week}` : ''}`;
+    return `/events${params?.['week'] ? `/${params?.['week']}` : ''}`;
   },
   '/events/[id]': (id: string | number, params?: {}) => {
     return `/events/${id}`;
@@ -104,8 +104,8 @@ export const PAGES = {
     params?: { tab?: 'unpaid' | 'paid' | 'verified' },
   ) => {
     params = params ?? {};
-    params.tab = params.tab ?? 'unpaid';
-    return `/events/${id}/bookings${appendSp({ tab: params.tab })}`;
+    params['tab'] = params['tab'] ?? 'unpaid';
+    return `/events/${id}/bookings${appendSp({ tab: params['tab'] })}`;
   },
   '/events/[id]/edit': (id: string | number, params?: {}) => {
     return `/events/${id}/edit`;
@@ -135,7 +135,7 @@ export const PAGES = {
     id: string | number;
     group: string | number;
   }) => {
-    return `/events/${params.id}/edit/ticket-groups/${params.group}`;
+    return `/events/${params['id']}/edit/ticket-groups/${params['group']}`;
   },
   '/events/[id]/edit/tickets': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/tickets`;
@@ -144,43 +144,43 @@ export const PAGES = {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}`;
   },
   '/events/[id]/edit/tickets/[ticket]/counting': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/counting`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/counting`;
   },
   '/events/[id]/edit/tickets/[ticket]/group': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/group`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/group`;
   },
   '/events/[id]/edit/tickets/[ticket]/invited': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/invited`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/invited`;
   },
   '/events/[id]/edit/tickets/[ticket]/links': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/links`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/links`;
   },
   '/events/[id]/edit/tickets/[ticket]/payment': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/payment`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/payment`;
   },
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
   },
   '/events/[id]/join/[code]': (params: { id: string | number; code: string | number }) => {
-    return `/events/${params.id}/join/${params.code}`;
+    return `/events/${params['id']}/join/${params['code']}`;
   },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
@@ -207,7 +207,7 @@ export const PAGES = {
     uid: string | number;
     page: (string | number)[];
   }) => {
-    return `/groups/${params.uid}/edit/pages/${params.page?.join('/')}`;
+    return `/groups/${params['uid']}/edit/pages/${params['page']?.join('/')}`;
   },
   '/groups/[uid]/edit/type': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/type`;
@@ -221,8 +221,8 @@ export const PAGES = {
   },
   '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
     params = params ?? {};
-    params.bypass_oauth = params.bypass_oauth ?? undefined;
-    return `/login${appendSp({ bypass_oauth: params.bypass_oauth })}`;
+    params['bypass_oauth'] = params['bypass_oauth'] ?? undefined;
+    return `/login${appendSp({ bypass_oauth: params['bypass_oauth'] })}`;
   },
   '/login/done': `/login/done`,
   '/login/forgotten': `/login/forgotten`,
@@ -231,8 +231,8 @@ export const PAGES = {
   },
   '/logout': (params?: { userWasDeleted?: '1' | undefined }) => {
     params = params ?? {};
-    params.userWasDeleted = params.userWasDeleted ?? undefined;
-    return `/logout${appendSp({ userWasDeleted: params.userWasDeleted })}`;
+    params['userWasDeleted'] = params['userWasDeleted'] ?? undefined;
+    return `/logout${appendSp({ userWasDeleted: params['userWasDeleted'] })}`;
   },
   '/logs': `/logs`,
   '/notifications': `/notifications`,
@@ -263,7 +263,7 @@ export const PAGES = {
     return `/quick-signups/qr/${code}`;
   },
   '/search': (params?: { q?: string | number }) => {
-    return `/search${params?.q ? `/${params?.q}` : ''}`;
+    return `/search${params?.['q'] ? `/${params?.['q']}` : ''}`;
   },
   '/services': `/services`,
   '/services/[id]/edit': (id: string | number, params?: {}) => {
@@ -282,7 +282,7 @@ export const PAGES = {
     uid: string | number;
     page: (string | number)[];
   }) => {
-    return `/student-associations/${params.uid}/${params.page?.join('/')}`;
+    return `/student-associations/${params['uid']}/${params['page']?.join('/')}`;
   },
   '/student-associations/[uid]/edit/pages': (uid: string | number, params?: {}) => {
     return `/student-associations/${uid}/edit/pages`;
@@ -291,7 +291,7 @@ export const PAGES = {
     uid: string | number;
     page: (string | number)[];
   }) => {
-    return `/student-associations/${params.uid}/edit/pages/${params.page?.join('/')}`;
+    return `/student-associations/${params['uid']}/edit/pages/${params['page']?.join('/')}`;
   },
   '/users/[uid]/edit': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit`;
@@ -371,7 +371,7 @@ export const SERVERS = {
     return `/groups/${uid}.pdf`;
   },
   'GET /groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
-    return `/groups/${params.uid}/${params.page?.join('/')}`;
+    return `/groups/${params['uid']}/${params['page']?.join('/')}`;
   },
   'GET /groups/[uid]/handover.pdf': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/handover.pdf`;
@@ -431,7 +431,12 @@ export const appendSp = (
     }
   };
 
+  let anchor = '';
   for (const [name, val] of Object.entries(sp)) {
+    if (name === '__KIT_ROUTES_ANCHOR__' && val !== undefined) {
+      anchor = `#${val}`;
+      continue;
+    }
     if (Array.isArray(val)) {
       for (const v of val) {
         append(name, v);
@@ -442,8 +447,8 @@ export const appendSp = (
   }
 
   const formatted = params.toString();
-  if (formatted) {
-    return `${prefix}${formatted}`;
+  if (formatted || anchor) {
+    return `${prefix}${formatted}${anchor}`.replace('?#', '#');
   }
   return '';
 };
@@ -507,7 +512,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
  *
  * Full example:
  * ```ts
- * import type { KIT_ROUTES } from './ROUTES'
+ * import type { KIT_ROUTES } from '$lib/ROUTES'
  * import { kitRoutes } from 'vite-plugin-kit-routes'
  *
  * kitRoutes<KIT_ROUTES>({

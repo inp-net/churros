@@ -3,12 +3,12 @@
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
   import type { Page } from '@sveltejs/kit';
   import { DropdownMenu } from 'bits-ui';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
   import IconDots from '~icons/msl/more-vert';
   import { page } from '$app/stores';
 
-  export type ActionData<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
+  export type ActionData<IconType extends Component<SvelteHTMLElements['svg']>> = {
     icon: IconType;
     help?: string;
     label: string;
@@ -22,12 +22,12 @@
     badge?: () => Promise<boolean>;
   };
 
-  export type OverflowMenuAction<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> =
+  export type OverflowMenuAction<IconType extends Component<SvelteHTMLElements['svg']>> =
     | ActionData<IconType>
     | ((page: Page) => Promise<ActionData<IconType>> | ActionData<IconType>);
 </script>
 
-<script lang="ts" generics="IconType extends SvelteComponent<SvelteHTMLElements['svg']>">
+<script lang="ts" generics="IconType extends Component<SvelteHTMLElements['svg']>">
   import { afterNavigate } from '$app/navigation';
 
   import { isMobile } from '$lib/mobile';

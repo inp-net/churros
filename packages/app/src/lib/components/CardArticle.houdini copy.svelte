@@ -1,5 +1,7 @@
 <script lang="ts">
   import {
+    CardArticleStore,
+    CardArticle_ToggleLikeStore,
     PendingValue,
     fragment,
     graphql,
@@ -8,6 +10,7 @@
   } from '$houdini';
   import { route } from '$lib/ROUTES';
   import { formatEventDates } from '$lib/dates';
+  import { goto } from '$app/navigation';
   import { allLoaded, loaded, loading, onceLoaded } from '$lib/loading';
   import { groupLogoSrc } from '$lib/logos';
   import { addReferrer, refroute } from '$lib/navigation';
@@ -22,57 +25,10 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import LoadingText from './LoadingText.svelte';
 
-  const ToggleLike = graphql(`
-    mutation CardArticle_ToggleLike($articleId: ID!) {
-      toggleReaction(articleId: $articleId, emoji: "❤️") {
-        ... on Article {
-          ...CardArticle
-        }
-      }
-    }
-  `);
+  const ToggleLike = new CardArticle_ToggleLikeStore();
 
   export let article: CardArticle | null;
-  $: data = fragment(
-    article,
-    graphql(`
-      fragment CardArticle on Article @loading {
-        id
-        localID
-        title
-        bodyPreview
-        publishedAt
-        pictureURL
-        liked: reacted(emoji: "❤️")
-        likes: reactions(emoji: "❤️")
-        links {
-          computedValue
-          name
-        }
-        group {
-          uid
-          name
-          pictureFile
-          pictureFileDark
-        }
-        author {
-          uid
-          fullName
-          pictureURL
-        }
-        event {
-          title
-          localID
-          pictureURL
-          location
-          startsAt
-          endsAt
-          frequency
-          recurringUntil
-        }
-      }
-    `),
-  );
+  $: data = fragment(article, new CardArticleStore());
   $: ({
     id,
     localID,
@@ -149,82 +105,89 @@
   $: notPublishedYet = onceLoaded(publishedAt, isFuture, false);
 </script>
 
-<div class="post-outer" class:future={notPublishedYet}>
-  <a href={addReferrer(href)} class="post-link">
-    <article class="post">
-      <a href={addReferrer(authorHref)} class="group-link">
-        {#if authorSrc}
-          <img src={authorSrc} alt={loading(group.name, '')} class="group-logo" />
-        {:else}
-          <div
-            class:loading={!allLoaded(group)}
-            class:skeleton-effect-wave={!allLoaded(group)}
-            class="group-logo no-logo"
-          ></div>
-        {/if}
-      </a>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<div
+  role="article"
+  class="post-outer"
+  class:future={notPublishedYet}
+  onclick={() => {
+    if (href) goto(addReferrer(href));
+  }}
+>
+  <article class="post">
+    <a href={addReferrer(authorHref)} class="group-link">
+      {#if authorSrc}
+        <img src={authorSrc} alt={loading(group.name, '')} class="group-logo" />
+      {:else}
+        <div
+          class:loading={!allLoaded(group)}
+          class:skeleton-effect-wave={!allLoaded(group)}
+          class="group-logo no-logo"
+        ></div>
+      {/if}
+    </a>
 
-      <div class="content">
-        <header>
-          <a href={authorHref} class="group">
-            <LoadingText
-              value={loaded(author?.fullName) && loaded(group.name)
-                ? hideGroup && author
-                  ? author.fullName
-                  : group.name
-                : PendingValue}>LoremIpsu</LoadingText
-            >
-          </a>
-          {#if !hideGroup || author}
-            <span class="separator">·</span>
+    <div class="content">
+      <header>
+        <a href={authorHref} class="group">
+          <LoadingText
+            value={loaded(author?.fullName) && loaded(group.name)
+              ? hideGroup && author
+                ? author.fullName
+                : group.name
+              : PendingValue}>LoremIpsu</LoadingText
+          >
+        </a>
+        {#if !hideGroup || author}
+          <span class="separator">·</span>
+        {/if}
+        <span
+          class="date"
+          use:tooltip={notPublishedYet ? "Ce post n'est pas encore publié" : undefined}
+        >
+          {#if notPublishedYet}
+            <IconHourglassEmpty></IconHourglassEmpty>
           {/if}
-          <span
-            class="date"
-            use:tooltip={notPublishedYet ? "Ce post n'est pas encore publié" : undefined}
-          >
-            {#if notPublishedYet}
-              <IconHourglassEmpty></IconHourglassEmpty>
-            {/if}
-            {#if loaded(publishedAt)}
-              {intlFormatDistance(publishedAt, new Date())}
-            {:else}
-              <LoadingText>{intlFormatDistance(subMinutes(new Date(), 5), new Date())}</LoadingText>
-            {/if}
-          </span>
-        </header>
-        <h2 class="title"><LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText></h2>
-        <p class="description">
-          <LoadingText value={bodyPreview} lines={3} />
-        </p>
-        {#if !hideEvent && event && allLoaded(event)}
-          <a
-            href={refroute('/events/[id]', event.localID)}
-            class="event"
-            style:background-image="url({event.pictureURL})"
-          >
-            <div class="content">
-              <h2>{event.title}</h2>
-              <p class="where">{event.location}</p>
-              <p class="when">
-                {formatEventDates(event)}
-              </p>
-            </div>
-          </a>
-        {:else if loaded(pictureURL) && pictureURL}
-          <img src={pictureURL} alt="Image de {loading(title, '')}" class="image" />
-        {/if}
-        {#if links.some(allLoaded)}
-          <ul class="links nobullet">
-            {#each links.filter(allLoaded) as { name, computedValue }}
-              <li>
-                <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
-    </article>
-  </a>
+          {#if loaded(publishedAt)}
+            {intlFormatDistance(publishedAt, new Date())}
+          {:else}
+            <LoadingText>{intlFormatDistance(subMinutes(new Date(), 5), new Date())}</LoadingText>
+          {/if}
+        </span>
+      </header>
+      <h2 class="title"><LoadingText value={title}>Lorem ipsum dolor sit amet</LoadingText></h2>
+      <p class="description">
+        <LoadingText value={bodyPreview} lines={3} />
+      </p>
+      {#if !hideEvent && event && allLoaded(event)}
+        <a
+          href={refroute('/events/[id]', event.localID)}
+          class="event"
+          style:background-image="url({event.pictureURL})"
+        >
+          <div class="content">
+            <h2>{event.title}</h2>
+            <p class="where">{event.location}</p>
+            <p class="when">
+              {formatEventDates(event)}
+            </p>
+          </div>
+        </a>
+      {:else if loaded(pictureURL) && pictureURL}
+        <img src={pictureURL} alt="Image de {loading(title, '')}" class="image" />
+      {/if}
+      {#if links.some(allLoaded)}
+        <ul class="links nobullet">
+          {#each links.filter(allLoaded) as { name, computedValue }}
+            <li>
+              <ButtonSecondary href={computedValue}>{name}</ButtonSecondary>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
+  </article>
   {#if likes !== undefined}
     <section class="likes">
       <ButtonGhost
@@ -263,13 +226,14 @@
     gap: 0.5rem;
     padding: 1rem;
     border-radius: var(--radius-block);
+    flex-grow: 1;
   }
 
-  a:hover article {
+  .post-outer:hover article {
     background: var(--primary-bg);
   }
 
-  .post-link {
+  .post-outer {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;

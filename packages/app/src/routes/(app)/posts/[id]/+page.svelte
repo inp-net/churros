@@ -96,7 +96,6 @@
   }
 
   .picture {
-    max-height: 33vh;
     overflow: hidden;
     border-radius: var(--radius-block);
   }

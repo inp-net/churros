@@ -138,10 +138,10 @@
 </div>
 
 <svelte:body
-  on:mouseup={handleMouseUp}
-  on:touchend={handleTouchUp}
-  on:mousemove={handleMouseMouve}
-  on:touchmove={handleTouchMouve}
+  onmouseup={handleMouseUp}
+  ontouchend={handleTouchUp}
+  onmousemove={handleMouseMouve}
+  ontouchmove={handleTouchMouve}
 />
 
 <style>

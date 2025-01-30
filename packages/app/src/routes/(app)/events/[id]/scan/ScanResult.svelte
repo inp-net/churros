@@ -11,7 +11,7 @@
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import IconNotPaid from '~icons/msl/account-balance-wallet-outline';
   import IconOtherEvent from '~icons/msl/cancel-presentation-outline';
   import IconCheck from '~icons/msl/check';
@@ -33,7 +33,7 @@
   $: if (result) vibrate(VIBRATION_PATTERNS[result.state]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const STATE_TO_ICON: Record<RegistrationVerificationState$options, typeof SvelteComponent<any>> =
+  const STATE_TO_ICON: Record<RegistrationVerificationState$options, Component> =
     {
       Ok: IconCheck,
       AlreadyVerified: IconRepeatOff,

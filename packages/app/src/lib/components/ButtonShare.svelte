@@ -110,5 +110,6 @@
     display: flex;
     gap: 0.5ch;
     align-items: center;
+    font-size: var(--size, 1em);
   }
 </style>

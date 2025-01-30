@@ -103,6 +103,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    font-size: var(--size, 1em);
   }
 
   button:disabled {

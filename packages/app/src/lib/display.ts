@@ -12,7 +12,6 @@ import {
   type Visibility$options,
 } from '$houdini';
 import { NotificationChannel, Visibility } from '$lib/zeus';
-import type { SvelteComponent } from 'svelte';
 import LogoLydia from '~icons/custom-logos/lydia';
 import LogoPaypal from '~icons/logos/paypal';
 import IconGroupMembers from '~icons/mdi/account-group-outline';
@@ -155,7 +154,7 @@ export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
 export const ICONS_NOTIFICATION_CHANNELS: Record<
   NotificationChannel$options,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  typeof SvelteComponent<any>
+  Component
 > = {
   Articles: IconArticle,
   Shotguns: IconShotgun,
@@ -185,7 +184,7 @@ export const DISPLAY_MANAGER_PERMISSION_LEVELS: Record<EventManagerPowerLevel$op
 
 // TODO remove
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ICONS_PAYMENT_METHODS: Record<PaymentMethod$options, typeof SvelteComponent<any>> = {
+export const ICONS_PAYMENT_METHODS: Record<PaymentMethod$options, Component> = {
   Card: IconCreditCard,
   Cash: IconCash,
   Check: IconPaymentCheck,
@@ -216,7 +215,7 @@ export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType$options, string>([
 ]);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ICONS_DOCUMENT_TYPES = new Map<DocumentType$options, typeof SvelteComponent<any>>([
+export const ICONS_DOCUMENT_TYPES = new Map<DocumentType$options, Component>([
   ['CourseNotes', IconFileDocumentOutline],
   ['CourseSlides', IconPlayBoxOutline],
   ['Exam', IconCalendarEndOutline],
@@ -242,7 +241,7 @@ export const ORDER_DOCUMENT_TYPES: DocumentType$options[] = [
 
 export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡', '💀', '🎉'] as const;
 
-// export const ICONS_REACTIONS: Record<typeof ORDER_REACTIONS[number], {outlined: SvelteComponent<any>, filled: SvelteComponent<any>} > = {
+// export const ICONS_REACTIONS: Record<typeof ORDER_REACTIONS[number], {outlined: Component<any>, filled: Component<any>} > = {
 //   '❤️': {
 //     filled: IconHeart,
 //     outlined:
@@ -283,7 +282,7 @@ export const DISPLAY_BOOLEAN_CONSTRAINT: Record<BooleanConstraint$options, strin
   Not: 'Interdit',
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ICONS_SERVICES: Map<string, typeof SvelteComponent<any>> = new Map([
+export const ICONS_SERVICES: Map<string, Component> = new Map([
   ['car', IconCar],
   ['defis', IconDefisInte],
   ['hand', IconHand],

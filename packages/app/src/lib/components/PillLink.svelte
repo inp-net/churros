@@ -7,6 +7,7 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { loading, mapAllLoading, mapLoading, onceLoaded, type MaybeLoading } from '$lib/loading';
   import { socials } from '$lib/social.generated';
+  import type { Component } from 'svelte';
 
   function socialSiteFromURL(url: URL) {
     for (const site of Object.values(socials)) {
@@ -37,6 +38,8 @@
   export let url: MaybeLoading<URL | string> | undefined = undefined;
   export let text: MaybeLoading<string> | undefined = undefined;
 
+  export let icon: Component | undefined = undefined;
+
   export let link: PillLink | null = null;
   $: data = fragment(
     link,
@@ -59,7 +62,9 @@
   {...umamiAttributes(track, { url: loading($data?.rawURL, '(not loaded)') })}
 >
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
-    {#if socialLogo}
+    {#if icon}
+      <svelte:component this={icon}></svelte:component>
+    {:else if socialLogo}
       <svelte:component this={socialLogo}></svelte:component>
     {:else if protocol === 'mailto:'}
       <IconEmail></IconEmail>

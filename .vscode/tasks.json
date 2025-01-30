@@ -40,6 +40,11 @@
       "command": "yarn build"
     },
     {
+      "label": "Clean & re-build API",
+      "type": "shell",
+      "command": "rm -r packages/api/build && yarn @api build"
+    },
+    {
       "label": "Create .env file",
       "type": "shell",
       "command": "cp .env.example .env && yarn cp-env"
@@ -65,7 +70,13 @@
     {
       "label": "After branch switch",
       "type": "shell",
-      "dependsOn": ["Install dependencies", "Reset database", "Pre-dev", "Develop"],
+      "dependsOn": [
+        "Install dependencies",
+        "Clean & re-build API",
+        "Reset database",
+        "Pre-dev",
+        "Develop"
+      ],
       "dependsOrder": "sequence"
     },
     {

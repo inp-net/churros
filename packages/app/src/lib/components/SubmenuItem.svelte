@@ -3,11 +3,11 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { loading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any> | null;
+  export let icon: Component | null;
 
   export let subtext: MaybeLoading<string> = '';
 

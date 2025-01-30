@@ -101,6 +101,8 @@
 
   $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
 
+  $: document.body.dataset.route = $page.route.id ?? undefined;
+
   let openChangelog: () => void;
   $: if (!changelogAcknowledged && $AppLayout.data?.combinedChangelog) openChangelog?.();
 </script>
@@ -160,8 +162,6 @@
 {#if $AppLayout.data?.me?.bookings}
   <OverlayQuickBookings {now} bookings={$AppLayout.data.me.bookings}></OverlayQuickBookings>
 {/if}
-
-<svelte:body data-route={$page.route.id} />
 
 <div class="layout" id="layout" class:mobile>
   <header class="left">

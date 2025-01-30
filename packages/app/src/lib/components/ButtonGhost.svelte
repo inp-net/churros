@@ -113,6 +113,9 @@
         &.dark-shadow {
           background: rgba($color: #fff, $alpha: 50%);
         }
+        &:not(.dark-shdow) {
+          background: var(--bg2);
+        }
       }
 
       &:hover:not(.has-hover-content) {

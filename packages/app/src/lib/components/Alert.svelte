@@ -4,7 +4,7 @@
   import IconWarning from '~icons/msl/warning-outline';
   import IconSuccess from '~icons/msl/check';
   import IconInfo from '~icons/msl/info-outline';
-  import { onMount, type SvelteComponent } from 'svelte';
+  import { onMount, type Component } from 'svelte';
   import { isMobile } from '$lib/mobile';
 
   export let closed = false;
@@ -20,7 +20,7 @@
   } as const;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any> | undefined = undefined;
+  export let icon: Component | undefined = undefined;
 
   $: icon ??= DEFAULT_ICONS[theme];
 

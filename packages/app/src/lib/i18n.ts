@@ -25,6 +25,21 @@ export function sentenceJoin(
 }
 
 /**
+ * Ensures that some text is not longer than a certain length. Might do some smart things like not cutting words in half, idk yet.
+ * @param str the string
+ * @param maxLength max length
+ * @returns the truncated string
+ */
+export function ellipsis(str: string, maxLength: number): string;
+export function ellipsis(str: MaybeLoading<string>, maxLength: number): MaybeLoading<string> 
+export function ellipsis(str: MaybeLoading<string>, maxLength: number): MaybeLoading<string> {
+  if (!loaded(str)) return str;
+  if (!str) return str;
+  if (str.length <= maxLength) return str;
+  return str.slice(0, maxLength - 1) + '…';
+}
+
+/**
  * Pluralize a word or noun phrase
  * @param singular singular form
  * @param count count of objects

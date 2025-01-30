@@ -3,7 +3,7 @@
   import { groupLogoSrc } from '$lib/logos';
   import { isDark } from '$lib/theme';
   import { LogoSourceType } from '$lib/zeus';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import IconAdd from '~icons/mdi/add';
   import IconBookshelf from '~icons/mdi/bookshelf';
   import IconBugCheck from '~icons/mdi/bug-check';
@@ -25,7 +25,7 @@
   import LogoFrappe from './LogoFrappe.svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const NAME_TO_ICON: Record<string, typeof SvelteComponent<any>> = {
+  const NAME_TO_ICON: Record<string, Component> = {
     'add': IconAdd,
     'car': IconCar,
     'defis': IconDefisInte,

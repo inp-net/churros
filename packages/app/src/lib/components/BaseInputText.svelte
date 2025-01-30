@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type SvelteComponent, createEventDispatcher, onMount } from 'svelte';
+  import { type Component, createEventDispatcher, onMount } from 'svelte';
   import IconReset from '~icons/mdi/reload';
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
@@ -19,7 +19,7 @@
   export let placeholder = '';
   export let validate: (value: string) => string = () => '';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
+  export let actionIcon: Component | undefined = undefined;
   export let required = false;
   export let closeKeyboardOnEnter = false;
   export let element: HTMLInputElement | undefined = undefined;

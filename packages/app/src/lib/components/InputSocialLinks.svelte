@@ -1,6 +1,6 @@
 <script lang="ts">
   import IconFacebook from '~icons/mdi/facebook-box';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import IconInstagram from '~icons/mdi/instagram';
   import IconTwitter from '~icons/mdi/twitter';
   import IconLinkedin from '~icons/mdi/linkedin';
@@ -37,7 +37,7 @@
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const NAME_TO_ICON: Record<(typeof names)[number], typeof SvelteComponent<any>> = {
+  const NAME_TO_ICON: Record<(typeof names)[number], Component> = {
     facebook: IconFacebook,
     instagram: IconInstagram,
     discord: IconDiscord,

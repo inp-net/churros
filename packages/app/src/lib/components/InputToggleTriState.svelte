@@ -1,6 +1,6 @@
 <script lang="ts">
   import { loaded, type MaybeLoading } from '$lib/loading';
-  import { createEventDispatcher, SvelteComponent } from 'svelte';
+  import { createEventDispatcher, Component } from 'svelte';
 
   const dispatch = createEventDispatcher<{ update: boolean }>();
 
@@ -20,7 +20,7 @@
   export let labels: Array<[EnumValue, string]>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icons: Array<[EnumValue, typeof SvelteComponent<any>]> = [];
+  export let icons: Array<[EnumValue, Component]> = [];
   $: icon = icons.find(([value]) => value === _value)?.[1];
 
   let _value: boolean;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import { umamiAttributes } from '$lib/analytics';
 
@@ -7,7 +7,7 @@
   export let trackData: Record<string, string | number> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any> | undefined = undefined;
+  export let icon: Component | undefined = undefined;
   export let href = '';
   export let insideProse = false;
   export let submits = false;

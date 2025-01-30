@@ -115,55 +115,57 @@
     {/if}
 
     <table>
-      {#each colorVariables as [name, value]}
-        <tr>
-          <td>{name}</td>
-          <td>
-            <input
-              type="color"
-              {name}
-              id=""
-              {value}
-              on:input={(e) => {
-                if (!(e.target instanceof HTMLInputElement)) return;
-                const newValue = e.target.value;
-                document.documentElement.style.setProperty(name, newValue);
-                colorVariables = colorVariables.map(([n, v]) =>
-                  n === name ? [n, newValue] : [n, v],
-                );
-              }}
-            />
-          </td>
-        </tr>
-      {:else}
-        <tr>Chargement…</tr>
-      {/each}
-      {#each otherVariables as [name, value]}
-        <tr>
-          <td>{name}</td>
-          <td>
-            {#if /--nav-.+-background/.test(name)}
-              <p class="typo-details">
-                Utiliser <code>url('URL')</code> avec <code>URL</code> le lien vers une image; ou
-                <code>#xxxxxx</code> un code héxa de couleur
-              </p>
-            {/if}
-            <input
-              type="text"
-              {value}
-              {name}
-              on:input={(e) => {
-                if (!(e.target instanceof HTMLInputElement)) return;
-                const newValue = e.target.value;
-                document.documentElement.style.setProperty(name, newValue);
-                otherVariables = otherVariables.map(([n, v]) =>
-                  n === name ? [n, newValue] : [n, v],
-                );
-              }}
-            />
-          </td>
-        </tr>
-      {/each}
+      <tbody>
+        {#each colorVariables as [name, value]}
+          <tr>
+            <td>{name}</td>
+            <td>
+              <input
+                type="color"
+                {name}
+                id=""
+                {value}
+                on:input={(e) => {
+                  if (!(e.target instanceof HTMLInputElement)) return;
+                  const newValue = e.target.value;
+                  document.documentElement.style.setProperty(name, newValue);
+                  colorVariables = colorVariables.map(([n, v]) =>
+                    n === name ? [n, newValue] : [n, v],
+                  );
+                }}
+              />
+            </td>
+          </tr>
+        {:else}
+          <tr><td>Chargement…</td></tr>
+        {/each}
+        {#each otherVariables as [name, value]}
+          <tr>
+            <td>{name}</td>
+            <td>
+              {#if /--nav-.+-background/.test(name)}
+                <p class="typo-details">
+                  Utiliser <code>url('URL')</code> avec <code>URL</code> le lien vers une image; ou
+                  <code>#xxxxxx</code> un code héxa de couleur
+                </p>
+              {/if}
+              <input
+                type="text"
+                {value}
+                {name}
+                on:input={(e) => {
+                  if (!(e.target instanceof HTMLInputElement)) return;
+                  const newValue = e.target.value;
+                  document.documentElement.style.setProperty(name, newValue);
+                  otherVariables = otherVariables.map(([n, v]) =>
+                    n === name ? [n, newValue] : [n, v],
+                  );
+                }}
+              />
+            </td>
+          </tr>
+        {/each}
+      </tbody>
     </table>
   {/if}
 </aside>

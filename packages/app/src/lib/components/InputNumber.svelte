@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { MaybeLoading } from '$lib/loading';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
 
@@ -17,7 +17,7 @@
   export let autocomplete: string | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let actionIcon: typeof SvelteComponent<any> | undefined = undefined;
+  export let actionIcon: Component | undefined = undefined;
   export let label: string;
   export let help = '';
 

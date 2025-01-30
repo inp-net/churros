@@ -1,11 +1,11 @@
 <script lang="ts">
   import { tooltip } from '$lib/tooltip';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   export let theme: 'danger' | 'warning' | 'success' | 'info' = 'info';
   export let title: string | undefined = undefined;
   export let inline = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any> | undefined = undefined;
+  export let icon: Component | undefined = undefined;
   import IconCheck from '~icons/msl/check';
   import IconError from '~icons/msl/error-outline';
   import IconWarning from '~icons/msl/warning-outline';

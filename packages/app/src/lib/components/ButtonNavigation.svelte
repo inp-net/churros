@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, type SvelteComponent } from 'svelte';
+  import { createEventDispatcher, type Component } from 'svelte';
   import type { LayoutRouteId } from '../../routes/(app)/$types';
   import { page } from '$app/stores';
   import { tooltip } from '$lib/tooltip';
@@ -14,9 +14,9 @@
   export let routeID: LayoutRouteId | LayoutRouteId[] | null;
   export let label: string | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any> | undefined = undefined;
+  export let icon: Component | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let iconFilled: typeof SvelteComponent<any> | undefined = icon;
+  export let iconFilled: Component | undefined = icon;
   export let tooltipsOn: 'left' | 'right' | 'top' | 'bottom' = 'top';
 
   /** Show a little red dot on the button to catch the attention of the user. The badge is not shown when the button is highlighted (if the user is on the page, we don't have to grab their attention anymore) */

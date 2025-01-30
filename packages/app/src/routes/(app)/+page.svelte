@@ -2,11 +2,12 @@
   import { PendingValue } from '$houdini';
   import AvatarPerson from '$lib/components/AvatarPerson.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
-  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
+  import CardArticle from '$lib/components/CardPost.svelte';
   import InputSelectOneDropdown from '$lib/components/InputSelectOneDropdown.svelte';
   import QuickAccessList from '$lib/components/QuickAccessList.svelte';
   import { loaded, type MaybeLoading } from '$lib/loading';
   import { isMobile } from '$lib/mobile';
+  import { route } from '$lib/ROUTES';
   import { infinitescroll } from '$lib/scroll';
   import { notNull } from '$lib/typing';
   import type { PageData } from './$houdini';
@@ -56,7 +57,7 @@
         {#each shownBirthdays as { uid, major, birthday, ...user } (uid)}
           <li>
             <AvatarPerson
-              href="/users/{uid}"
+              href={route('/[uid=uid]', uid)}
               {...user}
               role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
                 (birthday?.getFullYear() ?? 0)} ans"
@@ -103,7 +104,7 @@
     flex-direction: column;
     row-gap: 2rem;
     max-width: 600px;
-    margin: 2rem auto 0;
+    margin: 2rem 0;
   }
 
   section.articles .no-more-posts {

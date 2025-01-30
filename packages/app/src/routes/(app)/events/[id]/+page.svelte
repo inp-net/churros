@@ -6,7 +6,7 @@
   import { copyToClipboard } from '$lib/components/ButtonCopyToClipboard.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
-  import CardArticle from '$lib/components/CardArticle.houdini.svelte';
+  import CardArticle from '$lib/components/CardPost.svelte';
   import CardBooking from '$lib/components/CardBooking.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import HTMLContent from '$lib/components/HTMLContent.svelte';

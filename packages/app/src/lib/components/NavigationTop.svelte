@@ -6,7 +6,7 @@
   import OverflowMenu from '$lib/components/OverflowMenu.svelte';
   import { isMobile } from '$lib/mobile';
   import { topnavConfigs } from '$lib/navigation';
-  import { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import IconBack from '~icons/msl/arrow-back';
   import IconBugReport from '~icons/msl/bug-report-outline';
   import type { LayoutRouteId } from '../../routes/$types';
@@ -19,9 +19,9 @@
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           overflow?: OverflowMenuAction<any>[];
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          icon: typeof SvelteComponent<any>;
+          icon: Component;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          filledIcon?: typeof SvelteComponent<any>;
+          filledIcon?: Component;
         }
       | {
           label: string;

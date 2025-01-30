@@ -4,7 +4,7 @@
   import { LoadingText, loaded, mapAllLoading, type MaybeLoading } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { toasts } from '$lib/toasts';
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import IconCheck from '~icons/msl/check';
   import IconDisallow from '~icons/msl/close';
   import IconDontCare from '~icons/msl/skip-next-outline';
@@ -29,7 +29,7 @@
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let icon: typeof SvelteComponent<any>;
+  export let icon: Component;
   export let subtext: MaybeLoading<string>;
   export let ticketId: MaybeLoading<string>;
   export let value: MaybeLoading<boolean | null>;
