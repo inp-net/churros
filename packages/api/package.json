@@ -54,7 +54,7 @@
     "google-auth-library": "^9.15.0",
     "googleapis": "144.0.0",
     "graph-cycles": "^3.0.0",
-    "graphql": "^16.9.0",
+    "graphql": "^16.10.0",
     "graphql-rate-limit-directive": "^2.0.6",
     "graphql-scalars": "^1.24.1",
     "graphql-ws": "^5.16.0",

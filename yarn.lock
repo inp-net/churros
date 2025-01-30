@@ -777,7 +777,7 @@ __metadata:
     googleapis: "npm:144.0.0"
     graph-cycles: "npm:^3.0.0"
     graphinx: "npm:^0.12.1"
-    graphql: "npm:^16.9.0"
+    graphql: "npm:^16.10.0"
     graphql-rate-limit-directive: "npm:^2.0.6"
     graphql-scalars: "npm:^1.24.1"
     graphql-ws: "npm:^5.16.0"
@@ -902,7 +902,7 @@ __metadata:
     fuse.js: "npm:^7.0.0"
     git-root-path: "npm:^1.0.0"
     google-auth-library: "npm:^9.15.0"
-    graphql: "npm:^16.9.0"
+    graphql: "npm:^16.10.0"
     graphql-ws: "npm:^5.16.0"
     graphql-zeus: "npm:^5.3.3"
     houdini: "npm:^1.5.0"
@@ -972,7 +972,7 @@ __metadata:
     "@pothos/core": "npm:^4.3.0"
     "@pothos/plugin-prisma": "npm:^4.4.0"
     "@prisma/client": "npm:^5.22.0"
-    graphql: "npm:^16.9.0"
+    graphql: "npm:^16.10.0"
     ioredis: "npm:^5.4.2"
     npm-run-all2: "npm:^7.0.1"
     npm-upgrade: "npm:^3.1.0"
@@ -12110,7 +12110,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.5.0, graphql@npm:^16.9.0":
+"graphql@npm:^16.10.0, graphql@npm:^16.5.0, graphql@npm:^16.9.0":
   version: 16.10.0
   resolution: "graphql@npm:16.10.0"
   checksum: 10c0/303730675538c8bd6c76b447dc6f03e61242e2d2596b408c34759666ec4877409e5593a7a0467d590ac5407b8c663b093b599556a77f24f281abea69ddc53de6
