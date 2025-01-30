@@ -776,7 +776,7 @@ __metadata:
     google-auth-library: "npm:^9.15.0"
     googleapis: "npm:144.0.0"
     graph-cycles: "npm:^3.0.0"
-    graphinx: "npm:^0.12.1"
+    graphinx: "npm:^0.12.2"
     graphql: "npm:^16.10.0"
     graphql-rate-limit-directive: "npm:^2.0.6"
     graphql-scalars: "npm:^1.24.1"
@@ -11912,7 +11912,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphinx@npm:^0.12.1":
+"graphinx@npm:^0.12.2":
   version: 0.12.2
   resolution: "graphinx@npm:0.12.2"
   dependencies:
