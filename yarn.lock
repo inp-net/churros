@@ -753,7 +753,7 @@ __metadata:
     argon2: "npm:^0.41.1"
     barrelsby: "npm:^2.8.1"
     bunyan: "npm:^1.8.15"
-    chalk: "npm:^5.3.0"
+    chalk: "npm:^5.4.1"
     chokidar: "npm:^4.0.3"
     cli: "npm:^1.0.1"
     cli-progress: "npm:^3.12.0"
