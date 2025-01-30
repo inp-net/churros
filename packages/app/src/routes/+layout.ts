@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { load_RootLayout } from '$houdini';
 import { editingTheme } from '$lib/theme';
 import { setDefaultOptions } from 'date-fns';
-import fr from 'date-fns/locale/fr/index.js';
+import { fr } from 'date-fns/locale';
 import { get } from 'svelte/store';
 
 export const ssr = false;

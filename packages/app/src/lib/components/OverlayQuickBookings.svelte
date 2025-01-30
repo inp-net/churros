@@ -6,7 +6,7 @@
   import { allLoaded } from '$lib/loading';
   import { notNull } from '$lib/typing';
   import { addHours, formatDistanceToNow, isFuture, isWithinInterval, subMinutes } from 'date-fns';
-  import fr from 'date-fns/locale/fr/index.js';
+  import { fr } from 'date-fns/locale';
   import { swipe } from 'svelte-gestures';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';

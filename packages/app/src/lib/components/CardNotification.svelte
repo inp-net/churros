@@ -2,7 +2,7 @@
   import type { NotificationChannel$options } from '$houdini';
   import { ICONS_NOTIFICATION_CHANNELS } from '$lib/display';
   import { formatDistanceToNow } from 'date-fns';
-  import fr from 'date-fns/locale/fr/index.js';
+  import { fr } from 'date-fns/locale';
 
   export let href: string;
   export let channel: NotificationChannel$options;
