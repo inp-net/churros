@@ -7926,7 +7926,7 @@ __metadata:
     stylelint: "npm:^16.14.1"
     stylelint-config-html: "npm:^1.1.0"
     stylelint-config-prettier: "npm:^9.0.5"
-    stylelint-config-recess-order: "npm:^5.1.1"
+    stylelint-config-recess-order: "npm:^6.0.0"
     stylelint-config-standard: "npm:^37.0.0"
     stylelint-config-standard-scss: "npm:^14.0.0"
     svelte: "npm:^4.2.19"
@@ -20624,14 +20624,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-recess-order@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "stylelint-config-recess-order@npm:5.1.1"
+"stylelint-config-recess-order@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "stylelint-config-recess-order@npm:6.0.0"
   dependencies:
     stylelint-order: "npm:^6.0.4"
   peerDependencies:
     stylelint: ">=16"
-  checksum: 10c0/2389ebe9721486514ea5ed45edefa3e135f0d37eaa5610ea1c65aa0d381311cc6982f0e2299179e2b6930185d46fe474aef40261ac93c1eca66716ffdc56e45a
+  checksum: 10c0/1c8af42219d769a3ec5c195ac296c62d51dc583c6144a729ea802f69c249fd2d4b1aa44cb31ff2121cfbe4597c7f4c36c8d82c15789cf657f2f7493b0c8c2841
   languageName: node
   linkType: hard
 
