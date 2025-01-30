@@ -11,14 +11,18 @@ export function updateUserLastSeen(
 ) {
   if (!user?.user) return next();
 
-  const lastSeenAt = Promise.resolve(parseISO(user.user.lastSeenAt)).catch(() => new Date());
+  let needsUpdate = true;
 
-  // Update users that...
-  const needsUpdate =
-    // Have no lastSeenDate, or
-    !user.user.lastSeenAt ||
-    // the date is older than 1 day
-    Math.abs(differenceInDays(new Date(), lastSeenAt)) > 1;
+  try {
+    // Update users that...
+    needsUpdate =
+      // Have no lastSeenDate, or
+      !user.user.lastSeenAt ||
+      // the date is older than 1 day
+      Math.abs(differenceInDays(new Date(), parseISO(user.user.lastSeenAt))) > 1;
+  } catch (error) {
+    console.error(`Error updating last seen date for user ${user.user.uid}: ${error}`);
+  }
 
   if (needsUpdate) {
     // Don't wait for the operation to complete
