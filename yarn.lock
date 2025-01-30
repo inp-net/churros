@@ -815,7 +815,7 @@ __metadata:
     passport-anonymous: "npm:^1.0.1"
     passport-http-bearer: "npm:^1.0.1"
     passport-oauth2: "npm:^1.8.0"
-    pdfmake: "npm:^0.2.15"
+    pdfmake: "npm:^0.2.18"
     phone: "npm:^3.1.58"
     prettier: "npm:^3.4.2"
     prisma: "npm:5.22.0"
@@ -882,7 +882,7 @@ __metadata:
     "@types/lodash.debounce": "npm:^4.0.9"
     "@types/lodash.groupby": "npm:^4.6.9"
     "@types/lodash.throttle": "npm:^4.1.9"
-    "@types/pdfmake": "npm:^0.2.10"
+    "@types/pdfmake": "npm:^0.2.11"
     "@types/semver": "npm:^7.5.8"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@zxcvbn-ts/core": "npm:^3.0.4"
@@ -923,7 +923,7 @@ __metadata:
     npm-upgrade: "npm:^3.1.0"
     number-flip-animation: "patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch"
     party-js: "npm:^2.2.0"
-    pdfmake: "npm:^0.2.15"
+    pdfmake: "npm:^0.2.18"
     prettier: "npm:^3.4.2"
     qr-code-generator-lib: "npm:^1.0.1"
     qr-scanner: "npm:^1.4.2"
@@ -5896,7 +5896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pdfmake@npm:^0.2.10":
+"@types/pdfmake@npm:^0.2.11":
   version: 0.2.11
   resolution: "@types/pdfmake@npm:0.2.11"
   dependencies:
@@ -17638,7 +17638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pdfmake@npm:^0.2.15":
+"pdfmake@npm:^0.2.18":
   version: 0.2.18
   resolution: "pdfmake@npm:0.2.18"
   dependencies:
