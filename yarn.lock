@@ -968,7 +968,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
-    "@faker-js/faker": "npm:^9.3.0"
+    "@faker-js/faker": "npm:^9.4.0"
     "@pothos/core": "npm:^4.3.0"
     "@pothos/plugin-prisma": "npm:^4.4.0"
     "@prisma/client": "npm:^5.22.0"
@@ -985,7 +985,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/mock-n7-ldap@workspace:packages/mock-n7-ldap"
   dependencies:
-    "@faker-js/faker": "npm:^9.3.0"
+    "@faker-js/faker": "npm:^9.4.0"
     "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
     "@types/ldapjs": "npm:^3.0.6"
     ldapjs: "npm:^3.0.7"
@@ -1766,7 +1766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@faker-js/faker@npm:^9.3.0":
+"@faker-js/faker@npm:^9.4.0":
   version: 9.4.0
   resolution: "@faker-js/faker@npm:9.4.0"
   checksum: 10c0/52f242a764b506f84f0f80e8122758a4b4a82873d72e67b5ddee9d8132c33d462705b43543dd0b86b743f54daec668a1938b9e5b9d643c606a775fb48959580c
