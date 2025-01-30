@@ -1,4 +1,4 @@
-_Can't read french? An intro to the project is available on [Ewen Le Bihan's portfolio](https://en.ewen.works/churros)_
+_Can't read french? An intro to the project is available on [Gwenn Le Bihan's portfolio](https://en.gwen.works/churros)_
 
 # Churros
 
