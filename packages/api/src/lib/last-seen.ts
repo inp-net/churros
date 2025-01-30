@@ -11,7 +11,7 @@ export function updateUserLastSeen(
 ) {
   if (!user?.user) return next();
 
-  const lastSeenAt = Promise.resolve(() => parseISO(user.user.lastSeenAt)).catch(() => new Date());
+  const lastSeenAt = Promise.resolve(parseISO(user.user.lastSeenAt)).catch(() => new Date());
 
   // Update users that...
   const needsUpdate =
