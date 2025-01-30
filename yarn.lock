@@ -844,7 +844,7 @@ __metadata:
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.2"
     ua-parser-js: "npm:^2.0.0"
-    unaccent: "npm:^0.0.1"
+    unaccent: "npm:^0.3.0"
     unified: "npm:^11.0.5"
     web-push: "npm:^3.6.7"
     which: "npm:^5.0.0"
@@ -21721,10 +21721,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unaccent@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "unaccent@npm:0.0.1"
-  checksum: 10c0/a06d968d59432387e6ab337fdf1c159ab50fa224c2b4404797691667e40bb53991a96fe7c4e8181a440a148274fdd5499fcb18b2ac83573ea1c5dd09c2139edc
+"unaccent@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "unaccent@npm:0.3.0"
+  checksum: 10c0/c20120fd240fb8840696012f7e5d4c672de744094c022407c41210523063d6687006e939f7f46030d8aaa848201bd714cc2e00ac15cf26a80a7eabe80870f0c7
   languageName: node
   linkType: hard
 

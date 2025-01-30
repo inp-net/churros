@@ -121,7 +121,7 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "ua-parser-js": "^2.0.0",
-    "unaccent": "^0.0.1",
+    "unaccent": "^0.3.0",
     "unified": "^11.0.5",
     "web-push": "^3.6.7",
     "which": "^5.0.0",
