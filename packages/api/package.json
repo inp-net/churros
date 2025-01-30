@@ -92,7 +92,7 @@
     "passport-anonymous": "^1.0.1",
     "passport-http-bearer": "^1.0.1",
     "passport-oauth2": "^1.8.0",
-    "pdfmake": "^0.2.15",
+    "pdfmake": "^0.2.18",
     "phone": "^3.1.58",
     "prettier": "^3.4.2",
     "prisma": "5.22.0",
