@@ -1,4 +1,6 @@
 .changesets:
+  variables:
+    RELEASE_COMMIT_MESSAGE: 'chore: version packages'
   image:
     name: registry.inpt.fr/inp-net/changesets-gitlab-docker
     entrypoint: ['']
@@ -22,6 +24,7 @@ comment:
     - changesets-gitlab comment
 
 renovate-changesets:
+  extends: .changesets
   image: node:20.18.2-alpine
   stage: changesets
   variables:
@@ -35,7 +38,7 @@ renovate-changesets:
     - git pull gitlab_origin main
     - git push gitlab_origin HEAD:main
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE != "chore: version packages"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE != $RELEASE_COMMIT_MESSAGE
 
 release:
   extends: .changesets
@@ -43,8 +46,8 @@ release:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   variables:
-    INPUT_TITLE: 'chore: version packages'
-    INPUT_COMMIT: 'chore: version packages'
+    INPUT_TITLE: $RELEASE_COMMIT_MESSAGE
+    INPUT_COMMIT: $RELEASE_COMMIT_MESSAGE
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     INPUT_VERSION: '/bin/sh scripts/update-versions.sh'
     INPUT_PUBLISH: 'changeset tag'
