@@ -2,9 +2,6 @@ _Can't read french? An intro to the project is available on [Gwenn Le Bihan's po
 
 # Churros
 
-[![Application: Status](https://status.inpt.fr/api/badge/278/status?style=flat&label=Application)](https://churros.inpt.fr)
-[![API: Status](https://status.inpt.fr/api/badge/279/status?style=flat&label=API)](https://churros.inpt.fr/graphql)
-
 La plateforme d'organisation de la vie étudiante.
 
 ## Fonctionnalités
