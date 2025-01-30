@@ -12,12 +12,14 @@ builder.prismaObjectField(RegistrationType, 'linkURLs', (t) =>
       const links = await prisma.link.findMany({
         where: { ticketId },
       });
-      return links.map((link) => {
-        const rendered = renderURL(link, user, {
-          code: localID(id).toUpperCase(),
-        });
-        return URL.canParse(rendered) ? new URL(rendered) : null;
-      });
+      return links
+        .map(({ value }) =>
+          renderURL(value, user, {
+            code: localID(id).toUpperCase(),
+          }),
+        )
+        .filter((link) => URL.canParse(link))
+        .map((link) => new URL(link));
     },
   }),
 );
