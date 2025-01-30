@@ -44,17 +44,23 @@ test:api:schema:changeset-on-changes:
     - apk add git wget
     - mkdir -p .changeset
     - wget -O main.schema.graphql $CI_PROJECT_URL/-/raw/main/packages/app/schema.graphql
-    # allow breaking changes if any file in .changeset/ has "'@churros/api': major" line in it
-    - |
-      if grep -q "'@churros/api': major" .changeset/*; then
-        echo "Breaking changes detected in changesets, skipping schema check";
-      else
-        graphql-schema-diff --fail-on-dangerous-changes --fail-on-breaking-changes main.schema.graphql declared.schema.graphql;
-      fi
     # allow schema changes if any file in .changeset/ has "'@churros/api': minor" or "'@churros/api': major" line in it
     - |
       if grep -q "'@churros/api': minor" .changeset/* || grep -q "'@churros/api': major" .changeset/*; then
-        echo "Schema changes detected in changesets, skipping schema check";
+        echo "Minor or major changeset detected in changesets, skipping schema change check";
       else
-        graphql-schema-diff --fail-on-all-changes main.schema.graphql declared.schema.graphql;
+        echo "Include a minor or major changeset for @churros/api: the schema changed"
+        exit 1
+      fi
+    # allow breaking changes if any file in .changeset/ has "'@churros/api': major" line in it
+    - |
+      if grep -q "'@churros/api': major" .changeset/*; then
+        echo "Breaking changes detected in changesets, skipping breaking changes schema check";
+      else
+        if graphql-schema-diff --fail-on-dangerous-changes --fail-on-breaking-changes main.schema.graphql declared.schema.graphql; then
+          echo "No breaking changes detected in schema";
+        else
+          echo "Breaking or dangerous changes detected in schema, include a major changeset for @churros/api";
+          exit 1
+        fi
       fi
