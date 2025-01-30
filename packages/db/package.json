@@ -21,7 +21,7 @@
     "@prisma/client": "^5.22.0",
     "graphql": "^16.10.0",
     "ioredis": "^5.4.2",
-    "npm-run-all2": "^7.0.1",
+    "npm-run-all2": "^7.0.2",
     "npm-upgrade": "^3.1.0",
     "typescript": "^5.7.3"
   },
