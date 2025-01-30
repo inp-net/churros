@@ -23,7 +23,7 @@
     "ioredis": "^5.4.2",
     "npm-run-all2": "^7.0.1",
     "npm-upgrade": "^3.1.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "prisma": {
     "seed": "tsx ./seed/index.ts"
