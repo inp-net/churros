@@ -4,7 +4,7 @@
   "dependencies": {
     "@carbon/charts-svelte": "^1.22.15",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
-    "@iconify-json/logos": "^1.2.3",
+    "@iconify-json/logos": "^1.2.4",
     "@paypal/paypal-js": "^8.2.0",
     "@sentry/sveltekit": "^8.52.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
