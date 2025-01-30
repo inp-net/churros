@@ -13,6 +13,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [4.2.0] - 2025-01-30
 
+### Nouveautés
+
+- On peut maintenant écrire `[code]` dans l'addresse d'un lien d'un billet, ce sera remplacé par le code de réservation quand la personne cliquera dessus
+
 ## [4.1.3] - 2025-01-29
 
 ## [4.1.2] - 2025-01-26
