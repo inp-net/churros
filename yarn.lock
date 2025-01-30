@@ -957,7 +957,7 @@ __metadata:
     vite: "npm:5.4.14"
     vite-plugin-kit-routes: "npm:^0.7.6"
     wait-port: "npm:^1.1.0"
-    write-excel-file: "npm:^2.0.10"
+    write-excel-file: "npm:^2.0.11"
     ws: "npm:^8.18.0"
     xss: "npm:^1.0.15"
     zod: "npm:^3.24.1"
@@ -22716,7 +22716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"write-excel-file@npm:^2.0.10":
+"write-excel-file@npm:^2.0.11":
   version: 2.0.11
   resolution: "write-excel-file@npm:2.0.11"
   dependencies:
