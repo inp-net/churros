@@ -30,12 +30,12 @@ test:api:format:
         - packages/app/schema.graphql
         - packages/api/src/**/*
 
-test:api:schema-coherence:
+test:api:schema:no-undeclared-changes:
   extends: .test:api:schema
   script:
     - graphql-schema-diff --fail-on-all-changes declared.schema.graphql actual.schema.graphql
 
-test:api:no-undeclared-breaking-changes:
+test:api:schema:changeset-on-changes:
   extends: .test:api:schema
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -50,4 +50,11 @@ test:api:no-undeclared-breaking-changes:
         echo "Breaking changes detected in changesets, skipping schema check";
       else
         graphql-schema-diff --fail-on-dangerous-changes --fail-on-breaking-changes main.schema.graphql declared.schema.graphql;
+      fi
+    # allow schema changes if any file in .changeset/ has "'@churros/api': minor" or "'@churros/api': major" line in it
+    - |
+      if grep -q "'@churros/api': minor" .changeset/* || grep -q "'@churros/api': major" .changeset/*; then
+        echo "Schema changes detected in changesets, skipping schema check";
+      else
+        graphql-schema-diff --fail-on-all-changes main.schema.graphql declared.schema.graphql;
       fi
