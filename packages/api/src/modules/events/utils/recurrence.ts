@@ -11,10 +11,10 @@ import {
   setWeek,
   setYear,
 } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 export function findNextRecurringEvent<T extends EventPrisma>(event: T): T {
   // TODO get timezone from http request
-  const today = utcToZonedTime(new Date(), 'Europe/Berlin');
+  const today = toZonedTime(new Date(), 'Europe/Berlin');
   const { startsAt, endsAt, frequency, recurringUntil } = event;
   if (!startsAt || !endsAt) return event;
   let newStartsAt = startsAt;
