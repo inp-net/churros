@@ -849,7 +849,7 @@ __metadata:
     web-push: "npm:^3.6.7"
     which: "npm:^5.0.0"
     ws: "npm:^8.18.0"
-    yaml: "npm:^2.6.1"
+    yaml: "npm:^2.7.0"
     zod: "npm:^3.24.1"
     zod-i18n-map: "npm:^2.27.0"
   languageName: unknown
@@ -22847,7 +22847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.5.1, yaml@npm:^2.6.1":
+"yaml@npm:^2.0.0, yaml@npm:^2.5.1, yaml@npm:^2.7.0":
   version: 2.7.0
   resolution: "yaml@npm:2.7.0"
   bin:
