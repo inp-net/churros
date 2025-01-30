@@ -34,7 +34,10 @@
   $: socialSite = social && $data?.url ? mapLoading($data.url, socialSiteFromURL) : undefined;
   $: socialLogo = onceLoaded(socialSite, (s) => s?.icon, undefined);
 
-  export let link: PillLink | null;
+  export let url: URL | undefined = undefined;
+  export let text: string | undefined = undefined;
+
+  export let link: PillLink | null = null;
   $: data = fragment(
     link,
     graphql(`
@@ -50,7 +53,7 @@
 </script>
 
 <a
-  href={onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}
+  href={url?.toString() ?? onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}
   {...umamiAttributes(track, { url: loading($data?.rawURL, '(not loaded)') })}
 >
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
@@ -64,12 +67,16 @@
       <IconLinkVariant></IconLinkVariant>
     {/if}
   </div>
-  <LoadingText
-    value={socialSite || social
-      ? mapAllLoading([socialSite, $data?.url], (s, u) => s?.username || u?.hostname)
-      : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u?.hostname || u?.pathname)}
-    >Chargement…</LoadingText
-  >
+  {#if text}
+    {text}
+  {:else}
+    <LoadingText
+      value={socialSite || social
+        ? mapAllLoading([socialSite, $data?.url], (s, u) => s?.username || u?.hostname)
+        : mapAllLoading([$data?.text, $data?.url], (t, u) => t || u?.hostname || u?.pathname)}
+      >Chargement…</LoadingText
+    >
+  {/if}
 </a>
 
 <style>

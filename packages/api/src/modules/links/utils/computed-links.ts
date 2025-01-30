@@ -21,7 +21,9 @@ export const renderURLPrismaIncludes = {
 export function renderURL(
   value: string,
   user: null | undefined | Prisma.UserGetPayload<{ include: typeof renderURLPrismaIncludes }>,
+  extraReplacements?: Record<string, string>,
 ) {
+  extraReplacements ??= {};
   const removeAccents = (text: string) => text.normalize('NFKD').replaceAll(/[\u0300-\u036F]/g, '');
   const accessKey = (obj: Record<string, unknown>, dotstring: string) => {
     let searchingIn: string | Record<string, unknown> | undefined = obj;
@@ -48,10 +50,16 @@ export function renderURL(
     ? {
         ...user,
         yearTier: yearTier(user.graduationYear),
+        ...extraReplacements,
       }
     : undefined;
 
-  for (const [humanKey, databaseKey] of Object.entries(wrapWithNonAccentedKeys(REPLACE_MAP))) {
+  const replaceMap = {
+    ...REPLACE_MAP,
+    ...Object.fromEntries(Object.keys(extraReplacements).map((k) => [k, k])),
+  };
+
+  for (const [humanKey, databaseKey] of Object.entries(wrapWithNonAccentedKeys(replaceMap))) {
     value = value.replaceAll(
       `[${humanKey}]`,
       encodeURIComponent(accessKey(augmentedUser ?? {}, databaseKey) ?? '') +
