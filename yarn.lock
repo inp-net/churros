@@ -952,7 +952,7 @@ __metadata:
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.7.2"
     ua-parser-js: "npm:^2.0.0"
-    unplugin-icons: "npm:^0.21.0"
+    unplugin-icons: "npm:^22.0.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.14"
     vite-plugin-kit-routes: "npm:^0.7.6"
@@ -2408,7 +2408,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/utils@npm:^2.1.33":
+"@iconify/utils@npm:^2.2.1":
   version: 2.2.1
   resolution: "@iconify/utils@npm:2.2.1"
   dependencies:
@@ -21974,17 +21974,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin-icons@npm:^0.21.0":
-  version: 0.21.0
-  resolution: "unplugin-icons@npm:0.21.0"
+"unplugin-icons@npm:^22.0.0":
+  version: 22.0.0
+  resolution: "unplugin-icons@npm:22.0.0"
   dependencies:
     "@antfu/install-pkg": "npm:^0.5.0"
     "@antfu/utils": "npm:^0.7.10"
-    "@iconify/utils": "npm:^2.1.33"
-    debug: "npm:^4.3.7"
+    "@iconify/utils": "npm:^2.2.1"
+    debug: "npm:^4.4.0"
     kolorist: "npm:^1.8.0"
     local-pkg: "npm:^0.5.1"
-    unplugin: "npm:^1.16.0"
+    unplugin: "npm:^2.1.0"
   peerDependencies:
     "@svgr/core": ">=7.0.0"
     "@svgx/core": ^1.0.1
@@ -22005,7 +22005,7 @@ __metadata:
       optional: true
     vue-template-es2015-compiler:
       optional: true
-  checksum: 10c0/7f085d111f4a3401c1e80273240672f4bc567098db2a0b7f5e57ab21bf2a2ec848b66d5408dbc56e86a9d4945fe5f84997e15d9f7bc9af415d55ec64e1405c87
+  checksum: 10c0/e58601a18afcd2f9279b1cd57000c738cf58f83d2b67cbcf2a53cb2e96a94097c51884471b2a55b71663c391435a671cd7b86dc48a6c80cd1e8e4d775e78a954
   languageName: node
   linkType: hard
 
@@ -22021,13 +22021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin@npm:^1.16.0":
-  version: 1.16.1
-  resolution: "unplugin@npm:1.16.1"
+"unplugin@npm:^2.1.0":
+  version: 2.1.2
+  resolution: "unplugin@npm:2.1.2"
   dependencies:
     acorn: "npm:^8.14.0"
     webpack-virtual-modules: "npm:^0.6.2"
-  checksum: 10c0/dd5f8c5727d0135847da73cf03fb199107f1acf458167034886fda3405737dab871ad3926431b4f70e1e82cdac482ac1383cea4019d782a68515c8e3e611b6cc
+  checksum: 10c0/ae24ee275de96a700df416c3241f910ac964011c2e23dc726feb768fe10fc40bef3dbe2d0d8d267ed988c6c3393c3a9782d5b7b30df4a27e8dab244d86b4d4be
   languageName: node
   linkType: hard
 
