@@ -63,14 +63,6 @@ export const ZodErrorType = builder.objectType(ZodError, {
   }),
 });
 
-export const NotFoundErrorType = builder.objectType(Prisma.NotFoundError, {
-  name: 'NotFoundError',
-  description: 'An error raised when a resource does not exist.',
-  interfaces: [ErrorInterface],
-  fields: (t) => ({
-    message: t.exposeString('message'),
-  }),
-});
 
 export class CheckBackLaterError extends Error {
   /**

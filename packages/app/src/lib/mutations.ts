@@ -49,9 +49,6 @@ graphql(`
         message
       }
     }
-    ... on NotFoundError {
-      message
-    }
   }
 `);
 
