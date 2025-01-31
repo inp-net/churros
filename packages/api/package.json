@@ -42,7 +42,7 @@
     "croner": "^8.1.2",
     "dataloader": "^2.2.3",
     "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.0.0",
+    "date-fns-tz": "^3.2.0",
     "dichotomid": "^0.0.3",
     "envelop-trim-inputs": "^0.0.3",
     "execa": "^9.5.2",

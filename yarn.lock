@@ -764,7 +764,7 @@ __metadata:
     croner: "npm:^8.1.2"
     dataloader: "npm:^2.2.3"
     date-fns: "npm:^4.1.0"
-    date-fns-tz: "npm:^3.0.0"
+    date-fns-tz: "npm:^3.2.0"
     dichotomid: "npm:^0.0.3"
     envelop-trim-inputs: "npm:^0.0.3"
     execa: "npm:^9.5.2"
@@ -897,7 +897,7 @@ __metadata:
     cookie: "npm:^1.0.2"
     cytoscape: "npm:^3.31.0"
     date-fns: "npm:^4.1.0"
-    date-fns-tz: "npm:^3.0.0"
+    date-fns-tz: "npm:^3.2.0"
     dotenv: "npm:^16.4.7"
     extract-files: "npm:^13.0.0"
     fuse.js: "npm:^7.0.0"
@@ -9295,7 +9295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:^3.0.0":
+"date-fns-tz@npm:^3.2.0":
   version: 3.2.0
   resolution: "date-fns-tz@npm:3.2.0"
   peerDependencies:
