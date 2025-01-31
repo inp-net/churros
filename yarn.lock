@@ -953,7 +953,7 @@ __metadata:
     unplugin-icons: "npm:^22.0.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.14"
-    vite-plugin-kit-routes: "npm:^0.7.6"
+    vite-plugin-kit-routes: "npm:^0.8.1"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.11"
     ws: "npm:^8.18.0"
@@ -22183,16 +22183,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.7.6":
-  version: 0.7.6
-  resolution: "vite-plugin-kit-routes@npm:0.7.6"
+"vite-plugin-kit-routes@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "vite-plugin-kit-routes@npm:0.8.1"
   dependencies:
     "@kitql/helpers": "npm:0.8.11"
     "@kitql/internals": "npm:0.10.2"
     vite-plugin-watch-and-run: "npm:1.7.3"
   peerDependencies:
     "@sveltejs/kit": ^2.4.0
-  checksum: 10c0/b540e62c421e381671850416296a053eaa8b28afd1a0fff72937ec358da45d522ed642955318ad82cfa6fe085b171f57eb5c83ab943351e2bf645c3d2749c143
+  checksum: 10c0/4823836040d3d8138a0032e21d1c76e699b5539e5313b2d6a8e0e251cbb8eeaa7bb2034ea90c6f903870eae1c9259abdb77d89b5c3f6613c5728289c80fae73d
   languageName: node
   linkType: hard
 
