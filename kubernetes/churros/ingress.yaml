@@ -37,6 +37,13 @@ spec:
                 name: churros-api
                 port:
                   number: 4000
+            path: /.well-known/churros.app
+            pathType: Prefix
+          - backend:
+              service:
+                name: churros-api
+                port:
+                  number: 4000
             path: /storage
             pathType: Prefix
           - backend:
