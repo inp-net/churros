@@ -9,7 +9,7 @@
       - churros.apk
       - output-metadata.json
 
-build:app:
+.build:app:
   extends: .app
   stage: build
   needs: 
@@ -19,31 +19,55 @@ build:app:
       optional: true
     - job: test:app:svelte-check
       optional: true
+  artifacts:
+    expire_in: 4 days
+    paths: [churros.apk, output-metadata.json]
+  variables:
+    BUILD_APK: "false"
+  script:
+    - !reference [.build, script]
+    - |
+      if [ "$BUILD_APK" = "true" ]; then \
+        buildctl-daemonless.sh build \
+            --frontend=dockerfile.v0 \
+            --local context=. \
+            --local dockerfile=. \
+            --opt target=android \
+            --opt build-arg:TAG=$TAG \
+            --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+            $BUILD_SECRET_SENTRY \
+            --output type=local,dest=. \
+        mv app-debug.apk churros.apk \
+      fi
+
+build:app:
+  extends: .build:app
   rules: 
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
       changes: [packages/app/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
       when: manual
-  artifacts:
-    expire_in: 4 days
-    paths: [churros.apk, output-metadata.json]
-  script:
-    - !reference [.build, script]
+
+build:app-with-native:
+  extends: .build:app
+  variables:
+    BUILD_APK: "true"
+  rules: 
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
+      changes: [packages/app/android/**/*]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+  before_script:
+    - !reference [.build, before_script]
+    # cancel sibling build:app job with the gitlab API
     - |
-      buildctl-daemonless.sh build \
-          --frontend=dockerfile.v0 \
-          --local context=. \
-          --local dockerfile=. \
-          --opt target=android \
-          --opt build-arg:TAG=$TAG \
-          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
-          $BUILD_SECRET_SENTRY \
-          --output type=local,dest=.
-    - mv app-debug.apk churros.apk
+      job_id=$(curl --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs" | jq -r '.[] | select(.name == "build:app") | .id')
+      curl --request POST --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/$job_id/cancel"
+
 
 deploy:apk:
   stage: deploy
-  needs: [build:app]
+  needs: [build:app-with-native]
   image: curlimages/curl
   rules:
     - when: manual
