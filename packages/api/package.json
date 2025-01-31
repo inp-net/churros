@@ -39,7 +39,7 @@
     "colord": "^2.9.3",
     "connect-redis": "^8.0.1",
     "cors": "^2.8.5",
-    "croner": "^8.1.2",
+    "croner": "^9.0.0",
     "dataloader": "^2.2.3",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
