@@ -58,7 +58,7 @@
   </div>
 {/if}
 
-<style lang="scss">
+<style>
   .alert {
     display: flex;
     gap: 1rem;
@@ -74,8 +74,8 @@
   }
 
   .content {
-    // XXX 28.8px is the actual visual height of the icon
-    // This is to vertically center the text with the icon, but keep the icon at the top (in case there's more lines of text)
+    /* XXX 28.8px is the actual visual height of the icon 
+      This is to vertically center the text with the icon, but keep the icon at the top (in case there's more lines of text) */
     padding-top: calc(28.8px / 2 - 0.5lh);
   }
 

@@ -35,7 +35,7 @@
   </div>
 </article>
 
-<style lang="scss">
+<style>
   .card-notification {
     display: flex;
   }
@@ -78,7 +78,7 @@
   .body {
     display: flex;
     flex-flow: column wrap;
-    align-items: left;
+    align-items: start;
     justify-content: center;
     width: calc(2 * var(--size));
     height: var(--size);
@@ -162,12 +162,8 @@
     border-right: none;
   }
 
-  .content:hover + .action,
-  .content:focus-visible + .action {
+  .content:is(:hover, :focus-visible) + .action,
+  .content:is(:hover, :focus-visible) + .action.duo .action-label {
     border-left: none;
-
-    &.duo .action-label {
-      border-left: none;
-    }
   }
 </style>

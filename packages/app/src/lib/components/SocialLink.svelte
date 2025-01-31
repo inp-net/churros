@@ -15,7 +15,7 @@
   ]);
 
   /** Marks a variable as non null. */
-  const bang = <T extends {}>(x?: T) => x!;
+  const bang = <T,>(x?: T) => x!;
 </script>
 
 <a href={value} title={name} target="social">
@@ -26,16 +26,15 @@
   {/if}
 </a>
 
-<style lang="scss">
+<style>
   a {
     color: var(--muted);
     transition:
       outline 80ms ease-in,
       color 80ms ease-in;
+  }
 
-    &:hover,
-    &:focus-visible {
-      color: var(--primary);
-    }
+  a:is(:hover, :focus-visible) {
+    color: var(--primary);
   }
 </style>

@@ -13,11 +13,9 @@
   <IconChevronRight></IconChevronRight>
 </span>
 
-<style lang="scss">
-  .separator {
-    &:last-of-type {
-      display: none;
-    }
+<style>
+  .separator:last-of-type {
+    display: none;
   }
 
   .breadcrumb-item :global(> button) {

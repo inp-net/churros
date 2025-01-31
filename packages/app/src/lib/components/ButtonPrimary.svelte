@@ -42,7 +42,7 @@
   </div>
 </svelte:element>
 
-<style lang="scss">
+<style>
   .button-primary {
     position: relative;
     display: inline-flex;
@@ -55,16 +55,16 @@
     background: var(--primary);
     border: var(--border-block) solid var(--primary);
     border-radius: 5px;
+  }
 
-    &.loading .content {
-      opacity: 0;
-    }
+  .button-primary.loading .content {
+    opacity: 0;
+  }
 
-    &[disabled] {
-      color: var(--disabled-text);
-      cursor: default;
-      background: var(--disabled-bg);
-    }
+  .button-primary[disabled] {
+    color: var(--disabled-text);
+    cursor: default;
+    background: var(--disabled-bg);
   }
 
   .button-primary.danger {

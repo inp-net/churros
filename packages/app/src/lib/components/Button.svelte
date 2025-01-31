@@ -14,7 +14,7 @@
   <slot />
 </button>
 
-<style lang="scss">
+<style>
   button {
     position: relative;
     flex: 0;
@@ -34,10 +34,10 @@
 
   .loading {
     color: transparent;
+  }
 
-    &::before {
-      border-color: var(--text) var(--text) transparent transparent;
-    }
+  .loading::before {
+    border-color: var(--text) var(--text) transparent transparent;
   }
 
   @keyframes spin {

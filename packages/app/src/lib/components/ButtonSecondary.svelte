@@ -66,7 +66,7 @@
   <slot />
 </svelte:element>
 
-<style lang="scss">
+<style>
   .button-secondary {
     position: relative;
     display: inline-flex;
@@ -77,7 +77,7 @@
     height: fit-content;
     padding: 0.25rem 0.75rem;
 
-    // https://stackoverflow.com/a/68141091
+    /* https://stackoverflow.com/a/68141091 */
     line-height: inherit;
     cursor: pointer;
     background: transparent;

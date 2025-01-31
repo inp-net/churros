@@ -35,11 +35,11 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .calendar-day {
     display: flex;
-    flex-direction: column;
     flex-shrink: 0;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 4rem;
@@ -47,10 +47,10 @@
     color: var(--text);
     border: var(--border-block) solid;
     border-radius: var(--radius-block);
+  }
 
-    > * {
-      line-height: 1;
-    }
+  .calendar-day > * {
+    line-height: 1;
   }
 
   .calendar-day.today {

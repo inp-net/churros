@@ -40,19 +40,16 @@
   </article>
 </a>
 
-<style lang="scss">
+<style>
   article {
     padding: 0.5em 1em;
     border: var(--border-block) solid var(--muted-border);
     border-radius: 0.5em;
   }
 
-  a:hover,
-  a:focus-visible {
-    article {
-      background: var(--primary-bg);
-      border-color: var(--border);
-    }
+  a:is(:hover, :focus-visible) article {
+    background: var(--primary-bg);
+    border-color: var(--primary);
   }
 
   a:not(:hover, :focus-visible) article.add {

@@ -43,7 +43,7 @@
   </div>
 </InputEvent>
 
-<style lang="scss">
+<style>
   .pill {
     display: flex;
     gap: 0.5rem;
@@ -53,21 +53,21 @@
     background: var(--muted-bg);
     border: var(--border-block) solid var(--muted-bg);
     border-radius: 100000px;
+  }
 
-    &.empty {
-      background: transparent;
-      border-color: var(--border);
-    }
+  .pill.empty {
+    background: transparent;
+    border-color: var(--border);
+  }
 
-    &:hover {
-      color: var(--primary);
-      cursor: pointer;
-      background: var(--primary-bg);
+  .pill:hover {
+    color: var(--primary);
+    cursor: pointer;
+    background: var(--primary-bg);
+  }
 
-      &.empty {
-        border-color: var(--primary);
-      }
-    }
+  .pill.empty:hover {
+    border-color: var(--primary);
   }
 
   .pill :global(.button-ghost) {

@@ -272,7 +272,7 @@
   {/await}
 </MaybeError>
 
-<style lang="scss">
+<style>
   h1 {
     display: flex;
     flex-wrap: wrap;
@@ -301,12 +301,12 @@
     max-width: 600px;
     margin: 0 auto;
     margin-top: 2rem;
+  }
 
-    li.empty {
-      width: 100%;
-      padding: 1rem;
-      background: var(--muted-bg);
-      border-radius: var(--radius-block);
-    }
+  ul.notifications li.empty {
+    width: 100%;
+    padding: 1rem;
+    background: var(--muted-bg);
+    border-radius: var(--radius-block);
   }
 </style>

@@ -29,7 +29,7 @@
   {/if}
 </svelte:element>
 
-<style lang="scss">
+<style>
   .badge {
     display: inline-flex;
     gap: 0.5rem;
@@ -40,10 +40,10 @@
     background: var(--primary);
     border-radius: 100000px;
     outline: 0 solid var(--primary-bg);
+  }
 
-    &:hover {
-      outline: 2px solid var(--primary-bg);
-    }
+  .badge:hover {
+    outline: 2px solid var(--primary-bg);
   }
 
   .title {

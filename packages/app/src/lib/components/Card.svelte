@@ -15,7 +15,7 @@
   <slot name="footer" />
 </svelte:element>
 
-<style lang="scss">
+<style>
   .card {
     margin: 1rem 0;
     background-color: var(--card-bg, var(--bg));

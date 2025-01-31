@@ -63,7 +63,7 @@ A clearable search input with search-specific stuff, that stretches to take the 
   </BaseInputText>
 </form>
 
-<style lang="scss">
+<style>
   form.query {
     display: flex;
     gap: 1rem;
@@ -72,9 +72,9 @@ A clearable search input with search-specific stuff, that stretches to take the 
     max-width: 1000px;
     margin: 0 1rem;
     margin-bottom: 1rem;
+  }
 
-    > :global(.base-input) {
-      width: 100%;
-    }
+  form :global(.base-input) {
+    width: 100%;
   }
 </style>

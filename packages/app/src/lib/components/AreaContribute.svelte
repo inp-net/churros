@@ -79,7 +79,7 @@
 
     contributeLoading = undefined;
     if (toasts.mutation(result, 'contribute', '', 'Impossible de cotiser'))
-      window.location.reload();
+      globalThis.location.reload();
   }
 
   function optionOfferedToUser(optionId: string) {
@@ -105,10 +105,10 @@
     if (
       toasts.mutation(result, 'cancelPendingContribution', '', "Impossible d'annuler la cotisation")
     )
-      window.location.reload();
+      globalThis.location.reload();
 
     contributeLoading = undefined;
-    window.location.reload();
+    globalThis.location.reload();
   }
 </script>
 
@@ -149,7 +149,7 @@
   </ul>
 </div>
 
-<style lang="scss">
+<style>
   ul.options {
     display: flex;
     flex-wrap: wrap;

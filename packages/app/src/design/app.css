@@ -1,7 +1,3 @@
-@use 'sanitize.css/sanitize';
-@use 'sanitize.css/assets';
-@use 'sanitize.css/typography';
-
 * {
   max-width: 100%;
   font-family: var(--font-main);
@@ -249,7 +245,7 @@ button {
   }
 }
 
-// TODO for now no view transitions on desktop cuz they're borked
+/* TODO for now no view transitions on desktop cuz they're borked */
 @media (min-width: 900px) {
   ::view-transition-group(*),
   ::view-transition-old(*),

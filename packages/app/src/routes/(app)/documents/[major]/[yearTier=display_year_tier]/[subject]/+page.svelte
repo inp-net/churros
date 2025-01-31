@@ -87,7 +87,7 @@
   </div>
 {/if}
 
-<style lang="scss">
+<style>
   ul {
     display: flex;
     flex-direction: column;
@@ -129,9 +129,9 @@
     margin-left: calc(2 * var(--border-block));
     font-size: 1rem;
     font-weight: bold;
+  }
 
-    &:first-of-type {
-      margin-top: 2rem;
-    }
+  h2:not(.migration-notice):first-of-type {
+    margin-top: 2rem;
   }
 </style>

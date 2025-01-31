@@ -192,7 +192,7 @@
   </div>
 </article>
 
-<style lang="scss">
+<style>
   .breadcrumb-icon {
     font-size: 0.9em;
   }

@@ -12,7 +12,7 @@
   <slot />
 </div>
 
-<style lang="scss">
+<style>
   .breadcrumbs {
     display: flex;
     flex-wrap: wrap;

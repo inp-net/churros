@@ -63,7 +63,7 @@
   </div>
 </MaybeError>
 
-<style lang="scss">
+<style>
   .container {
     display: flex;
     flex-direction: column;

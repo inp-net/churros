@@ -58,7 +58,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   :global(body) {
     height: 100vh;
   }
@@ -99,18 +99,18 @@
     --bg: black;
     --text: #3edb46;
     --border: #107e0e;
+  }
 
-    img {
-      width: 100%;
-      max-width: calc(min(80vw, 50vh));
-      object-fit: contain;
-    }
+  .err-404 img {
+    width: 100%;
+    max-width: calc(min(80vw, 50vh));
+    object-fit: contain;
+  }
 
-    p {
-      margin: 0 1rem;
-      font-size: 1.5rem;
-      text-align: center;
-    }
+  .err-404 p {
+    margin: 0 1rem;
+    font-size: 1.5rem;
+    text-align: center;
   }
 
   .actions {

@@ -64,7 +64,7 @@
   {/if}
 </svelte:element>
 
-<style lang="scss">
+<style>
   .button-ghost.skeleton-effect-wave {
     background: var(--skeleton-ui-bg);
   }
@@ -87,40 +87,36 @@
     border: var(--border-inline) solid transparent;
     border-radius: var(--radius-inline);
     outline: 0 solid var(--fg);
+  }
 
-    &.tight {
-      padding: 0;
-    }
+  .button-ghost.tight {
+    padding: 0;
+  }
 
-    &:not(.inline) {
-      display: flex;
-    }
+  .button-ghost:not(.inline) {
+    display: flex;
+  }
 
-    &.disabled {
-      cursor: not-allowed;
-      opacity: 0.75;
-    }
+  .button-ghost.disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
 
-    &:not(.disabled) {
-      cursor: pointer;
+  .button-ghost:not(.disabled) {
+    cursor: pointer;
+  }
 
-      &:focus-visible {
-        outline-width: 1px;
-      }
+  .button-ghost:not(.disabled):focus-visible {
+    outline-width: 1px;
+  }
 
-      &:hover,
-      &:focus-visible {
-        &.dark-shadow {
-          background: rgba($color: #fff, $alpha: 50%);
-        }
-        &:not(.dark-shdow) {
-          background: var(--bg2);
-        }
-      }
+  .button-ghost:not(.disabled):hover,
+  .button-ghost:not(.disabled):focus-visible {
+    background: var(--bg2);
+  }
 
-      &:hover:not(.has-hover-content) {
-        color: var(--shy);
-      }
-    }
+  .button-ghost.dark-shadow:not(.disabled):hover,
+  .button-ghost.dark-shadow:not(.disabled):focus-visible {
+    background: rgb(255 255 255 / 50%);
   }
 </style>

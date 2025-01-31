@@ -83,17 +83,17 @@
   {/each}
 {/each}
 
-<style lang="scss">
+<style>
   h2:not(.migration-notice) {
     display: flex;
     gap: 1.5rem;
     align-items: center;
     margin-top: 2.5rem;
     margin-bottom: 0.5rem;
+  }
 
-    * {
-      flex-shrink: 0;
-    }
+  h2:not(.migration-notice) * {
+    flex-shrink: 0;
   }
 
   h3 {

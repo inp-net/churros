@@ -181,7 +181,7 @@
   </ul>
 </InputField>
 
-<style lang="scss">
+<style>
   ul {
     display: flex;
     flex-flow: column wrap;

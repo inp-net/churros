@@ -68,7 +68,7 @@
   </article>
 </a>
 
-<style lang="scss">
+<style>
   article {
     display: flex;
     gap: 1rem;
@@ -86,12 +86,9 @@
     font-size: 1.5rem;
   }
 
-  a:hover,
-  a:focus-visible {
-    article {
-      background: var(--primary-bg);
-      border-color: var(--border);
-    }
+  a:is(:hover, :focus-visible) article {
+    background: var(--primary-bg);
+    border-color: var(--border);
   }
 
   .infos {

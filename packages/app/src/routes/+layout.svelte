@@ -13,7 +13,7 @@
   import { editingTheme, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
-  import '../design/app.scss';
+  import '../design/app.css';
   import type { LayoutData } from './$houdini';
 
   export let data: LayoutData;
@@ -136,7 +136,7 @@
   <slot />
 </div>
 
-<style lang="scss">
+<style>
   section.toasts {
     position: fixed;
     bottom: 75px;
@@ -149,8 +149,10 @@
     max-width: 600px;
     padding: 0 1rem;
     transform: translateX(-50%);
+  }
 
-    @media (min-width: 1000px) {
+  @media (min-width: 1000px) {
+    section.toasts {
       right: 0;
       bottom: 6rem;
       left: unset;

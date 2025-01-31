@@ -112,7 +112,7 @@
   </InputField>
 </form>
 
-<style lang="scss">
+<style>
   .wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -131,8 +131,6 @@
     height: var(--size);
     color: var(--muted-text);
     background: var(--muted-bg);
-
-    // border-radius: var(--border-block);
   }
 
   img.rectangular {

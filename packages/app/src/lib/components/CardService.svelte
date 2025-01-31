@@ -86,7 +86,7 @@
   </p>
 </a>
 
-<style lang="scss">
+<style>
   .card-service {
     --size: 10rem;
 

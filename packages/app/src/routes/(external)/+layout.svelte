@@ -2,7 +2,7 @@
   <slot />
 </div>
 
-<style lang="scss">
+<style>
   .content {
     display: flex;
     align-items: center;

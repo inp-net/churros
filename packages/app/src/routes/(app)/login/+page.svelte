@@ -52,7 +52,7 @@
   </section>
 </form>
 
-<style lang="scss">
+<style>
   h1 {
     margin-bottom: 2rem;
     text-align: center;

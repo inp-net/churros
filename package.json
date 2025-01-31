@@ -35,7 +35,6 @@
     "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-recess-order": "^5.1.1",
     "stylelint-config-standard": "^37.0.0",
-    "stylelint-config-standard-scss": "^14.0.0",
     "svelte": "^5.19.6",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
@@ -53,8 +52,8 @@
     "dev:env": "yarn tsx scripts/watch-env.ts",
     "dev": "yarn pre:dev && yarn dotenv -- yarn workspaces foreach -Apiv run dev",
     "format": "prettier . --write --ignore-unknown",
-    "lint": "eslint . --cache=true & stylelint '**/*.{css,scss,svelte}' &",
-    "lintfix": "eslint --fix --cache=true . & stylelint --fix '**/*.{css,scss,svelte}' &",
+    "lint": "eslint . --cache=true & stylelint '**/*.{css,svelte}' &",
+    "lintfix": "eslint --fix --cache=true . & stylelint --fix '**/*.{css,svelte}' &",
     "migration": "bash -c 'docker compose up -d && yarn prisma migrate dev --name $0 && yarn @api build:typenames'",
     "postinstall": "husky install",
     "prisma": "yarn workspace @churros/db run prisma",

@@ -26,7 +26,7 @@
   import { setupViewTransition } from '$lib/view-transitions';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
-  import '../../design/app.scss';
+  import '../../design/app.css';
   import type { PageData } from './$houdini';
   import Announcements from './Announcements.svelte';
 
@@ -244,9 +244,7 @@
   </aside>
 </div>
 
-<style lang="scss">
-  @use 'sass:math';
-
+<style>
   /**
 
   Layout:
@@ -282,12 +280,13 @@
     gap: 2rem;
     width: 100dvw;
 
-    // TODO animate --scrollable-content-width changes
+    /* TODO animate --scrollable-content-width changes */
 
     --scrollable-area-border-color: var(--bg3);
 
-    // Waiting on https://drafts.csswg.org/css-env-1/ to use variables in media queries
-    // --width-mobile: 900px;
+    /* Waiting on https://drafts.csswg.org/css-env-1/ to use variables in media queries */
+
+    /* --width-mobile: 900px; */
   }
 
   .layout .left {
@@ -346,8 +345,6 @@
   .cap .corner-right {
     position: absolute;
     inset: 0;
-
-    // z-index: 11;
   }
 
   .cap .corner-left {

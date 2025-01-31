@@ -1,9 +1,7 @@
 {
   "files.autoSaveDelay": 1000,
-  "cssvar.extensions": ["css", "scss", "svelte"],
+  "cssvar.extensions": ["css", "svelte"],
   "cssvar.files": ["packages/app/src/static/colors.css"],
-  "cssvar.postcssSyntax": { "postcss-scss": ["scss", "svelte"] },
-  "scss.lint.unknownAtRules": "ignore",
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "sql-formatter.dialect": "pl/sql",

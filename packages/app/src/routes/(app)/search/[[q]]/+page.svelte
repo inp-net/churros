@@ -243,7 +243,7 @@
   </div>
 </MaybeError>
 
-<style lang="scss">
+<style>
   .content {
     padding: 0 1rem;
   }
@@ -256,10 +256,10 @@
     max-width: 1000px;
     margin: 0 1rem;
     margin-bottom: 1rem;
+  }
 
-    > :global(.base-input) {
-      width: 100%;
-    }
+  form.query > :global(.base-input) {
+    width: 100%;
   }
 
   .results-count {

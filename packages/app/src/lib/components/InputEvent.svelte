@@ -75,7 +75,7 @@
   </div>
 </InputPickObjects>
 
-<style lang="scss">
+<style>
   .suggestion {
     --size: 5rem;
 

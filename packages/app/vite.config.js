@@ -1,7 +1,6 @@
 import { sentrySvelteKit } from '@sentry/sveltekit';
 import { sveltekit } from '@sveltejs/kit/vite';
 import houdini from 'houdini/vite';
-import { fileURLToPath } from 'node:url';
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
@@ -27,16 +26,6 @@ export const commonConfig = defineConfig({
   resolve: {
     alias: {
       '~icons/msl': '~icons/material-symbols-light',
-    },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'moden-compiler',
-        additionalData: `@use "${fileURLToPath(
-          new URL('src/design/variables.scss', import.meta.url),
-        )}" as *;`,
-      },
     },
   },
 });
