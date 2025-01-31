@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { goto } from '$app/navigation';
 import { graphql, load_RootLayout } from '$houdini';
 import { editingTheme } from '$lib/theme';
 import { App } from '@capacitor/app';
@@ -23,6 +24,11 @@ export async function load(event) {
     // TODO close open drawer when there's one, instead of going back in history
     if (event.canGoBack) globalThis.history.back();
     else App.exitApp();
+  });
+
+  App.addListener('appUrlOpen', (event) => {
+    const url = new URL(event.url);
+    goto(event.url.replace(url.origin, ''));
   });
 
   if (Capacitor.isNativePlatform()) {

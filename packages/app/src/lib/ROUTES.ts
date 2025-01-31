@@ -388,6 +388,8 @@ export const SERVERS = {
   'GET /users/[uid]': (uid: string | number, params?: {}) => {
     return `/users/${uid}`;
   },
+  'GET /.well-known/apple-app-site-association': `/.well-known/apple-app-site-association`,
+  'GET /.well-known/assetlinks.json': `/.well-known/assetlinks.json`,
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
   '_RESERVED_USERNAMES /check-uid/[uid]': (uid: string | number, params?: {}) => {
@@ -658,6 +660,8 @@ export type KIT_ROUTES = {
     'GET /student-associations/[uid]': 'uid';
     'GET /themes.css': never;
     'GET /users/[uid]': 'uid';
+    'GET /.well-known/apple-app-site-association': never;
+    'GET /.well-known/assetlinks.json': never;
     'GET /connect/google': never;
     'GET /health': never;
     '_RESERVED_USERNAMES /check-uid/[uid]': 'uid';
