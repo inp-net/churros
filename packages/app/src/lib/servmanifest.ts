@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { CURRENT_VERSIONS } from '$lib/buildinfo';
 import { Capacitor } from '@capacitor/core';
+import * as semver from 'semver';
 import { z } from 'zod';
 
 export const serverManifestSchema = z.object({
@@ -61,10 +62,10 @@ export function getServerManifest(): ServerManifest {
 
 function assertApiVersionsCompatible(manifest: ServerManifest) {
   if (CURRENT_VERSIONS.api === 'dev') return;
+  if (CURRENT_VERSIONS.api.startsWith('latest-v')) return;
 
-  const [majorServer] = manifest.version.split('.');
-  const [majorClient] = CURRENT_VERSIONS.api.split('.');
-  if (majorServer !== majorClient) {
+  const validity = new semver.Range(`^${CURRENT_VERSIONS.api}`);
+  if (validity.test(manifest.version)) {
     throw new Error(
       `Ce serveur est à la version ${manifest.version} de l'API de Churros, qui est incompatible avec la tienne (${CURRENT_VERSIONS.api})`,
     );
@@ -111,11 +112,14 @@ export function saveServerManifest(manifest: ServerManifest) {
 }
 
 /** Get a server manifest from domain/.well-known/churros.app/server.json, and store it in localStorage */
-export async function fetchServerManifest(domain: string): Promise<ServerManifest> {
+export async function fetchServerManifest(
+  domain: string,
+  { checkVersions = true },
+): Promise<ServerManifest> {
   const response = await fetch(new URL('/.well-known/churros.app/server.json', domain).toString());
   if (!response.ok) throw new Error(`Failed to fetch server manifest: ${response.status}`);
   const manifest = serverManifestSchema.parse(await response.json());
-  assertApiVersionsCompatible(manifest);
+  if (checkVersions) assertApiVersionsCompatible(manifest);
   return manifest;
 }
 

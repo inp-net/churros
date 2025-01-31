@@ -30,7 +30,7 @@
   import IconProfile from '~icons/msl/person-outline';
   import { hiddenAnnouncements } from '../Announcements.svelte';
   import type { LayoutData } from './$houdini';
-  import ServerConfigurationModal from './ServerConfigurationModal.svelte';
+  import ModalServerConfiguration from './ModalServerConfiguration.svelte';
   import { browser } from '$app/environment';
 
   let openServerConfig: () => void;
@@ -185,7 +185,7 @@
           Supprimer mon compte
         </SubmenuItem>
       </Submenu>
-      <ServerConfigurationModal bind:open={openServerConfig} />
+      <ModalServerConfiguration bind:open={openServerConfig} />
     </div>
     <slot slot="right"></slot>
   </Split>

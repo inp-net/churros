@@ -26,28 +26,34 @@
     result.error = null;
     result.success = 'Configuration modifiée!';
   }
+
+  async function loadServerManifest({ checkVersions }: { checkVersions: boolean }) {
+    await fetchServerManifest(
+      /^https?:\/\//.test(serverDomain) ? serverDomain : `https://${serverDomain}`,
+      { checkVersions },
+    )
+      .then(afterSuccess)
+      .catch((error) => {
+        result.error = error?.toString() ?? 'Erreur inattendue';
+      });
+  }
 </script>
 
 <ModalOrDrawer tall={Boolean(loadedManifest)} title="Changer de serveur" bind:open>
   <div class="content">
-    <form
-      on:submit|preventDefault={async () => {
-        await fetchServerManifest(
-          /^https?:\/\//.test(serverDomain) ? serverDomain : `https://${serverDomain}`,
-        )
-          .then(afterSuccess)
-          .catch((error) => {
-            result.error = error?.toString() ?? 'Erreur inattendue';
-          });
-      }}
-    >
+    <form>
       <!-- <InputText label="Domaine du serveur" bind:value={serverDomain} /> -->
       <InputTextGhost
         label="Domaine du serveur"
         placeholder="Domaine du serveur"
         bind:value={serverDomain}
       />
-      <ButtonSecondary submits>Changer</ButtonSecondary>
+      <ButtonSecondary
+        on:click={() => loadServerManifest({ checkVersions: true })}
+        on:contextmenu={() => loadServerManifest({ checkVersions: false })}
+      >
+        Changer
+      </ButtonSecondary>
     </form>
     <div class="sep">ou</div>
     <ButtonSecondary
