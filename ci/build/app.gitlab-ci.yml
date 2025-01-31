@@ -56,7 +56,12 @@
 build:app:
   extends: .build:app
   rules: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS !~ /android/ && 
+        $CI_MERGE_REQUEST_LABELS !~ /ios/ &&
+        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
       changes: [packages/app/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
       when: manual
@@ -75,19 +80,22 @@ build:app:
 build:app-with-native-unsigned:
   extends: .build:app-with-native
   rules: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
-      changes: [packages/app/android/**/*]
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
 
 build:app-with-native-signed:
   extends: .build:app-with-native
   variables:
     SIGN_APK: "true"
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
-
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS =~ /native:signed/
 
 deploy:apk:
   stage: deploy
