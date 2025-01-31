@@ -49,9 +49,10 @@ deploy:apk:
     - when: manual
   script:
     - |
-      curl https://upload.diawi.com/ -F token='$DIAWI_TOKEN' \
+      curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
         -F file=@churros.apk \
-        -F callback_emails='contact@net7.dev'
+        -F callback_emails="$GITLAB_USER_EMAIL" \
+        -F comment="APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL"
 
 deploy:app:
   extends: .app
