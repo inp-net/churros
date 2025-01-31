@@ -67,10 +67,16 @@ build:app-with-native:
 
 deploy:apk:
   stage: deploy
-  needs: [build:app-with-native]
+  needs: 
+    - job: build:app-with-native
+      optional: true
+    - job: deploy:app
+      optional: true
   image: curlimages/curl
   rules:
-    - when: manual
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
     - |
       curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
@@ -79,7 +85,7 @@ deploy:apk:
         -F comment="APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL"
 
 deploy:app:
-  extends: .app
+  extends: .build:app
   stage: deploy
   interruptible: false
   rules:
@@ -89,6 +95,7 @@ deploy:app:
         URL: "https://churros.inpt.fr"
         TAG: export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
         DEPLOY: "true"
+        BUILD_APK: "true"
   environment:
     name: $ENV
     url: $URL
