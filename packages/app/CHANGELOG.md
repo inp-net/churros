@@ -1,5 +1,52 @@
 # @churros/app
 
+## 4.2.0
+
+### Minor Changes
+
+- 292e56e: Allow dynamic ticket links based on the booking's code, using [code]
+
+### Patch Changes
+
+- b84a071: fix(deps): update dependency bits-ui to ^0.22.0 (!465)
+- 74a1ca2: fix(deps): update dependency calendar-link to ^2.8.0 (!469)
+- 5569d5d: fix(deps): update dependency cytoscape to ^3.31.0 (!470)
+- bbf5895: fix(deps): update dependency date-fns to v4 (!461)
+- 28d9965: fix(deps): update dependency google-auth-library to ^9.15.1 (!503)
+- 5569d5d: fix(deps): update dependency graphql to ^16.10.0 (!472)
+- a3deb82: fix(deps): update dependency graphql-ws to v6 (!463)
+- 92e7bab: fix(deps): update dependency houdini to ^1.5.0 (!466)
+- 7e2d917: chore(deps): update dependency houdini-svelte to ^2.1.4 (!438)
+- 74a1ca2: fix(deps): update dependency @iconify-json/logos to ^1.2.4 (!468)
+- 1c9d2f4: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.14 (!491)
+- 92e7bab: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.14 (!492)
+- acf9d74: fix(deps): update dependency mime to ^4.0.6 (!499)
+- d445d96: fix(deps): update dependency @paypal/paypal-js to ^8.2.0 (!452)
+- 92e7bab: fix(deps): update dependency pdfmake to ^0.2.18 (!474)
+- cc994ce: chore(deps): update dependency sass to ^1.83.4 (!448)
+- d445d96: chore(deps): update dependency sass-embedded to ^1.83.4 (!449)
+- c6875b0: fix(deps): update dependency @sentry/sveltekit to ^8.52.0 (!487)
+- c8c085a: fix(deps): update dependency svelte-gestures to ^5.1.3 (!477)
+- 28d9965: fix(deps): update swc monorepo to ^1.10.12 (!504)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+- c6875b0: chore(deps): update dependency unplugin-icons to v22 (!490)
+- c8c085a: fix(deps): update dependency write-excel-file to ^2.0.11 (!479)
+- d445d96: fix(deps): update dependency zod to ^3.24.1 (!454)
+- Updated dependencies [92e7bab]
+- Updated dependencies [92e7bab]
+  - arborist@0.1.4
+
+## 4.1.3
+
+### Patch Changes
+
+- f68a9a1: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.22 (!440)
+- 691b29c: correct radio buttons in events visibility are now disabled
+- 4143201: chore(deps): update dependency svelte-check to ^4.1.4 (!431)
+- 92d9bf5: chore(deps): update dependency @sveltejs/kit to ^2.16.1 (!437)
+- f68a9a1: chore(deps): update dependency vite to v5.4.14 (!435)
+- 92d9bf5: chore(deps): update dependency vite-plugin-kit-routes to ^0.7.6 (!436)
+
 ## 4.1.2
 
 ### Patch Changes

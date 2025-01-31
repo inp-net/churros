@@ -6,7 +6,7 @@ import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import * as Sentry from '@sentry/sveltekit';
 import { addYears, setDefaultOptions } from 'date-fns';
-import fr from 'date-fns/locale/fr/index.js';
+import { fr } from 'date-fns/locale';
 import { get } from 'svelte/store';
 
 export const ssr = false;

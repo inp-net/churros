@@ -1,3 +1,4 @@
 src/lib/index.ts
 src/lib/**/index.ts
 src/modules/**/index.ts
+src/permissions/**/index.ts

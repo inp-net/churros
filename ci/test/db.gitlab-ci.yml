@@ -38,6 +38,7 @@ test:prisma:migration-coherence-with-prod:
 test:prisma:format:
   extends: .volta
   stage: test
+  interruptible: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: [packages/db/prisma/schema.prisma]

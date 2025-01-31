@@ -1,5 +1,18 @@
 # @churros/sync
 
+## 1.71.16
+
+### Patch Changes
+
+- 9db4f8b: fix(deps): update dependency npm-run-all2 to ^7.0.2 (!501)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+- Updated dependencies [1c9d2f4]
+- Updated dependencies [5569d5d]
+- Updated dependencies [d445d96]
+- Updated dependencies [9db4f8b]
+- Updated dependencies [92e7bab]
+  - @churros/db@4.1.5
+
 ## 1.71.15
 
 ### Patch Changes

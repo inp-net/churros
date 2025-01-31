@@ -1,4 +1,6 @@
 ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.inpt.fr/churros/dependency_proxy/containers, for example
+ARG REPOSITORY_URL=https://git.inpt.fr/churros/churros
+
 
 
 #####
@@ -6,7 +8,7 @@ ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.
 #####
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS builder
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS builder
 
 ARG TAG=dev
 
@@ -76,7 +78,7 @@ RUN yarn workspace @churros/sync build
 
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS base
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS base
 
 WORKDIR /app
 
@@ -99,6 +101,8 @@ COPY --from=builder /app/packages/arborist/ /app/packages/arborist/
 
 
 FROM base AS api
+
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/api
 
 WORKDIR /app
 
@@ -134,6 +138,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 
 FROM base AS app
+
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/app
 
 WORKDIR /app
 
@@ -191,6 +197,8 @@ COPY --from=android-assemble /app/packages/app/android/app/build/outputs/apk/deb
 
 FROM base AS sync
 
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/sync
+
 RUN apk add --update --no-cache openssl
 
 ENV NODE_ENV="production"
@@ -210,7 +218,9 @@ ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 ### Database
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine AS prisma
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS prisma
+
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/db
 
 RUN apk add --update --no-cache openssl
 

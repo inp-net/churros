@@ -31,7 +31,7 @@
       <InputRadios
         value={event.visibility}
         options={DISPLAY_VISIBILITIES}
-        isDisabled={(option) => event.allowedVisibilities.some((v) => loading(v, '') === option)}
+        isDisabled={(option) => !event.allowedVisibilities.some((v) => loading(v, '') === option)}
         on:change={async ({ detail }) => {
           const result = await mutate(ChangeEventVisibility, {
             event: event.id,

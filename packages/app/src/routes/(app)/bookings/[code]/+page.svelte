@@ -157,10 +157,14 @@
       </section>
     {/if}
 
-    {#if ticket.links.length > 0}
+    {#if booking.linkURLs.length > 0}
       <section class="links">
-        {#each ticket.links as link}
-          <PillLink track="link-from-booking" {link} />
+        {#each Array.from({ length: booking.linkURLs.length }) as _, i}
+          <PillLink
+            track="link-from-booking"
+            url={booking.linkURLs[i]}
+            text={booking.linkNames[i]}
+          />
         {/each}
       </section>
     {/if}

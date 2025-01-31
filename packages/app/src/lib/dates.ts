@@ -8,7 +8,7 @@ import {
   isToday,
   previousMonday,
 } from 'date-fns';
-import fr from 'date-fns/locale/fr/index.js';
+import { fr } from 'date-fns/locale';
 
 function safeFormatting<T>(func: (arg: T) => string): (arg: T) => string {
   return (arg) => {
