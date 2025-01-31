@@ -78,9 +78,9 @@ function singlequotes(literal: string): string {
 function constDeclaration(
   name: string,
   value: unknown,
-  { typescript = true, exported = true } = {},
+  { typescript = true, exported = true, typ = 'string' } = {},
 ) {
-  return `${exported ? 'export ' : ''}const ${name} = ${singlequotes(JSON.stringify(value))}${typescript ? ' as string' : ''};`;
+  return `${exported ? 'export ' : ''}const ${name} = ${singlequotes(JSON.stringify(value))}${typescript ? ` as ${typ}` : ''};`;
 }
 
 function replaceBetweenLines(start: string, end: string, replacement: string, contents: string) {
@@ -108,6 +108,13 @@ await Promise.all(
       constDeclaration('CURRENT_VERSION', variables.CURRENT_VERSIONS[pkg], {
         typescript,
         exported: isolated,
+      }),
+      constDeclaration('CURRENT_VERSIONS', variables.CURRENT_VERSIONS, {
+        typescript,
+        exported: isolated,
+        typ: `{ ${Object.keys(variables.CURRENT_VERSIONS)
+          .map((key) => `${key}: string`)
+          .join(',')} }`,
       }),
     ];
     await writeFile(

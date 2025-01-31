@@ -4,6 +4,7 @@ query LayoutSettings @loading {
     name
     localID
   }
+  apiVersion: version
   me: assertMe {
     uid
     lydiaPhone
