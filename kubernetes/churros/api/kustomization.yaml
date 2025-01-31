@@ -4,4 +4,3 @@ commonLabels:
 resources:
   - deployment.yaml
   - services.yaml
-  - cronjob.yaml
