@@ -71,12 +71,6 @@ build:app:
     SIGN_APK: "false"
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_SUBMODULE_FORCE_HTTPS: "true"
-  before_script:
-    - !reference [.build, before_script]
-    # cancel sibling build:app job with the gitlab API
-    - |
-      job_id=$(curl --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs" | jq -r '.[] | select(.name == "build:app") | .id')
-      curl --request POST --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/$job_id/cancel"
 
 build:app-with-native-unsigned:
   extends: .build:app-with-native
