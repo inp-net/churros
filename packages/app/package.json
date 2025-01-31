@@ -1,6 +1,6 @@
 {
   "name": "@churros/app",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "dependencies": {
     "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.1",

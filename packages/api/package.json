@@ -1,8 +1,8 @@
 {
   "name": "@churros/api",
-  "version": "10.1.0",
+  "version": "10.2.0",
   "dependencies": {
-    "@churros/db": "workspace:^4.1.5",
+    "@churros/db": "workspace:^4.1.6",
     "@clack/prompts": "^0.9.1",
     "@envelop/core": "^5.0.3",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",

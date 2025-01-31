@@ -1,5 +1,12 @@
 # @churros/db
 
+## 4.1.6
+
+### Patch Changes
+
+- 9bc1b79: trackShare did not work for articles
+- b7d0aaa: fix(deps): update prisma monorepo to v6 (major) (!464)
+
 ## 4.1.5
 
 ### Patch Changes

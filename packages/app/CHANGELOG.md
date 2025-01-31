@@ -1,5 +1,15 @@
 # @churros/app
 
+## 4.2.1
+
+### Patch Changes
+
+- b445dc2: fix(deps): update dependency date-fns-tz to ^3.2.0 (!509)
+- 816bfba: fix(deps): update dependency graphql-ws to ^6.0.3 (!510)
+- cd6debd: fix(deps): update dependency @sentry/sveltekit to ^8.52.1 (!508)
+- 0884880: remove dependency on react 💀
+- fc351f0: chore(deps): update dependency vite-plugin-kit-routes to ^0.8.1 (!485)
+
 ## 4.2.0
 
 ### Minor Changes
