@@ -160,37 +160,50 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 ### Android
 
+#### Common base
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mobiledevops/android-sdk-image AS android-assemble
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mobiledevops/android-sdk-image AS android-assemble-base
 
 WORKDIR /app
 
-# Yarn
-COPY .yarn/ /app/.yarn/
-COPY .yarnrc.yml /app/
-COPY yarn.lock /app/
-
-# packages
-COPY package.json /app/
-
-COPY packages/arborist /app/packages/arborist
 COPY --from=builder-app /app/packages/app/ /app/packages/app/
 COPY --from=builder-app /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
 COPY --from=builder-app /app/node_modules/@capgo/ /app/node_modules/@capgo/
 
-RUN du -hs .
-RUN df -h 
+
+#### Release (sign the APK)
+
+FROM android-assemble-base AS android-assemble-release
+
+ARG APK_KEY_ALIAS=ALIAS
+
+WORKDIR /app
+
+RUN --mount=type=secret,id=APK_KEYSTORE_BASE64 base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
+
+RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD \
+    KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true) \
+    KEY_ALIAS=$APK_KEY_ALIAS \
+    KEYSTORE_PATH=/app/churros.keystore \
+    cd packages/app/android && ./gradlew assembleRelease
+
+FROM scratch AS android-release
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs/apk/release/ .
+
+#### Debug assemble (unsigned APK)
+
+FROM android-assemble-base AS android-assemble-debug
+
+WORKDIR /app
 
 RUN cd packages/app/android && ./gradlew assembleDebug
 
-RUN du -hs .
-RUN df -h
-
-FROM scratch AS android
+FROM scratch AS android-debug
 
 # copy built apk from android-assemble
-COPY --from=android-assemble /app/packages/app/android/app/build/outputs/apk/debug/ .
-
+COPY --from=android-assemble-debug /app/packages/app/android/app/build/outputs/apk/debug/ .
 
 ### Sync
 
