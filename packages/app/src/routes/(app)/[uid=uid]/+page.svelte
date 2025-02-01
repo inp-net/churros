@@ -226,7 +226,7 @@
               class="color-dot"
               slot="icon"
               style:background-color={loading(profile.color, 'black')}
-            />
+            ></div>
             <LoadingText value={mapLoading(profile.color, colorName)} />
           </SubmenuItem>
         {/if}

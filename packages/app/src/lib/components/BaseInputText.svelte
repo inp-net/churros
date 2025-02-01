@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { type Component, createEventDispatcher, onMount } from 'svelte';
-  import IconReset from '~icons/mdi/reload';
+  import { loaded, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
   import { format } from 'date-fns';
-  import { loaded, type MaybeLoading } from '$lib/loading';
+  import { type Component, createEventDispatcher, onMount } from 'svelte';
+  import type { FullAutoFill } from 'svelte/elements';
+  import IconReset from '~icons/mdi/reload';
   const emit = createEventDispatcher<{
     action: undefined;
     input: Event & { currentTarget: HTMLInputElement & EventTarget };
@@ -11,7 +12,7 @@
 
   export let type: HTMLInputElement['type'];
   export let value: string | number | Date | null | undefined;
-  export let autocomplete: string | undefined = undefined;
+  export let autocomplete: FullAutoFill | null | undefined = undefined;
   export let autofocus = false;
   export let name: string | undefined = undefined;
   export let initial: MaybeLoading<string | number | Date | null | undefined> = undefined;

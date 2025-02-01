@@ -157,9 +157,9 @@
             {/if}
             {#if status === State.Errored}
               <br />
-              <div class="message">
+              <span class="message">
                 {#if !uid}Utilisateur·ice introuvable{:else}{message}{/if}
-              </div>
+              </span>
             {/if}
           </p>
         </li>
@@ -224,6 +224,7 @@
   }
 
   .results li .message {
+    display: block;
     margin-top: -0.25rem;
     font-size: 0.75rem;
   }

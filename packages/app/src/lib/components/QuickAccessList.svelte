@@ -84,7 +84,7 @@
                 {@const { title, icon } = data}
                 <div class="icon">
                   {#if typeof icon === 'string'}
-                    <img src={icon} aria-hidden alt="" />
+                    <img src={icon} aria-hidden="true" alt="" />
                   {:else}
                     <svelte:component this={icon}></svelte:component>
                   {/if}
@@ -159,7 +159,7 @@
                 {@const { title, icon } = data}
                 <div class="icon">
                   {#if typeof icon === 'string'}
-                    <img src={icon} aria-hidden alt="" />
+                    <img src={icon} aria-hidden="true" alt="" />
                   {:else}
                     <svelte:component this={icon}></svelte:component>
                   {/if}
@@ -192,11 +192,6 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
-  }
-
-  .remove-button,
-  .icon {
-    font-size: 1.2em;
   }
 
   .bookmarks {

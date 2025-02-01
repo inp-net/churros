@@ -33,15 +33,14 @@
   $: if (result) vibrate(VIBRATION_PATTERNS[result.state]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const STATE_TO_ICON: Record<RegistrationVerificationState$options, Component> =
-    {
-      Ok: IconCheck,
-      AlreadyVerified: IconRepeatOff,
-      NotFound: IconClose,
-      NotPaid: IconNotPaid,
-      Opposed: IconOpposed,
-      OtherEvent: IconOtherEvent,
-    };
+  const STATE_TO_ICON: Record<RegistrationVerificationState$options, Component> = {
+    Ok: IconCheck,
+    AlreadyVerified: IconRepeatOff,
+    NotFound: IconClose,
+    NotPaid: IconNotPaid,
+    Opposed: IconOpposed,
+    OtherEvent: IconOtherEvent,
+  };
 
   graphql(`
     fragment BookingScanResultBooking on Registration {

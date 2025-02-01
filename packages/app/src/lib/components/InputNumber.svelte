@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { FullAutoFill } from 'svelte/elements';
   import type { MaybeLoading } from '$lib/loading';
   import type { Component } from 'svelte';
   import BaseInputText from './BaseInputText.svelte';
@@ -14,7 +15,7 @@
   export let unit = '';
   export let value: Required extends true ? number : number | null;
   export let required = false;
-  export let autocomplete: string | undefined = undefined;
+  export let autocomplete: FullAutoFill | null | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let actionIcon: Component | undefined = undefined;

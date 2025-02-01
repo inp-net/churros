@@ -25,7 +25,7 @@
     }}
     bind:checked={_value}
   />
-  <span class="slider" />
+  <span class="slider"></span>
 </div>
 
 <style>
