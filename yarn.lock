@@ -546,6 +546,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor-community/safe-area@npm:^7.0.0-alpha.1":
+  version: 7.0.0-alpha.1
+  resolution: "@capacitor-community/safe-area@npm:7.0.0-alpha.1"
+  peerDependencies:
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10c0/d744bf0043e0ff7534411cdf7215e36ca6f57d92e02f02e660042095f80ee54828695bf00471bf3f31467a4b6c10c940b041e910d3509c5f0c238f0f42e27574
+  languageName: node
+  linkType: hard
+
 "@capacitor/android@npm:^7.0.0":
   version: 7.0.1
   resolution: "@capacitor/android@npm:7.0.1"
@@ -669,6 +678,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor/keyboard@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/keyboard@npm:7.0.0"
+  peerDependencies:
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10c0/07f296ba6e45c57238887dfdb2f404b16cc51d3c5f3d85e1e574d4e6873ae5668015afb0836505319cbb16acc5f4bad0c7fd089e5ad3595b1ec25ff4bf4c1f1d
+  languageName: node
+  linkType: hard
+
 "@capacitor/preferences@npm:^7.0.0":
   version: 7.0.0
   resolution: "@capacitor/preferences@npm:7.0.0"
@@ -693,6 +711,15 @@ __metadata:
   peerDependencies:
     "@capacitor/core": ">=7.0.0"
   checksum: 10c0/dc4a2a4d0a3334106310246cd383cb2721eaa6e9b2baf27da5784a9dda85d568c28031cafa15182db39a6c4f6eb932d2480a528fa3f1c81c1d9148b843565df8
+  languageName: node
+  linkType: hard
+
+"@capacitor/status-bar@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/status-bar@npm:7.0.0"
+  peerDependencies:
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10c0/a11d5cca36ce096bd917c7b49e6cd159f889bba9ad64cd926995e104ca97388e343977cb1976d8f50fb6261956331b330f718fe2213d87c94b82b51a1257d224
   languageName: node
   linkType: hard
 
@@ -1286,6 +1313,7 @@ __metadata:
   resolution: "@churros/app@workspace:packages/app"
   dependencies:
     "@babel/core": "npm:^7.26.7"
+    "@capacitor-community/safe-area": "npm:^7.0.0-alpha.1"
     "@capacitor/android": "npm:^7.0.0"
     "@capacitor/app": "npm:^7.0.0"
     "@capacitor/assets": "npm:^3.0.5"
@@ -1293,9 +1321,11 @@ __metadata:
     "@capacitor/core": "npm:^7.0.0"
     "@capacitor/haptics": "npm:^7.0.0"
     "@capacitor/ios": "npm:^7.0.0"
+    "@capacitor/keyboard": "npm:^7.0.0"
     "@capacitor/preferences": "npm:^7.0.0"
     "@capacitor/push-notifications": "npm:^7.0.0"
     "@capacitor/share": "npm:^7.0.0"
+    "@capacitor/status-bar": "npm:^7.0.0"
     "@capgo/inappbrowser": "npm:^7.1.1"
     "@carbon/charts-svelte": "npm:^1.22.15"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"

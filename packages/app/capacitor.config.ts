@@ -11,6 +11,15 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+    StatusBar: {
+      overlaysWebview: true,
+    },
+    Keyboard: {
+      resizeOnFullScreen: true,
+    },
+    SafeArea: {
+      enabled: true
+    }
   },
 };
 
