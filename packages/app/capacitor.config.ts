@@ -18,8 +18,8 @@ const config: CapacitorConfig = {
       resizeOnFullScreen: true,
     },
     SafeArea: {
-      enabled: true
-    }
+      enabled: true,
+    },
   },
 };
 
