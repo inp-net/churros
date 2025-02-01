@@ -165,10 +165,10 @@ ENTRYPOINT ["./entrypoint.sh"]
 FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/saschpe/android-sdk:35-jdk21.0.5_11 AS android-assemble-base
 
 ARG ANDROID_ASSEMBLE_USER_UID=1001
+ARG BUILD_NUMBER=1
+ARG TAG=dev
 
 WORKDIR /app
-
-ARG BUILD_NUMBER=1
 
 # create ~/.gradle/gradle.properties
 RUN mkdir -p $HOME/.gradle
