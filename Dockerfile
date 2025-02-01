@@ -181,14 +181,20 @@ ARG APK_KEY_ALIAS=ALIAS
 
 WORKDIR /app
 
+# create ~/.gradle/gradle.properties
+RUN mkdir -p $HOME/.gradle
+
 RUN --mount=type=secret,id=APK_KEYSTORE_BASE64,uid=$ANDROID_ASSEMBLE_USER_UID \
     base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
+RUN echo "KEYSTORE_PATH=/app/churros.keystore" > $HOME/.gradle/gradle.properties
 
-RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \
-    KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true) \
-    KEY_ALIAS=$APK_KEY_ALIAS \
-    KEYSTORE_PATH=/app/churros.keystore \
-    cd packages/app/android && ./gradlew assembleRelease
+RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \ 
+    echo "KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true)" >> $HOME/.gradle/gradle.properties
+
+RUN echo "KEY_ALIAS=$APK_KEY_ALIAS" >> $HOME/.gradle/gradle.properties
+
+WORKDIR /app/packages/app/android
+RUN ./gradlew assembleRelease
 
 FROM scratch AS android-release
 
@@ -199,9 +205,9 @@ COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs
 
 FROM android-assemble-base AS android-assemble-debug
 
-WORKDIR /app
+WORKDIR /app/packages/app/android
 
-RUN cd packages/app/android && ./gradlew assembleDebug
+RUN ./gradlew assembleDebug
 
 FROM scratch AS android-debug
 
