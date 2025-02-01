@@ -168,6 +168,13 @@ ARG ANDROID_ASSEMBLE_USER_UID=1001
 
 WORKDIR /app
 
+ARG BUILD_NUMBER=1
+
+# create ~/.gradle/gradle.properties
+RUN mkdir -p $HOME/.gradle
+RUN echo "BUILD_VERSION_CODE=$BUILD_NUMBER" >> $HOME/.gradle/gradle.properties
+RUN echo "BUILD_VERSION_NAME=$TAG" >> $HOME/.gradle/gradle.properties
+
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /app/packages/app/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor-community/ /app/node_modules/@capacitor-community/
@@ -182,12 +189,9 @@ ARG APK_KEY_ALIAS=ALIAS
 
 WORKDIR /app
 
-# create ~/.gradle/gradle.properties
-RUN mkdir -p $HOME/.gradle
-
 RUN --mount=type=secret,id=APK_KEYSTORE_BASE64,uid=$ANDROID_ASSEMBLE_USER_UID \
     base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
-RUN echo "KEYSTORE_PATH=/app/churros.keystore" > $HOME/.gradle/gradle.properties
+RUN echo "KEYSTORE_PATH=/app/churros.keystore" >> $HOME/.gradle/gradle.properties
 
 RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \ 
     echo "KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true)" >> $HOME/.gradle/gradle.properties
