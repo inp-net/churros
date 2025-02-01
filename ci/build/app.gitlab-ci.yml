@@ -50,6 +50,7 @@
             $BUILD_SECRET_APK_KEYSTORE_BASE64 \
             $BUILD_SECRET_APK_KEYSTORE_PASSWORD \
             --output type=local,dest=.; \
+        ls -la .; \
         mv app-$APK_TYPE.apk churros.apk; \
       fi
 
