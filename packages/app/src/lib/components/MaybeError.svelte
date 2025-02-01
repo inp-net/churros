@@ -46,9 +46,7 @@
       <p>Une erreur est survenue.</p>
     {/if}
     {#if !loggedIn}
-      <ButtonSecondary noClientSideNavigation href={refroute('/login')}
-        >Se connecter</ButtonSecondary
-      >
+      <ButtonSecondary href={refroute('/login')}>Se connecter</ButtonSecondary>
     {/if}
   </Alert>
 {:else if result?.fetching || (result && !result.data)}
@@ -67,14 +65,14 @@
     <p>
       Aucune donnée n'a été chargée ici. Ça ne devrait pas arriver, les devs ont fait des conneries!
     </p>
-    <ButtonSecondary on:click={() => window.location.reload()}>Recharger la page</ButtonSecondary>
+    <ButtonSecondary on:click={() => globalThis.location.reload()}>Recharger la page</ButtonSecondary>
     <small>(désOwOlé)</small>
   </Alert>
 {:else}
   <Alert theme="danger">
     <h2>Wtf‽</h2>
     <p>Une erreur trèèèès bizarre a eu lieu. Voici des infos pour les devs (good luck 🫶)</p>
-    <ButtonSecondary on:click={() => window.location.reload()}>Recharger la page</ButtonSecondary>
+    <ButtonSecondary on:click={() => globalThis.location.reload()}>Recharger la page</ButtonSecondary>
     <pre>{JSON.stringify({ result }, null, 2)}</pre>
   </Alert>
 {/if}

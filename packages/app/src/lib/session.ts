@@ -9,13 +9,27 @@ graphql(`
 `);
 
 /** Saves `token` as a cookie. */
-export const saveSessionToken = (cookies: Cookies, { token, expiresAt }: SessionToken$data) => {
-  cookies.set('token', token, {
-    expires: expiresAt ? new Date(expiresAt) : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-    path: '/',
-    sameSite: 'lax',
-  });
-};
+export async function saveSessionToken(
+  cookies: Cookies | null,
+  { token, expiresAt }: SessionToken$data,
+) {
+  const expiration = expiresAt
+    ? new Date(expiresAt)
+    : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+
+  if (cookies) {
+    cookies.set('token', token, {
+      expires: expiration,
+      path: '/',
+      sameSite: 'lax',
+    });
+  } else {
+    document.cookie = serialize('token', token, {
+      path: '/',
+    });
+    setClientSession({ token });
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function aled(...o: unknown[]) {
