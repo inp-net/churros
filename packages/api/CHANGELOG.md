@@ -1,5 +1,12 @@
 # @churros/api
 
+## 10.2.1
+
+### Patch Changes
+
+- bbc1775: fix(deps): update dependency firebase-admin to v13 (!520)
+- ca57f51: fix(deps): update dependency i18next to v24 (!521)
+
 ## 10.2.0
 
 ### Minor Changes

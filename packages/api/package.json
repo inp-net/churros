@@ -1,6 +1,6 @@
 {
   "name": "@churros/api",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "dependencies": {
     "@churros/db": "workspace:^4.1.6",
     "@clack/prompts": "^0.9.1",
