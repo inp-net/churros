@@ -174,6 +174,7 @@ ARG BUILD_NUMBER=1
 RUN mkdir -p $HOME/.gradle
 RUN echo "BUILD_VERSION_CODE=$BUILD_NUMBER" >> $HOME/.gradle/gradle.properties
 RUN echo "BUILD_VERSION_NAME=$TAG" >> $HOME/.gradle/gradle.properties
+RUN cat $HOME/.gradle/gradle.properties
 
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /app/packages/app/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
