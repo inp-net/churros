@@ -103,17 +103,39 @@ deploy:apk:
       optional: true
     - job: deploy:app
       optional: true
-  image: curlimages/curl
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
     - |
-      curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
+      diawi_job=$(
+        curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
         -F file=@churros.apk \
         -F callback_emails="$GITLAB_USER_EMAIL" \
-        -F comment="APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL"
+        -F comment="APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" \
+        | jq -r .job 
+      )
+    # poll for the diawi URL
+    - |
+      while true; do
+        sleep 10
+        response=$(curl https://upload.diawi.com/status -F token="$DIAWI_TOKEN" -F job=$diawi_job)
+        if [ "$(echo $response | jq -r .status)" == "2000" ]; then
+          echo "Diawi URL: $(echo $response | jq -r .link)"
+          if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+            curl -X POST $CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes \
+              -H "PRIVATE-TOKEN: $YAPPER_TOKEN" \
+              --url-query "APK $diawi_job available at $(echo $response | jq -r .link)\n\n![QR code]($(echo $response | jq -r .qrcode))\n\nBuilt against $CI_COMMIT_SHA in $CI_PIPELINE_URL"
+          fi
+          break
+        fi
+        if [ "$(echo $response | jq -r .status)" == "4000" ]; then
+          echo "Diawi error: $(echo $response | jq -r .message)"
+          exit 1
+        fi
+      done
 
 deploy:app:
   extends: .build:app-with-native
