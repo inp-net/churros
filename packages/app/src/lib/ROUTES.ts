@@ -11,7 +11,7 @@
 export const PAGES = {
   '/': `/`,
   '/[uid=uid]': (
-    uid: Parameters<typeof import('../params/uid.ts').match>[0],
+    uid: ExtractParamType<typeof import('../params/uid.ts').match>,
     params?: {
       tab?:
         | 'infos'
@@ -30,7 +30,7 @@ export const PAGES = {
     return `/${uid}${appendSp({ tab: params['tab'] })}`;
   },
   '/[uid=uid]/[...page]': (params: {
-    uid: Parameters<typeof import('../params/uid.ts').match>[0];
+    uid: ExtractParamType<typeof import('../params/uid.ts').match>;
     page: (string | number)[];
   }) => {
     return `/${params['uid']}/${params['page']?.join('/')}`;
@@ -58,20 +58,20 @@ export const PAGES = {
   },
   '/documents/[major]/[yearTier=display_year_tier]': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
   }) => {
     return `/documents/${params['major']}/${params['yearTier']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
   }) => {
     return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
     document: string | number;
   }) => {
@@ -79,7 +79,7 @@ export const PAGES = {
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
     document: string | number;
   }) => {
@@ -87,13 +87,13 @@ export const PAGES = {
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/create': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
   }) => {
     return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/create`;
   },
   '/documents/create': `/documents/create`,
-  '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
+  '/events': (params?: { week?: ExtractParamType<typeof import('../params/date.ts').match> }) => {
     return `/events${params?.['week'] ? `/${params?.['week']}` : ''}`;
   },
   '/events/[id]': (id: string | number, params?: {}) => {
@@ -219,10 +219,11 @@ export const PAGES = {
   '/join-managers/[code]': (code: string | number, params?: {}) => {
     return `/join-managers/${code}`;
   },
-  '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
+  '/login': (params?: { force_oauth?: '' | undefined; why?: 'unauthorized' | undefined }) => {
     params = params ?? {};
-    params['bypass_oauth'] = params['bypass_oauth'] ?? undefined;
-    return `/login${appendSp({ bypass_oauth: params['bypass_oauth'] })}`;
+    params['force_oauth'] = params['force_oauth'] ?? undefined;
+    params['why'] = params['why'] ?? undefined;
+    return `/login${appendSp({ force_oauth: params['force_oauth'], why: params['why'] })}`;
   },
   '/login/done': `/login/done`,
   '/login/forgotten': `/login/forgotten`,
@@ -346,13 +347,13 @@ export const PAGES = {
  */
 export const SERVERS = {
   'GET /[entity=entity_handle]': (
-    entity: Parameters<typeof import('../params/entity_handle.ts').match>[0],
+    entity: ExtractParamType<typeof import('../params/entity_handle.ts').match>,
     params?: {},
   ) => {
     return `/${entity}`;
   },
   'GET /[uid=uid].png': (
-    uid: Parameters<typeof import('../params/uid.ts').match>[0],
+    uid: ExtractParamType<typeof import('../params/uid.ts').match>,
     params?: {},
   ) => {
     return `/${uid}.png`;
@@ -406,9 +407,7 @@ export const SERVERS = {
 /**
  * ACTIONS
  */
-export const ACTIONS = {
-  'default /login': `/login`,
-};
+export const ACTIONS = {};
 
 /**
  * LINKS
@@ -472,7 +471,7 @@ export const currentSp = () => {
   return record;
 };
 
-// route function helpers
+/* type helpers for route function */
 type NonFunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
 type FunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T];
 type FunctionParams<T> = T extends (...args: infer P) => any ? P : never;
@@ -508,6 +507,11 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
     return AllObjs[key] as string;
   }
 }
+
+/* type helpers param & predicate */
+type ExtractFnPredicate<T> = T extends (param: any) => param is infer U ? U : never;
+type ExtractParamType<T extends (param: any) => any> =
+  ExtractFnPredicate<T> extends never ? Parameters<T>[0] : ExtractFnPredicate<T>;
 
 /**
  * Add this type as a generic of the vite plugin `kitRoutes<KIT_ROUTES>`.
@@ -667,7 +671,7 @@ export type KIT_ROUTES = {
     'GET /manifest.json': never;
     'POST /markdown': never;
   };
-  ACTIONS: { 'default /login': never };
+  ACTIONS: Record<string, never>;
   LINKS: Record<string, never>;
   Params: {
     uid: never;
@@ -682,7 +686,8 @@ export type KIT_ROUTES = {
     week: never;
     group: never;
     ticket: never;
-    bypass_oauth: never;
+    force_oauth: never;
+    why: never;
     token: never;
     userWasDeleted: never;
     q: never;

@@ -72,7 +72,14 @@ export default mergeConfig(
         PAGES: {
           '/login': {
             explicit_search_params: {
-              bypass_oauth: { type: "undefined | '1'", default: 'undefined' },
+              force_oauth: {
+                type: '"" | undefined',
+                default: 'undefined',
+              },
+              why: {
+                type: '"unauthorized" | undefined',
+                default: 'undefined',
+              },
             },
           },
           '/events/[id]/bookings': {
