@@ -46,7 +46,7 @@ const toplevel = await git('rev-parse --show-toplevel');
 
 const appTag = process.env.APP_TAG || process.env.TAG || 'dev';
 
-await git('fetch --tags');
+await git('fetch --tags').catch(console.error);
 
 // Get all tags on the commit of the app tag
 const commitOfAppTag = await git(`rev-list -n 1 ${appTag}`).catch(() => null);
