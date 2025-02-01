@@ -164,11 +164,13 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/saschpe/android-sdk:35-jdk21.0.5_11 AS android-assemble-base
 
+ARG ANDROID_ASSEMBLE_USER_UID=1001
+
 WORKDIR /app
 
-COPY --from=builder-app /app/packages/app/ /app/packages/app/
-COPY --from=builder-app /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
-COPY --from=builder-app /app/node_modules/@capgo/ /app/node_modules/@capgo/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /app/packages/app/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capgo/ /app/node_modules/@capgo/
 
 
 #### Release (sign the APK)
@@ -179,9 +181,10 @@ ARG APK_KEY_ALIAS=ALIAS
 
 WORKDIR /app
 
-RUN --mount=type=secret,id=APK_KEYSTORE_BASE64 base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
+RUN --mount=type=secret,id=APK_KEYSTORE_BASE64,uid=$ANDROID_ASSEMBLE_USER_UID \
+    base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
 
-RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD \
+RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \
     KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true) \
     KEY_ALIAS=$APK_KEY_ALIAS \
     KEYSTORE_PATH=/app/churros.keystore \
