@@ -1,6 +1,7 @@
 .volta:
   image: marcaureln/volta:2.0.2-slim
   before_script:
+    - apt update && apt install -y git
     - yarn config set enableGlobalCache false
     - yarn config set enableImmutableInstalls true
     - yarn install
