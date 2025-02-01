@@ -219,10 +219,11 @@ export const PAGES = {
   '/join-managers/[code]': (code: string | number, params?: {}) => {
     return `/join-managers/${code}`;
   },
-  '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
+  '/login': (params?: { force_oauth?: '' | undefined; why?: 'unauthorized' | undefined }) => {
     params = params ?? {};
-    params['bypass_oauth'] = params['bypass_oauth'] ?? undefined;
-    return `/login${appendSp({ bypass_oauth: params['bypass_oauth'] })}`;
+    params['force_oauth'] = params['force_oauth'] ?? undefined;
+    params['why'] = params['why'] ?? undefined;
+    return `/login${appendSp({ force_oauth: params['force_oauth'], why: params['why'] })}`;
   },
   '/login/done': `/login/done`,
   '/login/forgotten': `/login/forgotten`,
@@ -687,7 +688,8 @@ export type KIT_ROUTES = {
     week: never;
     group: never;
     ticket: never;
-    bypass_oauth: never;
+    force_oauth: never;
+    why: never;
     token: never;
     userWasDeleted: never;
     q: never;

@@ -1,15 +1,18 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
   import Alert from '$lib/components/Alert.svelte';
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
+  import { oauthEnabled, oauthInitiateLoginURL } from '$lib/oauth';
   import { route } from '$lib/ROUTES';
+  import IconOauthSignin from '~icons/msl/key-outline';
   import { saveSessionToken } from '$lib/session';
-  import IconEye from '~icons/mdi/eye';
-  import IconEyeOff from '~icons/mdi/eye-off';
+  import IconEye from '~icons/msl/visibility-outline';
+  import IconEyeOff from '~icons/msl/visibility-off-outline';
   import { Login } from './mutations';
 
   let showingPassword = false;
@@ -46,16 +49,30 @@
     <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 
+  {#if oauthEnabled()}
+    <section class="oauth">
+      <ButtonSecondary href={oauthInitiateLoginURL({ url: $page.url })} noClientSideNavigation>
+        <div class="oauth-logo" slot="icon">
+          {#if env.PUBLIC_OAUTH_LOGO_URL}
+            <img src={env.PUBLIC_OAUTH_LOGO_URL} alt={env.PUBLIC_OAUTH_NAME} />
+          {:else}
+            <IconOauthSignin />
+          {/if}
+        </div>
+        {#if env.PUBLIC_OAUTH_NAME}
+          Connexion via {env.PUBLIC_OAUTH_NAME}
+        {:else}
+          Connexion rapide
+        {/if}
+      </ButtonSecondary>
+    </section>
+    <div class="or-separator">ou</div>
+  {/if}
+
   <Alert theme="danger" closed={!serverError}>
     {serverError}
   </Alert>
-  <InputText
-    bind:value={email}
-    name="email"
-    required
-    label="Adresse e-mail ou nom d'utilisateur"
-    autofocus
-  />
+  <InputText bind:value={email} name="email" required label="Adresse e-mail ou pseudo" autofocus />
   <InputText
     bind:value={password}
     required
@@ -91,17 +108,40 @@
     flex-direction: column;
     gap: 1rem;
     max-width: 400px;
+    padding: 0 1rem;
     margin: 0 auto;
   }
 
-  .submit {
+  .submit,
+  .oauth {
     display: flex;
     justify-content: center;
+  }
+
+  .or-separator {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    text-align: center;
+  }
+
+  .or-separator::before,
+  .or-separator::after {
+    display: inline-block;
+    width: 50%;
+    height: 1px;
+    content: '';
+    border-top: var(--border-block) solid var(--shy);
   }
 
   .actions {
     display: flex;
     gap: 1rem;
     justify-content: center;
+  }
+
+  .oauth-logo {
+    display: flex;
+    font-size: 1.2em;
   }
 </style>

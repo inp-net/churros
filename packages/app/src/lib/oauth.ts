@@ -11,9 +11,7 @@ export function oauthEnabled(): boolean {
 }
 
 export function oauthLoginBypassed(event: { url: URL }): boolean {
-  return (
-    event.url.searchParams.has('migrate') || event.url.searchParams.get('bypass_oauth') === '1'
-  );
+  return !event.url.searchParams.has('force_oauth');
 }
 
 export function oauthInitiateLoginURL(event: { url: URL }): URL {

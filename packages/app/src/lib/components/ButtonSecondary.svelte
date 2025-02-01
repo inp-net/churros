@@ -12,7 +12,7 @@
   export let loading = false;
   export let circle = false;
   export let id = '';
-  export let href = '';
+  export let href: URL | string = '';
   export let formaction: string | undefined = undefined;
   export let danger = false;
   export let success = false;
@@ -43,7 +43,7 @@
   class:stretches
   class:circle
   class:inside-prose={insideProse}
-  href={disabled ? undefined : href}
+  href={disabled ? undefined : href.toString()}
   {download}
   {formaction}
   {id}
@@ -61,6 +61,10 @@
   {#if icon}
     <div class="icon">
       <svelte:component this={icon} />
+    </div>
+  {:else if $$slots.icon}
+    <div class="icon">
+      <slot name="icon"></slot>
     </div>
   {/if}
   <slot />
@@ -125,7 +129,7 @@
 
   .icon {
     display: flex;
-    justify-content: center;
+    align-items: center;
     width: 1.15em;
     height: 1.15em;
   }
