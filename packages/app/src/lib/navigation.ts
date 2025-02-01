@@ -178,6 +178,17 @@ const commonActions = {
       navigationTopActionEventDispatcher('NAVTOP_RELOAD');
     },
   },
+  logout: async () => {
+    const me = browser ? await navtopPermissions() : null;
+    return {
+      icon: IconLogout,
+      label: 'Se déconnecter',
+      async do() {
+        await goto(route('/logout'));
+      },
+      hidden: !me,
+    };
+  },
 } as const;
 
 const quickActionConfigureNotfications: NavigationQuickAction = {
@@ -289,17 +300,7 @@ const rootPagesActions = [
           : false,
     };
   },
-  async () => {
-    const me = browser ? await navtopPermissions() : null;
-    return {
-      icon: IconLogout,
-      label: 'Se déconnecter',
-      async do() {
-        await goto(route('/logout'));
-      },
-      hidden: !me,
-    };
-  },
+  commonActions.logout,
 ] as Array<NavigationContext['actions'][number]>;
 
 export const topnavConfigs: Partial<{
@@ -343,6 +344,7 @@ export const topnavConfigs: Partial<{
           };
         },
         commonActions.copyID,
+        commonActions.logout,
       ],
     };
   },
