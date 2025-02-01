@@ -393,6 +393,7 @@ export const SERVERS = {
   'GET /.well-known/assetlinks.json': `/.well-known/assetlinks.json`,
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
+  'POST /update-bundle': `/update-bundle`,
   '_RESERVED_USERNAMES /check-uid/[uid]': (uid: string | number, params?: {}) => {
     return `/check-uid/${uid}`;
   },
@@ -665,6 +666,7 @@ export type KIT_ROUTES = {
     'GET /.well-known/assetlinks.json': never;
     'GET /connect/google': never;
     'GET /health': never;
+    'POST /update-bundle': never;
     '_RESERVED_USERNAMES /check-uid/[uid]': 'uid';
     'GET /check-uid/[uid]': 'uid';
     'GET /gdpr': never;
