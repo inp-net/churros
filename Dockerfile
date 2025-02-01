@@ -162,7 +162,7 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 #### Common base
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/mobiledevops/android-sdk-image AS android-assemble-base
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/saschpe/android-sdk:35-jdk21.0.5_11 AS android-assemble-base
 
 WORKDIR /app
 
