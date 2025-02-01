@@ -1,6 +1,6 @@
 {
   "name": "@churros/app",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "dependencies": {
     "@capacitor-community/safe-area": "^7.0.0-alpha.1",
     "@capacitor/android": "^7.0.0",

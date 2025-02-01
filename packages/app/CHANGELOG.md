@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.3.0
+
+### Minor Changes
+
+- 5e50827: the node server now serves deeplinking manifests at .well-known/
+
 ## 4.2.1
 
 ### Patch Changes
