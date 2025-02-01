@@ -16,8 +16,20 @@
   variables:
     BUILD_APK: "false"
     SIGN_APK: "false"
+    MAKE_UPDATE_BUNDLE: "false"
   script:
     - !reference [.build, script]
+    - |
+      if [ "$MAKE_UPDATE_BUNDLE" == "true" ]; then 
+        buildctl-daemonless.sh build \
+            --frontend=dockerfile.v0 \
+            --local context=. \
+            --local dockerfile=. \
+            --opt target=app-bundle \
+            --opt build-arg:TAG=$TAG \
+            --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+            --output type=local,dest=.
+      fi
     - |
       if [ "$SIGN_APK" == "true" ]; then \
         if [ -n "$APK_KEYSTORE_BASE64" ]; then \
@@ -46,7 +58,6 @@
             $BUILD_SECRET_APK_KEYSTORE_BASE64 \
             $BUILD_SECRET_APK_KEYSTORE_PASSWORD \
             --output type=local,dest=.; \
-        ls -la .; \
         mv app-$APK_TYPE.apk churros.apk; \
       fi
 
@@ -67,6 +78,7 @@ build:app:
   extends: .build:app
   artifacts:
     expire_in: 4 days
+    expose_as: APK
     paths: [churros.apk, output-metadata.json]
   variables:
     BUILD_APK: "true"
@@ -141,6 +153,8 @@ deploy:app:
   extends: .build:app-with-native
   stage: deploy
   interruptible: false
+  artifacts:
+    paths: [update-bundle.zip]
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
       variables:
@@ -149,6 +163,19 @@ deploy:app:
         TAG: export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
         DEPLOY: "true"
         SIGN_APK: "true"
+        MAKE_UPDATE_BUNDLE: "true"
   environment:
     name: $ENV
     url: $URL
+
+deploy:app:update-bundle:
+  image: gitlab/glab:v1.52.0
+  stage: deploy
+  needs: 
+    - job: deploy:app
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
+  script:
+    - glab release upload $CI_COMMIT_TAG 'update-bundle.zip#update-bundle.zip#package'
+

@@ -20,6 +20,9 @@ const config: CapacitorConfig = {
     SafeArea: {
       enabled: true,
     },
+    CapacitorUpdater: {
+      updateUrl: 'https://churros.inpt.fr/update-bundle',
+    },
   },
 };
 

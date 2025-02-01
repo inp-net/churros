@@ -51,5 +51,6 @@ release:
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     INPUT_VERSION: '/bin/sh scripts/update-versions.sh'
     INPUT_PUBLISH: 'changeset tag'
+    INPUT_CREATE_GITLAB_RELEASES: 'true'
   script:
     - changesets-gitlab

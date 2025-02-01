@@ -265,6 +265,25 @@ ENTRYPOINT ["./entrypoint.sh"]
 # Artifacts
 #####
 
+### GraphQL schema
+
 FROM scratch as graphql-schema
 
 COPY --from=builder-api /app/packages/api/build/schema.graphql /schema.graphql
+
+### Update bundle for OTA updates of the native apps
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine as app-bundle-assemble
+
+COPY --from=builder-app /app/packages/app/build-static/ /build-static/
+
+ARG APP_PACKAGE_ID=app.churros
+
+RUN npx @capgo/cli bundle zip $APP_PACKAGE_ID \
+    --path /build-static \
+    --bundle $TAG \
+    --name update-bundle.zip 
+
+FROM scratch as app-bundle
+
+COPY --from=app-bundle-assemble /update-bundle.zip /update-bundle.zip
