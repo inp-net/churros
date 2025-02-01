@@ -652,12 +652,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/haptics@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "@capacitor/haptics@npm:6.0.1"
+"@capacitor/haptics@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/haptics@npm:7.0.0"
   peerDependencies:
-    "@capacitor/core": ^6.0.0
-  checksum: 10c0/d7c1c46a01efa7ba99152ae0bb0893a4dc489f2025c7008d0f7e8cfad4320bdcfad227cb1f3831e5d56c2635aeb49707bcb3da63e6b2fe070d90ff596ad64f81
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10c0/b3fc86267da3cddd03dded36ca042e9ed90da2432de2a70a90cb0be4c42ce82b4d623caab5d2def3dc21f6e7741acf8879e2c9b3a2b0e3888884a5833be2bf9d
   languageName: node
   linkType: hard
 
@@ -1292,6 +1292,7 @@ __metadata:
     "@capacitor/assets": "npm:^3.0.5"
     "@capacitor/cli": "npm:^6.1.2"
     "@capacitor/core": "npm:^6.1.2"
+    "@capacitor/haptics": "npm:^7.0.0"
     "@capacitor/ios": "npm:^6.1.2"
     "@capacitor/preferences": "npm:^6.0.2"
     "@capacitor/push-notifications": "npm:^6.0.2"
@@ -9166,7 +9167,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "churros@workspace:."
   dependencies:
-    "@capacitor/haptics": "npm:^6.0.1"
     "@changesets/changelog-git": "npm:^0.2.0"
     "@changesets/cli": "npm:^2.27.12"
     "@commitlint/cli": "npm:^19.6.1"
