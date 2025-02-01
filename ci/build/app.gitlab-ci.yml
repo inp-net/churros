@@ -135,12 +135,18 @@ deploy:apk:
       while true; do
         sleep 10
         response=$(curl https://upload.diawi.com/status -F token="$DIAWI_TOKEN" -F job=$diawi_job)
+        echo "Diawi response: $response"
         if [ "$(echo $response | jq -r .status)" == "2000" ]; then
           echo "Diawi URL: $(echo $response | jq -r .link)"
           if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+            echo "APK $diawi_job available at $(echo $response | jq -r .link)" >> note.md
+            echo >> note.md
+            echo "![QR code]($(echo $response | jq -r .qrcode))" >> note.md
+            echo >> note.md
+            echo "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" >> note.md
             curl -X POST $CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes \
               -H "PRIVATE-TOKEN: $YAPPER_TOKEN" \
-              --url-query "APK $diawi_job available at $(echo $response | jq -r .link)\n\n![QR code]($(echo $response | jq -r .qrcode))\n\nBuilt against $CI_COMMIT_SHA in $CI_PIPELINE_URL"
+              --url-query $(cat note.md) 
           fi
           break
         fi
