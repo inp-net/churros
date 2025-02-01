@@ -2,10 +2,6 @@
   extends: .build
   variables:
     TARGET: app
-  artifacts:
-    paths:
-      - churros.apk
-      - output-metadata.json
 
 .build:app:
   extends: .app
