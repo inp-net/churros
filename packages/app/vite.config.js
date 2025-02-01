@@ -73,7 +73,7 @@ export default mergeConfig(
           '/login': {
             explicit_search_params: {
               force_oauth: {
-                type: 'true | undefined',
+                type: '"" | undefined',
                 default: 'undefined',
               },
               why: {

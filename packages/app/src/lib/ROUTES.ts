@@ -219,7 +219,7 @@ export const PAGES = {
   '/join-managers/[code]': (code: string | number, params?: {}) => {
     return `/join-managers/${code}`;
   },
-  '/login': (params?: { force_oauth?: true | undefined; why?: 'unauthorized' | undefined }) => {
+  '/login': (params?: { force_oauth?: '' | undefined; why?: 'unauthorized' | undefined }) => {
     params = params ?? {};
     params['force_oauth'] = params['force_oauth'] ?? undefined;
     params['why'] = params['why'] ?? undefined;

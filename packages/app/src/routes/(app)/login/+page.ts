@@ -2,7 +2,5 @@ import { oauthEnabled, oauthInitiateLoginURL, oauthLoginBypassed } from '$lib/oa
 import { redirect } from '@sveltejs/kit';
 
 export async function load(event) {
-  if (oauthEnabled() && !oauthLoginBypassed(event)) 
-    redirect(307, oauthInitiateLoginURL(event));
-  
+  if (oauthEnabled() && !oauthLoginBypassed(event)) redirect(307, oauthInitiateLoginURL(event));
 }

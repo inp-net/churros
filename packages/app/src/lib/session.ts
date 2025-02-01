@@ -1,5 +1,6 @@
-import { graphql, type SessionToken$data } from '$houdini';
+import { graphql, setClientSession, type SessionToken$data } from '$houdini';
 import { redirect, type Cookies } from '@sveltejs/kit';
+import { serialize } from 'cookie';
 
 graphql(`
   fragment SessionToken on Credential {
