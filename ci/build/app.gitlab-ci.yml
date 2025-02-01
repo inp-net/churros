@@ -132,17 +132,16 @@ deploy:apk:
     - echo "Diawi job is $diawi_job"
     # poll for the diawi URL
     - |
+      attempts=0
       while true; do
         sleep 10
-        response=$(curl https://upload.diawi.com/status -F token="$DIAWI_TOKEN" -F job=$diawi_job)
+        response=$(curl "https://upload.diawi.com/status?token=$DIAWI_TOKEN&job=$diawi_job")
         echo "Diawi response: $response"
         if [ "$(echo $response | jq -r .status)" == "2000" ]; then
           echo "Diawi URL: $(echo $response | jq -r .link)"
           if [ -n "$CI_MERGE_REQUEST_IID" ]; then
-            echo "APK $diawi_job available at $(echo $response | jq -r .link)" >> note.md
-            echo >> note.md
-            echo "![QR code]($(echo $response | jq -r .qrcode))" >> note.md
-            echo >> note.md
+            echo $response | jq -r '"APK \(.hash) available [on Diawi](\(.link))\n"' >> note.md
+            echo $response | jq -r '"![QR code](\(.qrcode))\n\n"' >> note.md
             echo "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" >> note.md
             curl -X POST $CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes \
               -H "PRIVATE-TOKEN: $YAPPER_TOKEN" \
@@ -154,6 +153,11 @@ deploy:apk:
           echo "Diawi error: $(echo $response | jq -r .message)"
           exit 1
         fi
+        if [ $attempts -gt 100 ]; then
+          echo "Giving up after 100 attempts"
+          exit 1
+        fi
+        attempts=$((attempts+1))
       done
 
 deploy:app:
