@@ -21,7 +21,7 @@
   import { addReferrer, refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { scrollableContainer, setupScrollPositionRestorer } from '$lib/scroll';
-  import { editingTheme, isDark, theme } from '$lib/theme';
+  import { editingTheme, isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
   import { SafeArea } from '@capacitor-community/safe-area';
@@ -103,8 +103,8 @@
   $: SafeArea.enable({
     config: {
       customColorsForSystemBars: true,
-      navigationBarContent: $theme.variant,
-      statusBarContent: $theme.variant,
+      navigationBarContent: $isDark ? 'light' : 'dark',
+      statusBarContent: $isDark ? 'light' : 'dark',
     },
   });
 
