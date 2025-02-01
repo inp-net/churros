@@ -1,5 +1,18 @@
 # @churros/app
 
+## 4.4.0
+
+### Minor Changes
+
+- 5cab9f4: overhaul login flow, allow setting name and/or logo for the oauth provider thru PUBLIC*OAUTH*{LOGO_URL,NAME}
+- 67fc88a: Add /update-bundle to serve update bundles, in preparation for native OTA updates
+- 43d0446: add logout to profile page overflow menu
+- dbb8caf: add tooltip on like button when logged out
+
+### Patch Changes
+
+- 11f4d5a: remove help button on ticket capacity visiblity toggle, use a tooltip instead
+
 ## 4.3.0
 
 ### Minor Changes
