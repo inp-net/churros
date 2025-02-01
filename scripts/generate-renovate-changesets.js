@@ -77,7 +77,7 @@ for (const commitHash of mergeCommits) {
     .slice(1)
     .filter(Boolean)
     .map((line) => line.replace(/^See merge request .+?!(\d+)$/i, '(!$1)'))
-    .join('  ');
+    .join(' ');
   writeFileSync(changesetFile, `${originalMessage}\n`, {
     encoding: 'utf-8',
     flag: 'a',
