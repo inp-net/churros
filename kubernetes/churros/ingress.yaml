@@ -38,7 +38,7 @@ spec:
                 port:
                   number: 4000
             path: /.well-known/churros.app/server.json
-            pathType: Exact
+            pathType: ImplementationSpecific
           - backend:
               service:
                 name: churros-api
