@@ -174,7 +174,6 @@ WORKDIR /app
 RUN mkdir -p $HOME/.gradle
 RUN echo "BUILD_VERSION_CODE=$BUILD_NUMBER" >> $HOME/.gradle/gradle.properties
 RUN echo "BUILD_VERSION_NAME=$TAG" >> $HOME/.gradle/gradle.properties
-RUN cat $HOME/.gradle/gradle.properties
 
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /app/packages/app/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
@@ -198,6 +197,8 @@ RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID 
     echo "KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true)" >> $HOME/.gradle/gradle.properties
 
 RUN echo "KEY_ALIAS=$APK_KEY_ALIAS" >> $HOME/.gradle/gradle.properties
+
+RUN cat $HOME/.gradle/gradle.properties
 
 WORKDIR /app/packages/app/android
 RUN ./gradlew assembleRelease
