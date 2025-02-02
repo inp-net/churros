@@ -33,6 +33,7 @@
   import { toasts } from '$lib/toasts';
   import { vibrate } from '$lib/vibration';
   import { ScreenBrightness } from '@capacitor-community/screen-brightness';
+  import { KeepAwake } from '@capacitor-community/keep-awake';
   import { onDestroy, onMount } from 'svelte';
   import IconCancel from '~icons/msl/block';
   import IconDownload from '~icons/msl/download';
@@ -51,12 +52,22 @@
   let actualBrightness = -1;
 
   onMount(async () => {
-    actualBrightness = await ScreenBrightness.getBrightness().then((res) => res.brightness);
-    await ScreenBrightness.setBrightness({ brightness: 1 });
+    try {
+      actualBrightness = await ScreenBrightness.getBrightness().then((res) => res.brightness);
+      await ScreenBrightness.setBrightness({ brightness: 1 });
+      await KeepAwake.keepAwake();
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   onDestroy(async () => {
-    await ScreenBrightness.setBrightness({ brightness: actualBrightness });
+    try {
+      await KeepAwake.allowSleep();
+      await ScreenBrightness.setBrightness({ brightness: actualBrightness });
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   let initialBookingDataVerified: undefined | boolean;
