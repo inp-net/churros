@@ -288,7 +288,7 @@ ARG APP_PACKAGE_ID=app.churros
 
 RUN yarn dlx @capgo/cli bundle zip \
     --path build-static \
-    --bundle 4.4.1 \
+    --bundle $TAG \
     --name update-bundle.zip \
     $APP_PACKAGE_ID 
 
