@@ -10,6 +10,7 @@
     DEPLOY: 'false'
     EXPORT: image
     APP_DOTENV_OVERRIDE: packages/app/.env.prod
+    REMOTE_DEVSERVER: ''
   interruptible: true
   before_script:
     - |
@@ -28,6 +29,14 @@
 
   script:
     - eval $TAG
+    - |
+      if [ -n "$REMOTE_DEVSERVER" ]; then
+        if [ ! -n "$APP_DOTENV_OVERRIDE" ]; then
+          echo "APP_DOTENV_OVERRIDE is not set"
+          exit 1
+        fi
+        echo "CAPACITOR_DEVSERVER=$REMOTE_DEVSERVER" >> $APP_DOTENV_OVERRIDE
+      fi
     - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
     - |
       if [ "$EXPORT" == "image" ]; then \
@@ -43,6 +52,7 @@
           --opt target=$TARGET \
           --opt build-arg:TAG=$TAG \
           --opt build-arg:APP_DOTENV_OVERRIDE="$APP_DOTENV_OVERRIDE" \
+          --opt build-arg:REMOTE_DEVSERVER=$REMOTE_DEVSERVER \
           --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
           $BUILD_SECRET_SENTRY \
           --output "$OUTPUT"

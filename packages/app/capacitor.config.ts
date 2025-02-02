@@ -1,5 +1,11 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+const capacitorDevserverUrl = process.env['CAPACITOR_DEVSERVER'];
+
+if (capacitorDevserverUrl) {
+  console.log('Using remote devserver:', capacitorDevserverUrl);
+}
+
 const config: CapacitorConfig = {
   appId: 'app.churros',
   appName: 'Churros',
@@ -7,6 +13,12 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: true,
   },
+  server: capacitorDevserverUrl
+    ? {
+        cleartext: capacitorDevserverUrl.startsWith('http://'),
+        url: capacitorDevserverUrl,
+      }
+    : undefined,
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],

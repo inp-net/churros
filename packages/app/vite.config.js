@@ -7,6 +7,12 @@ import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
 import { kitRoutes } from 'vite-plugin-kit-routes';
 
+const capacitorDevserverUrl = process.env['CAPACITOR_DEVSERVER'];
+
+if (capacitorDevserverUrl) {
+  console.log(`Capacitor devserver URL set, allowing host ${new URL(capacitorDevserverUrl).host}`);
+}
+
 export const commonConfig = defineConfig({
   plugins: [
     icons({
@@ -48,6 +54,9 @@ export default mergeConfig(
     build: {
       minify: false,
       sourcemap: true,
+    },
+    server: {
+      allowedHosts: capacitorDevserverUrl ? [new URL(capacitorDevserverUrl).host] : [],
     },
     plugins: [
       houdini(),
