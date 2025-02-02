@@ -222,6 +222,10 @@ COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs
 
 FROM android-assemble-base AS android-assemble-debug
 
+RUN echo "KEYSTORE_PATH=null" >> $HOME/.gradle/gradle.properties
+RUN echo "KEYSTORE_PASSWORD=null" >> $HOME/.gradle/gradle.properties
+RUN echo "KEY_ALIAS=null" >> $HOME/.gradle/gradle.properties
+
 WORKDIR /app/packages/app/android
 
 RUN ./gradlew assembleDebug
