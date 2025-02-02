@@ -195,24 +195,52 @@
       </Submenu>
       <ModalServerConfiguration bind:open={openServerConfig} />
       <footer>
-        <p>Churros {Capacitor.getPlatform()} v{CURRENT_VERSION}</p>
+        <p>
+          Churros {Capacitor.getPlatform()}
+          <a href="{env.PUBLIC_REPOSITORY_URL}/-/releases/@churros%2Fapp@{CURRENT_VERSION}">
+            <code>v{CURRENT_VERSION}</code>
+          </a>
+          using API
+          <a
+            href={onceLoaded(
+              apiVersion,
+              (version) => `${env.PUBLIC_REPOSITORY_URL}/-/releases/@churros%2Fapi@${version}`,
+              '',
+            )}
+          >
+            <LoadingText tag="code" value={mapLoading(apiVersion, (ver) => `v${ver}`)}>
+              v0.0.0
+            </LoadingText>
+          </a>
+        </p>
         {#if Capacitor.isNativePlatform()}
           {#await App.getInfo() then { version, build }}
             <p>
-              build v{version}
-              <code>
-                <a href="{env.PUBLIC_REPOSITORY_URL}/-/pipelines/{build}">{build}</a>
-              </code>
+              build
+              <a href="{env.PUBLIC_REPOSITORY_URL}/-/releases/@churros%2Fapp@{version}">
+                <code>v{version}</code>
+              </a>
+              <a href="{env.PUBLIC_REPOSITORY_URL}/-/pipelines/{build}">
+                <code>{build}</code>
+              </a>
             </p>
           {/await}
         {/if}
         <p>
-          commit <code>
-            <a href="{env.PUBLIC_REPOSITORY_URL}/-/commit/{CURRENT_COMMIT}">
-              {CURRENT_COMMIT.slice(0, 7)}
-            </a>
-          </code>
+          commit
+          <a href="{env.PUBLIC_REPOSITORY_URL}/-/commit/{CURRENT_COMMIT}">
+            <code> {CURRENT_COMMIT.slice(0, 7)} </code>
+          </a>
         </p>
+        {#if $debugging}
+          <p><strong>Environment</strong></p>
+          <dl>
+            {#each Object.entries(env) as [key, value]}
+              <dt>{key}</dt>
+              <dd><code>{value}</code></dd>
+            {/each}
+          </dl>
+        {/if}
       </footer>
     </div>
     <slot slot="right"></slot>
@@ -237,6 +265,17 @@
     justify-content: center;
     padding: 2rem 1rem;
     color: var(--muted);
+  }
+
+  footer p {
     text-align: center;
+  }
+
+  footer a {
+    text-decoration: underline;
+  }
+
+  footer p:has(strong) {
+    margin-top: 1rem;
   }
 </style>
