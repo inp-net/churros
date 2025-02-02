@@ -8,6 +8,8 @@ import {
   type SucceededMutationResult,
 } from '$lib/errors';
 import { entries } from '$lib/typing';
+import { Capacitor } from '@capacitor/core';
+import { Toast } from '@capacitor/toast';
 import { minutesToMilliseconds } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { get, writable } from 'svelte/store';
@@ -84,14 +86,24 @@ export const toasts = {
   },
   _add<T>(toast: Toast<T>) {
     if (!browser) return;
-    toasts.update((ts) => [
-      ...ts.slice(0, MAX_TOASTS_COUNT - 1),
-      {
-        ...toast,
-        title: toast.body ? toast.title : '',
-        body: toast.body || toast.title,
-      },
-    ]);
+    const hasNoFancyFeatures =
+      !toast.callbacks.action && !toast.callbacks.closed && !toast.labels.action && !toast.lifetime;
+
+    if (hasNoFancyFeatures && Capacitor.isNativePlatform()) {
+      Toast.show({
+        text: [toast.title, toast.body].filter(Boolean).join('\n'),
+        duration: ['error', 'warning'].includes(toast.type) ? 'long' : 'short',
+      });
+    } else {
+      toasts.update((ts) => [
+        ...ts.slice(0, MAX_TOASTS_COUNT - 1),
+        {
+          ...toast,
+          title: toast.body ? toast.title : '',
+          body: toast.body || toast.title,
+        },
+      ]);
+    }
   },
   warn<T>(title: string, body = '', options?: ToastOptions<T>): string | undefined {
     return toasts.add<T>('warning', title, body, options);
@@ -139,7 +151,7 @@ export const toasts = {
     caveats:
       | Record<NoInfer<CaveatsKeys>, null | 'info' | 'warning' | 'success' | 'error'>
       | undefined = undefined,
-    options: ToastOptions<{}> | undefined = undefined,
+    options: ToastOptions<object> | undefined = undefined,
   ): result is SucceededMutationResult<
     MutationName,
     SuccessData,

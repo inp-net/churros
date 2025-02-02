@@ -2,7 +2,9 @@
   "name": "@churros/app",
   "version": "4.4.1",
   "dependencies": {
+    "@capacitor-community/keep-awake": "^6.0.0",
     "@capacitor-community/safe-area": "^7.0.0-alpha.1",
+    "@capacitor-community/screen-brightness": "^7.0.0",
     "@capacitor/android": "^7.0.0",
     "@capacitor/app": "^7.0.0",
     "@capacitor/core": "^7.0.0",
@@ -13,6 +15,8 @@
     "@capacitor/push-notifications": "^7.0.0",
     "@capacitor/share": "^7.0.0",
     "@capacitor/status-bar": "^7.0.0",
+    "@capacitor/toast": "^7.0.0",
+    "@capawesome/capacitor-app-shortcuts": "^7.0.1",
     "@capgo/capacitor-updater": "^6.14.8",
     "@capgo/inappbrowser": "^7.1.1",
     "@carbon/charts-svelte": "^1.22.15",
@@ -137,7 +141,8 @@
     "start": "node ./build-node/index.js",
     "zeus": "zeus ./schema.graphql ./src --es --subscriptions",
     "build:android": "BUILD_ADAPTER=static yarn generate && BUILD_ADAPTER=static vite build && yarn cap sync android && cd ./android && ./gradlew assembleDebug",
-    "build:native-assets": "npx @capacitor/assets generate --iconBackgroundColor '#2E55C1' --iconBackgroundColorDark '#222222' --splashBackgroundColor '#2E55C1' --splashBackgroundColorDark '#111111' --assetPath static --pwaManifestPath static/manifest.json"
+    "build:native-assets": "npx @capacitor/assets generate --iconBackgroundColor '#2E55C1' --iconBackgroundColorDark '#222222' --splashBackgroundColor '#2E55C1' --splashBackgroundColorDark '#111111' --assetPath static --pwaManifestPath static/manifest.json",
+    "capadd": "yarn add $@ && mkdir -p build-static && touch build-static/index.html && yarn cap sync && cd android && git add . && git commit -m \"chore: register $@\" && cd ../ios && git add . && git commit -m \"chore: register $@\" && cd .. && git add android ios package.json ../../yarn.lock && git commit -m \"chore(capacitor): register $@\""
   },
   "type": "module",
   "volta": {

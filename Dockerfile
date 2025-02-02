@@ -279,17 +279,19 @@ COPY --from=builder-api /app/packages/api/build/schema.graphql /schema.graphql
 
 ### Update bundle for OTA updates of the native apps
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine as app-bundle-assemble
+FROM builder-app as app-bundle-assemble
 
-COPY --from=builder-app /app/packages/app/build-static/ /build-static/
+WORKDIR /app/packages/app
 
+ARG TAG=dev
 ARG APP_PACKAGE_ID=app.churros
 
-RUN npx @capgo/cli bundle zip $APP_PACKAGE_ID \
-    --path /build-static \
+RUN yarn dlx @capgo/cli bundle zip \
+    --path build-static \
     --bundle $TAG \
-    --name update-bundle.zip 
+    --name update-bundle.zip \
+    $APP_PACKAGE_ID 
 
 FROM scratch as app-bundle
 
-COPY --from=app-bundle-assemble /update-bundle.zip /update-bundle.zip
+COPY --from=app-bundle-assemble /app/packages/app/update-bundle.zip /update-bundle.zip

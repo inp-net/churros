@@ -5,6 +5,7 @@ import { editingTheme } from '$lib/theme';
 import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import * as Sentry from '@sentry/sveltekit';
 import { addYears, setDefaultOptions } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -30,6 +31,8 @@ export async function load(event) {
     const url = new URL(event.url);
     goto(event.url.replace(url.origin, ''));
   });
+
+  await CapacitorUpdater.notifyAppReady();
 
   if (Capacitor.isNativePlatform()) {
     // Expose token to cookies so that houdini client can use it (its fetchParams function is synchronous so there's no way to call Preferences.get there)
