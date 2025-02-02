@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql, PendingValue } from '$houdini';
+  import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import IconLydia from '$lib/components/IconLydia.svelte';
   import InputCheckbox from '$lib/components/InputCheckbox.svelte';
@@ -18,6 +20,8 @@
   import { getServerManifest, type ServerManifest } from '$lib/servmanifest';
   import { theme } from '$lib/theme';
   import { toasts } from '$lib/toasts';
+  import { App } from '@capacitor/app';
+  import { Capacitor } from '@capacitor/core';
   import IconAnnouncements from '~icons/msl/campaign-outline';
   import IconReady from '~icons/msl/check-circle';
   import IconDebug from '~icons/msl/code';
@@ -31,7 +35,7 @@
   import { hiddenAnnouncements } from '../Announcements.svelte';
   import type { LayoutData } from './$houdini';
   import ModalServerConfiguration from './ModalServerConfiguration.svelte';
-  import { browser } from '$app/environment';
+  import { env } from '$env/dynamic/public';
 
   let openServerConfig: () => void;
 
@@ -186,6 +190,26 @@
         </SubmenuItem>
       </Submenu>
       <ModalServerConfiguration bind:open={openServerConfig} />
+      <footer>
+        <p>Churros {Capacitor.getPlatform()} v{CURRENT_VERSION}</p>
+        {#if Capacitor.isNativePlatform()}
+          {#await App.getInfo() then { version, build }}
+            <p>
+              build v{version}
+              <code>
+                <a href="{env.PUBLIC_REPOSITORY_URL}/-/pipelines/{build}">{build}</a>
+              </code>
+            </p>
+          {/await}
+        {/if}
+        <p>
+          commit <code>
+            <a href="{env.PUBLIC_REPOSITORY_URL}/-/commit/{CURRENT_COMMIT}">
+              {CURRENT_COMMIT.slice(0, 7)}
+            </a>
+          </code>
+        </p>
+      </footer>
     </div>
     <slot slot="right"></slot>
   </Split>
@@ -201,5 +225,14 @@
     gap: 0 0.5ch;
     align-items: center;
     font-size: 1.1em;
+  }
+
+  footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    text-align: center;
   }
 </style>
