@@ -80,10 +80,11 @@ build:app:
   artifacts:
     expire_in: 4 days
     expose_as: APK
-    paths: [churros.apk, output-metadata.json]
+    paths: [churros.apk, output-metadata.json, update-bundle.zip]
   variables:
     BUILD_APK: "true"
     SIGN_APK: "false"
+    MAKE_UPDATE_BUNDLE: "false"
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_SUBMODULE_FORCE_HTTPS: "true"
 
@@ -100,6 +101,8 @@ build:app-with-native-signed:
   extends: .build:app-with-native
   variables:
     SIGN_APK: "true"
+    MAKE_UPDATE_BUNDLE: "true"
+    TAG: "4.4.0"
   rules:
     - if: >-
         $CI_PIPELINE_SOURCE == "merge_request_event" && 
@@ -119,7 +122,6 @@ deploy:apk:
   image: registry.gitlab.com/gitlab-ci-utils/curl-jq
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
     - |
