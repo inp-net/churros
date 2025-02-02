@@ -262,14 +262,10 @@ const rootPagesActions = [
       hidden: !me,
     };
   },
-  async () => {
-    const me = browser ? await navtopPermissions() : null;
-    return {
-      icon: IconCog,
-      label: 'Paramètres',
-      href: route('/settings'),
-      hidden: !me,
-    };
+  {
+    icon: IconCog,
+    label: 'Paramètres',
+    href: route('/settings'),
   },
   {
     icon: IconGift,

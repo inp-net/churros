@@ -77,9 +77,11 @@
   <Split mobilePart={$page.route.id === '/(app)/settings' ? 'left' : 'right'}>
     <div class="contents" slot="left">
       <Submenu>
-        <SubmenuItem icon={IconProfile} href={route('/users/[uid]/edit', loading(me.uid, ''))}>
-          Profil
-        </SubmenuItem>
+        {#if me}
+          <SubmenuItem icon={IconProfile} href={route('/users/[uid]/edit', loading(me.uid, ''))}>
+            Profil
+          </SubmenuItem>
+        {/if}
         <SubmenuItem
           icon={IconTheme}
           subtext={themes.find((t) => t.localID === $theme.id)?.name ?? 'Par défaut'}
@@ -90,75 +92,77 @@
         <SubmenuItem icon={IconNotification} href={refroute('/notifications')}>
           Notifications
         </SubmenuItem>
-        <SubmenuItem icon={IconLydia} subtext="N'apparaît pas sur le profil" label>
-          Numéro de tel. pour Lydia
+        {#if me}
+          <SubmenuItem icon={IconLydia} subtext="N'apparaît pas sur le profil" label>
+            Numéro de tel. pour Lydia
 
-          <InputText
-            label=""
-            slot="right"
-            inputmode="tel"
-            value={loading(me.lydiaPhone, '')}
-            on:blur={async ({ target }) => {
-              if (!(target instanceof HTMLInputElement)) return;
-              await mutateAndToast(
-                UpdateLydiaPhone,
-                { lydiaPhone: target.value },
-                {
-                  error: 'Impossible de mettre à jour le num Lydia',
-                },
-              );
-            }}
-          />
-        </SubmenuItem>
-        <SubmenuItem icon={IconSpecialOffer} href={refroute('/claim-code')}>
-          Réclamer un code de promotion
-        </SubmenuItem>
-        <SubmenuItem icon={IconPersonalData}>
-          Mes données personnelles
-          <svelte:fragment slot="subtext">
-            {#if loading(me.gdprExport, null)}
-              <div class="gdpr-ready">
-                <IconReady class="success" />
-                Ton export est prêt
-              </div>
-            {/if}
-          </svelte:fragment>
-          <ButtonSecondary
-            slot="right"
-            href={onceLoaded(me.gdprExport, (u) => u?.toString() ?? '', '') || undefined}
-            newTab={onceLoaded(me.gdprExport, Boolean, false)}
-            on:click={async () => {
-              const result = await RequestGDPRExport.mutate(null);
-              if (result.data?.createGdprExport?.__typename === 'CheckBackLaterError') {
-                toasts.success(
-                  'Demande créée',
-                  'Tu recevras un email dès que ton export sera prêt.',
+            <InputText
+              label=""
+              slot="right"
+              inputmode="tel"
+              value={loading(me.lydiaPhone, '')}
+              on:blur={async ({ target }) => {
+                if (!(target instanceof HTMLInputElement)) return;
+                await mutateAndToast(
+                  UpdateLydiaPhone,
+                  { lydiaPhone: target.value },
+                  {
+                    error: 'Impossible de mettre à jour le num Lydia',
+                  },
                 );
-              } else if (
-                result.data?.createGdprExport?.__typename === 'MutationCreateGdprExportSuccess'
-              ) {
-                // Since we passed force: true, this should never happen
-                await LayoutSettings.fetch();
-                toasts.info(
-                  'Tu as déjà un export de prêt',
-                  'Tu peux le télécharger en cliquant de nouveau sur le bouton.',
-                );
-                return;
-              } else {
-                toasts.mutation(
-                  result,
-                  'createGdprExport',
-                  '',
-                  "Erreur lors de la création de l'export",
-                );
-              }
-            }}
-          >
-            <LoadingText
-              value={mapLoading(me.gdprExport, (u) => (u ? 'Télécharger' : 'Demander'))}
+              }}
             />
-          </ButtonSecondary>
-        </SubmenuItem>
+          </SubmenuItem>
+          <SubmenuItem icon={IconSpecialOffer} href={refroute('/claim-code')}>
+            Réclamer un code de promotion
+          </SubmenuItem>
+          <SubmenuItem icon={IconPersonalData}>
+            Mes données personnelles
+            <svelte:fragment slot="subtext">
+              {#if loading(me.gdprExport, null)}
+                <div class="gdpr-ready">
+                  <IconReady class="success" />
+                  Ton export est prêt
+                </div>
+              {/if}
+            </svelte:fragment>
+            <ButtonSecondary
+              slot="right"
+              href={onceLoaded(me.gdprExport, (u) => u?.toString() ?? '', '') || undefined}
+              newTab={onceLoaded(me.gdprExport, Boolean, false)}
+              on:click={async () => {
+                const result = await RequestGDPRExport.mutate(null);
+                if (result.data?.createGdprExport?.__typename === 'CheckBackLaterError') {
+                  toasts.success(
+                    'Demande créée',
+                    'Tu recevras un email dès que ton export sera prêt.',
+                  );
+                } else if (
+                  result.data?.createGdprExport?.__typename === 'MutationCreateGdprExportSuccess'
+                ) {
+                  // Since we passed force: true, this should never happen
+                  await LayoutSettings.fetch();
+                  toasts.info(
+                    'Tu as déjà un export de prêt',
+                    'Tu peux le télécharger en cliquant de nouveau sur le bouton.',
+                  );
+                  return;
+                } else {
+                  toasts.mutation(
+                    result,
+                    'createGdprExport',
+                    '',
+                    "Erreur lors de la création de l'export",
+                  );
+                }
+              }}
+            >
+              <LoadingText
+                value={mapLoading(me.gdprExport, (u) => (u ? 'Télécharger' : 'Demander'))}
+              />
+            </ButtonSecondary>
+          </SubmenuItem>
+        {/if}
         <SubmenuItem
           clickable
           on:click={() => {
