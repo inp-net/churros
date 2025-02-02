@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.4.1
+
+### Patch Changes
+
+- 118278c: remove leftover TWA assetlinks.json that was taking precedence over native one
+
 ## 4.4.0
 
 ### Minor Changes
