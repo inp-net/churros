@@ -188,6 +188,7 @@ COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /a
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor-community/ /app/node_modules/@capacitor-community/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capgo/ /app/node_modules/@capgo/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capawesome/ /app/node_modules/@capawesome/
 
 
 #### Release (sign the APK)
