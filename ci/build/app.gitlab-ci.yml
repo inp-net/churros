@@ -90,8 +90,6 @@ build:app:
 
 build:app-with-native-unsigned:
   extends: .build:app-with-native
-  variables:
-    TAG: export TAG=4.4.0
   rules: 
     - if: >-
         $CI_PIPELINE_SOURCE == "merge_request_event" && 
@@ -103,7 +101,6 @@ build:app-with-native-signed:
   extends: .build:app-with-native
   variables:
     SIGN_APK: "true"
-    TAG: export TAG=4.4.0
   rules:
     - if: >-
         $CI_PIPELINE_SOURCE == "merge_request_event" && 
