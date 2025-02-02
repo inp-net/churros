@@ -52,7 +52,7 @@
             --local dockerfile=. \
             --opt target=android-$APK_TYPE \
             --opt build-arg:TAG=$TAG \
-            --opt build-arg:BUILD_NUMBER=$CI_PIPELINE_IID \
+            --opt build-arg:BUILD_NUMBER=$CI_PIPELINE_ID \
             --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
             --opt build-arg:APK_KEY_ALIAS=$APK_KEY_ALIAS \
             $BUILD_SECRET_SENTRY \
@@ -114,7 +114,7 @@ build:app-with-native-signed:
 deploy:apk:
   stage: deploy
   needs: 
-    - job: build:app-with-native
+    - job: build:app-with-native-unsigned
       optional: true
     - job: build:app-with-native-signed
       optional: true
