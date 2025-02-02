@@ -50,12 +50,21 @@ RUN yarn workspace arborist build
 FROM builder AS builder-api
 
 WORKDIR /app
-RUN apk add --update --no-cache openssl
+RUN apk add --update --no-cache openssl 
 RUN yarn workspace @churros/api build
 
 FROM builder AS builder-app
 
+ARG APP_DOTENV_OVERRIDE=""
+
 WORKDIR /app
+
+RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
+      cp "$APP_DOTENV_OVERRIDE" packages/app/.env; \
+      echo "Building app with a .env override:" ;\
+      cat packages/app/.env ;\
+    fi
+
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
@@ -179,6 +188,7 @@ COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /a
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor-community/ /app/node_modules/@capacitor-community/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capgo/ /app/node_modules/@capgo/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capawesome/ /app/node_modules/@capawesome/
 
 
 #### Release (sign the APK)
