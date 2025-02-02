@@ -27,23 +27,49 @@ async function git(args: string): Promise<string> {
     // see https://stackoverflow.com/a/22634649/9943464
     'versionsort.suffix': '-alpha -beta -pre -rc',
   };
-  const { stdout } = await execa('git', [
+  const effectiveArgs = [
     '-c',
     ...Object.entries(additionalConfig).map(([k, v]) => `${k}='${v}'`),
     ...args.split(' '),
-  ]);
+  ];
+
+  console.info(`$ git ${effectiveArgs.join(' ')}`);
+
+  const { stdout } = await execa('git', effectiveArgs, {
+    stderr: 'inherit',
+  });
   return stdout;
 }
 
 const hash = stub ? 'dev' : await git('rev-parse HEAD').then((hash) => hash.trim());
 const toplevel = await git('rev-parse --show-toplevel');
+
+const appTag = process.env.APP_TAG || process.env.TAG || 'dev';
+
+await git('fetch --tags').catch(console.error);
+
+// Get all tags on the commit of the app tag
+const commitOfAppTag = await git(`rev-list -n 1 ${appTag}`).catch(() => null);
+const tags = commitOfAppTag
+  ? await git(`tag --points-at ${commitOfAppTag}`).then(
+      (tags) =>
+        Object.fromEntries(
+          tags
+            .trim()
+            .split('\n')
+            .map((tag) => tag.replace(/^@churros\//, '').split('@', 2)),
+        ) as Partial<Record<Package, string>>,
+    )
+  : {};
+
 const variables = {
   CURRENT_COMMIT: hash,
   CURRENT_VERSIONS: {
-    api: process.env.TAG || 'dev',
-    app: process.env.TAG || 'dev',
-    sync: process.env.TAG || 'dev',
-    db: process.env.TAG || 'dev',
+    api: process.env.API_TAG || 'dev',
+    app: appTag,
+    sync: process.env.SYNC_TAG || 'dev',
+    db: process.env.DB_TAG || 'dev',
+    ...tags,
   },
 };
 
@@ -78,9 +104,9 @@ function singlequotes(literal: string): string {
 function constDeclaration(
   name: string,
   value: unknown,
-  { typescript = true, exported = true } = {},
+  { typescript = true, exported = true, typ = 'string' } = {},
 ) {
-  return `${exported ? 'export ' : ''}const ${name} = ${singlequotes(JSON.stringify(value))}${typescript ? ' as string' : ''};`;
+  return `${exported ? 'export ' : ''}const ${name} = ${singlequotes(JSON.stringify(value))}${typescript ? ` as ${typ}` : ''};`;
 }
 
 function replaceBetweenLines(start: string, end: string, replacement: string, contents: string) {
@@ -108,6 +134,13 @@ await Promise.all(
       constDeclaration('CURRENT_VERSION', variables.CURRENT_VERSIONS[pkg], {
         typescript,
         exported: isolated,
+      }),
+      constDeclaration('CURRENT_VERSIONS', variables.CURRENT_VERSIONS, {
+        typescript,
+        exported: isolated,
+        typ: `{ ${Object.keys(variables.CURRENT_VERSIONS)
+          .map((key) => `${key}: string`)
+          .join(',')} }`,
       }),
     ];
     await writeFile(

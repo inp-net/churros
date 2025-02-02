@@ -57,9 +57,12 @@ FROM builder AS builder-app
 
 WORKDIR /app
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
     yarn workspace @churros/app build
+
+RUN yarn cap sync android
 
 FROM builder AS builder-sync
 
@@ -142,7 +145,7 @@ WORKDIR /app
 
 # Builded app
 ENV NODE_ENV="production"
-COPY --from=builder-app /app/packages/app/build/ /app/packages/app/build/
+COPY --from=builder-app /app/packages/app/build-node/ /app/packages/app/build-node/
 COPY --from=builder-app /app/packages/app/package.json /app/packages/app/
 
 # Install dependencies
@@ -154,6 +157,69 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
+
+### Android
+
+#### Common base
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/saschpe/android-sdk:35-jdk21.0.5_11 AS android-assemble-base
+
+ARG ANDROID_ASSEMBLE_USER_UID=1001
+ARG BUILD_NUMBER=1
+ARG TAG=dev
+
+WORKDIR /app
+
+# create ~/.gradle/gradle.properties
+RUN mkdir -p $HOME/.gradle
+RUN echo "BUILD_VERSION_CODE=$BUILD_NUMBER" >> $HOME/.gradle/gradle.properties
+RUN echo "BUILD_VERSION_NAME=$TAG" >> $HOME/.gradle/gradle.properties
+
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /app/packages/app/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor-community/ /app/node_modules/@capacitor-community/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capgo/ /app/node_modules/@capgo/
+
+
+#### Release (sign the APK)
+
+FROM android-assemble-base AS android-assemble-release
+
+ARG APK_KEY_ALIAS=ALIAS
+
+WORKDIR /app
+
+RUN --mount=type=secret,id=APK_KEYSTORE_BASE64,uid=$ANDROID_ASSEMBLE_USER_UID \
+    base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
+RUN echo "KEYSTORE_PATH=/app/churros.keystore" >> $HOME/.gradle/gradle.properties
+
+RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \ 
+    echo "KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true)" >> $HOME/.gradle/gradle.properties
+
+RUN echo "KEY_ALIAS=$APK_KEY_ALIAS" >> $HOME/.gradle/gradle.properties
+
+RUN cat $HOME/.gradle/gradle.properties
+
+WORKDIR /app/packages/app/android
+RUN ./gradlew assembleRelease
+
+FROM scratch AS android-release
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs/apk/release/ .
+
+#### Debug assemble (unsigned APK)
+
+FROM android-assemble-base AS android-assemble-debug
+
+WORKDIR /app/packages/app/android
+
+RUN ./gradlew assembleDebug
+
+FROM scratch AS android-debug
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-debug /app/packages/app/android/app/build/outputs/apk/debug/ .
 
 ### Sync
 
@@ -205,6 +271,25 @@ ENTRYPOINT ["./entrypoint.sh"]
 # Artifacts
 #####
 
+### GraphQL schema
+
 FROM scratch as graphql-schema
 
 COPY --from=builder-api /app/packages/api/build/schema.graphql /schema.graphql
+
+### Update bundle for OTA updates of the native apps
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20-alpine as app-bundle-assemble
+
+COPY --from=builder-app /app/packages/app/build-static/ /build-static/
+
+ARG APP_PACKAGE_ID=app.churros
+
+RUN npx @capgo/cli bundle zip $APP_PACKAGE_ID \
+    --path /build-static \
+    --bundle $TAG \
+    --name update-bundle.zip 
+
+FROM scratch as app-bundle
+
+COPY --from=app-bundle-assemble /update-bundle.zip /update-bundle.zip

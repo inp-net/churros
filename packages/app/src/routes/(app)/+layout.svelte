@@ -24,6 +24,7 @@
   import { editingTheme, isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
+  import { SafeArea } from '@capacitor-community/safe-area';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import '../../design/app.scss';
@@ -98,6 +99,14 @@
     back: null,
   });
   setContext('navtop', navtop);
+
+  $: SafeArea.enable({
+    config: {
+      customColorsForSystemBars: true,
+      navigationBarContent: $isDark ? 'light' : 'dark',
+      statusBarContent: $isDark ? 'light' : 'dark',
+    },
+  });
 
   $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
 
@@ -390,6 +399,10 @@
       flex-direction: column;
       width: 100dvw;
       height: 100dvh;
+
+      // Set by @capacitor-community/safe-area
+      padding-top: var(--safe-area-inset-top);
+      padding-bottom: var(--safe-area-inset-bottom);
     }
 
     .layout {

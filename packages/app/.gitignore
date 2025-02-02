@@ -2,3 +2,5 @@
 $houdini/
 # Sentry Config File
 .sentryclirc
+build-static/
+build-node/

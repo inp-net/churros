@@ -1,7 +1,12 @@
 import { browser } from '$app/environment';
-import { load_RootLayout } from '$houdini';
+import { goto } from '$app/navigation';
+import { graphql, load_RootLayout } from '$houdini';
 import { editingTheme } from '$lib/theme';
-import { setDefaultOptions } from 'date-fns';
+import { App } from '@capacitor/app';
+import { Capacitor, CapacitorCookies } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
+import * as Sentry from '@sentry/sveltekit';
+import { addYears, setDefaultOptions } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { get } from 'svelte/store';
 
@@ -14,6 +19,42 @@ export async function load(event) {
     weekStartsOn: 1,
     locale: fr,
   });
+
+  App.addListener('backButton', (event) => {
+    // TODO close open drawer when there's one, instead of going back in history
+    if (event.canGoBack) globalThis.history.back();
+    else App.exitApp();
+  });
+
+  App.addListener('appUrlOpen', (event) => {
+    const url = new URL(event.url);
+    goto(event.url.replace(url.origin, ''));
+  });
+
+  if (Capacitor.isNativePlatform()) {
+    // Expose token to cookies so that houdini client can use it (its fetchParams function is synchronous so there's no way to call Preferences.get there)
+    await CapacitorCookies.setCookie({
+      key: 'token',
+      value: await Preferences.get({ key: 'token' }).then(({ value }) => value ?? ''),
+      // Token will definitely be invalid before that date, but the app should handle invalid tokens anyways
+      expires: addYears(new Date(), 1).toISOString(),
+      path: '/',
+    });
+  }
+
+  const SentryUser = await graphql(`
+    query RootLayoutSentryUser {
+      me {
+        ...SentryUser @mask_disable
+      }
+    }
+  `)
+    .fetch({ event })
+    .then((result) => result.data?.me)
+    .catch(() => null);
+
+  if (SentryUser) Sentry.setUser({ id: SentryUser.uid });
+
   return await load_RootLayout({
     event,
     variables: {

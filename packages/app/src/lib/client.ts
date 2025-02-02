@@ -2,7 +2,11 @@ import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { ClientPlugin } from '$houdini';
 import { HoudiniClient, subscription } from '$houdini';
+import { getApiUrl } from '$lib/env';
 import { redirectToLogin } from '$lib/session';
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
+import { parse } from 'cookie';
 import { createClient } from 'graphql-ws';
 
 // XXX: must be the same as in the API
@@ -27,6 +31,18 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
   };
 };
 
+const nativeAuthentication: ClientPlugin = () => ({
+  async beforeNetwork(ctx, { next }) {
+    if (Capacitor.isNativePlatform()) {
+      const token = await Preferences.get({ key: 'token' }).then(({ value }) => value ?? undefined);
+      console.info(`[nativeAuthentication] token = ${token ?? '<none>'}`);
+      ctx.session = { ...ctx?.session, token };
+    }
+
+    next(ctx);
+  },
+});
+
 const logger: ClientPlugin = () => ({
   start(ctx, { next }) {
     // add the start time to the context's stuff
@@ -42,7 +58,8 @@ const logger: ClientPlugin = () => ({
     next(ctx);
   },
   beforeNetwork(ctx, { next }) {
-    console.info(`${ctx.name}: Hitting network`);
+    const apiUrl = getApiUrl();
+    console.info(`${ctx.name}: Hitting network @ ${apiUrl}`);
     if (ctx.metadata?.queryTimestamps) ctx.metadata.queryTimestamps.network = Date.now();
 
     next(ctx);
@@ -80,13 +97,17 @@ const subscriptionPlugin = subscription(({ session }) =>
 );
 
 export default new HoudiniClient({
-  url: env.PUBLIC_API_URL,
-  plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
+  url: getApiUrl(),
+  plugins: [logger, nativeAuthentication, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
+    let token = session?.token;
+    if (browser) token ??= parse(document.cookie).token;
+    const apiurl = getApiUrl();
+
     return {
-      credentials: 'include',
+      credentials: Capacitor.isNativePlatform() ? undefined : 'include',
       headers: {
-        Authorization: session?.token ? `Bearer ${session.token}` : '',
+        Authorization: token ? `Bearer ${token}` : '',
       },
     };
   },

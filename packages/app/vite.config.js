@@ -45,6 +45,10 @@ export const commonConfig = defineConfig({
 export default mergeConfig(
   commonConfig,
   defineConfig({
+    build: {
+      minify: false,
+      sourcemap: true,
+    },
     plugins: [
       houdini(),
       sentrySvelteKit({

@@ -1,4 +1,6 @@
 import { graphql, setClientSession, type SessionToken$data } from '$houdini';
+import { Capacitor, CapacitorCookies } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import { redirect, type Cookies } from '@sveltejs/kit';
 import { serialize } from 'cookie';
 
@@ -23,6 +25,20 @@ export async function saveSessionToken(
       expires: expiration,
       path: '/',
       sameSite: 'lax',
+    });
+  } else if (Capacitor.isNativePlatform()) {
+    // TODO handle expiration date?
+    // the app should handle invalid tokens anyways, so not sure if this is actually needed
+    await Preferences.set({
+      key: 'token',
+      value: token,
+    });
+    // Sync to cookies so that houdini client can use it immediately
+    await CapacitorCookies.setCookie({
+      key: 'token',
+      value: token,
+      expires: expiration.toISOString(),
+      path: '/',
     });
   } else {
     document.cookie = serialize('token', token, {

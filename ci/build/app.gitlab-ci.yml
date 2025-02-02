@@ -3,7 +3,7 @@
   variables:
     TARGET: app
 
-build:app:
+.build:app:
   extends: .app
   stage: build
   needs: 
@@ -13,16 +13,167 @@ build:app:
       optional: true
     - job: test:app:svelte-check
       optional: true
+  variables:
+    BUILD_APK: "false"
+    SIGN_APK: "false"
+    MAKE_UPDATE_BUNDLE: "false"
+  script:
+    - !reference [.build, script]
+    - |
+      if [ "$MAKE_UPDATE_BUNDLE" == "true" ]; then 
+        buildctl-daemonless.sh build \
+            --frontend=dockerfile.v0 \
+            --local context=. \
+            --local dockerfile=. \
+            --opt target=app-bundle \
+            --opt build-arg:TAG=$TAG \
+            --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+            --output type=local,dest=.
+      fi
+    - |
+      if [ "$SIGN_APK" == "true" ]; then \
+        if [ -n "$APK_KEYSTORE_BASE64" ]; then \
+          export BUILD_SECRET_APK_KEYSTORE_BASE64="--secret id=APK_KEYSTORE_BASE64"; \
+        else \
+          export BUILD_SECRET_APK_KEYSTORE_BASE64=""; \
+        fi; \
+        if [ -n "$APK_KEYSTORE_PASSWORD" ]; then \
+          export BUILD_SECRET_APK_KEYSTORE_PASSWORD="--secret id=APK_KEYSTORE_PASSWORD"; \
+        else \
+          export BUILD_SECRET_APK_KEYSTORE_PASSWORD=""; \
+        fi; \
+      fi
+    - if [ "$SIGN_APK" == "true" ]; then export APK_TYPE=release; else export APK_TYPE=debug; fi
+    - |
+      if [ "$BUILD_APK" == "true" ]; then \
+        buildctl-daemonless.sh build \
+            --frontend=dockerfile.v0 \
+            --local context=. \
+            --local dockerfile=. \
+            --opt target=android-$APK_TYPE \
+            --opt build-arg:TAG=$TAG \
+            --opt build-arg:BUILD_NUMBER=$CI_PIPELINE_IID \
+            --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+            --opt build-arg:APK_KEY_ALIAS=$APK_KEY_ALIAS \
+            $BUILD_SECRET_SENTRY \
+            $BUILD_SECRET_APK_KEYSTORE_BASE64 \
+            $BUILD_SECRET_APK_KEYSTORE_PASSWORD \
+            --output type=local,dest=.; \
+        mv app-$APK_TYPE.apk churros.apk; \
+      fi
+
+build:app:
+  extends: .build:app
   rules: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS !~ /android/ && 
+        $CI_MERGE_REQUEST_LABELS !~ /ios/ &&
+        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
       changes: [packages/app/**/*]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
       when: manual
 
+.build:app-with-native:
+  extends: .build:app
+  artifacts:
+    expire_in: 4 days
+    expose_as: APK
+    paths: [churros.apk, output-metadata.json, update-bundle.zip]
+  variables:
+    BUILD_APK: "true"
+    SIGN_APK: "false"
+    MAKE_UPDATE_BUNDLE: "false"
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_FORCE_HTTPS: "true"
+
+build:app-with-native-unsigned:
+  extends: .build:app-with-native
+  rules: 
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
+
+build:app-with-native-signed:
+  extends: .build:app-with-native
+  variables:
+    SIGN_APK: "true"
+    MAKE_UPDATE_BUNDLE: "true"
+    TAG: "4.4.0"
+  rules:
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS =~ /native:signed/
+
+deploy:apk:
+  stage: deploy
+  needs: 
+    - job: build:app-with-native
+      optional: true
+    - job: build:app-with-native-signed
+      optional: true
+    - job: deploy:app
+      optional: true
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
+  script:
+    - |
+      diawi_job=$(
+        curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
+        -F file=@churros.apk \
+        -F callback_emails="$GITLAB_USER_EMAIL" \
+        -F comment="APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" \
+        | jq -r .job 
+      )
+    - echo "Diawi job is $diawi_job"
+    # poll for the diawi URL
+    - |
+      attempts=0
+      while true; do
+        sleep 10
+        response=$(curl "https://upload.diawi.com/status?token=$DIAWI_TOKEN&job=$diawi_job")
+        echo "Diawi response: $response"
+        if [ "$(echo $response | jq -r .status)" == "2000" ]; then
+          echo "Diawi URL: $(echo $response | jq -r .link)"
+          break
+        fi
+        if [ "$(echo $response | jq -r .status)" == "4000" ]; then
+          echo "Diawi error: $(echo $response | jq -r .message)"
+          exit 1
+        fi
+        if [ $attempts -gt 100 ]; then
+          echo "Giving up after 100 attempts"
+          exit 1
+        fi
+        attempts=$((attempts+1))
+      done
+    - |
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        echo $response | jq -r '"APK \(.hash) available [on Diawi](\(.link))\n"' >> note.md
+        echo $response | jq -r '"![QR code](\(.qrcode))\n\n"' >> note.md
+        echo "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" >> note.md
+        cat note.md
+        url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
+        echo "Posting on $url"
+        curl -X POST \
+          -H "PRIVATE-TOKEN: $YAPPER_TOKEN" \
+          --url-query "body=$(cat note.md)" \
+          $url
+      fi
+
 deploy:app:
-  extends: .app
+  extends: .build:app-with-native
   stage: deploy
   interruptible: false
+  artifacts:
+    paths: [update-bundle.zip]
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
       variables:
@@ -30,6 +181,19 @@ deploy:app:
         URL: "https://churros.inpt.fr"
         TAG: export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/app@//')
         DEPLOY: "true"
+        SIGN_APK: "true"
+        MAKE_UPDATE_BUNDLE: "true"
   environment:
     name: $ENV
     url: $URL
+
+deploy:app:update-bundle:
+  image: gitlab/glab:v1.52.0
+  stage: deploy
+  needs: 
+    - job: deploy:app
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
+  script:
+    - glab release upload $CI_COMMIT_TAG 'update-bundle.zip#update-bundle.zip#package'
