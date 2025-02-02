@@ -27,6 +27,7 @@
             --local dockerfile=. \
             --opt target=app-bundle \
             --opt build-arg:TAG=$TAG \
+            --opt build-arg:APP_DOTENV_OVERRIDE="$APP_DOTENV_OVERRIDE" \
             --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
             --output type=local,dest=.
       fi
@@ -52,6 +53,7 @@
             --local dockerfile=. \
             --opt target=android-$APK_TYPE \
             --opt build-arg:TAG=$TAG \
+            --opt build-arg:APP_DOTENV_OVERRIDE="$APP_DOTENV_OVERRIDE" \
             --opt build-arg:BUILD_NUMBER=$CI_PIPELINE_ID \
             --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
             --opt build-arg:APK_KEY_ALIAS=$APK_KEY_ALIAS \
