@@ -26,6 +26,15 @@ COPY package.json /app/
 
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY .env.example /app/.env.example
+
+ARG APP_DOTENV_OVERRIDE=""
+RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
+      cp "$APP_DOTENV_OVERRIDE" /app/.env.example \
+      echo "Building app with a .env override:" ;\
+      cat /app/.env.example ;\
+    fi
+
+
 COPY .git /app/.git
 COPY packages/ /app/packages/ 
 COPY scripts/ /app/scripts/
@@ -55,16 +64,8 @@ RUN yarn workspace @churros/api build
 
 FROM builder AS builder-app
 
-ARG APP_DOTENV_OVERRIDE=""
 
 WORKDIR /app
-
-RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
-      cp "$APP_DOTENV_OVERRIDE" packages/app/.env; \
-      cp "$APP_DOTENV_OVERRIDE" .env; \
-      echo "Building app with a .env override:" ;\
-      cat .env ;\
-    fi
 
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
 ENV NODE_OPTIONS="--max-old-space-size=4096"
