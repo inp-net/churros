@@ -372,6 +372,10 @@ export const topnavConfigs: Partial<{
     title: 'Anniversaires',
     actions: [],
   },
+  '/(app)/login': {
+    title: 'Connexion',
+    actions: [],
+  },
   '/(app)/services': {
     quickAction: quickActionAdd,
     actions: [
