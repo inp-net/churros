@@ -26,17 +26,16 @@ COPY package.json /app/
 
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY .env.example /app/.env.example
+COPY packages/ /app/packages/ 
 
 ARG APP_DOTENV_OVERRIDE=""
 RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
-      cp "$APP_DOTENV_OVERRIDE" /app/.env.example \
-      echo "Building app with a .env override:" ;\
-      cat /app/.env.example ;\
+      cp "$APP_DOTENV_OVERRIDE" /app/.env.example; \
+      echo "Building app with a .env override:"; \
+      cat /app/.env.example; \
     fi
 
-
 COPY .git /app/.git
-COPY packages/ /app/packages/ 
 COPY scripts/ /app/scripts/
 
 # Remove unused packages
