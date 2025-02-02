@@ -61,8 +61,9 @@ WORKDIR /app
 
 RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
       cp "$APP_DOTENV_OVERRIDE" packages/app/.env; \
+      cp "$APP_DOTENV_OVERRIDE" .env; \
       echo "Building app with a .env override:" ;\
-      cat packages/app/.env ;\
+      cat .env ;\
     fi
 
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
