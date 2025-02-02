@@ -9,6 +9,7 @@
     TAG: export TAG=latest-$(date +%Y%m%d%H%m)
     DEPLOY: 'false'
     EXPORT: image
+    APP_DOTENV_OVERRIDE: packages/app/.env.prod
   interruptible: true
   before_script:
     - |
@@ -41,6 +42,7 @@
           --local dockerfile=. \
           --opt target=$TARGET \
           --opt build-arg:TAG=$TAG \
+          --opt build-arg:APP_DOTENV_OVERRIDE="$APP_DOTENV_OVERRIDE" \
           --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
           $BUILD_SECRET_SENTRY \
           --output "$OUTPUT"

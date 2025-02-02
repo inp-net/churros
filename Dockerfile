@@ -50,12 +50,21 @@ RUN yarn workspace arborist build
 FROM builder AS builder-api
 
 WORKDIR /app
-RUN apk add --update --no-cache openssl
+RUN apk add --update --no-cache openssl 
 RUN yarn workspace @churros/api build
 
 FROM builder AS builder-app
 
+ARG APP_DOTENV_OVERRIDE=""
+
 WORKDIR /app
+
+RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
+      cp "$APP_DOTENV_OVERRIDE" packages/app/.env; \
+      echo "Building app with a .env override:" ;\
+      cat packages/app/.env ;\
+    fi
+
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
