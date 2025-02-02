@@ -3,6 +3,7 @@
   "version": "4.4.0",
   "dependencies": {
     "@capacitor-community/safe-area": "^7.0.0-alpha.1",
+    "@capacitor-community/screen-brightness": "^7.0.0",
     "@capacitor/android": "^7.0.0",
     "@capacitor/app": "^7.0.0",
     "@capacitor/core": "^7.0.0",

@@ -555,6 +555,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor-community/screen-brightness@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor-community/screen-brightness@npm:7.0.0"
+  peerDependencies:
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10c0/3d4bfde4de3eb013566e966e58fd58edd5ed7d906653c5ef7769d8f8b9b3b48498a45a11b58c9dcd69ca3b19967a3c6c41867baf1c9b8492bbd96332aed4b600
+  languageName: node
+  linkType: hard
+
 "@capacitor/android@npm:^7.0.0":
   version: 7.0.1
   resolution: "@capacitor/android@npm:7.0.1"
@@ -1323,6 +1332,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.26.7"
     "@capacitor-community/safe-area": "npm:^7.0.0-alpha.1"
+    "@capacitor-community/screen-brightness": "npm:^7.0.0"
     "@capacitor/android": "npm:^7.0.0"
     "@capacitor/app": "npm:^7.0.0"
     "@capacitor/assets": "npm:^3.0.5"
