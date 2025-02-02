@@ -2,6 +2,7 @@
   "name": "@churros/app",
   "version": "4.4.0",
   "dependencies": {
+    "@capacitor-community/keep-awake": "^6.0.0",
     "@capacitor-community/safe-area": "^7.0.0-alpha.1",
     "@capacitor-community/screen-brightness": "^7.0.0",
     "@capacitor/android": "^7.0.0",
