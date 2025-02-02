@@ -114,7 +114,7 @@ build:app-with-native-signed:
 deploy:apk:
   stage: deploy
   needs: 
-    - job: build:app-with-native
+    - job: build:app-with-native-unsigned
       optional: true
     - job: build:app-with-native-signed
       optional: true
