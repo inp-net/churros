@@ -140,14 +140,6 @@ deploy:apk:
         echo "Diawi response: $response"
         if [ "$(echo $response | jq -r .status)" == "2000" ]; then
           echo "Diawi URL: $(echo $response | jq -r .link)"
-          if [ -n "$CI_MERGE_REQUEST_IID" ]; then
-            echo $response | jq -r '"APK \(.hash) available [on Diawi](\(.link))\n"' >> note.md
-            echo $response | jq -r '"![QR code](\(.qrcode))\n\n"' >> note.md
-            echo "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" >> note.md
-            curl -X POST $CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes \
-              -H "PRIVATE-TOKEN: $YAPPER_TOKEN" \
-              --url-query $(cat note.md) 
-          fi
           break
         fi
         if [ "$(echo $response | jq -r .status)" == "4000" ]; then
@@ -160,6 +152,19 @@ deploy:apk:
         fi
         attempts=$((attempts+1))
       done
+    - |
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        echo $response | jq -r '"APK \(.hash) available [on Diawi](\(.link))\n"' >> note.md
+        echo $response | jq -r '"![QR code](\(.qrcode))\n\n"' >> note.md
+        echo "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" >> note.md
+        cat note.md
+        url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
+        echo "Posting on $url"
+        curl -X POST \
+          -H "PRIVATE-TOKEN: $YAPPER_TOKEN" \
+          --url-query "body=$(cat note.md)" \
+          $url
+      fi
 
 deploy:app:
   extends: .build:app-with-native
