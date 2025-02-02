@@ -750,6 +750,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capawesome/capacitor-app-shortcuts@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@capawesome/capacitor-app-shortcuts@npm:7.0.1"
+  peerDependencies:
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10c0/e04fd905491a41d713ac8251f83ac5c33d914fb751d72f46b6e19e89ddac1d3f118b1f3a95656c51bbf469f3b4c989b5d2c67967db232d18d5994d632270bf35
+  languageName: node
+  linkType: hard
+
 "@capgo/capacitor-updater@npm:^6.14.8":
   version: 6.14.8
   resolution: "@capgo/capacitor-updater@npm:6.14.8"
@@ -1365,6 +1374,7 @@ __metadata:
     "@capacitor/share": "npm:^7.0.0"
     "@capacitor/status-bar": "npm:^7.0.0"
     "@capacitor/toast": "npm:^7.0.0"
+    "@capawesome/capacitor-app-shortcuts": "npm:^7.0.1"
     "@capgo/capacitor-updater": "npm:^6.14.8"
     "@capgo/inappbrowser": "npm:^7.1.1"
     "@carbon/charts-svelte": "npm:^1.22.15"
