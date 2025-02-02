@@ -102,7 +102,7 @@ build:app-with-native-signed:
   variables:
     SIGN_APK: "true"
     MAKE_UPDATE_BUNDLE: "true"
-    TAG: "4.4.0"
+    TAG: export TAG=4.4.0
   rules:
     - if: >-
         $CI_PIPELINE_SOURCE == "merge_request_event" && 

@@ -287,8 +287,8 @@ ARG APP_PACKAGE_ID=app.churros
 
 RUN npx @capgo/cli bundle zip $APP_PACKAGE_ID \
     --path /build-static \
-    --bundle $TAG \
     --name update-bundle.zip 
+    --bundle 4.4.1 \
 
 FROM scratch as app-bundle
 
