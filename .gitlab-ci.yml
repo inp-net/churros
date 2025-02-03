@@ -11,3 +11,4 @@ include:
   - ci/build.gitlab-ci.yml
   - ci/test.gitlab-ci.yml
   - ci/labels.gitlab-ci.yml
+  - ci/misc.gitlab-ci.yml

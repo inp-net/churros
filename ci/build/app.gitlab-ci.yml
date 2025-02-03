@@ -215,7 +215,9 @@ deploy:app:
     url: $URL
 
 deploy:app:update-bundle:
-  image: gitlab/glab:v1.52.0
+  extends: .glab
+  variables:
+    TOKEN: $CHANGESETS_TOKEN
   stage: deploy
   needs: 
     - job: deploy:app
@@ -223,4 +225,5 @@ deploy:app:update-bundle:
   rules:
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
+    - glab auth login --hostname $CI_SERVER_HOST --token
     - glab release upload $CI_COMMIT_TAG 'update-bundle.zip#update-bundle.zip#package'
