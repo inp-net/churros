@@ -1,5 +1,5 @@
 import { prisma, purgeSessionsUser } from '#lib';
-import { differenceInDays, parseISO } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 
 /**
  * Express middleware that updates the last seen date of the logged-in user, in the background (it doesn't wait for the operation to complete)
@@ -19,9 +19,11 @@ export function updateUserLastSeen(
       // Have no lastSeenDate, or
       !user.user.lastSeenAt ||
       // the date is older than 1 day
-      Math.abs(differenceInDays(new Date(), parseISO(user.user.lastSeenAt))) > 1;
+      Math.abs(differenceInDays(new Date(), user.user.lastSeenAt)) > 1;
   } catch (error) {
-    console.error(`Error updating last seen date for user ${user.user.uid}: ${error}`);
+    console.error(
+      `Error updating last seen date ${user.user.lastSeenAt} for user ${user.user.uid}: ${error}`,
+    );
   }
 
   if (needsUpdate) {
