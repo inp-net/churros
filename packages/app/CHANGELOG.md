@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.4.3
+
+### Patch Changes
+
+- 3af9e39: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.23 (!529)
+
 ## 4.4.2
 
 ### Patch Changes
