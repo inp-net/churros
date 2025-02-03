@@ -28,11 +28,19 @@ COPY .env.example /app/.env.example
 COPY packages/ /app/packages/ 
 
 ARG APP_DOTENV_OVERRIDE=""
+ARG REMOTE_DEVSERVER=""
+
+RUN if [ -n "$REMOTE_DEVSERVER" ] && [ -n "$APP_DOTENV_OVERRIDE" ]; then \
+      echo "Building app with REMOTE_DEVSERVER=$REMOTE_DEVSERVER, replacing origins in $APP_DOTENV_OVERRIDE"; \
+      sed -i "s|PUBLIC_API_ORIGIN_\(\w*\)=.*|PUBLIC_API_ORIGIN_\1=$REMOTE_DEVSERVER|g" $APP_DOTENV_OVERRIDE; \
+    fi
+
 RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
       cp "$APP_DOTENV_OVERRIDE" /app/.env.example; \
       echo "Building app with a .env override:"; \
       cat /app/.env.example; \
     fi
+
 
 COPY .git /app/.git
 COPY scripts/ /app/scripts/
@@ -70,10 +78,10 @@ COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
-    CAPACITOR_DEVSERVER="$REMOTE_DEVSERVER" \
+    PUBLIC_REMOTE_DEVSERVER="$REMOTE_DEVSERVER" \
     yarn workspace @churros/app build
 
-RUN CAPACITOR_DEVSERVER="$REMOTE_DEVSERVER" yarn cap sync android
+RUN PUBLIC_REMOTE_DEVSERVER="$REMOTE_DEVSERVER" yarn cap sync android
 
  
 

@@ -5,7 +5,9 @@
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { refroute } from '$lib/navigation';
   import {
+    defaultServerManifest,
     fetchServerManifest,
+    resetServerManifest,
     saveServerManifest,
     uploadServerManifest,
     type ServerManifest,
@@ -102,9 +104,18 @@
         on:click={() => {
           if (!loadedManifest) return;
           saveServerManifest(loadedManifest);
-          window.location.href = refroute('/login');
+          globalThis.location.href = refroute('/login');
         }}>Appliquer</ButtonSecondary
       >
+    {:else}
+      <ButtonSecondary
+        on:click={() => {
+          resetServerManifest();
+          globalThis.location.href = refroute('/login');
+        }}
+      >
+        Réétablir à {new URL(defaultServerManifest().urls.api).host}
+      </ButtonSecondary>
     {/if}
   </div>
 </ModalOrDrawer>

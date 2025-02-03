@@ -1,6 +1,6 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-const capacitorDevserverUrl = process.env['CAPACITOR_DEVSERVER'];
+const capacitorDevserverUrl = process.env['PUBLIC_REMOTE_DEVSERVER'];
 
 if (capacitorDevserverUrl) {
   console.log('Using remote devserver:', capacitorDevserverUrl);

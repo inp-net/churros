@@ -1,5 +1,5 @@
 stages:
-  - changesets
+  - prepare
   - test
   - build
   - post-build
@@ -10,3 +10,5 @@ include:
   - ci/volta.gitlab-ci.yml
   - ci/build.gitlab-ci.yml
   - ci/test.gitlab-ci.yml
+  - ci/labels.gitlab-ci.yml
+  - ci/misc.gitlab-ci.yml

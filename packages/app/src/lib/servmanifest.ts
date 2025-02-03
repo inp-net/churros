@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 export const serverManifestSchema = z.object({
   version: z.string().regex(/^(dev|(\d+\.\d+\.\d+))$/),
+  supportsCredentialsInclude: z.boolean().optional(),
   urls: z.object({
     auth: z.string().url(),
     api: z.string().url(),
@@ -72,7 +73,7 @@ function assertApiVersionsCompatible(manifest: ServerManifest) {
   }
 }
 
-function defaultServerManifest(): ServerManifest {
+export function defaultServerManifest(): ServerManifest {
   const overrides = new Map<string, string>([
     ['web', env.PUBLIC_API_ORIGIN_WEB],
     ['android', env.PUBLIC_API_ORIGIN_ANDROID],
@@ -80,13 +81,16 @@ function defaultServerManifest(): ServerManifest {
   ]);
 
   const replaceOrigin = (url: string) =>
-    url.replace(
-      env.PUBLIC_API_ORIGIN_WEB,
-      overrides.get(Capacitor.getPlatform()) ?? env.PUBLIC_API_ORIGIN_WEB,
-    );
+    url
+      ? url.replace(
+          new URL(url).origin,
+          overrides.get(Capacitor.getPlatform()) ?? env.PUBLIC_API_ORIGIN_WEB,
+        )
+      : url;
 
   return {
     version: CURRENT_VERSIONS.api,
+    supportsCredentialsInclude: !env.PUBLIC_REMOTE_DEVSERVER,
     urls: {
       auth: replaceOrigin(env.PUBLIC_API_AUTH_URL),
       api: replaceOrigin(env.PUBLIC_API_URL),
@@ -148,4 +152,8 @@ export async function uploadServerManifest(): Promise<ServerManifest> {
       reader.readAsText(file, 'utf8');
     });
   });
+}
+
+export function resetServerManifest() {
+  localStorage.removeItem(SERVER_MANIFEST_LOCAL_STORAGE_KEY);
 }

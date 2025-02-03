@@ -6,13 +6,13 @@
 .build:app:
   extends: .app
   stage: build
-  # needs: 
-  #   - job: test:app:lint
-  #     optional: true
-  #   - job: test:app:format
-  #     optional: true
-  #   - job: test:app:svelte-check
-  #     optional: true
+  needs: 
+     - job: test:app:lint
+       optional: true
+     - job: test:app:format
+       optional: true
+     - job: test:app:svelte-check
+       optional: true
   variables:
     BUILD_APK: "false"
     SIGN_APK: "false"
@@ -92,70 +92,21 @@ build:app:
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_SUBMODULE_FORCE_HTTPS: "true"
 
-build:app-with-native-develop:
-  extends: .build:app-with-native
-  stage: test
-  variables:
-    BUILD_APK: "true"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS =~ /native:signed/
-      when: manual
-      variables:
-        SIGN_APK: "true"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS !~ /native:signed/
-      when: manual
-      variables:
-        SIGN_APK: "false"
-  script:
-    - |
-      if [ ! -n "$REMOTE_DEVSERVER" ]; then
-        echo "Set REMOTE_DEVSERVER to your remote server URL (using ngrok or similar)"
-        exit 1
-      fi
-    - !reference [.build:app-with-native, script]
-
-build:app-with-native-unsigned:
-  extends: .build:app-with-native
-  rules: 
-    - if: >-
-        $CI_PIPELINE_SOURCE == "merge_request_event" && 
-        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
-        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
-        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
-
-build:app-with-native-signed:
-  extends: .build:app-with-native
-  variables:
-    SIGN_APK: "true"
-  rules:
-    - if: >-
-        $CI_PIPELINE_SOURCE == "merge_request_event" && 
-        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
-        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
-        $CI_MERGE_REQUEST_LABELS =~ /native:signed/
-
-deploy:apk:
+.upload:apk:
   stage: deploy
-  needs: 
-    - job: build:app-with-native-develop
-      optional: true
-    - job: build:app-with-native-unsigned
-      optional: true
-    - job: build:app-with-native-signed
-      optional: true
-    - job: deploy:app
-      optional: true
   image: registry.gitlab.com/gitlab-ci-utils/curl-jq
+  variables:
+    APK_TYPE: ""
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
+    - if [ ! -f churros.apk ]; then echo "No APK to upload. Check the build job for any error"; exit 1; fi
     - |
       diawi_job=$(
         curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
         -F file=@churros.apk \
         -F callback_emails="$GITLAB_USER_EMAIL" \
-        -F comment="APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" \
+        -F comment="$APK_TYPE APK built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" \
         | jq -r .job 
       )
     - echo "Diawi job is $diawi_job"
@@ -182,9 +133,11 @@ deploy:apk:
       done
     - |
       if [ -n "$CI_MERGE_REQUEST_IID" ]; then
-        echo $response | jq -r '"APK \(.hash) available [on Diawi](\(.link))\n"' >> note.md
+        echo -n "I built a **$APK_TYPE** APK " >> note.md
+        echo $response | jq -r '"[on Diawi](\(.link)). And what they do for you is, they giveyoutheQRcode:\n"' >> note.md
         echo $response | jq -r '"![QR code](\(.qrcode))\n\n"' >> note.md
-        echo "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL" >> note.md
+        echo -n "Built against $CI_COMMIT_SHA in $CI_PIPELINE_URL " >> note.md
+        echo $response | jq -r '"(diawi hash \(.hash))"' >> note.md
         cat note.md
         url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
         echo "Posting on $url"
@@ -193,6 +146,87 @@ deploy:apk:
           --url-query "body=$(cat note.md)" \
           $url
       fi
+
+build:app-with-native-develop:
+  extends: .build:app-with-native
+  stage: prepare
+  # see https://forum.gitlab.com/t/start-job-if-manual-job-is-successful/85476
+  allow_failure: true
+  needs: []
+  variables:
+    BUILD_APK: "true"
+    APP_DOTENV_OVERRIDE: packages/app/.env.prod
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS =~ /native:signed/
+      when: manual
+      variables:
+        SIGN_APK: "true"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS !~ /native:signed/
+      when: manual
+      variables:
+        SIGN_APK: "false"
+  script:
+    - |
+      if [ ! -n "$REMOTE_DEVSERVER" ]; then
+        echo "Set REMOTE_DEVSERVER to your remote server URL (using ngrok or similar)"
+        exit 1
+      fi
+    - !reference [.build:app-with-native, script]
+
+upload:apk-develop:
+  extends: .upload:apk
+  stage: prepare
+  allow_failure: true
+  needs: 
+    - job: build:app-with-native-develop
+      artifacts: true
+  variables:
+    APK_TYPE: Development
+
+build:app-with-native-unsigned:
+  extends: .build:app-with-native
+  rules: 
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
+
+upload:apk-unsigned:
+  extends: .upload:apk
+  needs: [build:app-with-native-unsigned]
+  rules: 
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS !~ /native:signed/
+
+  variables:
+    APK_TYPE: Unsigned
+
+build:app-with-native-signed:
+  extends: .build:app-with-native
+  variables:
+    SIGN_APK: "true"
+  rules:
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS =~ /native:signed/
+
+upload:apk-signed:
+  extends: .upload:apk
+  needs: [build:app-with-native-signed]
+  variables:
+    APK_TYPE: Signed
+  rules:
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" && 
+        $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/ &&
+        $CI_MERGE_REQUEST_LABELS =~ /android|ios/ && 
+        $CI_MERGE_REQUEST_LABELS =~ /native:signed/
 
 deploy:app:
   extends: .build:app-with-native
@@ -214,7 +248,9 @@ deploy:app:
     url: $URL
 
 deploy:app:update-bundle:
-  image: gitlab/glab:v1.52.0
+  extends: .glab
+  variables:
+    TOKEN: $CHANGESETS_TOKEN
   stage: deploy
   needs: 
     - job: deploy:app
@@ -223,3 +259,11 @@ deploy:app:update-bundle:
     - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
   script:
     - glab release upload $CI_COMMIT_TAG 'update-bundle.zip#update-bundle.zip#package'
+
+deploy:apk:
+  extends: .upload:apk
+  needs: [deploy:app]
+  variables:
+    APK_TYPE: Production
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^@churros\/app@(\d+\.\d+\.\d+)/
