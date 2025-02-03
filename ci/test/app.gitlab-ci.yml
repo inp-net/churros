@@ -7,7 +7,9 @@ test:app:no-undeclared-native-changes:
   extends: .test:app
   script:
     - |
-      if grep '^packages/app/(android|ios)' changes.txt && not grep "^'@churros/app': major$" .changesets/*.md; then
+      if grep -q "^'@churros/app': major$" .changeset/*.md; then
+        echo All good!
+      else
         echo You changed native code for the app. Include a changeset with a major bump. This is required to not break update bundles that will be sent to users for over-the-air updates.
         exit 1
       fi
