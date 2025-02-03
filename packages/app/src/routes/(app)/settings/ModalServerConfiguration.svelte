@@ -102,7 +102,7 @@
         on:click={() => {
           if (!loadedManifest) return;
           saveServerManifest(loadedManifest);
-          window.location.href = refroute('/login');
+          globalThis.location.href = refroute('/login');
         }}>Appliquer</ButtonSecondary
       >
     {/if}

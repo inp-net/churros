@@ -100,7 +100,7 @@ build:app:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
-    - if [ ! -f churros.apk ]; then echo "No APK to upload. Check the build job for any error"; exit 0; fi
+    - if [ ! -f churros.apk ]; then echo "No APK to upload. Check the build job for any error"; exit 1; fi
     - |
       diawi_job=$(
         curl https://upload.diawi.com/ -F token="$DIAWI_TOKEN" \
@@ -155,6 +155,7 @@ build:app-with-native-develop:
   needs: []
   variables:
     BUILD_APK: "true"
+    APP_DOTENV_OVERRIDE: packages/app/.env.prod
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS =~ /native:signed/
       when: manual

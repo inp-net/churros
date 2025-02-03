@@ -16,8 +16,8 @@ You can build yourself a development APK if you want to develop or test within t
 
 1. Create a free account on a localhost tunnelling service like ngrok (https://ngrok.com/)
 2. Create a tunnel to your localhost:5173 (with ngrok: `ngrok http 5173`)
-3. Start your development server (for now, the API used is the production API), setting the `CAPACITOR_DEVSERVER` env variable to the tunnel's URL:
-   > CAPACITOR_DEVSERVER=https://my-tunneled-url yarn @app dev
+3. Start your development server, setting the `PUBLIC_REMOTE_DEVSERVER` env variable to the tunnel's URL:
+   > PUBLIC_REMOTE_DEVSERVER=https://my-tunneled-url yarn dev
 4. Run the `build:app-with-native-debug` job, with the variable **`REMOTE_DEVSERVER`** set to the tunnel's URL
    To do this, click on the job name, not the play button directly. You can then set variables and click "Run job"
 

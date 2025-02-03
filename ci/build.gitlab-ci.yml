@@ -35,7 +35,7 @@
           echo "APP_DOTENV_OVERRIDE is not set"
           exit 1
         fi
-        echo "CAPACITOR_DEVSERVER=$REMOTE_DEVSERVER" >> $APP_DOTENV_OVERRIDE
+        echo "PUBLIC_REMOTE_DEVSERVER=$REMOTE_DEVSERVER" >> $APP_DOTENV_OVERRIDE
       fi
     - if [ "$DEPLOY" == "true" ] && [ -n "$SENTRY_AUTH_TOKEN" ]; then export BUILD_SECRET_SENTRY="--secret id=SENTRY_AUTH_TOKEN"; else export BUILD_SECRET_SENTRY=""; fi
     - |

@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/public';
 import type { ClientPlugin } from '$houdini';
 import { HoudiniClient, subscription } from '$houdini';
 import { getApiUrl } from '$lib/env';
+import { getServerManifest } from '$lib/servmanifest';
 import { redirectToLogin } from '$lib/session';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
@@ -22,7 +23,7 @@ const unauthorizedErrorHandler: ClientPlugin = () => {
         ctx.artifact.name.startsWith('Page') &&
         errors?.some((e) => e.message === UNAUTHORIZED_ERROR_MESSAGE)
       ) {
-        const url = new URL(window.location.href);
+        const url = new URL(globalThis.location.href);
         throw redirectToLogin(url.pathname, url.searchParams);
       }
 
@@ -102,10 +103,13 @@ export default new HoudiniClient({
   fetchParams({ session }) {
     let token = session?.token;
     if (browser) token ??= parse(document.cookie).token;
-    const apiurl = getApiUrl();
 
     return {
-      credentials: Capacitor.isNativePlatform() ? undefined : 'include',
+      credentials: Capacitor.isNativePlatform()
+        ? undefined
+        : getServerManifest().supportsCredentialsInclude
+          ? 'include'
+          : undefined,
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
       },
