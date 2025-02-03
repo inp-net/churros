@@ -57,6 +57,7 @@ FROM builder AS builder-app
 
 WORKDIR /app
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
     yarn workspace @churros/app build
