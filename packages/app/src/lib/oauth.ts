@@ -17,11 +17,8 @@ export function oauthLoginBypassed(event: { url: URL }): boolean {
 }
 
 export async function oauthInitiateLogin(event: { url: URL }) {
-  if (Capacitor.isNativePlatform()) 
-    await oauthInitiateLoginNative(event);
-   else 
-    globalThis.location.href = oauthInitiateLoginURL(event).toString();
-  
+  if (Capacitor.isNativePlatform()) await oauthInitiateLoginNative(event);
+  else globalThis.location.href = oauthInitiateLoginURL(event).toString();
 }
 
 export async function oauthInitiateLoginNative(event: { url: URL }) {
