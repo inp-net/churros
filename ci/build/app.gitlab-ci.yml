@@ -94,7 +94,8 @@ build:app:
 
 build:app-with-native-develop:
   extends: .build:app-with-native
-  stage: test
+  stage: prepare
+  allow_failure: true
   variables:
     BUILD_APK: "true"
   rules:
