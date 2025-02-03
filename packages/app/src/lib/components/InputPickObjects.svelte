@@ -70,7 +70,9 @@
     return value?.id === item.id;
   };
 
-  $: searcher = search ? { search } : new Fuse(options, { keys: searchKeys, threshold });
+  $: searcher = search
+    ? { search }
+    : new Fuse(options, { keys: searchKeys, threshold, ignoreDiacritics: true });
   async function shownOptions(query: string) {
     if (query.length <= 1) return options;
     const results = await searcher.search(query);
