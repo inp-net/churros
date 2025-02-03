@@ -823,7 +823,7 @@ __metadata:
     qr-code-generator-lib: "patch:qr-code-generator-lib@npm%3A1.0.1#~/.yarn/patches/qr-code-generator-lib-npm-1.0.1-14a65cb2e0.patch"
     qrcode: "npm:^1.5.4"
     rate-limiter-flexible: "npm:^5.0.5"
-    rehype-highlight: "npm:^7.0.1"
+    rehype-highlight: "npm:^7.0.2"
     rehype-katex: "npm:^7.0.1"
     rehype-sanitize: "npm:^6.0.0"
     rehype-stringify: "npm:^10.0.1"
@@ -868,7 +868,7 @@ __metadata:
     "@paypal/paypal-js": "npm:^8.2.0"
     "@sentry/sveltekit": "npm:^8.54.0"
     "@sveltejs/adapter-node": "npm:^5.2.12"
-    "@sveltejs/kit": "npm:^2.17.0"
+    "@sveltejs/kit": "npm:^2.17.1"
     "@sveltejs/vite-plugin-svelte": "npm:^3.1.2"
     "@swc/core": "npm:^1.10.12"
     "@swc/wasm": "npm:^1.10.12"
@@ -4628,7 +4628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^2.17.0":
+"@sveltejs/kit@npm:^2.17.1":
   version: 2.17.1
   resolution: "@sveltejs/kit@npm:2.17.1"
   dependencies:
@@ -6185,7 +6185,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^8.22.0":
+"@typescript-eslint/eslint-plugin@npm:^8.23.0":
   version: 8.23.0
   resolution: "@typescript-eslint/eslint-plugin@npm:8.23.0"
   dependencies:
@@ -6206,7 +6206,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^8.22.0":
+"@typescript-eslint/parser@npm:^8.23.0":
   version: 8.23.0
   resolution: "@typescript-eslint/parser@npm:8.23.0"
   dependencies:
@@ -7871,8 +7871,8 @@ __metadata:
     "@types/lodash": "npm:^4.17.15"
     "@types/lodash.uniqby": "npm:^4.7.9"
     "@types/pdfmake": "patch:@types/pdfmake@npm%3A0.2.8#~/.yarn/patches/@types-pdfmake-npm-0.2.8-22a107c1c7.patch"
-    "@typescript-eslint/eslint-plugin": "npm:^8.22.0"
-    "@typescript-eslint/parser": "npm:^8.22.0"
+    "@typescript-eslint/eslint-plugin": "npm:^8.23.0"
+    "@typescript-eslint/parser": "npm:^8.23.0"
     changesets-gitlab: "npm:^0.12.1"
     chokidar: "npm:^4.0.3"
     concurrently: "npm:^9.1.2"
@@ -18685,16 +18685,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rehype-highlight@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "rehype-highlight@npm:7.0.1"
+"rehype-highlight@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "rehype-highlight@npm:7.0.2"
   dependencies:
     "@types/hast": "npm:^3.0.0"
     hast-util-to-text: "npm:^4.0.0"
     lowlight: "npm:^3.0.0"
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.0"
-  checksum: 10c0/cb995cef8f0660538fdf988cea8184fdfb1ab8f74f20f67705b32617d7c484356feccb80b6faebc08e5cec7bc32977718b1d6c012ebd054719633e0cd22fe544
+  checksum: 10c0/b62effff554f9a3f2ad8688c675bc7580e6dcf20a6988f86a25e95f1adea2f4900f8a13f96ec7db6a543314aed28267e4057f8dbc71c02a76a9511a716e88da2
   languageName: node
   linkType: hard
 
