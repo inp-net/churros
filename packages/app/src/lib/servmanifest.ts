@@ -153,3 +153,7 @@ export async function uploadServerManifest(): Promise<ServerManifest> {
     });
   });
 }
+
+export function resetServerManifest() {
+  localStorage.removeItem(SERVER_MANIFEST_LOCAL_STORAGE_KEY);
+}
