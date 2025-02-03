@@ -43,7 +43,7 @@
   class:stretches
   class:circle
   class:inside-prose={insideProse}
-  href={disabled ? undefined : href.toString()}
+  href={disabled ? undefined : href?.toString()}
   {download}
   {formaction}
   {id}

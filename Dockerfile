@@ -2,7 +2,6 @@ ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.
 ARG REPOSITORY_URL=https://git.inpt.fr/churros/churros
 
 
-
 #####
 # Common builder
 #####
@@ -63,6 +62,7 @@ RUN yarn workspace @churros/api build
 
 FROM builder AS builder-app
 
+ARG REMOTE_DEVSERVER=""
 
 WORKDIR /app
 
@@ -70,9 +70,12 @@ COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
+    CAPACITOR_DEVSERVER="$REMOTE_DEVSERVER" \
     yarn workspace @churros/app build
 
-RUN yarn cap sync android
+RUN CAPACITOR_DEVSERVER="$REMOTE_DEVSERVER" yarn cap sync android
+
+ 
 
 FROM builder AS builder-sync
 
@@ -191,6 +194,8 @@ COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@ca
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capgo/ /app/node_modules/@capgo/
 COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capawesome/ /app/node_modules/@capawesome/
 
+RUN echo "Running with capacitor config:"
+RUN cat /app/packages/app/android/app/src/main/assets/capacitor.config.json
 
 #### Release (sign the APK)
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LogoChurros from '$lib/components/LogoChurros.svelte';
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
   import Alert from '$lib/components/Alert.svelte';
@@ -7,7 +8,7 @@
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import { mutationErrorMessages, mutationSucceeded } from '$lib/errors';
-  import { oauthEnabled, oauthInitiateLoginURL } from '$lib/oauth';
+  import { oauthEnabled, oauthInitiateLogin } from '$lib/oauth';
   import { route } from '$lib/ROUTES';
   import IconOauthSignin from '~icons/msl/key-outline';
   import { saveSessionToken } from '$lib/session';
@@ -23,10 +24,6 @@
 
   $: migratingPassword = $page.url.searchParams.has('migrate');
 </script>
-
-<h1>
-  {#if migratingPassword}Migration{:else}Connexion{/if}
-</h1>
 
 <form
   title="Se connecter"
@@ -49,9 +46,15 @@
     <Alert theme="warning">Cette page nécessite une connexion.</Alert>
   {/if}
 
+  <LogoChurros wordmark />
+
   {#if oauthEnabled()}
     <section class="oauth">
-      <ButtonSecondary href={oauthInitiateLoginURL({ url: $page.url })} noClientSideNavigation>
+      <ButtonSecondary
+        on:click={async () => {
+          await oauthInitiateLogin({ url: $page.url });
+        }}
+      >
         <div class="oauth-logo" slot="icon">
           {#if env.PUBLIC_OAUTH_LOGO_URL}
             <img src={env.PUBLIC_OAUTH_LOGO_URL} alt={env.PUBLIC_OAUTH_NAME} />
@@ -72,7 +75,13 @@
   <Alert theme="danger" closed={!serverError}>
     {serverError}
   </Alert>
-  <InputText bind:value={email} name="email" required label="Adresse e-mail ou pseudo" autofocus />
+  <InputText
+    bind:value={email}
+    name="email"
+    required
+    label="Adresse e-mail ou pseudo"
+    autofocus={!oauthEnabled()}
+  />
   <InputText
     bind:value={password}
     required
@@ -98,18 +107,13 @@
 </form>
 
 <style lang="scss">
-  h1 {
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
   form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     max-width: 400px;
     padding: 0 1rem;
-    margin: 0 auto;
+    margin: auto;
   }
 
   .submit,

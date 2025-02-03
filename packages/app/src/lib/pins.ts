@@ -6,9 +6,12 @@ import {
   PinDisplayProfilePageStore,
   PinDisplayServiceStore,
 } from '$houdini';
+import { nativeIcon } from '$lib/native-icons';
 import { route } from '$lib/ROUTES';
 import { isDark } from '$lib/theme';
 import { TYPENAMES_TO_ID_PREFIXES } from '$lib/typenames';
+import { Capacitor } from '@capacitor/core';
+import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts';
 import type { Page } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import IconMajor from '~icons/msl/account-tree-outline';
@@ -89,6 +92,7 @@ export async function pinDisplay(path: string) {
     return {
       title: path,
       icon: IconPage,
+      nativeIcon: nativeIcon('favorite'),
     };
   }
   try {
@@ -101,6 +105,7 @@ export async function pinDisplay(path: string) {
         .then((r) => r.data?.service);
       return {
         title: service?.name ?? 'Service',
+        nativeIcon: nativeIcon('favorite'),
         icon:
           (service?.logo
             ? service.logoSourceType === 'ExternalLink'
@@ -119,12 +124,21 @@ export async function pinDisplay(path: string) {
         Major: IconMajor,
       } as const;
 
+      const nativeIcons = {
+        User: nativeIcon('contact'),
+        Group: nativeIcon('favorite'),
+        StudentAssociation: nativeIcon('favorite'),
+        School: nativeIcon('location'),
+        Major: nativeIcon('favorite'),
+      } as const;
+
       const profile = await new PinDisplayProfilePageStore()
         .fetch({ variables: { uid } })
         .then((r) => r.data?.profile);
       if (profile) {
         return {
           title: 'name' in profile ? profile.name : uid,
+          nativeIcon: nativeIcons[profile.__typename],
           icon:
             ('pictureURL' in profile
               ? get(isDark)
@@ -143,6 +157,7 @@ export async function pinDisplay(path: string) {
         return {
           title: article?.title ?? 'Post',
           icon: article?.pictureURL || IconPost,
+          nativeIcon: nativeIcon('message'),
         };
       }
       case 'events': {
@@ -153,12 +168,14 @@ export async function pinDisplay(path: string) {
         return {
           title: path.split(/[/?]/g).includes('bookings') ? `${title}: Résas` : title,
           icon: event?.pictureURL || IconEvent,
+          nativeIcon: nativeIcon('date'),
         };
       }
       default: {
         return {
           title: path,
           icon: IconPage,
+          nativeIcon: nativeIcon('favorite'),
         };
       }
     }
@@ -166,6 +183,7 @@ export async function pinDisplay(path: string) {
     return {
       title: path,
       icon: IconPage,
+      nativeIcon: nativeIcon('favorite'),
     };
   }
 }
@@ -179,6 +197,20 @@ export async function pinCurrentPage(page: Page) {
     }
   `);
   await BookmarkPage.mutate({ path: page.url.pathname });
+
+  if (Capacitor.isNativePlatform()) {
+    const { nativeIcon, title } = await pinDisplay(page.url.pathname);
+    await AppShortcuts.set({
+      shortcuts: [
+        {
+          id: page.url.pathname,
+          icon: nativeIcon,
+          title,
+          description: title, // TODO something different?
+        },
+      ],
+    });
+  }
 }
 
 export async function unpinCurrentPage(page: Page) {
@@ -190,6 +222,14 @@ export async function unpinCurrentPage(page: Page) {
     }
   `);
   await UnbookmarkPage.mutate({ path: page.url.pathname });
+
+  if (Capacitor.isNativePlatform()) {
+    const { shortcuts } = await AppShortcuts.get();
+    await AppShortcuts.clear();
+    await AppShortcuts.set({
+      shortcuts: shortcuts.filter(({ id }) => id !== page.url.pathname),
+    });
+  }
 }
 
 export async function currentPageIsPinned(page: Page) {

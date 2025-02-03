@@ -1,10 +1,12 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { env } from '$env/dynamic/public';
 import { graphql, load_RootLayout } from '$houdini';
 import { editingTheme } from '$lib/theme';
 import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import * as Sentry from '@sentry/sveltekit';
 import { addYears, setDefaultOptions } from 'date-fns';
@@ -44,6 +46,31 @@ export async function load(event) {
       path: '/',
     });
   }
+
+  AppShortcuts.addListener('click', async ({ shortcutId }) => {
+    await graphql(`
+      query BookmarkURLByPath {
+        me {
+          bookmarks {
+            path
+            url
+          }
+        }
+      }
+    `)
+      .fetch({ event })
+      .then((result) => result.data?.me?.bookmarks.find(({ path }) => path === shortcutId)?.url)
+      .then((url) => {
+        if (!url) {
+          goto(shortcutId);
+          return;
+        }
+
+        const { pathname, origin } = new URL(url);
+        if (origin === env.PUBLIC_FRONTEND_ORIGIN_ANDROID) goto(pathname);
+        else globalThis.location.href = url.toString();
+      });
+  });
 
   const SentryUser = await graphql(`
     query RootLayoutSentryUser {

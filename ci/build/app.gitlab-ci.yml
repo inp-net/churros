@@ -6,13 +6,13 @@
 .build:app:
   extends: .app
   stage: build
-  needs: 
-    - job: test:app:lint
-      optional: true
-    - job: test:app:format
-      optional: true
-    - job: test:app:svelte-check
-      optional: true
+  # needs: 
+  #   - job: test:app:lint
+  #     optional: true
+  #   - job: test:app:format
+  #     optional: true
+  #   - job: test:app:svelte-check
+  #     optional: true
   variables:
     BUILD_APK: "false"
     SIGN_APK: "false"
@@ -28,6 +28,7 @@
             --opt target=app-bundle \
             --opt build-arg:TAG=$TAG \
             --opt build-arg:APP_DOTENV_OVERRIDE="$APP_DOTENV_OVERRIDE" \
+            --opt build-arg:REMOTE_DEVSERVER=$REMOTE_DEVSERVER \
             --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
             --output type=local,dest=.
       fi
@@ -54,6 +55,7 @@
             --opt target=android-$APK_TYPE \
             --opt build-arg:TAG=$TAG \
             --opt build-arg:APP_DOTENV_OVERRIDE="$APP_DOTENV_OVERRIDE" \
+            --opt build-arg:REMOTE_DEVSERVER=$REMOTE_DEVSERVER \
             --opt build-arg:BUILD_NUMBER=$CI_PIPELINE_ID \
             --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
             --opt build-arg:APK_KEY_ALIAS=$APK_KEY_ALIAS \
@@ -90,6 +92,28 @@ build:app:
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_SUBMODULE_FORCE_HTTPS: "true"
 
+build:app-with-native-develop:
+  extends: .build:app-with-native
+  stage: test
+  variables:
+    BUILD_APK: "true"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS =~ /native:signed/
+      when: manual
+      variables:
+        SIGN_APK: "true"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS !~ /native:signed/
+      when: manual
+      variables:
+        SIGN_APK: "false"
+  script:
+    - |
+      if [ ! -n "$REMOTE_DEVSERVER" ]; then
+        echo "Set REMOTE_DEVSERVER to your remote server URL (using ngrok or similar)"
+        exit 1
+      fi
+    - !reference [.build:app-with-native, script]
+
 build:app-with-native-unsigned:
   extends: .build:app-with-native
   rules: 
@@ -113,6 +137,8 @@ build:app-with-native-signed:
 deploy:apk:
   stage: deploy
   needs: 
+    - job: build:app-with-native-develop
+      optional: true
     - job: build:app-with-native-unsigned
       optional: true
     - job: build:app-with-native-signed

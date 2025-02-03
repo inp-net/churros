@@ -262,14 +262,10 @@ const rootPagesActions = [
       hidden: !me,
     };
   },
-  async () => {
-    const me = browser ? await navtopPermissions() : null;
-    return {
-      icon: IconCog,
-      label: 'Paramètres',
-      href: route('/settings'),
-      hidden: !me,
-    };
+  {
+    icon: IconCog,
+    label: 'Paramètres',
+    href: route('/settings'),
   },
   {
     icon: IconGift,
@@ -374,6 +370,10 @@ export const topnavConfigs: Partial<{
   },
   '/(app)/birthdays': {
     title: 'Anniversaires',
+    actions: [],
+  },
+  '/(app)/login': {
+    title: 'Connexion',
     actions: [],
   },
   '/(app)/services': {
