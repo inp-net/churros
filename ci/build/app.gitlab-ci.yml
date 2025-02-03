@@ -6,13 +6,13 @@
 .build:app:
   extends: .app
   stage: build
-  # needs: 
-  #   - job: test:app:lint
-  #     optional: true
-  #   - job: test:app:format
-  #     optional: true
-  #   - job: test:app:svelte-check
-  #     optional: true
+  needs: 
+     - job: test:app:lint
+       optional: true
+     - job: test:app:format
+       optional: true
+     - job: test:app:svelte-check
+       optional: true
   variables:
     BUILD_APK: "false"
     SIGN_APK: "false"
@@ -96,6 +96,7 @@ build:app-with-native-develop:
   extends: .build:app-with-native
   stage: prepare
   allow_failure: true
+  needs: []
   variables:
     BUILD_APK: "true"
   rules:
