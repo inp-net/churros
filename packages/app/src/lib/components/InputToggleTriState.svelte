@@ -1,6 +1,6 @@
 <script lang="ts">
   import { loaded, type MaybeLoading } from '$lib/loading';
-  import { createEventDispatcher, Component } from 'svelte';
+  import { createEventDispatcher, type Component } from 'svelte';
 
   const dispatch = createEventDispatcher<{ update: boolean }>();
 

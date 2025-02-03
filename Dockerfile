@@ -2,7 +2,6 @@ ARG CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=docker.io # override with git.
 ARG REPOSITORY_URL=https://git.inpt.fr/churros/churros
 
 
-
 #####
 # Common builder
 #####
@@ -26,8 +25,24 @@ COPY package.json /app/
 
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY .env.example /app/.env.example
-COPY .git /app/.git
 COPY packages/ /app/packages/ 
+
+ARG APP_DOTENV_OVERRIDE=""
+ARG REMOTE_DEVSERVER=""
+
+RUN if [ -n "$REMOTE_DEVSERVER" ] && [ -n "$APP_DOTENV_OVERRIDE" ]; then \
+      echo "Building app with REMOTE_DEVSERVER=$REMOTE_DEVSERVER, replacing origins in $APP_DOTENV_OVERRIDE"; \
+      sed -i "s|PUBLIC_API_ORIGIN_\(\w*\)=.*|PUBLIC_API_ORIGIN_\1=$REMOTE_DEVSERVER|g" $APP_DOTENV_OVERRIDE; \
+    fi
+
+RUN if [ -n "$APP_DOTENV_OVERRIDE" ]; then \
+      cp "$APP_DOTENV_OVERRIDE" /app/.env.example; \
+      echo "Building app with a .env override:"; \
+      cat /app/.env.example; \
+    fi
+
+
+COPY .git /app/.git
 COPY scripts/ /app/scripts/
 
 # Remove unused packages
@@ -50,16 +65,25 @@ RUN yarn workspace arborist build
 FROM builder AS builder-api
 
 WORKDIR /app
-RUN apk add --update --no-cache openssl
+RUN apk add --update --no-cache openssl 
 RUN yarn workspace @churros/api build
 
 FROM builder AS builder-app
 
+ARG REMOTE_DEVSERVER=""
+
 WORKDIR /app
+
 COPY packages/app/schema.graphql /app/packages/api/build/schema.graphql
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN || true) \
+    PUBLIC_REMOTE_DEVSERVER="$REMOTE_DEVSERVER" \
     yarn workspace @churros/app build
+
+RUN PUBLIC_REMOTE_DEVSERVER="$REMOTE_DEVSERVER" yarn cap sync android
+
+ 
 
 FROM builder AS builder-sync
 
@@ -142,7 +166,7 @@ WORKDIR /app
 
 # Builded app
 ENV NODE_ENV="production"
-COPY --from=builder-app /app/packages/app/build/ /app/packages/app/build/
+COPY --from=builder-app /app/packages/app/build-node/ /app/packages/app/build-node/
 COPY --from=builder-app /app/packages/app/package.json /app/packages/app/
 
 # Install dependencies
@@ -154,6 +178,76 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
+
+### Android
+
+#### Common base
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/saschpe/android-sdk:35-jdk21.0.5_11 AS android-assemble-base
+
+ARG ANDROID_ASSEMBLE_USER_UID=1001
+ARG BUILD_NUMBER=1
+ARG TAG=dev
+
+WORKDIR /app
+
+# create ~/.gradle/gradle.properties
+RUN mkdir -p $HOME/.gradle
+RUN echo "BUILD_VERSION_CODE=$BUILD_NUMBER" >> $HOME/.gradle/gradle.properties
+RUN echo "BUILD_VERSION_NAME=$TAG" >> $HOME/.gradle/gradle.properties
+
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/packages/app/ /app/packages/app/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor/ /app/node_modules/@capacitor/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capacitor-community/ /app/node_modules/@capacitor-community/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capgo/ /app/node_modules/@capgo/
+COPY --from=builder-app --chown=$ANDROID_ASSEMBLE_USER_UID /app/node_modules/@capawesome/ /app/node_modules/@capawesome/
+
+RUN echo "Running with capacitor config:"
+RUN cat /app/packages/app/android/app/src/main/assets/capacitor.config.json
+
+#### Release (sign the APK)
+
+FROM android-assemble-base AS android-assemble-release
+
+ARG APK_KEY_ALIAS=ALIAS
+
+WORKDIR /app
+
+RUN --mount=type=secret,id=APK_KEYSTORE_BASE64,uid=$ANDROID_ASSEMBLE_USER_UID \
+    base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
+RUN echo "KEYSTORE_PATH=/app/churros.keystore" >> $HOME/.gradle/gradle.properties
+
+RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \ 
+    echo "KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true)" >> $HOME/.gradle/gradle.properties
+
+RUN echo "KEY_ALIAS=$APK_KEY_ALIAS" >> $HOME/.gradle/gradle.properties
+
+RUN cat $HOME/.gradle/gradle.properties
+
+WORKDIR /app/packages/app/android
+RUN ./gradlew assembleRelease
+
+FROM scratch AS android-release
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs/apk/release/ .
+
+#### Debug assemble (unsigned APK)
+
+FROM android-assemble-base AS android-assemble-debug
+
+RUN echo "KEYSTORE_PATH=null" >> $HOME/.gradle/gradle.properties
+RUN echo "KEYSTORE_PASSWORD=null" >> $HOME/.gradle/gradle.properties
+RUN echo "KEY_ALIAS=null" >> $HOME/.gradle/gradle.properties
+
+WORKDIR /app/packages/app/android
+
+RUN ./gradlew assembleDebug
+
+FROM scratch AS android-debug
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-debug /app/packages/app/android/app/build/outputs/apk/debug/ .
 
 ### Sync
 
@@ -205,6 +299,27 @@ ENTRYPOINT ["./entrypoint.sh"]
 # Artifacts
 #####
 
+### GraphQL schema
+
 FROM scratch as graphql-schema
 
 COPY --from=builder-api /app/packages/api/build/schema.graphql /schema.graphql
+
+### Update bundle for OTA updates of the native apps
+
+FROM builder-app as app-bundle-assemble
+
+WORKDIR /app/packages/app
+
+ARG TAG=dev
+ARG APP_PACKAGE_ID=app.churros
+
+RUN yarn dlx @capgo/cli bundle zip \
+    --path build-static \
+    --bundle $TAG \
+    --name update-bundle.zip \
+    $APP_PACKAGE_ID 
+
+FROM scratch as app-bundle
+
+COPY --from=app-bundle-assemble /app/packages/app/update-bundle.zip /update-bundle.zip

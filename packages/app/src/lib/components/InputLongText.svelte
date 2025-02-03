@@ -56,7 +56,7 @@
     {name}
     {...$$restProps}
     placeholder={placeholder + (submitShortcut ? '\nCtrl-Entrer pour envoyer' : '')}
-  />
+  ></textarea>
 
   {#if maxlength}
     <div class="bottom-hint">

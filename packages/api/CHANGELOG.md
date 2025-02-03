@@ -1,5 +1,29 @@
 # @churros/api
 
+## 10.2.1
+
+### Patch Changes
+
+- bbc1775: fix(deps): update dependency firebase-admin to v13 (!520)
+- ca57f51: fix(deps): update dependency i18next to v24 (!521)
+
+## 10.2.0
+
+### Minor Changes
+
+- 8d94a13: add Query.version to get the current api version, and serve a server manifest at .well-known/churros.app/server.json
+
+### Patch Changes
+
+- b445dc2: fix(deps): update dependency date-fns-tz to ^3.2.0 (!509)
+- 816bfba: fix(deps): update dependency graphql-ws to ^6.0.3 (!510)
+- a6966ce: fix(deps): update dependency ldap-authentication to ^3.2.6 (!511)
+- 9bc1b79: trackShare did not work for articles
+- b7d0aaa: fix(deps): update prisma monorepo to v6 (major) (!464)
+- Updated dependencies [9bc1b79]
+- Updated dependencies [b7d0aaa]
+  - @churros/db@4.1.6
+
 ## 10.1.0
 
 ### Minor Changes

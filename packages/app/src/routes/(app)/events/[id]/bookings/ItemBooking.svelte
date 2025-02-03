@@ -105,6 +105,11 @@
     border-radius: var(--radius-block);
   }
 
+  .booking:hover,
+  .booking:focus-visible {
+    background-color: var(--bg2);
+  }
+
   .code {
     margin-left: auto;
     font-size: 0.8rem;
@@ -141,12 +146,6 @@
     container: bottom / inline-size;
   }
 
-  @container bottom (min-width: 300px) {
-    .booking .payment-method-name {
-      display: inline;
-    }
-  }
-
   .payment {
     color: var(--shy);
   }
@@ -162,20 +161,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .booking {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 1rem 1.5rem;
-    cursor: pointer;
-    border-radius: var(--border-block);
-  }
-
-  .booking:hover,
-  .booking:focus-visible {
-    background-color: var(--bg2);
   }
 
   .code.highlight {

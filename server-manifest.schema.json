@@ -1,0 +1,73 @@
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^(dev|(\\d+\\.\\d+\\.\\d+))$"
+    },
+    "urls": {
+      "type": "object",
+      "properties": {
+        "auth": {
+          "type": "string",
+          "format": "uri"
+        },
+        "api": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": ["auth", "api"],
+      "additionalProperties": false
+    },
+    "oauth": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "logoutUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "authorizeUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "clientId": {
+          "type": "string"
+        },
+        "tokenUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "userInfoUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "scopes": {
+          "type": "string"
+        }
+      },
+      "required": ["enabled", "scopes"],
+      "additionalProperties": false
+    },
+    "emails": {
+      "type": "object",
+      "properties": {
+        "support": {
+          "type": "string",
+          "format": "email"
+        },
+        "contact": {
+          "type": "string",
+          "format": "email"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["version", "urls", "oauth", "emails"],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

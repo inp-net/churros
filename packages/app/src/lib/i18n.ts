@@ -31,7 +31,7 @@ export function sentenceJoin(
  * @returns the truncated string
  */
 export function ellipsis(str: string, maxLength: number): string;
-export function ellipsis(str: MaybeLoading<string>, maxLength: number): MaybeLoading<string> 
+export function ellipsis(str: MaybeLoading<string>, maxLength: number): MaybeLoading<string>;
 export function ellipsis(str: MaybeLoading<string>, maxLength: number): MaybeLoading<string> {
   if (!loaded(str)) return str;
   if (!str) return str;

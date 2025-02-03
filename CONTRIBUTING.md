@@ -119,6 +119,10 @@ Pour effectuer vos changements puis les proposer:
 3. Faites vos commits sur ce _fork_
 4. Faites une _merge request_, demandant à intégrer les changements de _votre fork_ vers ce dépôt
 
+Si vous voulez obtenir des .apk/.ipa pour tester votre PR sur mobile (appli native), ajoutez les labels ~ios et/ou ~android à votre MR.
+
+Les packages obtenus ne seront pas signés et en mode "debug". Si pour quelconque raison, vous avez besoin de signer les packages (par exemple, développement sur le deeplinking), ajoutez ~native:signed.
+
 ### Conventions de commits
 
 Churros utilise la convention des [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). Les messages de commit doivent donc être de la forme suivante :

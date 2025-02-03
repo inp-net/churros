@@ -4,4 +4,3 @@
 [submodule "packages/app/ios"]
 	path = packages/app/ios
 	url = git@git.inpt.fr:churros/ios
-

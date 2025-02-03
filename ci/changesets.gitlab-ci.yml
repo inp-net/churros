@@ -17,7 +17,7 @@
 
 comment:
   extends: .changesets
-  stage: changesets
+  stage: prepare
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
@@ -26,7 +26,7 @@ comment:
 renovate-changesets:
   extends: .changesets
   image: node:20.18.2-alpine
-  stage: changesets
+  stage: prepare
   variables:
     GIT_DEPTH: 400
   before_script:
@@ -38,11 +38,11 @@ renovate-changesets:
     - git pull gitlab_origin main
     - git push gitlab_origin HEAD:main
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE != $RELEASE_COMMIT_MESSAGE
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE != $RELEASE_COMMIT_MESSAGE && $CI_COMMIT_TITLE != "Merge branch 'changeset-release/main' into 'main'"
 
 release:
   extends: .changesets
-  stage: changesets
+  stage: prepare
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   variables:
@@ -51,5 +51,6 @@ release:
     YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     INPUT_VERSION: '/bin/sh scripts/update-versions.sh'
     INPUT_PUBLISH: 'changeset tag'
+    INPUT_CREATE_GITLAB_RELEASES: 'true'
   script:
     - changesets-gitlab

@@ -6,6 +6,12 @@ import icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
 import { kitRoutes } from 'vite-plugin-kit-routes';
 
+const capacitorDevserverUrl = process.env['PUBLIC_REMOTE_DEVSERVER'];
+
+if (capacitorDevserverUrl) {
+  console.log(`Capacitor devserver URL set, allowing host ${new URL(capacitorDevserverUrl).host}`);
+}
+
 export const commonConfig = defineConfig({
   plugins: [
     icons({
@@ -34,6 +40,13 @@ export const commonConfig = defineConfig({
 export default mergeConfig(
   commonConfig,
   defineConfig({
+    build: {
+      minify: false,
+      sourcemap: true,
+    },
+    server: {
+      allowedHosts: capacitorDevserverUrl ? [new URL(capacitorDevserverUrl).host] : [],
+    },
     plugins: [
       houdini(),
       sentrySvelteKit({
@@ -61,7 +74,14 @@ export default mergeConfig(
         PAGES: {
           '/login': {
             explicit_search_params: {
-              bypass_oauth: { type: "undefined | '1'", default: 'undefined' },
+              force_oauth: {
+                type: '"" | undefined',
+                default: 'undefined',
+              },
+              why: {
+                type: '"unauthorized" | undefined',
+                default: 'undefined',
+              },
             },
           },
           '/events/[id]/bookings': {

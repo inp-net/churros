@@ -12,6 +12,7 @@ import {
   type Visibility$options,
 } from '$houdini';
 import { NotificationChannel, Visibility } from '$lib/zeus';
+import type { Component } from 'svelte';
 import LogoLydia from '~icons/custom-logos/lydia';
 import LogoPaypal from '~icons/logos/paypal';
 import IconGroupMembers from '~icons/mdi/account-group-outline';
@@ -151,11 +152,7 @@ export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
   NotificationChannel.Other,
 ];
 
-export const ICONS_NOTIFICATION_CHANNELS: Record<
-  NotificationChannel$options,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Component
-> = {
+export const ICONS_NOTIFICATION_CHANNELS: Record<NotificationChannel$options, Component> = {
   Articles: IconArticle,
   Shotguns: IconShotgun,
   Comments: IconComment,
@@ -183,7 +180,6 @@ export const DISPLAY_MANAGER_PERMISSION_LEVELS: Record<EventManagerPowerLevel$op
 };
 
 // TODO remove
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ICONS_PAYMENT_METHODS: Record<PaymentMethod$options, Component> = {
   Card: IconCreditCard,
   Cash: IconCash,
@@ -214,7 +210,6 @@ export const DISPLAY_DOCUMENT_TYPES = new Map<DocumentType$options, string>([
   ['Summary', 'Fiche'],
 ]);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ICONS_DOCUMENT_TYPES = new Map<DocumentType$options, Component>([
   ['CourseNotes', IconFileDocumentOutline],
   ['CourseSlides', IconPlayBoxOutline],
@@ -281,7 +276,7 @@ export const DISPLAY_BOOLEAN_CONSTRAINT: Record<BooleanConstraint$options, strin
   Only: 'Seulement',
   Not: 'Interdit',
 };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// @ts-expect-error very weird type error, probably due to type disparities between LogoFrappe & others. i have the flemme to fix it
 export const ICONS_SERVICES: Map<string, Component> = new Map([
   ['car', IconCar],
   ['defis', IconDefisInte],

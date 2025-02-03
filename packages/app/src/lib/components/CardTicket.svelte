@@ -176,12 +176,12 @@
             '',
           )
         : undefined}
-      on:click={!onceLoaded(externalURL, Boolean, null) && $page.route.id === '/(app)/events/[id]'
-        ? () => {
-            if (!$data || !loaded($data.localID)) return;
-            dispatch('book', $data.localID);
-          }
-        : undefined}
+      on:click={() => {
+        if (onceLoaded(externalURL, Boolean, null)) return;
+        if ($page.route.id !== '/(app)/events/[id]') return;
+        if (!$data || !loaded($data.localID)) return;
+        dispatch('book', $data.localID);
+      }}
       >Obtenir {#if externalURL}<IconOpenExternal />{/if}{#if $data}<span class="price"
           ><LoadingText
             value={mapAllLoading(

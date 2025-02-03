@@ -1,6 +1,6 @@
 query PageNotificationsInitial {
   loggedIn(assert: "Connectes-toi pour avoir des notifications")
   notificationSubscriptions {
-    endpoint
+    ...NotificationsSubscribedCheck @mask_disable
   }
 }

@@ -24,6 +24,7 @@
   import { editingTheme, isDark } from '$lib/theme';
   import { toasts } from '$lib/toasts';
   import { setupViewTransition } from '$lib/view-transitions';
+  import { SafeArea } from '@capacitor-community/safe-area';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import '../../design/app.css';
@@ -98,6 +99,14 @@
     back: null,
   });
   setContext('navtop', navtop);
+
+  $: SafeArea.enable({
+    config: {
+      customColorsForSystemBars: true,
+      navigationBarContent: $isDark ? 'light' : 'dark',
+      statusBarContent: $isDark ? 'light' : 'dark',
+    },
+  });
 
   $: if (browser && $page.route.id) document.body.dataset.route = $page.route.id;
 
@@ -209,13 +218,10 @@
         <p>Pour accéder à vos événements, groupes et réservations, connectes-toi.</p>
         <section class="actions">
           <!-- Can't use refroute here cuz it's not called again on every page change, since this lives in the layout -->
-          <ButtonSecondary
-            noClientSideNavigation
-            href={addReferrer(route('/login'), $page.url.pathname)}>Connexion</ButtonSecondary
+          <ButtonSecondary href={addReferrer(route('/login'), $page.url.pathname)}
+            >Connexion</ButtonSecondary
           >
-          <ButtonSecondary noClientSideNavigation href={refroute('/signup')}
-            >Inscription</ButtonSecondary
-          >
+          <ButtonSecondary href={refroute('/signup')}>Inscription</ButtonSecondary>
         </section>
       </section>
     {/if}
@@ -390,6 +396,10 @@
       flex-direction: column;
       width: 100dvw;
       height: 100dvh;
+
+      // Set by @capacitor-community/safe-area
+      padding-top: var(--safe-area-inset-top);
+      padding-bottom: var(--safe-area-inset-bottom);
     }
 
     .layout {

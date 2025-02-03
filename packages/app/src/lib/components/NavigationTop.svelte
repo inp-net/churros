@@ -38,7 +38,7 @@
 
   export function updateTitle(title: string) {
     if (!browser) return;
-    window.dispatchEvent(new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: title }));
+    globalThis.dispatchEvent(new CustomEvent('NAVTOP_UPDATE_TITLE', { detail: title }));
   }
 </script>
 
@@ -135,7 +135,7 @@
           </svelte:fragment>
         </OverflowMenu>
       {:else if 'icon' in quickAction}
-        <ButtonGhost on:click={quickAction.do} href={quickAction.href}>
+        <ButtonGhost on:click={() => quickAction?.do} href={quickAction.href}>
           <svelte:component this={quickAction.icon}></svelte:component>
           <svelte:fragment slot="hovering">
             <svelte:component this={quickAction.filledIcon ?? quickAction.icon}></svelte:component>
@@ -143,7 +143,7 @@
         </ButtonGhost>
       {:else if 'label' in quickAction}
         <div class="button-primary">
-          <ButtonPrimary on:click={quickAction.do} href={quickAction.href}
+          <ButtonPrimary on:click={() => quickAction?.do} href={quickAction.href}
             >{quickAction.label}</ButtonPrimary
           >
         </div>

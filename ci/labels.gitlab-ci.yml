@@ -1,0 +1,21 @@
+.labels:
+  extends: .glab
+  stage: prepare
+  variables:
+    TOKEN: $LABELLER_TOKEN
+
+labels:app-with-android-changes:
+  extends: .labels
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/app/android]
+  script:
+    - glab mr update $CI_MERGE_REQUEST_IID -l android
+
+labels:app-with-ios-changes:
+  extends: .labels
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/app/ios]
+  script:
+    - glab mr update $CI_MERGE_REQUEST_IID -l ios

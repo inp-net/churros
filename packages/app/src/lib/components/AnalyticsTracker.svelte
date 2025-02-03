@@ -2,6 +2,7 @@
   import { fragment, graphql, type AnalyticsTrackerUser } from '$houdini';
   import { CURRENT_VERSION, CURRENT_COMMIT } from '$lib/buildinfo';
   import { isPWA } from '$lib/pwa';
+  import { Capacitor } from '@capacitor/core';
   import { theme, isDark } from '$lib/theme';
 
   export let user: AnalyticsTrackerUser | null;
@@ -31,6 +32,10 @@
     data-commit={CURRENT_COMMIT}
     data-user-major={$data?.major?.shortName ?? '(none)'}
     data-user-year-tier={$data?.yearTier ? `${$data.yearTier}A` : '(none)'}
-    data-context={isPWA() ? 'pwa' : 'browser'}
+    data-context={Capacitor.isNativePlatform()
+      ? Capacitor.getPlatform()
+      : isPWA()
+        ? 'pwa'
+        : 'browser'}
   ></script>
 </svelte:head>

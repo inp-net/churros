@@ -16,4 +16,8 @@ Sentry.init({
 
 export const handleError: HandleClientError = Sentry.handleErrorWithSentry(({ error }) => {
   console.error(error);
+  if (error instanceof Error) console.error(error.stack);
+
+  // eslint-disable-next-line unicorn/error-message
+  console.error('Stacktrace:', new Error().stack);
 });

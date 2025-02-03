@@ -95,7 +95,7 @@
 <MaybeError result={$PageEventScanBookings}>
   <div class="camera-area">
     <!-- svelte-ignore a11y-media-has-caption -->
-    <video bind:this={videoElement} />
+    <video bind:this={videoElement}></video>
   </div>
 
   <div class="results">

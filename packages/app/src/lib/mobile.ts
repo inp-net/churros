@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { getContext, setContext } from 'svelte';
 
 export const _CONTEXT_KEY_MOBILE = Symbol('mobile');
@@ -15,7 +16,9 @@ export const _CONTEXT_KEY_MOBILE = Symbol('mobile');
  * This is more for stuff that is conditionally rendered but can't be reliably done with CSS. Check for {#if mobile} in the source code for examples.
  */
 export function isMobile() {
-  return getContext<boolean>(_CONTEXT_KEY_MOBILE) ?? false;
+  return (
+    getContext<boolean>(_CONTEXT_KEY_MOBILE) ?? ['ios', 'android'].includes(Capacitor.getPlatform())
+  );
 }
 
 /**

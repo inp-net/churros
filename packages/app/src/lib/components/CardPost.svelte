@@ -20,16 +20,22 @@
   interface Props {
     article: CardArticle | null;
     /** Hide the group and show the author instead */
-    hideGroup: boolean;
+    hideGroup?: boolean;
     /** Hide the event link */
-    hideEvent: boolean;
+    hideEvent?: boolean;
     /** Add a ?from= query parameter to the post link */
-    referrer: boolean;
+    referrer?: boolean;
     /** The href to go to. Defaults to the post's link. Unaffected by `referrer`. */
-    href: string | undefined;
+    href?: string | undefined;
   }
 
-  const { article, hideGroup, hideEvent, referrer, href: _href }: Props = $props();
+  const {
+    article,
+    hideGroup = false,
+    hideEvent = false,
+    referrer = false,
+    href: _href,
+  }: Props = $props();
 
   const data = $derived(
     fragment(
@@ -67,7 +73,7 @@
     ),
   );
 
-  let href = $derived.by(() => {
+  const href = $derived.by(() => {
     if (_href) return _href;
     if (!$data) return undefined;
     return onceLoaded(
@@ -102,7 +108,6 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <article class="post-outer" onclick={gotoPost}>
   <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="author-gutter" onclick={gotoPost}>
     {#if showingAuthor($data)}
@@ -170,9 +175,9 @@
     display: grid;
     grid-template-columns: max-content 1fr;
     gap: 0.5em;
+    padding: 1em;
     cursor: pointer;
     border-radius: var(--radius-block);
-    padding: 1em;
   }
 
   .post-outer:is(:hover, :focus-visible) {
@@ -185,27 +190,27 @@
 
   .rest {
     display: flex;
-    gap: 1em;
     flex-flow: column nowrap;
+    gap: 1em;
   }
 
   .author-and-time {
     display: flex;
-    align-items: center;
     gap: 0.5em;
+    align-items: center;
   }
 
   .picture {
+    position: relative;
     max-height: calc(max(25vh, 100px));
     overflow: hidden;
     border-radius: var(--radius-block);
-    position: relative;
   }
 
   .picture img {
     width: 100%;
-    object-fit: cover;
     margin-top: -50%;
+    object-fit: cover;
   }
 
   .interact {

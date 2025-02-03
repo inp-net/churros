@@ -1,0 +1,6 @@
+.glab:
+  image: gitlab/glab:v1.52.0
+  variables:
+    TOKEN: $CI_JOB_TOKEN
+  before_script:
+    - glab auth login --hostname $CI_SERVER_HOST --token $TOKEN

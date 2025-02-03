@@ -4,6 +4,7 @@
   import { fragment, graphql, type ButtonLike } from '$houdini';
   import { loaded } from '$lib/loading';
   import { toasts } from '$lib/toasts';
+  import { tooltip } from '$lib/tooltip';
   import { typenameOfId } from '$lib/typenames';
   import { NumberFlip } from 'number-flip-animation';
   import 'number-flip-animation/dist/styles.css';
@@ -73,6 +74,7 @@
 <div class="button-like">
   <button
     disabled={!$RootLayout.data?.loggedIn}
+    use:tooltip={$RootLayout.data?.loggedIn ? '' : 'Connectes-toi pour liker'}
     on:click={async () => {
       if (!$data) return;
       if (!loaded($data.id) || !loaded($data.liked)) return;

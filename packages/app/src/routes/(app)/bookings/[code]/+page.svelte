@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$houdini';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
   import BookingAuthor from '$lib/components/BookingAuthor.svelte';
   import BookingBeneficiary from '$lib/components/BookingBeneficiary.svelte';
   import BookingPaymentMethod from '$lib/components/BookingPaymentMethod.svelte';
@@ -30,21 +31,44 @@
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
+  import { vibrate } from '$lib/vibration';
+  import { ScreenBrightness } from '@capacitor-community/screen-brightness';
+  import { KeepAwake } from '@capacitor-community/keep-awake';
+  import { onDestroy, onMount } from 'svelte';
   import IconCancel from '~icons/msl/block';
   import IconDownload from '~icons/msl/download';
   import type { PageData } from './$houdini';
   import ModalPay, { type Step } from './ModalPay.svelte';
-  import { vibrate } from '$lib/vibration';
   import {
     CancelBooking,
     CreateAppleWalletPass,
     CreateGoogleWalletPass,
     MarkBookingAsPaid,
   } from './mutations';
-  import AvatarUser from '$lib/components/AvatarUser.svelte';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
+
+  let actualBrightness = -1;
+
+  onMount(async () => {
+    try {
+      actualBrightness = await ScreenBrightness.getBrightness().then((res) => res.brightness);
+      await ScreenBrightness.setBrightness({ brightness: 1 });
+      await KeepAwake.keepAwake();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  onDestroy(async () => {
+    try {
+      await KeepAwake.allowSleep();
+      await ScreenBrightness.setBrightness({ brightness: actualBrightness });
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
   let initialBookingDataVerified: undefined | boolean;
   $: if (initialBookingDataVerified === undefined) {

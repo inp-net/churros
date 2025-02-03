@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { FullAutoFill } from 'svelte/elements';
   import type { Component } from 'svelte';
   import BaseInputText from './BaseInputText.svelte';
   import InputField from './InputField.svelte';
@@ -12,7 +13,7 @@
   export let initial: MaybeLoading<string | undefined> = undefined;
   export let placeholder: string | undefined = undefined;
   export let value: string;
-  export let autocomplete: string | undefined = undefined;
+  export let autocomplete: FullAutoFill | null | undefined = undefined;
   export let errorMessage: string | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let actionIcon: Component | undefined = undefined;

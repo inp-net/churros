@@ -1,5 +1,52 @@
 # @churros/app
 
+## 4.4.3
+
+### Patch Changes
+
+- 3af9e39: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.23 (!529)
+
+## 4.4.2
+
+### Patch Changes
+
+- e78a4c9: fix a crash on event pages due to ButtonSecondary not handling undefined hrefs
+
+## 4.4.1
+
+### Patch Changes
+
+- 118278c: remove leftover TWA assetlinks.json that was taking precedence over native one
+
+## 4.4.0
+
+### Minor Changes
+
+- 5cab9f4: overhaul login flow, allow setting name and/or logo for the oauth provider thru PUBLIC*OAUTH*{LOGO_URL,NAME}
+- 67fc88a: Add /update-bundle to serve update bundles, in preparation for native OTA updates
+- 43d0446: add logout to profile page overflow menu
+- dbb8caf: add tooltip on like button when logged out
+
+### Patch Changes
+
+- 11f4d5a: remove help button on ticket capacity visiblity toggle, use a tooltip instead
+
+## 4.3.0
+
+### Minor Changes
+
+- 5e50827: the node server now serves deeplinking manifests at .well-known/
+
+## 4.2.1
+
+### Patch Changes
+
+- b445dc2: fix(deps): update dependency date-fns-tz to ^3.2.0 (!509)
+- 816bfba: fix(deps): update dependency graphql-ws to ^6.0.3 (!510)
+- cd6debd: fix(deps): update dependency @sentry/sveltekit to ^8.52.1 (!508)
+- 0884880: remove dependency on react 💀
+- fc351f0: chore(deps): update dependency vite-plugin-kit-routes to ^0.8.1 (!485)
+
 ## 4.2.0
 
 ### Minor Changes

@@ -4,10 +4,10 @@ query LayoutSettings @loading {
     name
     localID
   }
-  me: assertMe {
+  apiVersion: version
+  me {
     uid
     lydiaPhone
     gdprExport
-    # TODO: enabledNotificationChannels
   }
 }
