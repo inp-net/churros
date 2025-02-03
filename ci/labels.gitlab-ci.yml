@@ -1,0 +1,17 @@
+labels:app-with-android-changes:
+  stage: prepare
+  image: gitlab/glab
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/app/android]
+  script:
+    - glab mr update $CI_MERGE_REQUEST_IID -l android
+
+labels:app-with-ios-changes:
+  stage: prepare
+  image: gitlab/glab
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/app/ios]
+  script:
+    - glab mr update $CI_MERGE_REQUEST_IID -l ios
