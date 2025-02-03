@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.4.2
+
+### Patch Changes
+
+- e78a4c9: fix a crash on event pages due to ButtonSecondary not handling undefined hrefs
+
 ## 4.4.1
 
 ### Patch Changes
