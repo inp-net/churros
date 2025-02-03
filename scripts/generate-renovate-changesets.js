@@ -83,6 +83,8 @@ for (const commitHash of mergeCommits) {
     flag: 'a',
   });
 
+  console.log(`Changeset file created: \n${changesetFile}`);
+
   // Stage the changeset file
   exec(`git add ${changesetFile}`);
 }
