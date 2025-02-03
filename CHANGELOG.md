@@ -13,6 +13,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [4.4.2] - 2025-02-03
 
+### Corrections
+
+- Un problème empêchait souvent les pages d'événement de charger
+
 ## [4.4.1] - 2025-02-01
 
 ## [4.4.0] - 2025-02-01
