@@ -4,7 +4,10 @@
     PACKAGE: app
 
 test:app:no-undeclared-native-changes:
-  extends: .test:app
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: [packages/app/android, packages/app/ios]
   script:
     - |
       if grep -q "^'@churros/app': major$" .changeset/*.md; then
