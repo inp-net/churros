@@ -1,6 +1,6 @@
 import { MapperKind, getDirective, mapSchema, type Maybe } from '@graphql-tools/utils';
 import { formatDuration, intervalToDuration, type Locale } from 'date-fns';
-import fr from 'date-fns/locale/fr/index.js';
+import { fr } from 'date-fns/locale';
 import {
   DirectiveLocation,
   GraphQLDirective,

@@ -1,5 +1,22 @@
 # @churros/db
 
+## 4.1.6
+
+### Patch Changes
+
+- 9bc1b79: trackShare did not work for articles
+- b7d0aaa: fix(deps): update prisma monorepo to v6 (major) (!464)
+
+## 4.1.5
+
+### Patch Changes
+
+- 1c9d2f4: fix(deps): update dependency @faker-js/faker to ^9.4.0 (!497)
+- 5569d5d: fix(deps): update dependency graphql to ^16.10.0 (!472)
+- d445d96: fix(deps): update dependency ioredis to ^5.4.2 (!453)
+- 9db4f8b: fix(deps): update dependency npm-run-all2 to ^7.0.2 (!501)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+
 ## 4.1.4
 
 ### Patch Changes

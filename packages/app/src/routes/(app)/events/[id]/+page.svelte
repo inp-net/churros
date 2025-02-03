@@ -145,9 +145,8 @@
       {:else}
         {#if !loggedIn}
           <Alert theme="warning">
-            Il est possible que tu doive <a data-sveltekit-reload href={refroute('/login')}
-              >te connecter</a
-            > pour réserver une place
+            Il est possible que tu doive <a href={refroute('/login')}>te connecter</a> pour réserver
+            une place
           </Alert>
         {/if}
       {/each}

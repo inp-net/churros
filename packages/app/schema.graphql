@@ -4771,6 +4771,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   """
   userCandidatesCount: Int!
   userServices: [Service!]! @deprecated(reason: "Use `services(mine: true)` instead")
+  """
+  Version actuelle de l'API
+  """
+  version: String!
 }
 
 type QueryAllFormsConnection {
@@ -5591,6 +5595,14 @@ type Registration implements Node {
   createdAt: DateTime!
   externalBeneficiary: String
   id: ID!
+  """
+  Nom des liens du billet. Dans le même ordre que `links`.
+  """
+  linkNames: [String!]!
+  """
+  Liens associés au billets, avec `[code]` remplacé par la valeur de la variable `code` passée dans l'opération
+  """
+  linkURLs: [URL!]!
   """
   L'identifiant local de la ressource (sans préfixe)
   """

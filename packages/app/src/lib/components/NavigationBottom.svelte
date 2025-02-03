@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fragment, graphql, type NavigationBottomMe } from '$houdini';
   import ButtonNavigation from '$lib/components/ButtonNavigation.svelte';
-  import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import { addReferrer } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
   import IconAccount from '~icons/msl/account-circle';
   import IconAccountOutline from '~icons/msl/account-circle-outline';
@@ -23,6 +23,8 @@
       }
     `),
   );
+
+  $: loginHref = addReferrer(route('/login'), $page.url.pathname);
 </script>
 
 <nav>
@@ -66,14 +68,13 @@
       iconFilled={IconAccount}
     />
   {:else}
-    <ButtonSecondary
-      on:contextmenu={(e) => {
-        e?.preventDefault();
-        goto(route('/login', { bypass_oauth: '1' }));
-      }}
-      noClientSideNavigation
-      href={route('/login')}>Connexion</ButtonSecondary
-    >
+    <ButtonNavigation
+      href={loginHref}
+      routeID="/(app)/login"
+      label="Moi"
+      icon={IconAccountOutline}
+      iconFilled={IconAccount}
+    />
   {/if}
 </nav>
 

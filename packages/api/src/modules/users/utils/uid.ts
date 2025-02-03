@@ -1,7 +1,6 @@
 import { uidIsFree } from '#lib';
 import dichotomid from 'dichotomid';
 import slug from 'slug';
-// @ts-expect-error Untyped lib
 import unaccent from 'unaccent';
 
 export const createUid = async ({

@@ -48,6 +48,7 @@ for (const commitHash of mergeCommits) {
       const pkgJson = JSON.parse(readFileSync(pkgPath, { encoding: 'utf-8' }));
       // Root package contains meta-only deps
       if (pkgJson.name === 'churros') continue;
+      if (pkgJson.name === '@churros/mock-n7-ldap') continue;
       changedPackageNames.push(pkgJson.name);
     }
   }
@@ -76,7 +77,7 @@ for (const commitHash of mergeCommits) {
     .slice(1)
     .filter(Boolean)
     .map((line) => line.replace(/^See merge request .+?!(\d+)$/i, '(!$1)'))
-    .join('  ');
+    .join(' ');
   writeFileSync(changesetFile, `${originalMessage}\n`, {
     encoding: 'utf-8',
     flag: 'a',

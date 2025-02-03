@@ -1,6 +1,6 @@
 import { daysToSeconds, ENV, getSessionUser, redisClient } from '#lib';
 import { type User } from '@churros/db/prisma';
-import RedisStore from 'connect-redis';
+import { RedisStore } from 'connect-redis';
 import session from 'express-session';
 import passport from 'passport';
 

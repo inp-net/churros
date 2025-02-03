@@ -1,5 +1,84 @@
 # @churros/api
 
+## 10.2.1
+
+### Patch Changes
+
+- bbc1775: fix(deps): update dependency firebase-admin to v13 (!520)
+- ca57f51: fix(deps): update dependency i18next to v24 (!521)
+
+## 10.2.0
+
+### Minor Changes
+
+- 8d94a13: add Query.version to get the current api version, and serve a server manifest at .well-known/churros.app/server.json
+
+### Patch Changes
+
+- b445dc2: fix(deps): update dependency date-fns-tz to ^3.2.0 (!509)
+- 816bfba: fix(deps): update dependency graphql-ws to ^6.0.3 (!510)
+- a6966ce: fix(deps): update dependency ldap-authentication to ^3.2.6 (!511)
+- 9bc1b79: trackShare did not work for articles
+- b7d0aaa: fix(deps): update prisma monorepo to v6 (major) (!464)
+- Updated dependencies [9bc1b79]
+- Updated dependencies [b7d0aaa]
+  - @churros/db@4.1.6
+
+## 10.1.0
+
+### Minor Changes
+
+- 292e56e: Allow dynamic ticket links based on the booking's code, using [code]
+
+### Patch Changes
+
+- 1c9d2f4: fix(deps): update dependency chalk to ^5.4.1 (!498)
+- 9db4f8b: fix(deps): update dependency @clack/prompts to ^0.9.1 (!502)
+- a3deb82: fix(deps): update dependency connect-redis to v8 (!460)
+- bbf5895: fix(deps): update dependency date-fns to v4 (!461)
+- d445d96: fix(deps): update dependency @envelop/core to ^5.0.3 (!451)
+- c8c085a: fix(deps): update dependency glob to ^11.0.1 (!471)
+- 28d9965: fix(deps): update dependency google-auth-library to ^9.15.1 (!503)
+- 5569d5d: fix(deps): update dependency graphql to ^16.10.0 (!472)
+- c8c085a: fix(deps): update dependency graphql-scalars to ^1.24.1 (!473)
+- a3deb82: fix(deps): update dependency graphql-ws to v6 (!463)
+- c8c085a: fix(deps): update graphql-yoga monorepo (!481)
+- d445d96: fix(deps): update dependency ioredis to ^5.4.2 (!453)
+- c8c085a: fix(deps): update linkifyjs monorepo to ^4.2.0 (!482)
+- 92e7bab: chore(deps): update node.js to v20.18.2 (!456)
+- 92e7bab: fix(deps): update dependency nodemailer to ^6.10.0 (!493)
+- 9db4f8b: fix(deps): update dependency nodemon to ^3.1.9 (!500)
+- 9db4f8b: fix(deps): update dependency npm-run-all2 to ^7.0.2 (!501)
+- 92e7bab: fix(deps): update dependency pdfmake to ^0.2.18 (!474)
+- c8c085a: fix(deps): update dependency phone to ^3.1.58 (!475)
+- c8c085a: fix(deps): update dependency rate-limiter-flexible to ^5.0.5 (!476)
+- c6875b0: fix(deps): update dependency semver to ^7.7.0 (!488)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+- 3f31893: fix(deps): update dependency unaccent to ^0.3.0 (!489)
+- cdbe114: chore(deps): update dependency @vizdom/vizdom-ts-node to ^0.1.19 (!446)
+- c8c085a: fix(deps): update dependency yaml to ^2.7.0 (!480)
+- d445d96: fix(deps): update dependency zod to ^3.24.1 (!454)
+- Updated dependencies [1c9d2f4]
+- Updated dependencies [5569d5d]
+- Updated dependencies [d445d96]
+- Updated dependencies [92e7bab]
+- Updated dependencies [9db4f8b]
+- Updated dependencies [92e7bab]
+  - @churros/db@4.1.5
+  - arborist@0.1.4
+
+## 10.0.0
+
+### Major Changes
+
+- c1e9496: default value for Mutation.acknowledgeChangelog:version and Query.combinedChangelog:to were removed
+
+### Patch Changes
+
+- 4143201: chore(deps): update dependency chokidar to ^4.0.3 (!425)
+- f68a9a1: chore(deps): update dependency concurrently to ^9.1.2 (!426)
+- f68a9a1: chore(deps): update dependency @types/ws to ^8.5.14 (!422)
+
 ## 9.1.0
 
 ### Minor Changes

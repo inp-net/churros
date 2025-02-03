@@ -2,14 +2,12 @@
   extends: .test
   variables:
     PACKAGE: app
-  before_script:
-    - !reference [.test, before_script]
-    - yarn @app generate
 
 test:app:lint:
   extends: .test:app
   allow_failure: true # cuz eslint gives "Something went wrong" error in CI...
   script:
+    - yarn @app generate
     - yarn eslint --cache=true $(cat changes.txt)
 
 test:app:format:
@@ -20,4 +18,5 @@ test:app:format:
 test:app:svelte-check:
   extends: .test:app
   script:
+    - yarn @app generate
     - yarn @app verify

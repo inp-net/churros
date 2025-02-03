@@ -132,32 +132,33 @@
         icon={IconAccount}
         iconFilled={IconAccountFilled}
       />
+    {/if}
 
+    <ButtonNavigation
+      href={route('/settings')}
+      routeID="/(app)/settings"
+      label="Paramètres"
+      tooltipsOn="left"
+      icon={IconSettings}
+      iconFilled={IconSettingsFilled}
+    />
+
+    {#if $data && allLoaded($data) && ($data.admin || $data.studentAssociationAdmin)}
       <ButtonNavigation
-        href={route('/settings')}
-        routeID="/(app)/settings"
-        label="Paramètres"
+        href={route('/backrooms')}
+        routeID={[
+          '/(app)/backrooms',
+          '/(app)/signups',
+          '/(app)/quick-signups/manage',
+          '/(app)/services/manage',
+          '/(app)/logs',
+        ]}
+        label="Backrooms"
         tooltipsOn="left"
-        icon={IconSettings}
-        iconFilled={IconSettingsFilled}
+        icon={IconBackrooms}
+        iconFilled={IconBackroomsFilled}
+        badge={($PendingSignupsCount?.data?.userCandidatesCount ?? 0) > 0}
       />
-      {#if $data.admin || $data.studentAssociationAdmin}
-        <ButtonNavigation
-          href={route('/backrooms')}
-          routeID={[
-            '/(app)/backrooms',
-            '/(app)/signups',
-            '/(app)/quick-signups/manage',
-            '/(app)/services/manage',
-            '/(app)/logs',
-          ]}
-          label="Backrooms"
-          tooltipsOn="left"
-          icon={IconBackrooms}
-          iconFilled={IconBackroomsFilled}
-          badge={($PendingSignupsCount?.data?.userCandidatesCount ?? 0) > 0}
-        />
-      {/if}
     {/if}
   </div>
 
