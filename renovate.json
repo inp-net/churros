@@ -3,6 +3,9 @@
   "extends": ["config:recommended"],
   "labels": ["dependencies"],
   "rangeStrategy": "bump",
+  "kubernetes": {
+    "fileMatch": ["kubernetes/.+\\.ya?ml$"]
+  },
   "customManagers": [
     {
       "customType": "regex",

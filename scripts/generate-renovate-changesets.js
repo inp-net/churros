@@ -22,9 +22,9 @@ const mergeCommits = exec(
   `git log ${latestTag}..HEAD --merges --pretty=format:'%H' --grep='renovate/'`,
 ).split('\n');
 
-for (const commitHash of mergeCommits) {
+for (const commitHash of mergeCommits.reverse()) {
   if (!commitHash.trim()) continue;
-  console.info(`Processing merge commit: ${commitHash}`);
+  console.info(`\nProcessing merge commit: ${commitHash}`);
 
   // Extract the branch name from the merge commit's message
   const branchName = exec(`git show -s --format='%B' ${commitHash} | head -n 1`).replace(
@@ -83,9 +83,13 @@ for (const commitHash of mergeCommits) {
     flag: 'a',
   });
 
+  console.log(`Made changeset file ${path.basename(changesetFile)}:\n${originalMessage}`);
+
   // Stage the changeset file
   exec(`git add ${changesetFile}`);
 }
+
+console.log();
 
 // Check if any changesets were created/changed
 const changesetFiles = exec(`git diff --name-only --cached`).split('\n').filter(Boolean);
