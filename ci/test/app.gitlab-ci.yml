@@ -2,14 +2,21 @@
   extends: .test
   variables:
     PACKAGE: app
-  before_script:
-    - !reference [.test, before_script]
-    - yarn @app generate
+
+test:app:no-undeclared-native-changes:
+  extends: .test:app
+  script:
+    - |
+      if grep '^packages/app/(android|ios)' changes.txt && not grep "^'@churros/app': major$" .changesets/*.md; then
+        echo You changed native code for the app. Include a changeset with a major bump. This is required to not break update bundles that will be sent to users for over-the-air updates.
+        exit 1
+      fi
 
 test:app:lint:
   extends: .test:app
   allow_failure: true # cuz eslint gives "Something went wrong" error in CI...
   script:
+    - yarn @app generate
     - yarn eslint --cache=true $(cat changes.txt)
 
 test:app:format:
@@ -20,4 +27,5 @@ test:app:format:
 test:app:svelte-check:
   extends: .test:app
   script:
+    - yarn @app generate
     - yarn @app verify
