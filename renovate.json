@@ -6,6 +6,13 @@
   "kubernetes": {
     "fileMatch": ["kubernetes/.+\\.ya?ml$"]
   },
+  "packageRules": [
+    {
+      "groupName": "PostgreSQL",
+      "groupSlug": "postgresql",
+      "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql", "postgres"]
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
