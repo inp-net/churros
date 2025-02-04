@@ -2,7 +2,6 @@ import type { Context, GraphinxDirective, RateLimitDirective } from '#lib';
 import {
   ENV,
   authScopes,
-  context,
   decodeGlobalID,
   encodeGlobalID,
   type AuthContexts,
@@ -24,13 +23,26 @@ import SmartSubscriptionsPlugin, {
 import TracingPlugin, { isRootField, runFunction } from '@pothos/plugin-tracing';
 import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
+import { createSentryWrapper } from '@pothos/tracing-sentry';
+import * as Sentry from '@sentry/node';
 import { GraphQLError } from 'graphql';
-import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { ZodError } from 'zod';
 import { prisma } from './prisma.js';
-import { updateQueryUsage } from './prometheus.js';
 import { pubsub } from './pubsub.js';
 import { DEFAULT_RATE_LIMITS } from './ratelimit.js';
+
+if (ENV.SENTRY_GRAPHQL_DSN) {
+  console.log(`Initializing Sentry tracing to dsn ${ENV.SENTRY_GRAPHQL_DSN}`);
+  Sentry.init({
+    dsn: ENV.SENTRY_GRAPHQL_DSN,
+    tracesSampleRate: 1,
+  });
+}
+
+const traceResolver = createSentryWrapper({
+  includeArgs: true,
+  includeSource: true,
+});
 
 export const CapacityUnlimitedValue = 'Unlimited' as const;
 export type Capacity = number | typeof CapacityUnlimitedValue;
@@ -167,32 +179,15 @@ export const builder = new SchemaBuilder<PothosTypes>({
   },
   tracing: {
     default: (config) => isRootField(config),
-    wrap: (resolver, _options, config) => async (source, args, ctx, info) => {
+    wrap: (resolver, options, config) => async (source, args, ctx, info) => {
       return runFunction(
-        () => resolver(source, args, ctx, info),
+        () => traceResolver(resolver, options)(source, args, ctx, info),
         (_error, duration) => {
           console.info(
             `Executed \u001B[36;1m${(info.operation.name?.value ?? '').padStart(20)} ${config.parentType}.${
               config.name
             }\u001B[0m in \u001B[36;1m${Number(duration.toPrecision(3))} ms\u001B[0m`,
           );
-          // Do not wait for prometheus counters before sending the response!
-          (async () => {
-            const { user } = await context(ctx);
-            const ua = parseUserAgent(ctx.request?.headers.get('User-Agent') ?? '');
-            const ip = ctx.request?.headers.get('X-Real-Ip');
-
-            updateQueryUsage({
-              operationName: ctx.params?.operationName,
-              queryType: config.parentType,
-              queryName: config.name,
-              user:
-                user?.id ||
-                (ua.browser.name ? `${ua.browser.name}/${ua.browser.version || '?'}` : ua.ua) +
-                  (ip ? ` @${ip}` : ''),
-              duration,
-            }).catch(console.error);
-          })();
         },
       );
     },

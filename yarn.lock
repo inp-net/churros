@@ -692,6 +692,7 @@ __metadata:
     "@churros/db": "workspace:^4.1.6"
     "@clack/prompts": "npm:^0.9.1"
     "@envelop/core": "npm:^5.0.3"
+    "@envelop/sentry": "npm:^12.0.0"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.3"
@@ -709,7 +710,9 @@ __metadata:
     "@pothos/plugin-tracing": "npm:^1.1.0"
     "@pothos/plugin-with-input": "npm:^4.1.0"
     "@pothos/plugin-zod": "npm:^4.1.0"
+    "@pothos/tracing-sentry": "npm:^1.1.1"
     "@prisma/client": "npm:^6.3.0"
+    "@sentry/node": "npm:^8.54.0"
     "@startse/pass-js": "npm:^7.1.2"
     "@tsconfig/esm": "npm:^1.0.5"
     "@tsconfig/node18": "npm:^18.2.4"
@@ -1361,6 +1364,19 @@ __metadata:
     "@envelop/types": "npm:5.0.0"
     tslib: "npm:^2.5.0"
   checksum: 10c0/86f181137a4062554357151c717f068c89897364de0fd989b9abb408b03b4e8fc5946f8cdd76f2ff3ba5ab2e74140acf82210b18c32bb86875f2f18079bc19e2
+  languageName: node
+  linkType: hard
+
+"@envelop/sentry@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@envelop/sentry@npm:12.0.0"
+  dependencies:
+    tslib: "npm:^2.5.0"
+  peerDependencies:
+    "@envelop/core": ^5.0.2
+    "@sentry/node": ^8.0.0
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10c0/8aedb65831e22e8766f5071224f737f02250ea5452a3c5876962c4248cdcd70c727fd2347eed373cd1557beb4fe66df6386ecf1003e3f407817add704705067e
   languageName: node
   linkType: hard
 
@@ -3828,6 +3844,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pothos/tracing-sentry@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@pothos/tracing-sentry@npm:1.1.1"
+  peerDependencies:
+    "@pothos/core": "*"
+    "@pothos/plugin-tracing": "*"
+    "@sentry/node": "*"
+    graphql: ">=16.6.0"
+  checksum: 10c0/bd721fb6cc2ac491d4a7e20cef62a2a978c44b5dc5dca63d33d4a891ee1a1a5fce2b1a4d801090c9326d047f33f66be0010b170e50d36904caf0f567d7707403
+  languageName: node
+  linkType: hard
+
 "@prisma/client@npm:^6.3.0":
   version: 6.3.0
   resolution: "@prisma/client@npm:6.3.0"
@@ -4421,7 +4449,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/node@npm:8.54.0":
+"@sentry/node@npm:8.54.0, @sentry/node@npm:^8.54.0":
   version: 8.54.0
   resolution: "@sentry/node@npm:8.54.0"
   dependencies:

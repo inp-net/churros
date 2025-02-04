@@ -55,6 +55,8 @@ export const environmentSchema = z.object({
   LYDIA_WEBHOOK_URL: uri().describe(
     'Lydia webhook URL: Where Lydia should notify us of payment acknowledgements.',
   ),
+  SENTRY_GRAPHQL_DSN: optionaluri().describe('Sentry DSN for tracing the GraphQL API.'),
+  PUBLIC_SENTRY_DSN: optionaluri().describe('Sentry DSN for tracing the frontend.'),
   PUBLIC_FOY_GROUPS: z.string().describe('DEPRECATED.').optional(),
   PUBLIC_VAPID_KEY: z.string().describe('Public VAPID key. Used to send push notifications.'),
   VAPID_PRIVATE_KEY: z.string().describe('Private VAPID key. Used to send push notifications.'),

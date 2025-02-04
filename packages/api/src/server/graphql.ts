@@ -1,13 +1,35 @@
 import { context, customErrorMap, ENV, inDevelopment } from '#lib';
 import { Prisma } from '@churros/db/prisma';
+import { useSentry } from '@envelop/sentry';
 import { ForbiddenError } from '@pothos/plugin-scope-auth';
+import { AttributeNames } from '@pothos/tracing-sentry';
+import * as Sentry from '@sentry/node';
 import { createFetch } from '@whatwg-node/fetch';
 import { useTrimInputs } from 'envelop-trim-inputs';
-import { GraphQLError } from 'graphql';
-import { createYoga } from 'graphql-yoga';
+import { GraphQLError, print } from 'graphql';
+import { createYoga, type Plugin } from 'graphql-yoga';
 import { z, ZodError } from 'zod';
 import { schema } from '../schema.js';
 import { api } from './express.js';
+
+const tracingPlugin: Plugin = {
+  onExecute: ({ setExecuteFn, executeFn }) => {
+    setExecuteFn((options) =>
+      Sentry.startSpan(
+        {
+          op: 'graphql.execute',
+          name: options.operationName ?? '<unnamed operation>',
+          forceTransaction: true,
+          attributes: {
+            [AttributeNames.OPERATION_NAME]: options.operationName ?? undefined,
+            [AttributeNames.SOURCE]: print(options.document),
+          },
+        },
+        () => executeFn(options),
+      ),
+    );
+  },
+};
 
 z.setErrorMap(customErrorMap);
 
@@ -22,7 +44,7 @@ const yoga = createYoga<{
   // CORS are handled below, disable Yoga's default CORS settings
   cors: false,
   context,
-  plugins: [useTrimInputs()],
+  plugins: [useTrimInputs(), tracingPlugin, useSentry()],
   graphiql: {
     title: 'Churros API',
     subscriptionsProtocol: 'WS',
