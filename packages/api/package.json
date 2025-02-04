@@ -113,7 +113,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.1",
     "rimraf": "^6.0.1",
-    "semver": "^7.7.0",
+    "semver": "^7.7.1",
     "set-interval-async": "^3.0.3",
     "sharp": "^0.33.5",
     "slug": "^10.0.0",
@@ -150,7 +150,7 @@
     "@types/lodash.range": "^3.2.9",
     "@types/mjml": "^4.7.4",
     "@types/multer": "^1.4.12",
-    "@types/node": "^20.17.16",
+    "@types/node": "^20.17.17",
     "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
     "@types/passport-anonymous": "^1.0.5",
@@ -164,7 +164,7 @@
     "barrelsby": "^2.8.1",
     "chokidar": "^4.0.3",
     "concurrently": "^9.1.2",
-    "graphinx": "^0.12.1"
+    "graphinx": "^0.12.2"
   },
   "imports": {
     "#lib": "./build/src/lib/index.js",
