@@ -168,6 +168,11 @@ export const environmentSchema = z.object({
   USER_DELETED_WEBHOOK: optionaluri().describe(
     "When someone deletes their account, a GET request to this URL will be made with the user's UID as the ?user query parameter.",
   ),
+  PUBLIC_VAPID_KEY: z.string().describe('Public VAPID key. Used to send push notifications.'),
+  VAPID_PRIVATE_KEY: z.string().describe('Private VAPID key. Used to send push notifications.'),
+  FIREBASE_ADMIN_SERVICE_ACCOUNT_KEY: googleServiceAccountKey().describe(
+    'Firebase Admin SDK service account key. JSON contents of the key file, can be downloaded from the Firebase Admin console. Used to send push notifications to Android & iOS native clients.',
+  ),
 });
 
 function googleServiceAccountKey() {
