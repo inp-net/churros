@@ -8,6 +8,11 @@
   },
   "packageRules": [
     {
+      "groupName": "NodeJS",
+      "groupSlug": "nodejs",
+      "matchDepNames": ["node.js"]
+    },
+    {
       "groupName": "PostgreSQL",
       "groupSlug": "postgresql",
       "matchDepNames": ["ghcr.io/cloudnative-pg/postgresql", "postgres"]
