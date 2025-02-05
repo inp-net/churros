@@ -10,7 +10,7 @@
     {
       "groupName": "NodeJS",
       "groupSlug": "nodejs",
-      "matchDepNames": ["node.js"]
+      "matchDepNames": ["node.js", "node", "@types/node", "docker.io/node"]
     },
     {
       "groupName": "PostgreSQL",
