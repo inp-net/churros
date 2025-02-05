@@ -21,7 +21,7 @@ services:
       - 8001:8001
 
   notella:
-    image: harbor.k8s.inpt.fr/net7_public/churros/notella:v0.9.0
+    image: registry.inpt.fr/churros/notella:v0.11.1
     profiles:
       - notella
     env_file:
@@ -39,6 +39,7 @@ services:
       - STARTUP_SCHEDULE_RESTORATION=enabled # enabled, disabled, eager
       - APP_PACKAGE_ID=${PUBLIC_APP_PACKAGE_ID}
       - HEALTH_CHECK_PORT=8080
+      - DEBUG=1
     command: >
       sh -c 'export DATABASE_URL=$${DATABASE_URL/localhost/db} && export REDIS_URL=$${REDIS_URL/localhost/redis} && exec /app/notella'
 
