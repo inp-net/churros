@@ -21,7 +21,7 @@ services:
       - 8001:8001
 
   notella:
-    image: registry.inpt.fr/churros/notella:v0.11.4
+    image: registry.inpt.fr/churros/notella:v0.14.0
     profiles:
       - notella
     env_file:
