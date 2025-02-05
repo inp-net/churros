@@ -93,7 +93,8 @@ builder.mutationField('upsertArticleV2', (t) =>
 
       await log('article', id ? 'update' : 'create', { old, result }, result.id, user);
 
-      if (!old || isFuture(addSeconds(result.publishedAt, 1)))
+      // TODO find less brittle way to do this -- by checking when the visibility increases, or storing last visibility increase date?
+      if (!old || isFuture(addSeconds(result.publishedAt, 0.5)))
         await schedulePostNotification(result);
 
       return result;
