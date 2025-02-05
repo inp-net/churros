@@ -1195,6 +1195,7 @@ __metadata:
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.3"
     "@inp-net/ldap7": "npm:^1.0.12"
+    "@inp-net/notella": "https://git.inpt.fr/churros/notella.git#v0.9.0"
     "@pothos/core": "npm:4.3.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
     "@pothos/plugin-dataloader": "npm:^4.3.0"
@@ -1239,7 +1240,7 @@ __metadata:
     "@types/qrcode": "npm:^1.5.5"
     "@types/semver": "npm:^7.5.8"
     "@types/slug": "npm:^5.0.9"
-    "@types/web-push": "npm:^3.6.4"
+    "@types/web-push": "npm:^3"
     "@types/which": "npm:^3.0.4"
     "@types/ws": "npm:^8.5.14"
     "@vizdom/vizdom-ts-node": "npm:^0.1.19"
@@ -1259,7 +1260,7 @@ __metadata:
     concurrently: "npm:^9.1.2"
     connect-redis: "npm:^8.0.1"
     cors: "npm:^2.8.5"
-    croner: "npm:^8.1.2"
+    croner: "npm:^8"
     dataloader: "npm:^2.2.3"
     date-fns: "npm:^4.1.0"
     date-fns-tz: "npm:^3.2.0"
@@ -1274,7 +1275,7 @@ __metadata:
     google-auth-library: "npm:^9.15.1"
     googleapis: "npm:144.0.0"
     graph-cycles: "npm:^3.0.0"
-    graphinx: "npm:0.12.1"
+    graphinx: "npm:^0.12.2"
     graphql: "npm:^16.10.0"
     graphql-rate-limit-directive: "npm:^2.0.6"
     graphql-scalars: "npm:^1.24.1"
@@ -1304,6 +1305,7 @@ __metadata:
     mjml: "npm:^4.15.3"
     multer: "npm:^1.4.5-lts.1"
     nanoid: "npm:^5.0.9"
+    nats: "npm:^2.28.2"
     nodemailer: "npm:^6.10.0"
     nodemon: "npm:^3.1.9"
     normalize-url: "npm:^8.0.1"
@@ -3219,6 +3221,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@inp-net/notella@https://git.inpt.fr/churros/notella.git#v0.9.0":
+  version: 0.9.0
+  resolution: "@inp-net/notella@https://git.inpt.fr/churros/notella.git#commit=710e88304155b83131698fb27e9e2bded2c77a6f"
+  dependencies:
+    "@prisma/client": "npm:^5.20.0"
+  checksum: 10c0/cd6c07557078f88016a50e99f6f9844ee9c4099693b899d354381ca66e9d9e3e9e480d09c15524ce1dc54f7de7f4162944a478a9157caeb18e22836df083b246
+  languageName: node
+  linkType: hard
+
 "@inquirer/figures@npm:^1.0.3":
   version: 1.0.5
   resolution: "@inquirer/figures@npm:1.0.5"
@@ -4635,6 +4646,18 @@ __metadata:
     "@xml-tools/parser": "npm:^1.0.11"
     prettier: "npm:>=2.4.0"
   checksum: 10c0/a76c791aced51a406fad0cf6ab10cb119443d0d426d7a52be6d718513737d576d2a31adf9b7b07fbc6431c37fecce02b166e85fd781ca05ee5555550a8769b19
+  languageName: node
+  linkType: hard
+
+"@prisma/client@npm:^5.20.0":
+  version: 5.22.0
+  resolution: "@prisma/client@npm:5.22.0"
+  peerDependencies:
+    prisma: "*"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+  checksum: 10c0/ad111b931f184249794f811637456eb38dcfd0d7047e5a1f64804e5256f462fa3ee7c7a552fc8fa181e8daacc2b958af7426cb57bf0dc66605c3ef7c4aef4afb
   languageName: node
   linkType: hard
 
@@ -7269,7 +7292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/web-push@npm:^3.6.4":
+"@types/web-push@npm:^3":
   version: 3.6.4
   resolution: "@types/web-push@npm:3.6.4"
   dependencies:
@@ -10204,7 +10227,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"croner@npm:^8.1.2":
+"croner@npm:^8":
   version: 8.1.2
   resolution: "croner@npm:8.1.2"
   checksum: 10c0/9ce614c9ef5eb7c2106ff6a5f0cc2dcfe5dd69aff7792fefdc7bd79e7901b498ecd477dcfa790a1db0e46cb3b385f13f6bf870d072f11323ae9d44d8b040c878
@@ -13718,9 +13741,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphinx@npm:0.12.1":
-  version: 0.12.1
-  resolution: "graphinx@npm:0.12.1"
+"graphinx@npm:^0.12.2":
+  version: 0.12.2
+  resolution: "graphinx@npm:0.12.2"
   dependencies:
     "@clack/prompts": "npm:^0.7.0"
     chalk: "npm:^5.3.0"
@@ -13748,7 +13771,7 @@ __metadata:
     zod-to-markdown: "npm:^1.0.2"
   bin:
     graphinx: dist/cli.js
-  checksum: 10c0/322da4a9a9847afc1515b840c845434af5c8e9c1e87e9e1951237b2606f8b05919dff1a0759dce4db2f1c099664fd0323ee725e12fc5cff5a654f9ba7992f941
+  checksum: 10c0/62a259ed9a876319b3dcc176b36cda14a3f3c92f462f67078d744e25b8598d003caf0921deb6c51b8a060614b12fcdadfc681b0a2328249005a753296bd45eca
   languageName: node
   linkType: hard
 
@@ -18473,6 +18496,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nats@npm:^2.28.2":
+  version: 2.29.1
+  resolution: "nats@npm:2.29.1"
+  dependencies:
+    nkeys.js: "npm:1.1.0"
+  checksum: 10c0/cb4892f634d087449209baed5d920a3a98f891f084fa59d753bde27451cbef8d12373de9fe021aaee9ea35c1f70aa946cba8c9e339462503912551f534369c52
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -18507,6 +18539,15 @@ __metadata:
   version: 1.0.5
   resolution: "nice-try@npm:1.0.5"
   checksum: 10c0/95568c1b73e1d0d4069a3e3061a2102d854513d37bcfda73300015b7ba4868d3b27c198d1dbbd8ebdef4112fc2ed9e895d4a0f2e1cce0bd334f2a1346dc9205f
+  languageName: node
+  linkType: hard
+
+"nkeys.js@npm:1.1.0":
+  version: 1.1.0
+  resolution: "nkeys.js@npm:1.1.0"
+  dependencies:
+    tweetnacl: "npm:1.0.3"
+  checksum: 10c0/44ff8d61e46d2b345351ed7844d66036a815aeca23927def6ca258e27a18a1678fe5ab161c5cf0b6e3a3993a945d422b71036986d09669b214540c8491478bef
   languageName: node
   linkType: hard
 
@@ -24200,6 +24241,13 @@ __metadata:
   version: 0.0.6
   resolution: "tunnel@npm:0.0.6"
   checksum: 10c0/e27e7e896f2426c1c747325b5f54efebc1a004647d853fad892b46d64e37591ccd0b97439470795e5262b5c0748d22beb4489a04a0a448029636670bfd801b75
+  languageName: node
+  linkType: hard
+
+"tweetnacl@npm:1.0.3":
+  version: 1.0.3
+  resolution: "tweetnacl@npm:1.0.3"
+  checksum: 10c0/069d9df51e8ad4a89fbe6f9806c68e06c65be3c7d42f0701cc43dba5f0d6064686b238bbff206c5addef8854e3ce00c643bff59432ea2f2c639feab0ee1a93f9
   languageName: node
   linkType: hard
 

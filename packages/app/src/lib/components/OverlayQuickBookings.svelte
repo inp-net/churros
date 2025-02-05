@@ -64,7 +64,6 @@
   const hiddenBookings = writable([] as string[]);
   if (browser) syncToLocalStorage(hiddenBookings, 'hidden_quick_bookings');
 
-  // See https://github.com/Rezi/svelte-gestures/pull/21
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 

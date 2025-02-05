@@ -4,3 +4,15 @@
     TOKEN: $CI_JOB_TOKEN
   before_script:
     - glab auth login --hostname $CI_SERVER_HOST --token $TOKEN
+
+trigger-notella-update:
+  stage: prepare
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes: [packages/db/prisma/schema.prisma]
+    - when: manual
+  variables:
+    SCHEMA_RAW_URL: $CI_PROJECT_URL/-/raw/$CI_COMMIT_SHA/packages/db/prisma/schema.prisma
+  trigger:
+    project: $CI_PROJECT_NAMESPACE/notella

@@ -8,11 +8,9 @@
   import InputRadios from '$lib/components/InputRadios.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
-  import { formatDateTimeSmart } from '$lib/dates';
   import { DISPLAY_VISIBILITIES, HELP_VISIBILITY } from '$lib/display';
-  import { loaded, LoadingSpinner, LoadingText, mapLoading } from '$lib/loading';
+  import { loaded, LoadingSpinner } from '$lib/loading';
   import { mutateAndToast } from '$lib/mutations';
-  import IconCheck from '~icons/msl/check';
   import IconClose from '~icons/msl/close';
   import IconSend from '~icons/msl/send-outline';
   import { ChangePostVisibility } from '../mutations';
@@ -119,16 +117,6 @@
         Enregistrer
       {/if}
     </ButtonPrimary>
-
-    {#if post.notifiedAt}
-      <p class="muted notifications">
-        <LoadingText value={mapLoading(post.notifiedAt, formatDateTimeSmart)} />
-        <span class="success">
-          <IconCheck />
-        </span>
-        Notifications envoyées
-      </p>
-    {/if}
   </div>
 </MaybeError>
 
@@ -165,17 +153,5 @@
     gap: 0.5rem 1rem;
     align-items: center;
     justify-content: center;
-  }
-
-  .notifications {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-    align-items: center;
-    line-height: 1;
-  }
-
-  .notifications .success {
-    font-size: 1.2em;
   }
 </style>
