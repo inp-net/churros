@@ -46,6 +46,7 @@
         ticket {
           name
         }
+        createdAt
         verifiedAt
         verifiedBy {
           ...AvatarUser
@@ -106,6 +107,12 @@
       <dd>
         <BookingAuthor booking={$data} />
       </dd>
+      {#if $data?.createdAt}
+        <dt>Créée le</dt>
+        <dd>
+          <LoadingText value={mapLoading($data.createdAt, formatDateTimeSmart)}></LoadingText>
+        </dd>
+      {/if}
       {#if $dataEvent?.enforcePointOfContact || $data.pointOfContact}
         <dt>Référent·e</dt>
         <dd>
