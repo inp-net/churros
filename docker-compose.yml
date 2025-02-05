@@ -21,7 +21,7 @@ services:
       - 8001:8001
 
   notella:
-    image: registry.inpt.fr/churros/notella:v0.11.1
+    image: registry.inpt.fr/churros/notella:v0.11.4
     profiles:
       - notella
     env_file:
@@ -46,7 +46,7 @@ services:
   nats:
     profiles:
       - notella
-    image: nats:2.10.22
+    image: nats:2.10.25
     ports:
       - '8222:8222'
       - '4222:4222'
