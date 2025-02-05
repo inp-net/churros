@@ -87,7 +87,7 @@ Parmis d'autres choses, sont notamment lancés:
 
 - <http://localhost:5173>: l'application
 - <http://localhost:4000>: l'API
-- <http://localhost:8025>: un serveur mail de test reçevant tout les mails envoyés par l'application
+- <http://localhost:8025>: un serveur mail de test reçevant tout les mails envoyés par l'application: démarrer le docker compose avec le profil `mails` en plus: `docker compose --profile mails up -d`
 
 On peut lancer Prisma Studio pour inspecter la base de données:
 

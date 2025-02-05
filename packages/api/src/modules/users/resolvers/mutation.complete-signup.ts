@@ -1,5 +1,5 @@
 import { builder, log, prisma, yearTier } from '#lib';
-import { notify } from '#modules/notifications';
+import { notify, queueNotification } from '#modules/notifications';
 import {
   CredentialType,
   NotificationChannel,
@@ -8,6 +8,7 @@ import {
   type UserCandidate,
 } from '@churros/db/prisma';
 import { upsertLdapUser } from '@inp-net/ldap7/user';
+import { Event as NotellaEvent } from '@inp-net/notella';
 import { addDays } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import omit from 'lodash.omit';
@@ -57,32 +58,32 @@ builder.mutationField('completeSignup', (t) =>
 
       const needsVerification = !user;
 
-      const adminsResponsibleForThisSignup = await prisma.user.findMany({
-        where: {
-          OR: [
-            { admin: true },
-            ...(userOrCandidate.majorId
-              ? [
-                  {
-                    adminOfStudentAssociations: {
-                      some: {
-                        school: {
-                          majors: {
-                            some: { id: userOrCandidate.majorId },
+      // The !candidate.emailValidated conditions prevents sending the notificaiton
+      // on subsequent completeSignup requests for the same user candidate
+      if (needsVerification && !candidate.emailValidated) {
+        // remove when notella confirmed
+        const adminsResponsibleForThisSignup = await prisma.user.findMany({
+          where: {
+            OR: [
+              { admin: true },
+              ...(userOrCandidate.majorId
+                ? [
+                    {
+                      adminOfStudentAssociations: {
+                        some: {
+                          school: {
+                            majors: {
+                              some: { id: userOrCandidate.majorId },
+                            },
                           },
                         },
                       },
                     },
-                  },
-                ]
-              : []),
-          ],
-        },
-      });
-
-      // The !candidate.emailValidated conditions prevents sending the notificaiton
-      // on subsequent completeSignup requests for the same user candidate
-      if (needsVerification && !candidate.emailValidated) {
+                  ]
+                : []),
+            ],
+          },
+        });
         await notify(adminsResponsibleForThisSignup, {
           title: `Inscription en attente de validation`,
           body: `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
@@ -93,6 +94,16 @@ builder.mutationField('completeSignup', (t) =>
             goto: `/signups/edit/${userOrCandidate.email}`,
             group: undefined,
           },
+        });
+        // end remove when notella confirmed
+        await queueNotification({
+          title: `Inscription en attente de validation`,
+          body: `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
+            userOrCandidate.graduationYear ? yearTier(userOrCandidate.graduationYear) : '?'
+          }A ${userOrCandidate.major?.shortName ?? 'sans filière'}) a fait une demande d'inscription`,
+          action: `/signups/edit/${userOrCandidate.email}`,
+          object_id: userOrCandidate.id,
+          event: NotellaEvent.PendingSignup,
         });
       }
 

@@ -1,5 +1,48 @@
 # @churros/api
 
+## 11.0.2
+
+### Patch Changes
+
+- 639fef9: fix(deps): update dependency @inp-net/notella to v0.11.4 (!558)
+
+## 11.0.1
+
+### Patch Changes
+
+- 87ddf2c: fix(deps): update dependency @clack/prompts to ^0.10.0 (!554)
+- f35ea39: bump notella to v0.10.4
+
+## 11.0.0
+
+### Major Changes
+
+- d5abb5c: notifications are now handled by a separate scheduler process, see git.inpt.fr/churros/notella
+- d5abb5c: default value for Mutation.acknowledgeChangelog:version and Query.combinedChangelog:to were removed
+
+### Minor Changes
+
+- d5abb5c: deprecate Article.notifiedAt
+
+### Patch Changes
+
+- a499885: PUBLIC_API_ORIGIN_WEB was not taken into account when computing Pictured.pictureURL
+- 4c7cfde: updating user's last-seen date in database always failed
+- fa35bcb: fix(deps): update dependency croner to ^8.1.2 (!549)
+- 6e48f56: chore(deps): update dependency graphinx to ^0.12.2 (!387)
+- fa35bcb: fix(deps): update dependency nats (!550)
+- 9359f91: chore(deps): update dependency @types/node to ^20.17.17 (!542)
+- 8ea502c: fix(deps): update prisma monorepo to ^6.3.1 (!546)
+- 2e8d8c4: fix(deps): update dependency rehype-highlight to ^7.0.2 (!537)
+- 549df42: fix(deps): update dependency semver to ^7.7.1 (!540)
+- ecec087: fix(deps): update dependency ua-parser-js to ^2.0.1 (!547)
+- 8ea502c: chore(deps): update dependency @types/web-push to ^3.6.4 (!548)
+- Updated dependencies [d5abb5c]
+- Updated dependencies [9359f91]
+- Updated dependencies [8ea502c]
+  - @churros/db@4.2.0
+  - arborist@0.1.5
+
 ## 10.2.1
 
 ### Patch Changes

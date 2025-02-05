@@ -1,5 +1,24 @@
 # @churros/app
 
+## 4.5.0
+
+### Minor Changes
+
+- d5abb5c: deprecate Article.notifiedAt
+- 31d89fc: search bar in modals that ask to pick something now ignores accents
+- 2c6f49b: booking details popup from modal now shows the booking date
+
+### Patch Changes
+
+- 4dd70d6: fix(deps): update dependency fuse.js to ^7.1.0 (!532)
+- d1fbf48: fix(deps): update dependency @sentry/sveltekit to ^8.54.0 (!535)
+- 9317098: settings tab is now accessible on desktop when logged out
+- 3868c9f: chore(deps): update dependency @sveltejs/kit to ^2.17.1 (!538)
+- 8566a68: fix(deps): update swc monorepo to ^1.10.14 (!541)
+- ecec087: fix(deps): update dependency ua-parser-js to ^2.0.1 (!547)
+- Updated dependencies [9359f91]
+  - arborist@0.1.5
+
 ## 4.4.3
 
 ### Patch Changes
