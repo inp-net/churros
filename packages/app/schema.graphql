@@ -4217,7 +4217,6 @@ type Notification implements Node {
 
 enum NotificationChannel {
   Articles
-  Comments
   GodparentRequests
   GroupBoard
   Mandatory
