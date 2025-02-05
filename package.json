@@ -67,7 +67,7 @@
     "deps": "yarn workspaces foreach --all run npm-upgrade"
   },
   "volta": {
-    "node": "20.18.2",
+    "node": "22.13.1",
     "yarn": "4.6.0"
   },
   "workspaces": [

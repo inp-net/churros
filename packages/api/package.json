@@ -152,7 +152,7 @@
     "@types/lodash.range": "^3.2.9",
     "@types/mjml": "^4.7.4",
     "@types/multer": "^1.4.12",
-    "@types/node": "^20.17.17",
+    "@types/node": "^22.13.1",
     "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
     "@types/passport-anonymous": "^1.0.5",
