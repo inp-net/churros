@@ -10,12 +10,12 @@
     {
       "groupName": "PostgreSQL",
       "groupSlug": "postgresql",
-      "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql", "postgres"]
+      "matchDepNames": ["ghcr.io/cloudnative-pg/postgresql", "postgres"]
     },
     {
       "groupName": "Notella",
       "groupSlug": "notella",
-      "matchPackageNames": ["registry.inpt.fr/churros/notella", "@inp-net/notella"]
+      "matchDepNames": ["registry.inpt.fr/churros/notella", "@inp-net/notella"]
     }
   ],
   "customManagers": [
