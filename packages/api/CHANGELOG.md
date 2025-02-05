@@ -1,5 +1,11 @@
 # @churros/api
 
+## 11.0.2
+
+### Patch Changes
+
+- 639fef9: fix(deps): update dependency @inp-net/notella to v0.11.4 (!558)
+
 ## 11.0.1
 
 ### Patch Changes
