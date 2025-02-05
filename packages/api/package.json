@@ -84,7 +84,7 @@
     "mjml": "^4.15.3",
     "multer": "^1.4.5-lts.1",
     "nanoid": "^5.0.9",
-    "nats": "^2.28.2",
+    "nats": "^2.29.1",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "normalize-url": "^8.0.1",
