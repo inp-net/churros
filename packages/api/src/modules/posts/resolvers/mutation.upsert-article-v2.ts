@@ -2,7 +2,7 @@ import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { LocalID, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
 import { ArticleType, canEditArticle, PostInput, schedulePostNotification } from '#modules/posts';
-import { isFuture } from 'date-fns';
+import { addSeconds, isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 
@@ -91,15 +91,10 @@ builder.mutationField('upsertArticleV2', (t) =>
 
       publish(result.id, id ? 'updated' : 'created', result);
 
-      await log(
-        'article',
-        id ? 'update' : 'create',
-        { message: `Article ${id ? 'updated' : 'created'}` },
-        result.id,
-        user,
-      );
+      await log('article', id ? 'update' : 'create', { old, result }, result.id, user);
 
-      if (!old || isFuture(old.publishedAt)) await schedulePostNotification(result);
+      if (!old || isFuture(addSeconds(result.publishedAt, 1)))
+        await schedulePostNotification(result);
 
       return result;
     },
