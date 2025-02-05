@@ -1,5 +1,15 @@
 # @churros/db
 
+## 4.2.0
+
+### Minor Changes
+
+- d5abb5c: deprecate Article.notifiedAt
+
+### Patch Changes
+
+- 8ea502c: fix(deps): update prisma monorepo to ^6.3.1 (!546)
+
 ## 4.1.6
 
 ### Patch Changes

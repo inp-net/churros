@@ -1,5 +1,11 @@
 # arborist
 
+## 0.1.5
+
+### Patch Changes
+
+- 9359f91: chore(deps): update dependency @types/node to ^20.17.17 (!542)
+
 ## 0.1.4
 
 ### Patch Changes
