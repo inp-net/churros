@@ -1,7 +1,13 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { LocalID, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
-import { ArticleType, canEditArticle, PostInput, schedulePostNotification } from '#modules/posts';
+import {
+  ArticleType,
+  canEditArticle,
+  isMoreVisible,
+  PostInput,
+  schedulePostNotification,
+} from '#modules/posts';
 import { addSeconds, isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
@@ -61,7 +67,8 @@ builder.mutationField('upsertArticleV2', (t) =>
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
 
-      publishedAt ??= new Date();
+      // gives the code a little time to run, so that the publishedAt date is still in the future when it reaches notella
+      publishedAt ??= addSeconds(new Date(), 0.5);
 
       const result = await prisma.article.upsert({
         include: {
@@ -93,8 +100,18 @@ builder.mutationField('upsertArticleV2', (t) =>
 
       await log('article', id ? 'update' : 'create', { old, result }, result.id, user);
 
-      // TODO find less brittle way to do this -- by checking when the visibility increases, or storing last visibility increase date?
-      if (!old || isFuture(addSeconds(result.publishedAt, 0.5)))
+      // This "if" is important to prevent sending duplicate notifications.
+      // We only schedule a notification if:
+      // 1. We're creating a new post.
+      //    We don't create duplicates because well there was never a post to begin with.
+      // 2. We were going to publish the post in the future.
+      //    in that case we clear the old scheduled notification, and enqueue a new one.
+      //    We don't create duplicates because the notification was never sent yet.
+      // 3. We're making the post more visible.
+      //    We *can* actually create "duplicate" notifications here, but it's indented: it's to reach a wider audience.
+      //    This also accounts for the common case were the post is created empty as Private,
+      //    then actually published when the user chooses a more public visibility.
+      if (!old || isFuture(old.publishedAt) || isMoreVisible(result.visibility, old.visibility))
         await schedulePostNotification(result);
 
       return result;
