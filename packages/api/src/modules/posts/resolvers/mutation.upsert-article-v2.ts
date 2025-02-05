@@ -8,7 +8,7 @@ import {
   PostInput,
   schedulePostNotification,
 } from '#modules/posts';
-import { addSeconds, isFuture } from 'date-fns';
+import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 
@@ -67,8 +67,7 @@ builder.mutationField('upsertArticleV2', (t) =>
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
 
-      // gives the code a little time to run, so that the publishedAt date is still in the future when it reaches notella
-      publishedAt ??= addSeconds(new Date(), 0.5);
+      publishedAt ??= new Date();
 
       const result = await prisma.article.upsert({
         include: {
