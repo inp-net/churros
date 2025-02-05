@@ -1,5 +1,12 @@
 # @churros/api
 
+## 11.0.1
+
+### Patch Changes
+
+- 87ddf2c: fix(deps): update dependency @clack/prompts to ^0.10.0 (!554)
+- f35ea39: bump notella to v0.10.4
+
 ## 11.0.0
 
 ### Major Changes
