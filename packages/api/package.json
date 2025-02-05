@@ -160,7 +160,7 @@
     "@types/passport-oauth2": "^1.4.17",
     "@types/semver": "^7.5.8",
     "@types/slug": "^5.0.9",
-    "@types/web-push": "^3",
+    "@types/web-push": "^3.6.4",
     "@types/which": "^3.0.4",
     "@types/ws": "^8.5.14",
     "@vizdom/vizdom-ts-node": "^0.1.19",
