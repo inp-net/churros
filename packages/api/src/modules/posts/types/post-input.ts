@@ -12,7 +12,7 @@ export const PostInput = builder.inputType('PostInput', {
   }),
   validate: [
     [
-      ({ publishedAt }) => Boolean(!publishedAt || differenceInDays(publishedAt, new Date()) <= 1),
+      ({ publishedAt }) => Boolean(!publishedAt || differenceInDays(publishedAt, new Date()) >= 1),
       { message: 'Impossible de créer un post publié dans le passé.' },
     ],
   ],
