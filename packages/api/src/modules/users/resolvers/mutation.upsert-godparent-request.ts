@@ -1,7 +1,8 @@
 import { builder, log, objectValuesFlat, prisma } from '#lib';
-import { notify } from '#modules/notifications';
+import { notify, queueNotification } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@churros/db/prisma';
+import { Event as NotellaEvent } from '@inp-net/notella';
 import { GraphQLError } from 'graphql';
 import { GodparentRequestType, fullName, getFamilyTree } from '../index.js';
 
@@ -52,6 +53,7 @@ builder.mutationField('upsertGodparentRequest', (t) =>
         godparent: { connect: { uid: godparentUid } },
       };
       if (!id) {
+        // remove when notella confirmed
         await notify([godparent], {
           body: `${fullName(godchild)} veut devenir votre filleul·e !`,
           title: `Demande de parrainage reçue`,
@@ -60,6 +62,14 @@ builder.mutationField('upsertGodparentRequest', (t) =>
             group: undefined,
             channel: NotificationChannel.GodparentRequests,
           },
+        });
+        // end remove when notella confirmed
+        await queueNotification({
+          body: `${fullName(godchild)} veut devenir votre filleul·e !`,
+          title: `Demande de parrainage reçue`,
+          action: `/users/${godparentUid}/edit/family`,
+          object_id: godchild.id,
+          event: NotellaEvent.GodchildRequest,
         });
       }
 

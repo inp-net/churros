@@ -1,8 +1,9 @@
 import { builder, log, objectValuesFlat, prisma, purgeSessionsUser } from '#lib';
 import { LocalID } from '#modules/global';
-import { notify } from '#modules/notifications';
+import { notify, queueNotification } from '#modules/notifications';
 import { userIsAdminOf } from '#permissions';
 import { NotificationChannel } from '@churros/db/prisma';
+import { Event as NotellaEvent } from '@inp-net/notella';
 import { fullName, GodparentRequestType } from '../index.js';
 
 builder.mutationField('answerGodparentRequest', (t) =>
@@ -62,6 +63,7 @@ builder.mutationField('answerGodparentRequest', (t) =>
           },
         });
         await purgeSessionsUser(request.godchild.uid);
+        // remove when notella confirmed
         await notify([request.godchild], {
           body: `${fullName(request.godparent)} a accepté ta demande de parrainage!`,
           title: `Demande de parrainage acceptée!`,
@@ -70,6 +72,14 @@ builder.mutationField('answerGodparentRequest', (t) =>
             channel: NotificationChannel.GodparentRequests,
             group: undefined,
           },
+        });
+        // end remove when notella confirmed
+        await queueNotification({
+          body: `${fullName(request.godparent)} a accepté ta demande de parrainage!`,
+          title: `Demande de parrainage acceptée!`,
+          action: `/${request.godchild.uid}`,
+          event: NotellaEvent.GodchildAccepted,
+          object_id: request.id,
         });
       } else {
         await notify([request.godchild], {
@@ -80,6 +90,13 @@ builder.mutationField('answerGodparentRequest', (t) =>
             channel: NotificationChannel.GodparentRequests,
             group: undefined,
           },
+        });
+        await queueNotification({
+          body: `${fullName(request.godparent)} a refusé ta demande de parrainage.`,
+          title: `Demande de parrainage refusée :/`,
+          action: `/${request.godchild.uid}`,
+          event: NotellaEvent.GodchildRejected,
+          object_id: request.id,
         });
       }
 

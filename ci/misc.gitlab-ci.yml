@@ -1,0 +1,11 @@
+trigger-notella-update:
+  stage: changesets
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes: [packages/db/prisma/schema.prisma]
+    - when: manual
+  variables:
+    SCHEMA_RAW_URL: $CI_PROJECT_URL/-/raw/$CI_COMMIT_SHA/packages/db/prisma/schema.prisma
+  trigger:
+    project: $CI_PROJECT_NAMESPACE/notella

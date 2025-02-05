@@ -2,6 +2,7 @@ import { builder, ensureGlobalId, log, prisma } from '#lib';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { LocalID, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
+import { schedulePostNotification } from '#modules/posts';
 import { ArticleType } from '#modules/posts/types';
 import slug from 'slug';
 
@@ -47,8 +48,12 @@ builder.mutationField('createPost', (t) =>
     async resolve(query, _, args, { user }) {
       const id = args.event ? ensureGlobalId(args.event, 'Event') : null;
       await log('posts', 'create-on-event', args, id, user);
-      return prisma.article.create({
+      const result = await prisma.article.create({
         ...query,
+        include: {
+          ...query.include,
+          group: query.include?.group || true,
+        },
         data: {
           title: args.title,
           body: args.body,
@@ -57,6 +62,8 @@ builder.mutationField('createPost', (t) =>
           event: id ? { connect: { id } } : undefined,
         },
       });
+      await schedulePostNotification(result);
+      return result;
     },
   }),
 );

@@ -1,13 +1,16 @@
 import { builder, ensureGlobalId, log, prisma, publish } from '#lib';
 import { LocalID, UIDScalar } from '#modules/global';
 import { canCreatePostsOn } from '#modules/groups';
-import { Visibility } from '@churros/db/prisma';
+import {
+  ArticleType,
+  canEditArticle,
+  isMoreVisible,
+  PostInput,
+  schedulePostNotification,
+} from '#modules/posts';
 import { isFuture } from 'date-fns';
 import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
-import { ArticleType, scheduleNewArticleNotification } from '../index.js';
-import { PostInput } from '../types/post-input.js';
-import { canEditArticle } from '../utils/permissions.js';
 
 builder.mutationField('upsertArticleV2', (t) =>
   t.prismaField({
@@ -59,10 +62,10 @@ builder.mutationField('upsertArticleV2', (t) =>
     ) {
       if (id) id = ensureGlobalId(id, 'Article');
       eventId = eventId ? ensureGlobalId(eventId, 'Event') : null;
+      const old = id ? await prisma.article.findUnique({ where: { id } }) : null;
       const group = groupUid
         ? await prisma.group.findUniqueOrThrow({ where: { uid: groupUid } })
         : undefined;
-      const old = await prisma.article.findUnique({ where: { id: id ?? '' } });
 
       publishedAt ??= new Date();
 
@@ -73,7 +76,6 @@ builder.mutationField('upsertArticleV2', (t) =>
         },
         where: { id: id ?? '' },
         create: {
-          notifiedAt: null,
           body: body ?? '',
           title: title ?? '',
           slug: '',
@@ -92,31 +94,25 @@ builder.mutationField('upsertArticleV2', (t) =>
           event: eventId ? { connect: { id: eventId } } : undefined,
         },
       });
+
       publish(result.id, id ? 'updated' : 'created', result);
-      await log(
-        'article',
-        id ? 'update' : 'create',
-        { message: `Article ${id ? 'updated' : 'created'}` },
-        result.id,
-        user,
-      );
-      const visibilitiesByVerbosity = [
-        Visibility.Private,
-        Visibility.Unlisted,
-        Visibility.GroupRestricted,
-        Visibility.SchoolRestricted,
-        Visibility.Public,
-      ];
-      void scheduleNewArticleNotification(result, {
-        // Only post the notification immediately if the article was not already published before.
-        // This prevents notifications if the content of the article is changed after its publication; but allows to send notifications immediately if the article was previously set to be published in the future and the author changes their mind and decides to publish it now.
-        eager:
-          !old ||
-          old.publishedAt > new Date() ||
-          // send new notifications when changing visibility of article to a more public one (e.g. from private to school-restricted)
-          visibilitiesByVerbosity.indexOf(result.visibility) >
-            visibilitiesByVerbosity.indexOf(old.visibility),
-      });
+
+      await log('article', id ? 'update' : 'create', { old, result }, result.id, user);
+
+      // This "if" is important to prevent sending duplicate notifications.
+      // We only schedule a notification if:
+      // 1. We're creating a new post.
+      //    We don't create duplicates because well there was never a post to begin with.
+      // 2. We were going to publish the post in the future.
+      //    in that case we clear the old scheduled notification, and enqueue a new one.
+      //    We don't create duplicates because the notification was never sent yet.
+      // 3. We're making the post more visible.
+      //    We *can* actually create "duplicate" notifications here, but it's indented: it's to reach a wider audience.
+      //    This also accounts for the common case were the post is created empty as Private,
+      //    then actually published when the user chooses a more public visibility.
+      if (!old || isFuture(old.publishedAt) || isMoreVisible(result.visibility, old.visibility))
+        await schedulePostNotification(result);
+
       return result;
     },
   }),
