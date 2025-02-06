@@ -28,6 +28,7 @@ test:api:format:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/app/schema.graphql
+        - packages/db/prisma/schema.prisma
         - packages/api/src/**/*
 
 test:api:schema:no-undeclared-changes:

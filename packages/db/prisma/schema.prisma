@@ -52,7 +52,7 @@ model User {
   links                        Link[]
   godparentId                  String?
   cededImageRightsToTVn7       Boolean               @default(false)
-  enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Comments, Other])
+  enabledNotificationChannels  NotificationChannel[] @default([Articles, Shotguns, Permissions, GroupBoard, GodparentRequests, Other])
   latestVersionSeenInChangelog String                @default("0.0.0")
   bot                          Boolean               @default(false)
   // Not shown on profile, used to autofill Lydia payment request forms
@@ -859,7 +859,6 @@ enum NotificationChannel {
   Permissions
   GroupBoard
   GodparentRequests
-  Comments
   Mandatory
   Other // should't be used too much
 }
