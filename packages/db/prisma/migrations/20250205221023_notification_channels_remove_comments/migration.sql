@@ -11,6 +11,9 @@ UPDATE "User"
 SET "enabledNotificationChannels" = array_remove("enabledNotificationChannels", 'Comments'::"NotificationChannel")
 WHERE "enabledNotificationChannels" @> ARRAY['Comments'::"NotificationChannel"];
 
+DELETE FROM "Notification"
+WHERE "channel" = 'Comments'::"NotificationChannel";
+
 -- AlterEnum
 BEGIN;
 CREATE TYPE "NotificationChannel_new" AS ENUM ('Articles', 'Shotguns', 'Permissions', 'GroupBoard', 'GodparentRequests', 'Mandatory', 'Other');
