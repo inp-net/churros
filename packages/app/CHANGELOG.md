@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.5.1
+
+### Patch Changes
+
+- 12b62f4: remove now-useless Comment value of NotificationChannel enum
+
 ## 4.5.0
 
 ### Minor Changes

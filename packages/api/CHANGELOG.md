@@ -1,5 +1,17 @@
 # @churros/api
 
+## 12.0.0
+
+### Major Changes
+
+- 12b62f4: remove NotificationChannel.Comments
+
+### Patch Changes
+
+- 9b78610: fix(deps): update notella to v0.15.0 (!568)
+- Updated dependencies [12b62f4]
+  - @churros/db@4.3.0
+
 ## 11.0.2
 
 ### Patch Changes
