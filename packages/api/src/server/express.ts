@@ -1,10 +1,10 @@
 /* eslint-disable unicorn/prefer-module */
-import { context, ENV } from '#lib';
+import { context, ENV, updateUserLastSeen } from '#lib';
 import { checkHealth } from '#modules/health-checks/utils';
 import cors from 'cors';
 import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
-import * as GraphQLWS from 'graphql-ws/lib/use/ws';
+import * as GraphQLWS from 'graphql-ws/use/ws';
 import helmet from 'helmet';
 import passport from 'passport';
 import { setIntervalAsync } from 'set-interval-async';
@@ -20,6 +20,7 @@ import('./auth/bearer.js');
 
 api.use(
   // Allow any origin, this is a public API :)
+  // @ts-expect-error weird typing issue
   cors({
     credentials: true,
     origin: true,
@@ -36,6 +37,8 @@ api.use(
   passport.initialize(),
   passport.session(),
   passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  // Last login date middleware
+  updateUserLastSeen,
 );
 
 export async function startApiServer() {
@@ -51,11 +54,12 @@ export async function startApiServer() {
   } catch (error) {
     console.error('Failed to initialize GraphQL server', error);
   }
-  import('./gdpr.js');
   import('./log.js');
+  import('./wellknown.js');
   import('./booking-pdf.js');
   import('./handover-pdf.js');
   import('./storage.js');
+  import('./devtools.js');
 
   // Perform a health check and setup interval to run health checks every 5 minutes
   console.info('Performing initial health check...');

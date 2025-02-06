@@ -16,7 +16,7 @@ spec:
                   matchLabels:
                     app: churros-app
       containers:
-        - image: harbor.k8s.inpt.fr/net7/churros/app:latest
+        - image: registry.inpt.fr/churros/churros/app:latest
           imagePullPolicy: IfNotPresent
           name: app
           readinessProbe:

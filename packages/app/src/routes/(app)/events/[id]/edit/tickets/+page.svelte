@@ -3,16 +3,16 @@
   import { page } from '$app/stores';
   import { route } from '$lib/ROUTES';
   import Alert from '$lib/components/Alert.svelte';
-  import ButtonInk from '$lib/components/ButtonInk.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import CardTicket from '$lib/components/CardTicket.svelte';
   import InputText from '$lib/components/InputText.svelte';
+  import InputToggle from '$lib/components/InputToggle.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import Submenu from '$lib/components/Submenu.svelte';
   import SubmenuItem from '$lib/components/SubmenuItem.svelte';
   import TextTicketGroupSummary from '$lib/components/TextTicketGroupSummary.svelte';
   import TextTicketSummary from '$lib/components/TextTicketSummary.svelte';
+  import { stringifyCapacity } from '$lib/display';
   import {
     LoadingText,
     loaded,
@@ -30,8 +30,8 @@
   import IconChevronRight from '~icons/msl/chevron-right';
   import IconRemainingPlaces from '~icons/msl/clock-loader-90';
   import IconHideCapacity from '~icons/msl/close';
+  import IconPointOfContact from '~icons/msl/connect-without-contact';
   import IconCapacity from '~icons/msl/file-copy-outline';
-  import IconHelp from '~icons/msl/help-outline';
   import IconCapacityOnly from '~icons/msl/stacks-outline';
   import type { PageData } from './$houdini';
   import PickLydiaAccount from './PickBeneficiary.svelte';
@@ -39,19 +39,17 @@
     ChangeCapacity,
     CreateTicket,
     CreateTicketGroup,
+    SetEnforcePointOfContact,
     SetEventBeneficiary,
     SetEventPlacesVisibility,
     UnsetEventBeneficiary,
   } from './mutations';
-  import { stringifyCapacity } from '$lib/display';
 
   export let data: PageData;
   $: ({ PageEditEventTickets } = data);
 
   let pickLydiaAccount: () => void;
   $: if ($page.url.hash === '#beneficiary') pickLydiaAccount?.();
-
-  let openPlacesVisibilityHelp: () => void;
 </script>
 
 <MaybeError result={$PageEditEventTickets} let:data={{ event }}>
@@ -77,6 +75,16 @@
       <SubmenuItem
         icon={IconRemainingPlaces}
         clickable
+        help="Le nombre de places restantes est toujours visible par les managers avec Modification ou plus"
+        subtext={mapAllLoading(
+          [event.showPlacesLeft, event.showCapacity],
+          (placesLeft, capacity) =>
+            placesLeft
+              ? 'Total & restantes visibles'
+              : capacity
+                ? 'Places restantes cachées'
+                : 'Total & restantes cachées',
+        )}
         on:click={async () => {
           if (!loaded(event.showPlacesLeft) || !loaded(event.showCapacity)) return;
           const newValues = {
@@ -103,42 +111,6 @@
         }}
       >
         Visibilité du nombre de places
-        <div class="places-visiblity-subtext" slot="subtext">
-          <LoadingText
-            value={mapAllLoading(
-              [event.showPlacesLeft, event.showCapacity],
-              (placesLeft, capacity) =>
-                placesLeft
-                  ? 'Total & restantes visibles'
-                  : capacity
-                    ? 'Places restantes cachées'
-                    : 'Total & restantes cachées',
-            )}
-          />
-          <ButtonInk
-            inline
-            neutral
-            insideProse
-            icon={IconHelp}
-            on:click={(e) => {
-              e.stopPropagation();
-              openPlacesVisibilityHelp();
-            }}
-          >
-            Aide
-          </ButtonInk>
-        </div>
-        <ModalOrDrawer
-          narrow
-          notrigger
-          title="Visiblité des places restantes"
-          bind:open={openPlacesVisibilityHelp}
-        >
-          <p>
-            Le nombre de places restantes est toujours visible par les managers avec Modification ou
-            plus
-          </p>
-        </ModalOrDrawer>
         <svelte:fragment slot="right">
           {#if loaded(event.showPlacesLeft) && loaded(event.showCapacity)}
             <div
@@ -155,6 +127,28 @@
             </div>
           {/if}
         </svelte:fragment>
+      </SubmenuItem>
+      <SubmenuItem
+        icon={IconPointOfContact}
+        label
+        subtext={mapLoading(event.enforcePointOfContact, (enforced) =>
+          enforced ? 'Obligatoire pour les extés' : 'Désactivé',
+        )}
+      >
+        Demander un·e référent·e
+        <svelte:fragment slot="right">
+          {#if loaded(event.enforcePointOfContact)}
+            <InputToggle
+              value={event.enforcePointOfContact}
+              on:update={async ({ detail }) => {
+                await mutateAndToast(SetEnforcePointOfContact, {
+                  id: $page.params.id,
+                  enforce: detail,
+                });
+              }}
+            ></InputToggle>
+          {/if}</svelte:fragment
+        >
       </SubmenuItem>
       <SubmenuItem icon={IconCapacity} label subtext="Limite sur l'ensemble des places">
         Capacité totale

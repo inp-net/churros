@@ -11,6 +11,8 @@
     | Record<Value, MaybeLoading<string>>
     | Array<[Value, MaybeLoading<string>]> = [];
 
+  export let isDisabled: (option: Value) => boolean = () => false;
+
   let optionsWithDisplay: Array<[Value, MaybeLoading<string>]> = [];
   $: optionsWithDisplay = Array.isArray(options)
     ? options.map((option) => (Array.isArray(option) ? option : [option, option.toString()]))
@@ -18,16 +20,18 @@
 </script>
 
 {#each optionsWithDisplay as [optionValue, label] (optionValue)}
-  <label class="input-radio" aria-current={optionValue === value}>
+  {@const disabled = isDisabled(optionValue)}
+  <label class="input-radio" aria-current={optionValue === value} aria-disabled={disabled}>
     <input
       on:change={() => {
         dispatch('change', optionValue);
       }}
       type="radio"
       value={optionValue}
+      {disabled}
       bind:group={value}
     />
-    <slot name="label" {label} option={optionValue}>
+    <slot name="label" {label} option={optionValue} {disabled}>
       <LoadingText value={label} />
     </slot>
   </label>
@@ -63,11 +67,20 @@
   }
 
   label::before {
-    background-color: var(--bg);
+    background: var(--bg);
     border: var(--border-block) solid var(--text);
   }
 
   label[aria-current='true']::after {
     border: calc(var(--radio-size, var(--default-radio-size)) / 2) solid var(--text);
+  }
+
+  label[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
+  label[aria-disabled='true']::before {
+    border-color: var(--shy);
+    border-style: dashed;
   }
 </style>

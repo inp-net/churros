@@ -1,5 +1,10 @@
 import { builder, ensureGlobalId, log, prisma } from '#lib';
-import { canEditEvent, canEditEventPrismaIncludes, CapacityScalar } from '#modules/events';
+import {
+  canEditEvent,
+  canEditEventPrismaIncludes,
+  CapacityScalar,
+  scheduleShotgunNotifications,
+} from '#modules/events';
 import { DateRangeInput, LocalID } from '#modules/global';
 import { PaymentMethodEnum } from '#modules/payments';
 import { TicketType } from '#modules/ticketing/types';
@@ -77,15 +82,16 @@ builder.mutationField('updateTicket', (t) =>
           );
         }
       }
+
       const ticket = await prisma.ticket.findUniqueOrThrow({ where: { id } });
       if (
-        args.allowedPaymentMethods &&
-        (ticket.minimumPrice > 0 || ticket.maximumPrice > 0) &&
-        args.allowedPaymentMethods!.length === 0
+        args.allowedPaymentMethods?.length === 0 &&
+        (ticket.minimumPrice > 0 || ticket.maximumPrice > 0) 
       ) 
         throw new GraphQLError('Il faut au moins un moyen de paiement pour un billet payant');
       
-      return prisma.ticket.update({
+
+      const result = await prisma.ticket.update({
         ...query,
         where: { id },
         data: {
@@ -102,6 +108,9 @@ builder.mutationField('updateTicket', (t) =>
           countingPolicy: args.countingPolicy,
         },
       });
+
+      await scheduleShotgunNotifications(result.eventId);
+      return result;
     },
   }),
 );

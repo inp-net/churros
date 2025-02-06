@@ -1,41 +1,32 @@
 import { log, prisma, publish } from '#lib';
-import { notify } from '#modules/notifications/utils';
+import { notify, queueNotification } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
-import express, { type Request, type Response } from 'express';
-import multer from 'multer';
+import { Event as NotellaEvent } from '@inp-net/notella';
+import express from 'express';
+import { z } from 'zod';
 
 export const lydiaWebhook = express();
-const upload: multer.Multer = multer();
 
 // Lydia webhook
 lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
   res.sendStatus(200);
 });
 
-lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Response) => {
-  lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
-    res.sendStatus(200);
-  });
+lydiaWebhook.post('/lydia-webhook', async (req, res) => {
   // Retrieve the params from the request
-  const { request_id, amount, currency, sig, signed, transaction_identifier, vendor_token } =
-    req.body as {
-      request_id: string;
-      amount: string;
-      currency: string;
-      sig: string;
-      signed: string;
-      transaction_identifier: string;
-      vendor_token: string;
-    };
+  const signatureParameters = z
+    .object({
+      request_id: z.string(),
+      amount: z.string(),
+      currency: z.string(),
+      sig: z.string(),
+      signed: z.string(),
+      transaction_identifier: z.string(),
+      vendor_token: z.string(),
+    })
+    .parse(req.body);
 
-  const signatureParameters = {
-    currency,
-    request_id,
-    amount,
-    signed,
-    transaction_identifier,
-    vendor_token,
-  };
+  const { request_id, sig, transaction_identifier } = signatureParameters;
 
   try {
     const { verified, transaction } = await verifyLydiaTransaction(
@@ -126,6 +117,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
             },
             contribution: {
               select: {
+                id: true,
                 user: true,
                 option: {
                   select: {
@@ -138,6 +130,7 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
         });
         if (txn.registration?.author) {
           publish(txn.registration.id, 'updated', txn);
+          // remove when notella confirmed
           await notify([txn.registration.author], {
             title: 'Place payée',
             body: `Ta réservation pour ${txn.registration.ticket.event}`,
@@ -147,7 +140,16 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
               group: undefined,
             },
           });
+          // end remove when notella confirmed
+          await queueNotification({
+            title: 'Place payée',
+            body: `Ta réservation pour ${txn.registration.ticket.event}`,
+            action: txn.paidCallback ?? '/',
+            event: NotellaEvent.BookingPaid,
+            object_id: txn.registration.id,
+          });
         } else if (txn.contribution?.user) {
+          // remove when notella confirmed
           await notify([txn.contribution.user], {
             title: 'Cotisation payée',
             body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
@@ -156,6 +158,14 @@ lydiaWebhook.post('/lydia-webhook', upload.none(), async (req: Request, res: Res
               goto: txn.paidCallback ?? '/',
               group: undefined,
             },
+          });
+          // end remove when notella confirmed
+          await queueNotification({
+            title: 'Cotisation payée',
+            body: `Ta cotisation "${txn.contribution.option.name}" a bien été payée`,
+            action: txn.paidCallback ?? '/',
+            event: NotellaEvent.ContributionPaid,
+            object_id: txn.contribution.id,
           });
         }
         return res.status(200).send('OK');

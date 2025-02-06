@@ -8,7 +8,7 @@ import {
   isToday,
   previousMonday,
 } from 'date-fns';
-import fr from 'date-fns/locale/fr/index.js';
+import { fr } from 'date-fns/locale';
 
 function safeFormatting<T>(func: (arg: T) => string): (arg: T) => string {
   return (arg) => {
@@ -28,6 +28,10 @@ export const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
 
 export const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'full',
+});
+
+export const dateShortFormatter = new Intl.DateTimeFormat('fr-FR', {
+  dateStyle: 'short',
 });
 
 export const formatDateTime = safeFormatting((date: unknown) =>
@@ -52,6 +56,16 @@ export const formatDateTimeSmart: (date: Date | string) => string = (date) => {
   if (isToday(date)) return formatTime(date);
 
   return formatDate(date);
+};
+/**
+ * Show the time only if the date is today, otherwise show the date in a short format
+ * @param date
+ */
+export const formatDateTimeShortSmart: (date: Date | string) => string = (date) => {
+  if (typeof date === 'string') date = new Date(Date.parse(date));
+  if (isToday(date)) return formatTime(date);
+
+  return dateShortFormatter.format(date);
 };
 
 export const formatDatetimeLocal = (date: Date | string) => {

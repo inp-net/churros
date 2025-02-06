@@ -3,6 +3,7 @@ import { EventType } from '#modules/events/types';
 import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events/utils';
 import { LocalID, VisibilityEnum } from '#modules/global';
 import { Visibility } from '@churros/db/prisma';
+import { GraphQLError } from 'graphql';
 import { ZodError } from 'zod';
 
 const ALLOWED_DATELESS_VISIBILITIES = [Visibility.Private, Visibility.Unlisted] as Visibility[];
@@ -30,6 +31,18 @@ builder.mutationField('setEventVisibility', (t) =>
     async resolve(query, _, { id, visibility }, { user }) {
       id = ensureGlobalId(id, 'Event');
       await log('events', 'set-visibility', { visibility, id }, id, user);
+      if (visibility === Visibility.GroupRestricted || visibility === Visibility.SchoolRestricted) {
+        // Make sure no ticket is open to externals
+        const offendingTicketsCount = await prisma.ticket.count({
+          where: { eventId: id, openToExternal: { not: false } },
+        });
+
+        if (offendingTicketsCount > 0) {
+          throw new GraphQLError(
+            "L'évènement ne peut pas être restreint à l'école ou au groupe s'il a des billets ouverts aux extés",
+          );
+        }
+      }
       return prisma.event.update({
         ...query,
         where: { id },

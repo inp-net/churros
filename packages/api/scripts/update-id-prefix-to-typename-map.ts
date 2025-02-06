@@ -1,3 +1,4 @@
+import { execa } from 'execa';
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -71,6 +72,7 @@ function updateInFile(filename: string, exported: boolean): void {
   }
 
   writeFileSync(writeTo, writeToLines.join('\n'));
+  execa('yarn', ['prettier', '--write', writeTo], { stdio: 'inherit' });
 }
 
 updateInFile('../src/lib/global-id.ts', true);

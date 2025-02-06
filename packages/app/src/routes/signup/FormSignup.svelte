@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   export type Args = {
-    major: string;
+    major: string | null;
     graduationYear: number;
     apprentice: boolean;
     email: string;
@@ -97,7 +97,7 @@
     firstName: '',
     graduationYear: fromYearTier(1),
     lastName: '',
-    major: '',
+    major: null,
     password: '',
     passwordConfirmation: '',
     username: '',

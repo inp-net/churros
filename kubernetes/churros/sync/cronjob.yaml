@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: sync
-              image: harbor.k8s.inpt.fr/net7/churros/sync:latest
+              image: registry.inpt.fr/churros/churros/sync:latest
               imagePullPolicy: Always
               env:
                 - name: DATABASE_BASE_URL

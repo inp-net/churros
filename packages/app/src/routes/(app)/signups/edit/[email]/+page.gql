@@ -1,0 +1,17 @@
+query PageSignupsEdit($email: String!) {
+  userCandidateByEmail(email: $email) {
+    uid
+    major {
+      uid
+    }
+    firstName
+    lastName
+    fullName
+    email
+    birthday
+    graduationYear
+    majorId
+    cededImageRightsToTVn7
+  }
+  ...InputMajor
+}

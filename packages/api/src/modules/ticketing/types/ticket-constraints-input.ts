@@ -30,6 +30,11 @@ export const TicketConstraintsInput = builder.inputType('TicketConstraintsInput'
       required: false,
       description: "Réservable par les gestionnaires de l'évènement seulement",
     }),
+    invitesOnly: t.boolean({
+      required: false,
+      description:
+        "Réservable uniquement via un code d'invitation. Quand true, génère un code d'invitation récupérable avec Ticket.inviteCode. Quand false, supprime un éventuel code d'invitation existant. Quand false, supprime un éventuel code d'invitation existant",
+    }),
     majors: t.field({
       required: false,
       type: [UIDScalar],

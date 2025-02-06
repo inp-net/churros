@@ -213,9 +213,7 @@
           <div class="subtitle">Connectes-toi pour shotgun ;)</div>
         </div>
         <div class="actions">
-          <ButtonSecondary noClientSideNavigation href={refroute('/login')}
-            >Connexion</ButtonSecondary
-          >
+          <ButtonSecondary href={refroute('/login')}>Connexion</ButtonSecondary>
         </div>
       </div>
     </section>
@@ -363,7 +361,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    background-color: var(--bg2);
+    background: var(--bg2);
     border: var(--border-block) solid transparent;
     border-radius: 10px;
   }
@@ -375,7 +373,7 @@
 
   .tickets.please-login .ticket {
     color: var(--warning);
-    background-color: var(--warning-bg);
+    background: var(--warning-bg);
   }
 
   .ticket .text {

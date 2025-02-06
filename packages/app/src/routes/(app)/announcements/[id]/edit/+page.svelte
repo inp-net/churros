@@ -1,29 +1,48 @@
 <script lang="ts">
-  import ButtonBack from '$lib/components/ButtonBack.svelte';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { graphql } from '$houdini';
   import MaybeError from '$lib/components/MaybeError.svelte';
-  import FormAnnouncement from '$lib/components/FormAnnouncement.svelte';
+  import ModalConfirmDelete from '$lib/components/ModalConfirmDelete.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
+  import { loaded } from '$lib/loading';
+  import { mutateAndToast } from '$lib/mutations';
+  import { route } from '$lib/ROUTES';
+  import FormAnnouncement from '../../FormAnnouncement.svelte';
   import type { PageData } from './$houdini';
 
   export let data: PageData;
   $: ({ PageAnnouncementEdit } = data);
+  const Delete = graphql(`
+    mutation DeleteAnnouncement($id: LocalID!) {
+      deleteAnnouncement(id: $id) {
+        ...MutationErrors
+        ... on MutationDeleteAnnouncementSuccess {
+          data {
+            id
+          }
+        }
+      }
+    }
+  `);
+
+  $: if (
+    $PageAnnouncementEdit.data?.announcement &&
+    loaded($PageAnnouncementEdit.data.announcement.title)
+  )
+    updateTitle(`Annonce “${$PageAnnouncementEdit.data.announcement.title}”`);
 </script>
 
-<div class="content">
-  <h1><ButtonBack /> Modifier une annonce</h1>
-  <MaybeError result={$PageAnnouncementEdit} let:data={{ announcement }}>
-    <FormAnnouncement {announcement} />
-  </MaybeError>
-</div>
+<ModalConfirmDelete
+  title="Supprimer l'annonce"
+  on:confirm={async () => {
+    const ok = await mutateAndToast(Delete, {
+      id: $page.params.id,
+    });
+    if (ok) await goto(route('/announcements'));
+  }}
+/>
 
-<style>
-  h1 {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-
-  .content {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-</style>
+<MaybeError result={$PageAnnouncementEdit} let:data={{ announcement }}>
+  <FormAnnouncement {announcement} on:saved={() => goto(route('/announcements'))} />
+</MaybeError>

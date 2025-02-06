@@ -1,7 +1,11 @@
-import { builder, ensureGlobalId, graphinx, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma } from '#lib';
 import { EventType } from '#modules/events';
-import { RegistrationType, canSeeAllBookings } from '#modules/ticketing';
-import type { Prisma } from '@churros/db/prisma';
+import {
+  BookingStateEnum,
+  RegistrationType,
+  bookingStatePrismaWhereClause,
+  canSeeAllBookings,
+} from '#modules/ticketing';
 
 builder.prismaObjectField(EventType, 'bookings', (t) =>
   t.prismaConnection({
@@ -10,14 +14,7 @@ builder.prismaObjectField(EventType, 'bookings', (t) =>
     args: {
       only: t.arg({
         description: "Ne montre que les réservations d'un certain statut",
-        type: builder.enumType('BookingState', {
-          ...graphinx('ticketing'),
-          values: {
-            Paid: { value: 'Paid', description: 'Payée' },
-            Verified: { value: 'Verified', description: 'Scannée' },
-            Unpaid: { value: 'Unpaid', description: 'Non payée et non scannée' },
-          },
-        }),
+        type: BookingStateEnum,
       }),
     },
     async subscribe(subscriptions, { id }) {
@@ -27,20 +24,12 @@ builder.prismaObjectField(EventType, 'bookings', (t) =>
       return canSeeAllBookings(event, user);
     },
     async resolve(query, { id }, { only }) {
-      const filter: Prisma.RegistrationFindManyArgs['where'] = {
-        Paid: { paid: true, verifiedAt: null },
-        Verified: { verifiedAt: { not: null } },
-        Unpaid: { paid: false, verifiedAt: null },
-      }[only ?? 'Unpaid'];
-
       return prisma.registration.findMany({
         ...query,
         where: {
           AND: [
-            {
-              ticket: { eventId: ensureGlobalId(id, 'Event') },
-            },
-            filter,
+            { ticket: { eventId: ensureGlobalId(id, 'Event') } },
+            bookingStatePrismaWhereClause(only),
           ],
         },
         orderBy: { createdAt: 'desc' },

@@ -125,3 +125,23 @@ export function needsManualValidation(
     return false;
   return true;
 }
+
+/**
+ * Get user candidates to be validated, that can be validated by the given user
+ * @param user logged in user
+ * @returns a prisma where object
+ */
+export const prismaQueryUserCandidatesForUser = (user: User | null) =>
+  ({
+    emailValidated: true,
+    ...(user?.admin
+      ? {}
+      : // only return signups for the student association the user is admin of
+        {
+          major: {
+            schools: {
+              some: { studentAssociations: { some: { admins: { some: { id: user?.id } } } } },
+            },
+          },
+        }),
+  }) as Prisma.UserCandidateWhereInput;

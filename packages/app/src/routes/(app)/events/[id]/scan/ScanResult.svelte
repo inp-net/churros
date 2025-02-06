@@ -309,11 +309,11 @@
   }
 
   .circle.danger {
-    background-color: var(--danger);
+    background: var(--danger);
   }
 
   .circle.success {
-    background-color: var(--success);
+    background: var(--success);
   }
 
   h2.invalid {

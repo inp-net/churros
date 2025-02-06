@@ -138,13 +138,13 @@
     flex-direction: column;
     gap: 0.5rem;
     padding: 1rem 1.5rem;
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   article.floating {
     padding: 0 1rem;
     padding-bottom: 1rem;
-    background-color: var(--bg);
+    background: var(--bg);
   }
 
   article:not(.mobile) {

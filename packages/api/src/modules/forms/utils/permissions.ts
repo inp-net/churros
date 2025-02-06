@@ -16,12 +16,7 @@ import { GraphQLError } from 'graphql';
 export const requiredIncludesForPermissions = {
   group: { include: { studentAssociation: true } },
   event: {
-    include: {
-      managers: { include: { user: true } },
-      coOrganizers: true,
-      group: { include: { studentAssociation: { include: { school: true } } } },
-      tickets: true,
-    },
+    include: userCanAccessEvent.prismaIncludes,
   },
 } as const satisfies Prisma.FormInclude;
 

@@ -1,5 +1,4 @@
 import { builder, htmlToText, prisma, toHtml } from '#lib';
-import { CommentableInterface } from '#modules/comments';
 import {
   DateTimeScalar,
   HTMLScalar,
@@ -16,8 +15,6 @@ export const ArticleType = builder.prismaNode('Article', {
   id: { field: 'id' },
   include: { reactions: true },
   interfaces: [
-    // @ts-expect-error dunno why it complainnns
-    CommentableInterface,
     PicturedInterface,
     ReactableInterface,
     // FIXME: Gives a "not implemented" error
@@ -61,7 +58,12 @@ export const ArticleType = builder.prismaNode('Article', {
     published: t.exposeBoolean('published'),
     visibility: t.expose('visibility', { type: VisibilityEnum }),
     createdAt: t.expose('createdAt', { type: DateTimeScalar }),
-    notifiedAt: t.expose('notifiedAt', { type: DateTimeScalar, nullable: true }),
+    notifiedAt: t.field({
+      type: DateTimeScalar,
+      nullable: true,
+      deprecationReason: "Le champ n'est plus mis à jour maintenant",
+      resolve: () => null,
+    }),
     publishedAt: t.expose('publishedAt', { type: DateTimeScalar }),
     pictureFile: t.exposeString('pictureFile'),
     author: t.relation('author', { nullable: true }),

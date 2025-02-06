@@ -1,59 +1,47 @@
 <script lang="ts">
-  import { invalidateAll } from '$app/navigation';
-  import { groupLogoSrc } from '$lib/logos';
-  import { subscribe } from '$lib/subscriptions';
-  import { differenceInSeconds } from 'date-fns';
+  import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
+  import { loading } from '$lib/loading';
+  import { differenceInSeconds, secondsToMilliseconds } from 'date-fns';
   import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import { queryParam } from 'sveltekit-search-params';
-  import IconAccessPointCheck from '~icons/mdi/access-point-check';
-  import IconDate from '~icons/mdi/calendar-outline';
-  import IconLocation from '~icons/mdi/map-marker-outline';
-  import IconReloaded from '~icons/mdi/reload';
-  import type { PageData } from './$types';
+  import IconDate from '~icons/msl/event-outline';
+  import IconLocation from '~icons/msl/location-on-outline';
+  import IconReloaded from '~icons/msl/refresh';
+  import type { PageData } from './$houdini';
 
   export let data: PageData;
+  $: ({ PageKiosk } = data);
+
+  const slidesCount = queryParam('count', {
+    decode: (x) => Number.parseInt(x ?? '5'),
+    encode: String,
+  });
   const secondsPerSlide = queryParam('secondsPerSlide', {
     decode: (x) => Number.parseFloat(x ?? '5'),
     encode: String,
   });
 
-  let initialSubscriptionEventReceived = false;
-  let liveConnectionIndicatorShown = false;
   let lastReloadAt = new Date();
   let now = new Date();
-  $: currentSlide = data.events.nodes[0];
 
-  function nextSlide() {
-    currentSlide =
-      data.events.nodes[(data.events.nodes.indexOf(currentSlide) + 1) % data.events.nodes.length];
+  $: events = $PageKiosk.data?.events.nodes ?? [];
+  $: currentSlide = events[0];
+
+  async function moveToNextSlide() {
+    const nextSlideIndex = (events.map((n) => n.id).indexOf(currentSlide.id) + 1) % events.length;
+    if (nextSlideIndex === 0) {
+      await PageKiosk.fetch({ variables: { count: $slidesCount ?? 5 } });
+      lastReloadAt = new Date();
+    }
+    currentSlide = events.at(nextSlideIndex) ?? currentSlide;
   }
 
   onMount(() => {
-    setInterval(nextSlide, ($secondsPerSlide ?? 5) * 1000);
+    setInterval(moveToNextSlide, secondsToMilliseconds($secondsPerSlide ?? 5));
     setInterval(() => {
       now = new Date();
-    }, 1000);
-
-    // Get fresh data every time an event changes: this will be _very_ useful if we ever have an event that mistakenly has includeInKiosk set to true, and we want to remove it. Without this, removing it would require waiting for a manual page reload
-    $subscribe(
-      {
-        kioskReload: true,
-      },
-      async () => {
-        if (!initialSubscriptionEventReceived) {
-          liveConnectionIndicatorShown = true;
-          setTimeout(() => {
-            liveConnectionIndicatorShown = false;
-          }, 3000);
-          initialSubscriptionEventReceived = true;
-          return;
-        }
-
-        lastReloadAt = new Date();
-        await invalidateAll();
-      },
-    );
+    }, secondsToMilliseconds(1));
   });
 </script>
 
@@ -61,10 +49,8 @@
   <div class="slide">
     <div class="content" out:fade={{ duration: 400 }}>
       <div class="organizers" in:fly={{ duration: 500, y: 50, delay: 100 + 0 }}>
-        {#each [currentSlide.group, ...currentSlide.coOrganizers] as g}
-          <!-- svelte-ignore a11y-missing-attribute -->
-          <img src={groupLogoSrc(true, g)} class="group-logo" />
-          <!-- <img src="https://churros.inpt.fr/storage/groups/{g.uid}.png" class="group-logo" /> -->
+        {#each [currentSlide.organizer, ...currentSlide.coOrganizers] as group}
+          <AvatarGroup {group} />
         {/each}
       </div>
       <h1 in:fly={{ duration: 500, y: 50, delay: 100 + 50 }}>{currentSlide.title}</h1>
@@ -77,17 +63,19 @@
         {/if}
         <p in:fly={{ duration: 500, y: 50, delay: 100 + 125 }}>
           <IconDate />
-          {new Intl.DateTimeFormat('fr-FR', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            hour: 'numeric',
-          }).format(currentSlide.startsAt)}
+          {currentSlide.startsAt instanceof Date
+            ? new Intl.DateTimeFormat('fr-FR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                hour: 'numeric',
+              }).format(currentSlide.startsAt)
+            : ''}
         </p>
       </section>
     </div>
     <div class="backdrop" transition:fade={{ duration: 2000 }}>
-      <img src={currentSlide.pictureURL} alt="" />
+      <img src={loading(currentSlide.pictureURL, '')} alt="" />
     </div>
   </div>
 {/key}
@@ -96,11 +84,6 @@
   {#if differenceInSeconds(now, lastReloadAt) < 3}
     <div class="indicator-data-reloaded" transition:fade={{ duration: 200 }}>
       <IconReloaded />
-    </div>
-  {/if}
-  {#if liveConnectionIndicatorShown}
-    <div class="indicator-live-connection-ok" transition:fade={{ duration: 200 }}>
-      <IconAccessPointCheck />
     </div>
   {/if}
 </div>
@@ -187,18 +170,8 @@
     font-size: 2em;
   }
 
-  .group-logo {
-    width: 3em;
-    height: 3em;
-    overflow: hidden;
-    object-fit: contain;
-    background: white;
-    border: 2px solid white;
-    border-radius: 50%;
-  }
-
-  .group-logo:not(:last-child) {
-    margin-right: 1em;
+  .organizers {
+    --avatar-size: 7rem;
   }
 
   .backdrop {

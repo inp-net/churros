@@ -1,5 +1,200 @@
 # @churros/app
 
+## 4.5.0
+
+### Minor Changes
+
+- d5abb5c: deprecate Article.notifiedAt
+- 31d89fc: search bar in modals that ask to pick something now ignores accents
+- 2c6f49b: booking details popup from modal now shows the booking date
+
+### Patch Changes
+
+- 4dd70d6: fix(deps): update dependency fuse.js to ^7.1.0 (!532)
+- d1fbf48: fix(deps): update dependency @sentry/sveltekit to ^8.54.0 (!535)
+- 9317098: settings tab is now accessible on desktop when logged out
+- 3868c9f: chore(deps): update dependency @sveltejs/kit to ^2.17.1 (!538)
+- 8566a68: fix(deps): update swc monorepo to ^1.10.14 (!541)
+- ecec087: fix(deps): update dependency ua-parser-js to ^2.0.1 (!547)
+- Updated dependencies [9359f91]
+  - arborist@0.1.5
+
+## 4.4.3
+
+### Patch Changes
+
+- 3af9e39: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.23 (!529)
+
+## 4.4.2
+
+### Patch Changes
+
+- e78a4c9: fix a crash on event pages due to ButtonSecondary not handling undefined hrefs
+
+## 4.4.1
+
+### Patch Changes
+
+- 118278c: remove leftover TWA assetlinks.json that was taking precedence over native one
+
+## 4.4.0
+
+### Minor Changes
+
+- 5cab9f4: overhaul login flow, allow setting name and/or logo for the oauth provider thru PUBLIC*OAUTH*{LOGO_URL,NAME}
+- 67fc88a: Add /update-bundle to serve update bundles, in preparation for native OTA updates
+- 43d0446: add logout to profile page overflow menu
+- dbb8caf: add tooltip on like button when logged out
+
+### Patch Changes
+
+- 11f4d5a: remove help button on ticket capacity visiblity toggle, use a tooltip instead
+
+## 4.3.0
+
+### Minor Changes
+
+- 5e50827: the node server now serves deeplinking manifests at .well-known/
+
+## 4.2.1
+
+### Patch Changes
+
+- b445dc2: fix(deps): update dependency date-fns-tz to ^3.2.0 (!509)
+- 816bfba: fix(deps): update dependency graphql-ws to ^6.0.3 (!510)
+- cd6debd: fix(deps): update dependency @sentry/sveltekit to ^8.52.1 (!508)
+- 0884880: remove dependency on react 💀
+- fc351f0: chore(deps): update dependency vite-plugin-kit-routes to ^0.8.1 (!485)
+
+## 4.2.0
+
+### Minor Changes
+
+- 292e56e: Allow dynamic ticket links based on the booking's code, using [code]
+
+### Patch Changes
+
+- b84a071: fix(deps): update dependency bits-ui to ^0.22.0 (!465)
+- 74a1ca2: fix(deps): update dependency calendar-link to ^2.8.0 (!469)
+- 5569d5d: fix(deps): update dependency cytoscape to ^3.31.0 (!470)
+- bbf5895: fix(deps): update dependency date-fns to v4 (!461)
+- 28d9965: fix(deps): update dependency google-auth-library to ^9.15.1 (!503)
+- 5569d5d: fix(deps): update dependency graphql to ^16.10.0 (!472)
+- a3deb82: fix(deps): update dependency graphql-ws to v6 (!463)
+- 92e7bab: fix(deps): update dependency houdini to ^1.5.0 (!466)
+- 7e2d917: chore(deps): update dependency houdini-svelte to ^2.1.4 (!438)
+- 74a1ca2: fix(deps): update dependency @iconify-json/logos to ^1.2.4 (!468)
+- 1c9d2f4: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.14 (!491)
+- 92e7bab: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.14 (!492)
+- acf9d74: fix(deps): update dependency mime to ^4.0.6 (!499)
+- d445d96: fix(deps): update dependency @paypal/paypal-js to ^8.2.0 (!452)
+- 92e7bab: fix(deps): update dependency pdfmake to ^0.2.18 (!474)
+- cc994ce: chore(deps): update dependency sass to ^1.83.4 (!448)
+- d445d96: chore(deps): update dependency sass-embedded to ^1.83.4 (!449)
+- c6875b0: fix(deps): update dependency @sentry/sveltekit to ^8.52.0 (!487)
+- c8c085a: fix(deps): update dependency svelte-gestures to ^5.1.3 (!477)
+- 28d9965: fix(deps): update swc monorepo to ^1.10.12 (!504)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+- c6875b0: chore(deps): update dependency unplugin-icons to v22 (!490)
+- c8c085a: fix(deps): update dependency write-excel-file to ^2.0.11 (!479)
+- d445d96: fix(deps): update dependency zod to ^3.24.1 (!454)
+- Updated dependencies [92e7bab]
+- Updated dependencies [92e7bab]
+  - arborist@0.1.4
+
+## 4.1.3
+
+### Patch Changes
+
+- f68a9a1: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.22 (!440)
+- 691b29c: correct radio buttons in events visibility are now disabled
+- 4143201: chore(deps): update dependency svelte-check to ^4.1.4 (!431)
+- 92d9bf5: chore(deps): update dependency @sveltejs/kit to ^2.16.1 (!437)
+- f68a9a1: chore(deps): update dependency vite to v5.4.14 (!435)
+- 92d9bf5: chore(deps): update dependency vite-plugin-kit-routes to ^0.7.6 (!436)
+
+## 4.1.2
+
+### Patch Changes
+
+- 10c907b: dedupe & reorder sections in event managers page
+
+## 4.1.1
+
+### Patch Changes
+
+- 2aadf87: chore(deps): update dependency @babel/core to ^7.26.7 (!415)
+- 2aadf87: fix(deps): update dependency @carbon/charts-svelte to ^1.22.15 (!391)
+- 2aadf87: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.13 (!410)
+- 6cdab09: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.13 (!416)
+- 2aadf87: chore(deps): update dependency @iconify-json/mdi to ^1.2.3 (!417)
+- 6cdab09: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.21 (!418)
+- 2aadf87: fix(deps): update dependency @sentry/sveltekit to ^8.51.0 (!403)
+- 84a508a: chore(deps): update dependency @sveltejs/adapter-node to ^5.2.12 (!419)
+- 3af8ad0: changelogs now include dependency updates
+- Updated dependencies [6cdab09]
+  - arborist@0.1.3
+
+## 4.1.0
+
+### Minor Changes
+
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Redesign /backrooms
+- 8f63ff5: show event managers inherited from group memberships
+- a50aec4: redesign announcements management pages
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- 92a434c: clarify when someone can see places left and/or capacity of a ticket because they are managers
+- 2aebc49: allow search for bookings in /event/:id/bookings
+- ff0a9a9: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- a09feb9: CSV bookings export download button did not work in OAuth2-based sessions (see #1216)
+- a09feb9: payment method showed "undefined" when not yet selected (see #1094)
+- 0d0b17a: hide red dot from overflow menu if item that adds it is hidden and/or disabled
+- a9fe207: all inputs had autofocus
+
+## 4.0.0
+
+### Major Changes
+
+- a451d73: remove /reports/ pages, remove code contributors from /credits
+- 50ffbd7: remove comments
+
+### Minor Changes
+
+- 896707d: The checks.websocket property of /health's response is always true and is now deprecated
+- df8fb24: Redesign /backrooms
+- df8fb24: show red dot on backrooms overflow menu item when there are pending signups
+
+### Patch Changes
+
+- 7f63be5: fix group member list infinite scroll
+- f791fd5: toast using callbacks or labels triggered Svelte warnings about unknown props in console
+- df8fb24: /kiosk should now work even on devices without websocket support
+
+## 3.1.0
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 45d7615: allow setting 4th yeartier on graduation year constraint (closes #1194)
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- a0b3b27: clicking Voir plus on event cards would cause a double navigation to the event detail page
+- e1262b7: upgrade dependencies
+- Updated dependencies [e1262b7]
+  - arborist@0.1.2
+
 ## 3.0.1
 
 ### Patch Changes

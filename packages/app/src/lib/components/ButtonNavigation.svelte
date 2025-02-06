@@ -10,8 +10,8 @@
   const dispatch = createEventDispatcher<{ click: undefined }>();
 
   export let href: string;
-  /** If null, only highlighted when current page is href. */
-  export let routeID: LayoutRouteId | null;
+  /** If null, only highlighted when current page is href. Pass an array, if any of the provided route IDs match, item will be highlighted. */
+  export let routeID: LayoutRouteId | LayoutRouteId[] | null;
   export let label: string | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let icon: typeof SvelteComponent<any> | undefined = undefined;
@@ -19,26 +19,37 @@
   export let iconFilled: typeof SvelteComponent<any> | undefined = icon;
   export let tooltipsOn: 'left' | 'right' | 'top' | 'bottom' = 'top';
 
+  /** Show a little red dot on the button to catch the attention of the user. The badge is not shown when the button is highlighted (if the user is on the page, we don't have to grab their attention anymore) */
+  export let badge = false;
+
   const mobile = isMobile();
 
   function isPathwiseEqual(a: URL, b: URL) {
     return a.pathname.replace(/\/$/, '') === b.pathname.replace(/\/$/, '');
   }
 
-  function isCurrent(route: LayoutRouteId | null, href: string, page: Page) {
+  function isCurrent(
+    route: LayoutRouteId | LayoutRouteId[] | null,
+    href: string,
+    page: Page,
+  ): boolean {
+    if (Array.isArray(route)) return route.some((r) => isCurrent(r, href, page));
     if (route) return page.route.id === route;
     return isPathwiseEqual(new URL(href, page.url), page.url);
   }
+
+  $: current = isCurrent(routeID, href, $page);
 </script>
 
 <svelte:element
-  this={isCurrent(routeID, href, $page) ? 'button' : 'a'}
+  this={current ? 'button' : 'a'}
   {href}
   class="button-navigation"
-  role={isCurrent(routeID, href, $page) ? 'button' : 'link'}
-  class:current={isCurrent(routeID, href, $page)}
+  class:has-red-dot={badge && !current}
+  role={current ? 'button' : 'link'}
+  class:current
   use:tooltip={label ? { content: label, placement: tooltipsOn } : undefined}
-  on:click={isCurrent(routeID, href, $page)
+  on:click={current
     ? () => {
         scrollableContainer(mobile).scrollTo({ top: 0, behavior: 'smooth' });
         dispatch('click');
@@ -46,7 +57,7 @@
     : undefined}
 >
   <slot>
-    {#if isCurrent(routeID, href, $page)}
+    {#if current}
       <svelte:component this={iconFilled}></svelte:component>
     {:else if icon}
       <svelte:component this={icon}></svelte:component>
@@ -59,7 +70,19 @@
     color: var(--primary);
   }
 
+  .has-red-dot::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0.5em;
+    height: 0.5em;
+    content: '';
+    background-color: var(--danger);
+    border-radius: 50%;
+  }
+
   .button-navigation {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -170,7 +170,7 @@
     font-size: 1.3rem;
     color: inherit;
     cursor: pointer;
-    background-color: var(--bg);
+    background: var(--bg);
     border: none;
     border-radius: 50%;
     box-shadow: var(--shadow);

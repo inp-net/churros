@@ -62,6 +62,12 @@
     box-shadow: none;
   }
 
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .button-ink.neutral {
     color: var(--fg);
   }

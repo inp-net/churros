@@ -1,5 +1,94 @@
 # @churros/db
 
+## 4.2.0
+
+### Minor Changes
+
+- d5abb5c: deprecate Article.notifiedAt
+
+### Patch Changes
+
+- 8ea502c: fix(deps): update prisma monorepo to ^6.3.1 (!546)
+
+## 4.1.6
+
+### Patch Changes
+
+- 9bc1b79: trackShare did not work for articles
+- b7d0aaa: fix(deps): update prisma monorepo to v6 (major) (!464)
+
+## 4.1.5
+
+### Patch Changes
+
+- 1c9d2f4: fix(deps): update dependency @faker-js/faker to ^9.4.0 (!497)
+- 5569d5d: fix(deps): update dependency graphql to ^16.10.0 (!472)
+- d445d96: fix(deps): update dependency ioredis to ^5.4.2 (!453)
+- 9db4f8b: fix(deps): update dependency npm-run-all2 to ^7.0.2 (!501)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+
+## 4.1.4
+
+### Patch Changes
+
+- b779ec4: add back migration that was already applied in prod
+
+## 4.1.3
+
+### Patch Changes
+
+- 778280f: remove superfluous migration
+
+## 4.1.2
+
+### Patch Changes
+
+- cfbb198: reorder migration user_last_seen_at
+
+## 4.1.1
+
+### Patch Changes
+
+- 535587d: fix migrations order: migration order of 4.1.0 was inconsistent with 4.0.1, which would cause a failed migration when applying
+
+## 4.1.0 - [YANKED]
+
+### Minor Changes
+
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 2aebc49: allow search for bookings in /event/:id/bookings
+
+## 4.0.1
+
+### Patch Changes
+
+- 43754a2: fix runtime error when running migrator because of missing openssl package
+
+## 4.0.0
+
+### Major Changes
+
+- 50ffbd7: drop comments table
+
+### Patch Changes
+
+- 5b6b6ba: drop superfluous unique constraint of GodparentRequest's id, switch School.aliasMailDomains to text array
+
+## 3.2.0
+
+### Minor Changes
+
+- 4589b01: allow tickets to be accessed via invitation links only
+- 85bc631: theme dates are now nullable
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- e1262b7: upgrade dependencies
+
 ## 3.1.0
 
 ### Minor Changes

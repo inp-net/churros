@@ -1,5 +1,233 @@
 # @churros/api
 
+## 11.0.2
+
+### Patch Changes
+
+- 639fef9: fix(deps): update dependency @inp-net/notella to v0.11.4 (!558)
+
+## 11.0.1
+
+### Patch Changes
+
+- 87ddf2c: fix(deps): update dependency @clack/prompts to ^0.10.0 (!554)
+- f35ea39: bump notella to v0.10.4
+
+## 11.0.0
+
+### Major Changes
+
+- d5abb5c: notifications are now handled by a separate scheduler process, see git.inpt.fr/churros/notella
+- d5abb5c: default value for Mutation.acknowledgeChangelog:version and Query.combinedChangelog:to were removed
+
+### Minor Changes
+
+- d5abb5c: deprecate Article.notifiedAt
+
+### Patch Changes
+
+- a499885: PUBLIC_API_ORIGIN_WEB was not taken into account when computing Pictured.pictureURL
+- 4c7cfde: updating user's last-seen date in database always failed
+- fa35bcb: fix(deps): update dependency croner to ^8.1.2 (!549)
+- 6e48f56: chore(deps): update dependency graphinx to ^0.12.2 (!387)
+- fa35bcb: fix(deps): update dependency nats (!550)
+- 9359f91: chore(deps): update dependency @types/node to ^20.17.17 (!542)
+- 8ea502c: fix(deps): update prisma monorepo to ^6.3.1 (!546)
+- 2e8d8c4: fix(deps): update dependency rehype-highlight to ^7.0.2 (!537)
+- 549df42: fix(deps): update dependency semver to ^7.7.1 (!540)
+- ecec087: fix(deps): update dependency ua-parser-js to ^2.0.1 (!547)
+- 8ea502c: chore(deps): update dependency @types/web-push to ^3.6.4 (!548)
+- Updated dependencies [d5abb5c]
+- Updated dependencies [9359f91]
+- Updated dependencies [8ea502c]
+  - @churros/db@4.2.0
+  - arborist@0.1.5
+
+## 10.2.1
+
+### Patch Changes
+
+- bbc1775: fix(deps): update dependency firebase-admin to v13 (!520)
+- ca57f51: fix(deps): update dependency i18next to v24 (!521)
+
+## 10.2.0
+
+### Minor Changes
+
+- 8d94a13: add Query.version to get the current api version, and serve a server manifest at .well-known/churros.app/server.json
+
+### Patch Changes
+
+- b445dc2: fix(deps): update dependency date-fns-tz to ^3.2.0 (!509)
+- 816bfba: fix(deps): update dependency graphql-ws to ^6.0.3 (!510)
+- a6966ce: fix(deps): update dependency ldap-authentication to ^3.2.6 (!511)
+- 9bc1b79: trackShare did not work for articles
+- b7d0aaa: fix(deps): update prisma monorepo to v6 (major) (!464)
+- Updated dependencies [9bc1b79]
+- Updated dependencies [b7d0aaa]
+  - @churros/db@4.1.6
+
+## 10.1.0
+
+### Minor Changes
+
+- 292e56e: Allow dynamic ticket links based on the booking's code, using [code]
+
+### Patch Changes
+
+- 1c9d2f4: fix(deps): update dependency chalk to ^5.4.1 (!498)
+- 9db4f8b: fix(deps): update dependency @clack/prompts to ^0.9.1 (!502)
+- a3deb82: fix(deps): update dependency connect-redis to v8 (!460)
+- bbf5895: fix(deps): update dependency date-fns to v4 (!461)
+- d445d96: fix(deps): update dependency @envelop/core to ^5.0.3 (!451)
+- c8c085a: fix(deps): update dependency glob to ^11.0.1 (!471)
+- 28d9965: fix(deps): update dependency google-auth-library to ^9.15.1 (!503)
+- 5569d5d: fix(deps): update dependency graphql to ^16.10.0 (!472)
+- c8c085a: fix(deps): update dependency graphql-scalars to ^1.24.1 (!473)
+- a3deb82: fix(deps): update dependency graphql-ws to v6 (!463)
+- c8c085a: fix(deps): update graphql-yoga monorepo (!481)
+- d445d96: fix(deps): update dependency ioredis to ^5.4.2 (!453)
+- c8c085a: fix(deps): update linkifyjs monorepo to ^4.2.0 (!482)
+- 92e7bab: chore(deps): update node.js to v20.18.2 (!456)
+- 92e7bab: fix(deps): update dependency nodemailer to ^6.10.0 (!493)
+- 9db4f8b: fix(deps): update dependency nodemon to ^3.1.9 (!500)
+- 9db4f8b: fix(deps): update dependency npm-run-all2 to ^7.0.2 (!501)
+- 92e7bab: fix(deps): update dependency pdfmake to ^0.2.18 (!474)
+- c8c085a: fix(deps): update dependency phone to ^3.1.58 (!475)
+- c8c085a: fix(deps): update dependency rate-limiter-flexible to ^5.0.5 (!476)
+- c6875b0: fix(deps): update dependency semver to ^7.7.0 (!488)
+- 92e7bab: fix(deps): update dependency typescript to ^5.7.3 (!478)
+- 3f31893: fix(deps): update dependency unaccent to ^0.3.0 (!489)
+- cdbe114: chore(deps): update dependency @vizdom/vizdom-ts-node to ^0.1.19 (!446)
+- c8c085a: fix(deps): update dependency yaml to ^2.7.0 (!480)
+- d445d96: fix(deps): update dependency zod to ^3.24.1 (!454)
+- Updated dependencies [1c9d2f4]
+- Updated dependencies [5569d5d]
+- Updated dependencies [d445d96]
+- Updated dependencies [92e7bab]
+- Updated dependencies [9db4f8b]
+- Updated dependencies [92e7bab]
+  - @churros/db@4.1.5
+  - arborist@0.1.4
+
+## 10.0.0
+
+### Major Changes
+
+- c1e9496: default value for Mutation.acknowledgeChangelog:version and Query.combinedChangelog:to were removed
+
+### Patch Changes
+
+- 4143201: chore(deps): update dependency chokidar to ^4.0.3 (!425)
+- f68a9a1: chore(deps): update dependency concurrently to ^9.1.2 (!426)
+- f68a9a1: chore(deps): update dependency @types/ws to ^8.5.14 (!422)
+
+## 9.1.0
+
+### Minor Changes
+
+- 104e3ab: remove /dump, add /dump/migrations/{names,list} to peek easily at the db migration state in production, useful for devops
+
+### Patch Changes
+
+- e41296f: User.deletionConsequence would try to count comments, but the table was removed
+- Updated dependencies [b779ec4]
+  - @churros/db@4.1.4
+
+## 9.0.1
+
+### Patch Changes
+
+- 6cdab09: chore(deps): update dependency @types/jsonwebtoken to ^9.0.8 (!420)
+- Updated dependencies [6cdab09]
+- Updated dependencies [535587d]
+  - arborist@0.1.3
+  - @churros/db@4.1.1
+
+## 9.0.0
+
+### Major Changes
+
+- d46f5c7: Change return types of Mutation.{accept,refuse}Registration; change arguments to Mutation.updateUserCandidate
+- a0721d8: Event.placesLeft and Ticket.placesLeft are now of type Capacity and not Int. Instead of -1 to represent infinity, the Capacity scalar is used
+- d46f5c7: rename Mutation.{accept,refuse}Registration to Mutation.{accept,refuse}UserCandidate
+- a09feb9: - add required argument bookingUrl to Mutation.bookEvent,
+  - add optional arguments authorName and pointOfContact to Mutation.bookEvent
+  - add Registration.pointOfContact and Registration.authorName.
+  - add Event.enforcePointOfContact and argument enforcePointOfContact to Mutation.updateEvent
+- 50bc062: remove deprecated Mutation.upsertRegistration
+- a50aec4: Make Mutation.deleteAnnouncement return a Result<Announcement> instead of Boolean
+
+### Minor Changes
+
+- dda7171: Add FeaturesHealthCheck.housekeeper
+- d46f5c7: redesign signups management page
+- 89f386f: allow users to delete their accounts
+- 5880beb: allow hiding capacity on tickets
+- a09feb9: add point of contacts on event (see #1229), allow specifying authorName when booking an event while loggedout (see #1209)
+- 072d7f5: add event manager invite links system
+- 1cd5f3d: Add Query.userCandidatesCount
+- 8f63ff5: show event managers inherited from group memberships
+- 7be2de4: disallow some visibilities when an event has tickets open to external users. reflect this clearly in the UI too
+- dda7171: Add Mutation.housekeep to clear out old ressources
+- b114902: only Edit-level managers can now see places left count and capacities when they are hidden
+- 2aebc49: allow search for bookings in /event/:id/bookings
+
+### Patch Changes
+
+- Updated dependencies [89f386f]
+- Updated dependencies [5880beb]
+- Updated dependencies [a09feb9]
+- Updated dependencies [072d7f5]
+- Updated dependencies [2aebc49]
+  - @churros/db@4.1.0
+
+## 8.0.0
+
+### Major Changes
+
+- a451d73: remove Query.issuesByUser, Query.codeContributors, Query.issue and types related to gitlab issues
+- df8fb24: Remove Mutation.kioskReload and Subscription.kioskReload
+- 50ffbd7: drop type Comment, interface Commentable, fields .comments, .comment and .commentId where they exist, Mutation.{upsert,delete}Comment and remove commentId argument from fields that take it
+
+### Minor Changes
+
+- df8fb24: Add Query.userCandidatesCount
+
+### Patch Changes
+
+- 03a5a4f: gdpr exports could not be created
+- 788844c: fix(ticketing): nombre de places non payées ne prend pas en compte les places sans mode de paiement choisi (closes #1254)
+- 8322cc9: school-restricted events can be accessed by other school's students if some tickets are opened to them
+- Updated dependencies [5b6b6ba]
+- Updated dependencies [50ffbd7]
+  - @churros/db@4.0.0
+
+## 7.0.0
+
+### Major Changes
+
+- 4589b01: User.booking takes a `event: LocalID!` instead of `event: ID!`, and is now nullable instead of throwing an error
+
+### Minor Changes
+
+- 893dbc8: Add GDPR data export
+- 465ebe1: dedupe profile email addresses
+- 85bc631: add themes management
+- 4589b01: allow tickets to be accessed via invitation links only
+- 93f7dd6: allow users to set their pronouns
+
+### Patch Changes
+
+- 4589b01: User.booking now correctly returns the User object's booking instead of the logged-in user's
+- e1262b7: upgrade dependencies
+- Updated dependencies [4589b01]
+- Updated dependencies [85bc631]
+- Updated dependencies [e1262b7]
+- Updated dependencies [93f7dd6]
+  - @churros/db@3.2.0
+  - arborist@0.1.2
+
 ## 6.0.0
 
 ### Major Changes

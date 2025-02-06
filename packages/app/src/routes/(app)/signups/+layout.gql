@@ -1,0 +1,14 @@
+query LayoutManageSignups @loading {
+  userCandidates(first: 20) @paginate @list(name: "List_LayoutManageSignups", connection: true) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges @loading(count: 20) {
+      node {
+        ...LayoutManageSignups_UserCandidate @mask_disable
+      }
+    }
+  }
+}

@@ -42,7 +42,8 @@ builder.mutationField('verifyBooking', (t) =>
       if (!user) throw new GraphQLError('Must be logged in to verify a registration');
 
       let code = '';
-      if (args.bookingURLTemplate && URL.canParse(args.qrcode)) {
+      // QR Code could contain a global id, which, because of the ':' separator, makes URL.canParse() true, even though the qrcode content is clearly not a booking URL
+      if (args.bookingURLTemplate && URL.canParse(args.qrcode) && /^https?:/.test(args.qrcode)) {
         const normalized = new URL(args.qrcode).toString();
         // Remove characters before [code] in the template in normalized
         // And remove characters after [code] in the template in normalized

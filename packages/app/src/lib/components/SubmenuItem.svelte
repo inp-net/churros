@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import LoadingText from '$lib/components/LoadingText.svelte';
-  import type { MaybeLoading } from '$lib/loading';
+  import { loading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
   import type { SvelteComponent } from 'svelte';
   import IconChevronRight from '~icons/msl/chevron-right';
@@ -11,8 +11,17 @@
 
   export let subtext: MaybeLoading<string> = '';
 
+  /** The submenu item is a form */
+  export let form = false;
+
+  /** Widen the space available to the right slot */
+  export let wideRightPart = false;
+
   /** Whether to allow overflows, could be useful when the icon slot requires so. */
   export let overflow = false;
+
+  /** Show a little red dot next to the icon to grab the user's attention */
+  export let badge: MaybeLoading<boolean> = false;
 
   /** Whether to show a right chevron icon on the right side of the item. Useful to indicate that the item leads to another page. Defaults to true if href is set. */
   export let chevron: boolean | undefined = undefined;
@@ -50,11 +59,13 @@
 </script>
 
 <svelte:element
-  this={href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
+  this={form ? 'form' : href ? 'a' : label ? 'label' : clickable ? 'button' : 'div'}
   {href}
   on:click
+  on:submit
   role="menuitem"
   tabindex="-1"
+  class:wide-right-part={wideRightPart}
   id={anchor?.replace(/^#/, '')}
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
@@ -62,7 +73,7 @@
   use:tooltip={help}
 >
   <div class="left" class:allow-overflow={overflow}>
-    <div class="icon">
+    <div class="icon" class:has-red-dot={loading(badge, false)}>
       {#if icon}
         <svelte:component this={icon}></svelte:component>
       {:else}
@@ -84,7 +95,7 @@
       {/if}
     </div>
   </div>
-  <div class="right" class:chevron>
+  <div class="right" class:chevron class:wider={wideRightPart}>
     {#if chevron}
       <svelte:component this={IconChevronRight}></svelte:component>
     {:else}
@@ -95,6 +106,7 @@
 
 <style>
   .submenu-item {
+    position: relative;
     display: flex;
     gap: 1rem;
     align-items: center;
@@ -104,9 +116,21 @@
     overflow: hidden;
   }
 
+  /* Requires the CSS container-name submenu, so requires that the parent is the <Submenu> component -- which is expected anyway */
+  @container submenu (max-width: 600px) {
+    .submenu-item.wide-right-part {
+      flex-direction: column;
+    }
+
+    .submenu-item.wide-right-part .right {
+      width: unset;
+      text-align: center;
+    }
+  }
+
   .submenu-item.current {
     color: var(--primary);
-    background-color: var(--bg2);
+    background: var(--bg2);
   }
 
   .submenu-item.highlighted {
@@ -133,10 +157,22 @@
   }
 
   .icon {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+  }
+
+  .icon.has-red-dot::before {
+    position: absolute;
+    top: -0.125em;
+    right: -0.125em;
+    width: 0.5em;
+    height: 0.5em;
+    content: '';
+    background-color: var(--danger);
+    border-radius: 50%;
   }
 
   .text {
@@ -163,8 +199,12 @@
     white-space: nowrap;
   }
 
-  .right {
+  .right:not(.wider) {
     max-width: 40%;
+  }
+
+  .right.wider {
+    width: 100%;
   }
 
   .chevron {

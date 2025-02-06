@@ -9,5 +9,7 @@ export const _PageEventAllBookingsVariables: PageEventAllBookingsVariables = asy
   return {
     ...params,
     filter: tabToFilter[tab] ?? 'Unpaid',
+    search: searchParams.get('q') ?? '',
+    searching: searchParams.has('q'),
   };
 };

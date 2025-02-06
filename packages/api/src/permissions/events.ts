@@ -2,7 +2,7 @@ import type { Context } from '#lib';
 import { prisma } from '#lib';
 
 import { userCanManageEvent, userIsAdminOf } from '#permissions';
-import type { Group, Prisma } from '@churros/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
 import * as PrismaTypes from '@churros/db/prisma';
 import { mappedGetAncestors } from 'arborist';
 
@@ -53,6 +53,28 @@ export function prismaQueryVisibleEvents(
               some: {
                 openToExternal: {
                   not: false,
+                },
+              },
+            },
+          },
+          {
+            tickets: {
+              some: {
+                openToSchools: {
+                  some: {
+                    majors: { some: { students: { some: { uid: user?.uid ?? '' } } } },
+                  },
+                },
+              },
+            },
+          },
+          {
+            tickets: {
+              some: {
+                openToMajors: {
+                  some: {
+                    students: { some: { uid: user?.uid ?? '' } },
+                  },
                 },
               },
             },
@@ -120,26 +142,7 @@ export function prismaQueryVisibleEvents(
 }
 
 export async function userCanAccessEvent(
-  event:
-    | (PrismaTypes.Event & {
-        coOrganizers: Array<{
-          id: string;
-          uid: string;
-          studentAssociation?: null | { school: { uid: string } };
-        }>;
-        group: Group & {
-          studentAssociation?: null | { school: { uid: string } };
-        };
-        managers: Array<{
-          user: { uid: string };
-
-          canEdit: boolean;
-          canEditPermissions: boolean;
-          canVerifyRegistrations: boolean;
-        }>;
-        tickets: Array<{ openToExternal: boolean | null }>;
-      })
-    | null,
+  event: Prisma.EventGetPayload<{ include: typeof userCanAccessEvent.prismaIncludes }>,
   user: Context['user'],
 ): Promise<boolean> {
   if (userIsAdminOf(user, event?.group.studentAssociationId)) return true;
@@ -155,12 +158,29 @@ export async function userCanAccessEvent(
     case PrismaTypes.Visibility.SchoolRestricted: {
       if (!user) return false;
       if (userCanManageEvent(event, user, {})) return true;
-      return Boolean(
+
+      const userIsStudentOfOrganizers = Boolean(
         [event.group, ...event.coOrganizers]
           .map((g) => g.studentAssociation?.school.uid)
           .filter(Boolean)
           .some((schoolUid) => user.major?.schools.some((s) => s.uid === schoolUid!)),
       );
+
+      const userIsStudentOfSomeTicketConstraints = Boolean(
+        event.tickets.some(({ openToMajors, openToSchools }) => {
+          if (openToMajors.some(({ students }) => students.some(({ uid }) => uid === user.uid)))
+            return true;
+          if (
+            openToSchools.some(({ majors }) =>
+              majors.some(({ students }) => students.some(({ uid }) => uid === user.uid)),
+            )
+          )
+            return true;
+          return false;
+        }),
+      );
+
+      return userIsStudentOfOrganizers || userIsStudentOfSomeTicketConstraints;
     }
 
     case PrismaTypes.Visibility.GroupRestricted: {
@@ -194,3 +214,15 @@ export async function userCanAccessEvent(
     }
   }
 }
+
+userCanAccessEvent.prismaIncludes = {
+  managers: { include: { user: true } },
+  coOrganizers: { include: { studentAssociation: { include: { school: true } } } },
+  group: { include: { studentAssociation: { include: { school: true } } } },
+  tickets: {
+    include: {
+      openToMajors: { include: { students: true } },
+      openToSchools: { include: { majors: { include: { students: true } } } },
+    },
+  },
+} as const satisfies Prisma.EventInclude;

@@ -1,17 +1,8 @@
 import { type Context } from '#lib';
-
-import type { Event } from '@churros/db/prisma';
+import type { Prisma } from '@churros/db/prisma';
 
 export function userCanManageEvent(
-  event: Event & {
-    managers: Array<{
-      user: { uid: string };
-
-      canEdit: boolean;
-      canEditPermissions: boolean;
-      canVerifyRegistrations: boolean;
-    }>;
-  },
+  event: Prisma.EventGetPayload<{ include: typeof userCanManageEvent.prismaIncludes }>,
   user: Context['user'],
   required: { canEdit?: boolean; canEditPermissions?: boolean; canVerifyRegistrations?: boolean },
 ) {
@@ -37,3 +28,11 @@ export function userCanManageEvent(
       }),
   );
 }
+
+userCanManageEvent.prismaIncludes = {
+  managers: {
+    include: {
+      user: true,
+    },
+  },
+} as const satisfies Prisma.EventInclude;

@@ -2,6 +2,7 @@ import { fragment, MutationErrorsStore, type MutationErrors } from '$houdini';
 import { get } from 'svelte/store';
 import type { ZodFormattedError } from 'zod';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export const fieldErrorsToFormattedError = <T extends {}>(
   fieldErrors: Array<{
     path: string[];
@@ -23,7 +24,11 @@ export const fieldErrorsToFormattedError = <T extends {}>(
 
 // I can't do Exclude<string, 'data'|'__typename'|' $fragments'> - it just evaluates back to string
 // See https://stackoverflow.com/questions/51442157/type-for-every-possible-string-value-except
-export type CaveatKey = 'didSoftDelete' | 'softDeleted' | 'constraintsWereSimplified';
+export type CaveatKey =
+  | 'didSoftDelete'
+  | 'softDeleted'
+  | 'constraintsWereSimplified'
+  | 'lastManagerPowerlevelChanged';
 
 type SuccessWithCaveats<K extends CaveatKey, TSuccess, Fragments, Typename> = {
   'data': TSuccess;

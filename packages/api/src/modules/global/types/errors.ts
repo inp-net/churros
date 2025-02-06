@@ -1,5 +1,4 @@
 import { builder } from '#lib';
-import { Prisma } from '@churros/db/prisma';
 import { ZodError, type ZodFormattedError } from 'zod';
 
 const ErrorInterface = builder.interfaceRef<Error>('ErrorInterface').implement({
@@ -63,9 +62,29 @@ export const ZodErrorType = builder.objectType(ZodError, {
   }),
 });
 
-export const NotFoundErrorType = builder.objectType(Prisma.NotFoundError, {
+export class NotFoundError extends Error {}
+
+export const NotFoundErrorType = builder.objectType(NotFoundError, {
   name: 'NotFoundError',
   description: 'An error raised when a resource does not exist.',
+  interfaces: [ErrorInterface],
+  fields: (t) => ({
+    message: t.exposeString('message'),
+  }),
+});
+
+export class CheckBackLaterError extends Error {
+  /**
+   * @param object the name of the object being processed/created
+   */
+  constructor(object: string) {
+    super(`Ton ${object} est en cours de traitement, réessayes plus tard`);
+  }
+}
+
+export const CheckBackLaterErrorType = builder.objectType(CheckBackLaterError, {
+  name: 'CheckBackLaterError',
+  description: 'An error raised when an operation is in progress and should be retried later.',
   interfaces: [ErrorInterface],
   fields: (t) => ({
     message: t.exposeString('message'),

@@ -6,5 +6,7 @@ query PageEventEditVisibility($id: LocalID!) @loading {
     includeInKiosk
     startsAt
     endsAt
+    allowedVisibilities
+    visibilitiesRestrictedWhy
   }
 }

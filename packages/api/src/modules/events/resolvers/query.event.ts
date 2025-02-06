@@ -1,4 +1,4 @@
-import { builder, ensureGlobalId, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma, subscriptionName } from '#lib';
 import { LocalID } from '#modules/global';
 import { canAccessEvent, EventType } from '../index.js';
 
@@ -9,6 +9,9 @@ builder.queryField('event', (t) =>
       id: t.arg({ type: LocalID }),
     },
     smartSubscription: true,
+    subscribe(subs, _, { id }) {
+      subs.register(subscriptionName('EventManager', undefined, ensureGlobalId(id, 'Event')));
+    },
     async authScopes(_, { id }, { user }) {
       const event = await prisma.event.findUniqueOrThrow({
         where: { id: ensureGlobalId(id, 'Event') },

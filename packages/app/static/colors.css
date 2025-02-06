@@ -45,7 +45,9 @@
 
 :root,
 dialog,
-::backdrop {
+::backdrop,
+:root [data-force-default-theme='dark'],
+:root [data-force-default-theme='light'] {
   /* Surfaces */
 
   --bg: #fff;
@@ -113,7 +115,8 @@ dialog,
 :root[data-theme-variant='dark'],
 :root[data-theme-variant='dark']::backdrop,
 dialog[data-theme-variant='dark'],
-dialog[data-theme-variant='dark']::backdrop {
+dialog[data-theme-variant='dark']::backdrop,
+:root [data-force-default-theme='dark'] {
   /* Surfaces */
   --bg: #000;
   --bg2: #1a1a1a;

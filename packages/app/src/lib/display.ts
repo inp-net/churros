@@ -4,9 +4,10 @@ import {
   type EventFrequency$options,
   type EventManagerPowerLevel$options,
   type GroupType$options,
-  type IssueState$options,
   type NotificationChannel$options,
   type PaymentMethod$options,
+  type ThemeVariable$options,
+  type ThemeVariant$options,
   type TicketCountingPolicy$options,
   type Visibility$options,
 } from '$houdini';
@@ -25,7 +26,6 @@ import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
 import IconCar from '~icons/mdi/car';
 import IconCarrot from '~icons/mdi/carrot';
 import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
-import IconComment from '~icons/mdi/comment-outline';
 import IconCoupon from '~icons/mdi/coupon';
 import IconDomainSwitch from '~icons/mdi/domain-switch';
 import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
@@ -133,7 +133,6 @@ export const HELP_VISIBILITY_DYNAMIC: (
 export const DISPLAY_NOTIFICATION_CHANNELS: Record<NotificationChannel, string> = {
   Articles: 'Posts',
   Shotguns: 'Shotguns',
-  Comments: 'Commentaires',
   GodparentRequests: 'Demandes de parrainage',
   GroupBoard: 'Changements de bureau',
   Permissions: 'Changement de permissions',
@@ -145,7 +144,6 @@ export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
   NotificationChannel.Shotguns,
   NotificationChannel.Articles,
   NotificationChannel.GodparentRequests,
-  NotificationChannel.Comments,
   NotificationChannel.GroupBoard,
   NotificationChannel.Permissions,
   NotificationChannel.Other,
@@ -158,7 +156,6 @@ export const ICONS_NOTIFICATION_CHANNELS: Record<
 > = {
   Articles: IconArticle,
   Shotguns: IconShotgun,
-  Comments: IconComment,
   GodparentRequests: IconGodparent,
   GroupBoard: IconGroupMembers,
   Other: IconNotification,
@@ -248,12 +245,6 @@ export const ORDER_REACTIONS = ['❤️', '👍', '👎', '😂', '😮', '😡'
 //   }
 // }
 
-export const ISSUE_STATE_DISPLAY = new Map<IssueState$options, string>([
-  ['Closed', 'Terminé'],
-  ['Open', 'En cours'],
-  ['Deployed', 'En ligne'],
-]);
-
 export function orderedDisplay<T extends string | number | symbol>(
   order: T[],
   display: Record<T, string>,
@@ -330,10 +321,38 @@ export const DISPLAY_GROUP_MEMBER_PERMISSIONS: Record<
   canScanEvents: 'Scan de billets',
 };
 
+export const DISPLAY_THEME_VARIANT: Record<ThemeVariant$options, string> = {
+  Dark: 'Sombre',
+  Light: 'Clair',
+};
+
+export const DISPLAY_THEME_VARIABLE: Record<ThemeVariable$options, string> = {
+  ColorBackground: 'Couleur de fond',
+  ColorBackground2: 'Couleur de fond moins intense',
+  ColorBackground3: 'Couleur de fond moins intense que ColorBackground2',
+  ColorBackground4: 'Couleur de fond moins intense que ColorBackground3',
+  ColorDanger: 'Couleur des erreurs ou choses dangereuses (souvent rouge)',
+  ColorDangerBackground: 'Couleur de fond pour ColorDanger',
+  ColorForeground: "Couleur d'avant plan",
+  ColorMuted: "Couleur d'avant plan moins intense",
+  ColorPrimary: 'Couleur principale',
+  ColorPrimaryBackground: 'Couleur de fond pour ColorPrimary',
+  ColorShy: "Couleur d'avant plan moins intense que ColorMuted",
+  ColorSuccess: 'Couleur des éléments de succès (souvent vert)',
+  ColorSuccessBackground: 'Couleur de fond pour ColorSuccess',
+  ColorWarning: 'Couleurs des avertissements',
+  ColorWarningBackground: 'Couleur de fond pour ColorWarning',
+  ImageLogoNavbarTop: 'Logo de la barre de navigation en haut',
+  ImageLogoNavbarSide: 'Logo de la barre de navigation sur le côté',
+  ImageBackgroundNavbarBottom: 'Fond de la barre de navigation en bas',
+  ImageBackgroundNavbarTop: 'Fond de la barre de navigation en haut',
+  PatternBackground: 'Fond avec motif',
+};
 export function stringifyCapacity(
   capacity: null | number | App.CapacityUnlimitedValue,
   fallback = '',
 ): string {
+  if (capacity === undefined) return fallback;
   if (capacity === null) return fallback;
   if (capacity === 'Unlimited') return fallback;
   return capacity.toString();

@@ -1,4 +1,5 @@
 import {
+  APPLE_WALLET_PASS_STORAGE_PATH,
   builder,
   canCreateAppleWalletPasses,
   createAppleWalletPass,
@@ -32,9 +33,12 @@ builder.mutationField('createAppleWalletPass', (t) =>
         include: createAppleWalletPass.prismaIncludes,
       });
 
-      const destination = path.join('passes/apple/', `${localID(booking.id)}.pkpass`);
+      const destination = path.join(
+        APPLE_WALLET_PASS_STORAGE_PATH,
+        `${localID(booking.id)}.pkpass`,
+      );
       await log('bookings', 'create-pass/apple', { booking, destination }, booking.id, user);
-      await mkdir(path.join(storageRoot(), 'passes/apple'), {
+      await mkdir(path.join(storageRoot(), APPLE_WALLET_PASS_STORAGE_PATH), {
         recursive: true,
       });
       try {

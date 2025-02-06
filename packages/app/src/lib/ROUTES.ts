@@ -8,10 +8,10 @@
 /**
  * PAGES
  */
-const PAGES = {
+export const PAGES = {
   '/': `/`,
   '/[uid=uid]': (
-    uid: Parameters<typeof import('../params/uid.ts').match>[0],
+    uid: ExtractParamType<typeof import('../params/uid.ts').match>,
     params?: {
       tab?:
         | 'infos'
@@ -26,20 +26,19 @@ const PAGES = {
     },
   ) => {
     params = params ?? {};
-    params.tab = params.tab ?? 'infos';
-    return `/${uid}${appendSp({ tab: params.tab })}`;
+    params['tab'] = params['tab'] ?? 'infos';
+    return `/${uid}${appendSp({ tab: params['tab'] })}`;
   },
   '/[uid=uid]/[...page]': (params: {
-    uid: Parameters<typeof import('../params/uid.ts').match>[0];
+    uid: ExtractParamType<typeof import('../params/uid.ts').match>;
     page: (string | number)[];
   }) => {
-    return `/${params.uid}/${params.page?.join('/')}`;
+    return `/${params['uid']}/${params['page']?.join('/')}`;
   },
   '/announcements': `/announcements`,
   '/announcements/[id]/edit': (id: string | number, params?: {}) => {
     return `/announcements/${id}/edit`;
   },
-  '/announcements/create': `/announcements/create`,
   '/backrooms': `/backrooms`,
   '/birthdays': `/birthdays`,
   '/bookings': `/bookings`,
@@ -52,49 +51,50 @@ const PAGES = {
     return `/claim-code/${code}`;
   },
   '/credits': `/credits`,
+  '/delete-account': `/delete-account`,
   '/documents': `/documents`,
   '/documents/[major]': (major: string | number, params?: {}) => {
     return `/documents/${major}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}`;
+    return `/documents/${params['major']}/${params['yearTier']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
     document: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}/${params.document}`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/${params['document']}`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/[document]/edit': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
     document: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}/${params.document}/edit`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/${params['document']}/edit`;
   },
   '/documents/[major]/[yearTier=display_year_tier]/[subject]/create': (params: {
     major: string | number;
-    yearTier: Parameters<typeof import('../params/display_year_tier.ts').match>[0];
+    yearTier: ExtractParamType<typeof import('../params/display_year_tier.ts').match>;
     subject: string | number;
   }) => {
-    return `/documents/${params.major}/${params.yearTier}/${params.subject}/create`;
+    return `/documents/${params['major']}/${params['yearTier']}/${params['subject']}/create`;
   },
   '/documents/create': `/documents/create`,
-  '/events': (params?: { week?: Parameters<typeof import('../params/date.ts').match>[0] }) => {
-    return `/events${params?.week ? `/${params?.week}` : ''}`;
+  '/events': (params?: { week?: ExtractParamType<typeof import('../params/date.ts').match> }) => {
+    return `/events${params?.['week'] ? `/${params?.['week']}` : ''}`;
   },
   '/events/[id]': (id: string | number, params?: {}) => {
     return `/events/${id}`;
@@ -104,8 +104,8 @@ const PAGES = {
     params?: { tab?: 'unpaid' | 'paid' | 'verified' },
   ) => {
     params = params ?? {};
-    params.tab = params.tab ?? 'unpaid';
-    return `/events/${id}/bookings${appendSp({ tab: params.tab })}`;
+    params['tab'] = params['tab'] ?? 'unpaid';
+    return `/events/${id}/bookings${appendSp({ tab: params['tab'] })}`;
   },
   '/events/[id]/edit': (id: string | number, params?: {}) => {
     return `/events/${id}/edit`;
@@ -135,7 +135,7 @@ const PAGES = {
     id: string | number;
     group: string | number;
   }) => {
-    return `/events/${params.id}/edit/ticket-groups/${params.group}`;
+    return `/events/${params['id']}/edit/ticket-groups/${params['group']}`;
   },
   '/events/[id]/edit/tickets': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/tickets`;
@@ -144,34 +144,43 @@ const PAGES = {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}`;
   },
   '/events/[id]/edit/tickets/[ticket]/counting': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/counting`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/counting`;
   },
   '/events/[id]/edit/tickets/[ticket]/group': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/group`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/group`;
+  },
+  '/events/[id]/edit/tickets/[ticket]/invited': (params: {
+    id: string | number;
+    ticket: string | number;
+  }) => {
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/invited`;
   },
   '/events/[id]/edit/tickets/[ticket]/links': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/links`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/links`;
   },
   '/events/[id]/edit/tickets/[ticket]/payment': (params: {
     id: string | number;
     ticket: string | number;
   }) => {
-    return `/events/${params.id}/edit/tickets/${params.ticket}/payment`;
+    return `/events/${params['id']}/edit/tickets/${params['ticket']}/payment`;
   },
   '/events/[id]/edit/visibility': (id: string | number, params?: {}) => {
     return `/events/${id}/edit/visibility`;
+  },
+  '/events/[id]/join/[code]': (params: { id: string | number; code: string | number }) => {
+    return `/events/${params['id']}/join/${params['code']}`;
   },
   '/events/[id]/scan': (id: string | number, params?: {}) => {
     return `/events/${id}/scan`;
@@ -198,7 +207,7 @@ const PAGES = {
     uid: string | number;
     page: (string | number)[];
   }) => {
-    return `/groups/${params.uid}/edit/pages/${params.page?.join('/')}`;
+    return `/groups/${params['uid']}/edit/pages/${params['page']?.join('/')}`;
   },
   '/groups/[uid]/edit/type': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/edit/type`;
@@ -207,17 +216,25 @@ const PAGES = {
     return `/groups/${uid}/members`;
   },
   '/help': `/help`,
-  '/login': (params?: { bypass_oauth?: undefined | '1' }) => {
+  '/join-managers/[code]': (code: string | number, params?: {}) => {
+    return `/join-managers/${code}`;
+  },
+  '/login': (params?: { force_oauth?: '' | undefined; why?: 'unauthorized' | undefined }) => {
     params = params ?? {};
-    params.bypass_oauth = params.bypass_oauth ?? undefined;
-    return `/login${appendSp({ bypass_oauth: params.bypass_oauth })}`;
+    params['force_oauth'] = params['force_oauth'] ?? undefined;
+    params['why'] = params['why'] ?? undefined;
+    return `/login${appendSp({ force_oauth: params['force_oauth'], why: params['why'] })}`;
   },
   '/login/done': `/login/done`,
   '/login/forgotten': `/login/forgotten`,
   '/login/reset/[token]': (token: string | number, params?: {}) => {
     return `/login/reset/${token}`;
   },
-  '/logout': `/logout`,
+  '/logout': (params?: { userWasDeleted?: '1' | undefined }) => {
+    params = params ?? {};
+    params['userWasDeleted'] = params['userWasDeleted'] ?? undefined;
+    return `/logout${appendSp({ userWasDeleted: params['userWasDeleted'] })}`;
+  },
   '/logs': `/logs`,
   '/notifications': `/notifications`,
   '/posts/[id]': (id: string | number, params?: {}) => {
@@ -246,12 +263,8 @@ const PAGES = {
   '/quick-signups/qr/[code]': (code: string | number, params?: {}) => {
     return `/quick-signups/qr/${code}`;
   },
-  '/reports': `/reports`,
-  '/reports/[number]': (number: string | number, params?: {}) => {
-    return `/reports/${number}`;
-  },
   '/search': (params?: { q?: string | number }) => {
-    return `/search${params?.q ? `/${params?.q}` : ''}`;
+    return `/search${params?.['q'] ? `/${params?.['q']}` : ''}`;
   },
   '/services': `/services`,
   '/services/[id]/edit': (id: string | number, params?: {}) => {
@@ -261,6 +274,7 @@ const PAGES = {
   '/services/submit': `/services/submit`,
   '/set-password': `/set-password`,
   '/settings': `/settings`,
+  '/settings/theme': `/settings/theme`,
   '/signups': `/signups`,
   '/signups/edit/[email]': (email: string | number, params?: {}) => {
     return `/signups/edit/${email}`;
@@ -269,7 +283,7 @@ const PAGES = {
     uid: string | number;
     page: (string | number)[];
   }) => {
-    return `/student-associations/${params.uid}/${params.page?.join('/')}`;
+    return `/student-associations/${params['uid']}/${params['page']?.join('/')}`;
   },
   '/student-associations/[uid]/edit/pages': (uid: string | number, params?: {}) => {
     return `/student-associations/${uid}/edit/pages`;
@@ -278,7 +292,7 @@ const PAGES = {
     uid: string | number;
     page: (string | number)[];
   }) => {
-    return `/student-associations/${params.uid}/edit/pages/${params.page?.join('/')}`;
+    return `/student-associations/${params['uid']}/edit/pages/${params['page']?.join('/')}`;
   },
   '/users/[uid]/edit': (uid: string | number, params?: {}) => {
     return `/users/${uid}/edit`;
@@ -331,15 +345,15 @@ const PAGES = {
 /**
  * SERVERS
  */
-const SERVERS = {
+export const SERVERS = {
   'GET /[entity=entity_handle]': (
-    entity: Parameters<typeof import('../params/entity_handle.ts').match>[0],
+    entity: ExtractParamType<typeof import('../params/entity_handle.ts').match>,
     params?: {},
   ) => {
     return `/${entity}`;
   },
   'GET /[uid=uid].png': (
-    uid: Parameters<typeof import('../params/uid.ts').match>[0],
+    uid: ExtractParamType<typeof import('../params/uid.ts').match>,
     params?: {},
   ) => {
     return `/${uid}.png`;
@@ -358,7 +372,7 @@ const SERVERS = {
     return `/groups/${uid}.pdf`;
   },
   'GET /groups/[uid]/[...page]': (params: { uid: string | number; page: (string | number)[] }) => {
-    return `/groups/${params.uid}/${params.page?.join('/')}`;
+    return `/groups/${params['uid']}/${params['page']?.join('/')}`;
   },
   'GET /groups/[uid]/handover.pdf': (uid: string | number, params?: {}) => {
     return `/groups/${uid}/handover.pdf`;
@@ -375,8 +389,11 @@ const SERVERS = {
   'GET /users/[uid]': (uid: string | number, params?: {}) => {
     return `/users/${uid}`;
   },
+  'GET /.well-known/apple-app-site-association': `/.well-known/apple-app-site-association`,
+  'GET /.well-known/assetlinks.json': `/.well-known/assetlinks.json`,
   'GET /connect/google': `/connect/google`,
   'GET /health': `/health`,
+  'POST /update-bundle': `/update-bundle`,
   '_RESERVED_USERNAMES /check-uid/[uid]': (uid: string | number, params?: {}) => {
     return `/check-uid/${uid}`;
   },
@@ -391,14 +408,12 @@ const SERVERS = {
 /**
  * ACTIONS
  */
-const ACTIONS = {
-  'default /login': `/login`,
-};
+export const ACTIONS = {};
 
 /**
  * LINKS
  */
-const LINKS = {};
+export const LINKS = {};
 
 type ParamValue = string | number | undefined;
 
@@ -418,7 +433,12 @@ export const appendSp = (
     }
   };
 
+  let anchor = '';
   for (const [name, val] of Object.entries(sp)) {
+    if (name === '__KIT_ROUTES_ANCHOR__' && val !== undefined) {
+      anchor = `#${val}`;
+      continue;
+    }
     if (Array.isArray(val)) {
       for (const v of val) {
         append(name, v);
@@ -429,8 +449,8 @@ export const appendSp = (
   }
 
   const formatted = params.toString();
-  if (formatted) {
-    return `${prefix}${formatted}`;
+  if (formatted || anchor) {
+    return `${prefix}${formatted}${anchor}`.replace('?#', '#');
   }
   return '';
 };
@@ -452,7 +472,7 @@ export const currentSp = () => {
   return record;
 };
 
-// route function helpers
+/* type helpers for route function */
 type NonFunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
 type FunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T];
 type FunctionParams<T> = T extends (...args: infer P) => any ? P : never;
@@ -489,12 +509,17 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
   }
 }
 
+/* type helpers param & predicate */
+type ExtractFnPredicate<T> = T extends (param: any) => param is infer U ? U : never;
+type ExtractParamType<T extends (param: any) => any> =
+  ExtractFnPredicate<T> extends never ? Parameters<T>[0] : ExtractFnPredicate<T>;
+
 /**
  * Add this type as a generic of the vite plugin `kitRoutes<KIT_ROUTES>`.
  *
  * Full example:
  * ```ts
- * import type { KIT_ROUTES } from './ROUTES'
+ * import type { KIT_ROUTES } from '$lib/ROUTES'
  * import { kitRoutes } from 'vite-plugin-kit-routes'
  *
  * kitRoutes<KIT_ROUTES>({
@@ -511,7 +536,6 @@ export type KIT_ROUTES = {
     '/[uid=uid]/[...page]': 'uid' | 'page';
     '/announcements': never;
     '/announcements/[id]/edit': 'id';
-    '/announcements/create': never;
     '/backrooms': never;
     '/birthdays': never;
     '/bookings': never;
@@ -520,6 +544,7 @@ export type KIT_ROUTES = {
     '/claim-code': never;
     '/claim-code/[code]': 'code';
     '/credits': never;
+    '/delete-account': never;
     '/documents': never;
     '/documents/[major]': 'major';
     '/documents/[major]/[yearTier=display_year_tier]': 'major' | 'yearTier';
@@ -555,9 +580,11 @@ export type KIT_ROUTES = {
     '/events/[id]/edit/tickets/[ticket]': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/counting': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/group': 'id' | 'ticket';
+    '/events/[id]/edit/tickets/[ticket]/invited': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/links': 'id' | 'ticket';
     '/events/[id]/edit/tickets/[ticket]/payment': 'id' | 'ticket';
     '/events/[id]/edit/visibility': 'id';
+    '/events/[id]/join/[code]': 'id' | 'code';
     '/events/[id]/scan': 'id';
     '/groups/[uid]/edit': 'uid';
     '/groups/[uid]/edit/bank-accounts': 'uid';
@@ -569,6 +596,7 @@ export type KIT_ROUTES = {
     '/groups/[uid]/edit/type': 'uid';
     '/groups/[uid]/members': 'uid';
     '/help': never;
+    '/join-managers/[code]': 'code';
     '/login': never;
     '/login/done': never;
     '/login/forgotten': never;
@@ -586,8 +614,6 @@ export type KIT_ROUTES = {
     '/quick-signups/create': never;
     '/quick-signups/manage': never;
     '/quick-signups/qr/[code]': 'code';
-    '/reports': never;
-    '/reports/[number]': 'number';
     '/search': 'q';
     '/services': never;
     '/services/[id]/edit': 'id';
@@ -595,6 +621,7 @@ export type KIT_ROUTES = {
     '/services/submit': never;
     '/set-password': never;
     '/settings': never;
+    '/settings/theme': never;
     '/signups': never;
     '/signups/edit/[email]': 'email';
     '/student-associations/[uid]/[...page]': 'uid' | 'page';
@@ -635,15 +662,18 @@ export type KIT_ROUTES = {
     'GET /student-associations/[uid]': 'uid';
     'GET /themes.css': never;
     'GET /users/[uid]': 'uid';
+    'GET /.well-known/apple-app-site-association': never;
+    'GET /.well-known/assetlinks.json': never;
     'GET /connect/google': never;
     'GET /health': never;
+    'POST /update-bundle': never;
     '_RESERVED_USERNAMES /check-uid/[uid]': 'uid';
     'GET /check-uid/[uid]': 'uid';
     'GET /gdpr': never;
     'GET /manifest.json': never;
     'POST /markdown': never;
   };
-  ACTIONS: { 'default /login': never };
+  ACTIONS: Record<string, never>;
   LINKS: Record<string, never>;
   Params: {
     uid: never;
@@ -658,9 +688,10 @@ export type KIT_ROUTES = {
     week: never;
     group: never;
     ticket: never;
-    bypass_oauth: never;
+    force_oauth: never;
+    why: never;
     token: never;
-    number: never;
+    userWasDeleted: never;
     q: never;
     email: never;
     componentName: never;

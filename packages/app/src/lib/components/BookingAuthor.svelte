@@ -7,6 +7,9 @@
   export let shortName = false;
   $: nameProperty = (shortName ? 'uid' : 'fullName') as 'uid' | 'fullName';
 
+  /** Show the author's email (for accountless bookings) alongside the authorName */
+  export let fullAuthor = false;
+
   export let booking;
   $: data = fragment(
     booking,
@@ -17,6 +20,7 @@
           uid
           fullName
         }
+        authorName
         authorEmail
       }
     `),
@@ -29,6 +33,8 @@
   {:else if $data.author}
     <AvatarUser user={$data.author} />
     {$data.author?.[nameProperty]}
+  {:else if $data.authorName && fullAuthor}
+    {$data.authorName} ({$data.authorEmail})
   {:else if $data.authorEmail}
     {$data.authorEmail}
   {:else}

@@ -6,6 +6,7 @@
   import type { SvelteComponent } from 'svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
   import IconDots from '~icons/msl/more-vert';
+  import { page } from '$app/stores';
 
   export type ActionData<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> = {
     icon: IconType;
@@ -17,6 +18,8 @@
     hidden?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     overflow?: OverflowMenuAction<any>[];
+    /** Show a red dot on the icon to notify the user. Loaded lazily after the menu is shown */
+    badge?: () => Promise<boolean>;
   };
 
   export type OverflowMenuAction<IconType extends SvelteComponent<SvelteHTMLElements['svg']>> =
@@ -25,6 +28,8 @@
 </script>
 
 <script lang="ts" generics="IconType extends SvelteComponent<SvelteHTMLElements['svg']>">
+  import { afterNavigate } from '$app/navigation';
+
   import { isMobile } from '$lib/mobile';
 
   import OverflowMenuItem from '$lib/components/OverflowMenuItem.svelte';
@@ -34,6 +39,21 @@
   // eslint-disable-next-line no-undef
   export let actions: OverflowMenuAction<IconType>[];
   const mobile = isMobile();
+
+  /** Show a red dot to get the user's attention (most likely because an overflow menu item inside has a red dot itself) */
+  let hasBadge = false;
+  async function updateHasBadge(actions: Array<OverflowMenuAction<IconType>>) {
+    await Promise.all(
+      actions.map(async (action) => {
+        const data = typeof action === 'function' ? await action($page) : action;
+        if (data.hidden || data.disabled) return;
+        if (await data.badge?.()) hasBadge = true;
+      }),
+    );
+  }
+
+  $: updateHasBadge(actions);
+  afterNavigate(() => updateHasBadge(actions));
 
   type FlyAndScaleParams = {
     y?: number;
@@ -95,11 +115,17 @@
       {#if drawerOpen}
         <slot name="open">
           <slot>
-            <IconDots></IconDots>
+            <div class="icon" class:has-badge={hasBadge}>
+              <IconDots />
+            </div>
           </slot>
         </slot>
       {:else}
-        <slot><IconDots></IconDots></slot>
+        <slot>
+          <div class="icon" class:has-badge={hasBadge}>
+            <IconDots />
+          </div>
+        </slot>
       {/if}
     </svelte:fragment>
     {#each actions as action}
@@ -116,11 +142,15 @@
     <DropdownMenu.Trigger>
       <ButtonGhost>
         <slot>
-          <IconDots></IconDots>
+          <div class="icon" class:has-badge={hasBadge}>
+            <IconDots />
+          </div>
         </slot>
         <slot name="hovering" slot="hovering">
           <slot>
-            <IconDots></IconDots>
+            <div class="icon" class:has-badge={hasBadge}>
+              <IconDots />
+            </div>
           </slot>
         </slot>
       </ButtonGhost>
@@ -144,7 +174,7 @@
   :global([data-menu-content]) {
     z-index: 100;
     padding: 0.5em 0;
-    background-color: var(--bg);
+    background: var(--bg);
     border-radius: var(--radius-block);
     box-shadow: var(--shadow);
   }
@@ -154,5 +184,22 @@
     width: max-content;
     padding: 0.25em;
     font-size: 1em;
+  }
+
+  .icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon.has-badge::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0.5em;
+    height: 0.5em;
+    content: '';
+    background: var(--danger);
+    border-radius: 50%;
   }
 </style>

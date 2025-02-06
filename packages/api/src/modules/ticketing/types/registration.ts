@@ -39,6 +39,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
       },
       deprecationReason: 'Use `externalBeneficiary` instead.',
     }),
+    pointOfContact: t.relation('pointOfContact', { nullable: true }),
     externalBeneficiary: t.exposeString('externalBeneficiary', { nullable: true }),
     beneficiaryUser: t.prismaField({
       type: UserType,
@@ -98,6 +99,7 @@ export const RegistrationType = builder.prismaNode('Registration', {
     ticket: t.relation('ticket'),
     author: t.relation('author', { nullable: true }),
     authorEmail: t.exposeString('authorEmail'),
+    authorName: t.exposeString('authorName'),
     authorIsBeneficiary: t.boolean({
       async resolve({ authorId, authorEmail, internalBeneficiaryId, externalBeneficiary }) {
         if (!authorId) return true;

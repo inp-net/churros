@@ -39,12 +39,6 @@ builder.mutationField('unreact', (t) =>
             include: { reactions: true },
           });
         }
-        case 'Comment': {
-          return prisma.comment.findUniqueOrThrow({
-            where: { id: target },
-            include: { reactions: true },
-          });
-        }
         case 'Event': {
           return prisma.event.findUniqueOrThrow({
             where: { id: target },

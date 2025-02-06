@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { loaded, type MaybeLoading } from '$lib/loading';
+  import { loaded, loading, type MaybeLoading } from '$lib/loading';
   import { tooltip } from '$lib/tooltip';
   import { createEventDispatcher, tick } from 'svelte';
   const dispatch = createEventDispatcher<{ input: Value; blur: Value; focus: Value }>();
@@ -9,10 +9,13 @@
 
   export let readonly = false;
 
+  /** Always show underline even if input is empty */
+  export let verboseUnderline = false;
+
   type Type = $$Generic<string>;
   type Value = $$Generic<Type extends 'date' ? Date | null : string>;
 
-  export let placeholder: string;
+  export let placeholder: MaybeLoading<string>;
   // @ts-expect-error "could be instanciated with a different subtype"
   export let type: Type = 'text';
   export let value: MaybeLoading<Value>;
@@ -44,6 +47,7 @@
   <input
     {type}
     {...$$restProps}
+    class:verbose-underline={verboseUnderline}
     readonly={readonly ? true : undefined}
     on:focus={() => {
       dispatch('focus', _value);
@@ -56,7 +60,7 @@
       updateValue(coerce(currentTarget.value));
     }}
     use:tooltip={value ? undefined : label}
-    placeholder={loaded(value) ? placeholder : 'Chargement…'}
+    placeholder={loaded(value) ? loading(placeholder, 'Chargement…') : 'Chargement…'}
     disabled={!loaded(value)}
     aria-label={label}
   />
@@ -99,7 +103,8 @@
     opacity: 0;
   }
 
-  input:not(:placeholder-shown) + .underline line {
+  input:not(:placeholder-shown) + .underline line,
+  input.verbose-underline + .underline line {
     stroke: var(--muted);
     stroke-dasharray: 5;
     stroke-width: var(--border-block);

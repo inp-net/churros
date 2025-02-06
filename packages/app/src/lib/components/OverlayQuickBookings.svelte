@@ -6,7 +6,7 @@
   import { allLoaded } from '$lib/loading';
   import { notNull } from '$lib/typing';
   import { addHours, formatDistanceToNow, isFuture, isWithinInterval, subMinutes } from 'date-fns';
-  import fr from 'date-fns/locale/fr/index.js';
+  import { fr } from 'date-fns/locale';
   import { swipe } from 'svelte-gestures';
   import { syncToLocalStorage } from 'svelte-store2storage';
   import { writable } from 'svelte/store';
@@ -64,7 +64,6 @@
   const hiddenBookings = writable([] as string[]);
   if (browser) syncToLocalStorage(hiddenBookings, 'hidden_quick_bookings');
 
-  // See https://github.com/Rezi/svelte-gestures/pull/21
   const touchAction = 'pan-y pinch-zoom' as unknown as 'pan-y';
 </script>
 

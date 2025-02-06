@@ -1,0 +1,48 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "kubernetes": {
+    "fileMatch": ["kubernetes/.+\\.ya?ml$"]
+  },
+  "packageRules": [
+    {
+      "groupName": "NodeJS",
+      "groupSlug": "nodejs",
+      "matchDepNames": ["node.js", "node", "@types/node", "docker.io/node"]
+    },
+    {
+      "groupName": "PostgreSQL",
+      "groupSlug": "postgresql",
+      "matchDepNames": ["ghcr.io/cloudnative-pg/postgresql", "postgres"]
+    },
+    {
+      "groupName": "Notella",
+      "groupSlug": "notella",
+      "matchDepNames": ["registry.inpt.fr/churros/notella", "@inp-net/notella"]
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.graphinx\\.ya?ml$"],
+      "matchStrings": ["template: graphinx/templates/default#(?<currentValue>.*?)\\n"],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "graphinx template",
+      "packageNameTemplate": "https://github.com/graphinx/templates",
+      "datasourceTemplate": "git-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.graphinx\\.ya?ml$"],
+      "matchStrings": [
+        "# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/(?<currentValue>.*)/config.schema.json"
+      ],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "graphinx config file version",
+      "packageNameTemplate": "https://github.com/graphinx/graphinx",
+      "datasourceTemplate": "git-tags"
+    }
+  ]
+}

@@ -24,6 +24,8 @@ query AppLayout($version: String!, $pagePath: String!) {
     bookings(forUserOnly: true, first: 5) @loading(count: 0) {
       ...OverlayQuickBookings
     }
+
+    ...ThemeEditorSidebar_Me
   }
 
   currentPageIsPinned: bookmarked(path: $pagePath)

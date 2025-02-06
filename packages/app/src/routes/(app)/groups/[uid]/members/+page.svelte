@@ -95,31 +95,31 @@
         <LoadingText value={group.membersCount} /> membres
       {/if}
     </p>
-    <div
-      class="infinite-scroll-wrapper"
-      use:infinitescroll={async () => {
-        await PageGroupMembers.loadNextPage();
-      }}
-    >
-      <Submenu>
-        <SubmenuItem
-          icon={IconAdd}
-          clickable
-          on:click={() => {
-            pushState('', {
-              NAVTOP_CREATING_GROUP_MEMBER: true,
-            });
-          }}
-        >
-          Ajouter un membre
-        </SubmenuItem>
-        <SubmenuItem
-          icon={IconAddBulk}
-          href={refroute('/groups/[uid]/edit/members/bulk', $page.params.uid)}
-          subtext="Pour ajouter pleins de gens d'un coup"
-        >
-          Ajouter en masse
-        </SubmenuItem>
+    <Submenu>
+      <SubmenuItem
+        icon={IconAdd}
+        clickable
+        on:click={() => {
+          pushState('', {
+            NAVTOP_CREATING_GROUP_MEMBER: true,
+          });
+        }}
+      >
+        Ajouter un membre
+      </SubmenuItem>
+      <SubmenuItem
+        icon={IconAddBulk}
+        href={refroute('/groups/[uid]/edit/members/bulk', $page.params.uid)}
+        subtext="Pour ajouter pleins de gens d'un coup"
+      >
+        Ajouter en masse
+      </SubmenuItem>
+      <div
+        class="infinite-scroll-wrapper"
+        use:infinitescroll={async () => {
+          await PageGroupMembers.loadNextPage();
+        }}
+      >
         {#each withPrevious($searchQuery && $SearchResults.data ? $SearchResults.data?.group.searchMembers.map((r) => r.membership) : group.members.edges.map((e) => e.node)) as [membership, previous]}
           {#if loaded(membership.createdAt) && (!previous || loaded(previous.createdAt))}
             {@const joinedRange = schoolYearRangeOf(membership.createdAt)}
@@ -152,8 +152,8 @@
             {membership}
           />
         {/each}
-      </Submenu>
-    </div>
+      </div>
+    </Submenu>
   </div>
 </MaybeError>
 

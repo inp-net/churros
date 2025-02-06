@@ -1,5 +1,6 @@
 <script lang="ts">
   import ButtonGhost from '$lib/components/ButtonGhost.svelte';
+  import { page } from '$app/stores';
   import ModalDialog from '$lib/components/ModalDialog.svelte';
   import ModalDrawer from '$lib/components/ModalDrawer.svelte';
   import { isMobile } from '$lib/mobile';
@@ -22,6 +23,14 @@
 
   /** Signals that the drawer (mobile) should not have bottom padding */
   export let removeBottomPadding = false;
+
+  /** Ties the open/closed state of the modal to a $page.state boolean property */
+  export let statebound: keyof App.PageState | undefined = undefined;
+
+  $: if (statebound) {
+    if ($page.state[statebound]) open?.();
+    else implicitClose?.();
+  }
 
   const mobile = isMobile();
 
@@ -97,6 +106,10 @@
     gap: 1rem;
     align-items: center;
     justify-content: space-between;
+  }
+
+  header.using-title {
+    width: 100%;
   }
 
   header.using-title :global(.button-ghost) {

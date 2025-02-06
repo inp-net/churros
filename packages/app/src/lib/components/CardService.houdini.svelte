@@ -167,7 +167,7 @@
     z-index: 2;
     display: none;
     font-size: 1.2em;
-    background-color: var(--bg);
+    background: var(--bg);
     border: var(--border-block) solid var(--fg);
     border-radius: 10000px;
   }

@@ -1,5 +1,4 @@
-import { builder, prisma, toHtml } from '#lib';
-import { CommentType, CommentableInterface, CommentsConnectionType } from '#modules/comments';
+import { builder, toHtml } from '#lib';
 import { DateTimeScalar } from '#modules/global';
 import { ReactableInterface } from '#modules/reactions';
 import { DocumentTypeEnum } from '../index.js';
@@ -7,11 +6,7 @@ import { DocumentTypeEnum } from '../index.js';
 export const DocumentType = builder.prismaNode('Document', {
   id: { field: 'id' },
   include: { reactions: true },
-  interfaces: [
-    // @ts-expect-error dunno why it complainnns
-    CommentableInterface,
-    ReactableInterface,
-  ],
+  interfaces: [ReactableInterface],
   fields: (t) => ({
     uid: t.exposeString('slug', {
       deprecationReason: 'Use `slug` instead. This field was never universally unique.',
@@ -39,19 +34,5 @@ export const DocumentType = builder.prismaNode('Document', {
     }),
     uploader: t.relation('uploader', { nullable: true }),
     uploaderId: t.exposeID('uploaderId', { nullable: true }),
-    comments: t.prismaConnection(
-      {
-        cursor: 'id',
-        type: CommentType,
-        async resolve(query, { id }) {
-          return prisma.comment.findMany({
-            ...query,
-            where: { documentId: id },
-            orderBy: { createdAt: 'desc' },
-          });
-        },
-      },
-      CommentsConnectionType,
-    ),
   }),
 });

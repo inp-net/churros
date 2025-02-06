@@ -1,5 +1,5 @@
-import { builder, decodeGlobalID, ENV } from '#lib';
-import path from 'node:path/posix';
+import { builder, decodeGlobalID } from '#lib';
+import { pictureURL } from '#modules/global';
 
 interface Pictured {
   id: string;
@@ -57,15 +57,7 @@ export const PicturedInterface = builder.interfaceRef<Pictured>('Pictured').impl
         }),
       },
       resolve: ({ pictureFile, pictureFileDark, updatedAt }, { dark, timestamp }) => {
-        const filepath = dark ? pictureFileDark || pictureFile : pictureFile;
-        if (!filepath) return '';
-
-        const result = new URL(ENV.PUBLIC_STORAGE_URL);
-        result.pathname = path.join(result.pathname, filepath);
-        if (timestamp)
-          result.searchParams.set('t', (updatedAt?.getTime() ?? Date.now()).toString());
-
-        return result.toString();
+        return pictureURL({ dark, pictureFile, pictureFileDark, updatedAt, timestamp });
       },
     }),
   }),

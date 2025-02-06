@@ -9,6 +9,9 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
     ...BookingBeneficiary
     ...BookingAuthor
     ...BookingPaymentMethod
+    pointOfContact {
+      ...AvatarUser
+    }
 
     canManage
 
@@ -24,20 +27,17 @@ query PageBooking($code: String!, $qrCodeURLTemplate: URL!) {
       path
       viewbox
     }
+    linkURLs
+    linkNames
     ticket {
       name
       minimumPrice(applyPromotions: false)
       maximumPrice
       priceIsVariable
-      links {
-        url
-        text
-        rawURL
-        ...PillLink
-      }
       event {
         localID
         title
+        enforcePointOfContact
         ...CardEvent
       }
     }

@@ -39,7 +39,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
     async authScopes(event, _, { user: me }) {
       return canSeeAllBookings(event, me);
     },
-    async resolve({ id }, { dialect, bookingURL }) {
+    async resolve({ id, ...event }, { dialect, bookingURL }) {
       const SEPARATOR = dialect === 'Excel' ? ';' : ',';
       const quoteValue = (value: string) => {
         if (dialect === 'Excel' || value.includes(SEPARATOR) || value.includes('"'))
@@ -69,6 +69,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
               contributions: { include: { option: { include: { paysFor: true } } } },
             },
           },
+          pointOfContact: true,
         },
       });
       let result = '';
@@ -76,6 +77,7 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       if (registrations.length <= 0) return '';
       const columns = [
         'Date de réservation',
+        'Référent·e',
         'Bénéficiaire',
         'Achat par',
         'Payée',
@@ -102,12 +104,14 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
           cancelledAt,
           paid,
           authorEmail,
+          authorName,
           author,
           ticket,
           paymentMethod,
           id,
           externalBeneficiary,
           wantsToPay,
+          pointOfContact,
         }: (typeof registrations)[number],
         benef:
           | undefined
@@ -122,7 +126,8 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
       ) =>
         ({
           'Date de réservation': createdAt.toISOString(),
-          'Bénéficiaire': (benef ? fullName(benef) : externalBeneficiary) || authorEmail,
+          'Bénéficiaire': (benef ? fullName(benef) : externalBeneficiary) || authorName,
+          'Référent·e': pointOfContact ? fullName(pointOfContact) : '',
           'Achat par': author ? fullName(author) : authorEmail,
           'Payée': humanBoolean(paid),
           'Scannée': humanBoolean(Boolean(verifiedAt) && paid),
@@ -148,11 +153,14 @@ builder.prismaObjectField(EventType, 'bookingsCsv', (t) =>
             .replaceAll('[code]', localID(id).toUpperCase()),
         }) satisfies Record<(typeof columns)[number], string>;
 
-      result = csvLine(columns);
+      const filteredColumns = event.enforcePointOfContact
+        ? columns
+        : columns.filter((c) => c !== 'Référent·e');
 
+      result = csvLine(filteredColumns);
       for (const reg of registrations) {
         const data = mapping(reg, reg.internalBeneficiary ?? reg.author);
-        result += csvLine(columns.map((col) => data[col]));
+        result += csvLine(filteredColumns.map((col) => data[col]));
       }
 
       return result;

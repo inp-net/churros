@@ -1,0 +1,33 @@
+.sync:
+  extends: .build
+  variables:
+    TARGET: sync
+
+build:sync:
+  extends: .sync
+  stage: build
+  needs: 
+    - job: test:sync:lint
+      optional: true
+    - job: test:sync:format
+      optional: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
+      changes: [packages/sync/**/*, packages/db/**/*]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
+      when: manual
+
+deploy:sync:
+  extends: .sync
+  stage: deploy
+  interruptible: false
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^@churros\/sync@(\d+\.\d+\.\d+)/
+      variables:
+        ENV: "production"
+        URL: "https://churros.inpt.fr"
+        TAG: export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/sync@//')
+        DEPLOY: "true"
+  environment:
+    name: $ENV
+    url: $URL

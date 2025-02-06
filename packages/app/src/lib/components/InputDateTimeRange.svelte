@@ -9,7 +9,7 @@
   type StartValue = $$Generic<MaybeLoading<Date | null>>;
   type EndValue = $$Generic<MaybeLoading<Date | null>>;
 
-  export let resourceId: MaybeLoading<string>;
+  export let resourceId: MaybeLoading<string> = '';
   export let start: StartValue;
   export let end: EndValue;
   export let variant: 'ghost' | 'box';

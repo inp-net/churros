@@ -25,7 +25,7 @@
     font-weight: bold;
     color: var(--muted-text);
     text-align: center;
-    background-color: var(--muted-bg);
+    background: var(--muted-bg);
     border-radius: var(--radius-inline);
   }
 

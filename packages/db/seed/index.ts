@@ -40,17 +40,17 @@ const storageRootDirectory = storageRoot();
 //   );
 // }
 
-console.info("Clearing redis cache")
+console.info('Clearing redis cache');
 const redis = new Redis({
   host: new URL(process.env['REDIS_URL'] || 'redis://localhost:6379').hostname,
   port: Number.parseInt(new URL(process.env['REDIS_URL'] || 'redis://localhost:6379').port),
-})
-await redis.keys('*').then(keys => {
-  const pipeline = redis.pipeline()
-  keys.forEach(key => pipeline.del(key))
-  pipeline.exec()
-  console.info(`Deleted ${keys.length} keys`)
-})
+});
+await redis.keys('*').then((keys) => {
+  const pipeline = redis.pipeline();
+  keys.forEach((key) => pipeline.del(key));
+  pipeline.exec();
+  console.info(`Deleted ${keys.length} keys`);
+});
 
 async function randomMember(groupId: string) {
   return faker.helpers.arrayElement(
@@ -137,8 +137,16 @@ async function downloadRandomPeoplePhoto(): Promise<File> {
   return new File([await response.blob()], 'profile.jpeg', { type: 'image/jpeg' });
 }
 
-const createUid = async ({ firstName, lastName, uid }: { firstName: string; lastName: string, uid?: string }) => {
-  if (uid) return uid
+const createUid = async ({
+  firstName,
+  lastName,
+  uid,
+}: {
+  firstName: string;
+  lastName: string;
+  uid?: string;
+}) => {
+  if (uid) return uid;
   const toAscii = (x: string) =>
     slug(x.toLocaleLowerCase(), {
       charmap: {
@@ -480,7 +488,7 @@ const contributionOptions = await prisma.contributionOption.findMany({
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
 const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
-  { firstName: "Ewen", lastName: "Le Bihan", admin: true, uid: 'lebihae' }, // Pour tester l'oauth
+  { firstName: 'Gwen', lastName: 'Le Bihan', admin: true, uid: 'lebihae' }, // Pour tester l'oauth
   { firstName: 'Bernard', lastName: 'Tichaut' },
   { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
@@ -544,8 +552,8 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
     where: { id: faker.helpers.arrayElement(minors).id },
   });
 
-  const uid = await createUid(data)
-   await prisma.user.create({
+  const uid = await createUid(data);
+  await prisma.user.create({
     data: {
       uid,
       email: faker.internet.email({ firstName: data.firstName, lastName: data.lastName }),
@@ -748,11 +756,11 @@ const clubsData = [
 
 console.info('Creating groups');
 for (const [i, group] of tqdm([...clubsData.entries()])) {
-  const uid = slug(group.name)
+  const uid = slug(group.name);
   const { id: groupId } = await prisma.group.create({
     data: {
       ...group,
-      uid, 
+      uid,
       // ensure 3 list groups
       type:
         i < 3
@@ -771,7 +779,9 @@ for (const [i, group] of tqdm([...clubsData.entries()])) {
       studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
       links: {
         createMany: {
-          data: faker.helpers.arrayElements(socialMedia, {min: 0, max: 6}).map(domain => ({name: domain, value: `https://${domain}/${uid}`})),
+          data: faker.helpers
+            .arrayElements(socialMedia, { min: 0, max: 6 })
+            .map((domain) => ({ name: domain, value: `https://${domain}/${uid}` })),
         },
       },
     },
@@ -1008,15 +1018,17 @@ await prisma.article.create({
 const selectedClub = faker.helpers.arrayElements(groups, numberEvent);
 const eventDate: Date = new Date();
 console.info('Creating events');
-for (const element of tqdm(selectedClub)) {
+for (const club of tqdm(selectedClub)) {
   const eventName = faker.lorem.words(3);
   const capacityEvent = faker.number.int({ min: 30, max: 300 });
   const minimumPrice = faker.number.int({ min: 0, max: 30 });
-  const maximumPrice = faker.datatype.boolean(0.85) ? minimumPrice : faker.number.int({
-    min: minimumPrice + 0.5,
-    max: minimumPrice + 30,
-  })
-  const { id } = await prisma.event.create({
+  const maximumPrice = faker.datatype.boolean(0.85)
+    ? minimumPrice
+    : faker.number.int({
+        min: minimumPrice + 0.5,
+        max: minimumPrice + 30,
+      });
+  const { id, tickets } = await prisma.event.create({
     data: {
       contactMail: 'hey@ewen.works',
       description: 'Ceci est un événement',
@@ -1030,14 +1042,14 @@ for (const element of tqdm(selectedClub)) {
       includeInKiosk: faker.datatype.boolean(0.85),
       slug: slug(eventName),
       title: eventName,
-      group: { connect: { id: element!.id } },
+      group: { connect: { id: club!.id } },
       visibility: Visibility.Public,
       articles: {
         createMany: {
           data: [
             {
               body: "Ceci est un article d'événement",
-              groupId: element!.id,
+              groupId: club!.id,
               slug: 'ceci-est-un-article-d-evenement',
               title: "Ceci est un article d'événement",
             },
@@ -1062,8 +1074,8 @@ for (const element of tqdm(selectedClub)) {
         createMany: {
           data: [
             {
-              slug: `event-${element!.uid}`,
-              name: `Event ${element!.name}`,
+              slug: `event-${club!.uid}`,
+              name: `Event ${club!.name}`,
               description: 'blablabla ramenez vos culs par pitié je vous en supplie',
               minimumPrice,
               maximumPrice,
@@ -1090,6 +1102,19 @@ for (const element of tqdm(selectedClub)) {
       tickets: true,
     },
   });
+
+  for (const ticket of tickets) {
+    const inviteCode = faker.datatype.boolean(0.2) ? faker.string.nanoid(8) : undefined;
+    await prisma.ticket.update({
+      where: { id: ticket.id },
+      data: {
+        inviteCode,
+        invited: inviteCode
+          ? { connect: faker.helpers.arrayElements(users, 30).map((u) => ({ id: u.id })) }
+          : undefined,
+      },
+    });
+  }
 
   if (faker.datatype.boolean(0.45)) {
     await downloadRandomImage(800, 600, id)
@@ -1131,10 +1156,10 @@ const registration = await prisma.registration.create({
 });
 
 console.info('Creating bookings');
-for (const i of tqdm([...range(0, 100)])) {
-  selectedEvent = faker.helpers.arrayElement(events);
-  await prisma.registration.create({
-    data: {
+ await prisma.registration.createMany({
+  data: [...range(0, 5000)].map((i) => {
+    selectedEvent = faker.helpers.arrayElement(events);
+    return {
       createdAt: randomTime(registration.createdAt, range(13, 23)),
       ticketId: faker.helpers.arrayElement(selectedEvent.tickets).id,
       authorId:
@@ -1148,9 +1173,10 @@ for (const i of tqdm([...range(0, 100)])) {
       ...(i % 4 === 0
         ? { externalBeneficiary: 'whatcoubeh' }
         : { internalBeneficiaryId: faker.helpers.arrayElement(users).id }),
-    },
-  });
-}
+    };
+  }),
+}).then(({count}) => console.info(`Created ${count} bookings`));
+
 
 await prisma.ticket.update({
   where: { id: events[0]!.tickets[0]!.id },
@@ -1427,10 +1453,43 @@ await prisma.promotion.create({
     type: 'SIMPPS',
     validByDefaultOn: {
       connect: {
-        uid: 'art'
-      }
+        uid: 'art',
+      },
+    },
+  },
+});
+
+await prisma.ticket
+  .findMany({
+    where: { inviteCode: { not: null } },
+  })
+  .then((tickets) => {
+    for (const ticket of tickets) {
+      console.info(
+        `Ticket ${ticket.id} invite: http://localhost:5173/events/${ticket.eventId.replace(/^e:/, '')}/join/${ticket.inviteCode}`,
+      );
     }
-  }
+  });
+
+await prisma.userCandidate.createMany({
+  data: await Promise.all(Array.from({length: 50}).map(async () => {
+    const name =  {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+    }
+    return {
+      ...name,
+      email: faker.internet.email(),
+      churrosPassword: await hash('hahahaha'),
+      ldapPassword: await hash('hahahaha'),
+      uid: faker.internet.username(name),
+      majorId: randomChoice(majors).id,
+      apprentice: faker.datatype.boolean(),
+      graduationYear: faker.number.int({min: 2022, max: 2026}),
+      token: faker.string.uuid(),
+      emailValidated: faker.datatype.boolean(0.8)
+    } as Prisma.UserCandidateCreateInput
+  }))
 })
 
 exit(0);

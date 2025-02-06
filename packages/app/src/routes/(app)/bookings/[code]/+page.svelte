@@ -41,6 +41,7 @@
     CreateGoogleWalletPass,
     MarkBookingAsPaid,
   } from './mutations';
+  import AvatarUser from '$lib/components/AvatarUser.svelte';
 
   export let data: PageData;
   $: ({ PageBooking } = data);
@@ -79,7 +80,11 @@
   let openCancellationConfirmation: () => void;
   let openPaymentModal: (step?: Step) => void;
 
-  $: if (loading($PageBooking.data?.booking.awaitingPayment, false)) openPaymentModal?.();
+  $: if (
+    !$page.url.searchParams.has('dontpay') &&
+    loading($PageBooking.data?.booking.awaitingPayment, false)
+  )
+    openPaymentModal?.();
 </script>
 
 <svelte:window
@@ -90,8 +95,7 @@
   }}
 />
 
-<ModalOrDrawer bind:open={openCancellationConfirmation}>
-  <h2 slot="header">Es-tu sûr·e ?</h2>
+<ModalOrDrawer title="Es-tu sûr·e" narrow bind:open={openCancellationConfirmation}>
   <div class="confirm-cancellation">
     <p class="explainer">
       Il n'est pas possible de revenir en arrière. Tu devras de nouveau prendre une place (s'il en
@@ -112,7 +116,7 @@
             "Impossible d'annuler la place",
           )
         )
-          await goto(route('/bookings'));
+          await goto($page.url.searchParams.get('from') ?? route('/bookings'));
       }}>Oui, je confirme</ButtonPrimary
     >
   </div>
@@ -153,10 +157,14 @@
       </section>
     {/if}
 
-    {#if ticket.links.length > 0}
+    {#if booking.linkURLs.length > 0}
       <section class="links">
-        {#each ticket.links as link}
-          <PillLink track="link-from-booking" {link} />
+        {#each Array.from({ length: booking.linkURLs.length }) as _, i}
+          <PillLink
+            track="link-from-booking"
+            url={booking.linkURLs[i]}
+            text={booking.linkNames[i]}
+          />
         {/each}
       </section>
     {/if}
@@ -194,7 +202,7 @@
               "Impossible d'ajouter le pass à Google Wallet",
             )
           )
-            window.location.href = result.data.createGoogleWalletPass.data;
+            globalThis.location.href = result.data.createGoogleWalletPass.data;
         }}
       />
       <ButtonAddToAppleWallet
@@ -210,7 +218,7 @@
               "Impossible d'ajouter le pass à Apple Wallet",
             )
           )
-            window.location.href = result.data.createAppleWalletPass.data;
+            globalThis.location.href = result.data.createAppleWalletPass.data;
         }}
       />
     </section>
@@ -225,6 +233,16 @@
         <dd>
           <BookingAuthor {booking} />
         </dd>
+        {#if ticket.event.enforcePointOfContact || booking.pointOfContact}
+          <dt>Référent·e</dt>
+          <dd>
+            {#if booking.pointOfContact}
+              <AvatarUser name user={booking.pointOfContact} />
+            {:else}
+              <span class="muted">Aucun·e</span>
+            {/if}
+          </dd>
+        {/if}
         <dt>Place</dt>
         <dd><LoadingText value={ticket.name}></LoadingText></dd>
         <dt>Prix</dt>
@@ -258,7 +276,7 @@
       <section class="cancel">
         <ButtonSecondary track="booking-cancel-start" danger on:click={openCancellationConfirmation}
           ><IconCancel />
-          {#if loading(booking.paid, false)}Libérer{:else}Annuler{/if} ma place</ButtonSecondary
+          {#if loading(booking.paid, false)}Libérer{:else}Annuler{/if} cette place</ButtonSecondary
         >
       </section>
     {/if}

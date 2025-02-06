@@ -6,7 +6,7 @@
   export let data: PageData;
 
   onMount(async () => {
-    if (/^https?:\/\//.test(data.next)) window.location.href = data.next;
+    if (data.fullpageReload || /^https?:\/\//.test(data.next)) window.location.href = data.next;
     else await goto(data.next);
   });
 </script>

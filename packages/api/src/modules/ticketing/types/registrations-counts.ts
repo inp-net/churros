@@ -8,14 +8,14 @@ class RegistrationsCounts {
   total: number;
   paid: number;
   verified: number;
-  unpaidByPaymentMethod: Record<PaymentMethod, number>;
+  unpaidByPaymentMethod: Record<PaymentMethod | '_unset', number>;
   cancelled: number;
 
   constructor(data: {
     total: number;
     paid: number;
     verified: number;
-    unpaidByPaymentMethod: Record<PaymentMethod, number>;
+    unpaidByPaymentMethod: Record<PaymentMethod | '_unset', number>;
     cancelled: number;
   }) {
     this.total = data.total;

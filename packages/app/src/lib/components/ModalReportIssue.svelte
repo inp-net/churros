@@ -12,7 +12,7 @@
   import ButtonSecondary from './ButtonSecondary.svelte';
   import InputCheckbox from './InputCheckbox.svelte';
   import { page } from '$app/stores';
-  import { default as parseUserAgent } from 'ua-parser-js';
+  import { UAParser as parseUserAgent } from 'ua-parser-js';
   import { CURRENT_COMMIT, CURRENT_VERSION } from '$lib/buildinfo';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { env } from '$env/dynamic/public';

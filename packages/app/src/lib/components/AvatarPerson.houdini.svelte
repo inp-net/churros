@@ -144,7 +144,7 @@
     line-height: var(--size); /* to vertically center alt text */
     color: var(--muted-text);
     text-align: center;
-    background-color: var(--muted-bg);
+    background: var(--muted-bg);
     border-radius: 50%;
   }
 

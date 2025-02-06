@@ -1,17 +1,20 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fragment, graphql, type ModalBookTicket, type ModalBookTicketMe } from '$houdini';
-  import MaybeError from '$lib/components/MaybeError.svelte';
   import Alert from '$lib/components/Alert.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
+  import InputRadios from '$lib/components/InputRadios.svelte';
   import InputText from '$lib/components/InputText.svelte';
   import LoadingChurros from '$lib/components/LoadingChurros.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
+  import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
-  import { mapLoading, onceLoaded } from '$lib/loading';
+  import { loaded, onceLoaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
+  import { route } from '$lib/ROUTES';
   import { toasts } from '$lib/toasts';
   import { createEventDispatcher } from 'svelte';
 
@@ -34,11 +37,20 @@
       fragment ModalBookTicket on Ticket @loading {
         localID
         name
-        price
+        price: minimumPrice(applyPromotions: true)
         cannotBookForMe: cannotBookReason(themself: true)
         cannotBookForSomeoneElse: cannotBookReason(themself: false)
         godsonLimit
         remainingGodsons
+        event {
+          enforcePointOfContact
+          managers {
+            user {
+              uid
+              ...AvatarUser
+            }
+          }
+        }
       }
     `),
   );
@@ -58,12 +70,18 @@
       $beneficiary: String
       $churrosBeneficiary: UID
       $authorEmail: Email
+      $authorName: String
+      $pointOfContact: UID
+      $urlTemplate: String!
     ) {
       bookEvent(
         ticket: $ticket
         authorEmail: $authorEmail
+        authorName: $authorName
         beneficiary: $beneficiary
         churrosBeneficiary: $churrosBeneficiary
+        pointOfContact: $pointOfContact
+        bookingUrl: $urlTemplate
       ) {
         ... on MutationBookEventSuccess {
           data {
@@ -78,9 +96,12 @@
   async function createBooking(close: () => void) {
     const result = await mutate(CreateBooking, {
       ticket: $data?.localID,
-      churrosBeneficiary: mapLoading(churrosBeneficiary, (v) => v || null),
-      beneficiary: mapLoading(beneficiary, (v) => v || null),
-      authorEmail: mapLoading(authorEmail, (v) => v || null),
+      churrosBeneficiary: churrosBeneficiary || null,
+      beneficiary: beneficiary || null,
+      authorName: authorName || null,
+      authorEmail: authorEmail || null,
+      pointOfContact: pointOfContact || null,
+      urlTemplate: new URL(route('/bookings/[code]', '[code]'), $page.url).toString(),
     });
     if (toasts.mutation(result, 'bookEvent', 'Place réservée', 'Impossible de réserver la place')) {
       close?.();
@@ -96,6 +117,10 @@
   }
 
   function advance(step: (typeof historyStack)[number]) {
+    if (!$data || !loaded($data.event.enforcePointOfContact)) return;
+    // If we're booking without a churros acct and the event enforces choosing a point of contact, prevent advancing to confirm step if no point of contact was selected yet
+    if (step === 'confirm' && $data.event.enforcePointOfContact && !pointOfContact && !$dataMe)
+      step = 'point-of-contact';
     historyStack = [...historyStack, step];
     return step;
   }
@@ -104,13 +129,16 @@
 
   let churrosBeneficiary = '';
   let beneficiary = '';
+  /** Pour les réservations sans compte Churros */
+  let authorName = '';
   let authorEmail = '';
+  let pointOfContact = '';
 
   $: step = historyStack.at(-1)!;
 
-  let historyStack: Array<'start' | 'beneficiary-external' | 'beneficiary-internal' | 'confirm'> = [
-    'start',
-  ];
+  let historyStack: Array<
+    'start' | 'beneficiary-external' | 'beneficiary-internal' | 'point-of-contact' | 'confirm'
+  > = ['start'];
 </script>
 
 <ModalOrDrawer bind:open let:close on:close={() => dispatch('close')}>
@@ -118,6 +146,8 @@
     <h2>
       {#if step.startsWith('beneficiary')}
         Choisir lea bénéficiaire
+      {:else if step === 'point-of-contact'}
+        Choisir un·e référent·e
       {:else}
         Réserver une place
       {/if}
@@ -201,6 +231,36 @@
           <ButtonSecondary submits>Réserver</ButtonSecondary>
         </nav>
       </form>
+    {:else if step === 'point-of-contact'}
+      <p>
+        L'inscription sans compte Churros à cet évènement demande de renseigner une personne qui
+        sera contactée en cas de problème
+      </p>
+      <InputRadios
+        value={pointOfContact}
+        options={$data.event.managers.map((mgr) => mgr.user.uid)}
+        on:change={({ detail }) => {
+          pointOfContact = detail;
+          advance('confirm');
+        }}
+      >
+        <AvatarUser
+          href=""
+          slot="label"
+          let:option
+          name
+          user={$data.event.managers.find((mgr) => mgr.user.uid === option)?.user ?? null}
+        />
+      </InputRadios>
+      <nav>
+        <ButtonSecondary
+          on:click={() => {
+            // if we don't reset this, going forward after going back will go to straight to confirm
+            pointOfContact = '';
+            back();
+          }}>Retour</ButtonSecondary
+        >
+      </nav>
     {:else if step === 'confirm'}
       <form on:submit|preventDefault={() => createBooking(close)}>
         {#if churrosBeneficiary}
@@ -227,9 +287,21 @@
         {:else if beneficiary}
           <p>Réservation d'une place pour {beneficiary}</p>
         {/if}
+        {#if pointOfContact}
+          <p>
+            Avec référent·e <AvatarUser
+              name
+              user={$data.event.managers.find((mgr) => mgr.user.uid === pointOfContact)?.user ??
+                null}
+            />
+          </p>
+        {/if}
         {#if !$dataMe}
-          <InputText required label="Votre adresse e-mail" type="email" bind:value={authorEmail}
+          <InputText required label="Ton adresse e-mail" type="email" bind:value={authorEmail}
           ></InputText>
+        {/if}
+        {#if !$dataMe && !beneficiary}
+          <InputText required label="Ton joli nom" type="text" bind:value={authorName}></InputText>
         {/if}
         <nav>
           <ButtonSecondary on:click={back}>Retour</ButtonSecondary>

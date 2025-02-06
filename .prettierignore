@@ -9,3 +9,4 @@ packages/app/$houdini/
 *.mjml
 packages/db/
 !packages/db/**/*.prisma
+*.generated.*

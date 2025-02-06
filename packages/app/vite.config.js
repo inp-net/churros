@@ -68,10 +68,18 @@ export default mergeConfig(
         format_short: true,
         format: 'route(path)',
         post_update_run: 'yarn format-at ./src/lib/ROUTES.ts',
+        exportObjects: true,
         PAGES: {
           '/login': {
             explicit_search_params: {
-              bypass_oauth: { type: "undefined | '1'", default: 'undefined' },
+              force_oauth: {
+                type: '"" | undefined',
+                default: 'undefined',
+              },
+              why: {
+                type: '"unauthorized" | undefined',
+                default: 'undefined',
+              },
             },
           },
           '/events/[id]/bookings': {
@@ -84,6 +92,14 @@ export default mergeConfig(
               tab: {
                 type: '"infos" | "members" | "family" | "see-also" | "groups" | "services" | "majors" | "subjects" | "boards"',
                 default: '"infos"',
+              },
+            },
+          },
+          '/logout': {
+            explicit_search_params: {
+              userWasDeleted: {
+                type: '"1" | undefined',
+                default: 'undefined',
               },
             },
           },

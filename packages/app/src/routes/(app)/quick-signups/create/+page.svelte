@@ -24,9 +24,8 @@
     }
   `);
 
-  $: if (!school && $PageQuickSignupCreate?.data && allLoaded($PageQuickSignupCreate.data)) 
+  $: if (!school && $PageQuickSignupCreate?.data && allLoaded($PageQuickSignupCreate.data))
     school = $PageQuickSignupCreate.data.me?.major?.schools[0];
-  
 </script>
 
 <MaybeError result={$PageQuickSignupCreate}>
@@ -35,8 +34,9 @@
       on:submit|preventDefault={async () => {
         if (!school) return;
         const { data, errors } = await Create.mutate({ validUntil, school: school.uid });
-        if (data) {await goto(`../manage#${data.createQuickSignup.code}`);}
-        else {
+        if (data) {
+          await goto(`../manage#${data.createQuickSignup.code}`);
+        } else {
           toasts.error(
             'Erreur lors de la création du lien',
             errors?.map((e) => e.message).join('; ') ?? 'Erreur inconnue',

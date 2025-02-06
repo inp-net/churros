@@ -1,10 +1,7 @@
 .volta:
-  image: debian:12
+  image: marcaureln/volta:2.0.2-slim
   before_script:
-    - apt-get update && apt-get install -y curl git jq moreutils
-    - export VOLTA_HOME=/root/.volta
-    - export PATH=$VOLTA_HOME/bin:$PATH
-    - curl https://get.volta.sh | bash -s -- --skip-setup
+    - apt update && apt install -y git
     - yarn config set enableGlobalCache false
     - yarn config set enableImmutableInstalls true
     - yarn install
@@ -12,25 +9,6 @@
   cache:
     paths:
       - .yarn/cache/
-
-build:
-  stage: build
-  extends: .volta
-  rules:
-    # wishing that gilab adds $CI_MERGE_REQUEST_DRAFT one day...
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME && $CI_MERGE_REQUEST_TITLE !~ /^Draft: /'
-    # still allow to run the build job on the pipeline on Draft MRs, but only when we actually want to (manual action)
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME && $CI_MERGE_REQUEST_TITLE =~ /^Draft: /'
-      when: manual
-    # prevents branch pipeline when a merge request pipeline will be created, see https://docs.gitlab.com/ee/ci/yaml/workflow.html#switch-between-branch-pipelines-and-merge-request-pipelines
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
-  script:
-    - export SENTRY_AUTH_TOKEN=''
-    - yarn prisma generate
-    - yarn build
 
 pages:
   stage: deploy

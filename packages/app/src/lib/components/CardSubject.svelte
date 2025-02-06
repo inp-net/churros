@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconAdd from '~icons/mdi/plus';
   import { formatRelative } from 'date-fns';
-  import fr from 'date-fns/locale/fr/index.js';
+  import { fr } from 'date-fns/locale';
   import ButtonInk from './ButtonInk.svelte';
 
   export let href: string;
@@ -89,7 +89,7 @@
   a:hover,
   a:focus-visible {
     article {
-      background-color: var(--primary-bg);
+      background: var(--primary-bg);
       border-color: var(--border);
     }
   }

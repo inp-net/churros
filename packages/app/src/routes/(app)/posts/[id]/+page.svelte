@@ -1,5 +1,4 @@
 <script lang="ts">
-  import AreaComments from '$lib/components/AreaComments.houdini.svelte';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
@@ -19,7 +18,7 @@
 
 <ModalDelete postId={$page.params.id} />
 
-<MaybeError result={$PagePostDetail} let:data={{ post, me }}>
+<MaybeError result={$PagePostDetail} let:data={{ post }}>
   <div class="contents">
     <article>
       <header>
@@ -60,10 +59,6 @@
         <CardEvent referrer event={post.event} />
       </section>
     {/if}
-
-    <section class="comments">
-      <AreaComments user={me} comments={post} />
-    </section>
   </div>
 </MaybeError>
 

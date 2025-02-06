@@ -69,8 +69,13 @@
       "dependsOrder": "sequence"
     },
     {
+      "label": "Watch .env",
+      "type": "shell",
+      "command": "yarn dev:env"
+    },
+    {
       "label": "Develop",
-      "dependsOn": ["Develop API", "Develop App"],
+      "dependsOn": ["Develop API", "Develop App", "Watch .env"],
       "dependsOrder": "parallel",
       "problemMatcher": []
     }

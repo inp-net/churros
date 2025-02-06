@@ -1,0 +1,49 @@
+.api:
+  extends: .build
+  variables:
+    TARGET: api
+
+build:api:
+  extends: .api
+  stage: build
+  needs: 
+    - job: test:api:lint
+      optional: true
+    - job: test:api:format 
+      optional: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE !~ /^(\[Draft\]|\(Draft\)|Draft:)/
+      changes: [packages/api/**/*, packages/db/**/*, packages/sync/**/*]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TITLE =~ /^(\[Draft\]|\(Draft\)|Draft:)/
+      when: manual
+  script:
+    - !reference [.build, script]
+    - |
+      buildctl-daemonless.sh build \
+          --frontend=dockerfile.v0 \
+          --local context=. \
+          --local dockerfile=. \
+          --opt target=graphql-schema \
+          --opt build-arg:TAG=$TAG \
+          --opt build-arg:CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX=$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX \
+          $BUILD_SECRET_SENTRY \
+          --output type=local,dest=.
+  artifacts:
+    paths: [schema.graphql]
+    expire_in: 4 days
+
+
+deploy:api:
+  extends: .api
+  stage: deploy
+  interruptible: false
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^@churros\/api@(\d+\.\d+\.\d+)/
+      variables:
+        ENV: "production"
+        URL: "https://churros.inpt.fr"
+        TAG: export TAG=$(echo $CI_COMMIT_TAG | sed 's/@churros\/api@//')
+        DEPLOY: "true"
+  environment:
+    name: $ENV
+    url: $URL

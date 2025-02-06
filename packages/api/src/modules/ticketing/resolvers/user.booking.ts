@@ -1,4 +1,5 @@
-import { builder, prisma } from '#lib';
+import { builder, ensureGlobalId, prisma } from '#lib';
+import { LocalID } from '#modules/global';
 import { fullName, UserType } from '#modules/users';
 import { GraphQLError } from 'graphql';
 import { authorIsBeneficiary, RegistrationType } from '../index.js';
@@ -6,8 +7,9 @@ import { authorIsBeneficiary, RegistrationType } from '../index.js';
 builder.prismaObjectField(UserType, 'booking', (t) =>
   t.prismaField({
     type: RegistrationType,
+    nullable: true,
     args: {
-      event: t.arg.id(),
+      event: t.arg({ type: LocalID }),
       // TODO: split into 2 arguments
       beneficiary: t.arg.string({
         required: false,
@@ -15,8 +17,9 @@ builder.prismaObjectField(UserType, 'booking', (t) =>
           'Identifiant complet (avec le préfixe) pour un bénéficiaire avec compte Churros, ou texte libre pour un bénéficiaire externe',
       }),
     },
-    async resolve(query, _, { event: eventId, beneficiary: argBeneficiary }, { user }) {
+    async resolve(query, user, { event: eventId, beneficiary: argBeneficiary }) {
       if (!user) throw new GraphQLError('User not found');
+      eventId = ensureGlobalId(eventId, 'Event');
       const registrations = await prisma.registration.findMany({
         include: {
           ...query.include,
@@ -40,7 +43,6 @@ builder.prismaObjectField(UserType, 'booking', (t) =>
             internalBeneficiaryId === argBeneficiary),
       );
 
-      if (!registration) throw new GraphQLError('Registration not found');
       return registration;
     },
   }),
