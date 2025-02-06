@@ -2,4 +2,4 @@
 '@churros/api': patch
 ---
 
-fix(deps): update notella to v0.14.1 (!566)
+fix(deps): update notella to v0.15.0 (!568)
