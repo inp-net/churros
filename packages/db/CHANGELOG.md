@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.0
+
+### Minor Changes
+
+- 12b62f4: remove now-useless Comment value of NotificationChannel enum
+
 ## 4.2.0
 
 ### Minor Changes
