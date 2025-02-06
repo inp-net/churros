@@ -44,7 +44,8 @@ lydiaWebhook.post('/lydia-webhook', async (req, res) => {
         { verified, transaction, why: 'Transaction signature is invalid' },
         transaction_identifier,
       );
-      return res.status(400).send('Transaction signature is invalid');
+      res.status(400).send('Transaction signature is invalid');
+      return;
     }
 
     if (!transaction) {
@@ -54,7 +55,8 @@ lydiaWebhook.post('/lydia-webhook', async (req, res) => {
         { verified, transaction, why: 'Transaction not found' },
         transaction_identifier,
       );
-      return res.status(400).send('Transaction not found');
+      res.status(400).send('Transaction not found');
+      return;
     }
 
     // Check if the beneficiary exists
@@ -66,7 +68,8 @@ lydiaWebhook.post('/lydia-webhook', async (req, res) => {
           { verified, transaction, why: 'Beneficiary not found' },
           transaction_identifier,
         );
-        return res.status(400).send('Beneficiary not found');
+        res.status(400).send('Beneficiary not found');
+        return;
       }
 
       if (
@@ -168,7 +171,8 @@ lydiaWebhook.post('/lydia-webhook', async (req, res) => {
             object_id: txn.contribution.id,
           });
         }
-        return res.status(200).send('OK');
+        res.status(200).send('OK');
+        return;
       }
     } else if (transaction.contribution) {
       const { beneficiary } = transaction.contribution.option;
@@ -179,7 +183,8 @@ lydiaWebhook.post('/lydia-webhook', async (req, res) => {
           { verified, transaction, why: 'No lydia account linked' },
           transaction_identifier,
         );
-        return res.status(400).send('No lydia accounts for this student association');
+        res.status(400).send('No lydia accounts for this student association');
+        return;
       }
 
       if (sig === lydiaSignature(beneficiary, signatureParameters)) {
@@ -198,12 +203,13 @@ lydiaWebhook.post('/lydia-webhook', async (req, res) => {
           { verified, transaction, message: 'making contribution transaction as paid' },
           transaction_identifier,
         );
-        return res.status(200).send('OK');
+        res.status(200).send('OK');
+        return;
       }
     }
 
-    return res.status(400).send('Bad request');
+    res.status(400).send('Bad request');
   } catch {
-    return res.status(400).send('Bad request');
+    res.status(400).send('Bad request');
   }
 });

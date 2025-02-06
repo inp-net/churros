@@ -249,7 +249,7 @@ api.get('/print-handover/:uid', async (req, res) => {
 
     return pdf;
   } catch {
-    return res.status(500).json({ error: 'Erreur lors de la génération du PDF' });
+    res.status(500).json({ error: 'Erreur lors de la génération du PDF' });
   }
 });
 

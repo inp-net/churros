@@ -27,7 +27,10 @@ api.get('/print-booking/:pseudoID', async (req, res) => {
     include: registrationInclude,
   });
 
-  if (!registration) return res.status(404).send('Not found');
+  if (!registration) {
+    return;
+    res.status(404).send('Not found');
+  }
 
   try {
     const pdf = generatePDF(registration);
@@ -39,9 +42,9 @@ api.get('/print-booking/:pseudoID', async (req, res) => {
     pdf.pipe(res);
     pdf.end();
 
-    return res.status(200);
+    res.status(200);
   } catch (error) {
-    return res
+    res
       .status(500)
       .send(error?.toString() ?? 'Impossible de générer de PDF pour cette réservation');
   }
