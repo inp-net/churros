@@ -8,9 +8,8 @@ export function polyfillMethod(
   value,
   { writable = true, enumerable = true, configurable = true } = {},
 ) {
-  if (!(parent[name] instanceof Function)) 
+  if (!(parent[name] instanceof Function))
     Object.defineProperty(parent, name, { value, writable, enumerable, configurable });
-  
 }
 
 polyfillMethod(URL, 'parse', (url, base) => {

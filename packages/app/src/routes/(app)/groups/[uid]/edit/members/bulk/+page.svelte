@@ -7,11 +7,7 @@
   import IconError from '~icons/mdi/close';
   import IconLoading from '~icons/mdi/loading';
 
-  enum State {
-    Adding,
-    Errored,
-    Success,
-  }
+  type State = 'Adding' | 'Errored' | 'Success';
 
   let membersToAdd = '';
   let adding = false;
@@ -24,7 +20,7 @@
 
   async function addMember(line: string) {
     const resultIndex = result.length;
-    result[resultIndex] = [line, State.Adding, 'Ajout en cours…', undefined];
+    result[resultIndex] = [line, 'Adding', 'Ajout en cours…', undefined];
     let uid: string | undefined = undefined;
     try {
       membersToAdd = membersToAdd
@@ -96,9 +92,9 @@
       });
       if (addGroupMember.__typename === 'Error') throw new Error(addGroupMember.message);
 
-      result[resultIndex] = [line, State.Success, 'Ajouté!', uid];
+      result[resultIndex] = [line, 'Success', 'Ajouté!', uid];
     } catch (error) {
-      result[resultIndex] = [line, State.Errored, error?.toString() ?? 'Erreur inconnue', uid];
+      result[resultIndex] = [line, 'Errored', error?.toString() ?? 'Erreur inconnue', uid];
     }
   }
 
@@ -110,7 +106,7 @@
       result = [];
       await Promise.all(lines.map(async (line) => addMember(line)));
       membersToAdd = lines
-        .filter((l) => result.some(([line, status]) => l === line && status === State.Errored))
+        .filter((l) => result.some(([line, status]) => l === line && status === 'Errored'))
         .join('\n');
     } finally {
       adding = false;
@@ -136,13 +132,13 @@
     <ul class="nobullet">
       {#each result as [line, status, message, uid]}
         <li
-          class:muted={status === State.Adding}
-          class:danger={status === State.Errored}
-          class:success={status === State.Success}
+          class:muted={status === 'Adding'}
+          class:danger={status === 'Errored'}
+          class:success={status === 'Success'}
         >
-          <span class:loading={status === State.Adding} class="status"
-            >{#if status === State.Errored}<IconError></IconError>
-            {:else if status === State.Success}
+          <span class:loading={status === 'Adding'} class="status"
+            >{#if status === 'Errored'}<IconError></IconError>
+            {:else if status === 'Success'}
               <IconCheck></IconCheck>
             {:else}
               <IconLoading></IconLoading>
@@ -155,7 +151,7 @@
                 >{#if line.trim() === `@${uid}`}profil{:else}@{uid}{/if}</a
               >
             {/if}
-            {#if status === State.Errored}
+            {#if status === 'Errored'}
               <br />
               <span class="message">
                 {#if !uid}Utilisateur·ice introuvable{:else}{message}{/if}

@@ -25,13 +25,14 @@ export async function GET(event) {
   `)
     .fetch({ event })
     .then(({ data }) => {
-      if (!data)
-        {return {
+      if (!data) {
+        return {
           database: { prisma: false },
           ldap: { internal: false, school: false },
           mail: { smtp: false },
           redis: { publish: false, subscribe: false },
-        };}
+        };
+      }
       return data.healthcheck;
     });
 

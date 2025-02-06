@@ -397,7 +397,7 @@
       width: 100dvw;
       height: 100dvh;
 
-      // Set by @capacitor-community/safe-area
+      /* Set by @capacitor-community/safe-area */
       padding-top: var(--safe-area-inset-top);
       padding-bottom: var(--safe-area-inset-bottom);
     }

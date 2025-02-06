@@ -1,3 +1,15 @@
+<script lang="ts" module>
+  export function fileListOf(files: File[]): FileList {
+    const filelist = new DataTransfer();
+    for (const file of files) filelist.items.add(file);
+    return filelist.files;
+  }
+
+  export function withoutFilename(files: FileList, filename: string): FileList {
+    return fileListOf(Array.from(files).filter((file) => file.name !== filename));
+  }
+</script>
+
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 

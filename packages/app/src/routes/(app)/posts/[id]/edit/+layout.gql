@@ -24,7 +24,7 @@ query LayoutPostEdit($id: LocalID!) @loading {
       title
     }
     links {
-        id
+      id
     }
   }
 }

@@ -81,9 +81,7 @@
     );
 
     // Always come back on mobile since we don't have both sides of the split at the same time
-    if (register || mobile) 
-      await goto(route('/signups'));
-    
+    if (register || mobile) await goto(route('/signups'));
   }
 
   let openRefusalReason: () => void;

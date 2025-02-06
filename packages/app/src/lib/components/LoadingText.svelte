@@ -49,16 +49,12 @@
     /* no putting in a fallback generic font prevents unsupported skeleton text characters from showing up */
     /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
     font-family: skeleton;
+    color: transparent;
+    letter-spacing: -0.03em;
     user-select: none;
-
-    &,
-    & * {
-      color: transparent;
-      letter-spacing: -0.03em;
-      background-color: var(--skeleton-ui-bg);
-      border-radius: 1000px;
-      box-decoration-break: clone;
-    }
+    background-color: var(--skeleton-ui-bg);
+    border-radius: 1000px;
+    box-decoration-break: clone;
   }
 
   [data-loaded] {

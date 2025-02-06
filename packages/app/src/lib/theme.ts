@@ -77,9 +77,11 @@ if (browser) {
     else isDark.set($theme.variant === 'dark');
   });
 
-  globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-    if ((localStorage.getItem('themeVariant') ?? 'auto') === 'auto') isDark.set(matches);
-  });
+  globalThis
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', ({ matches }) => {
+      if ((localStorage.getItem('themeVariant') ?? 'auto') === 'auto') isDark.set(matches);
+    });
 
   isDark.subscribe(($isDark) => {
     document.documentElement.dataset.themeVariant = $isDark ? 'dark' : 'light';

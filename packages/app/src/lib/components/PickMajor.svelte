@@ -50,9 +50,8 @@
       allSchoolsUids.sort((a, b) => (a === favorSchool ? -1 : b === favorSchool ? 1 : 0));
 
     for (const schoolUid of allSchoolsUids) {
-      for (const major of options) 
+      for (const major of options)
         if (major.schools.some((school) => school.uid === schoolUid)) majorsBySchool.push(major);
-      
     }
     return majorsBySchool;
   }
