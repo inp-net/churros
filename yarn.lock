@@ -771,7 +771,7 @@ __metadata:
     express: "npm:^4.21.2"
     express-session: "npm:^1.18.1"
     extract-files: "npm:^13.0.0"
-    firebase-admin: "npm:^13.0.2"
+    firebase-admin: "npm:^13.1.0"
     glob: "npm:^11.0.1"
     google-auth-library: "npm:^9.15.1"
     googleapis: "npm:144.0.0"
@@ -11034,9 +11034,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^13.0.2":
-  version: 13.0.2
-  resolution: "firebase-admin@npm:13.0.2"
+"firebase-admin@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "firebase-admin@npm:13.1.0"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
     "@firebase/database-compat": "npm:^2.0.0"
@@ -11055,7 +11055,7 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 10c0/77401a62f1e10961f6cf176d686a8892676bb4b7828a42371291bbd9833d186099c2459d27b120d6bfd5681fce556a785ec5f895183bc5c5b83a6b28e73ec493
+  checksum: 10c0/e73c76a3b1e6fe35551a73f56afa2743e6acb24a322b6ea9d4b8d62fd0d6618b3bb7ecdf020cd0c4a2065fa4cdd312ada050012cb794edf6e3e946e37d353760
   languageName: node
   linkType: hard
 
