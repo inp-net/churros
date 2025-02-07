@@ -103,6 +103,34 @@ export default mergeConfig(
               },
             },
           },
+          '/logs': {
+            explicit_search_params: {
+              area: {
+                type: 'string | undefined',
+                default: 'undefined',
+              },
+              action: {
+                type: 'string | undefined',
+                default: 'undefined',
+              },
+              target: {
+                type: 'string | undefined',
+                default: 'undefined',
+              },
+              user: {
+                type: 'string | undefined',
+                default: 'undefined',
+              },
+              message: {
+                type: 'string | undefined',
+                default: 'undefined',
+              },
+              open: {
+                type: 'string | undefined',
+                default: 'undefined',
+              },
+            },
+          },
         },
       }),
     ],

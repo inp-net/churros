@@ -1,16 +1,33 @@
-query PageLogs($user: UID, $message: String, $area: String, $action: String) {
-  logs(first: 50, user: $user, message: $message, area: $area, action: $action) @paginate {
+query PageLogs(
+  $user: UID
+  $message: String
+  $area: String
+  $action: String
+  $target: String
+  $open: LocalID!
+) @loading {
+  openedLog: log(id: $open) {
+    localID
+    happenedAt
+    message
+  }
+  logs(first: 20, user: $user, message: $message, area: $area, action: $action, target: $target)
+    @paginate {
     edges {
       node {
+        localID
         id
         happenedAt
         user {
           uid
-          fullName
+          ...AvatarUser
         }
         area
         action
         target
+        targetObject {
+          ...NodeDisplay
+        }
         message
       }
     }

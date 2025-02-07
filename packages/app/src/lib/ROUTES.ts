@@ -235,7 +235,23 @@ export const PAGES = {
     params['userWasDeleted'] = params['userWasDeleted'] ?? undefined;
     return `/logout${appendSp({ userWasDeleted: params['userWasDeleted'] })}`;
   },
-  '/logs': `/logs`,
+  '/logs': (params?: {
+    area?: string | undefined;
+    action?: string | undefined;
+    target?: string | undefined;
+    user?: string | undefined;
+    message?: string | undefined;
+    open?: string | undefined;
+  }) => {
+    params = params ?? {};
+    params['area'] = params['area'] ?? undefined;
+    params['action'] = params['action'] ?? undefined;
+    params['target'] = params['target'] ?? undefined;
+    params['user'] = params['user'] ?? undefined;
+    params['message'] = params['message'] ?? undefined;
+    params['open'] = params['open'] ?? undefined;
+    return `/logs${appendSp({ area: params['area'], action: params['action'], target: params['target'], user: params['user'], message: params['message'], open: params['open'] })}`;
+  },
   '/notifications': `/notifications`,
   '/posts/[id]': (id: string | number, params?: {}) => {
     return `/posts/${id}`;
@@ -692,6 +708,12 @@ export type KIT_ROUTES = {
     why: never;
     token: never;
     userWasDeleted: never;
+    area: never;
+    action: never;
+    target: never;
+    user: never;
+    message: never;
+    open: never;
     q: never;
     email: never;
     componentName: never;

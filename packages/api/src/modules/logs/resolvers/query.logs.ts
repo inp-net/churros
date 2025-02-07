@@ -1,5 +1,4 @@
 import { builder, prisma } from '#lib';
-
 import { UIDScalar } from '#modules/global';
 import { GraphQLError } from 'graphql';
 import { LogType } from '../index.js';
@@ -26,9 +25,13 @@ builder.queryField('logs', (t) =>
         description: "Filtrer dans le message de l'entrée de log",
         required: false,
       }),
+      target: t.arg.string({
+        description: 'Filtrer par cible',
+        required: false,
+      }),
     },
     authScopes: { admin: true },
-    async resolve(query, _, { user, area, message, action }, { user: me }) {
+    async resolve(query, _, { user, area, message, action, target }, { user: me }) {
       if (!me) throw new GraphQLError('User not found');
       return prisma.logEntry.findMany({
         ...query,
@@ -37,6 +40,7 @@ builder.queryField('logs', (t) =>
           area: area ? { search: area } : undefined,
           action: action ? { search: action } : undefined,
           message: message ? { search: message } : undefined,
+          target: target ? { search: target } : undefined,
         },
         include: {
           user: true,

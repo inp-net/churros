@@ -1,7 +1,11 @@
 <script lang="ts">
+  import { infinitescroll } from '$lib/scroll';
+
+  /** Function to load next page when we reach the bottom, using use:infinitescroll. */
+  export let nextPage: undefined | (() => Promise<unknown>) = undefined;
 </script>
 
-<nav>
+<nav use:infinitescroll={async () => nextPage?.()}>
   <slot></slot>
 </nav>
 

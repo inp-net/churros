@@ -114,5 +114,6 @@ export const EventManagerInviteType = builder.prismaNode('EventManagerInvite', {
         return permissionsToPowerlevel(invite);
       },
     }),
+    event: t.relation('event'),
   }),
 });
