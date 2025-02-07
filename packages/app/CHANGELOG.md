@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.6.0
+
+### Minor Changes
+
+- 6fb2412: greatly improve /logs UI
+
 ## 4.5.1
 
 ### Patch Changes
