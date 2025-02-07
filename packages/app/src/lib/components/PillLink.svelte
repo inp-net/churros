@@ -7,6 +7,8 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import { loading, mapAllLoading, mapLoading, onceLoaded, type MaybeLoading } from '$lib/loading';
   import { socials } from '$lib/social.generated';
+  import type { SvelteComponent } from 'svelte';
+  import { tooltip } from '$lib/tooltip';
 
   function socialSiteFromURL(url: URL) {
     for (const site of Object.values(socials)) {
@@ -28,6 +30,14 @@
 
   /** Whether to use social media icons and text (the Link's text is used as a fallback)*/
   export let social = false;
+
+  /** Use a custom icon. Set to null to not display any */
+  export let icon: typeof SvelteComponent<any> | undefined | null = undefined;
+
+  /**Show a tooltip*/
+  export let help: MaybeLoading<string> = '';
+
+  export let highlighted = false;
 
   export let track: string | undefined = undefined;
 
@@ -57,10 +67,14 @@
     ? onceLoaded(url, (u) => u.toString(), '')
     : onceLoaded($data?.url, (u) => u?.toString() ?? '', '')}
   {...umamiAttributes(track, { url: loading($data?.rawURL, '(not loaded)') })}
+  use:tooltip={loading(help, '')}
+  class:highlighted
 >
   <div class="icon" class:is-logo={Boolean(socialLogo)}>
-    {#if socialLogo}
-      <svelte:component this={socialLogo}></svelte:component>
+    {#if icon === null}
+      <!-- no icon -->
+    {:else if icon || socialLogo}
+      <svelte:component this={icon ?? socialLogo}></svelte:component>
     {:else if protocol === 'mailto:'}
       <IconEmail></IconEmail>
     {:else if protocol === 'tel:'}
@@ -79,6 +93,7 @@
       >Chargement…</LoadingText
     >
   {/if}
+  <slot />
 </a>
 
 <style>
@@ -88,10 +103,23 @@
     padding: 0.25em 0.75em;
     background: var(--bg2);
     border-radius: 1000px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
-  a:hover {
+  .highlighted {
+    background: var(--primary);
+    color: var(--bg);
+  }
+
+  a:is(:hover, :focus-visible) {
     background: var(--bg3);
+  }
+
+  a.highlighted:is(:hover, :focus-visible) {
+    background: var(--primary-bg);
+    color: var(--primary);
   }
 
   .icon {
