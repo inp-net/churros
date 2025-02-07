@@ -5,6 +5,8 @@ export const _PageLogsVariables: PageLogsVariables = ({ url }) => {
     user: url.searchParams.get('user') ?? null,
     area: url.searchParams.get('area') ?? null,
     action: url.searchParams.get('action') ?? null,
+    target: url.searchParams.get('target') ?? null,
     message: url.searchParams.get('message') ?? null,
+    open: url.searchParams.get('open') ?? 'log:notfound',
   };
 };
