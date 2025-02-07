@@ -56,12 +56,7 @@
 </script>
 
 <script lang="ts">
-  import { 
-    fragment, 
-    graphql, 
-    NodeDisplayStore, 
-    type NodeDisplay 
-  } from '$houdini';
+  import { fragment, graphql, NodeDisplayStore, type NodeDisplay } from '$houdini';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import AvatarUser from '$lib/components/AvatarUser.svelte';
   import LoadingText from '$lib/components/LoadingText.svelte';
