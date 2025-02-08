@@ -1992,7 +1992,7 @@ scalar HTML
 union HasLinks = Article | Event | Group | Ticket | User
 
 """
-Results of a health self-check
+Health self-checks
 """
 type HealthCheck {
   database: DatabaseHealthCheck!
