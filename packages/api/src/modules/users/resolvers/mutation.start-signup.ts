@@ -118,7 +118,14 @@ builder.mutationField('startSignup', (t) =>
       await log(
         'signups',
         'start',
-        { uid, args, quickSignupCode, quickSignup, major, mailVerificationCallbackURL },
+        {
+          uid,
+          args: omit(args, 'password', 'passwordConfirmation'),
+          quickSignupCode,
+          quickSignup,
+          major,
+          mailVerificationCallbackURL,
+        },
         args.email,
         user,
       );
