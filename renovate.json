@@ -21,6 +21,11 @@
       "groupName": "Notella",
       "groupSlug": "notella",
       "matchDepNames": ["registry.inpt.fr/churros/notella", "@inp-net/notella"]
+    },
+    {
+      "groupName": "Graphinx",
+      "groupSlug": "graphinx",
+      "matchDepNames": ["graphinx/graphinx", "graphinx/templates", "graphinx"]
     }
   ],
   "customManagers": [
