@@ -5,6 +5,7 @@ import {
   context,
   decodeGlobalID,
   encodeGlobalID,
+  splitID,
   type AuthContexts,
   type AuthScopes,
 } from '#lib';
@@ -158,6 +159,16 @@ export const builder = new SchemaBuilder<PothosTypes>({
     nodeQueryOptions: false,
     nodesQueryOptions: false,
     brandLoadedObjects: true,
+    nodeTypeOptions: {
+      resolveType(parent) {
+        if (!parent) return null;
+        if (!(parent instanceof Object)) return null;
+        if ('id' in parent) {
+          if (typeof parent.id === 'string') return splitID(parent.id)[0];
+        }
+        return null;
+      },
+    },
     edgesFieldOptions: {
       nullable: false,
     },

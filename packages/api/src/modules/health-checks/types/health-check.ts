@@ -1,89 +1,56 @@
-import { builder, graphinx } from '#lib';
-import * as Notella from '@inp-net/notella';
+import { builder, graphinx, nestedFields, subscribeClient } from '#lib';
+import {
+  checkFeatures,
+  checkLdapClient,
+  checkMailClient,
+  checkNotella,
+  checkPrismaClient,
+  checkRedisClient,
+  checkSchoolLdapClient,
+  type FeaturesCheck,
+  type NotellaHealthCheck,
+} from '#modules/health-checks/utils';
 
-export type HealthCheck = {
-  redis: { publish: boolean; subscribe: boolean };
-  database: { prisma: boolean };
-  ldap: { school: boolean | null; internal: boolean };
-  mail: { smtp: boolean | null };
-  notella: Notella.HealthResponse & { gateway: boolean };
-  features: {
-    prometheus: boolean;
-    gitlab: boolean;
-    googleAPIs: boolean;
-    googleWallet: boolean;
-    appleWallet: boolean;
-    oauth: boolean;
-    mailman: boolean;
-    notifications: boolean;
-    housekeeper: boolean;
-  };
-};
-
-export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').implement({
-  description: 'Results of a health self-check',
+export const HealthCheckType = builder.objectRef<void>('HealthCheck').implement({
+  description: 'Health self-checks',
   fields: (t) => ({
-    redis: t.field({
-      resolve: ({ redis }) => redis,
-      type: builder.objectRef<HealthCheck['redis']>('RedisHealthCheck').implement({
-        ...graphinx('health-checks'),
-        fields: (t) => ({
-          subscribe: t.boolean({
-            description: 'Whether the Redis subscriber client is ready',
-            resolve: ({ subscribe }) => subscribe,
-          }),
-          publish: t.boolean({
-            description: 'Whether the Redis publisher client is ready',
-            resolve: ({ publish }) => publish,
-          }),
-        }),
+    redis: nestedFields(t, 'health-checks', 'RedisHealthCheck', (t) => ({
+      subscribe: t.boolean({
+        description: 'Whether the Redis subscriber client is ready',
+        resolve: async () => checkRedisClient(subscribeClient),
       }),
-    }),
-    database: t.field({
-      resolve: ({ database }) => database,
-      type: builder.objectRef<HealthCheck['database']>('DatabaseHealthCheck').implement({
-        ...graphinx('health-checks'),
-        fields: (t) => ({
-          prisma: t.boolean({
-            resolve: ({ prisma }) => prisma,
-          }),
-        }),
+      publish: t.boolean({
+        description: 'Whether the Redis publisher client is ready',
+        resolve: async () => checkRedisClient(subscribeClient),
       }),
-    }),
-    ldap: t.field({
-      resolve: ({ ldap }) => ldap,
-      type: builder.objectRef<HealthCheck['ldap']>('LdapHealthCheck').implement({
-        ...graphinx('health-checks'),
-        fields: (t) => ({
-          school: t.boolean({
-            description:
-              'Whether the LDAP school client is ready. Null when no LDAP_SCHOOL has been configured.',
-            nullable: true,
-            resolve: ({ school }) => school,
-          }),
-          internal: t.boolean({
-            description: 'Whether the LDAP internal client is ready',
-            resolve: ({ internal }) => internal,
-          }),
-        }),
+    })),
+    database: nestedFields(t, 'health-checks', 'DatabaseHealthCheck', (t) => ({
+      prisma: t.boolean({
+        resolve: checkPrismaClient,
       }),
-    }),
-    mail: t.field({
-      resolve: ({ mail }) => mail,
-      type: builder.objectRef<HealthCheck['mail']>('MailHealthCheck').implement({
-        ...graphinx('health-checks'),
-        fields: (t) => ({
-          smtp: t.boolean({
-            description: 'Whether the SMTP client is ready. Null if no SMTP_URL is configured.',
-            nullable: true,
-            resolve: ({ smtp }) => smtp,
-          }),
-        }),
+    })),
+    ldap: nestedFields(t, 'health-checks', 'LdapHealthCheck', (t) => ({
+      school: t.boolean({
+        description:
+          'Whether the LDAP school client is ready. Null when no LDAP_SCHOOL has been configured.',
+        nullable: true,
+        resolve: checkSchoolLdapClient,
       }),
-    }),
+      internal: t.boolean({
+        description: 'Whether the LDAP internal client is ready',
+        resolve: checkLdapClient,
+      }),
+    })),
+    mail: nestedFields(t, 'health-checks', 'MailHealthCheck', (t) => ({
+      smtp: t.boolean({
+        description: 'Whether the SMTP client is ready. Null if no SMTP_URL is configured.',
+        nullable: true,
+        resolve: checkMailClient,
+      }),
+    })),
     notella: t.field({
-      resolve: ({ notella }) => notella,
-      type: builder.objectRef<HealthCheck['notella']>('NotellaHealthCheck').implement({
+      resolve: checkNotella,
+      type: builder.objectRef<NotellaHealthCheck>('NotellaHealthCheck').implement({
         ...graphinx('health-checks'),
         fields: (t) => ({
           gateway: t.boolean({
@@ -110,8 +77,8 @@ export const HealthCheckType = builder.objectRef<HealthCheck>('HealthCheck').imp
       }),
     }),
     features: t.field({
-      resolve: ({ features }) => features,
-      type: builder.objectRef<HealthCheck['features']>('FeaturesHealthCheck').implement({
+      resolve: checkFeatures,
+      type: builder.objectRef<FeaturesCheck>('FeaturesHealthCheck').implement({
         ...graphinx('health-checks'),
         fields: (t) => ({
           prometheus: t.boolean({

@@ -1213,6 +1213,7 @@ type EventManagerInvite implements Node {
   capacity: Capacity!
   code: String
   createdAt: DateTime!
+  event: Event!
   """
   L'invitation est expiré
   """
@@ -1991,7 +1992,7 @@ scalar HTML
 union HasLinks = Article | Event | Group | Ticket | User
 
 """
-Results of a health self-check
+Health self-checks
 """
 type HealthCheck {
   database: DatabaseHealthCheck!
@@ -2125,6 +2126,7 @@ type LogEntry implements Node {
   localID: LocalID!
   message: String!
   target: String
+  targetObject: Node
   user: User
 }
 
@@ -4217,7 +4219,6 @@ type Notification implements Node {
 
 enum NotificationChannel {
   Articles
-  Comments
   GodparentRequests
   GroupBoard
   Mandatory
@@ -4581,6 +4582,15 @@ type Query @rateLimit(limit: 1200, duration: 60) {
   """
   homepage(after: String, before: String, first: Int, last: Int): QueryHomepageConnection!
   """
+  Récupérer un log par son ID
+  """
+  log(
+    """
+    ID du log à récupérer
+    """
+    id: LocalID!
+  ): LogEntry
+  """
   Vrai si l'utilisateur·ice est connecté·e
   """
   loggedIn(
@@ -4606,6 +4616,10 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     Filtrer dans le message de l'entrée de log
     """
     message: String
+    """
+    Filtrer par cible
+    """
+    target: String
     """
     Limiter les logs à ceux effectués par une certaine personne
     """
@@ -5555,6 +5569,7 @@ type Reaction implements Node {
   L'identifiant local de la ressource (sans préfixe)
   """
   localID: LocalID!
+  subject: Node
   updatedAt: DateTime!
 }
 

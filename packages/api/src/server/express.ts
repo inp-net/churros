@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/prefer-module */
 import { context, ENV, updateUserLastSeen } from '#lib';
-import { checkHealth } from '#modules/health-checks/utils';
+import { checkEverything } from '#modules/health-checks/utils';
 import cors from 'cors';
 import { minutesToMilliseconds } from 'date-fns';
 import express from 'express';
@@ -63,11 +63,11 @@ export async function startApiServer() {
 
   // Perform a health check and setup interval to run health checks every 5 minutes
   console.info('Performing initial health check...');
-  await checkHealth();
+  await checkEverything();
   console.info('Setting up health check interval...');
   setIntervalAsync(async () => {
     console.info('Performing health check...');
-    await checkHealth();
+    await checkEverything();
   }, minutesToMilliseconds(5));
 
   const apiServer = api.listen(4000, () => {

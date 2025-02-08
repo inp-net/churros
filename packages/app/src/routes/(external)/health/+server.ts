@@ -21,13 +21,13 @@ const BackendHealthcheck = graphql(`
         publish
         subscribe
       }
-      notella {
-        churrosDatabase
-        firebase
-        gateway
-        nats
-        redis
-      }
+      # notella {
+      #  churrosDatabase
+      #  firebase
+      #  gateway
+      #  nats
+      #  redis
+      # }
       features {
         appleWallet
         gitlab
@@ -54,6 +54,7 @@ export async function GET(event) {
           ldap: { internal: false, school: false },
           mail: { smtp: false },
           redis: { publish: false, subscribe: false },
+          /*
           notella: {
             churrosDatabase: false,
             firebase: false,
@@ -61,6 +62,7 @@ export async function GET(event) {
             nats: false,
             redis: false,
           },
+          */
           features: {
             appleWallet: false,
             gitlab: false,

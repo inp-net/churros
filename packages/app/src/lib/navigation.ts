@@ -780,6 +780,12 @@ export const topnavConfigs: Partial<{
     back: route('/signups'),
     actions: [],
   }),
+  '/(app)/logs': {
+    title: 'Logs',
+    back: route('/backrooms'),
+    quickAction: commonActions.reload,
+    actions: rootPagesActions,
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
