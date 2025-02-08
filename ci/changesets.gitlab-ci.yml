@@ -38,13 +38,13 @@ renovate-changesets:
     - git pull gitlab_origin main
     - git push gitlab_origin HEAD:main
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE != $RELEASE_COMMIT_MESSAGE && $CI_COMMIT_TITLE != "Merge branch 'changeset-release/main' into 'main'"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE != $RELEASE_COMMIT_MESSAGE && $CI_COMMIT_TITLE != "Merge branch 'changeset-release/main' into 'main'" && $TASK != "update-socials-data"
 
 release:
   extends: .changesets
   stage: prepare
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TASK != "update-socials-data"
   variables:
     INPUT_TITLE: $RELEASE_COMMIT_MESSAGE
     INPUT_COMMIT: $RELEASE_COMMIT_MESSAGE
