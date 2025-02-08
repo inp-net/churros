@@ -40,7 +40,7 @@ builder.queryField('logs', (t) =>
           area: area ? { search: area } : undefined,
           action: action ? { search: action } : undefined,
           message: message ? { search: message } : undefined,
-          target: target ? { search: target } : undefined,
+          target: target || undefined,
         },
         include: {
           user: true,
