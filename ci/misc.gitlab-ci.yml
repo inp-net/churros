@@ -8,3 +8,22 @@ trigger-notella-update:
     SCHEMA_RAW_URL: $CI_PROJECT_URL/-/raw/$CI_COMMIT_SHA/packages/db/prisma/schema.prisma
   trigger:
     project: $CI_PROJECT_NAMESPACE/notella
+
+update-socials-data:
+  extends: .volta
+  stage: changesets
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - cd packages/app; yarn tsx src/scripts/generate-socials-json.ts
+    - git config --global user.name gitlab
+    - git config --global user.email "git@noreply.inpt.fr"
+    - git remote remove gitlab_origin || true
+    - git remote add gitlab_origin https://updater:$UPDATER_TOKEN@$CI_SERVER_SHELL_SSH_HOST/$CI_PROJECT_PATH
+    - |
+      if [ -n "$(git status --porcelain)" ]; then
+        git add src/lib/social.generated.ts
+        git commit -m "chore(socials): update data from sherlock"
+        git push gitlab_origin HEAD:$CI_DEFAULT_BRANCH
+      fi
