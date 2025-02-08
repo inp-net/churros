@@ -24,6 +24,11 @@
       "groupName": "Notella",
       "groupSlug": "notella",
       "matchDepNames": ["registry.inpt.fr/churros/notella", "@inp-net/notella"]
+    },
+    {
+      "groupName": "Graphinx",
+      "groupSlug": "graphinx",
+      "matchDepNames": ["graphinx/graphinx", "graphinx/templates", "graphinx"]
     }
   ],
   "customManagers": [
@@ -31,10 +36,8 @@
       "customType": "regex",
       "fileMatch": ["\\.graphinx\\.ya?ml$"],
       "matchStrings": ["template: graphinx/templates/default#(?<currentValue>.*?)\\n"],
-      "currentValueTemplate": "main",
-      "depNameTemplate": "graphinx template",
-      "packageNameTemplate": "https://github.com/graphinx/templates",
-      "datasourceTemplate": "git-tags"
+      "depNameTemplate": "graphinx/templates",
+      "datasourceTemplate": "github-tags"
     },
     {
       "customType": "regex",
@@ -42,10 +45,8 @@
       "matchStrings": [
         "# yaml-language-server: $schema=https://raw.githubusercontent.com/graphinx/graphinx/(?<currentValue>.*)/config.schema.json"
       ],
-      "currentValueTemplate": "main",
-      "depNameTemplate": "graphinx config file version",
-      "packageNameTemplate": "https://github.com/graphinx/graphinx",
-      "datasourceTemplate": "git-tags"
+      "depNameTemplate": "graphinx/graphinx",
+      "datasourceTemplate": "github-tags"
     }
   ]
 }
