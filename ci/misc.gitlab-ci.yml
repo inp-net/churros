@@ -2,7 +2,7 @@ trigger-notella-update:
   stage: changesets
   allow_failure: true
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TASK != "update-socials-data"
       changes: [packages/db/prisma/schema.prisma]
   variables:
     SCHEMA_RAW_URL: $CI_PROJECT_URL/-/raw/$CI_COMMIT_SHA/packages/db/prisma/schema.prisma
