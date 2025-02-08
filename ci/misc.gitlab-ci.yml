@@ -14,7 +14,7 @@ update-socials-data:
   stage: changesets
   allow_failure: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TASK == "update-socials-data"
   script:
     - cd packages/app; yarn tsx src/scripts/generate-socials-json.ts
     - git config --global user.name gitlab
