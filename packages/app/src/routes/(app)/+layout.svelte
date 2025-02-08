@@ -313,6 +313,7 @@
     display: flex;
     flex-direction: column;
     max-width: var(--scrollable-content-width, 700px);
+    margin: 0 auto;
     background: var(--bg);
   }
 
