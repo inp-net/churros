@@ -2610,6 +2610,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Run housekeeping tasks: remove bookings on old events, remove old users (no login since a certain time), apple wallet pass files, etc.
   """
   housekeep(
+    """
+    If true, log actions without performing them
+    """
+    dryRun: Boolean! = false
     thresholds: HousekeepingExpirationThresholds!
     """
     Housekeeper token

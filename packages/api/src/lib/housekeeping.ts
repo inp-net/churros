@@ -7,9 +7,16 @@ import { rimraf } from 'rimraf';
 
 /**
  * Delete bookings for events that have been finished for a certain amount of time, and their associated Apple Wallet pass files
- * @param thresholdDays days since event end
+ * @param thresholdDays - Days since event end
+ * @param dryRun - if true, return result but don't do anything
  */
-export async function housekeepBookings(thresholdDays: number) {
+export async function housekeepBookings({
+  thresholdDays,
+  dryRun = false,
+}: {
+  thresholdDays: number;
+  dryRun?: boolean;
+}) {
   const toDelete = await prisma.registration.findMany({
     where: {
       ticket: {
@@ -22,7 +29,9 @@ export async function housekeepBookings(thresholdDays: number) {
     },
   });
 
-  const deletionResults = prisma.registration.deleteMany({
+  if (dryRun) return { bookings: toDelete };
+
+  const deletionResults = await prisma.registration.deleteMany({
     where: {
       id: { in: toDelete.map((r) => r.id) },
     },
@@ -36,10 +45,13 @@ export async function housekeepBookings(thresholdDays: number) {
 
 /**
  * Delete Apple Wallet pass files & resources
+ * @param dryRun - if true, return result but don't do anything
  */
-export async function housekeepAppleWallet() {
+export async function housekeepAppleWallet({ dryRun = false }: { dryRun?: boolean } = {}) {
   const directory = path.join(storageRoot(), APPLE_WALLET_PASS_STORAGE_PATH);
   const files = await readdir(directory);
+
+  if (dryRun) return files;
 
   await rimraf(directory);
   await mkdir(directory);
@@ -49,9 +61,16 @@ export async function housekeepAppleWallet() {
 
 /**
  * Delete users that have not been seen for a certain amount of time
- * @param thresholdDays days since last login
+ * @param thresholdDays - Days since last login
+ * @param dryRun - if true, return result but don't do anything
  */
-export async function housekeepUsers(thresholdDays: number) {
+export async function housekeepUsers({
+  thresholdDays,
+  dryRun = false,
+}: {
+  thresholdDays: number;
+  dryRun?: boolean;
+}) {
   const toDelete = await prisma.user.findMany({
     where: {
       bot: false,
@@ -60,7 +79,10 @@ export async function housekeepUsers(thresholdDays: number) {
       },
     },
   });
-  const deletionResults = prisma.user.deleteMany({
+
+  if (dryRun) return { users: toDelete };
+
+  const deletionResults = await prisma.user.deleteMany({
     where: {
       id: { in: toDelete.map((u) => u.id) },
     },
@@ -74,9 +96,16 @@ export async function housekeepUsers(thresholdDays: number) {
 
 /**
  * Warn users by email that will have their account deleted in thresholdDays/2 days
- * @param thresholdDays days since last login
+ * @param thresholdDays - Days since last login
+ * @param dryRun - if true, return result but don't do anything
  */
-export async function warnUsersToHousekeep(thresholdDays: number) {
+export async function warnUsersToHousekeep({
+  thresholdDays,
+  dryRun = false,
+}: {
+  thresholdDays: number;
+  dryRun?: boolean;
+}) {
   const daysLeft = Math.floor(thresholdDays / 2);
 
   const usersToWarn = await prisma.user.findMany({
@@ -87,6 +116,8 @@ export async function warnUsersToHousekeep(thresholdDays: number) {
       },
     },
   });
+
+  if (dryRun) return usersToWarn;
 
   for (const user of usersToWarn) {
     await sendMail(
@@ -105,7 +136,27 @@ export async function warnUsersToHousekeep(thresholdDays: number) {
   return usersToWarn;
 }
 
-export async function housekeepNotifications(thresholdDays: number) {
+/**
+ * Delete notifications older than a certain amount of time
+ * @param thresholdDays - Days since notification creation
+ * @param dryRun - if true, return result but don't do anything
+ */
+export async function housekeepNotifications({
+  thresholdDays,
+  dryRun = false,
+}: {
+  thresholdDays: number;
+  dryRun?: boolean;
+}) {
+  if (dryRun)
+    return await prisma.notification.findMany({
+      where: {
+        createdAt: {
+          lt: subDays(new Date(), thresholdDays),
+        },
+      },
+    });
+
   return prisma.notification.deleteMany({
     where: {
       createdAt: {
@@ -115,7 +166,27 @@ export async function housekeepNotifications(thresholdDays: number) {
   });
 }
 
-export async function housekeepLogs(thresholdDays: number) {
+/**
+ * Delete log entries older than a certain amount of time
+ * @param thresholdDays - Days since log entry creation
+ * @param dryRun - if true, return result but don't do anything
+ */
+export async function housekeepLogs({
+  thresholdDays,
+  dryRun = false,
+}: {
+  thresholdDays: number;
+  dryRun?: boolean;
+}) {
+  if (dryRun)
+    return await prisma.logEntry.findMany({
+      where: {
+        happenedAt: {
+          lt: subDays(new Date(), thresholdDays),
+        },
+      },
+    });
+
   return prisma.logEntry.deleteMany({
     where: {
       happenedAt: {
@@ -125,12 +196,26 @@ export async function housekeepLogs(thresholdDays: number) {
   });
 }
 
-export async function housekeepGdprExports(thresholdDays: number) {
+/**
+ * Delete GDPR exports older than a certain amount of time
+ * @param thresholdDays - Days since GDPR export creation
+ * @param dryRun - if true, return result but don't do anything
+ */
+export async function housekeepGdprExports({
+  thresholdDays,
+  dryRun = false,
+}: {
+  thresholdDays: number;
+  dryRun?: boolean;
+}) {
   const exportPaths = await getAllGdprExports();
   const thresholdDate = subDays(new Date(), thresholdDays);
   const toDelete = exportPaths.filter((exportPath) =>
     isBefore(gdprExportCreationDateFromFilename(path.basename(exportPath)), thresholdDate),
   );
+
+  if (dryRun) return toDelete;
+
   await Promise.all(
     toDelete.map(async (exportPath) => {
       await unlink(exportPath);
