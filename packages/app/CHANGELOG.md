@@ -1,5 +1,23 @@
 # @churros/app
 
+## 4.6.1
+
+### Patch Changes
+
+- 80c6f9d: deactivate notella checks on /health for now
+
+## 4.6.0
+
+### Minor Changes
+
+- 6fb2412: greatly improve /logs UI
+
+## 4.5.1
+
+### Patch Changes
+
+- 12b62f4: remove now-useless Comment value of NotificationChannel enum
+
 ## 4.5.0
 
 ### Minor Changes

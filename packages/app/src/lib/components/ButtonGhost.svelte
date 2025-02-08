@@ -16,12 +16,14 @@
   export let inline = false;
   export let loading = false;
   export let hovering = false;
+  export let newTab = false;
 </script>
 
 <svelte:element
   this={href ? 'a' : 'button'}
   {...umamiAttributes(track, trackData)}
   role="button"
+  target={newTab ? '_blank' : undefined}
   tabindex="0"
   title={help}
   {...$$restProps}

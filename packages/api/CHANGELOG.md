@@ -1,5 +1,31 @@
 # @churros/api
 
+## 12.1.0
+
+### Minor Changes
+
+- 6fb2412: Add more filtering arguments to Query.logs, add Query.log
+
+### Patch Changes
+
+- 0e82f9d: fix(deps): update dependency firebase-admin to ^13.1.0 (!571)
+- 6709369: fix(deps): update dependency graphql-yoga to ^5.11.0 (!569)
+- 6aecb8d: fix(deps): update dependency ioredis to ^5.5.0 (!573)
+- Updated dependencies [6aecb8d]
+  - @churros/db@4.3.1
+
+## 12.0.0
+
+### Major Changes
+
+- 12b62f4: remove NotificationChannel.Comments
+
+### Patch Changes
+
+- 9b78610: fix(deps): update notella to v0.15.0 (!568)
+- Updated dependencies [12b62f4]
+  - @churros/db@4.3.0
+
 ## 11.0.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @churros/db
 
+## 4.3.1
+
+### Patch Changes
+
+- 6aecb8d: fix(deps): update dependency ioredis to ^5.5.0 (!573)
+
+## 4.3.0
+
+### Minor Changes
+
+- 12b62f4: remove now-useless Comment value of NotificationChannel enum
+
 ## 4.2.0
 
 ### Minor Changes

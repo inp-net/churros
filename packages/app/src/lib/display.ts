@@ -26,7 +26,6 @@ import IconCalendar from '~icons/mdi/calendar-multiselect-outline';
 import IconCar from '~icons/mdi/car';
 import IconCarrot from '~icons/mdi/carrot';
 import IconStatus from '~icons/mdi/checkbox-marked-circle-outline';
-import IconComment from '~icons/mdi/comment-outline';
 import IconCoupon from '~icons/mdi/coupon';
 import IconDomainSwitch from '~icons/mdi/domain-switch';
 import IconFileDocumentOutline from '~icons/mdi/file-document-outline';
@@ -134,7 +133,6 @@ export const HELP_VISIBILITY_DYNAMIC: (
 export const DISPLAY_NOTIFICATION_CHANNELS: Record<NotificationChannel, string> = {
   Articles: 'Posts',
   Shotguns: 'Shotguns',
-  Comments: 'Commentaires',
   GodparentRequests: 'Demandes de parrainage',
   GroupBoard: 'Changements de bureau',
   Permissions: 'Changement de permissions',
@@ -146,7 +144,6 @@ export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
   NotificationChannel.Shotguns,
   NotificationChannel.Articles,
   NotificationChannel.GodparentRequests,
-  NotificationChannel.Comments,
   NotificationChannel.GroupBoard,
   NotificationChannel.Permissions,
   NotificationChannel.Other,
@@ -155,7 +152,6 @@ export const ORDER_NOTIFICATION_CHANNELS: NotificationChannel[] = [
 export const ICONS_NOTIFICATION_CHANNELS: Record<NotificationChannel$options, Component> = {
   Articles: IconArticle,
   Shotguns: IconShotgun,
-  Comments: IconComment,
   GodparentRequests: IconGodparent,
   GroupBoard: IconGroupMembers,
   Other: IconNotification,

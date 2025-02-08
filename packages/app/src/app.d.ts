@@ -33,6 +33,7 @@ declare namespace App {
   interface PageState extends NavtopAndModalState {
     currentTab?: string;
     bookingTicketId?: string | null;
+    focusedItemId?: string | null;
   }
 }
 

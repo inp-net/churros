@@ -920,14 +920,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@churros/api@workspace:packages/api"
   dependencies:
-    "@churros/db": "workspace:^4.2.0"
+    "@churros/db": "workspace:^4.3.1"
     "@clack/prompts": "npm:^0.10.0"
     "@envelop/core": "npm:^5.0.3"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.3"
     "@inp-net/ldap7": "npm:^1.0.12"
-    "@inp-net/notella": "https://github.com/inp-net/churros-notella.git#v0.14.0"
+    "@inp-net/notella": "https://github.com/inp-net/churros-notella.git#v0.15.0"
     "@pothos/core": "npm:4.3.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
     "@pothos/plugin-dataloader": "npm:^4.3.0"
@@ -1002,7 +1002,7 @@ __metadata:
     express: "npm:^4.21.2"
     express-session: "npm:^1.18.1"
     extract-files: "npm:^13.0.0"
-    firebase-admin: "npm:^13.0.2"
+    firebase-admin: "npm:^13.1.0"
     glob: "npm:^11.0.1"
     google-auth-library: "npm:^9.15.1"
     googleapis: "npm:144.0.0"
@@ -1012,13 +1012,13 @@ __metadata:
     graphql-rate-limit-directive: "npm:^2.0.6"
     graphql-scalars: "npm:^1.24.1"
     graphql-ws: "npm:^6.0.3"
-    graphql-yoga: "npm:^5.10.11"
+    graphql-yoga: "npm:^5.11.0"
     handlebars: "npm:^4.7.8"
     helmet: "npm:^8.0.0"
     html-to-text: "npm:^9.0.5"
     i18next: "npm:^24.2.2"
     image-type: "npm:^5.2.0"
-    ioredis: "npm:^5.4.2"
+    ioredis: "npm:^5.5.0"
     is-plain-object: "npm:^5.0.0"
     is-valid-domain: "npm:^0.1.6"
     jsonwebtoken: "npm:^9.0.2"
@@ -1219,7 +1219,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@churros/db@workspace:^, @churros/db@workspace:^4.2.0, @churros/db@workspace:packages/db":
+"@churros/db@workspace:^, @churros/db@workspace:^4.3.1, @churros/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
@@ -1228,7 +1228,7 @@ __metadata:
     "@pothos/plugin-prisma": "npm:^4.4.0"
     "@prisma/client": "npm:^6.3.1"
     graphql: "npm:^16.10.0"
-    ioredis: "npm:^5.4.2"
+    ioredis: "npm:^5.5.0"
     npm-run-all2: "npm:^7.0.2"
     npm-upgrade: "npm:^3.1.0"
     prisma: "npm:^6.3.1"
@@ -2883,12 +2883,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inp-net/notella@https://github.com/inp-net/churros-notella.git#v0.14.0":
+"@inp-net/notella@https://github.com/inp-net/churros-notella.git#v0.15.0":
   version: 0.9.0
-  resolution: "@inp-net/notella@https://github.com/inp-net/churros-notella.git#commit=22f2908d3dae81ca13ae9a60d765c46f15d4e8c5"
+  resolution: "@inp-net/notella@https://github.com/inp-net/churros-notella.git#commit=76409424f2a0da7348088ba021255f7c372343f5"
   dependencies:
     "@prisma/client": "npm:^6.0.0"
-  checksum: 10c0/dbdbcf6131aeb5007b3fcc19d040666fcfd31c75fb624b4e0ea4143e6c027dff81393164be417aa35440b0e21141e0dcfe76cd0fe54caebb50b94d9a3c836d83
+  checksum: 10c0/bc7a0a8e9fe837cf735c3cd6a52819ea22faa68557926b2b34dd2a70f6d71a62d8906e942c27d9216a917f7b84fb3bebeed48be6090459514d1d68914fa9c0e2
   languageName: node
   linkType: hard
 
@@ -11985,9 +11985,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^13.0.2":
-  version: 13.0.2
-  resolution: "firebase-admin@npm:13.0.2"
+"firebase-admin@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "firebase-admin@npm:13.1.0"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
     "@firebase/database-compat": "npm:^2.0.0"
@@ -12006,7 +12006,7 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 10c0/77401a62f1e10961f6cf176d686a8892676bb4b7828a42371291bbd9833d186099c2459d27b120d6bfd5681fce556a785ec5f895183bc5c5b83a6b28e73ec493
+  checksum: 10c0/e73c76a3b1e6fe35551a73f56afa2743e6acb24a322b6ea9d4b8d62fd0d6618b3bb7ecdf020cd0c4a2065fa4cdd312ada050012cb794edf6e3e946e37d353760
   languageName: node
   linkType: hard
 
@@ -13034,9 +13034,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-yoga@npm:^5.10.11":
-  version: 5.10.11
-  resolution: "graphql-yoga@npm:5.10.11"
+"graphql-yoga@npm:^5.11.0":
+  version: 5.11.0
+  resolution: "graphql-yoga@npm:5.11.0"
   dependencies:
     "@envelop/core": "npm:^5.0.2"
     "@graphql-tools/executor": "npm:^1.3.7"
@@ -13051,7 +13051,7 @@ __metadata:
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: 10c0/74b3ad3ff77656c680b36044c2655e8e95624fa51f4cb189c7d7d23a17ce14538fd13a552eea78fd1eddd3cc2e1c2f98bb529ad66a83a2869d9306f648f15368
+  checksum: 10c0/4cfe3fcf4cc6a771f8b5b50669bd640b53e04d82615a0985703adafb33386d6ea6af7bdb2f0ee882eeb378134d3447146b9bdfbbb36792253ec532e49f98ad9e
   languageName: node
   linkType: hard
 
@@ -14058,9 +14058,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^5.4.2":
-  version: 5.4.2
-  resolution: "ioredis@npm:5.4.2"
+"ioredis@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "ioredis@npm:5.5.0"
   dependencies:
     "@ioredis/commands": "npm:^1.1.1"
     cluster-key-slot: "npm:^1.1.0"
@@ -14071,7 +14071,7 @@ __metadata:
     redis-errors: "npm:^1.2.0"
     redis-parser: "npm:^3.0.0"
     standard-as-callback: "npm:^2.1.0"
-  checksum: 10c0/e59d2cceb43ed74b487d7b50fa91b93246e734e5d4835c7e62f64e44da072f12ab43b044248012e6f8b76c61a7c091a2388caad50e8ad69a8ce5515a730b23b8
+  checksum: 10c0/ba64502fc92d9e05465793fafcd0568cb668af6e2350462b61daadfd499e3a48239d9a723d3ce08b08c93f3f745d05dda91136cdc597d4d485604e6730305305
   languageName: node
   linkType: hard
 

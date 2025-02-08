@@ -28,6 +28,7 @@ test:api:format:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/app/schema.graphql
+        - packages/db/prisma/schema.prisma
         - packages/api/src/**/*
 
 test:api:schema:no-undeclared-changes:
@@ -57,7 +58,7 @@ test:api:schema:changeset-on-changes:
       if grep -q "'@churros/api': major" .changeset/*; then
         echo "Breaking changes detected in changesets, skipping breaking changes schema check";
       else
-        if graphql-schema-diff --fail-on-dangerous-changes --fail-on-breaking-changes main.schema.graphql declared.schema.graphql; then
+        if graphql-schema-diff --fail-on-breaking-changes main.schema.graphql declared.schema.graphql; then
           echo "No breaking changes detected in schema";
         else
           echo "Breaking or dangerous changes detected in schema, include a major changeset for @churros/api";

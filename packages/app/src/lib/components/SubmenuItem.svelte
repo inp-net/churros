@@ -14,6 +14,9 @@
   /** The submenu item is a form */
   export let form = false;
 
+  /** Only show right slot when item is hovered/focused */
+  export let hoverRightPart = false;
+
   /** Widen the space available to the right slot */
   export let wideRightPart = false;
 
@@ -66,6 +69,7 @@
   role="menuitem"
   tabindex="-1"
   class:wide-right-part={wideRightPart}
+  class:hover-right-part={hoverRightPart}
   id={anchor?.replace(/^#/, '')}
   class:highlighted={anchor === $page.url.hash}
   class:current={href && compareHrefs(href, $page.url.href)}
@@ -126,6 +130,14 @@
       width: unset;
       text-align: center;
     }
+  }
+
+  .submenu-item.hover-right-part .right {
+    display: none;
+  }
+
+  .submenu-item.hover-right-part:is(:hover, :focus-visible, :focus-within) .right {
+    display: block;
   }
 
   .submenu-item.current {
