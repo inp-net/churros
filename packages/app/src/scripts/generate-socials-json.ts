@@ -69,18 +69,18 @@ sherlockData.Wakatime = {
   errorType: 'status_code',
 };
 
-sherlockData.Facebook = {
-  url: 'https://www.facebook.com/{}',
-  urlMain: 'https://facebook.com/',
-  username_claimed: 'Meta',
+sherlockData.Bluesky = {
+  url: 'https://bsky.app/profile/{}',
+  urlMain: 'https://bsky.app/',
+  username_claimed: 'bsky.app',
   errorType: 'message',
-  errorMsg: "isn't available right now",
+  errorMsg: 'Unable to resolve handle',
 };
 
 sherlockData.Twitter.url = 'https://twitter.com/{}';
 sherlockData.Twitter.urlMain = 'https://twitter.com/';
 
-sherlockData.LinkedIn.regexCheck = '^[\\w._-]+$';
+sherlockData.LinkedIn.regexCheck = String.raw`^[\w._-]+$`;
 // sherlockData.inpgit = {
 //   ...sherlockData.GitLab,
 //   url: 'https://git.inpt.fr/{}',
@@ -118,7 +118,7 @@ function generateSocialSiteData(siteName: string) {
             regex: new RegExp(${JSON.stringify(
               removeWWWandMobile(extraction.url).replace(
                 '{}',
-                `(${extraction.regexCheck?.replace(/^\^/, '').replace(/\$$/, '') ?? '[\\w_.-]+'})`,
+                `(${extraction.regexCheck?.replace(/^\^/, '').replace(/\$$/, '') ?? String.raw`[\w_.-]+`})`,
               ),
             )}),
             usernameIsValid: ${
