@@ -29,7 +29,7 @@ export async function housekeepBookings({
     },
   });
 
-  if (dryRun) return { bookings: toDelete };
+  if (dryRun) return { bookings: toDelete, count: toDelete.length };
 
   const deletionResults = await prisma.registration.deleteMany({
     where: {
@@ -80,7 +80,7 @@ export async function housekeepUsers({
     },
   });
 
-  if (dryRun) return { users: toDelete };
+  if (dryRun) return { users: toDelete, count: toDelete.length };
 
   const deletionResults = await prisma.user.deleteMany({
     where: {
@@ -148,14 +148,17 @@ export async function housekeepNotifications({
   thresholdDays: number;
   dryRun?: boolean;
 }) {
-  if (dryRun)
-    return await prisma.notification.findMany({
-      where: {
-        createdAt: {
-          lt: subDays(new Date(), thresholdDays),
+  if (dryRun) {
+    return await prisma.notification
+      .count({
+        where: {
+          createdAt: {
+            lt: subDays(new Date(), thresholdDays),
+          },
         },
-      },
-    });
+      })
+      .then((count) => ({ count }));
+  }
 
   return prisma.notification.deleteMany({
     where: {
@@ -178,14 +181,17 @@ export async function housekeepLogs({
   thresholdDays: number;
   dryRun?: boolean;
 }) {
-  if (dryRun)
-    return await prisma.logEntry.findMany({
-      where: {
-        happenedAt: {
-          lt: subDays(new Date(), thresholdDays),
+  if (dryRun) {
+    return await prisma.logEntry
+      .count({
+        where: {
+          happenedAt: {
+            lt: subDays(new Date(), thresholdDays),
+          },
         },
-      },
-    });
+      })
+      .then((count) => ({ count }));
+  }
 
   return prisma.logEntry.deleteMany({
     where: {
