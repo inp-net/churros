@@ -17,13 +17,14 @@ update-socials-data:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TASK == "update-socials-data"
   script:
     - cd packages/app; yarn tsx src/scripts/generate-socials-json.ts
+    - yarn prettier -w packages/app/src/lib/social.generated.ts
     - git config --global user.name gitlab
     - git config --global user.email "git@noreply.inpt.fr"
     - git remote remove gitlab_origin || true
     - git remote add gitlab_origin https://updater:$UPDATER_TOKEN@$CI_SERVER_SHELL_SSH_HOST/$CI_PROJECT_PATH
     - |
       if [ -n "$(git status --porcelain)" ]; then
-        git add src/lib/social.generated.ts
-        git commit -m "chore(socials): update data from sherlock"
+        git add packages/app/src/lib/social.generated.ts
+        git commit -nm "chore(socials): update data from sherlock"
         git push gitlab_origin HEAD:$CI_DEFAULT_BRANCH
       fi
