@@ -54,6 +54,10 @@ export default mergeConfig(
     build: {
       minify: false,
       sourcemap: true,
+      rollupOptions: {
+        // f-droid build does not include @capacitor/push-notifications
+        external: ['@capacitor/push-notifications']
+      }
     },
     server: {
       allowedHosts: capacitorDevserverUrl ? [new URL(capacitorDevserverUrl).host] : [],

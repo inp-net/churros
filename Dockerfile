@@ -225,12 +225,12 @@ RUN echo "KEY_ALIAS=$APK_KEY_ALIAS" >> $HOME/.gradle/gradle.properties
 RUN cat $HOME/.gradle/gradle.properties
 
 WORKDIR /app/packages/app/android
-RUN ./gradlew assembleRelease
+RUN ./gradlew assembleRelease -PbuildFlavor=google
 
 FROM scratch AS android-release
 
 # copy built apk from android-assemble
-COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs/apk/release/ .
+COPY --from=android-assemble-release /app/packages/app/android/app/build/outputs/apk/google/release/ .
 
 #### Debug assemble (unsigned APK)
 
@@ -242,12 +242,59 @@ RUN echo "KEY_ALIAS=null" >> $HOME/.gradle/gradle.properties
 
 WORKDIR /app/packages/app/android
 
-RUN ./gradlew assembleDebug
+RUN ./gradlew assembleDebug -PbuildFlavor=google
 
 FROM scratch AS android-debug
 
 # copy built apk from android-assemble
-COPY --from=android-assemble-debug /app/packages/app/android/app/build/outputs/apk/debug/ .
+COPY --from=android-assemble-debug /app/packages/app/android/app/build/outputs/apk/google/debug/ .
+
+#### F-droid debug assemble
+
+FROM android-assemble-base AS android-assemble-fdroid-debug
+
+RUN echo "KEYSTORE_PATH=null" >> $HOME/.gradle/gradle.properties
+RUN echo "KEYSTORE_PASSWORD=null" >> $HOME/.gradle/gradle.properties
+RUN echo "KEY_ALIAS=null" >> $HOME/.gradle/gradle.properties
+
+WORKDIR /app/packages/app/android
+
+RUN ./gradlew assembleDebug -PbuildFlavor=fdroid
+
+FROM scratch AS android-fdroid-debug
+
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-fdroid-debug /app/packages/app/android/app/build/outputs/apk/fdroid/debug/ .
+
+#### F-droid release assemble
+
+FROM android-assemble-base AS android-assemble-fdroid-release
+
+ARG APK_KEY_ALIAS=ALIAS
+
+WORKDIR /app
+
+RUN --mount=type=secret,id=APK_KEYSTORE_BASE64,uid=$ANDROID_ASSEMBLE_USER_UID \
+    base64 -d -i /run/secrets/APK_KEYSTORE_BASE64 > /app/churros.keystore
+
+RUN echo "KEYSTORE_PATH=/app/churros.keystore" >> $HOME/.gradle/gradle.properties
+
+RUN --mount=type=secret,id=APK_KEYSTORE_PASSWORD,uid=$ANDROID_ASSEMBLE_USER_UID \ 
+    echo "KEYSTORE_PASSWORD=$(cat /run/secrets/APK_KEYSTORE_PASSWORD || true)" >> $HOME/.gradle/gradle.properties
+
+
+RUN echo "KEY_ALIAS=$APK_KEY_ALIAS" >> $HOME/.gradle/gradle.properties
+
+WORKDIR /app/packages/app/android
+
+RUN ./gradlew assembleRelease -PbuildFlavor=fdroid
+
+FROM scratch AS android-fdroid-release
+
+# copy built apk from android-assemble
+COPY --from=android-assemble-fdroid-release /app/packages/app/android/app/build/outputs/apk/fdroid/release/ .
+
 
 ### Sync
 

@@ -8,7 +8,16 @@ import { arrayBufferToBase64 } from '$lib/base64';
 import { toasts } from '$lib/toasts';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
-import { PushNotifications } from '@capacitor/push-notifications';
+import type { PushNotificationsPlugin } from '@capacitor/push-notifications';
+
+// PushNotifications plugin is not available on F-Droid builds
+let PushNotifications: Promise<PushNotificationsPlugin> | undefined;
+try {
+  PushNotifications = import('@capacitor/push-notifications').then((m) => m.PushNotifications);
+} catch (error) {
+  console.error('Push notifications capacitor plugin not available', error);
+  PushNotifications = undefined;
+}
 
 graphql(`
   fragment NotificationsSubscribedCheck on NotificationSubscription {
@@ -37,11 +46,11 @@ export async function checkIfSubscribed(subscriptions: NotificationsSubscribedCh
 
 export async function unsubscribeFromNotifications(): Promise<void> {
   let endpoint: string | null = null;
-  if (Capacitor.isNativePlatform()) {
+  if (Capacitor.isNativePlatform() && PushNotifications) {
     endpoint = await Preferences.get({ key: 'notificationToken' }).then(({ value }) =>
       value ? endpointFromToken(value) : null,
     );
-    await PushNotifications.unregister();
+    await PushNotifications.then((pn) => pn.unregister());
   } else {
     if ((await Notification.requestPermission()) === 'granted') {
       const sw = await navigator.serviceWorker.ready;
@@ -81,15 +90,17 @@ export async function subscribeToNotifications(): Promise<
   const ok = await requestPermissions();
   if (!ok) return 'denied';
 
-  if (Capacitor.isNativePlatform()) {
-    PushNotifications.register();
-    const token = await new Promise<string | null>((resolve) => {
-      PushNotifications.addListener('registration', (token) => {
-        resolve(token.value);
-      });
-      PushNotifications.addListener('registrationError', (error) => {
-        console.error('Error on registration: ' + JSON.stringify(error));
-        resolve(null);
+  if (Capacitor.isNativePlatform() && PushNotifications) {
+    await PushNotifications.then((pn) => pn.register());
+    const token = await new Promise<string | null>(async (resolve) => {
+      await PushNotifications.then((pn) => {
+        pn.addListener('registration', (token) => {
+          resolve(token.value);
+        });
+        pn.addListener('registrationError', (error) => {
+          console.error('Error on registration: ' + JSON.stringify(error));
+          resolve(null);
+        });
       });
     });
 
@@ -181,12 +192,12 @@ function endpointFromToken(token: string): string {
 }
 
 async function requestPermissions(): Promise<boolean> {
-  if (Capacitor.isNativePlatform()) {
-    const check = await PushNotifications.checkPermissions();
+  if (Capacitor.isNativePlatform() && PushNotifications) {
+    const check = await PushNotifications.then((pn) => pn.checkPermissions());
     if (check.receive === 'denied') return false;
 
     if (check.receive !== 'granted') {
-      const check = await PushNotifications.requestPermissions();
+      const check = await PushNotifications.then((pn) => pn.requestPermissions());
       if (check.receive !== 'granted') return false;
     }
 
