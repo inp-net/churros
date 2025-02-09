@@ -2,17 +2,15 @@ import { log, prisma, publish } from '#lib';
 import { notify, queueNotification } from '#modules/notifications/utils';
 import { lydiaSignature, verifyLydiaTransaction } from '#modules/payments';
 import { Event as NotellaEvent } from '@inp-net/notella';
-import express from 'express';
 import { z } from 'zod';
-
-export const lydiaWebhook = express();
+import { api } from './express.js';
 
 // Lydia webhook
-lydiaWebhook.get('/lydia-webhook/alive', (_, res) => {
+api.get('/lydia-webhook/alive', (_, res) => {
   res.sendStatus(200);
 });
 
-lydiaWebhook.post('/lydia-webhook', async (req, res) => {
+api.post('/lydia-webhook', async (req, res) => {
   // Retrieve the params from the request
   const signatureParameters = z
     .object({
