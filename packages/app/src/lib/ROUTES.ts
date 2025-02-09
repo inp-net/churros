@@ -362,14 +362,6 @@ export const PAGES = {
  * SERVERS
  */
 export const SERVERS = {
-  'GET /auth/[...subpath]': (subpath: (string | number)[], params?: {}) => {
-    return `/auth/${subpath?.join('/')}`;
-  },
-  'POST /graphql': `/graphql`,
-  'GET /graphql': `/graphql`,
-  'GET /storage/[...file]': (file: (string | number)[], params?: {}) => {
-    return `/storage/${file?.join('/')}`;
-  },
   'GET /[entity=entity_handle]': (
     entity: ExtractParamType<typeof import('../params/entity_handle.ts').match>,
     params?: {},
@@ -671,10 +663,6 @@ export type KIT_ROUTES = {
     '/signup/finish/[token]': 'token';
   };
   SERVERS: {
-    'GET /auth/[...subpath]': 'subpath';
-    'POST /graphql': never;
-    'GET /graphql': never;
-    'GET /storage/[...file]': 'file';
     'GET /[entity=entity_handle]': 'entity';
     'GET /[uid=uid].png': 'uid';
     'GET /bookings/[code].pdf': 'code';
@@ -730,8 +718,6 @@ export type KIT_ROUTES = {
     email: never;
     componentName: never;
     qrcode: never;
-    subpath: never;
-    file: never;
     entity: never;
   };
 };
