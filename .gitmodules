@@ -1,6 +1,6 @@
 [submodule "packages/app/android"]
 	path = packages/app/android
-	url = git@git.inpt.fr:churros/android
+	url = git@github.com:inp-net/churros-android
 [submodule "packages/app/ios"]
 	path = packages/app/ios
-	url = git@git.inpt.fr:churros/ios
+	url = git@github.com:inp-net/churros-ios
