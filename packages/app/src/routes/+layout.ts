@@ -7,7 +7,6 @@ import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts';
-import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import * as Sentry from '@sentry/sveltekit';
 import { addYears, setDefaultOptions } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -34,7 +33,13 @@ export async function load(event) {
     goto(event.url.replace(url.origin, ''));
   });
 
-  await CapacitorUpdater.notifyAppReady();
+  try {
+    await import('@capgo/capacitor-updater').then(({ CapacitorUpdater }) =>
+      CapacitorUpdater.notifyAppReady(),
+    );
+  } catch (error) {
+    console.error('Failed to notify app ready (fine in f-droid builds)', error);
+  }
 
   if (Capacitor.isNativePlatform()) {
     // Expose token to cookies so that houdini client can use it (its fetchParams function is synchronous so there's no way to call Preferences.get there)
