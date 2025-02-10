@@ -2,5 +2,6 @@
   "printWidth": 100,
   "quoteProps": "consistent",
   "singleQuote": true,
+  "objectWraping": "collapse",
   "plugins": ["prettier-plugin-svelte", "prettier-plugin-organize-imports"]
 }
