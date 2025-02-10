@@ -362,46 +362,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/charts-svelte@npm:^1.22.15":
-  version: 1.22.15
-  resolution: "@carbon/charts-svelte@npm:1.22.15"
+"@carbon/charts-svelte@npm:^1.22.16":
+  version: 1.22.16
+  resolution: "@carbon/charts-svelte@npm:1.22.16"
   dependencies:
-    "@carbon/charts": "npm:1.22.15"
-    "@ibm/telemetry-js": "npm:^1.8.0"
+    "@carbon/charts": "npm:1.22.16"
+    "@ibm/telemetry-js": "npm:^1.9.1"
   peerDependencies:
     svelte: ^4.0.0 || ^5.17.0
-  checksum: 10c0/3d36cd3d9e78c07a12ce0167ece8337b23fc6f66092fc77fc3b691a6b3db51fd9736a18db232727098680881da9b87647f27d20317db1ba5a6b0717df0cb4f21
+  checksum: 10c0/dde65321c73e3183b4e704b03563709ff588fbf0431e0990ea63e65f081575a47be8872795101205e7150d466aa185fb7bd8b8a45602d6a9b9c7ed1a9d84451e
   languageName: node
   linkType: hard
 
-"@carbon/charts@npm:1.22.15":
-  version: 1.22.15
-  resolution: "@carbon/charts@npm:1.22.15"
+"@carbon/charts@npm:1.22.16":
+  version: 1.22.16
+  resolution: "@carbon/charts@npm:1.22.16"
   dependencies:
-    "@carbon/colors": "npm:^11.28.0"
+    "@carbon/colors": "npm:^11.29.0"
     "@carbon/utils-position": "npm:^1.3.0"
-    "@ibm/telemetry-js": "npm:^1.8.0"
+    "@ibm/telemetry-js": "npm:^1.9.1"
     "@types/d3": "npm:^7.4.3"
     "@types/topojson": "npm:^3.2.6"
     d3: "npm:^7.9.0"
     d3-cloud: "npm:^1.2.7"
     d3-sankey: "npm:^0.12.3"
     date-fns: "npm:^4.1.0"
-    dompurify: "npm:^3.2.3"
+    dompurify: "npm:^3.2.4"
     html-to-image: "npm:^1.11.11"
     lodash-es: "npm:^4.17.21"
     topojson-client: "npm:^3.1.0"
     tslib: "npm:^2.8.1"
-  checksum: 10c0/38d46426454d018e9e3fb8496687231a2a1058a5dea354b6214fa0ad6e8a0d8adac7c9f844607eb8f29b2e1aa7c5fd4b2000e4838faa0cbcb6250e79f88d1d3e
+  checksum: 10c0/59c4a131155d4f1bf50fed0372eaa86f31a13e1d55499eaa003fcbcd88112cdcb3a5ea14aff4f87457b6e5676dd0e2d0ab0e89473674470f51514f6573e9090f
   languageName: node
   linkType: hard
 
-"@carbon/colors@npm:^11.28.0":
-  version: 11.28.0
-  resolution: "@carbon/colors@npm:11.28.0"
+"@carbon/colors@npm:^11.29.0":
+  version: 11.29.0
+  resolution: "@carbon/colors@npm:11.29.0"
   dependencies:
     "@ibm/telemetry-js": "npm:^1.5.0"
-  checksum: 10c0/7d7c8eecf7ae1a6e4a6cc1244be7015d5cfbe186f79b97091ddc0420f7c740a0f0d67cc31a7234d9e1819bb1a36e76695fbd568b28096990e6f6a552f7251505
+  checksum: 10c0/2acb575e09a691481ef759d79d887ea0edf538772a672b9cb059e9d5bbc2ae75783aa93b39d35c3b9aba9443f878050d2597985adc500875034438d3aecdb9b0
   languageName: node
   linkType: hard
 
@@ -945,7 +945,7 @@ __metadata:
   resolution: "@churros/app@workspace:packages/app"
   dependencies:
     "@babel/core": "npm:^7.26.8"
-    "@carbon/charts-svelte": "npm:^1.22.15"
+    "@carbon/charts-svelte": "npm:^1.22.16"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.4"
     "@iconify-json/material-symbols": "npm:^1.2.14"
@@ -2443,12 +2443,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ibm/telemetry-js@npm:^1.5.0, @ibm/telemetry-js@npm:^1.5.1, @ibm/telemetry-js@npm:^1.8.0":
+"@ibm/telemetry-js@npm:^1.5.0, @ibm/telemetry-js@npm:^1.5.1":
   version: 1.9.0
   resolution: "@ibm/telemetry-js@npm:1.9.0"
   bin:
     ibmtelemetry: dist/collect.js
   checksum: 10c0/9c513f1643ebf4353a7970b198aa2404fcf70bab0736560f7f8c2ec74867af51eda38c6522f1526de748f7983ef264f94cc971c9928fec885c7cbd53ba3f2a54
+  languageName: node
+  linkType: hard
+
+"@ibm/telemetry-js@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "@ibm/telemetry-js@npm:1.9.1"
+  bin:
+    ibmtelemetry: dist/collect.js
+  checksum: 10c0/fc7684c0051f76884ecc24409558b6162a11a1c80536afbe1f201b5f26f234f5ae7236ab13b260ce4faaaec0deacc0f2b702b2ae6b02765fef81c5bc4f3215e2
   languageName: node
   linkType: hard
 
@@ -9789,15 +9798,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^3.2.3":
-  version: 3.2.3
-  resolution: "dompurify@npm:3.2.3"
+"dompurify@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "dompurify@npm:3.2.4"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10c0/0ce5cb89b76f396d800751bcb48e0d137792891d350ccc049f1bc9a5eca7332cc69030c25007ff4962e0824a5696904d4d74264df9277b5ad955642dfb6f313f
+  checksum: 10c0/6be56810fb7ad2776155c8fc2967af5056783c030094362c7d0cf1ad13f2129cf922d8eefab528a34bdebfb98e2f44b306a983ab93aefb9d6f24c18a3d027a05
   languageName: node
   linkType: hard
 
