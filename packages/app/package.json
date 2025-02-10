@@ -1,6 +1,6 @@
 {
   "name": "@churros/app",
-  "version": "4.6.1",
+  "version": "4.7.0",
   "dependencies": {
     "@capacitor-community/keep-awake": "^6.0.0",
     "@capacitor-community/safe-area": "^7.0.0-alpha.1",

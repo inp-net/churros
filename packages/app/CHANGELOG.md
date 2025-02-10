@@ -1,5 +1,20 @@
 # @churros/app
 
+## 4.7.0
+
+### Minor Changes
+
+- 3dc0f5f: add bluesky profile links support
+- e83f043: allow choosing any graduation year on signup
+
+### Patch Changes
+
+- fd64a14: chore(deps): update dependency @babel/core to ^7.26.8 (!579)
+- 1595c8f: hide open-target and/or target items from a log entry if it's not relevant
+- 1d86026: main ui was off-center on tablet-sized viewports
+- 3dc0f5f: facebook social links showed "profile.php" as username
+- fd64a14: fix(deps): update swc monorepo to ^1.10.15 (!578)
+
 ## 4.6.1
 
 ### Patch Changes

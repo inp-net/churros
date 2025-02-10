@@ -1,5 +1,17 @@
 # @churros/api
 
+## 12.2.0
+
+### Minor Changes
+
+- a47ab5b: Add argument Mutation.housekeep:dryRun
+- 72893d1: health checks are resolved on fields themselves, so that e.g. requesting healthcheck { database { prisma }} only executes a prisma healthcheck, instead of executing all checks and only returning data from the database.prisma part of the total health check
+
+### Patch Changes
+
+- 986820f: Query.logs:target would use search operator syntax, which prevented items with ':' in them
+- fd64a14: fix(deps): update notella to v0.15.3 (!576)
+
 ## 12.1.0
 
 ### Minor Changes
