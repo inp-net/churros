@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Nouveautés
+
+- Les managers d'évènements et admins sont maintenant avertis quand iels s'apprêtent à prendre une place qu'iels ne pourrait pas prendre sans leur statut de manager/admin
+
 ## [4.7.0] - 2025-02-08
 
 ## [4.6.1] - 2025-02-07

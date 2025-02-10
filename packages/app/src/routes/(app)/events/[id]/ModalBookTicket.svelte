@@ -11,7 +11,8 @@
   import LoadingText from '$lib/components/LoadingText.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
-  import { loaded, onceLoaded } from '$lib/loading';
+  import { countThing } from '$lib/i18n';
+  import { allLoaded, loaded } from '$lib/loading';
   import { mutate } from '$lib/mutations';
   import { refroute } from '$lib/navigation';
   import { route } from '$lib/ROUTES';
@@ -40,6 +41,7 @@
         price: minimumPrice(applyPromotions: true)
         cannotBookForMe: cannotBookReason(themself: true)
         cannotBookForSomeoneElse: cannotBookReason(themself: false)
+        cannotBookAsRegularUser: cannotBookReason(themself: true, asRegularPerson: true)
         godsonLimit
         remainingGodsons
         event {
@@ -154,7 +156,7 @@
     </h2>
   </header>
   <div class="contents">
-    {#if !$data}
+    {#if !$data || !allLoaded( [$data.cannotBookAsRegularUser, $data.cannotBookForMe, $data.cannotBookForSomeoneElse], )}
       <LoadingChurros />
       <p>Chargement...</p>
       <nav>
@@ -165,19 +167,23 @@
         <LoadingText tag="p" value={$data.cannotBookForMe} />
       </Alert>
     {:else if step === 'start'}
-      {#if !$data.cannotBookForSomeoneElse && $data.godsonLimit > 0}
-        <Alert theme="warning">
-          <LoadingText tag="p" value={$data.cannotBookForSomeoneElse} />
-        </Alert>
-      {:else if $data?.godsonLimit > 0}
-        <p class="godsons-remaining">
-          Il te reste <LoadingText value={$data.remainingGodsons} /> parrainage{onceLoaded(
-            $data.remainingGodsons,
-            (count) => (count > 1 ? 's' : ''),
-            '(s)',
-          )}
-        </p>
-      {/if}
+      <section class="notices">
+        {#if !$data.cannotBookForMe && $data.cannotBookAsRegularUser}
+          <Alert theme="warning">
+            <p>Si tu n'étais pas admin ou manager, tu ne pourrais pas réserver cette place:</p>
+            <LoadingText tag="p" value={$data.cannotBookAsRegularUser} />
+          </Alert>
+        {/if}
+        {#if !$data.cannotBookForSomeoneElse && $data.godsonLimit > 0}
+          <Alert theme="warning">
+            <LoadingText tag="p" value={$data.cannotBookForSomeoneElse} />
+          </Alert>
+        {:else if $data?.godsonLimit > 0}
+          <p class="godsons-remaining">
+            Il te reste {countThing('parrainage', $data.remainingGodsons)}
+          </p>
+        {/if}
+      </section>
       <div class="actions">
         <ButtonSecondary
           disabled={Boolean($data.cannotBookForMe)}
@@ -339,5 +345,9 @@
     gap: 0.5rem;
     align-items: center;
     justify-content: center;
+  }
+
+  .notices {
+    margin-bottom: 1.2em;
   }
 </style>

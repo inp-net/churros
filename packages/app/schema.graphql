@@ -6356,6 +6356,10 @@ type Ticket implements Node {
   """
   cannotBookReason(
     """
+    Ignorer le fait qu'on puisse voir toutes les places (managers, admins, admins AE, etc)
+    """
+    asRegularPerson: Boolean! = false
+    """
     On souhaite réserver pour soi-même
     """
     themself: Boolean!

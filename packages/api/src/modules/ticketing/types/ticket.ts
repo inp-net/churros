@@ -188,8 +188,13 @@ export const TicketType = builder.prismaNode('Ticket', {
         themself: t.arg.boolean({
           description: 'On souhaite réserver pour soi-même',
         }),
+        asRegularPerson: t.arg.boolean({
+          defaultValue: false,
+          description:
+            "Ignorer le fait qu'on puisse voir toutes les places (managers, admins, admins AE, etc)",
+        }),
       },
-      async resolve({ id }, { themself }, { user }) {
+      async resolve({ id }, { themself, asRegularPerson }, { user }) {
         const ticket = await prisma.ticket.findUniqueOrThrow({
           where: { id },
           include: canBookTicket.prismaIncludes,
@@ -205,6 +210,7 @@ export const TicketType = builder.prismaNode('Ticket', {
             : null,
           beneficiary: themself ? null : 'someone else',
           pointOfContact: ticket.event.managers.at(0)?.user,
+          ignoreCanSeeAllBookings: asRegularPerson,
         });
         return can ? null : whynot;
       },
