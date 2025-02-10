@@ -2246,6 +2246,9 @@ type Minor implements Node {
   yearTier: Int!
 }
 
+"""
+- **Rate limit par défault:** 1200 / 10 minutes (par utilisateur·ice et par query)
+"""
 type Mutation @rateLimit(limit: 1200, duration: 600) {
   acceptUserCandidate(email: String!): MutationAcceptUserCandidateResult!
   """
@@ -4445,6 +4448,9 @@ type QRCode {
   viewbox: String!
 }
 
+"""
+- **Rate limit par défault:** 1200/minute (par utilisateur·ice et par query)
+"""
 type Query @rateLimit(limit: 1200, duration: 60) {
   """
   Récupère tous les formulaires. Réservé aux admins.
@@ -4580,6 +4586,9 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     unlisted: Boolean! = false
   ): [Group!]!
+  """
+  - **Rate limit:** 5/seconde
+  """
   healthcheck: HealthCheck! @rateLimit(duration: 1, limit: 5)
   """
   Gets the homepage articles, customized if the user is logged in.
