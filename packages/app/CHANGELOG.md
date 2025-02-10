@@ -1,5 +1,23 @@
 # @churros/app
 
+## 4.8.0
+
+### Minor Changes
+
+- 4ecb677: warn managers or admins when they're bypassing checks when booking a ticket
+- acacf6b: welcome page now clearly states what your uid is, and has a bit better appearance for things to do
+
+### Patch Changes
+
+- d3b24c0: fix(deps): update dependency @carbon/charts-svelte to ^1.22.16 (!589)
+- 6e4a020: local logins did not reload layout
+- 7f06985: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.24 (!582)
+- 7f06985: fix(deps): update dependency @sentry/sveltekit to v9 (!585)
+- 3f1c99e: chore(deps): update dependency postcss to ^8.5.2 (!594)
+- a8c7bcb: fix(deps): update dependency prettier to ^3.5.0 (!584)
+- 41698e3: prevent double-bookings by accidentally clicking twice on book buttons
+- 7f06985: fix(deps): update dependency ua-parser-js to ^2.0.2 (!583)
+
 ## 4.7.0
 
 ### Minor Changes

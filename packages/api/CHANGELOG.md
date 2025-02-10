@@ -1,5 +1,19 @@
 # @churros/api
 
+## 12.3.0
+
+### Minor Changes
+
+- 4ecb677: warn managers or admins when they're bypassing checks when booking a ticket
+- 6c53ddd: Rate-limit Mutation.bookEvent to 1/10 seconds
+
+### Patch Changes
+
+- a8c7bcb: fix(deps): update dependency prettier to ^3.5.0 (!584)
+- 7f06985: fix(deps): update dependency remark-gfm to ^4.0.1 (!586)
+- 18f2499: rate limits are applied again
+- 7f06985: fix(deps): update dependency ua-parser-js to ^2.0.2 (!583)
+
 ## 12.2.0
 
 ### Minor Changes
