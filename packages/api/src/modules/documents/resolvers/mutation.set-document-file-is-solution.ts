@@ -34,37 +34,34 @@ builder.mutationField('setDocumentFileIsSolution', (t) =>
       });
       await prisma.document.update({
         where: { id: documentId },
-        data: {
-          // If marking as solution, remove from paperPaths and add to solutionPaths
-          ...(isSolution
-            ? {
-                paperPaths: {
-                  set: document.paperPaths.filter((p) => p !== filename),
-                },
-                // Don't create duplicates
-                ...(document.solutionPaths.includes(filename)
-                  ? {}
-                  : {
-                      solutionPaths: {
-                        push: filename,
-                      },
-                    }),
-                // The other way around
-              }
-            : {
-                // Don't create duplicates
-                ...(document.paperPaths.includes(filename)
-                  ? {}
-                  : {
-                      paperPaths: {
-                        push: filename,
-                      },
-                    }),
-                solutionPaths: {
-                  set: document.solutionPaths.filter((p) => p !== filename),
-                },
-              }),
-        },
+        data: isSolution
+          ? {
+              paperPaths: {
+                set: document.paperPaths.filter((p) => p !== filename),
+              },
+              // Don't create duplicates
+              ...(document.solutionPaths.includes(filename)
+                ? {}
+                : {
+                    solutionPaths: {
+                      push: filename,
+                    },
+                  }),
+              // The other way around
+            }
+          : {
+              // Don't create duplicates
+              ...(document.paperPaths.includes(filename)
+                ? {}
+                : {
+                    paperPaths: {
+                      push: filename,
+                    },
+                  }),
+              solutionPaths: {
+                set: document.solutionPaths.filter((p) => p !== filename),
+              },
+            },
       });
       return true;
     },
