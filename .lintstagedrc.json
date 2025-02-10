@@ -1,5 +1,5 @@
 {
-  "*.{js,ts,svelte}": "eslint --fix",
+  "*.{js,ts,svelte}": "oxlint --fix",
   "*.{css,scss,svelte}": "stylelint --fix",
   "*": "prettier --write --ignore-unknown"
 }
