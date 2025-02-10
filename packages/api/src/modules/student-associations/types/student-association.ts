@@ -148,11 +148,8 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
       async resolve({ id }, { yearTiers }) {
         return prisma.groupMember.count({
           where: {
-            member: {
-              ...(yearTiers.length > 0
-                ? { graduationYear: { in: yearTiers.map(fromYearTier) } }
-                : {}),
-            },
+            member:
+              yearTiers.length > 0 ? { graduationYear: { in: yearTiers.map(fromYearTier) } } : {},
             group: {
               type: 'StudentAssociationSection',
               studentAssociationId: id,
