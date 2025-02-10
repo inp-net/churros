@@ -1,5 +1,12 @@
 # @churros/api
 
+## 12.2.1
+
+### Patch Changes
+
+- 7f06985: fix(deps): update dependency remark-gfm to ^4.0.1 (!586)
+- 7f06985: fix(deps): update dependency ua-parser-js to ^2.0.2 (!583)
+
 ## 12.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @churros/app
 
+## 4.7.1
+
+### Patch Changes
+
+- 7f06985: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.24 (!582)
+- 7f06985: fix(deps): update dependency @sentry/sveltekit to v9 (!585)
+- 7f06985: fix(deps): update dependency ua-parser-js to ^2.0.2 (!583)
+
 ## 4.7.0
 
 ### Minor Changes
