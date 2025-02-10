@@ -2349,7 +2349,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     pointOfContact: UID
     ticket: LocalID!
-  ): MutationBookEventResult!
+  ): MutationBookEventResult! @rateLimit(duration: 10, limit: 1)
   """
   Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
   """
