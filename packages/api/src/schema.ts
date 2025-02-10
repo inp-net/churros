@@ -1,4 +1,9 @@
-import { builder, graphinxDirective, rateLimitDirective } from '#lib';
+import {
+  builder,
+  graphinxDirective,
+  rateLimitDirective,
+  rateLimitDirectiveTransformer,
+} from '#lib';
 import { addTypes, printSchemaWithDirectives } from '@graphql-tools/utils';
 import { execa } from 'execa';
 import { rename, writeFile } from 'node:fs/promises';
@@ -31,8 +36,9 @@ import '#modules/themes';
 import '#modules/ticketing';
 import '#modules/users';
 
-// export const schema = rateLimitDirectiveTransformer(builder.toSchema({}));
-export const schema = addTypes(builder.toSchema({}), [graphinxDirective, rateLimitDirective]);
+export const schema = rateLimitDirectiveTransformer(
+  addTypes(builder.toSchema({}), [graphinxDirective, rateLimitDirective]),
+);
 
 export async function writeSchema() {
   await writeFile(

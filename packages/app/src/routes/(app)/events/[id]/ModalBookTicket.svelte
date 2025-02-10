@@ -95,7 +95,9 @@
     }
   `);
 
+  let creatingBooking = false;
   async function createBooking(close: () => void) {
+    creatingBooking = true;
     const result = await mutate(CreateBooking, {
       ticket: $data?.localID,
       churrosBeneficiary: churrosBeneficiary || null,
@@ -109,6 +111,7 @@
       close?.();
       await goto(`${refroute('/bookings/[code]', result.data.bookEvent.data.localID)}#finish`);
     }
+    creatingBooking = false;
   }
 
   function back() {
@@ -187,6 +190,7 @@
       <div class="actions">
         <ButtonSecondary
           disabled={Boolean($data.cannotBookForMe)}
+          loading={creatingBooking}
           on:click={async () => {
             if ($dataMe) await createBooking(close);
             else advance('confirm');
@@ -311,7 +315,7 @@
         {/if}
         <nav>
           <ButtonSecondary on:click={back}>Retour</ButtonSecondary>
-          <ButtonSecondary submits>Confirmer</ButtonSecondary>
+          <ButtonSecondary loading={creatingBooking} submits>Confirmer</ButtonSecondary>
         </nav>
       </form>
     {/if}
