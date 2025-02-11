@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.8.1
+
+### Patch Changes
+
+- 5142e78: chore(deps): downgrade @sentry/sveltekit to 8.x
+
 ## 4.8.0
 
 ### Minor Changes
