@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.8.2
+
+### Patch Changes
+
+- 6615941: fix(deps): update dependency zod to ^3.24.2 (!601)
+
 ## 4.8.1
 
 ### Patch Changes
