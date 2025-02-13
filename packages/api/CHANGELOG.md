@@ -1,5 +1,13 @@
 # @churros/api
 
+## 12.3.1
+
+### Patch Changes
+
+- 6615941: fix(deps): update dependency zod to ^3.24.2 (!601)
+- Updated dependencies [9e10869]
+  - @churros/db@4.3.2
+
 ## 12.3.0
 
 ### Minor Changes

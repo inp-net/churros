@@ -1,5 +1,13 @@
 # @churros/app
 
+## 4.8.2
+
+### Patch Changes
+
+- a6c4d74: fix(deps): update dependency @sentry/sveltekit to ^8.55.0 (!604)
+- 27d8f7b: fix(deps): update swc monorepo to ^1.10.16 (!606)
+- 6615941: fix(deps): update dependency zod to ^3.24.2 (!601)
+
 ## 4.8.1
 
 ### Patch Changes
