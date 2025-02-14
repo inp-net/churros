@@ -3,6 +3,9 @@
   "extends": ["config:recommended"],
   "labels": ["dependencies"],
   "rangeStrategy": "bump",
+  "git-submodules": {
+    "enabled": true
+  },
   "kubernetes": {
     "fileMatch": ["kubernetes/.+\\.ya?ml$"]
   },
