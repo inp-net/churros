@@ -1,14 +1,10 @@
 import { clearScheduledNotifications, queueNotification } from '#modules/notifications';
 import { type Prisma } from '@churros/db/prisma';
 import { Event } from '@inp-net/notella';
-import { scheduleNewArticleNotification } from './notifications.old.js';
 
 export async function schedulePostNotification(
   post: Prisma.ArticleGetPayload<{ include: { group: true } }>,
 ) {
-  // remove when notella confirmed
-  void scheduleNewArticleNotification(post, { eager: true });
-  // end remove when notella confirmed
   await clearScheduledNotifications(post.id);
   await queueNotification({
     body: post.title,
