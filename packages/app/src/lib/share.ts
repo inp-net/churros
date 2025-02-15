@@ -20,7 +20,9 @@ export async function share(data: {
   page: Readable<{ url: URL }>;
 }) {
   const currentUrl = get(data.page).url;
-  const finalUrl = data.url || rewriteUrl(data.path ? new URL(data.path, currentUrl) : currentUrl);
+  const finalUrl = rewriteUrl(
+    data.url || (data.path ? new URL(data.path, currentUrl) : currentUrl),
+  );
 
   if (await canShare()) {
     if (Capacitor.isNativePlatform()) {
@@ -52,16 +54,17 @@ export async function share(data: {
   }
 }
 
-function rewriteUrl(url: URL): string {
+function rewriteUrl(urlOrString: URL | string): string {
+  let url: URL;
+  if (URL.canParse(urlOrString)) {
+    url = new URL(urlOrString);
+  } else {
+    return urlOrString.toString();
+  }
+
   if (Capacitor.isNativePlatform() && !dev) {
     // Android uses localhost for its internal webview, but we want to share the public web link
     url = new URL(url.toString().replace(/https?:\/\/localhost/, env.PUBLIC_FRONTEND_ORIGIN));
-  }
-  const segments = url.pathname.split('/').filter(Boolean);
-  if (['users', 'groups'].includes(segments[0]) && segments.length === 2) {
-    return new URL(url.pathname.replace(`/${segments[0]}/`, '/@'), url.origin)
-      .toString()
-      .replace(/\/$/, '');
   }
 
   return url.toString();
