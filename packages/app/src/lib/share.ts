@@ -13,16 +13,14 @@ export async function canShare() {
   return Boolean(browser && navigator.share !== undefined);
 }
 
-export async function share(
-  data: { resourceId?: MaybeLoading<string> } & (
-    | { url: string }
-    | { path?: string; page: Readable<{ url: URL }> }
-  ),
-) {
-  const finalUrl =
-    'url' in data
-      ? data.url
-      : rewriteUrl(data.path ? new URL(data.path, get(data.page).url) : get(data.page).url);
+export async function share(data: {
+  resourceId?: MaybeLoading<string>;
+  url: string;
+  path?: string;
+  page: Readable<{ url: URL }>;
+}) {
+  const currentUrl = get(data.page).url;
+  const finalUrl = data.url || rewriteUrl(data.path ? new URL(data.path, currentUrl) : currentUrl);
 
   if (await canShare()) {
     if (Capacitor.isNativePlatform()) {
