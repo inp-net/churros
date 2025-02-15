@@ -1,5 +1,5 @@
-import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { fullName, log, type Capacity, type Context } from '#lib';
+import { canEditEvent, canEditEventPrismaIncludes } from '#modules/events';
 import { actualPrice } from '#modules/payments';
 import { userIsAdminOf } from '#permissions';
 import type { Prisma, User } from '@churros/db/prisma';
@@ -216,6 +216,7 @@ userIsBookedToEvent.prismaIncludes = {
 /**
  * @returns [canBook, why]
  * @param beneficiary - can be a string if it's a beneficiary (free form) or a User if it's a churrosBeneficiary
+ * @param ignoreCanSeeAllBookings - if true, will ignore the canSeeAllBookings check. useful to determine if someone can book a ticket only because they're managers/admins/etc
  */
 export function canBookTicket({
   user,
@@ -224,6 +225,7 @@ export function canBookTicket({
   ticket,
   debug,
   pointOfContact,
+  ignoreCanSeeAllBookings = false,
 }: {
   user: Context['user'];
   userAdditionalData: null | Prisma.UserGetPayload<{
@@ -233,6 +235,7 @@ export function canBookTicket({
   beneficiary: string | User | null | undefined;
   ticket: Prisma.TicketGetPayload<{ include: typeof canBookTicket.prismaIncludes }>;
   debug?: boolean;
+  ignoreCanSeeAllBookings?: boolean;
 }): [boolean, string] {
   const dret = <T extends [boolean, string]>(ret: T, data: unknown) => {
     if (debug) void log('ticketing', 'debug/can-book-ticket', { ret, data }, ticket.id, user);
@@ -242,7 +245,8 @@ export function canBookTicket({
     if (debug) void log('ticketing', 'debug/can-book-ticket', { data }, ticket.id, user);
   };
 
-  if (canSeeAllBookings(ticket.event, user)) return dret([true, ''], { why: 'canSeeAllBookings' });
+  if (!ignoreCanSeeAllBookings && canSeeAllBookings(ticket.event, user))
+    return dret([true, ''], { why: 'canSeeAllBookings' });
 
   d({ canSeeAllBookings: false });
 
@@ -288,12 +292,12 @@ export function canBookTicket({
 
   d({ shotgunPastClosed: true });
 
-  if (ticket.onlyManagersCanProvide && !canSeeAllBookings(ticket.event, user))
+  if (ticket.onlyManagersCanProvide)
     return dret([false, 'Seul un·e manager peut faire une réservation pour ce billet'], {});
 
   d({ managersOnlyCheck: true });
 
-  if (!canSeeAllBookings(ticket.event, user) && user) {
+  if (user) {
     const bookingsByUser = ticket.registrations.filter((r) => r.authorId === user.id);
     if (ticket.godsonLimit > 0 && bookingsByUser.length > ticket.godsonLimit)
       return dret([false, 'Vous avez atteint la limite de parrainages pour ce billet'], {});
@@ -305,7 +309,7 @@ export function canBookTicket({
 
   d({ placesLeftCheck: true });
 
-  if (!canSeeAllBookings(ticket.event, user) && ticket.godsonLimit <= 0 && beneficiary)
+  if (ticket.godsonLimit <= 0 && beneficiary)
     return dret([false, "Ce billet n'accepte pas de parrainages"], {});
 
   d({ godsonEnabledCheck: true });

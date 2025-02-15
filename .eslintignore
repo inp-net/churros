@@ -26,3 +26,5 @@ packages/db/
 packages/app/android/
 packages/app/ios/
 packages/app/capacitor.config.ts
+*.gql
+*.graphql

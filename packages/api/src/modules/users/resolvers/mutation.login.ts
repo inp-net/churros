@@ -1,7 +1,7 @@
 import { builder, log, prisma } from '#lib';
-import { notify, queueNotification } from '#modules/notifications';
+import { queueNotification } from '#modules/notifications';
 import type { Prisma } from '@churros/db/prisma';
-import { CredentialType as CredentialPrismaType, NotificationChannel } from '@churros/db/prisma';
+import { CredentialType as CredentialPrismaType } from '@churros/db/prisma';
 import { hashPassword, upsertLdapUser } from '@inp-net/ldap7/user';
 import { Event as NotellaEvent } from '@inp-net/notella';
 import { GraphQLError } from 'graphql';
@@ -113,18 +113,6 @@ export async function login(
           err: 'user does not need manual validation but no user was created from the userCandidate',
           userCandidate,
         });
-
-        // remove when notella confirmed
-        await notify(await prisma.user.findMany({ where: { admin: true } }), {
-          title: `${userCandidate.email} est bloqué·e dans une étape intermédiaire`,
-          body: "Il a un userCandidate mais pas de user, alors qu'aucune validation manuelle n'est nécéssaire.",
-          data: {
-            channel: NotificationChannel.Other,
-            goto: `/signups/edit/${userCandidate.email}`,
-            group: undefined,
-          },
-        });
-        // end remove when notella confirmed
 
         await queueNotification({
           title: `${userCandidate.email} est bloqué·e dans une étape intermédiaire`,

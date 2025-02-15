@@ -13,7 +13,7 @@ maintenance.listen(4002, () => {
 });
 
 await writeSchema();
-// await rescheduleNotifications({ dryRun: true });
+
 const id = await registerGoogleWalletClass(GOOGLE_WALLET_CLASS);
 if (id) console.info(`Registered Google Wallet pass class ${id}`);
 const template = await registerAppleWalletPassTemplate();

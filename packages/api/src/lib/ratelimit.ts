@@ -1,4 +1,10 @@
-import { MapperKind, getDirective, mapSchema, type Maybe } from '@graphql-tools/utils';
+import {
+  MapperKind,
+  getDirective,
+  mapSchema,
+  type FieldMapper,
+  type Maybe,
+} from '@graphql-tools/utils';
 import { formatDuration, intervalToDuration, type Locale } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
@@ -76,6 +82,19 @@ export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSch
     },
   });
 
+  // This does not actually work except when original description is undefined, see https://github.com/ardatan/graphql-tools/issues/5508
+  const fieldMapper: FieldMapper = (fieldConfig, _fieldName, _typeName, schema) => {
+    const rateLimitDirective = getDirective(schema, fieldConfig, 'rateLimit')?.[0] as
+      | RateLimitDirective['args']
+      | undefined;
+
+    if (!rateLimitDirective) return fieldConfig;
+    return {
+      ...fieldConfig,
+      description: appendRateLimitToDescription(false, fieldConfig.description, rateLimitDirective),
+    };
+  };
+
   // Auto-generate additional documentation to mention rate limits
   return mapSchema(transformer(schema), {
     [MapperKind.OBJECT_TYPE]: (type, schema) => {
@@ -98,21 +117,10 @@ export function rateLimitDirectiveTransformer(schema: GraphQLSchema): GraphQLSch
       });
     },
 
-    [MapperKind.OBJECT_FIELD]: (fieldConfig, _fieldName, _typeName, schema) => {
-      const rateLimitDirective = getDirective(schema, fieldConfig, 'rateLimit')?.[0] as
-        | RateLimitDirective['args']
-        | undefined;
-
-      if (!rateLimitDirective) return fieldConfig;
-      return {
-        ...fieldConfig,
-        description: appendRateLimitToDescription(
-          false,
-          fieldConfig.description,
-          rateLimitDirective,
-        ),
-      };
-    },
+    [MapperKind.MUTATION_ROOT_FIELD]: fieldMapper,
+    [MapperKind.QUERY_ROOT_FIELD]: fieldMapper,
+    [MapperKind.SUBSCRIPTION_ROOT_FIELD]: fieldMapper,
+    [MapperKind.OBJECT_FIELD]: fieldMapper,
   });
 }
 

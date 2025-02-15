@@ -1,12 +1,6 @@
 import { builder, log, prisma, yearTier } from '#lib';
-import { notify, queueNotification } from '#modules/notifications';
-import {
-  CredentialType,
-  NotificationChannel,
-  Prisma,
-  type Major,
-  type UserCandidate,
-} from '@churros/db/prisma';
+import { queueNotification } from '#modules/notifications';
+import { CredentialType, Prisma, type Major, type UserCandidate } from '@churros/db/prisma';
 import { upsertLdapUser } from '@inp-net/ldap7/user';
 import { Event as NotellaEvent } from '@inp-net/notella';
 import { addDays } from 'date-fns';
@@ -61,41 +55,6 @@ builder.mutationField('completeSignup', (t) =>
       // The !candidate.emailValidated conditions prevents sending the notificaiton
       // on subsequent completeSignup requests for the same user candidate
       if (needsVerification && !candidate.emailValidated) {
-        // remove when notella confirmed
-        const adminsResponsibleForThisSignup = await prisma.user.findMany({
-          where: {
-            OR: [
-              { admin: true },
-              ...(userOrCandidate.majorId
-                ? [
-                    {
-                      adminOfStudentAssociations: {
-                        some: {
-                          school: {
-                            majors: {
-                              some: { id: userOrCandidate.majorId },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  ]
-                : []),
-            ],
-          },
-        });
-        await notify(adminsResponsibleForThisSignup, {
-          title: `Inscription en attente de validation`,
-          body: `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
-            userOrCandidate.graduationYear ? yearTier(userOrCandidate.graduationYear) : '?'
-          }A ${userOrCandidate.major?.shortName ?? 'sans filière'}) a fait une demande d'inscription`,
-          data: {
-            channel: NotificationChannel.Other,
-            goto: `/signups/edit/${userOrCandidate.email}`,
-            group: undefined,
-          },
-        });
-        // end remove when notella confirmed
         await queueNotification({
           title: `Inscription en attente de validation`,
           body: `${userOrCandidate.email} (${userOrCandidate.firstName} ${userOrCandidate.lastName}, ${
