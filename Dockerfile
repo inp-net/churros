@@ -26,6 +26,7 @@ COPY package.json /app/
 
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY .env.example /app/.env.example
+COPY .merge-drivers.yml /app/.merge-drivers.yml
 COPY .git /app/.git
 COPY packages/ /app/packages/ 
 COPY scripts/ /app/scripts/
