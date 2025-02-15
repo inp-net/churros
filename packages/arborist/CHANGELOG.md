@@ -1,5 +1,11 @@
 # arborist
 
+## 0.1.6
+
+### Patch Changes
+
+- 8b72d36: chore(deps): update nodejs (!598)
+
 ## 0.1.5
 
 ### Patch Changes

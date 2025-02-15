@@ -1,5 +1,22 @@
 # @churros/app
 
+## 4.8.2
+
+### Patch Changes
+
+- 02b1a81: chore(deps): update dependency @babel/core to ^7.26.9 (!610)
+- ec0870c: fix(deps): update dependency graphql-ws to ^6.0.4 (!612)
+- 02b1a81: fix(deps): update dependency houdini to ^1.5.1 (!608)
+- 368ecd6: chore(deps): update dependency houdini-svelte to ^2.1.5 (!607)
+- 98b55c6: fix(deps): update dependency nanoid to ^5.1.0 (!618)
+- f9e4478: fix(deps): update dependency prettier to ^3.5.1 (!609)
+- a6c4d74: fix(deps): update dependency @sentry/sveltekit to ^8.55.0 (!604)
+- 02b1a81: chore(deps): update dependency @sveltejs/kit to ^2.17.2 (!611)
+- 27d8f7b: fix(deps): update swc monorepo to ^1.10.16 (!606)
+- 6615941: fix(deps): update dependency zod to ^3.24.2 (!601)
+- Updated dependencies [8b72d36]
+  - arborist@0.1.6
+
 ## 4.8.1
 
 ### Patch Changes
