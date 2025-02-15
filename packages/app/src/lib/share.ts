@@ -1,4 +1,5 @@
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
+import { env } from '$env/dynamic/public';
 import { graphql } from '$houdini';
 import { loaded, type MaybeLoading } from '$lib/loading';
 import { toasts } from '$lib/toasts';
@@ -21,9 +22,7 @@ export async function share(
   const finalUrl =
     'url' in data
       ? data.url
-      : data.path
-        ? new URL(data.path, get(data.page).url)?.toString()
-        : rewriteUrl(get(data.page).url);
+      : rewriteUrl(data.path ? new URL(data.path, get(data.page).url) : get(data.page).url);
 
   if (await canShare()) {
     if (Capacitor.isNativePlatform()) {
@@ -56,6 +55,10 @@ export async function share(
 }
 
 function rewriteUrl(url: URL): string {
+  if (Capacitor.isNativePlatform() && !dev) {
+    // Android uses localhost for its internal webview, but we want to share the public web link
+    url = new URL(url.toString().replace(/https?:\/\/localhost/, env.PUBLIC_FRONTEND_ORIGIN));
+  }
   const segments = url.pathname.split('/').filter(Boolean);
   if (['users', 'groups'].includes(segments[0]) && segments.length === 2) {
     return new URL(url.pathname.replace(`/${segments[0]}/`, '/@'), url.origin)
