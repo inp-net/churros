@@ -80,7 +80,7 @@ spec:
               service:
                 name: churros-api
                 port:
-                  number: 4000
+                  number: 4001
           - pathType: Prefix
             path: /log
             backend:
