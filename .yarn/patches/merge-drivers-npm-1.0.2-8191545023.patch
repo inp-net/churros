@@ -1,0 +1,20 @@
+diff --git a/index.js b/index.js
+index 0be51599d5a2b618407ec31ddfc86a6823fc1991..5ce09ec93772b95448b5b5afff7213de0bdb413a 100755
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,6 @@
+ #!/usr/bin/env node
+ import { Command } from 'commander';
++import path from 'node:path';
+ import fs from 'node:fs';
+ 
+ import { install } from './commands/install.js';
+@@ -8,7 +9,7 @@ import { clean } from './commands/clean.js';
+ 
+ import { readConfig } from './utils/config.js';
+ 
+-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
++const packageJson = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, './package.json'), 'utf8'));
+ const config = readConfig('.merge-drivers.yml');
+ const program = new Command();
+ 
