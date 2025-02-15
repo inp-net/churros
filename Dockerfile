@@ -35,7 +35,7 @@ COPY scripts/ /app/scripts/
 RUN rm -rf packages/mock-n7-ldap pack
 RUN rm -rf packages/oauth-client
 
-RUN yarn install 
+RUN if ! yarn install; then cat /tmp/xfs-*/build.log; exit 1; fi
 RUN yarn cp-env
 RUN yarn generate-buildinfo
 
