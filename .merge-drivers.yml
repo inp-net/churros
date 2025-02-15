@@ -1,4 +1,4 @@
 merge-drivers:
   regen-yarn-lockfile:
     name: regenerate yarn.lock
-    driver: yarn install
+    driver: yarn install; cp yarn.lock %A
