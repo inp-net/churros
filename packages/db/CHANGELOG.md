@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.2
+
+### Patch Changes
+
+- 9e10869: fix(deps): update dependency @faker-js/faker to ^9.5.0 (!603)
+
 ## 4.3.1
 
 ### Patch Changes
