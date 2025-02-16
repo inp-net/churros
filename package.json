@@ -27,7 +27,7 @@
     "merge-drivers": "patch:merge-drivers@npm%3A1.0.2#~/.yarn/patches/merge-drivers-npm-1.0.2-8191545023.patch",
     "npm-run-all2": "^7.0.2",
     "npm-upgrade": "^3.1.0",
-    "oxlint": "^0.15.10",
+    "oxlint": "^0.15.11",
     "postcss": "^8.5.2",
     "postcss-html": "^1.8.0",
     "prettier": "^3.5.1",
