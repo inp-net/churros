@@ -1,5 +1,15 @@
 # @churros/api
 
+## 14.0.0
+
+### Major Changes
+
+- 229a501: Put lydia webhook and prometheus exporter on the same port as the API (4000)
+
+### Patch Changes
+
+- 1fa3db4: fix(deps): update dependency @inp-net/notella to v0.15.5 (!623)
+
 ## 13.0.0
 
 ### Major Changes
