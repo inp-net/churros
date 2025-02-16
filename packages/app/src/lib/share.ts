@@ -1,4 +1,4 @@
-import { browser, dev } from '$app/environment';
+import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { graphql } from '$houdini';
 import { loaded, type MaybeLoading } from '$lib/loading';
@@ -62,7 +62,7 @@ function rewriteUrl(urlOrString: URL | string): string {
     return urlOrString.toString();
   }
 
-  if (Capacitor.isNativePlatform() && !dev) {
+  if (Capacitor.isNativePlatform()) {
     // Android uses localhost for its internal webview, but we want to share the public web link
     url = new URL(url.toString().replace(/https?:\/\/localhost/, env.PUBLIC_FRONTEND_ORIGIN));
   }
