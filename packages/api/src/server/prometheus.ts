@@ -1,9 +1,7 @@
-import express from 'express';
 import { register } from 'prom-client';
+import { api } from './express.js';
 
-export const prometheusServer = express();
-
-prometheusServer.get('/metrics', async (_req, res) => {
+api.get('/metrics', async (_req, res) => {
   try {
     res.set('Content-Type', register.contentType);
     res.end(await register.metrics());
@@ -12,7 +10,7 @@ prometheusServer.get('/metrics', async (_req, res) => {
   }
 });
 
-prometheusServer.get('/metrics/:counter', async (req, res) => {
+api.get('/metrics/:counter', async (req, res) => {
   try {
     res.set('Content-Type', register.contentType);
     res.end(await register.getSingleMetricAsString(req.params.counter));
