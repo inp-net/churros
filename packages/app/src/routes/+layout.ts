@@ -2,12 +2,15 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { env } from '$env/dynamic/public';
 import { graphql, load_RootLayout } from '$houdini';
+import { notificationClickRoute } from '$lib/notifications.js';
 import { editingTheme } from '$lib/theme';
 import { App } from '@capacitor/app';
 import { Capacitor, CapacitorCookies } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { PushNotifications } from '@capacitor/push-notifications';
 import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import * as Notella from '@inp-net/notella';
 import * as Sentry from '@sentry/sveltekit';
 import { addYears, setDefaultOptions } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -32,6 +35,13 @@ export async function load(event) {
   App.addListener('appUrlOpen', (event) => {
     const url = new URL(event.url);
     goto(event.url.replace(url.origin, ''));
+  });
+
+  PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
+    console.log(`Received push notification action: ${action}`);
+    const message = JSON.parse(action.notification.data.original) as Notella.Message;
+    const path = await notificationClickRoute(message);
+    if (path) await goto(path);
   });
 
   await CapacitorUpdater.notifyAppReady();
