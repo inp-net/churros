@@ -2,7 +2,7 @@
   "name": "churros",
   "type": "module",
   "devDependencies": {
-    "@changesets/changelog-git": "^0.2.0",
+    "@changesets/changelog-git": "^0.2.1",
     "@changesets/cli": "^2.27.12",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",

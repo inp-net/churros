@@ -429,6 +429,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@changesets/changelog-git@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@changesets/changelog-git@npm:0.2.1"
+  dependencies:
+    "@changesets/types": "npm:^6.1.0"
+  checksum: 10c0/6a6fb315ffb2266fcb8f32ae9a60ccdb5436e52350a2f53beacf9822d3355f9052aba5001a718e12af472b4a8fabd69b408d0b11c02ac909ba7a183d27a9f7fd
+  languageName: node
+  linkType: hard
+
 "@changesets/cli@npm:^2.27.12":
   version: 2.27.12
   resolution: "@changesets/cli@npm:2.27.12"
@@ -711,6 +720,13 @@ __metadata:
   version: 6.0.0
   resolution: "@changesets/types@npm:6.0.0"
   checksum: 10c0/e755f208792547e3b9ece15ce4da22466267da810c6fd87d927a1b8cec4d7fb7f0eea0d1a7585747676238e3e4ba1ffdabe016ccb05cfa537b4e4b03ec399f41
+  languageName: node
+  linkType: hard
+
+"@changesets/types@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@changesets/types@npm:6.1.0"
+  checksum: 10c0/b4cea3a4465d1eaf0bbd7be1e404aca5a055a61d4cc72aadcb73bbbda1670b4022736b8d3052616cbf1f451afa0637545d077697f4b923236539af9cd5abce6c
   languageName: node
   linkType: hard
 
@@ -7642,7 +7658,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "churros@workspace:."
   dependencies:
-    "@changesets/changelog-git": "npm:^0.2.0"
+    "@changesets/changelog-git": "npm:^0.2.1"
     "@changesets/cli": "npm:^2.27.12"
     "@commitlint/cli": "npm:^19.7.1"
     "@commitlint/config-conventional": "npm:^19.7.1"
