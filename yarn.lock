@@ -956,7 +956,7 @@ __metadata:
     number-flip-animation: "patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch"
     party-js: "npm:^2.2.0"
     pdfmake: "npm:^0.2.18"
-    postcss: "npm:^8.5.2"
+    postcss: "npm:^8.5.3"
     postcss-html: "npm:^1.8.0"
     prettier: "npm:^3.5.1"
     qr-code-generator-lib: "npm:^1.0.1"
@@ -7635,7 +7635,7 @@ __metadata:
     npm-run-all2: "npm:^7.0.2"
     npm-upgrade: "npm:^3.1.0"
     oxlint: "npm:^0.15.11"
-    postcss: "npm:^8.5.2"
+    postcss: "npm:^8.5.3"
     postcss-html: "npm:^1.8.0"
     prettier: "npm:^3.5.1"
     prettier-plugin-jsdoc: "npm:^1.3.2"
@@ -17383,14 +17383,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.2":
-  version: 8.5.2
-  resolution: "postcss@npm:8.5.2"
+"postcss@npm:^8.5.3":
+  version: 8.5.3
+  resolution: "postcss@npm:8.5.3"
   dependencies:
     nanoid: "npm:^3.3.8"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10c0/3044d49bc725029ab62292e8bf9849741251b95f3b754e191bf8b4025414d40ec3b4ac05c5a563d4b50060b5c8e96683eb4d783d8d8fa3867eb7b763cbe66127
+  checksum: 10c0/b75510d7b28c3ab728c8733dd01538314a18c52af426f199a3c9177e63eb08602a3938bfb66b62dc01350b9aed62087eabbf229af97a1659eb8d3513cec823b3
   languageName: node
   linkType: hard
 
