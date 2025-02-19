@@ -70,7 +70,7 @@
     "is-valid-domain": "^0.1.6",
     "jsonwebtoken": "^9.0.2",
     "keep-a-changelog": "^2.5.3",
-    "ldap-authentication": "^3.2.6",
+    "ldap-authentication": "^3.3.2",
     "ldapjs": "^3.0.7",
     "linkify-html": "^4.2.0",
     "linkify-plugin-mention": "^4.2.0",
