@@ -12,10 +12,11 @@
   import HTMLContent from '$lib/components/HTMLContent.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
   import TextEventDates from '$lib/components/TextEventDates.svelte';
   import { sentenceJoin } from '$lib/i18n';
-  import { LoadingText, loading, mapAllLoading } from '$lib/loading';
+  import { LoadingText, loaded, loading, mapAllLoading } from '$lib/loading';
   import { refroute } from '$lib/navigation';
   import IconDate from '~icons/msl/calendar-today-outline';
   import IconLocation from '~icons/msl/location-on-outline';
@@ -37,6 +38,10 @@
     bookingTicketId = $page.url.hash.replace('#book/', '');
 
   $: if (bookingTicketId) bookTicket?.();
+
+  $: if ($PageEventDetail.data && loaded($PageEventDetail.data.event.title)) {
+    updateTitle($PageEventDetail.data.event.title);
+  }
 </script>
 
 <svelte:window

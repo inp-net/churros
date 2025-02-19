@@ -16,9 +16,9 @@ pages:
   rules:
     # build on tags, but not pre-releases
     - if: $CI_COMMIT_TAG =~ /^@churros\/api@(\d+\.\d+\.\d+)/
-    # allow manual triggers
+    # build when graphinx config changes
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
+      changes: [packages/api/.graphinx.yaml]
   script:
     - yarn workspace @churros/api install --immutable
     - yarn generate-buildinfo

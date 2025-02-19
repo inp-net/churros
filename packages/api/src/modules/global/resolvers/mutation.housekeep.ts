@@ -13,6 +13,7 @@ import {
   warnUsersToHousekeep,
 } from '#lib';
 import { GraphQLError } from 'graphql';
+import { nanoid } from 'nanoid';
 
 builder.mutationField('housekeep', (t) =>
   t.field({
@@ -28,6 +29,10 @@ builder.mutationField('housekeep', (t) =>
         validate: {
           schema: environmentSchema.shape.HOUSEKEEPER_TOKEN.unwrap(),
         },
+      }),
+      dryRun: t.arg.boolean({
+        description: 'If true, log actions without performing them',
+        defaultValue: false,
       }),
       thresholds: t.arg({
         type: builder.inputType('HousekeepingExpirationThresholds', {
@@ -57,45 +62,62 @@ builder.mutationField('housekeep', (t) =>
         }),
       }),
     },
-    async resolve(_, { token, thresholds }) {
+    async resolve(_, { token, thresholds, dryRun }, { user }) {
       if (!ENV.HOUSEKEEPER_TOKEN)
         throw new GraphQLError('Housekeeper token is not set in the environment');
 
       if (token !== ENV.HOUSEKEEPER_TOKEN) throw new GraphQLError('Invalid token');
 
+      const jobId = nanoid(10);
+
       const log = (msg: string, payload: Record<string, unknown>) =>
-        _log('housekeeping', msg, payload, null, null);
+        _log('housekeeping', msg, payload, jobId, user);
 
       // Run housekeeping tasks
-      await log('start', { thresholds });
+      await log('start', { thresholds, dryRun });
 
-      await log('remove-apple-wallet-passes', {});
-      const filesRemoved = await housekeepAppleWallet();
-      await log('remove-apple-wallet-passes/done', { filesRemoved });
+      await log('remove-apple-wallet-passes', { dryRun });
+      const filesRemoved = await housekeepAppleWallet({ dryRun });
+      await log('remove-apple-wallet-passes/done', { filesRemoved, dryRun });
 
-      await log('remove-expired-bookings', { treshold: thresholds.eventEndedAt });
-      const bookingsRemoved = await housekeepBookings(thresholds.eventEndedAt);
-      await log('remove-expired-bookings/done', { bookingsRemoved });
+      await log('remove-expired-bookings', { dryRun, treshold: thresholds.eventEndedAt });
+      const bookingsRemoved = await housekeepBookings({
+        dryRun,
+        thresholdDays: thresholds.eventEndedAt,
+      });
+      await log('remove-expired-bookings/done', { bookingsRemoved, dryRun });
 
-      await log('warn-soon-expired-users', { expireThreshold: thresholds.userLastLogin });
-      const warned = await warnUsersToHousekeep(thresholds.userLastLogin);
-      await log('warn-soon-expired-users/done', { warned });
+      await log('warn-soon-expired-users', { dryRun, expireThreshold: thresholds.userLastLogin });
+      const warned = await warnUsersToHousekeep({
+        dryRun,
+        thresholdDays: thresholds.userLastLogin,
+      });
+      await log('warn-soon-expired-users/done', { warned, dryRun });
 
-      await log('remove-expired-users', { threshold: thresholds.userLastLogin });
-      const usersRemoved = await housekeepUsers(thresholds.userLastLogin);
+      await log('remove-expired-users', { dryRun, threshold: thresholds.userLastLogin });
+      const usersRemoved = await housekeepUsers({
+        dryRun,
+        thresholdDays: thresholds.userLastLogin,
+      });
       await log('remove-expired-users/done', { usersRemoved });
 
-      await log('clean-old-notifications', { threshold: thresholds.notificationSentAt });
-      const { count } = await housekeepNotifications(thresholds.notificationSentAt);
-      await log('clean-old-notifications/done', { count });
+      await log('clean-old-notifications', { dryRun, threshold: thresholds.notificationSentAt });
+      const { count } = await housekeepNotifications({
+        dryRun,
+        thresholdDays: thresholds.notificationSentAt,
+      });
+      await log('clean-old-notifications/done', { count, dryRun });
 
-      await log('clean-old-logs', { threshold: thresholds.logHappenedAt });
-      const logsRemoved = await housekeepLogs(thresholds.logHappenedAt);
-      await log('clean-old-logs/done', { logsRemoved });
+      await log('clean-old-logs', { dryRun, threshold: thresholds.logHappenedAt });
+      const logsRemoved = await housekeepLogs({ dryRun, thresholdDays: thresholds.logHappenedAt });
+      await log('clean-old-logs/done', { logsRemoved, dryRun });
 
-      await log('clean-gdpr-exports', { threshold: thresholds.gdprExportCreatedAt });
-      const gdprExportsRemoved = await housekeepGdprExports(thresholds.gdprExportCreatedAt);
-      await log('clean-gdpr-exports/done', { gdprExportsRemoved });
+      await log('clean-gdpr-exports', { dryRun, threshold: thresholds.gdprExportCreatedAt });
+      const gdprExportsRemoved = await housekeepGdprExports({
+        dryRun,
+        thresholdDays: thresholds.gdprExportCreatedAt,
+      });
+      await log('clean-gdpr-exports/done', { gdprExportsRemoved, dryRun });
 
       const counts = {
         deletedEvents: bookingsRemoved.count,

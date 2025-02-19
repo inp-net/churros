@@ -1,6 +1,7 @@
 import Logobehance from '~icons/logos/behance.svg';
 import Logobitbucket from '~icons/logos/bitbucket.svg';
 import Logoblogger from '~icons/logos/blogger.svg';
+import Logobluesky from '~icons/logos/bluesky.svg';
 import Logocodecademy from '~icons/logos/codecademy.svg';
 import Logocodepen from '~icons/logos/codepen-icon.svg';
 import Logocodersrank from '~icons/logos/codersrank-icon.svg';
@@ -9,7 +10,6 @@ import Logodeviantart from '~icons/logos/deviantart-icon.svg';
 import Logodiscord from '~icons/logos/discord-icon.svg';
 import Logodisqus from '~icons/logos/disqus.svg';
 import Logodribbble from '~icons/logos/dribbble-icon.svg';
-import Logofacebook from '~icons/logos/facebook.svg';
 import Logoflickr from '~icons/logos/flickr-icon.svg';
 import Logogithub from '~icons/logos/github-icon.svg';
 import Logogitlab from '~icons/logos/gitlab.svg';
@@ -37,7 +37,6 @@ import Logosoundcloud from '~icons/logos/soundcloud.svg';
 import Logospotify from '~icons/logos/spotify-icon.svg';
 import Logotelegram from '~icons/logos/telegram.svg';
 import Logotrello from '~icons/logos/trello.svg';
-import Logotwitch from '~icons/logos/twitch.svg';
 import Logotwitter from '~icons/logos/twitter.svg';
 import Logovimeo from '~icons/logos/vimeo-icon.svg';
 import Logowakatime from '~icons/logos/wakatime.svg';
@@ -431,10 +430,10 @@ export const socials = {
     name: 'Telegram',
     url: 'https://t.me/{}',
     urlMain: 'https://t.me/',
-    regex: new RegExp('https://t.me/(\\w{3,32}[^_])'),
+    regex: new RegExp('https://t.me/([a-zA-Z0-9_]{3,32}[^_])'),
     usernameIsValid: (username: string) => {
       try {
-        new RegExp('^\\w{3,32}[^_]$').test(username);
+        new RegExp('^[a-zA-Z0-9_]{3,32}[^_]$').test(username);
       } catch {
         return false;
       }
@@ -451,23 +450,14 @@ export const socials = {
     iconName: 'trello',
     icon: Logotrello,
   },
-  twitch: {
-    name: 'Twitch',
-    url: 'https://www.twitch.tv/{}',
-    urlMain: 'https://www.twitch.tv/',
-    regex: new RegExp('https://twitch.tv/([\\w_.-]+)'),
-    usernameIsValid: () => true,
-    iconName: 'twitch',
-    icon: Logotwitch,
-  },
   twitter: {
     name: 'Twitter',
     url: 'https://twitter.com/{}',
     urlMain: 'https://twitter.com/',
-    regex: new RegExp('https://twitter.com/(\\w{1,15})'),
+    regex: new RegExp('https://twitter.com/([a-zA-Z0-9_]{1,15})'),
     usernameIsValid: (username: string) => {
       try {
-        new RegExp('^\\w{1,15}$').test(username);
+        new RegExp('^[a-zA-Z0-9_]{1,15}$').test(username);
       } catch {
         return false;
       }
@@ -488,8 +478,14 @@ export const socials = {
     name: 'Weebly',
     url: 'https://{}.weebly.com/',
     urlMain: 'https://weebly.com/',
-    regex: new RegExp('https://([\\w_.-]+).weebly.com/'),
-    usernameIsValid: () => true,
+    regex: new RegExp('https://([a-zA-Z0-9-]{1,63}).weebly.com/'),
+    usernameIsValid: (username: string) => {
+      try {
+        new RegExp('^[a-zA-Z0-9-]{1,63}$').test(username);
+      } catch {
+        return false;
+      }
+    },
     iconName: 'weebly',
     icon: Logoweebly,
   },
@@ -497,10 +493,10 @@ export const socials = {
     name: 'Wix',
     url: 'https://{}.wix.com',
     urlMain: 'https://wix.com/',
-    regex: new RegExp('https://([a-zA-Z0-9@_-]).wix.com'),
+    regex: new RegExp('https://([\\w@-]+?).wix.com'),
     usernameIsValid: (username: string) => {
       try {
-        new RegExp('^[a-zA-Z0-9@_-]$').test(username);
+        new RegExp('^[\\w@-]+?$').test(username);
       } catch {
         return false;
       }
@@ -550,6 +546,15 @@ export const socials = {
     iconName: 'npm-icon',
     icon: Logonpm,
   },
+  bluesky: {
+    name: 'Bluesky',
+    url: 'https://bsky.app/profile/{}',
+    urlMain: 'https://bsky.app/',
+    regex: new RegExp('https://bsky.app/profile/([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'bluesky',
+    icon: Logobluesky,
+  },
   wakatime: {
     name: 'Wakatime',
     url: 'https://wakatime.com/@{}',
@@ -558,14 +563,5 @@ export const socials = {
     usernameIsValid: () => true,
     iconName: 'wakatime',
     icon: Logowakatime,
-  },
-  facebook: {
-    name: 'Facebook',
-    url: 'https://www.facebook.com/{}',
-    urlMain: 'https://facebook.com/',
-    regex: new RegExp('https://facebook.com/([\\w_.-]+)'),
-    usernameIsValid: () => true,
-    iconName: 'facebook',
-    icon: Logofacebook,
   },
 };

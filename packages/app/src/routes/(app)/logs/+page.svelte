@@ -221,22 +221,26 @@
               help={filterTooltip($page, { action: log.action })}
               text={log.action}
             />
-            <div class="target">
-              on
+            {#if log.target}
+              <div class="target">
+                on
 
-              <PillLink
-                icon={null}
-                highlighted={filteringBy($page, { target: log.target })}
-                url={filterHref($page, { target: log.target })}
-                help={filterTooltip($page, { target: log.target })}
-                text=" "
-              >
-                <NodeDisplay fallback={log.target} data={log.targetObject} />
-              </PillLink>
-              <ButtonGhost newTab href={hrefByTypename(log.targetObject)}>
-                <IconOpenExternal />
-              </ButtonGhost>
-            </div>
+                <PillLink
+                  icon={null}
+                  highlighted={filteringBy($page, { target: log.target })}
+                  url={filterHref($page, { target: log.target })}
+                  help={filterTooltip($page, { target: log.target })}
+                  text=" "
+                >
+                  <NodeDisplay fallback={log.target} data={log.targetObject} />
+                </PillLink>
+                {#if hrefByTypename(log.targetObject)}
+                  <ButtonGhost newTab href={hrefByTypename(log.targetObject)}>
+                    <IconOpenExternal />
+                  </ButtonGhost>
+                {/if}
+              </div>
+            {/if}
           </div>
           <div slot="right" class="open-log">
             <ButtonSecondary

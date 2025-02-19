@@ -131,5 +131,5 @@ export async function findExistingGdprExport(user: Context['user']) {
 export async function getAllGdprExports() {
   const directory = path.join(storageRoot(), GDPR_EXPORTS_STORAGE_DIRECTORY);
   await mkdir(directory, { recursive: true });
-  return globSync('*.json', { absolute: true });
+  return globSync(path.join(directory, '*.json'), { absolute: true });
 }

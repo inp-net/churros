@@ -1,5 +1,50 @@
 # @churros/api
 
+## 13.0.0
+
+### Major Changes
+
+- e4d37f6: remove old notifications handling. Everything goes through notella now.
+
+### Patch Changes
+
+- ec0870c: fix(deps): update dependency graphql-ws to ^6.0.4 (!612)
+- 98b55c6: fix(deps): update dependency nanoid to ^5.1.0 (!618)
+- ec0870c: fix(deps): update dependency nats to ^2.29.2 (!614)
+- 8b72d36: chore(deps): update nodejs (!598)
+- f9e4478: fix(deps): update dependency prettier to ^3.5.1 (!609)
+- 6615941: fix(deps): update dependency zod to ^3.24.2 (!601)
+- Updated dependencies [9e10869]
+- Updated dependencies [8b72d36]
+  - @churros/db@4.3.2
+  - arborist@0.1.6
+
+## 12.3.0
+
+### Minor Changes
+
+- 4ecb677: warn managers or admins when they're bypassing checks when booking a ticket
+- 6c53ddd: Rate-limit Mutation.bookEvent to 1/10 seconds
+
+### Patch Changes
+
+- a8c7bcb: fix(deps): update dependency prettier to ^3.5.0 (!584)
+- 7f06985: fix(deps): update dependency remark-gfm to ^4.0.1 (!586)
+- 18f2499: rate limits are applied again
+- 7f06985: fix(deps): update dependency ua-parser-js to ^2.0.2 (!583)
+
+## 12.2.0
+
+### Minor Changes
+
+- a47ab5b: Add argument Mutation.housekeep:dryRun
+- 72893d1: health checks are resolved on fields themselves, so that e.g. requesting healthcheck { database { prisma }} only executes a prisma healthcheck, instead of executing all checks and only returning data from the database.prisma part of the total health check
+
+### Patch Changes
+
+- 986820f: Query.logs:target would use search operator syntax, which prevented items with ':' in them
+- fd64a14: fix(deps): update notella to v0.15.3 (!576)
+
 ## 12.1.0
 
 ### Minor Changes

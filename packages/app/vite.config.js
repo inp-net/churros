@@ -57,6 +57,20 @@ export default mergeConfig(
     },
     server: {
       allowedHosts: capacitorDevserverUrl ? [new URL(capacitorDevserverUrl).host] : [],
+      proxy: Object.fromEntries(
+        [
+          'graphql',
+          'auth',
+          'storage',
+          '.well-known/churros.app/server.json',
+          'prometheus',
+          'dump',
+          'print-handover',
+          'print-booking',
+          'log',
+          'lydia-webhook',
+        ].map((path) => ['/' + path, `http://localhost:4000/${path}`]),
+      ),
     },
     plugins: [
       houdini(),

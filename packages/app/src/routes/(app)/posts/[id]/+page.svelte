@@ -1,19 +1,24 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import AvatarGroup from '$lib/components/AvatarGroup.houdini.svelte';
   import ButtonLike from '$lib/components/ButtonLike.svelte';
   import ButtonShare from '$lib/components/ButtonShare.svelte';
   import CardEvent from '$lib/components/CardEvent.svelte';
   import HTMLContent from '$lib/components/HTMLContent.svelte';
   import MaybeError from '$lib/components/MaybeError.svelte';
+  import { updateTitle } from '$lib/components/NavigationTop.svelte';
   import PillLink from '$lib/components/PillLink.svelte';
-  import { LoadingText, loading } from '$lib/loading';
+  import { LoadingText, loaded, loading } from '$lib/loading';
   import { Lightbox } from 'svelte-lightbox';
   import type { PageData } from './$houdini';
-  import { page } from '$app/stores';
   import ModalDelete from './ModalDelete.svelte';
 
   export let data: PageData;
   $: ({ PagePostDetail } = data);
+
+  $: if ($PagePostDetail.data && loaded($PagePostDetail.data.post.title)) {
+    updateTitle($PagePostDetail.data.post.title);
+  }
 </script>
 
 <ModalDelete postId={$page.params.id} />

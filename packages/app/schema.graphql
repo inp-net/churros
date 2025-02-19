@@ -2246,6 +2246,9 @@ type Minor implements Node {
   yearTier: Int!
 }
 
+"""
+- **Rate limit par défault:** 1200 / 10 minutes (par utilisateur·ice et par query)
+"""
 type Mutation @rateLimit(limit: 1200, duration: 600) {
   acceptUserCandidate(email: String!): MutationAcceptUserCandidateResult!
   """
@@ -2346,7 +2349,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     """
     pointOfContact: UID
     ticket: LocalID!
-  ): MutationBookEventResult!
+  ): MutationBookEventResult! @rateLimit(duration: 10, limit: 1)
   """
   Épingle une page pour en faire un accès rapide. Si la page est déjà épinglée, ne fait rien. Voir `unpin` pour retirer une page épinglée.
   """
@@ -2610,6 +2613,10 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   Run housekeeping tasks: remove bookings on old events, remove old users (no login since a certain time), apple wallet pass files, etc.
   """
   housekeep(
+    """
+    If true, log actions without performing them
+    """
+    dryRun: Boolean! = false
     thresholds: HousekeepingExpirationThresholds!
     """
     Housekeeper token
@@ -4441,6 +4448,9 @@ type QRCode {
   viewbox: String!
 }
 
+"""
+- **Rate limit par défault:** 1200/minute (par utilisateur·ice et par query)
+"""
 type Query @rateLimit(limit: 1200, duration: 60) {
   """
   Récupère tous les formulaires. Réservé aux admins.
@@ -4576,6 +4586,9 @@ type Query @rateLimit(limit: 1200, duration: 60) {
     """
     unlisted: Boolean! = false
   ): [Group!]!
+  """
+  - **Rate limit:** 5/seconde
+  """
   healthcheck: HealthCheck! @rateLimit(duration: 1, limit: 5)
   """
   Gets the homepage articles, customized if the user is logged in.
@@ -6351,6 +6364,10 @@ type Ticket implements Node {
   Un message d'explication sur pourquoi la personne connectée ne peut pas réserver ce billet pour quelqu'un d'autre. Null si la personne peut.
   """
   cannotBookReason(
+    """
+    Ignorer le fait qu'on puisse voir toutes les places (managers, admins, admins AE, etc)
+    """
+    asRegularPerson: Boolean! = false
     """
     On souhaite réserver pour soi-même
     """

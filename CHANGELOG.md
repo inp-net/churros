@@ -11,6 +11,18 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [4.8.2] - 2025-02-15
+
+## [4.8.1] - 2025-02-11
+
+## [4.8.0] - 2025-02-10
+
+### Nouveautés
+
+- Les managers d'évènements et admins sont maintenant avertis quand iels s'apprêtent à prendre une place qu'iels ne pourrait pas prendre sans leur statut de manager/admin
+
+## [4.7.0] - 2025-02-08
+
 ## [4.6.1] - 2025-02-07
 
 ## [4.6.0] - 2025-02-07
@@ -945,7 +957,11 @@ La boutique est encore en bêta, si vous découvrez un bug, n'hésitez pas à no
 
 - Churros est maintenant un _provider OAuth2_, et peut être utilisé pour se connecter à d'autres services. Tu peux dès maintenant te connecter à [Loca7](https://loca7.fr), [Gitlab](https://git.inpt.fr), [Le Wiki des clubs](https://wiki.inpt.fr) et [TVn7FLiX](https://tvn7flix.fr) sans avoir à rentrer de mot de passe à chaque fois ;) [[Détails techniques pour les nerds](https://wiki.inpt.fr/inp-net/public/oauth-churros)]
 
-[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/@churros%2Fapp@4.6.1...main
+[Unreleased]: https://git.inpt.fr/churros/churros/-/compare/@churros%2Fapp@4.8.2...main
+[4.8.2]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.8.2
+[4.8.1]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.8.1
+[4.8.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.8.0
+[4.7.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.7.0
 [4.6.1]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.6.1
 [4.6.0]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.6.0
 [4.5.1]: https://git.inpt.fr/churros/churros/-/releases/@churros%2Fapp@4.5.1

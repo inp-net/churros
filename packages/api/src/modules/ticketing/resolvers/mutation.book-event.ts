@@ -12,6 +12,12 @@ builder.mutationField('bookEvent', (t) =>
     type: RegistrationType,
     description: 'Réserver une place sur un évènement',
     errors: { types: [Error, ZodError] },
+    directives: {
+      rateLimit: {
+        duration: 10,
+        limit: 1,
+      },
+    },
     args: {
       ticket: t.arg({
         type: LocalID,

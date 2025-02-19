@@ -1,5 +1,61 @@
 # @churros/app
 
+## 4.8.2
+
+### Patch Changes
+
+- 02b1a81: chore(deps): update dependency @babel/core to ^7.26.9 (!610)
+- ec0870c: fix(deps): update dependency graphql-ws to ^6.0.4 (!612)
+- 02b1a81: fix(deps): update dependency houdini to ^1.5.1 (!608)
+- 368ecd6: chore(deps): update dependency houdini-svelte to ^2.1.5 (!607)
+- 98b55c6: fix(deps): update dependency nanoid to ^5.1.0 (!618)
+- f9e4478: fix(deps): update dependency prettier to ^3.5.1 (!609)
+- a6c4d74: fix(deps): update dependency @sentry/sveltekit to ^8.55.0 (!604)
+- 02b1a81: chore(deps): update dependency @sveltejs/kit to ^2.17.2 (!611)
+- 27d8f7b: fix(deps): update swc monorepo to ^1.10.16 (!606)
+- 6615941: fix(deps): update dependency zod to ^3.24.2 (!601)
+- Updated dependencies [8b72d36]
+  - arborist@0.1.6
+
+## 4.8.1
+
+### Patch Changes
+
+- 5142e78: chore(deps): downgrade @sentry/sveltekit to 8.x
+
+## 4.8.0
+
+### Minor Changes
+
+- 4ecb677: warn managers or admins when they're bypassing checks when booking a ticket
+- acacf6b: welcome page now clearly states what your uid is, and has a bit better appearance for things to do
+
+### Patch Changes
+
+- d3b24c0: fix(deps): update dependency @carbon/charts-svelte to ^1.22.16 (!589)
+- 6e4a020: local logins did not reload layout
+- 7f06985: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.24 (!582)
+- 7f06985: fix(deps): update dependency @sentry/sveltekit to v9 (!585)
+- 3f1c99e: chore(deps): update dependency postcss to ^8.5.2 (!594)
+- a8c7bcb: fix(deps): update dependency prettier to ^3.5.0 (!584)
+- 41698e3: prevent double-bookings by accidentally clicking twice on book buttons
+- 7f06985: fix(deps): update dependency ua-parser-js to ^2.0.2 (!583)
+
+## 4.7.0
+
+### Minor Changes
+
+- 3dc0f5f: add bluesky profile links support
+- e83f043: allow choosing any graduation year on signup
+
+### Patch Changes
+
+- fd64a14: chore(deps): update dependency @babel/core to ^7.26.8 (!579)
+- 1595c8f: hide open-target and/or target items from a log entry if it's not relevant
+- 1d86026: main ui was off-center on tablet-sized viewports
+- 3dc0f5f: facebook social links showed "profile.php" as username
+- fd64a14: fix(deps): update swc monorepo to ^1.10.15 (!578)
+
 ## 4.6.1
 
 ### Patch Changes

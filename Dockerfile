@@ -7,7 +7,7 @@ ARG REPOSITORY_URL=https://git.inpt.fr/churros/churros
 #####
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS builder
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.3-alpine AS builder
 
 ARG TAG=dev
 
@@ -25,6 +25,8 @@ COPY package.json /app/
 
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY .env.example /app/.env.example
+COPY .merge-drivers.yml /app/.merge-drivers.yml
+COPY .git /app/.git
 COPY packages/ /app/packages/ 
 
 ARG APP_DOTENV_OVERRIDE=""
@@ -49,7 +51,7 @@ COPY scripts/ /app/scripts/
 RUN rm -rf packages/mock-n7-ldap pack
 RUN rm -rf packages/oauth-client
 
-RUN yarn install 
+RUN if ! yarn install; then cat /tmp/xfs-*/build.log; exit 1; fi
 RUN yarn cp-env
 RUN yarn generate-buildinfo
 
@@ -99,7 +101,7 @@ RUN yarn workspace @churros/sync build
 
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS base
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.3-alpine AS base
 
 WORKDIR /app
 
@@ -275,7 +277,7 @@ ENTRYPOINT ["node", "packages/sync/build/src/index.js"]
 ### Database
 
 
-FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.2-alpine AS prisma
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.18.3-alpine AS prisma
 
 LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/db
 

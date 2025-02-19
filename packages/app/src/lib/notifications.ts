@@ -5,10 +5,13 @@ import {
   type SubscribeToNotifications$input,
 } from '$houdini';
 import { arrayBufferToBase64 } from '$lib/base64';
+import { route } from '$lib/ROUTES';
 import { toasts } from '$lib/toasts';
+import { removeIdPrefix, typenameOfId } from '$lib/typenames';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { PushNotifications } from '@capacitor/push-notifications';
+import * as Notella from '@inp-net/notella';
 
 graphql(`
   fragment NotificationsSubscribedCheck on NotificationSubscription {
@@ -208,4 +211,70 @@ async function requestPermissions(): Promise<boolean> {
   }
 
   return true;
+}
+
+/**
+ * Where to go when a notification is clicked
+ * @param message the received notification
+ */
+export async function notificationClickRoute(message: Notella.Message) {
+  const MyUid = graphql(`
+    query NotificationClickMyUid {
+      me {
+        uid
+      }
+    }
+  `);
+
+  const { object_id, event, action } = message;
+  switch (event) {
+    case Notella.Event.BookingPaid: {
+      // We except a Booking ID. If it's something else, go to /bookings instead
+      if (typenameOfId(object_id) !== 'Registration') return route('/bookings');
+
+      return route('/bookings/[code]', removeIdPrefix('Registration', object_id));
+    }
+
+    case Notella.Event.ContributionPaid: {
+      const myUid = await MyUid.fetch().then((result) => result.data?.me?.uid);
+      return myUid ? route('/users/[uid]/edit/contributions', myUid) : route('/');
+    }
+
+    case Notella.Event.GodchildAccepted:
+    case Notella.Event.GodchildRejected:
+    case Notella.Event.GodchildRequest: {
+      const myUid = await MyUid.fetch().then((result) => result.data?.me?.uid);
+      return myUid ? route('/users/[uid]/edit/family', myUid) : route('/');
+    }
+
+    case Notella.Event.LoginStuck: {
+      return route('/signups');
+    }
+
+    case Notella.Event.NewPost: {
+      if (typenameOfId(object_id) !== 'Article') return route('/');
+      return route('/posts/[id]', removeIdPrefix('Article', object_id));
+    }
+
+    case Notella.Event.PendingSignup: {
+      // TODO change API to allow resolving email from user candidate ID, so we can go to the specific signup edit page
+      return route('/signups');
+    }
+
+    case Notella.Event.ShotgunClosesSoon:
+    case Notella.Event.ShotgunOpensSoon: {
+      if (typenameOfId(object_id) !== 'Event') return route('/');
+      return route('/events/[id]', removeIdPrefix('Event', object_id));
+    }
+
+    case Notella.Event.Test: {
+      return route('/notifications');
+    }
+
+    case Notella.Event.Custom: {
+      return action;
+    }
+  }
+
+  return undefined;
 }

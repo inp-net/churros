@@ -19,6 +19,7 @@
   import ButtonPrimary from '$lib/components/ButtonPrimary.svelte';
   import ButtonSecondary from '$lib/components/ButtonSecondary.svelte';
   import InputMajor from '$lib/components/InputMajor.svelte';
+  import InputNumber from '$lib/components/InputNumber.svelte';
   import InputPassword from '$lib/components/InputPassword.svelte';
   import InputRadios from '$lib/components/InputRadios.svelte';
   import InputStudentEmail from '$lib/components/InputStudentEmail.svelte';
@@ -104,7 +105,9 @@
   };
 
   $: selectedMajor = args.major ? $Data.majors.find((m) => m.uid === args.major) : null;
+  $: if (yearTier && [1, 2, 3].includes(yearTier)) args.graduationYear = fromYearTier(yearTier);
 
+  let yearTier: 1 | 2 | 3 | 0 | null = null;
   let majorWasChosen = false;
   let loading = false;
   let success = false;
@@ -192,13 +195,19 @@
       {#if majorWasChosen}
         <div class="promotion">
           <InputRadios
-            bind:value={args.graduationYear}
+            bind:value={yearTier}
             options={[
-              [fromYearTier(1), '1re année'],
-              [fromYearTier(2), '2e année'],
-              [fromYearTier(3), '3e année'],
+              [1, '1re année'],
+              [2, '2e année'],
+              [3, '3e année'],
+              [0, 'Autre…'],
             ]}
           />
+          <div class="other">
+            {#if yearTier === 0}
+              <InputNumber bind:value={args.graduationYear} label="Année de graduation" />
+            {/if}
+          </div>
         </div>
         <div class="apprenticeship">
           <InputRadios
@@ -288,6 +297,11 @@
     flex-wrap: wrap;
     gap: 1em 0.5rem;
     align-items: center;
+  }
+
+  .promotion .other {
+    width: 100%;
+    margin-bottom: 2rem;
   }
 
   .major-first-title {
