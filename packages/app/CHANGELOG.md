@@ -1,5 +1,14 @@
 # @churros/app
 
+## 4.8.3
+
+### Patch Changes
+
+- d6b0038: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.25 (!631)
+- d6b0038: fix(deps): update swc monorepo to ^1.10.17 (!630)
+- c3cc7a8: fix(deps): update dependency tsx to ^4.19.3 (!638)
+- d6b0038: chore(deps): update dependency unplugin-icons to ^22.1.0 (!632)
+
 ## 4.8.2
 
 ### Patch Changes

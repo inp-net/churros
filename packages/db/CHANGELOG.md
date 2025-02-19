@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.3
+
+### Patch Changes
+
+- 382cad8: fix(deps): update prisma monorepo to ^6.4.0 (!634)
+
 ## 4.3.2
 
 ### Patch Changes

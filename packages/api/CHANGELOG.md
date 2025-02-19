@@ -1,5 +1,21 @@
 # @churros/api
 
+## 14.0.0
+
+### Major Changes
+
+- 229a501: Put lydia webhook and prometheus exporter on the same port as the API (4000)
+
+### Patch Changes
+
+- c3cc7a8: fix(deps): update dependency @envelop/core to ^5.1.0 (!637)
+- c3cc7a8: fix(deps): update dependency ldap-authentication to ^3.3.2 (!636)
+- 1fa3db4: fix(deps): update dependency @inp-net/notella to v0.15.5 (!623)
+- 382cad8: fix(deps): update prisma monorepo to ^6.4.0 (!634)
+- c3cc7a8: fix(deps): update dependency tsx to ^4.19.3 (!638)
+- Updated dependencies [382cad8]
+  - @churros/db@4.3.3
+
 ## 13.0.0
 
 ### Major Changes
