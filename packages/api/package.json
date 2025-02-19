@@ -120,7 +120,7 @@
     "slug": "^10.0.0",
     "string-length": "^6.0.0",
     "ts-tqdm": "^0.8.6",
-    "tsx": "^4.19.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "ua-parser-js": "^2.0.2",
     "unaccent": "^0.3.0",
