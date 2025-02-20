@@ -59,6 +59,7 @@ model User {
   lydiaPhone                   String                @default("") @db.VarChar(255)
   // Prevent these themes from being auto-deployed to the user
   blockedThemes                Theme[]
+  authProviders                AuthProvider[]        @default([])
 
   // Permissions
   admin              Boolean              @default(false)
@@ -111,6 +112,13 @@ model User {
 
   @@unique([schoolServer, schoolUid])
   @@index([search], type: Gin)
+}
+
+/// A provider used to authenticate a User.
+enum AuthProvider {
+  OAuth
+  Local
+  LDAP
 }
 
 /// A bookmarked page, used to make personal quick access links

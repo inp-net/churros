@@ -113,6 +113,11 @@ export const environmentSchema = z.object({
     .optional()
     .describe('Oauth2 scopes, comma separated.')
     .transform((scopes) => (scopes ? scopes.split(',').map((scope) => scope.trim()) : undefined)),
+  PUBLIC_OAUTH_NAME: z.string().optional().describe('Display name for the oauth2 provider.'),
+  PUBLIC_OAUTH_LOGO_URL: optionaluri().describe('URL to the oauth2 provider logo.'),
+  PUBLIC_OAUTH_PASSWORD_RESET_URL: optionaluri().describe(
+    'URL to a page where oauth2 users can reset their password',
+  ),
   OAUTH_UID_KEY: z
     .string()
     .optional()
