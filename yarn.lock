@@ -728,7 +728,7 @@ __metadata:
     "@graphql-yoga/redis-event-target": "npm:^3.0.3"
     "@inp-net/ldap7": "npm:^1.0.12"
     "@inp-net/notella": "https://github.com/inp-net/churros-notella.git#v0.17.0"
-    "@pothos/core": "npm:4.3.0"
+    "@pothos/core": "npm:4.4.0"
     "@pothos/plugin-complexity": "npm:^4.1.0"
     "@pothos/plugin-dataloader": "npm:^4.3.0"
     "@pothos/plugin-directives": "npm:^4.2.0"
@@ -1001,7 +1001,7 @@ __metadata:
   resolution: "@churros/db@workspace:packages/db"
   dependencies:
     "@faker-js/faker": "npm:^9.5.0"
-    "@pothos/core": "npm:^4.3.0"
+    "@pothos/core": "npm:^4.4.0"
     "@pothos/plugin-prisma": "npm:^4.4.0"
     "@prisma/client": "npm:^6.4.0"
     graphql: "npm:^16.10.0"
@@ -3836,12 +3836,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pothos/core@npm:4.3.0, @pothos/core@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@pothos/core@npm:4.3.0"
+"@pothos/core@npm:4.4.0, @pothos/core@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "@pothos/core@npm:4.4.0"
   peerDependencies:
     graphql: ">=16.6.0"
-  checksum: 10c0/3a4a0e5dfed468d9181b9602edc6bc4bbb1d57b2b0bca72c660bc4390e27c6199c0bdb357e1fe3548d9a6feb22ac9ec90e789a367263260d52b64485f6e34e6b
+  checksum: 10c0/2fc3ab7b541cc6045269a570a82a0a680d62b333dd38776e8cebc8eb4c66da7a409044b37499e4eca27633c81c06614439dd6312aaa4569331ac01c215f34da4
   languageName: node
   linkType: hard
 
