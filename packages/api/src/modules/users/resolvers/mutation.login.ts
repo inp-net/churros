@@ -1,7 +1,7 @@
 import { builder, log, prisma } from '#lib';
 import { queueNotification } from '#modules/notifications';
 import type { Prisma } from '@churros/db/prisma';
-import { CredentialType as CredentialPrismaType } from '@churros/db/prisma';
+import { AuthProvider, CredentialType as CredentialPrismaType } from '@churros/db/prisma';
 import { hashPassword, upsertLdapUser } from '@inp-net/ldap7/user';
 import { Event as NotellaEvent } from '@inp-net/notella';
 import { GraphQLError } from 'graphql';
@@ -10,6 +10,7 @@ import {
   AwaitingValidationError,
   CredentialType,
   emailLoginPrismaClauses,
+  InvalidAuthProviderError,
   needsManualValidation,
   verifyMasterKey,
   verifyPassword,
@@ -20,7 +21,7 @@ builder.mutationField('login', (t) =>
     description: 'Logs a user in and returns a session token.',
     type: CredentialType,
     errors: {
-      types: [Error, AwaitingValidationError],
+      types: [Error, AwaitingValidationError, InvalidAuthProviderError],
       dataField: { grantScopes: ['me', 'login'] },
     },
     args: {
@@ -74,6 +75,16 @@ export async function login(
       },
     },
   });
+
+  if (user && user.authProviders.length > 0 && !user?.authProviders.includes(AuthProvider.Local)) {
+    await log('login', 'fail', {
+      uidOrEmail,
+      err: 'user has authProviders but not Local',
+      user,
+    });
+
+    throw new InvalidAuthProviderError(user.authProviders);
+  }
 
   if (!user) {
     const userCandidate = await prisma.userCandidate.findFirst({
@@ -180,6 +191,15 @@ export async function login(
         }
       }
 
+      if (userId && !user.authProviders.includes(AuthProvider.Local)) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            authProviders: { push: AuthProvider.Local },
+          },
+        });
+      }
+
       return prisma.credential.create({
         ...query,
         data: {
@@ -194,17 +214,5 @@ export async function login(
     }
   }
 
-  // Ce if est temporaire, la télé du local fait tj une requête avec l'ancien mdp et bah le local est fermé quoi mdr
-  if (uidOrEmail !== 'n7tv') {
-    await log(
-      'login',
-      'fail',
-      {
-        uidOrEmail,
-        err: 'no hash matches given password',
-      },
-      user.id,
-    );
-  }
   throw new Error('Identifiants invalides.');
 }

@@ -12,6 +12,9 @@ export const Login = graphql(`
       ... on AwaitingValidationError {
         message
       }
+      ... on InvalidAuthProviderError {
+        message
+      }
     }
   }
 `);

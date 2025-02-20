@@ -1,4 +1,5 @@
 import { ENV, getSessionUser, prisma } from '#lib';
+import { AuthProvider } from '@churros/db/prisma';
 import { nanoid } from 'nanoid';
 import passport from 'passport';
 import OAuth2Strategy, { type VerifyCallback } from 'passport-oauth2';
@@ -33,6 +34,17 @@ const oauth2Strategy = new OAuth2Strategy(
       if (!userSession) {
         cb('This account is not linked to any user', false);
         return;
+      }
+
+      if (!userSession.authProviders.includes(AuthProvider.OAuth)) {
+        await prisma.user.update({
+          where: {
+            uid: userSession.uid,
+          },
+          data: {
+            authProviders: { push: AuthProvider.OAuth },
+          },
+        });
       }
 
       cb(null, { user: userSession });
@@ -89,6 +101,8 @@ api.get(
     const searchParams = new URL(`http://localhost${req.url}`).searchParams;
 
     res.cookie(AUTHED_VIA_COOKIE_NAME, AuthedViaCookie.OAUTH2, { httpOnly: false, secure: false });
+
+    console.log({ rqu: req.user?.user });
 
     // ?native=1 is used to create a local token instead of setting a HttpOnly cookie,
     // since native apps don't support them.

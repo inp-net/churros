@@ -2070,6 +2070,13 @@ type InheritedEventManager {
   user: User!
 }
 
+"""
+An error raised when the user tries to log in with an invalid auth provider.
+"""
+type InvalidAuthProviderError {
+  message: String!
+}
+
 type LdapHealthCheck @graphinx(module: "health-checks") {
   """
   Whether the LDAP internal client is ready
@@ -3667,7 +3674,12 @@ type MutationFinishPaypalRegistrationPaymentSuccess {
 
 union MutationHousekeepResult = Error | HousekeepingResult | ZodError
 
-union MutationLoginResult = AwaitingValidationError | Error | MutationLoginSuccess | ZodError
+union MutationLoginResult =
+  | AwaitingValidationError
+  | Error
+  | InvalidAuthProviderError
+  | MutationLoginSuccess
+  | ZodError
 
 type MutationLoginSuccess {
   data: Credential!
