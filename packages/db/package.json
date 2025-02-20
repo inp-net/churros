@@ -1,6 +1,6 @@
 {
   "name": "@churros/db",
-  "version": "4.3.2",
+  "version": "4.3.3",
   "scripts": {
     "prisma": "prisma",
     "generate": "run-s \"generate:*\"",
