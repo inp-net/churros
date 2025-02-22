@@ -96,7 +96,7 @@
     "passport-oauth2": "^1.8.0",
     "pdfmake": "^0.2.18",
     "phone": "^3.1.58",
-    "prettier": "^3.5.1",
+    "prettier": "^3.5.2",
     "prisma": "6.4.1",
     "prom-client": "^15.1.3",
     "prometheus-query": "^3.4.1",
