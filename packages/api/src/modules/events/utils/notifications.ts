@@ -1,5 +1,5 @@
 import { localID, prisma } from '#lib';
-import { clearScheduledNotifications, queueNotification } from '#modules/notifications';
+import { queueNotification } from '#modules/notifications';
 import { Event as NotellaEvent } from '@inp-net/notella';
 import { subMinutes } from 'date-fns';
 
@@ -22,8 +22,6 @@ export async function scheduleShotgunNotifications(eventId: string): Promise<voi
     Math.min(...tickets.map(({ closesAt }) => closesAt?.valueOf() ?? Number.POSITIVE_INFINITY)),
   );
 
-  await clearScheduledNotifications(id);
-
   await queueNotification({
     title: `Shotgun pour ${title}`,
     // TODO: store user's timezone and format the date accordingly
@@ -33,6 +31,7 @@ export async function scheduleShotgunNotifications(eventId: string): Promise<voi
     object_id: id,
     action: `/events/${localID(id)}`,
     event: NotellaEvent.ShotgunOpensSoon,
+    clear_schedule: true,
     eager: false,
   });
 
@@ -43,6 +42,7 @@ export async function scheduleShotgunNotifications(eventId: string): Promise<voi
     object_id: id,
     action: `/events/${localID(id)}`,
     event: NotellaEvent.ShotgunClosesSoon,
+    clear_schedule: true,
     eager: false,
   });
 }

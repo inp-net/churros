@@ -1,5 +1,5 @@
 import { ENV } from '#lib';
-import { Event, STREAM_NAME, SUBJECT_NAME, type Message } from '@inp-net/notella';
+import { STREAM_NAME, SUBJECT_NAME, type Event, type Message } from '@inp-net/notella';
 import { isPast } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { connect, StringCodec, type JetStreamManager, type NatsConnection } from 'nats';
@@ -13,11 +13,26 @@ let natsConnection: NatsConnection;
 export async function queueNotification({
   /** Queue notification even if send_at is in the past */
   eager = true,
+  /** Clear other jobs for the same object_id. If true, clear jobs that have the same event type as this one. If false, don't clear anything. If an array, clear those event types. If an event type, clear only that event type  */
+  clear_schedule = false,
   ...msg
-}: Omit<Message, 'id' | 'send_at'> & { id?: string; send_at?: Date; eager?: boolean }) {
-  const message = {
+}: Omit<Message, 'id' | 'send_at' | 'clear_schedule_for'> & {
+  id?: string;
+  send_at?: Date;
+  eager?: boolean;
+  clear_schedule?: boolean | Event | Event[];
+}) {
+  const message: Message = {
     id: nanoid(10),
     send_at: new Date(),
+    clear_schedule_for:
+      clear_schedule === false
+        ? []
+        : clear_schedule === true
+          ? [msg.event]
+          : Array.isArray(clear_schedule)
+            ? clear_schedule
+            : [clear_schedule],
     ...msg,
   };
 
@@ -28,19 +43,6 @@ export async function queueNotification({
   );
 
   await send(message);
-}
-
-export async function clearScheduledNotifications(objectId: string) {
-  console.info(`Clearing scheduled notifications for ${objectId}`);
-  await send({
-    title: '',
-    body: '',
-    send_at: new Date(),
-    id: `CLEAR_${nanoid(10)}`,
-    event: Event.ClearScheduledJobs,
-    object_id: objectId,
-    action: '',
-  });
 }
 
 async function send(message: Message) {

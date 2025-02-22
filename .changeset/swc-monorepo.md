@@ -2,4 +2,4 @@
 '@churros/app': patch
 ---
 
-fix(deps): update swc monorepo to ^1.10.17 (!630)
+fix(deps): update swc monorepo to ^1.10.18 (!639)
