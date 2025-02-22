@@ -78,7 +78,19 @@ builder.mutationField('upsertGroup', (t) =>
     async authScopes(_, { uid, input }, { user }) {
       if (!user) return false;
       const creating = !uid;
-      if (creating) return canCreateGroup(user, input);
+      if (creating) {
+        const studentAssociation = input.studentAssociation
+          ? await prisma.studentAssociation.findUnique({
+              where: {
+                uid: input.studentAssociation,
+              },
+            })
+          : null;
+        return canCreateGroup(user, {
+          studentAssociationId: studentAssociation?.id,
+          type: input.type,
+        });
+      }
 
       const group = await prisma.group.findUniqueOrThrow({
         where: { uid },

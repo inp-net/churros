@@ -6,7 +6,7 @@ import {
   canEditDetails,
   userContributesTo,
 } from '#modules/student-associations/utils';
-import type { Prisma } from '@churros/db/prisma';
+import { type Prisma, GroupType as GroupTypeEnum } from '@churros/db/prisma';
 
 export const StudentAssociationPrismaIncludes = {
   contributionOptions: true,
@@ -183,17 +183,17 @@ export const StudentAssociationType = builder.prismaObject('StudentAssociation',
             "Quel type de groupe l'on souhaiterait créer. Si non spécifié, renvoie vrai si l'on peut créer au moins un type de groupe",
         }),
       },
-      resolve: async ({ uid }, { type }, { user }) => {
+      resolve: async ({ id }, { type }, { user }) => {
         if (type) {
           return canCreateGroup(user, {
-            studentAssociationUid: uid,
+            studentAssociationId: id,
             type,
           });
         }
 
-        return Object.values(GroupEnumType).some((type) =>
+        return Object.values(GroupTypeEnum).some((type) =>
           canCreateGroup(user, {
-            studentAssociationUid: uid,
+            studentAssociationId: id,
             type,
           }),
         );
