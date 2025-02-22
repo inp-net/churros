@@ -1,5 +1,18 @@
 # @churros/app
 
+## 4.8.3
+
+### Patch Changes
+
+- d6b0038: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.25 (!631)
+- 4489a77: chore(deps): update dependency postcss to ^8.5.3 (!641)
+- da9dce1: fix(deps): update dependency prettier to ^3.5.2 (!650)
+- d6b0038: fix(deps): update swc monorepo to ^1.10.18 (!639)
+- c3cc7a8: fix(deps): update dependency tsx to ^4.19.3 (!638)
+- d6b0038: chore(deps): update dependency unplugin-icons to ^22.1.0 (!632)
+- d2401f7: chore(deps): update dependency vite-plugin-kit-routes to ^0.8.2 (!647)
+- 68f169e: fix(deps): update dependency ws to ^8.18.1 (!651)
+
 ## 4.8.2
 
 ### Patch Changes

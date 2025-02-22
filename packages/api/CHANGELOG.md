@@ -1,5 +1,29 @@
 # @churros/api
 
+## 14.0.0
+
+### Major Changes
+
+- 2507838: Remove deprecated Mutation.upsertGroup
+- 229a501: Put lydia webhook and prometheus exporter on the same port as the API (4000)
+
+### Patch Changes
+
+- c3cc7a8: fix(deps): update dependency @envelop/core to ^5.1.0 (!637)
+- 4489a77: fix(deps): update dependency graphql-yoga to ^5.12.0 (!640)
+- 89c8430: chore(deps): update dependency @types/jsonwebtoken to ^9.0.9 (!649)
+- c3cc7a8: fix(deps): update dependency ldap-authentication to ^3.3.3 (!648)
+- 1fa3db4: fix(deps): update notella to v0.17.0 (!635)
+- 18bcafb: canCreateGroup would always return false
+- 5a9f4ec: fix(deps): update dependency @pothos/core to v4.4.0 (!644)
+- da9dce1: fix(deps): update dependency prettier to ^3.5.2 (!650)
+- 382cad8: fix(deps): update prisma monorepo to ^6.4.1 (!646)
+- c3cc7a8: fix(deps): update dependency tsx to ^4.19.3 (!638)
+- 68f169e: fix(deps): update dependency ws to ^8.18.1 (!651)
+- Updated dependencies [5a9f4ec]
+- Updated dependencies [382cad8]
+  - @churros/db@4.3.3
+
 ## 13.0.0
 
 ### Major Changes
