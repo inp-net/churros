@@ -126,17 +126,19 @@ export function operationErrorMessages<T, CaveatsKeys extends CaveatKey, Fragmen
       const operationResultData = get(
         fragment(operationResult as MutationErrors, new MutationErrorsStore()),
       );
-      return operationErrorMessages(result, operationResultData, true);
-    } else {
-      return operationResult && 'fieldErrors' in operationResult
-        ? operationResult.fieldErrors.map(
-            ({ path, message }) =>
-              `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
-          )
-        : 'message' in operationResult
-          ? [operationResult.message]
-          : [];
+      if ('message' in operationResultData || 'fieldErrors' in operationResultData) {
+        return operationErrorMessages(result, operationResultData, true);
+      }
     }
+
+    return operationResult && 'fieldErrors' in operationResult
+      ? operationResult.fieldErrors.map(
+          ({ path, message }) =>
+            `${path.map((part) => (/\d+/.test(part) ? (Number.parseInt(part) + 1).toString() : part)).join(': ')}: ${message}`,
+        )
+      : 'message' in operationResult
+        ? [operationResult.message]
+        : [];
   }
   return result.errors ? result.errors.map(({ message }) => message) : ['Erreur inconnue'];
 }
