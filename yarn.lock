@@ -755,7 +755,7 @@ __metadata:
     "@types/express": "npm:^4.17.21"
     "@types/express-session": "npm:^1.18.1"
     "@types/is-plain-object": "npm:^2.0.4"
-    "@types/jsonwebtoken": "npm:^9.0.8"
+    "@types/jsonwebtoken": "npm:^9.0.9"
     "@types/ldapjs": "npm:^3.0.6"
     "@types/lodash.countby": "npm:^4.6.9"
     "@types/lodash.get": "npm:^4.4.9"
@@ -5346,13 +5346,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^9.0.2, @types/jsonwebtoken@npm:^9.0.8":
+"@types/jsonwebtoken@npm:^9.0.2":
   version: 9.0.8
   resolution: "@types/jsonwebtoken@npm:9.0.8"
   dependencies:
     "@types/ms": "npm:*"
     "@types/node": "npm:*"
   checksum: 10c0/dd3ccea05115ad9c4458d0c2a487179b1abf8886eaa8cc77d64031a8ef47abd3ff038cdde26e76893372238c8612e4f5fd578b3400e525b65c0e8d3abefe5282
+  languageName: node
+  linkType: hard
+
+"@types/jsonwebtoken@npm:^9.0.9":
+  version: 9.0.9
+  resolution: "@types/jsonwebtoken@npm:9.0.9"
+  dependencies:
+    "@types/ms": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/d754a7b65fc021b298fc94e8d7a7d71f35dedf24296ac89286f80290abc5dbb0c7830a21440ee9ecbb340efc1b0a21f5609ea298a35b874cae5ad29a65440741
   languageName: node
   linkType: hard
 
