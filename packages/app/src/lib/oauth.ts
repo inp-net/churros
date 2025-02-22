@@ -15,6 +15,11 @@ export function oauthInitiateLoginURL(event: { url: URL }): URL {
   return url;
 }
 
+export function oauthPasswordResetURL(): URL | null {
+  if (!URL.canParse(env.PUBLIC_OAUTH_PASSWORD_RESET_URL)) return null;
+  return new URL(env.PUBLIC_OAUTH_PASSWORD_RESET_URL);
+}
+
 export function oauthLogoutURL(): URL {
   return new URL(env.PUBLIC_API_AUTH_URL + '/logout');
 }

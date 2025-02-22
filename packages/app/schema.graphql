@@ -3522,7 +3522,11 @@ type MutationCreateGroupSuccess {
   data: Group!
 }
 
-union MutationCreatePasswordResetResult = Error | MutationCreatePasswordResetSuccess | ZodError
+union MutationCreatePasswordResetResult =
+  | Error
+  | InvalidAuthProviderError
+  | MutationCreatePasswordResetSuccess
+  | ZodError
 
 type MutationCreatePasswordResetSuccess {
   data: Boolean!

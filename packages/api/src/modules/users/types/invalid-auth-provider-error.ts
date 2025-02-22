@@ -4,7 +4,7 @@ import { AuthProvider } from '@churros/db/prisma';
 export class InvalidAuthProviderError extends Error {
   constructor(allowedProviders: AuthProvider[]) {
     super(
-      `Méthode de connexion invalide pour ton compte. Tu peux te connecter via ${allowedProviders
+      `Méthode de connexion invalide pour ton compte. Tu peux essayer via ${allowedProviders
         .map((provider) => {
           switch (provider) {
             case AuthProvider.Local:

@@ -1,6 +1,12 @@
 import { builder, ENV, log, prisma, sendMail } from '#lib';
-import { emailLoginPrismaClauses, PASSWORD_RESET_EXPIRES_AFTER } from '#modules/users/utils';
+import {
+  emailLoginPrismaClauses,
+  InvalidAuthProviderError,
+  PASSWORD_RESET_EXPIRES_AFTER,
+} from '#modules/users';
+import { AuthProvider } from '@churros/db/prisma';
 import { addSeconds } from 'date-fns';
+import { ZodError } from 'zod';
 
 // TODO rename to request-password-reset
 builder.mutationField('createPasswordReset', (t) =>
@@ -8,7 +14,7 @@ builder.mutationField('createPasswordReset', (t) =>
     type: 'Boolean',
     description:
       "Démarre une procédure de réinitialisation de mot de passe pour l'utilisateur associé à l'adresse e-mail ou l'uid fournie. Renvoie `true` même si l'utilisateur n'existe pas.",
-    errors: {},
+    errors: { types: [Error, ZodError, InvalidAuthProviderError] },
     args: {
       email: t.arg.string(),
     },
@@ -20,6 +26,9 @@ builder.mutationField('createPasswordReset', (t) =>
         },
       });
       if (!owner) return true;
+      if (owner.authProviders.length > 0 && !owner.authProviders.includes(AuthProvider.Local)) {
+        throw new InvalidAuthProviderError(owner.authProviders);
+      }
       const result = await prisma.passwordReset.create({
         data: {
           user: {

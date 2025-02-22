@@ -786,6 +786,11 @@ export const topnavConfigs: Partial<{
     quickAction: commonActions.reload,
     actions: rootPagesActions,
   },
+  '/(app)/login/forgotten': {
+    title: 'Mot de passe oublié',
+    back: route('/login'),
+    actions: [],
+  },
 };
 
 export const scanningEventsRouteID: LayoutRouteId = '/(app)/events/[id]/scan';
