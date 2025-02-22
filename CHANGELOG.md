@@ -11,6 +11,10 @@ Le format du changelog est basé sur [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Corrections
+
+- Un bug empêchait les respos clubs ou admins d'AE de créer des groupes
+
 ## [4.8.2] - 2025-02-15
 
 ## [4.8.1] - 2025-02-11

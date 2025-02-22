@@ -23,19 +23,19 @@ export const ALLOWED_SUBGROUP_TYPES: GroupType[] = [
 export function canCreateGroup(
   user: Context['user'],
   {
-    studentAssociationUid,
+    studentAssociationId,
     parentUid,
     type,
   }: {
-    studentAssociationUid?: string | null | undefined;
+    studentAssociationId?: string | null | undefined;
     /** @deprecated setting parent group is done in another mutation now  */
     parentUid?: string | null | undefined;
     type: GroupType;
   },
 ): boolean {
   if (!user) return false;
-  if (userIsAdminOf(user, studentAssociationUid ?? null)) return true;
-  if (userIsGroupEditorOf(user, studentAssociationUid ?? null)) return true;
+  if (userIsAdminOf(user, studentAssociationId ?? null)) return true;
+  if (userIsGroupEditorOf(user, studentAssociationId ?? null)) return true;
 
   if (
     parentUid &&

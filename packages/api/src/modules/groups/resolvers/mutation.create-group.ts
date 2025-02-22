@@ -25,9 +25,12 @@ builder.mutationField('createGroup', (t) =>
         defaultValue: 'Group',
       }),
     },
-    async authScopes(_, { studentAssociation, type }, { user }) {
+    async authScopes(_, { studentAssociation: studentAssociationUid, type }, { user }) {
+      const studentAssociation = await prisma.studentAssociation.findUniqueOrThrow({
+        where: { uid: studentAssociationUid },
+      });
       return canCreateGroup(user, {
-        studentAssociationUid: studentAssociation,
+        studentAssociationId: studentAssociation.id,
         type,
       });
     },
