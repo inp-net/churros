@@ -880,7 +880,7 @@ __metadata:
     unified: "npm:^11.0.5"
     web-push: "npm:^3.6.7"
     which: "npm:^5.0.0"
-    ws: "npm:^8.18.0"
+    ws: "npm:^8.18.1"
     yaml: "npm:^2.7.0"
     zod: "npm:^3.24.2"
     zod-i18n-map: "npm:^2.27.0"
@@ -990,7 +990,7 @@ __metadata:
     vite-plugin-kit-routes: "npm:^0.8.2"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.0.11"
-    ws: "npm:^8.18.0"
+    ws: "npm:^8.18.1"
     xss: "npm:^1.0.15"
     zod: "npm:^3.24.2"
   languageName: unknown
@@ -22133,7 +22133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.14.2, ws@npm:^8.18.0":
+"ws@npm:^8.14.2":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:
@@ -22145,6 +22145,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/25eb33aff17edcb90721ed6b0eb250976328533ad3cd1a28a274bd263682e7296a6591ff1436d6cbc50fa67463158b062f9d1122013b361cec99a05f84680e06
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "ws@npm:8.18.1"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/e498965d6938c63058c4310ffb6967f07d4fa06789d3364829028af380d299fe05762961742971c764973dce3d1f6a2633fe8b2d9410c9b52e534b4b882a99fa
   languageName: node
   linkType: hard
 
