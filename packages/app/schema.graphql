@@ -3242,10 +3242,6 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
     godparentUid: String!
     id: ID
   ): MutationUpsertGodparentRequestResult!
-  upsertGroup(input: UpsertGroupInput!, uid: UID): MutationUpsertGroupResult!
-    @deprecated(
-      reason: "Mutation séparée en plusieurs mutations plus spécifiques. Voir la documentation du module groups"
-    )
   upsertGroupMember(
     canEditArticles: Boolean!
     canEditMembers: Boolean!
@@ -4039,12 +4035,6 @@ union MutationUpsertGodparentRequestResult =
 
 type MutationUpsertGodparentRequestSuccess {
   data: GodparentRequest!
-}
-
-union MutationUpsertGroupResult = Error | MutationUpsertGroupSuccess | ZodError
-
-type MutationUpsertGroupSuccess {
-  data: Group!
 }
 
 union MutationUpsertLydiaAccountResult = Error | MutationUpsertLydiaAccountSuccess | ZodError
@@ -6579,30 +6569,6 @@ scalar UID
 Une adresse internet (URL). Les protocoles autorisés sont: http:, https:, mailto:, tel:
 """
 scalar URL
-
-input UpsertGroupInput @graphinx(module: "groups") {
-  address: String!
-  color: String
-  description: String!
-  email: String
-  longDescription: String!
-  mailingList: String
-  name: String!
-  parent: UID
-  related: [String!]!
-  school: UID
-    @deprecated(
-      reason: "N'a aucun effet, les groupes ne peuvent plus être reliés à des écoles directement"
-    )
-  selfJoinable: Boolean!
-  studentAssociation: UID
-  type: GroupType!
-  """
-  Ne sert qu'à la création du groupe. Il est impossible de modifier un uid existant
-  """
-  uid: UID
-  website: String!
-}
 
 """
 Users are the people who use the app
