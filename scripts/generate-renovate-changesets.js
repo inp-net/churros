@@ -33,7 +33,7 @@ for (const commitHash of mergeCommits.reverse()) {
   );
 
   // Create a new changeset file
-  const changesetFile = path.join(changesetDir, `${branchName}.md`);
+  const changesetFile = path.join(changesetDir, `zzzz-renovate-${branchName}.md`);
 
   // Get the package.json files changed in the merge commit
   const changedFiles = exec(`git diff ${commitHash}~1 ${commitHash} --name-only`)
