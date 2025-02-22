@@ -7,6 +7,7 @@ import {
 import { AuthProvider } from '@churros/db/prisma';
 import { addSeconds } from 'date-fns';
 import { ZodError } from 'zod';
+import { AuthProvider } from '@churros/db/prisma'
 
 // TODO rename to request-password-reset
 builder.mutationField('createPasswordReset', (t) =>
