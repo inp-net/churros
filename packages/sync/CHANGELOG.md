@@ -1,5 +1,14 @@
 # @churros/sync
 
+## 1.71.22
+
+### Patch Changes
+
+- c3cc7a8: fix(deps): update dependency tsx to ^4.19.3 (!638)
+- Updated dependencies [5a9f4ec]
+- Updated dependencies [382cad8]
+  - @churros/db@4.3.3
+
 ## 1.71.21
 
 ### Patch Changes

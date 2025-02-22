@@ -1,5 +1,12 @@
 # @churros/db
 
+## 4.3.3
+
+### Patch Changes
+
+- 5a9f4ec: fix(deps): update dependency @pothos/core to v4.4.0 (!644)
+- 382cad8: fix(deps): update prisma monorepo to ^6.4.1 (!646)
+
 ## 4.3.2
 
 ### Patch Changes
