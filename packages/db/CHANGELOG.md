@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.4
+
+### Patch Changes
+
+- c8f2c86: fix(deps): update dependency @pothos/core to v4.4.1 (!663)
+
 ## 4.3.3
 
 ### Patch Changes

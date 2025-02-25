@@ -1,5 +1,16 @@
 # @churros/api
 
+## 14.0.1
+
+### Patch Changes
+
+- bb77173: fix(deps): update dependency graphql-yoga to ^5.12.1 (!659)
+- a414f76: fix(deps): update dependency keep-a-changelog to ^2.6.1 (!653)
+- f36bb35: fix(deps): update dependency nanoid to ^5.1.2 (!655)
+- c8f2c86: fix(deps): update dependency @pothos/core to v4.4.1 (!663)
+- Updated dependencies [c8f2c86]
+  - @churros/db@4.3.4
+
 ## 14.0.0
 
 ### Major Changes
