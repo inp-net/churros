@@ -722,7 +722,7 @@ __metadata:
   dependencies:
     "@churros/db": "workspace:^4.3.3"
     "@clack/prompts": "npm:^0.10.0"
-    "@envelop/core": "npm:^5.1.0"
+    "@envelop/core": "npm:^5.1.1"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@graphql-yoga/node": "npm:^3.9.1"
     "@graphql-yoga/redis-event-target": "npm:^3.0.3"
@@ -1396,13 +1396,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@envelop/core@npm:5.1.0"
+"@envelop/core@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@envelop/core@npm:5.1.1"
   dependencies:
-    "@envelop/types": "npm:^5.1.0"
+    "@envelop/types": "npm:^5.1.1"
+    "@whatwg-node/promise-helpers": "npm:^1.0.0"
     tslib: "npm:^2.5.0"
-  checksum: 10c0/b3aa8b3c58d85daa99629f2d379a9a47f14585d36429f929db67f97e4954df96d1fa4a518723392811be4f79b111dc2f4c79a43eb8c6c2d532970055ec76c5aa
+  checksum: 10c0/04841f3c705bb80e11be765a6f9dfaa15e78ae24064490522a21fbda9e59b1b9c0baa50681abdbd72e38c162ce336079f6d6ad8578ccdb4a4d741f702419517c
   languageName: node
   linkType: hard
 
@@ -1433,12 +1434,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/types@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@envelop/types@npm:5.1.0"
+"@envelop/types@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@envelop/types@npm:5.1.1"
   dependencies:
+    "@whatwg-node/promise-helpers": "npm:^1.0.0"
     tslib: "npm:^2.5.0"
-  checksum: 10c0/db9f33756b6c7299dfd33fc02023f45a686e0d43b37977fd92073d69edffeb0619627dde818fc8061c9aaa2a17fab46092eb1eff1998ec897bc20a2355f78e34
+  checksum: 10c0/7e695e0e2de6e9e86c3b2e8130c7ab38d013267f246c911e34123aeadb31225eaf21cd3a8cc4476238a64c086f058a77468ff0ead5effc09adcb10f555c95321
   languageName: node
   linkType: hard
 
@@ -6198,6 +6200,15 @@ __metadata:
     busboy: "npm:^1.6.0"
     tslib: "npm:^2.6.3"
   checksum: 10c0/f61c45f256363f1c98ddcbcfc9265c8a98a64d09461a19ce32bcf76ab38619c7d7ee52ee7abfe80e49ddc7d6336e85ee481552294146ae934fca453feb970d23
+  languageName: node
+  linkType: hard
+
+"@whatwg-node/promise-helpers@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@whatwg-node/promise-helpers@npm:1.0.0"
+  dependencies:
+    tslib: "npm:^2.6.3"
+  checksum: 10c0/44601db8a132a02aa05726a592282f361c8830f9bcd9852c4ae23cc47ee9b1a8ec190611e5a66c55cf2df137ddd51e9704a22c69304a1dfc6036be1db374809d
   languageName: node
   linkType: hard
 
