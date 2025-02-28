@@ -1,5 +1,14 @@
 # @churros/app
 
+## 4.8.4
+
+### Patch Changes
+
+- 8579276: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.26 (!657)
+- f36bb35: fix(deps): update dependency nanoid to ^5.1.2 (!655)
+- 0681725: fix(deps): update swc monorepo to ^1.11.1 (!664)
+- 3d3779c: fix(deps): update dependency write-excel-file to ^2.1.0 (!633)
+
 ## 4.8.3
 
 ### Patch Changes
