@@ -92,8 +92,7 @@ export async function GET(event) {
       headers: {
         'Content-Type': 'application/json',
       },
-      // consider frontend ready as soon as the database is ready on the backend
-      status: checks.backend.database.prisma ? 200 : 500,
+      status: 200,
     },
   );
 }
