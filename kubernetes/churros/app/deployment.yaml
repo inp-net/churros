@@ -19,13 +19,6 @@ spec:
         - image: registry.inpt.fr/churros/churros/app:latest
           imagePullPolicy: IfNotPresent
           name: app
-          readinessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            httpGet:
-              scheme: HTTP
-              path: /health
-              port: 3000
           resources:
             requests:
               memory: '128Mi'
