@@ -266,12 +266,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.17.9, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5":
+"@babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5":
   version: 7.26.7
   resolution: "@babel/runtime@npm:7.26.7"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10c0/60199c049f90e5e41c687687430052a370aca60bac7859ff4ee761c5c1739b8ba1604d391d01588c22dc0e93828cbadb8ada742578ad1b1df240746bce98729a
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.26.9":
+  version: 7.26.9
+  resolution: "@babel/runtime@npm:7.26.9"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/e8517131110a6ec3a7360881438b85060e49824e007f4a64b5dfa9192cf2bb5c01e84bfc109f02d822c7edb0db926928dd6b991e3ee460b483fb0fac43152d9b
   languageName: node
   linkType: hard
 
@@ -989,7 +998,7 @@ __metadata:
     vite: "npm:5.4.14"
     vite-plugin-kit-routes: "npm:^0.8.2"
     wait-port: "npm:^1.1.0"
-    write-excel-file: "npm:^2.1.0"
+    write-excel-file: "npm:^2.3.2"
     ws: "npm:^8.18.1"
     xss: "npm:^1.0.15"
     zod: "npm:^3.24.2"
@@ -13205,7 +13214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.9.1":
+"jszip@npm:^3.10.1":
   version: 3.10.1
   resolution: "jszip@npm:3.10.1"
   dependencies:
@@ -22131,15 +22140,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"write-excel-file@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "write-excel-file@npm:2.1.0"
+"write-excel-file@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "write-excel-file@npm:2.3.2"
   dependencies:
-    "@babel/runtime": "npm:^7.17.9"
+    "@babel/runtime": "npm:^7.26.9"
     archiver: "npm:^7.0.1"
     file-saver: "npm:^2.0.5"
-    jszip: "npm:^3.9.1"
-  checksum: 10c0/e3185377b4a6533873b438dc03fdb65275cb4fc9b82b5ebb711542b262361f38862f4a2754240e35d946432b6a681f0dbfff52cce7618b6f5797547e44a175fe
+    jszip: "npm:^3.10.1"
+  checksum: 10c0/ff1f8fb5e13e781f15d208e3a5475f2ab482cdb615511a2e74230f110a0a71e5263f12c3f2475806be3e4ac3a53025e2e98da246da47853c17e68403c11ae45e
   languageName: node
   linkType: hard
 
