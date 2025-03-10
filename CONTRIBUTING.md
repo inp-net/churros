@@ -8,11 +8,11 @@
 
 <details><summary>⚠️ Si vous utilisez WSL, lisez ceci</summary>
 
-Votre path windows sera automatiquement ajouté à la fin du path de votre distro (typiquement /mnt/c/windows/system32 qui expose l'explorer via `explorer .`).
+Votre path windows sera automatiquement ajouté à la fin du path de votre distro (typiquement /mnt/c/windows/system32 qui expose l'explorer via `explorer .` dans wsl).
 
 
 Cependant, si vous avez node installé sur votre windows et ajouté à votre path, wsl utilisera cette version par défaut et ca marchera ! 
-Jusqu'à ce que vous ayez besoin d'executer un script avec une commande node ./thing.js où le terminal essayera de le chercher dans C:\ au lieu de votre répertoire courant car il ne supporte pas les répertoires réseaux UNC comme `\\wsl.localhost\`)
+Jusqu'à ce que vous ayez besoin d'executer un script avec une commande `node ./script.js` où le terminal essayera de le chercher dans C:\ au lieu de votre répertoire courant car il ne supporte pas les répertoires réseaux [UNC](https://fr.wikipedia.org/wiki/Universal_Naming_Convention) comme `\\wsl.localhost\`)
 </details>
 
 - [Docker](https://docs.docker.com/engine/install/) avec le plugin [Docker Compose](https://docs.docker.com/compose/)
