@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.0.2
+
+### Patch Changes
+
+- b0123cb: fix(deps): update dependency @envelop/core to ^5.2.3 (!665)
+
 ## 14.0.1
 
 ### Patch Changes

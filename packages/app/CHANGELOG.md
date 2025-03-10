@@ -1,5 +1,12 @@
 # @churros/app
 
+## 4.8.5
+
+### Patch Changes
+
+- c3fe3c3: chore(deps): update dependency @sveltejs/kit to ^2.19.0 (!666)
+- e7d4f82: fix(deps): update dependency write-excel-file to ^2.3.2 (!656)
+
 ## 4.8.4
 
 ### Patch Changes
