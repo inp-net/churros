@@ -904,7 +904,7 @@ __metadata:
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.4"
     "@iconify-json/material-symbols": "npm:^1.2.14"
-    "@iconify-json/material-symbols-light": "npm:^1.2.14"
+    "@iconify-json/material-symbols-light": "npm:^1.2.16"
     "@iconify-json/mdi": "npm:^1.2.3"
     "@iconify-json/simple-icons": "npm:^1.2.26"
     "@paypal/paypal-js": "npm:^8.2.0"
@@ -2476,12 +2476,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/material-symbols-light@npm:^1.2.14":
-  version: 1.2.14
-  resolution: "@iconify-json/material-symbols-light@npm:1.2.14"
+"@iconify-json/material-symbols-light@npm:^1.2.16":
+  version: 1.2.16
+  resolution: "@iconify-json/material-symbols-light@npm:1.2.16"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 10c0/8d70870c50d6b8851cccf82448f8f76d70a8c11fbf1c0434d08c63cfa1185affd10179e09bf7f72a172036e81cbf7a21b540e223491050d8ff3f6c8a37321f2d
+  checksum: 10c0/ae09f821e99440413c500819b51bbbc8708f372c2ca8e302646a63c7e949157bebe6a6fa5c04a647f19f663652a5cf681ce7f4c29d9c324aeb2a4019bac380be
   languageName: node
   linkType: hard
 
