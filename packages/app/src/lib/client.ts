@@ -84,7 +84,7 @@ export default new HoudiniClient({
   plugins: [logger, subscriptionPlugin, unauthorizedErrorHandler],
   fetchParams({ session }) {
     return {
-      credentials: 'include',
+      credentials: 'omit',
       headers: {
         Authorization: session?.token ? `Bearer ${session.token}` : '',
       },
