@@ -3,6 +3,9 @@
   image: node:20-alpine
   before_script:
     - apk add diffutils git # busybox diff has no -y option
+    - git remote remove origin || true
+    - git remote add origin $CI_PROJECT_URL
+    - git fetch
   script:
     - >
       MIGRATION_NAMES_ENDPOINT=https://churros.inpt.fr/dump/migrations/names 
