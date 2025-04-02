@@ -87,7 +87,7 @@
     "postcss-html": "^1.8.0",
     "prettier": "^3.5.2",
     "sanitize.css": "^13.0.0",
-    "sass": "^1.83.4",
+    "sass": "^1.86.2",
     "sass-embedded": "^1.83.4",
     "svelte": "^4.2.19",
     "svelte-check": "^4.1.4",

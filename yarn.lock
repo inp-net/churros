@@ -971,7 +971,7 @@ __metadata:
     qr-code-generator-lib: "npm:^1.0.1"
     qr-scanner: "npm:^1.4.2"
     sanitize.css: "npm:^13.0.0"
-    sass: "npm:^1.83.4"
+    sass: "npm:^1.86.2"
     sass-embedded: "npm:^1.83.4"
     simple-svelte-autocomplete: "npm:^2.5.2"
     slugify: "npm:^1.6.6"
@@ -19088,9 +19088,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.83.4":
-  version: 1.83.4
-  resolution: "sass@npm:1.83.4"
+"sass@npm:^1.86.2":
+  version: 1.86.2
+  resolution: "sass@npm:1.86.2"
   dependencies:
     "@parcel/watcher": "npm:^2.4.1"
     chokidar: "npm:^4.0.0"
@@ -19101,7 +19101,7 @@ __metadata:
       optional: true
   bin:
     sass: sass.js
-  checksum: 10c0/6f27f0eebfeb50222b14baaeef548ef58a05daf8abd9797e6c499334ed7ad40541767056c8693780d06ca83d8836348ea7396a923d3be439b133507993ca78be
+  checksum: 10c0/fe40b63a19e867f460369d495bcdc979598c0b105c9d52164a7e9cc4e12ab91c27337702a1b58575f7da8fd08256b85fd2f34cc8275eb7c57699bfc5029f54a3
   languageName: node
   linkType: hard
 
