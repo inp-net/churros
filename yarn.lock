@@ -235,7 +235,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.21.9, @babel/parser@npm:^7.23.0, @babel/parser@npm:^7.24.6, @babel/parser@npm:^7.25.9, @babel/parser@npm:^7.26.5, @babel/parser@npm:^7.26.7":
+"@babel/parser@npm:7.26.10":
+  version: 7.26.10
+  resolution: "@babel/parser@npm:7.26.10"
+  dependencies:
+    "@babel/types": "npm:^7.26.10"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 10c0/c47f5c0f63cd12a663e9dc94a635f9efbb5059d98086a92286d7764357c66bceba18ccbe79333e01e9be3bfb8caba34b3aaebfd8e62c3d5921c8cf907267be75
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.21.9, @babel/parser@npm:^7.24.6, @babel/parser@npm:^7.25.9, @babel/parser@npm:^7.26.5, @babel/parser@npm:^7.26.7":
   version: 7.26.7
   resolution: "@babel/parser@npm:7.26.7"
   dependencies:
@@ -355,6 +366,16 @@ __metadata:
     debug: "npm:^4.3.1"
     globals: "npm:^11.1.0"
   checksum: 10c0/c7af29781960dacaae51762e8bc6c4b13d6ab4b17312990fbca9fc38e19c4ad7fecaae24b1cf52fb844e8e6cdc76c70ad597f90e496bcb3cc0a1d66b41a0aa5b
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:7.26.10":
+  version: 7.26.10
+  resolution: "@babel/types@npm:7.26.10"
+  dependencies:
+    "@babel/helper-string-parser": "npm:^7.25.9"
+    "@babel/helper-validator-identifier": "npm:^7.25.9"
+  checksum: 10c0/7a7f83f568bfc3dfabfaf9ae3a97ab5c061726c0afa7dcd94226d4f84a81559da368ed79671e3a8039d16f12476cf110381a377ebdea07587925f69628200dac
   languageName: node
   linkType: hard
 
@@ -1028,7 +1049,7 @@ __metadata:
     unplugin-icons: "npm:^22.1.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.14"
-    vite-plugin-kit-routes: "npm:^0.8.2"
+    vite-plugin-kit-routes: "npm:^0.8.4"
     wait-port: "npm:^1.1.0"
     write-excel-file: "npm:^2.3.2"
     ws: "npm:^8.18.1"
@@ -2900,15 +2921,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kitql/internals@npm:0.10.2":
-  version: 0.10.2
-  resolution: "@kitql/internals@npm:0.10.2"
+"@kitql/helpers@npm:0.8.12":
+  version: 0.8.12
+  resolution: "@kitql/helpers@npm:0.8.12"
   dependencies:
-    "@babel/parser": "npm:^7.23.0"
-    "@kitql/helpers": "npm:0.8.11"
+    esm-env: "npm:^1.0.0"
+  checksum: 10c0/40c75f9feaecdb233c8ba305ecc5a835ef25131a35b3123def08dcdec1a02fcec67423fef24b45c262647b96437910eda68c2852a80b4f503b379431d042fd49
+  languageName: node
+  linkType: hard
+
+"@kitql/internals@npm:0.10.4":
+  version: 0.10.4
+  resolution: "@kitql/internals@npm:0.10.4"
+  dependencies:
+    "@babel/parser": "npm:7.26.10"
+    "@babel/types": "npm:7.26.10"
+    "@kitql/helpers": "npm:0.8.12"
     recast: "npm:^0.23.4"
     svelte: "npm:^5.0.0"
-  checksum: 10c0/9aff67e4416f95ff91f7d266b75e787ce25028ed8f9789afcc2279d5a78544d0e8261b1d23a4395dd587d5e2326313f7ccbc42ff46bba5e19c5f565ecfd834d3
+  checksum: 10c0/e040c23829272596649146277e13ae07e52524f78febd93cd11cc70a8d15811f169385a50d526c4f28322a34f1de3a05fc8a633d2ee7f9daa4d88a2f2bb60cbb
   languageName: node
   linkType: hard
 
@@ -21815,20 +21846,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-kit-routes@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "vite-plugin-kit-routes@npm:0.8.2"
+"vite-plugin-kit-routes@npm:^0.8.4":
+  version: 0.8.4
+  resolution: "vite-plugin-kit-routes@npm:0.8.4"
   dependencies:
-    "@kitql/helpers": "npm:0.8.11"
-    "@kitql/internals": "npm:0.10.2"
-    vite-plugin-watch-and-run: "npm:1.7.3"
+    "@kitql/helpers": "npm:0.8.12"
+    "@kitql/internals": "npm:0.10.4"
+    vite-plugin-watch-and-run: "npm:1.7.4"
   peerDependencies:
     "@sveltejs/kit": ^2.4.0
-  checksum: 10c0/bb23c68dbe898b0bb4fa3df1a9ae509ff703adfa4f36d48832dca46613d21280ac8614524c8239503c877a07fc2a8fc4bc2e82043804f40f45d5be94303e1cbe
+  checksum: 10c0/e952a9b6e4b33b19514e1384ea460309902ff8a850541fde0c8ef93457c9ec578253cc66dd0c881caecc9909fabb93862e034766e0d41bd827d8643b986ec376
   languageName: node
   linkType: hard
 
-"vite-plugin-watch-and-run@npm:1.7.3, vite-plugin-watch-and-run@npm:^1.7.0":
+"vite-plugin-watch-and-run@npm:1.7.4":
+  version: 1.7.4
+  resolution: "vite-plugin-watch-and-run@npm:1.7.4"
+  dependencies:
+    "@kitql/helpers": "npm:0.8.12"
+    micromatch: "npm:4.0.8"
+  checksum: 10c0/121ab1f5b99fe18363f508593256e31b6f4c4f9584d17593fe3d4557fb8cc85d3e5530174507c82fe026520f4f31c9f3fd77e27abebadb649f9326ff5dd6381e
+  languageName: node
+  linkType: hard
+
+"vite-plugin-watch-and-run@npm:^1.7.0":
   version: 1.7.3
   resolution: "vite-plugin-watch-and-run@npm:1.7.3"
   dependencies:
