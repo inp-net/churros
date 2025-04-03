@@ -16,7 +16,7 @@ test:api:format:
 
 .test:api:schema:
   extends: .test
-  image: node:20-alpine
+  image: node:20.19.0-alpine
   stage: post-build
   needs:
     - job: build:api
