@@ -530,6 +530,8 @@ model Article {
   search Unsupported("tsvector") @default(dbgenerated("''::tsvector"))
 
   @@index([search], type: Gin)
+  @@index([eventId])
+  @@index([visibility, publishedAt(sort: Desc)])
 }
 
 enum EventFrequency {
