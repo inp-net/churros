@@ -57,7 +57,7 @@
     "graph-cycles": "^3.0.0",
     "graphql": "^16.10.0",
     "graphql-rate-limit-directive": "^2.0.6",
-    "graphql-scalars": "^1.24.1",
+    "graphql-scalars": "^1.24.2",
     "graphql-ws": "^6.0.4",
     "graphql-yoga": "^5.12.1",
     "handlebars": "^4.7.8",
