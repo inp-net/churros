@@ -63,7 +63,7 @@
     "handlebars": "^4.7.8",
     "helmet": "^8.0.0",
     "html-to-text": "^9.0.5",
-    "i18next": "^24.2.2",
+    "i18next": "^24.2.3",
     "image-type": "^5.2.0",
     "ioredis": "^5.5.0",
     "is-plain-object": "^5.0.0",
