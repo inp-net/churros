@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.5
+
+### Patch Changes
+
+- 818a0f8: perf(schema): add indexes on Article for faster homepage
+
 ## 4.3.4
 
 ### Patch Changes

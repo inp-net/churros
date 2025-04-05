@@ -1,5 +1,11 @@
 # arborist
 
+## 0.1.7
+
+### Patch Changes
+
+- 1113183: chore(deps): update dependency @tsconfig/node20 to ^20.1.5 (!675)
+
 ## 0.1.6
 
 ### Patch Changes

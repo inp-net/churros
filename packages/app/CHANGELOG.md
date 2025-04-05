@@ -1,5 +1,22 @@
 # @churros/app
 
+## 4.8.5
+
+### Patch Changes
+
+- 1113183: chore(deps): update dependency @babel/core to ^7.26.10 (!674)
+- f7bcd39: fix(deps): update dependency houdini to ^1.5.4 (!686)
+- d348d6c: chore(deps): update dependency houdini-svelte to ^2.1.12 (!677)
+- c864fe2: chore(deps): update dependency @iconify-json/material-symbols to ^1.2.17 (!669)
+- 1b5f1db: chore(deps): update dependency @iconify-json/material-symbols-light to ^1.2.17 (!670)
+- 1b5f1db: chore(deps): update dependency @iconify-json/simple-icons to ^1.2.30 (!671)
+- d348d6c: chore(deps): update dependency svelte-check to ^4.1.5 (!678)
+- c3fe3c3: chore(deps): update dependency @sveltejs/kit to ^2.19.0 (!666)
+- d348d6c: chore(deps): update dependency vite-plugin-kit-routes to ^0.8.4 (!680)
+- e7d4f82: fix(deps): update dependency write-excel-file to ^2.3.2 (!656)
+- Updated dependencies [1113183]
+  - arborist@0.1.7
+
 ## 4.8.4
 
 ### Patch Changes

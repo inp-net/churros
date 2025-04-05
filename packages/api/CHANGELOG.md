@@ -1,5 +1,16 @@
 # @churros/api
 
+## 14.0.2
+
+### Patch Changes
+
+- c261c30: fix(deps): update dependency connect-redis to ^8.0.2 (!682)
+- b0123cb: fix(deps): update dependency @envelop/core to ^5.2.3 (!665)
+- Updated dependencies [818a0f8]
+- Updated dependencies [1113183]
+  - @churros/db@4.3.5
+  - arborist@0.1.7
+
 ## 14.0.1
 
 ### Patch Changes
