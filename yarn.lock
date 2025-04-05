@@ -988,7 +988,7 @@ __metadata:
     calendar-link: "npm:^2.8.0"
     colord: "npm:^2.9.3"
     cookie: "npm:^1.0.2"
-    cytoscape: "npm:^3.31.0"
+    cytoscape: "npm:^3.31.2"
     date-fns: "npm:^4.1.0"
     date-fns-tz: "npm:^3.2.0"
     dotenv: "npm:^16.4.7"
@@ -8752,10 +8752,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape@npm:^3.31.0":
-  version: 3.31.0
-  resolution: "cytoscape@npm:3.31.0"
-  checksum: 10c0/2ed2e58b85e2078ef7bbc176e30f1c992984197cf1f4b38bd578da84a221a25fb81b0b6a0c3777185557bf89dca3c05c114be835039804e7b9897d25db8abcd0
+"cytoscape@npm:^3.31.2":
+  version: 3.31.2
+  resolution: "cytoscape@npm:3.31.2"
+  checksum: 10c0/7b1652ab0ad60966b43e9b64ac21c23efaea9ab33a0fd0dff35b036d51f084d25010f2dd78205b60ccb76fba73affa4dcd477a5c15a80e0d2af03e42d39229a9
   languageName: node
   linkType: hard
 

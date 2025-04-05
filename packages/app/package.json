@@ -19,7 +19,7 @@
     "calendar-link": "^2.8.0",
     "colord": "^2.9.3",
     "cookie": "^1.0.2",
-    "cytoscape": "^3.31.0",
+    "cytoscape": "^3.31.2",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "extract-files": "^13.0.0",
