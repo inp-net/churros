@@ -1,5 +1,23 @@
 # @churros/api
 
+## 14.0.2
+
+### Patch Changes
+
+- c261c30: fix(deps): update dependency connect-redis to ^8.0.2 (!682)
+- b0123cb: fix(deps): update dependency @envelop/core to ^5.2.3 (!665)
+- be397c0: fix(deps): update dependency graphql-scalars to ^1.24.2 (!684)
+- be397c0: fix(deps): update dependency i18next to ^24.2.3 (!687)
+- 9e987ef: fix(deps): update dependency multer to ^1.4.5-lts.2 (!691)
+- be397c0: chore(deps): update nodejs (!681)
+- be397c0: fix(deps): update notella to v0.17.1 (!685)
+- 3dd2e08: fix(deps): update dependency prettier to ^3.5.3 (!694)
+- Updated dependencies [818a0f8]
+- Updated dependencies [be397c0]
+- Updated dependencies [1113183]
+  - @churros/db@4.3.5
+  - arborist@0.1.7
+
 ## 14.0.1
 
 ### Patch Changes

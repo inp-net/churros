@@ -1,8 +1,8 @@
 {
   "name": "@churros/api",
-  "version": "14.0.1",
+  "version": "14.0.2",
   "dependencies": {
-    "@churros/db": "workspace:^4.3.4",
+    "@churros/db": "workspace:^4.3.5",
     "@clack/prompts": "^0.10.0",
     "@envelop/core": "^5.2.3",
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
@@ -31,7 +31,7 @@
     "@zxcvbn-ts/language-common": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
     "@zxcvbn-ts/language-fr": "^3.0.2",
-    "arborist": "workspace:^0.1.6",
+    "arborist": "workspace:^0.1.7",
     "argon2": "^0.41.1",
     "bunyan": "^1.8.15",
     "chalk": "^5.4.1",
