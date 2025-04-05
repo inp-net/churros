@@ -831,7 +831,7 @@ __metadata:
     cli-progress: "npm:^3.12.0"
     colord: "npm:^2.9.3"
     concurrently: "npm:^9.1.2"
-    connect-redis: "npm:^8.0.1"
+    connect-redis: "npm:^8.0.2"
     cors: "npm:^2.8.5"
     croner: "npm:^8.1.2"
     dataloader: "npm:^2.2.3"
@@ -8362,12 +8362,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect-redis@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "connect-redis@npm:8.0.1"
+"connect-redis@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "connect-redis@npm:8.0.2"
   peerDependencies:
     express-session: ">=1"
-  checksum: 10c0/0503e2eb99b3b623008cca008d514fd23ffa19961d9fc29a2f2c7be67716b5176ed12570634954456360d0048c0bc26b076ff290901dc8e27efea915e5c50087
+  checksum: 10c0/96eeb58d9e5502efdeb89a155fc23d569d01f1d37245aefdfe9f39248d3b95c6e3869039804f3481cc96993db69ed76065c5bfae5ae9f6314772882822c7714c
   languageName: node
   linkType: hard
 
