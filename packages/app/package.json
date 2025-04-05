@@ -81,7 +81,7 @@
     "dotenv": "^16.4.7",
     "git-root-path": "^1.0.0",
     "graphql-zeus": "^5.3.3",
-    "houdini-svelte": "^2.1.5",
+    "houdini-svelte": "^2.1.12",
     "npm-upgrade": "^3.1.0",
     "postcss": "^8.5.3",
     "postcss-html": "^1.8.0",
