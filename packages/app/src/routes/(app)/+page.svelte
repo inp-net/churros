@@ -56,7 +56,7 @@
         {#each shownBirthdays as { uid, major, birthday, ...user } (uid)}
           <li>
             <AvatarPerson
-              href="/users/{uid}"
+              href="/{uid}"
               {...user}
               role="{major?.shortName ?? '(exté)'} · {new Date().getFullYear() -
                 (birthday?.getFullYear() ?? 0)} ans"
