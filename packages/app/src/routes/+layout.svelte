@@ -9,7 +9,6 @@
   import { debugging, themeDebugger } from '$lib/debugging';
   import { setupIsMobile } from '$lib/mobile';
   import '$lib/polyfills';
-  import { setSentryUser } from '$lib/sentry';
   import { editingTheme, theme } from '$lib/theme.js';
   import { toasts } from '$lib/toasts';
   import { onMount } from 'svelte';
@@ -36,8 +35,6 @@
     }
     $theme.id = newTheme.localID;
   }
-
-  $: setSentryUser($RootLayout.data?.me ?? null);
 
   $: if (browser && $editingTheme)
     RootLayout.fetch({ variables: { editingThemeId: $editingTheme.id, editingTheme: true } });
