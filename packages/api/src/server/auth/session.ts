@@ -1,4 +1,4 @@
-import { daysToSeconds, ENV, getSessionUser, redisClient } from '#lib';
+import { daysToMilliseconds, daysToSeconds, ENV, getSessionUser, redisClient } from '#lib';
 import { type User } from '@churros/db/prisma';
 import { RedisStore } from 'connect-redis';
 import session from 'express-session';
@@ -34,7 +34,7 @@ export default session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: daysToSeconds(365), // 1 year
+    maxAge: daysToMilliseconds(365), // 1 year
     secure: 'auto',
     sameSite: 'lax',
   },

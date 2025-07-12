@@ -46,6 +46,10 @@ export function daysToSeconds(days: number): number {
   return days * 24 * 60 * 60;
 }
 
+export function daysToMilliseconds(days: number): number {
+  return daysToSeconds(days) * 1000;
+}
+
 export function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
