@@ -8,5 +8,8 @@ api.use(
   '/storage',
   // Another layer of protection against malicious uploads
   helmet.contentSecurityPolicy({ directives: { 'script-src': "'none'" } }),
-  express.static(storageRoot()),
+  express.static(storageRoot(), {
+    maxAge: '8h', // Cache static files for 8 hours
+    immutable: true, // recommended for cache-busting
+  }),
 );
