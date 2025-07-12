@@ -12,15 +12,19 @@
   export let data: PageData;
 
   let { LayoutProfile } = data;
+
+  // We handle $LayoutProfile data manually because of a weird Houdini bug
+  // that causes `AbortError`s otherwise.
+  // Probably due to high parallelism that overwhelms Houdini's store update handling
+  // Found by @pisentt, July 2025
   const me = writable($LayoutProfile.data?.me);
   const profile = writable($LayoutProfile.data?.profile);
+  $: unsubscribeFromData = data.LayoutProfile.subscribe(({ data }) => {
+    if (!data) return;
 
-  $: data_unsub = data.LayoutProfile.subscribe(($lp) => {
-    if ($lp.data) {
-      if (data_unsub) data_unsub();
-      profile.set($lp.data?.profile);
-      me.set($lp.data?.me);
-    }
+    unsubscribeFromData?.();
+    $profile = data.profile;
+    $me = data.me;
   });
 </script>
 

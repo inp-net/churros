@@ -74,6 +74,11 @@
   export let data: PageData;
 
   let { PageProfile } = data;
+
+  // We handle $PageProfile data manually because of a weird Houdini bug
+  // that causes `AbortError`s otherwise.
+  // Probably due to high parallelism that overwhelms Houdini's store update handling
+  // Found by @pisentt, July 2025
   const profile = writable($PageProfile.data?.profile);
 
   $: data_unsub = data.PageProfile.subscribe(($lp) => {
