@@ -38,61 +38,100 @@ function _setDecisionTaken() {
 }
 const setDecisionTaken = debounce(_setDecisionTaken, 1000);
 
+/** Enum to select the admin decision about a pending UserCandidate */
+export enum Decision {
+  Accept, // accept and register the user
+  Drop, // delete the UserCandidate silently
+  Refuse, // delete the UserCandidate but send an email to explain the reason
+}
+
 export async function decide(
   email: MaybeLoading<string>,
-  accept: boolean,
+  decision: Decision,
   why = '',
 ): Promise<void> {
   if (!loaded(email)) return;
 
   let ok = false;
-  decidingOn.update((list) => [...list, { email, accepted: accept }]);
-  if (accept) {
-    const result = await graphql(`
-      mutation AcceptUserCandidate($email: String!) {
-        acceptUserCandidate(email: $email) {
-          ...MutationErrors
-          ... on MutationAcceptUserCandidateSuccess {
-            data {
-              email
+  decidingOn.update((list) => [...list, { email, accepted: decision === Decision.Accept }]);
+  switch (decision) {
+    case Decision.Accept:
+      {
+        const result = await graphql(`
+          mutation AcceptUserCandidate($email: String!) {
+            acceptUserCandidate(email: $email) {
+              ...MutationErrors
+              ... on MutationAcceptUserCandidateSuccess {
+                data {
+                  email
+                }
+              }
             }
           }
-        }
-      }
-    `).mutate({ email });
+        `).mutate({ email });
 
-    ok = toasts.mutation(
-      result,
-      'acceptUserCandidate',
-      'Inscription acceptée',
-      "Impossible d'accepter l'inscription",
-    );
-  } else {
-    const result = await graphql(`
-      mutation RefuseUserCandidate($email: String!, $why: String!) {
-        refuseUserCandidate(email: $email, reason: $why) {
-          ...MutationErrors
-          ... on MutationRefuseUserCandidateSuccess {
-            data {
-              email
+        ok = toasts.mutation(
+          result,
+          'acceptUserCandidate',
+          'Inscription acceptée',
+          "Impossible d'accepter l'inscription",
+        );
+      }
+      break;
+
+    case Decision.Drop:
+      {
+        const result = await graphql(`
+          mutation DropUserCandidate($email: String!) {
+            dropUserCandidate(email: $email) {
+              ...MutationErrors
+              ... on MutationDropUserCandidateSuccess {
+                data {
+                  email
+                }
+              }
             }
           }
-        }
-      }
-    `).mutate({ email, why });
+        `).mutate({ email });
 
-    ok = toasts.mutation(
-      result,
-      'refuseUserCandidate',
-      'Inscription refusée',
-      "Impossible de refuser l'inscription",
-    );
+        ok = toasts.mutation(
+          result,
+          'dropUserCandidate',
+          'Inscription supprimée',
+          "Impossible de supprimer l'inscription",
+        );
+      }
+      break;
+
+    case Decision.Refuse:
+      {
+        const result = await graphql(`
+          mutation RefuseUserCandidate($email: String!, $why: String!) {
+            refuseUserCandidate(email: $email, reason: $why) {
+              ...MutationErrors
+              ... on MutationRefuseUserCandidateSuccess {
+                data {
+                  email
+                }
+              }
+            }
+          }
+        `).mutate({ email, why });
+
+        ok = toasts.mutation(
+          result,
+          'refuseUserCandidate',
+          'Inscription refusée',
+          "Impossible de refuser l'inscription",
+        );
+      }
+      break;
   }
 
   if (ok) {
     willDecideOn.push({
       email,
-      accepted: accept,
+      accepted: decision === Decision.Accept,
     });
   } else {
     decidingOn.update((list) => list.filter((e) => e.email !== email));
@@ -102,4 +141,5 @@ export async function decide(
 }
 
 export { default as IconRefuse } from '~icons/msl/back-hand-outline';
+export { default as IconDrop } from '~icons/msl/delete-forever';
 export { default as IconAccept } from '~icons/msl/thumb-up-outline';

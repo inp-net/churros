@@ -18,7 +18,16 @@
   import IconDetails from '~icons/msl/chevron-right';
   import type { PageData } from './$houdini';
   import ModalRefuseReason from './ModalRefuseReason.svelte';
-  import { decide, decided, decidingOn, IconAccept, IconRefuse, reloadCandidates } from './shared';
+  import {
+    decide,
+    Decision,
+    decided,
+    decidingOn,
+    IconAccept,
+    IconRefuse,
+    IconDrop,
+    reloadCandidates,
+  } from './shared';
 
   export let data: PageData;
   $: ({ LayoutManageSignups } = data);
@@ -126,12 +135,24 @@
               </ButtonGhost>
 
               <ButtonGhost
+                help="Supprimer l'inscription"
+                --text="var(--danger)"
+                on:click={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  await decide(candidate.email, Decision.Drop);
+                }}
+              >
+                <IconDrop />
+              </ButtonGhost>
+
+              <ButtonGhost
                 help="Accepter l'inscription"
                 --text="var(--success)"
                 on:click={async (e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  await decide(candidate.email, true);
+                  await decide(candidate.email, Decision.Accept);
                 }}
               >
                 <IconAccept />

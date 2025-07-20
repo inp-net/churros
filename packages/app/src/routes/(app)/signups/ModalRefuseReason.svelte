@@ -3,7 +3,7 @@
   import InputLongText from '$lib/components/InputLongText.svelte';
   import ModalOrDrawer from '$lib/components/ModalOrDrawer.svelte';
   import { loading, type MaybeLoading } from '$lib/loading';
-  import { decide } from './shared';
+  import { decide, Decision } from './shared';
 
   export let open: () => void;
   export let email: MaybeLoading<string> | undefined;
@@ -15,7 +15,7 @@
   <section class="submit">
     <ButtonPrimary
       on:click={async () => {
-        await decide(email, false, why);
+        await decide(email, Decision.Refuse, why);
         close();
       }}
     >
