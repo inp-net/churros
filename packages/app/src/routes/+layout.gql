@@ -2,7 +2,6 @@ query RootLayout($editingThemeId: LocalID!, $editingTheme: Boolean!) {
   loggedIn
   me {
     ...AnalyticsTrackerUser
-    ...SentryUser @mask_disable
   }
 
   autodeployedTheme {

@@ -1,20 +1,11 @@
-import { env } from '$env/dynamic/public';
 import { setSession } from '$houdini';
-import { CURRENT_VERSION } from '$lib/buildinfo';
 import { inferIsMobile } from '$lib/mobile';
 import { aled } from '$lib/session';
-import * as Sentry from '@sentry/sveltekit';
-import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit';
+import type { Handle, HandleFetch } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import * as cookie from 'cookie';
 
-Sentry.init({
-  dsn: env.PUBLIC_SENTRY_DSN,
-  release: CURRENT_VERSION,
-  tracesSampleRate: 1,
-});
-
-export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, resolve }) => {
+export const handle: Handle = sequence(async ({ event, resolve }) => {
   const tokenFromAuthorizationHeader = (event.request.headers.get('Authorization') ?? '').replace(
     /^Bearer /,
     '',
@@ -52,7 +43,3 @@ export const handleFetch: HandleFetch = async ({ request, fetch }) => {
       return response;
     });
 };
-
-export const handleError: HandleServerError = Sentry.handleErrorWithSentry(({ error }) => {
-  console.error(error);
-});

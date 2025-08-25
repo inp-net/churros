@@ -19,7 +19,6 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/strict',
-    'plugin:unicorn/recommended',
     'plugin:svelte/recommended',
     'prettier',
   ],
@@ -50,16 +49,6 @@ module.exports = {
     'no-empty-pattern': 'off',
     'no-empty': 'warn',
     'prefer-const': 'warn',
-    'unicorn/consistent-function-scoping': ['error', { checkArrowFunctions: false }],
-    'unicorn/expiring-todo-comments': 'off',
-    'unicorn/no-abusive-eslint-disable': 'off',
-    'unicorn/no-document-cookie': 'off',
-    'unicorn/prefer-top-level-await': 'off',
-    'unicorn/prevent-abbreviations': 'off',
-    'unicorn/no-empty-file': 'off', // TODO reenable before merging to main
-    'unicorn/no-array-callback-reference': 'off',
-    'unicorn/prefer-spread': process.argv.includes('--fix') ? 'off' : 'warn',
-    'unicorn/prefer-ternary': process.argv.includes('--fix') ? 'off' : 'warn',
   },
   overrides: [
     {
@@ -72,7 +61,6 @@ module.exports = {
             allow: ['warn', 'error', 'info', 'group', 'groupEnd'],
           },
         ],
-        'unicorn/no-null': 'off',
       },
     },
     {
@@ -89,10 +77,6 @@ module.exports = {
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/no-unsafe-return': 'off',
         'no-undef-init': 'off',
-        'unicorn/consistent-destructuring': 'off',
-        'unicorn/no-useless-undefined': 'off',
-        'unicorn/filename-case': 'off',
-        'unicorn/no-null': 'off',
         'no-console': [
           'error',
           {

@@ -1,4 +1,4 @@
-query PageProfile($uid: UID!) @loading {
+query PageProfile($uid: UID!) {
   profile(uid: $uid) {
     ... on User {
       id

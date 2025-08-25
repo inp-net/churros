@@ -36,6 +36,7 @@
   import IconOtherEmails from '~icons/msl/stacked-email-outline';
   import IconNickname from '~icons/msl/signature';
   import type { PageData } from './$houdini';
+  import { writable } from 'svelte/store';
 
   const formatPhoneNumber = (phone: string) =>
     phone
@@ -68,249 +69,264 @@
     }
   `);
 
-  export let data: PageData;
-  $: ({ PageProfile } = data);
   $: tab = $page.url.searchParams.get('tab') || 'infos';
+
+  export let data: PageData;
+
+  let { PageProfile } = data;
+
+  // We handle $PageProfile data manually because of a weird Houdini bug
+  // that causes `AbortError`s otherwise.
+  // Probably due to high parallelism that overwhelms Houdini's store update handling
+  // Found by @pisentt, July 2025
+  const profile = writable($PageProfile.data?.profile);
+
+  $: data_unsub = data.PageProfile.subscribe(($lp) => {
+    if ($lp.data) {
+      if (data_unsub) data_unsub();
+      profile.set($lp.data?.profile);
+    }
+  });
+
+  $: console.log($profile?.__typename);
 </script>
 
 <svelte:window
   on:NAVTOP_COPY_ID={async () => {
-    if (!$PageProfile.data?.profile) return;
-    if (!('id' in $PageProfile.data.profile)) return;
-    const id = loading($PageProfile.data?.profile.id, '');
+    if (!$profile) return;
+    if (!('id' in $profile)) return;
+    const id = loading($profile.id, '');
     if (!id) return;
     await copyToClipboard(id);
   }}
 />
 
-<MaybeError result={$PageProfile} let:data={{ profile }}>
-  <div class="contents">
-    {#if profile.__typename === 'User' && tab === 'groups'}
-      <Submenu>
-        {#each profile.memberOf as membership}
-          <GroupMember href={refroute('/[uid=uid]', membership.group.uid)} side="group" {membership}
-          ></GroupMember>
-        {/each}
+<div class="contents">
+  {#if $profile?.__typename === 'User' && tab === 'groups'}
+    <Submenu>
+      {#each $profile.memberOf as membership}
+        <GroupMember href={refroute('/[uid=uid]', membership.group.uid)} side="group" {membership}
+        ></GroupMember>
+      {/each}
+      <SubmenuItem
+        icon={IconAdd}
+        clickable
+        on:click={() => {
+          pushState('', {
+            NAVTOP_CREATING_GROUP_MEMBER: true,
+          });
+        }}>Ajouter à…</SubmenuItem
+      >
+    </Submenu>
+  {:else if $profile?.__typename === 'User' && tab === 'infos'}
+    <Submenu>
+      {#if $profile.nickname}
+        <SubmenuItem icon={IconNickname} subtext="Surnom">
+          <LoadingText value={$profile.nickname} />
+        </SubmenuItem>
+      {/if}
+      {#if $profile.phone}
         <SubmenuItem
-          icon={IconAdd}
-          clickable
-          on:click={() => {
-            pushState('', {
-              NAVTOP_CREATING_GROUP_MEMBER: true,
-            });
-          }}>Ajouter à…</SubmenuItem
+          icon={IconPhone}
+          subtext={$profile.isMe ? 'Uniquement visible par les autres étudiant.e.s' : ''}
         >
-      </Submenu>
-    {:else if profile.__typename === 'User' && tab === 'infos'}
-      <Submenu>
-        {#if profile.nickname}
-          <SubmenuItem icon={IconNickname} subtext="Surnom">
-            <LoadingText value={profile.nickname} />
-          </SubmenuItem>
-        {/if}
-        {#if profile.phone}
-          <SubmenuItem
-            icon={IconPhone}
-            subtext={profile.isMe ? 'Uniquement visible par les autres étudiant.e.s' : ''}
+          <LoadingText value={mapLoading($profile.phone, formatPhoneNumber)} />
+          <ButtonSecondary
+            slot="right"
+            href={onceLoaded($profile.phone, (phone) => `tel:${phone}`, '')}
+            >Appeler</ButtonSecondary
           >
-            <LoadingText value={mapLoading(profile.phone, formatPhoneNumber)} />
-            <ButtonSecondary
-              slot="right"
-              href={onceLoaded(profile.phone, (phone) => `tel:${phone}`, '')}
-              >Appeler</ButtonSecondary
-            >
-          </SubmenuItem>
-        {/if}
-        {#if profile.postalAddress}
-          <SubmenuItem
-            icon={IconAddress}
-            subtext={profile.isMe ? 'Uniquement visible par les autres étudiant.e.s' : ''}
-          >
-            <LoadingText value={profile.postalAddress} />
-            <ButtonSecondary
-              slot="right"
-              href={onceLoaded(
-                profile.postalAddress,
-                (addr) => `https://google.com/maps?q=${addr}`,
-                '',
-              )}>Maps</ButtonSecondary
-            >
-          </SubmenuItem>
-        {/if}
-        {#if profile.birthday}
-          <SubmenuItem icon={IconBirthday}>
-            <span
-              slot="subtext"
-              class="birthday-distance"
-              class:today={isBirthdayToday(profile.birthday)}
-            >
-              {mapLoading(profile.birthday, (date) =>
-                isToday(setYear(date, new Date().getFullYear()))
-                  ? "Aujourd'hui !"
-                  : formatDistanceToNow(nextBirthdayAt(date), {
-                      addSuffix: true,
-                      includeSeconds: false,
-                    }),
-              )}
-            </span>
-            <LoadingText value={mapLoading(profile.birthday, formatDate)} />
-          </SubmenuItem>
-        {/if}
-        {#if profile.email}
-          <SubmenuItem icon={IconEmail}>
-            <LoadingText value={profile.email} />
-            <ButtonSecondary
-              slot="right"
-              href={onceLoaded(profile.email, (email) => `mailto:${email}`, '')}
-              >Contacter</ButtonSecondary
-            >
-          </SubmenuItem>
-        {/if}
-        {#if profile.otherEmails && profile.otherEmails.length > 0}
-          <SubmenuItem icon={IconOtherEmails}>
-            {#each profile.otherEmails as email}
-              <LoadingText tag="p" value={email}></LoadingText>
-            {/each}
-          </SubmenuItem>
-        {/if}
-        {#if profile.schoolUid}
-          <SubmenuItem icon={IconStudentUid} subtext="Identifiant de l'école">
-            <LoadingText value={profile.schoolUid} />
-            <ButtonCopyToClipboard slot="right" label text={profile.schoolUid} />
-          </SubmenuItem>
-        {/if}
-        {#if profile.contributesTo}
-          <SubmenuItem
-            icon={IconContributesTo}
-            subtext={profile.isMe ? "Visible par toi et l'équipe administrative" : undefined}
-          >
-            <div class="contributes-for">
-              {#if profile.contributesTo.length > 0}
-                Cotise pour
-                {#each profile.contributesTo as studentAssociation}
-                  <AvatarStudentAssociation name {studentAssociation}></AvatarStudentAssociation>
-                {/each}
-              {:else}
-                Non cotisant.e
-              {/if}
-            </div>
-            <ButtonSecondary
-              slot="right"
-              href={refroute('/users/[uid]/edit/contributions', $page.params.uid)}
-            >
-              Gérer
-            </ButtonSecondary>
-          </SubmenuItem>
-        {/if}
-      </Submenu>
-    {:else if profile.__typename === 'User' && tab === 'family'}
-      <TreePersons user={profile} />
-    {:else if profile.__typename === 'Group' && tab === 'members'}
-      <Submenu>
-        {#each profile.boardMembers as membership}
-          <GroupMember href={refroute('/[uid=uid]', membership.user.uid)} side="user" {membership}
-          ></GroupMember>
-        {/each}
-      </Submenu>
-      <section class="see-more-button">
-        <ButtonInk href={refroute('/groups/[uid]/members', $page.params.uid)}
-          >Voir les <LoadingText value={profile.membersCount}>...</LoadingText> membres</ButtonInk
+        </SubmenuItem>
+      {/if}
+      {#if $profile.postalAddress}
+        <SubmenuItem
+          icon={IconAddress}
+          subtext={$profile.isMe ? 'Uniquement visible par les autres étudiant.e.s' : ''}
         >
-      </section>
-    {:else if profile.__typename === 'Group' && tab === 'infos'}
-      <Submenu>
-        {#if profile.color}
-          <SubmenuItem icon={null} subtext="Couleur">
-            <div
-              class:skeleton-effect-wave={!loaded(profile.color)}
-              class="color-dot"
-              slot="icon"
-              style:background-color={loading(profile.color, 'black')}
-            />
-            <LoadingText value={mapLoading(profile.color, colorName)} />
-          </SubmenuItem>
-        {/if}
-        {#if profile.email}
-          <SubmenuItem icon={IconEmail}>
-            <LoadingText value={profile.email} />
-            <ButtonSecondary
-              slot="right"
-              href={onceLoaded(profile.email, (email) => `mailto:${email}`, '')}
-              >Contacter</ButtonSecondary
-            >
-          </SubmenuItem>
-        {/if}
-        {#if profile.address}
-          <SubmenuItem icon={IconGroupRoom} subtext="Local">
-            <LoadingText value={profile.address} />
-            <svelte:fragment slot="right">
-              {#if profile.canSetGroupRoomOpenState}
-                <InputCheckbox
-                  label={profile.roomIsOpen ? 'Ouvert' : 'Fermé'}
-                  value={profile.roomIsOpen}
-                  on:update={async ({ detail }) => {
-                    await (detail
-                      ? MarkRoomOpen.mutate({ group: $page.params.uid })
-                      : MarkRoomClosed.mutate({ group: $page.params.uid }));
-                  }}
-                />
-              {:else if profile.roomIsOpen}
-                <IconOpen /> Ouvert
-              {:else}
-                <IconClosed /> Fermé
-              {/if}
-            </svelte:fragment>
-          </SubmenuItem>
-        {/if}
-        {#if profile.canEditMembers}
-          <SubmenuItem
-            icon={IconHandover}
-            href={route('GET /groups/[uid]/handover.pdf', $page.params.uid)}
+          <LoadingText value={$profile.postalAddress} />
+          <ButtonSecondary
+            slot="right"
+            href={onceLoaded(
+              $profile.postalAddress,
+              (addr) => `https://google.com/maps?q=${addr}`,
+              '',
+            )}>Maps</ButtonSecondary
           >
-            Fiche de passation
-            <!-- FIXME download attr doesn't cause a download -->
-            <!-- <ButtonSecondary
-              slot="right"
-              download="Fiche de passation {$page.params.uid}.pdf"
-              href={route('GET /groups/[uid]/handover.pdf', $page.params.uid)}
-              >Télécharger</ButtonSecondary
-            > -->
-          </SubmenuItem>
-        {/if}
-      </Submenu>
-    {:else if profile.__typename === 'Group' && tab === 'see-also'}
+        </SubmenuItem>
+      {/if}
+      {#if $profile.birthday}
+        <SubmenuItem icon={IconBirthday}>
+          <span
+            slot="subtext"
+            class="birthday-distance"
+            class:today={isBirthdayToday($profile.birthday)}
+          >
+            {mapLoading($profile.birthday, (date) =>
+              isToday(setYear(date, new Date().getFullYear()))
+                ? "Aujourd'hui !"
+                : formatDistanceToNow(nextBirthdayAt(date), {
+                    addSuffix: true,
+                    includeSeconds: false,
+                  }),
+            )}
+          </span>
+          <LoadingText value={mapLoading($profile.birthday, formatDate)} />
+        </SubmenuItem>
+      {/if}
+      {#if $profile.email}
+        <SubmenuItem icon={IconEmail}>
+          <LoadingText value={$profile.email} />
+          <ButtonSecondary
+            slot="right"
+            href={onceLoaded($profile.email, (email) => `mailto:${email}`, '')}
+            >Contacter</ButtonSecondary
+          >
+        </SubmenuItem>
+      {/if}
+      {#if $profile.otherEmails && $profile.otherEmails.length > 0}
+        <SubmenuItem icon={IconOtherEmails}>
+          {#each $profile.otherEmails as email}
+            <LoadingText tag="p" value={email}></LoadingText>
+          {/each}
+        </SubmenuItem>
+      {/if}
+      {#if $profile.schoolUid}
+        <SubmenuItem icon={IconStudentUid} subtext="Identifiant de l'école">
+          <LoadingText value={$profile.schoolUid} />
+          <ButtonCopyToClipboard slot="right" label text={$profile.schoolUid} />
+        </SubmenuItem>
+      {/if}
+      {#if $profile.contributesTo}
+        <SubmenuItem
+          icon={IconContributesTo}
+          subtext={$profile.isMe ? "Visible par toi et l'équipe administrative" : undefined}
+        >
+          <div class="contributes-for">
+            {#if $profile.contributesTo.length > 0}
+              Cotise pour
+              {#each $profile.contributesTo as studentAssociation}
+                <AvatarStudentAssociation name {studentAssociation}></AvatarStudentAssociation>
+              {/each}
+            {:else}
+              Non cotisant.e
+            {/if}
+          </div>
+          <ButtonSecondary
+            slot="right"
+            href={refroute('/users/[uid]/edit/contributions', $page.params.uid)}
+          >
+            Gérer
+          </ButtonSecondary>
+        </SubmenuItem>
+      {/if}
+    </Submenu>
+  {:else if $profile?.__typename === 'User' && tab === 'family'}
+    <TreePersons user={$profile} />
+  {:else if $profile?.__typename === 'Group' && tab === 'members'}
+    <Submenu>
+      {#each $profile.boardMembers as membership}
+        <GroupMember href={refroute('/[uid=uid]', membership.user.uid)} side="user" {membership}
+        ></GroupMember>
+      {/each}
+    </Submenu>
+    <section class="see-more-button">
+      <ButtonInk href={refroute('/groups/[uid]/members', $page.params.uid)}
+        >Voir les <LoadingText value={$profile.membersCount}>...</LoadingText> membres</ButtonInk
+      >
+    </section>
+  {:else if $profile?.__typename === 'Group' && tab === 'infos'}
+    <Submenu>
+      {#if $profile.color}
+        <SubmenuItem icon={null} subtext="Couleur">
+          <div
+            class:skeleton-effect-wave={!loaded($profile.color)}
+            class="color-dot"
+            slot="icon"
+            style:background-color={loading($profile.color, 'black')}
+          />
+          <LoadingText value={mapLoading($profile.color, colorName)} />
+        </SubmenuItem>
+      {/if}
+      {#if $profile.email}
+        <SubmenuItem icon={IconEmail}>
+          <LoadingText value={$profile.email} />
+          <ButtonSecondary
+            slot="right"
+            href={onceLoaded($profile.email, (email) => `mailto:${email}`, '')}
+            >Contacter</ButtonSecondary
+          >
+        </SubmenuItem>
+      {/if}
+      {#if $profile.address}
+        <SubmenuItem icon={IconGroupRoom} subtext="Local">
+          <LoadingText value={$profile.address} />
+          <svelte:fragment slot="right">
+            {#if $profile.canSetGroupRoomOpenState}
+              <InputCheckbox
+                label={$profile.roomIsOpen ? 'Ouvert' : 'Fermé'}
+                value={$profile.roomIsOpen}
+                on:update={async ({ detail }) => {
+                  await (detail
+                    ? MarkRoomOpen.mutate({ group: $page.params.uid })
+                    : MarkRoomClosed.mutate({ group: $page.params.uid }));
+                }}
+              />
+            {:else if $profile.roomIsOpen}
+              <IconOpen /> Ouvert
+            {:else}
+              <IconClosed /> Fermé
+            {/if}
+          </svelte:fragment>
+        </SubmenuItem>
+      {/if}
+      {#if $profile.canEditMembers}
+        <SubmenuItem
+          icon={IconHandover}
+          href={route('GET /groups/[uid]/handover.pdf', $page.params.uid)}
+        >
+          Fiche de passation
+          <!-- FIXME download attr doesn't cause a download -->
+          <!-- <ButtonSecondary
+                slot="right"
+                download="Fiche de passation {$page.params.uid}.pdf"
+                href={route('GET /groups/[uid]/handover.pdf', $page.params.uid)}
+                >Télécharger</ButtonSecondary
+              > -->
+        </SubmenuItem>
+      {/if}
+    </Submenu>
+  {:else if $profile?.__typename === 'Group' && tab === 'see-also'}
+    <ul class="avatars big">
+      {#each $profile.familyChildren.filter((g) => g.uid !== $page.params.uid) as group}
+        <li>
+          <div class="left">
+            <AvatarGroup name {group} />
+          </div>
+          <div class="right muted">
+            {#if group.description}
+              <LoadingText value={group.description} />
+            {:else if group.selfJoinable}
+              <span class="selfjoinable muted">
+                <IconCheck /> Inscription libre
+              </span>
+            {/if}
+          </div>
+        </li>
+      {/each}
+    </ul>
+    {#if $profile.related.length > 0}
+      <h3 class="typo-field-label">Ça pourrait aussi te plaire</h3>
       <ul class="avatars big">
-        {#each profile.familyChildren.filter((g) => g.uid !== $page.params.uid) as group}
+        {#each $profile.related as group}
           <li>
-            <div class="left">
-              <AvatarGroup name {group} />
-            </div>
-            <div class="right muted">
-              {#if group.description}
-                <LoadingText value={group.description} />
-              {:else if group.selfJoinable}
-                <span class="selfjoinable muted">
-                  <IconCheck /> Inscription libre
-                </span>
-              {/if}
-            </div>
+            <div class="left"><AvatarGroup name {group} /></div>
+            <div class="right muted"><LoadingText value={group.description} /></div>
           </li>
         {/each}
       </ul>
-      {#if profile.related.length > 0}
-        <h3 class="typo-field-label">Ça pourrait aussi te plaire</h3>
-        <ul class="avatars big">
-          {#each profile.related as group}
-            <li>
-              <div class="left"><AvatarGroup name {group} /></div>
-              <div class="right muted"><LoadingText value={group.description} /></div>
-            </li>
-          {/each}
-        </ul>
-      {/if}
     {/if}
-  </div>
-</MaybeError>
+  {/if}
+</div>
 
 <style>
   .contents {

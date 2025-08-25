@@ -1,4 +1,4 @@
-query LayoutProfile($uid: UID!) @loading {
+query LayoutProfile($uid: UID!) {
   me {
     ...ProfileHeader_Me
     canAddMembersTo {

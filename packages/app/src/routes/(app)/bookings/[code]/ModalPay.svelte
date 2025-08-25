@@ -4,7 +4,6 @@
 
 <script lang="ts">
   import { page } from '$app/stores';
-  // import * as Sentry from '@sentry/sveltekit';
   import {
     fragment,
     graphql,
@@ -112,7 +111,6 @@
         `https://churros.inpt.fr/log?${new URLSearchParams({ message: `Booking payment failed with ${paymentError}` })}`,
       );
     }
-    // if (paymentError) Sentry.captureMessage(`Booking payment failed with ${paymentError}`, 'error');
     paymentInProgress = false;
   }
 
