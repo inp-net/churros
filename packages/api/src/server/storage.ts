@@ -10,6 +10,6 @@ api.use(
   helmet.contentSecurityPolicy({ directives: { 'script-src': "'none'" } }),
   express.static(storageRoot(), {
     maxAge: '8h', // Cache static files for 8 hours
-    immutable: true, // recommended for cache-busting
+    immutable: false, // recommended for cache-busting
   }),
 );
