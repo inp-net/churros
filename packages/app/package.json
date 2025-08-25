@@ -1,6 +1,6 @@
 {
   "name": "@churros/app",
-  "version": "4.8.5",
+  "version": "4.9.0",
   "dependencies": {
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch",
     "@iconify-json/logos": "^1.2.4",

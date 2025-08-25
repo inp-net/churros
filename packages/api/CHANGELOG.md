@@ -1,5 +1,15 @@
 # @churros/api
 
+## 14.1.0
+
+### Minor Changes
+
+- bf2bb2a: add cache policy on static files from /storage
+
+### Patch Changes
+
+- bf2bb2a: oauth session cookies now last for 1 year
+
 ## 14.0.2
 
 ### Patch Changes

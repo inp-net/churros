@@ -1,5 +1,15 @@
 # @churros/app
 
+## 4.9.0
+
+### Minor Changes
+
+- 29a7fbb: remove sentry integration
+
+### Patch Changes
+
+- 564672f: fix json data dump displayed instead of page on first click on a profile page
+
 ## 4.8.5
 
 ### Patch Changes
