@@ -134,7 +134,7 @@
               </ButtonGhost>
 
               <ButtonGhost
-                help="Supprimer l'inscription"
+                help="Supprimer l'inscription silencieusement"
                 --text="var(--danger)"
                 on:click={async (e) => {
                   e.stopPropagation();
