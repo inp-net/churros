@@ -20,7 +20,6 @@
   import ModalRefuseReason from './ModalRefuseReason.svelte';
   import {
     decide,
-    Decision,
     decided,
     decidingOn,
     IconAccept,
@@ -140,7 +139,7 @@
                 on:click={async (e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  await decide(candidate.email, Decision.Drop);
+                  await decide(candidate.email, 'Drop');
                 }}
               >
                 <IconDrop />
@@ -152,7 +151,7 @@
                 on:click={async (e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  await decide(candidate.email, Decision.Accept);
+                  await decide(candidate.email, 'Accept');
                 }}
               >
                 <IconAccept />

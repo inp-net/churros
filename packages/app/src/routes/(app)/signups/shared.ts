@@ -39,11 +39,7 @@ function _setDecisionTaken() {
 const setDecisionTaken = debounce(_setDecisionTaken, 1000);
 
 /** Enum to select the admin decision about a pending UserCandidate */
-export enum Decision {
-  Accept, // accept and register the user
-  Drop, // delete the UserCandidate silently
-  Refuse, // delete the UserCandidate but send an email to explain the reason
-}
+export type Decision = 'Accept' | 'Drop' | 'Refuse';
 
 export async function decide(
   email: MaybeLoading<string>,
@@ -53,9 +49,9 @@ export async function decide(
   if (!loaded(email)) return;
 
   let ok = false;
-  decidingOn.update((list) => [...list, { email, accepted: decision === Decision.Accept }]);
+  decidingOn.update((list) => [...list, { email, accepted: decision === 'Accept' }]);
   switch (decision) {
-    case Decision.Accept:
+    case 'Accept':
       {
         const result = await graphql(`
           mutation AcceptUserCandidate($email: String!) {
@@ -79,7 +75,7 @@ export async function decide(
       }
       break;
 
-    case Decision.Drop:
+    case 'Drop':
       {
         const result = await graphql(`
           mutation DropUserCandidate($email: String!) {
@@ -103,7 +99,7 @@ export async function decide(
       }
       break;
 
-    case Decision.Refuse:
+    case 'Refuse':
       {
         const result = await graphql(`
           mutation RefuseUserCandidate($email: String!, $why: String!) {
@@ -131,7 +127,7 @@ export async function decide(
   if (ok) {
     willDecideOn.push({
       email,
-      accepted: decision === Decision.Accept,
+      accepted: decision === 'Accept',
     });
   } else {
     decidingOn.update((list) => list.filter((e) => e.email !== email));
