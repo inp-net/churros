@@ -233,7 +233,7 @@
         <img
           height="50px"
           width="100px"
-          src="https://net7.dev/images/net7_{$isDark ? 'white' : 'dark'}.svg"
+          src="https://churros.inpt.fr/net7_{$isDark ? 'light' : 'dark'}.svg"
           alt="net7"
         />
       </a>

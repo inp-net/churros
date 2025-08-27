@@ -100,7 +100,7 @@
     wordmark
     textColor="white"
   /> -->
-  <img class="net7-logo" src="https://net7.dev/images/net7_white.svg" alt="net7" />
+  <img class="net7-logo" src="https://churros.inpt.fr/net7_light.svg" alt="net7" />
 </div>
 
 <style>
