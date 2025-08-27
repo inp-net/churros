@@ -15,7 +15,7 @@
   <section class="submit">
     <ButtonPrimary
       on:click={async () => {
-        await decide(email, false, why);
+        await decide(email, 'Refuse', why);
         close();
       }}
     >

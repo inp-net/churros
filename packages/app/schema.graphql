@@ -2608,6 +2608,7 @@ type Mutation @rateLimit(limit: 1200, duration: 600) {
   """
   deleteUser: MutationDeleteUserResult!
   deleteUserPicture(uid: String!): Boolean!
+  dropUserCandidate(email: String!): MutationDropUserCandidateResult!
   finishPaypalRegistrationPayment(orderId: String!): MutationFinishPaypalRegistrationPaymentResult!
   """
   Run housekeeping tasks: remove bookings on old events, remove old users (no login since a certain time), apple wallet pass files, etc.
@@ -3654,6 +3655,12 @@ union MutationDeleteUserResult = Error | MutationDeleteUserSuccess | ZodError
 
 type MutationDeleteUserSuccess {
   data: User!
+}
+
+union MutationDropUserCandidateResult = Error | MutationDropUserCandidateSuccess | ZodError
+
+type MutationDropUserCandidateSuccess {
+  data: UserCandidate!
 }
 
 union MutationFinishPaypalRegistrationPaymentResult =
