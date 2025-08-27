@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.11.0
+
+### Minor Changes
+
+- 290a98d: fix image urls
+
 ## 4.10.0
 
 ### Minor Changes
