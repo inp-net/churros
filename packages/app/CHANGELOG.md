@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.10.0
+
+### Minor Changes
+
+- 05a2c84: add possibility to silently delete an user candidate
+
 ## 4.9.0
 
 ### Minor Changes
