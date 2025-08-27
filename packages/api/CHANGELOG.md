@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.2.0
+
+### Minor Changes
+
+- 05a2c84: add possibility to silently delete an user candidate
+
 ## 14.1.0
 
 ### Minor Changes
