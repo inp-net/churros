@@ -9,6 +9,6 @@
       <a href="mailto:{{env.PUBLIC_SUPPORT_EMAIL}}">{{env.PUBLIC_SUPPORT_EMAIL}}</a>
     </mj-text>
     <mj-spacer height="16px" />
-    <mj-image height="32px" src="https://net7.dev/images/net7_dark.svg" alt="net7" />
+    <mj-image height="32px" src="https://churros.inpt.fr/net7_dark.svg" alt="net7" />
   </mj-column>
 </mj-section>
