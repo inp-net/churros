@@ -946,7 +946,7 @@ __metadata:
     ts-tqdm: "npm:^0.8.6"
     tsx: "npm:^4.19.3"
     typescript: "npm:^5.7.3"
-    ua-parser-js: "npm:^2.0.2"
+    ua-parser-js: "npm:^2.0.4"
     unaccent: "npm:^0.3.0"
     unified: "npm:^11.0.5"
     web-push: "npm:^3.6.7"
@@ -1054,7 +1054,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     tsx: "npm:^4.19.3"
     typescript: "npm:^5.7.3"
-    ua-parser-js: "npm:^2.0.2"
+    ua-parser-js: "npm:^2.0.4"
     unplugin-icons: "npm:^22.1.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.17"
@@ -21203,9 +21203,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "ua-parser-js@npm:2.0.2"
+"ua-parser-js@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "ua-parser-js@npm:2.0.4"
   dependencies:
     "@types/node-fetch": "npm:^2.6.12"
     detect-europe-js: "npm:^0.1.2"
@@ -21214,7 +21214,7 @@ __metadata:
     ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10c0/fb64041bce98d205ffc0e08b6167fc12977ea120b59d76afd25759be5bd472f14bbf1c7650261e7e420f1e9a1aa22a033d38947d437be103c2da46151e9867ed
+  checksum: 10c0/ddcbccf0f1ed6c12ddfdbd48047d2761f047b0041e0e65935698120d05e970a176cfa3655b6d82c7ad56603e8e940fd1b31806260732c3466986790e5bf16162
   languageName: node
   linkType: hard
 
