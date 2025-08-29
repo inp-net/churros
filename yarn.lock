@@ -965,7 +965,7 @@ __metadata:
     "@babel/core": "npm:^7.26.10"
     "@graphql-tools/utils": "patch:@graphql-tools/utils@npm%3A10.5.4#~/.yarn/patches/@graphql-tools-utils-npm-10.5.4-34df6bb3a5.patch"
     "@iconify-json/logos": "npm:^1.2.4"
-    "@iconify-json/material-symbols": "npm:^1.2.17"
+    "@iconify-json/material-symbols": "npm:^1.2.33"
     "@iconify-json/material-symbols-light": "npm:^1.2.17"
     "@iconify-json/mdi": "npm:^1.2.3"
     "@iconify-json/simple-icons": "npm:^1.2.30"
@@ -2547,12 +2547,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify-json/material-symbols@npm:^1.2.17":
-  version: 1.2.17
-  resolution: "@iconify-json/material-symbols@npm:1.2.17"
+"@iconify-json/material-symbols@npm:^1.2.33":
+  version: 1.2.33
+  resolution: "@iconify-json/material-symbols@npm:1.2.33"
   dependencies:
     "@iconify/types": "npm:*"
-  checksum: 10c0/fde51e7bd63b8ab2de7906dca3047d3c455a4893df3247980b81bff556c682db6ba60ef5b692941247065cb7f71f88c912ee44530c2329f6225cb2ed0af54677
+  checksum: 10c0/3e6f1d74e896558e50374b3689364f61136a3b9b90417f630dc53bdb595c8fcdcedd47fa0695be96d7005d35008a0d55b9a25249430cc9a89722ace4c2af78d9
   languageName: node
   linkType: hard
 
