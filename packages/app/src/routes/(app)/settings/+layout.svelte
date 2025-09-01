@@ -79,7 +79,7 @@
           Notifications
         </SubmenuItem>
         <SubmenuItem icon={IconLydia} subtext="N'apparaît pas sur le profil" label>
-          Numéro de tel. pour Lydia
+          Numéro de tel. pour Sumeria
 
           <InputText
             label=""
