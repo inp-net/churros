@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.12.0
+
+### Minor Changes
+
+- 3384f05: rename Lydia to Sumeria because the AE wants it.
+
 ## 4.11.0
 
 ### Minor Changes

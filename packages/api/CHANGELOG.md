@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.2.1
+
+### Patch Changes
+
+- c7a1e1a: Hotfix to prevent anyone to view event edit page
+
 ## 14.2.0
 
 ### Minor Changes
