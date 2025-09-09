@@ -198,14 +198,9 @@ export const EventType = builder.prismaNode('Event', {
         }),
       },
       resolve: (event, { assert }, { user }) => {
-        try {
-          const can = canEditEvent(event, user);
-          if (assert && !can) throw new GraphQLError(assert);
-          return can;
-        } catch (error) {
-          console.error({ error });
-          return false;
-        }
+        const can = canEditEvent(event, user);
+        if (assert && !can) throw new GraphQLError(assert);
+        return can;
       },
     }),
     canEditManagers: t.boolean({
