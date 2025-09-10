@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.2.3
+
+### Patch Changes
+
+- c2ee75e: Bump version
+
 ## 14.2.2
 
 ### Patch Changes
