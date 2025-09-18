@@ -22,6 +22,7 @@ import Logolastfm from '~icons/logos/lastfm.svg';
 import Logolinkedin from '~icons/logos/linkedin-icon.svg';
 import Logomedium from '~icons/logos/medium-icon.svg';
 import Logonpm from '~icons/logos/npm-icon.svg';
+import Logoopencollective from '~icons/logos/opencollective.svg';
 import Logoopensource from '~icons/logos/opensource.svg';
 import Logopatreon from '~icons/logos/patreon.svg';
 import Logoperiscope from '~icons/logos/periscope.svg';
@@ -34,9 +35,11 @@ import Logosignal from '~icons/logos/signal.svg';
 import Logoslack from '~icons/logos/slack-icon.svg';
 import Logoslides from '~icons/logos/slides.svg';
 import Logosoundcloud from '~icons/logos/soundcloud.svg';
+import Logospeakerdeck from '~icons/logos/speakerdeck.svg';
 import Logospotify from '~icons/logos/spotify-icon.svg';
 import Logotelegram from '~icons/logos/telegram.svg';
 import Logotrello from '~icons/logos/trello.svg';
+import Logotumblr from '~icons/logos/tumblr-icon.svg';
 import Logotwitter from '~icons/logos/twitter.svg';
 import Logovimeo from '~icons/logos/vimeo-icon.svg';
 import Logowakatime from '~icons/logos/wakatime.svg';
@@ -84,6 +87,15 @@ export const socials = {
     },
     iconName: 'blogger',
     icon: Logoblogger,
+  },
+  bluesky: {
+    name: 'Bluesky',
+    url: 'https://bsky.app/profile/{}',
+    urlMain: 'https://bsky.app/',
+    regex: new RegExp('https://bsky.app/profile/([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'bluesky',
+    icon: Logobluesky,
   },
   codecademy: {
     name: 'Codecademy',
@@ -297,6 +309,15 @@ export const socials = {
     iconName: 'medium-icon',
     icon: Logomedium,
   },
+  opencollective: {
+    name: 'Open Collective',
+    url: 'https://opencollective.com/{}',
+    urlMain: 'https://opencollective.com/',
+    regex: new RegExp('https://opencollective.com/([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'opencollective',
+    icon: Logoopencollective,
+  },
   opensource: {
     name: 'Opensource',
     url: 'https://opensource.com/users/{}',
@@ -416,6 +437,15 @@ export const socials = {
     usernameIsValid: () => true,
     iconName: 'soundcloud',
     icon: Logosoundcloud,
+  },
+  speakerdeck: {
+    name: 'SpeakerDeck',
+    url: 'https://speakerdeck.com/{}',
+    urlMain: 'https://speakerdeck.com/',
+    regex: new RegExp('https://speakerdeck.com/([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'speakerdeck',
+    icon: Logospeakerdeck,
   },
   spotify: {
     name: 'Spotify',
@@ -546,14 +576,14 @@ export const socials = {
     iconName: 'npm-icon',
     icon: Logonpm,
   },
-  bluesky: {
-    name: 'Bluesky',
-    url: 'https://bsky.app/profile/{}',
-    urlMain: 'https://bsky.app/',
-    regex: new RegExp('https://bsky.app/profile/([\\w_.-]+)'),
+  tumblr: {
+    name: 'tumblr',
+    url: 'https://{}.tumblr.com/',
+    urlMain: 'https://www.tumblr.com/',
+    regex: new RegExp('https://([\\w_.-]+).tumblr.com/'),
     usernameIsValid: () => true,
-    iconName: 'bluesky',
-    icon: Logobluesky,
+    iconName: 'tumblr-icon',
+    icon: Logotumblr,
   },
   wakatime: {
     name: 'Wakatime',
