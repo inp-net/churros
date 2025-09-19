@@ -946,7 +946,7 @@ __metadata:
     ts-tqdm: "npm:^0.8.6"
     tsx: "npm:^4.19.3"
     typescript: "npm:^5.7.3"
-    ua-parser-js: "npm:^2.0.2"
+    ua-parser-js: "npm:^2.0.5"
     unaccent: "npm:^0.3.0"
     unified: "npm:^11.0.5"
     web-push: "npm:^3.6.7"
@@ -1054,7 +1054,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     tsx: "npm:^4.19.3"
     typescript: "npm:^5.7.3"
-    ua-parser-js: "npm:^2.0.2"
+    ua-parser-js: "npm:^2.0.5"
     unplugin-icons: "npm:^22.1.0"
     vaul-svelte: "npm:^0.3.2"
     vite: "npm:5.4.17"
@@ -5680,16 +5680,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/3cf279e7db05d56c0544532a4380b9079f579092379a04c8138bd5cf88dda5b31208ac2d23ce7dbf4e3a3f43aaeed44e72f9f19f726518f308efe95a7435619a
-  languageName: node
-  linkType: hard
-
-"@types/node-fetch@npm:^2.6.12":
-  version: 2.6.12
-  resolution: "@types/node-fetch@npm:2.6.12"
-  dependencies:
-    "@types/node": "npm:*"
-    form-data: "npm:^4.0.0"
-  checksum: 10c0/7693acad5499b7df2d1727d46cff092a63896dc04645f36b973dd6dd754a59a7faba76fcb777bdaa35d80625c6a9dd7257cca9c401a4bab03b04480cda7fd1af
   languageName: node
   linkType: hard
 
@@ -21203,18 +21193,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "ua-parser-js@npm:2.0.2"
+"ua-parser-js@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "ua-parser-js@npm:2.0.5"
   dependencies:
-    "@types/node-fetch": "npm:^2.6.12"
     detect-europe-js: "npm:^0.1.2"
     is-standalone-pwa: "npm:^0.1.1"
-    node-fetch: "npm:^2.7.0"
     ua-is-frozen: "npm:^0.1.2"
+    undici: "npm:^7.12.0"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10c0/fb64041bce98d205ffc0e08b6167fc12977ea120b59d76afd25759be5bd472f14bbf1c7650261e7e420f1e9a1aa22a033d38947d437be103c2da46151e9867ed
+  checksum: 10c0/9967792d8a41a417547a49fea042beba5436ff33c173caebc64356e3377044e59ee4540175f98e3ce20d45ddc39f848bfa9a91f3c394667e4dbf9421476281ce
   languageName: node
   linkType: hard
 
@@ -21291,6 +21280,13 @@ __metadata:
   version: 6.21.1
   resolution: "undici@npm:6.21.1"
   checksum: 10c0/d604080e4f8db89b35a63b483b5f96a5f8b19ec9f716e934639345449405809d2997e1dd7212d67048f210e54534143384d712bd9075e4394f0788895ef9ca8e
+  languageName: node
+  linkType: hard
+
+"undici@npm:^7.12.0":
+  version: 7.16.0
+  resolution: "undici@npm:7.16.0"
+  checksum: 10c0/efd867792e9f233facf9efa0a087e2d9c3e4415c0b234061b9b40307ca4fa01d945fee4d43c7b564e1b80e0d519bcc682f9f6e0de13c717146c00a80e2f1fb0f
   languageName: node
   linkType: hard
 
