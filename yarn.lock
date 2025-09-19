@@ -907,7 +907,7 @@ __metadata:
     lodash.uniqby: "npm:^4.7.0"
     mjml: "npm:^4.15.3"
     multer: "npm:^1.4.5-lts.2"
-    nanoid: "npm:^5.1.2"
+    nanoid: "npm:^5.1.5"
     nats: "npm:^2.29.2"
     nodemailer: "npm:^6.10.0"
     nodemon: "npm:^3.1.9"
@@ -1022,7 +1022,7 @@ __metadata:
     lodash.omit: "npm:^4.5.0"
     lodash.throttle: "npm:^4.1.1"
     mime: "npm:^4.0.7"
-    nanoid: "npm:^5.1.2"
+    nanoid: "npm:^5.1.5"
     npm-upgrade: "npm:^3.1.0"
     number-flip-animation: "patch:number-flip-animation@npm%3A1.1.1#~/.yarn/patches/number-flip-animation-npm-1.1.1-be5234b0a7.patch"
     party-js: "npm:^2.2.0"
@@ -15859,12 +15859,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "nanoid@npm:5.1.2"
+"nanoid@npm:^5.1.5":
+  version: 5.1.5
+  resolution: "nanoid@npm:5.1.5"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 10c0/60b3d30d1629704f4b156f79e53a454d10440a38f4ab14cda1c9aa08091389212d03afb35fbc09c11f4619f83bcf5076abc4719295e3b79c57abad0e40297177
+  checksum: 10c0/e6004f1ad6c7123eeb037062c4441d44982037dc043aabb162457ef6986e99964ba98c63c975f96c547403beb0bf95bc537bd7bf9a09baf381656acdc2975c3c
   languageName: node
   linkType: hard
 
