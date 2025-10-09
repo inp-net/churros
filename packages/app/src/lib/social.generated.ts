@@ -6,6 +6,7 @@ import Logocodecademy from '~icons/logos/codecademy.svg';
 import Logocodepen from '~icons/logos/codepen-icon.svg';
 import Logocodersrank from '~icons/logos/codersrank-icon.svg';
 import Logocoderwall from '~icons/logos/coderwall.svg';
+import Logocodesandbox from '~icons/logos/codesandbox-icon.svg';
 import Logodeviantart from '~icons/logos/deviantart-icon.svg';
 import Logodiscord from '~icons/logos/discord-icon.svg';
 import Logodisqus from '~icons/logos/disqus.svg';
@@ -141,11 +142,26 @@ export const socials = {
     iconName: 'coderwall',
     icon: Logocoderwall,
   },
+  codesandbox: {
+    name: 'Code Sandbox',
+    url: 'https://codesandbox.io/u/{}',
+    urlMain: 'https://codesandbox.io',
+    regex: new RegExp('https://codesandbox.io/u/([a-zA-Z0-9_-]{3,30})'),
+    usernameIsValid: (username: string) => {
+      try {
+        new RegExp('^[a-zA-Z0-9_-]{3,30}$').test(username);
+      } catch {
+        return false;
+      }
+    },
+    iconName: 'codesandbox-icon',
+    icon: Logocodesandbox,
+  },
   deviantart: {
-    name: 'DeviantART',
-    url: 'https://{}.deviantart.com',
-    urlMain: 'https://deviantart.com',
-    regex: new RegExp('https://([a-zA-Z][a-zA-Z0-9_-]*).deviantart.com'),
+    name: 'DeviantArt',
+    url: 'https://www.deviantart.com/{}',
+    urlMain: 'https://www.deviantart.com/',
+    regex: new RegExp('https://deviantart.com/([a-zA-Z][a-zA-Z0-9_-]*)'),
     usernameIsValid: (username: string) => {
       try {
         new RegExp('^[a-zA-Z][a-zA-Z0-9_-]*$').test(username);
@@ -504,6 +520,15 @@ export const socials = {
     iconName: 'vimeo-icon',
     icon: Logovimeo,
   },
+  wakatime: {
+    name: 'Wakatime',
+    url: 'https://wakatime.com/@{}',
+    urlMain: 'https://wakatime.com/',
+    regex: new RegExp('https://wakatime.com/@([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'wakatime',
+    icon: Logowakatime,
+  },
   weebly: {
     name: 'Weebly',
     url: 'https://{}.weebly.com/',
@@ -584,14 +609,5 @@ export const socials = {
     usernameIsValid: () => true,
     iconName: 'tumblr-icon',
     icon: Logotumblr,
-  },
-  wakatime: {
-    name: 'Wakatime',
-    url: 'https://wakatime.com/@{}',
-    urlMain: 'https://wakatime.com/',
-    regex: new RegExp('https://wakatime.com/@([\\w_.-]+)'),
-    usernameIsValid: () => true,
-    iconName: 'wakatime',
-    icon: Logowakatime,
   },
 };
