@@ -27,6 +27,7 @@ import Logoopencollective from '~icons/logos/opencollective.svg';
 import Logoopensource from '~icons/logos/opensource.svg';
 import Logopatreon from '~icons/logos/patreon.svg';
 import Logoperiscope from '~icons/logos/periscope.svg';
+import Logopinterest from '~icons/logos/pinterest.svg';
 import Logoproducthunt from '~icons/logos/producthunt.svg';
 import Logopypi from '~icons/logos/pypi.svg';
 import Logoreddit from '~icons/logos/reddit-icon.svg';
@@ -39,6 +40,7 @@ import Logosoundcloud from '~icons/logos/soundcloud.svg';
 import Logospeakerdeck from '~icons/logos/speakerdeck.svg';
 import Logospotify from '~icons/logos/spotify-icon.svg';
 import Logotelegram from '~icons/logos/telegram.svg';
+import Logotiktok from '~icons/logos/tiktok-icon.svg';
 import Logotrello from '~icons/logos/trello.svg';
 import Logotumblr from '~icons/logos/tumblr-icon.svg';
 import Logotwitter from '~icons/logos/twitter.svg';
@@ -472,6 +474,15 @@ export const socials = {
     iconName: 'spotify-icon',
     icon: Logospotify,
   },
+  tiktok: {
+    name: 'TikTok',
+    url: 'https://www.tiktok.com/@{}',
+    urlMain: 'https://www.tiktok.com',
+    regex: new RegExp('https://tiktok.com/@([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'tiktok-icon',
+    icon: Logotiktok,
+  },
   telegram: {
     name: 'Telegram',
     url: 'https://t.me/{}',
@@ -600,6 +611,15 @@ export const socials = {
     usernameIsValid: () => true,
     iconName: 'npm-icon',
     icon: Logonpm,
+  },
+  pinterest: {
+    name: 'Pinterest',
+    url: 'https://www.pinterest.com/{}/',
+    urlMain: 'https://www.pinterest.com/',
+    regex: new RegExp('https://pinterest.com/([\\w_.-]+)/'),
+    usernameIsValid: () => true,
+    iconName: 'pinterest',
+    icon: Logopinterest,
   },
   tumblr: {
     name: 'tumblr',
