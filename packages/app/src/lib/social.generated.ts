@@ -23,6 +23,7 @@ import Logolastfm from '~icons/logos/lastfm.svg';
 import Logolinkedin from '~icons/logos/linkedin-icon.svg';
 import Logomedium from '~icons/logos/medium-icon.svg';
 import Logonpm from '~icons/logos/npm-icon.svg';
+import Logoobservablehq from '~icons/logos/observablehq.svg';
 import Logoopencollective from '~icons/logos/opencollective.svg';
 import Logoopensource from '~icons/logos/opensource.svg';
 import Logopatreon from '~icons/logos/patreon.svg';
@@ -145,7 +146,7 @@ export const socials = {
     icon: Logocoderwall,
   },
   codesandbox: {
-    name: 'Code Sandbox',
+    name: 'CodeSandbox',
     url: 'https://codesandbox.io/u/{}',
     urlMain: 'https://codesandbox.io',
     regex: new RegExp('https://codesandbox.io/u/([a-zA-Z0-9_-]{3,30})'),
@@ -326,6 +327,15 @@ export const socials = {
     usernameIsValid: () => true,
     iconName: 'medium-icon',
     icon: Logomedium,
+  },
+  observablehq: {
+    name: 'ObservableHQ',
+    url: 'https://observablehq.com/@{}',
+    urlMain: 'https://observablehq.com/',
+    regex: new RegExp('https://observablehq.com/@([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'observablehq',
+    icon: Logoobservablehq,
   },
   opencollective: {
     name: 'Open Collective',
