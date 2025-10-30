@@ -44,6 +44,7 @@ import Logotelegram from '~icons/logos/telegram.svg';
 import Logotiktok from '~icons/logos/tiktok-icon.svg';
 import Logotrello from '~icons/logos/trello.svg';
 import Logotumblr from '~icons/logos/tumblr-icon.svg';
+import Logotwitch from '~icons/logos/twitch.svg';
 import Logotwitter from '~icons/logos/twitter.svg';
 import Logovimeo from '~icons/logos/vimeo-icon.svg';
 import Logowakatime from '~icons/logos/wakatime.svg';
@@ -516,6 +517,15 @@ export const socials = {
     usernameIsValid: () => true,
     iconName: 'trello',
     icon: Logotrello,
+  },
+  twitch: {
+    name: 'Twitch',
+    url: 'https://www.twitch.tv/{}',
+    urlMain: 'https://www.twitch.tv',
+    regex: new RegExp('https://twitch.tv/([\\w_.-]+)'),
+    usernameIsValid: () => true,
+    iconName: 'twitch',
+    icon: Logotwitch,
   },
   twitter: {
     name: 'Twitter',
