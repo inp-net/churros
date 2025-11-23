@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.12.1
+
+### Patch Changes
+
+- 706aaf3: Fix error 500 for GET /documents, see issue #1284
+
 ## 4.12.0
 
 ### Minor Changes
