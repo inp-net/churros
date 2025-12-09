@@ -54,7 +54,7 @@
     "svelte-tenor": "^0.2.0",
     "sveltejs-tippy": "^3.0.0",
     "ts-opaque": "^3.0.1",
-    "ua-parser-js": "^2.0.2",
+    "ua-parser-js": "^2.0.7",
     "vaul-svelte": "^0.3.2",
     "write-excel-file": "^2.3.2",
     "xss": "^1.0.15"
