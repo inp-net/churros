@@ -1,6 +1,6 @@
 .test:prisma:
   extends: .test
-  image: node:20.19.0-alpine
+  image: node:24.12.0-alpine
   before_script:
     - apk add diffutils git # busybox diff has no -y option
     - git remote remove origin || true
