@@ -46,7 +46,7 @@ services:
   nats:
     profiles:
       - notella
-    image: nats:2.10.25
+    image: nats:2.12.3
     ports:
       - '8222:8222'
       - '4222:4222'
