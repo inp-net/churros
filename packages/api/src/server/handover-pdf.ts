@@ -277,8 +277,8 @@ function boardMemberBuildInfo(boardMembers: boardMemberType[], rightPos: number)
         },
         { text: '' },
       ],
-      [{ text: 'Nom' }, { text: boardMembers[i]?.firstName }],
-      [{ text: 'Prénom' }, { text: boardMembers[i]?.lastName }],
+      [{ text: 'Nom' }, { text: boardMembers[i]?.lastName }],
+      [{ text: 'Prénom' }, { text: boardMembers[i]?.firstName }],
       [
         { text: 'Date de naissance' },
         {
