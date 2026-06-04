@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.2.4
+
+### Patch Changes
+
+- b2d5f67: First name and last name were swapped in the handover PDF generation
+
 ## 14.2.3
 
 ### Patch Changes
