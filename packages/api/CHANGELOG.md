@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.2.5
+
+### Patch Changes
+
+- ce9151f: fix(handover): added a sort by date to handle multiple treasurer
+
 ## 14.2.4
 
 ### Patch Changes
