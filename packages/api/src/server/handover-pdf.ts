@@ -23,6 +23,7 @@ type boardMemberType = {
     treasurer: boolean;
     vicePresident: boolean;
     secretary: boolean;
+    createdAt: Date;
   }[];
 };
 
@@ -87,6 +88,7 @@ api.get('/print-handover/:uid', async (req, res) => {
           treasurer: true,
           vicePresident: true,
           secretary: true,
+          createdAt: true,
         },
       },
     },
@@ -201,7 +203,6 @@ api.get('/print-handover/:uid', async (req, res) => {
           table: {
             body: [
               [
-                //TODO : Déhardcoder les noms le jour où on aura les infos sur les prez et trésorier AE
                 {
                   text: [
                     `Le·a président·e de l’AEn7, \n ${studentAssociationPresident?.firstName} ${studentAssociationPresident?.lastName}`,
@@ -294,13 +295,16 @@ function boardMemberBuildInfo(boardMembers: boardMemberType[], rightPos: number)
 
 //Fonction de tri des membres du bureau en fonction de leur rôles. Prez > Trez > VP > Secrétaire
 function sortMemberByRole(boardMembers: boardMemberType[]) {
-  //recup tout les membres du bureau selon leur rôles
-  const sortedMembers: boardMemberType[] = [];
-  const presidentList = boardMembers.filter((member) => member.groups[0]?.president);
-  const treasurerList = boardMembers.filter((member) => member.groups[0]?.treasurer);
-  const vicePresidentList = boardMembers.filter((member) => member.groups[0]?.vicePresident);
-  const secretaryList = boardMembers.filter((member) => member.groups[0]?.secretary);
+  const byDate = (a: boardMemberType, b: boardMemberType) => {
+    const dateA = a.groups[0]?.createdAt ? new Date(a.groups[0].createdAt).getTime() : 0;
+    const dateB = b.groups[0]?.createdAt ? new Date(b.groups[0].createdAt).getTime() : 0;
+    return dateA - dateB;
+  };
 
-  //renvoie la liste des membres dans l'ordre Prez > Trez > VP > Secrétaire
-  return sortedMembers.concat(presidentList, treasurerList, vicePresidentList, secretaryList);
+  return [
+    ...boardMembers.filter((m) => m.groups[0]?.president).sort(byDate),
+    ...boardMembers.filter((m) => m.groups[0]?.treasurer).sort(byDate),
+    ...boardMembers.filter((m) => m.groups[0]?.vicePresident).sort(byDate),
+    ...boardMembers.filter((m) => m.groups[0]?.secretary).sort(byDate),
+  ];
 }
