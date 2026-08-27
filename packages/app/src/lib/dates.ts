@@ -100,10 +100,10 @@ export function formatDateRelativeSmart(date: Date | string) {
 
 export function schoolYearStart(now?: Date): Date {
   now ??= new Date();
-  const thisYearSeptemberFirst = new Date(now.getFullYear(), 8, 1);
-  if (now > thisYearSeptemberFirst) return thisYearSeptemberFirst;
+  const thisYearJulyFirst = new Date(now.getFullYear(), 6, 1);
+  if (now > thisYearJulyFirst) return thisYearJulyFirst;
 
-  return new Date(now.getFullYear() - 1, 8, 1);
+  return new Date(now.getFullYear() - 1, 6, 1);
 }
 
 export function yearTier(graduationYear: number): number {
