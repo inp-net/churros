@@ -1,5 +1,11 @@
 # @churros/app
 
+## 4.13.0
+
+### Minor Changes
+
+- fef98b2: date de début d'année décalée en juillet pour éviter les problèmes si l'année scolaire commence en août.
+
 ## 4.12.1
 
 ### Patch Changes
