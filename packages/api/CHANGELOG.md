@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.3.1
+
+### Patch Changes
+
+- 0717433: Fix un problème ou le sort n'était pas bien utilisé, et les title n'était plus affiché
+
 ## 14.3.0
 
 ### Minor Changes
