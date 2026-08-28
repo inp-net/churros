@@ -15,7 +15,6 @@ type BoardMember = {
   id: string;
   firstName: string;
   lastName: string;
-  title?: string;
   birthday: Date | null;
   phone: string;
   email: string;
@@ -24,6 +23,7 @@ type BoardMember = {
     treasurer: boolean;
     vicePresident: boolean;
     secretary: boolean;
+    title?: string;
     createdAt: Date;
   }[];
 };
@@ -112,41 +112,44 @@ async function getHandoverData(uid: string) {
     studentAssociationTreasurer = data.find((user) => user.groups[0]?.treasurer) || null;
   }
 
-  const boardMembersUser: BoardMember[] = await prisma.user.findMany({
-    where: {
-      groups: {
-        some: {
-          groupId: group.id,
-          OR: [
-            { president: true },
-            { vicePresident: true },
-            { secretary: true },
-            { treasurer: true },
-          ],
+  const boardMembersUser: BoardMember[] = sortMemberByRole(
+    await prisma.user.findMany({
+      where: {
+        groups: {
+          some: {
+            groupId: group.id,
+            OR: [
+              { president: true },
+              { vicePresident: true },
+              { secretary: true },
+              { treasurer: true },
+            ],
+          },
         },
       },
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      birthday: true,
-      phone: true,
-      email: true,
-      groups: {
-        where: {
-          groupId: group.id,
-        },
-        select: {
-          president: true,
-          treasurer: true,
-          vicePresident: true,
-          secretary: true,
-          createdAt: true,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        birthday: true,
+        phone: true,
+        email: true,
+        groups: {
+          where: {
+            groupId: group.id,
+          },
+          select: {
+            president: true,
+            treasurer: true,
+            vicePresident: true,
+            secretary: true,
+            title: true,
+            createdAt: true,
+          },
         },
       },
-    },
-  });
+    }),
+  );
 
   return { group, boardMembersUser, studentAssociationPresident, studentAssociationTreasurer };
 }
@@ -198,7 +201,8 @@ function boardMemberBuildInfo(boardMembers: BoardMember[], rightPos: number) {
     body.push(
       [
         {
-          text: boardMembers[i]?.title == undefined ? '' : boardMembers[i]?.title,
+          text:
+            boardMembers[i]?.groups[0]?.title == undefined ? '' : boardMembers[i]?.groups[0]?.title,
           bold: true,
           fontSize: 16,
           margin: [0, 0, 0, 5],
@@ -317,7 +321,7 @@ function buildSignatureRow(
 
   return {
     layout: 'noBorders',
-    table: { body: [row] },
+    table: { widths: row.map(() => '*'), body: [row] },
     fontSize: 10,
   };
 }
@@ -343,7 +347,7 @@ api.get('/print-handover/:uid', async (req, res) => {
       },
       content: [
         buildHeader(),
-        buildBoardMembersTables(sortMemberByRole(boardMembersUser)),
+        buildBoardMembersTables(boardMembersUser),
         buildResponsibleText(group?.type ?? ''),
         buildSignatureRow(
           group.name,
