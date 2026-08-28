@@ -1,11 +1,5 @@
 # @churros/app
 
-## 4.14.0
-
-### Minor Changes
-
-- 0717433: date de début d'année décalée en juillet pour éviter les problèmes si l'année scolaire commence en août.
-
 ## 4.13.0
 
 ### Minor Changes
