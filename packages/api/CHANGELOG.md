@@ -1,5 +1,12 @@
 # @churros/api
 
+## 14.4.0
+
+### Minor Changes
+
+- 0717433: Fix un problème ou le sort n'était pas bien utilisé, et les title n'était plus affiché
+- 0717433: date de début d'année décalée en juillet pour éviter les problèmes si l'année scolaire commence en août.
+
 ## 14.3.0
 
 ### Minor Changes
