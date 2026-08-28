@@ -1,5 +1,16 @@
 # @churros/api
 
+## 14.3.0
+
+### Minor Changes
+
+- 3e60494: Modification des fiches de passation pour les associations
+- fef98b2: date de début d'année décalée en juillet pour éviter les problèmes si l'année scolaire commence en août.
+
+### Patch Changes
+
+- 3e60494: fix(handover): added a sort by date to handle multiple treasurer
+
 ## 14.2.5
 
 ### Patch Changes
