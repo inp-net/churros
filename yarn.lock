@@ -893,7 +893,7 @@ __metadata:
     is-plain-object: "npm:^5.0.0"
     is-valid-domain: "npm:^0.1.6"
     jsonwebtoken: "npm:^9.0.2"
-    keep-a-changelog: "npm:^2.6.1"
+    keep-a-changelog: "npm:^2.8.0"
     ldap-authentication: "npm:^3.3.3"
     ldapjs: "npm:^3.0.7"
     linkify-html: "npm:^4.2.0"
@@ -13402,14 +13402,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keep-a-changelog@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "keep-a-changelog@npm:2.6.1"
+"keep-a-changelog@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "keep-a-changelog@npm:2.8.0"
   dependencies:
     "@deno/shim-deno": "npm:~0.18.0"
   bin:
     changelog: esm/bin.js
-  checksum: 10c0/393a06a1d1b8a2c7a2669e15d2f82bb269437dabd5c8174e0a5372d2ea2f33ffefad1d1d8818bdd02896878335ff8da88e7fbde4404bebe95a6dff8f1abbe2f5
+  checksum: 10c0/0a10d0f6b58203f1c6798176c3fdc96aa2f1ef8e3c75c39d62ae7c42102e9bf3ef59a872cb8d6290c833cc21c8d38b531f3404109c3436e84e3172a7d6a52c7f
   languageName: node
   linkType: hard
 
