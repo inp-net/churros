@@ -894,7 +894,7 @@ __metadata:
     is-valid-domain: "npm:^0.1.6"
     jsonwebtoken: "npm:^9.0.2"
     keep-a-changelog: "npm:^2.6.1"
-    ldap-authentication: "npm:^3.3.3"
+    ldap-authentication: "npm:^3.3.6"
     ldapjs: "npm:^3.0.7"
     linkify-html: "npm:^4.2.0"
     linkify-plugin-mention: "npm:^4.2.0"
@@ -13500,12 +13500,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ldap-authentication@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "ldap-authentication@npm:3.3.3"
+"ldap-authentication@npm:^3.3.6":
+  version: 3.3.6
+  resolution: "ldap-authentication@npm:3.3.6"
   dependencies:
     ldapts: "npm:^7.3.1"
-  checksum: 10c0/36922e44aba613444fc9310c89a86184ab8038df32d3a2a750fa9540d0bba896d62b22ede9d840bfed7ada6c934b56aa88bcd6d7518dd56014d7bf88b54a66d8
+  checksum: 10c0/956d095b0c815a3a7968fe3b51f37ea7d7cd68a8273732ce8186c498161f24fefa70f97fa8d5fc97cfa65a45ae072665c6f3590c0bc1ae6bf819978816fa440c
   languageName: node
   linkType: hard
 
