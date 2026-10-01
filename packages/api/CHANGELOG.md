@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.4.0
+
+### Minor Changes
+
+- 8a82f3f: fixed user resolver
+
 ## 14.3.1
 
 ### Patch Changes
