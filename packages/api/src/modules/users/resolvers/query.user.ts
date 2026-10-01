@@ -23,7 +23,10 @@ builder.queryField('user', (t) =>
           id: id ?? undefined,
           uid: uid ?? undefined,
         },
-        include: { articles: { where: prismaQueryAccessibleArticles(user, 'wants') } },
+        include: {
+          ...query.include,
+          articles: { where: prismaQueryAccessibleArticles(user, 'wants') },
+        },
       });
       if (!userToReturn) throw new GraphQLError('Utilisateur·ice introuvable');
       return userToReturn;

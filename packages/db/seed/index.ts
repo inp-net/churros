@@ -489,6 +489,7 @@ const contributionOptions = await prisma.contributionOption.findMany({
 const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
   { firstName: 'Gwen', lastName: 'Le Bihan', admin: true, uid: 'lebihae' }, // Pour tester l'oauth
+  { firstName: "Nathan", lastName: "Pagnucco", admin: true, uid: 'pagnuccon2' }, // Pour tester l'oauth
   { firstName: 'Bernard', lastName: 'Tichaut' },
   { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
