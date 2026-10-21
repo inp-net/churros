@@ -23,11 +23,15 @@ builder.mutationField('setGroupStudentAssociation', (t) =>
     },
     async resolve(query, _, { group, studentAssociation }, { user }) {
       await log('groups', 'set-student-association', { group, studentAssociation }, group, user);
+      const studentAssociationId = await prisma.studentAssociation.findUniqueOrThrow({
+        where: { uid: studentAssociation },
+        select: { id: true },
+      });
       return prisma.group.update({
         ...query,
         where: { uid: group },
         data: {
-          studentAssociationId: studentAssociation,
+          studentAssociationId: studentAssociationId.id,
         },
       });
     },
