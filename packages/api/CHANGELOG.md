@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.4.1
+
+### Patch Changes
+
+- ecb55bb: fix studentassociation change for groups
+
 ## 14.4.0
 
 ### Minor Changes
