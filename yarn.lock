@@ -908,7 +908,7 @@ __metadata:
     mjml: "npm:^4.15.3"
     multer: "npm:^1.4.5-lts.2"
     nanoid: "npm:^5.1.2"
-    nats: "npm:^2.29.2"
+    nats: "npm:^2.29.3"
     nodemailer: "npm:^6.10.0"
     nodemon: "npm:^3.1.9"
     normalize-url: "npm:^8.0.1"
@@ -15868,12 +15868,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nats@npm:^2.29.2":
-  version: 2.29.2
-  resolution: "nats@npm:2.29.2"
+"nats@npm:^2.29.3":
+  version: 2.29.3
+  resolution: "nats@npm:2.29.3"
   dependencies:
     nkeys.js: "npm:1.1.0"
-  checksum: 10c0/f20fc2b4b2dc223c219e36c9585ab82eee74e192ef42e0ba3f70310dca02ddae47c70e0a9903a360a3165df1364a2ba8560a2d86bdb63e5fa4d9a4432eb257e2
+  checksum: 10c0/9a4c09c4b562e415f28926cc7d3b609ee4a727570c398e90d5d71f1a4c08f84ebf8c6d881eb1d202d39fa071c4779bcd8764b982767135b09826f28386cc55fb
   languageName: node
   linkType: hard
 
