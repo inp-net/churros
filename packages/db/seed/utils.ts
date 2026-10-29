@@ -21,6 +21,17 @@ export const skipImages = Boolean(process.env['SEED_SKIP_IMAGES']);
 export const HOUR = 60 * 60 * 1000;
 export const DAY = 24 * HOUR;
 
+export function getRandomLinks(count: number): { name: string; value: string }[] {
+  const links: { name: string; value: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    links.push({
+      name: faker.music.genre(),
+      value: faker.internet.url(),
+    });
+  }
+  return links;
+}
+
 export function daysFromNow(days: number): Date {
   return new Date(Date.now() + days * DAY);
 }
@@ -29,33 +40,6 @@ export function chunk<T>(array: T[], size: number): T[][] {
   const chunks: T[][] = [];
   for (let i = 0; i < array.length; i += size) chunks.push(array.slice(i, i + size));
   return chunks;
-}
-
-/** Deterministic pseudo-random color from a string (used for group colors) */
-export function color(str: string): string {
-  let hash = 0xc0_ff_ee;
-  /* eslint-disable */
-  for (const char of str) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
-  const red = ((hash & 0xff0000) >> 16) + 1;
-  const green = ((hash & 0x00ff00) >> 8) + 1;
-  const blue = (hash & 0x0000ff) + 1;
-  /* eslint-enable */
-  const l = 0.4 * red + 0.4 * green + 0.2 * blue;
-  const h = (n: number) =>
-    Math.min(0xd0, Math.max(0x60, Math.floor((n * 0xd0) / l)))
-      .toString(16)
-      .padStart(2, '0');
-  return `#${h(red)}${h(green)}${h(blue)}`;
-}
-
-export function randomVisibility(): Visibility {
-  return faker.helpers.weightedArrayElement([
-    { weight: 40, value: Visibility.Public },
-    { weight: 15, value: Visibility.SchoolRestricted },
-    { weight: 25, value: Visibility.GroupRestricted },
-    { weight: 5, value: Visibility.Unlisted },
-    { weight: 15, value: Visibility.Private },
-  ]);
 }
 
 export function fakeTitle(min = 2, max = 5): string {
@@ -78,44 +62,6 @@ export function fakeMarkdown(): string {
   }
   if (faker.datatype.boolean(0.4)) parts.push(`[${faker.lorem.words(2)}](https://example.com)`);
   return parts.join('\n\n');
-}
-
-export function fakeAnswer(question: {
-  type: QuestionKind;
-  options: string[];
-  scaleStart: number | null;
-  scaleEnd: number | null;
-}): string[] {
-  switch (question.type) {
-    case 'Scale': {
-      const span = (question.scaleEnd ?? 0) - (question.scaleStart ?? 0);
-      return [`${faker.number.int({ min: 0, max: span })}/${span}`];
-    }
-    case 'SelectOne': {
-      return [faker.helpers.arrayElement(question.options)];
-    }
-    case 'SelectMultiple': {
-      return faker.helpers.arrayElements(question.options, { min: 1, max: 3 });
-    }
-    case 'Text': {
-      return [faker.lorem.sentence()];
-    }
-    case 'LongText': {
-      return [faker.lorem.paragraph()];
-    }
-    case 'Number': {
-      return [faker.number.float({ min: -5, max: 20, fractionDigits: 2 }).toString()];
-    }
-    case 'Date': {
-      return [format(faker.date.past(), 'yyyy-MM-dd')];
-    }
-    case 'Time': {
-      return [format(faker.date.past(), 'HH:mm:ss')];
-    }
-    default: {
-      return [];
-    }
-  }
 }
 
 export function randomImageURL(width: number, height: number, seed: string): string {

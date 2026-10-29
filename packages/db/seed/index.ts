@@ -14,6 +14,7 @@ import {
   PrismaClient,
   QuestionKind,
   Visibility,
+  type Group,
   type Major,
   type Minor,
   type Prisma,
@@ -23,9 +24,12 @@ import {
 
 // XXX: will break if we change the hashing algorithm (abstracted away in api package but not here)
 import { hash } from 'argon2';
-import { color, createUid, downloadRandomImage, downloadRandomPeoplePhoto, faker, randomImageURL, randomVisibility, storageRootDirectory } from './utils.js';
+import { createUid, downloadRandomImage, downloadRandomPeoplePhoto, faker, getRandomLinks, randomImageURL, storageRootDirectory, storePicture } from './utils.js';
 
 const prisma = new PrismaClient();
+
+const now = new Date();
+const passwordHash = await hash('lovechurros');
 
 // console.info(`Cleaning storage root ${storageRootDirectory}`);
 // for (const folder of ['events']) {
@@ -56,6 +60,8 @@ const parametres = {
   //la première filière de chaque école sera discontinued pour tester la gestion des filières obsolètes
   numberOfMinorsPerMajor : 4, //Nombre de spécialité par filière dans la DB de test
   numberOfStudentAssociationSection : 5, //Nombre de bureaux (groupes de type StudentAssociationSection) par asso étudiante dans la DB de test
+  numberOfGroupsPerSchool : 50, //Nombre de groupes (clubs, assos, groupes) par école dans la DB de test
+  numberOfSubGroupsPerSchool: 5, //Nombre de sous groupes dans la db de test (en gros juste des groupes en plus pour tester la hiérarchie de groupes)
   numberOfUsers : 500, //Nombre d'utilisateur dans la DB de test
   numberOfEvents : 50, //Nombre d'événement créer dans la DB
 }
@@ -163,73 +169,145 @@ for(let i = 0; i < parametres.numberOfStudentAssociationSection*parametres.numbe
     studentAssociation: { connect: { id: asso.id } },
     address: faker.location.streetAddress(),
     email: faker.internet.email({firstName: name, lastName: asso.name}),
+    links: {
+      createMany: {
+        data: getRandomLinks(faker.number.int({ min: 0, max: 5 })),
+      }
+    },
     //TODO : Ajouter les comptes lydia
   });
 }
 
+const groups : Group[] = [];
 for (const group of tqdm(studentAssociationSectionData)) {
-  let pictureFilePath: string | undefined = undefined;
+  let pictureFile: string | undefined = undefined;
   if (faker.datatype.boolean(0.8)) {
-    const destinationPath = pictureDestinationFile({
+    pictureFile = await storePicture({
       folder: 'groups',
       extension: 'png',
       identifier: group.uid,
-      root: storageRootDirectory,
+      resource: 'group',
     });
-
-    if(!existsSync(destinationPath)) {
-      try {
-        const file = await downloadRandomImage(400, 400, group.uid);
-        updatePicture({
-          extension: 'png',
-          folder: 'groups',
-          identifier: group.uid,
-          resource: 'group',
-          file,
-          silent: true,
-          root: storageRootDirectory,
-        });
-      }
-      catch (error) {
-        console.warn(
-            `Could not download random image: ${error}. This is not critical, seeding will continue`,
-        );
-      }
-    }
-    else {
-      pictureFilePath = path.relative(storageRootDirectory, destinationPath);
-    }
   }
-  await prisma.group.create({
+  groups.push(await prisma.group.create({
     data: {
       ...group,
-      pictureFile: pictureFilePath,
+      pictureFile: pictureFile,
     },
+  }));
+}
+
+console.info('Creating groups (lists, clubs, associations, groups, integrations groups)');
+
+let groupsData : Prisma.GroupCreateInput[] = [];
+for(let i = 0; i < parametres.numberOfGroupsPerSchool*parametres.numberOfSchools; i++){
+  const name = faker.commerce.product();
+  groupsData.push({
+    name: name,
+    uid: slug(name),
+    color: faker.color.rgb(),
+    type: faker.helpers.weightedArrayElement([
+      { weight: 0.5, value: GroupType.Club },
+      { weight: 0.2, value: GroupType.Association },
+      { weight: 0.1, value: GroupType.Integration },
+      { weight: 0.1, value: GroupType.List },
+      { weight: 0.1, value: GroupType.Group },
+    ]),
+    studentAssociation : { connect: { id: studentAssociations[i % studentAssociations.length]?.id } },
+    address: faker.location.streetAddress(),
+    email: faker.internet.email({firstName: name, lastName: 'churros'}),
+    website: faker.internet.url(),
+    description: faker.commerce.productMaterial(),
+    longDescription: faker.lorem.paragraphs({ min: 0, max: 5 }),
+    links: {
+      createMany: {
+        data: getRandomLinks(faker.number.int({ min: 0, max: 5 })),
+      }
+    },
+
   });
 }
 
-//TODO les autres groupes
-
-const studentAssociationsWithLydiaAccounts = await prisma.studentAssociation.findMany({
-  include: { school: true, lydiaAccounts: true },
-});
-
-for (const ae of studentAssociationsWithLydiaAccounts) {
-  await prisma.contributionOption.create({
+for (const group of tqdm(groupsData)) {
+  let pictureFile: string | undefined = undefined;
+  if (faker.datatype.boolean(0.8)) {
+    pictureFile = await storePicture({
+      folder: 'groups',
+      extension: 'png',
+      identifier: group.uid,
+      resource: 'group',
+    });
+  }
+  groups.push(await prisma.group.create({
     data: {
-      paysFor: { connect: { id: ae.id } },
-      name: ae.name,
-      offeredIn: { connect: { id: ae.school.id } },
-      price: faker.number.int({ min: 30, max: 200 }),
-      beneficiary:
-        ae.lydiaAccounts.length > 0 ? { connect: { id: ae.lydiaAccounts[0]?.id } } : undefined,
+      ...group,
+      pictureFile: pictureFile,
+    },
+  }));
+}
+
+for (const group of groups) {
+  await prisma.group.update({ //pr etre honnete je sais pas si c'est indispensable, surement pour les sous clubs
+    where: { id: group.id },
+    data: {
+      familyRoot: { connect: { id: group.id } },
     },
   });
 }
 
-const contributionOptions = await prisma.contributionOption.findMany({
-  include: { offeredIn: true },
-});
+console.log(`Creating sub-groups`);
+groupsData = [];
+for(let i = 0; i < parametres.numberOfSubGroupsPerSchool*parametres.numberOfSchools; i++){
+  const name = faker.commerce.productAdjective();
+  const parentGroup = groups[parametres.numberOfStudentAssociationSection*parametres.numberOfSchools + i]; //Pr prendre les groupes qui ne sont pas des sections d'assos étudiantes et avec 1 par école
+  groupsData.push({
+    name: name,
+    uid: slug(name),
+    color: faker.color.rgb(),
+    type: faker.helpers.weightedArrayElement([
+      { weight: 0.8, value: GroupType.Club },
+      { weight: 0.2, value: GroupType.Group },
+    ]),
+    studentAssociation : { connect: { id: parentGroup?.studentAssociationId } },
+    address: faker.location.streetAddress(),
+    email: faker.internet.email({firstName: name, lastName: 'churros'}),
+    website: faker.internet.url(),
+    description: faker.commerce.productMaterial(),
+    longDescription: faker.lorem.paragraphs({ min: 0, max: 5 }),
+    links: {
+      createMany: {
+        data: getRandomLinks(faker.number.int({ min: 0, max: 5 })),
+      }
+    },
+    familyRoot: { connect: { id: parentGroup!.id } },
+  });
+}
+
+for (const group of tqdm(groupsData)) {
+  groups.push(await prisma.group.create({
+    data: {
+      ...group,
+    },
+  }));
+}
+
+console.log("Creating contribution options");
+const contributionsOptionsData: Prisma.ContributionOptionCreateInput[] = [];
+for(let i = 0; i < parametres.numberOfSchools; i++){
+  contributionsOptionsData.push({
+    paysFor: { connect: { id: studentAssociations[i]!.id } },
+    name: studentAssociations[i]!.name,
+    offeredIn: { connect: { id: schools[i]!.id } },
+    price: faker.number.int({ min: 30, max: 200 }),
+    beneficiary: undefined, //TODO : Ajouter les comptes lydia pour les associations étudiantes
+  });
+}
+
+for (const option of tqdm(contributionsOptionsData)) {
+  await prisma.contributionOption.create({
+    data: option,
+  });
+}
 
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
 const usersData: Array<Partial<Prisma.UserCreateInput>> = [
@@ -266,23 +344,7 @@ const usersData: Array<Partial<Prisma.UserCreateInput>> = [
     uid: 'valliet',
     firstName: 'Theodors',
     lastName: 'Vieux con',
-    major: {
-      connect: {
-        uid: ir.uid,
-      },
-    },
   },
-];
-
-//création d'une liste des réseaux sociaux qu'on peut ref sur son profil churros
-const socialMedia = [
-  'facebook.com',
-  'instagram.com',
-  'discord.com',
-  'twitter.com',
-  'linkedin.com/in',
-  'github.com',
-  'anilist.co',
 ];
 
 //ajout d'utilisateur aléatoire par Faker
@@ -439,178 +501,9 @@ for (const school of await prisma.school.findMany()) {
 
 const users = await prisma.user.findMany();
 
-const numberSubject: number = 10;
-//creation de nbSubject pour toute les mineurs des filières possible
-//TODO : Plus necessaire mtn la frappe est ailleurs
-console.info('Creating minors, subjects and documents');
-for (const [_, minor] of tqdm([...minors.entries()])) {
-  for (let j = 0; j < numberSubject; j++) {
-    const title: string = faker.lorem.word();
-    const subject = await prisma.subject.create({
-      data: {
-        name: title,
-        slug: slug(title),
-        minors: { connect: { id: minor.id } },
-      },
-    });
-    await prisma.document.create({
-      data: {
-        description: faker.lorem.paragraph({ min: 2, max: 10 }),
-        title: 'Un document',
-        slug: 'un-document',
-        schoolYear: faker.number.int({ min: 2015, max: 2024 }),
-        subject: { connect: { id: subject.id } },
-        type: faker.helpers.enumValue(DocumentType),
-        uploader: {
-          connect: {
-            uid: faker.helpers.arrayElement(users.filter((element) => element.minorId === minor.id))
-              .uid,
-          },
-        }, //recup uniquement les users de la bonne mineur pour en faire des auteurs
-      },
-    });
-  }
-}
-
-const clubsData = [
-  { name: 'Art' },
-  { name: 'Basket' },
-  { name: 'Cinéma' },
-  { name: 'Danse' },
-  { name: 'Escalade' },
-  { name: 'Football' },
-  { name: 'Golf' },
-  { name: 'Handball' },
-  { name: 'Igloo' },
-  { name: 'Jardinage' },
-  { name: 'Karaté' },
-  { name: 'Lecture' },
-  { name: 'Musique' },
-  { name: 'Natation' },
-  { name: 'Origami' },
-  { name: 'Pétanque' },
-  { name: 'Quidditch' },
-  { name: 'Randonnée' },
-  { name: 'Ski' },
-  { name: 'Tennis' },
-  { name: 'Ukulélé' },
-  { name: 'Vélo' },
-  { name: 'Water-polo' },
-  { name: 'Xylophone' },
-  { name: 'Yoga' },
-  { name: 'Zumba' },
-];
-
 console.info('Creating groups');
-for (const [i, group] of tqdm([...clubsData.entries()])) {
-  const uid = slug(group.name);
-  const { id: groupId } = await prisma.group.create({
-    data: {
-      ...group,
-      uid,
-      // ensure 3 list groups
-      type:
-        i < 3
-          ? GroupType.List
-          : (weightedRandomEnumValue({
-              [GroupType.Club]: 0.75,
-              [GroupType.Association]: 0.2,
-              [GroupType.Integration]: 0.05,
-            }) as GroupType),
-      color: color(group.name),
-      address: 'D202',
-      email: `${slug(group.name)}@list.example.com`,
-      website: `https://${slug(group.name)}.example.com`,
-      description: `Club ${group.name} de l'école`,
-      longDescription: faker.lorem.paragraphs({ min: 0, max: 5 }),
-      studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
-      links: {
-        createMany: {
-          data: faker.helpers
-            .arrayElements(socialMedia, { min: 0, max: 6 })
-            .map((domain) => ({ name: domain, value: `https://${domain}/${uid}` })),
-        },
-      },
-    },
-  });
-  await prisma.group.update({
-    where: { id: groupId },
-    data: {
-      familyRoot: { connect: { id: groupId } },
-    },
-  });
-  if (faker.datatype.boolean(0.8)) {
-    await downloadRandomImage(400, 400, uid)
-      .then(async (file) =>
-        prisma.group.update({
-          where: { id: groupId },
-          data: {
-            pictureFile: await updatePicture({
-              extension: 'png',
-              folder: 'groups',
-              identifier: uid,
-              resource: 'group',
-              file,
-              silent: true,
-              root: storageRootDirectory,
-            }),
-          },
-        }),
-      )
-      .catch((error) =>
-        console.warn(
-          `Could not download random image: ${error}. This is not critical, seeding will continue`,
-        ),
-      );
-  }
-}
 
-let IntégrationGroup = await prisma.group.create({
-  data: {
-    name: `Intégration ${new Date().getFullYear()}`,
-    type: GroupType.Group,
-    uid: `integration-${new Date().getFullYear()}`,
-    color: '#ff0000',
-    links: { create: [] },
-    studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
-  },
-});
 
-IntégrationGroup = await prisma.group.update({
-  where: { id: IntégrationGroup.id },
-  data: {
-    familyRoot: { connect: { id: IntégrationGroup.id } },
-  },
-});
-/*
-const Groupe1 = await prisma.group.create({
-  data: {
-    name: 'Groupe 1',
-    type: GroupType.Integration,
-    uid: 'groupe-1',
-    color: '#00ff00',
-    parent: { connect: { id: Intégration2022.id } },
-    familyRoot: { connect: { id: Intégration2022.familyId! } },
-    links: { create: [] },
-    // members: { createMany: { data: [{ memberId: 2 }, { memberId: 3 }, { memberId: 4 }] } },
-  },
-});
-*/
-await prisma.group.create({
-  data: {
-    name: 'Groupe 2',
-    type: GroupType.Integration,
-    uid: 'groupe-2',
-    color: '#0000ff',
-    parent: { connect: { id: IntégrationGroup.id } },
-    familyRoot: { connect: { id: IntégrationGroup.familyId! } },
-    links: { create: [] },
-    studentAssociation: { connect: { id: faker.helpers.arrayElement(studentAssociations).id } },
-    // members: { createMany: { data: [{ memberId: 5 }, { memberId: 6 }, { memberId: 7 }] } },
-  },
-});
-
-let groups = await prisma.group.findMany({ include: { members: { include: { member: true } } } });
 
 const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
 
