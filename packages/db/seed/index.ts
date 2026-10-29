@@ -1,6 +1,4 @@
-import { fakerFR } from '@faker-js/faker';
 import { format } from 'date-fns';
-import dichotomid from 'dichotomid';
 import { Redis } from 'ioredis';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -8,7 +6,6 @@ import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
 import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
-import { storageRoot } from '../../api/src/lib/storage.js';
 import {
   CredentialType,
   DocumentType,
@@ -17,18 +14,18 @@ import {
   PrismaClient,
   QuestionKind,
   Visibility,
+  type Major,
+  type Minor,
   type Prisma,
+  type School,
+  type StudentAssociation,
 } from '../src/client/default.js';
 
 // XXX: will break if we change the hashing algorithm (abstracted away in api package but not here)
 import { hash } from 'argon2';
+import { color, createUid, downloadRandomImage, downloadRandomPeoplePhoto, faker, randomImageURL, randomVisibility, storageRootDirectory } from './utils.js';
 
 const prisma = new PrismaClient();
-
-const faker = fakerFR;
-faker.seed(5);
-
-const storageRootDirectory = storageRoot();
 
 // console.info(`Cleaning storage root ${storageRootDirectory}`);
 // for (const folder of ['events']) {
@@ -52,417 +49,166 @@ await redis.keys('*').then((keys) => {
   console.info(`Deleted ${keys.length} keys`);
 });
 
-async function randomMember(groupId: string) {
-  return faker.helpers.arrayElement(
-    await prisma.user.findMany({
-      where: {
-        groups: {
-          some: {
-            groupId,
-          },
-        },
-      },
-    }),
-  );
+const parametres = {
+  numberOfSchools : 4, //Nombre d'école dans la DB de test
+  //Il y aura 1 asso etudiante par école (obligé avec la manière dont tout est fait actuellement)
+  numberOfMajorsPerSchool : 4, //Nombre de filière par école dans la DB de test
+  //la première filière de chaque école sera discontinued pour tester la gestion des filières obsolètes
+  numberOfMinorsPerMajor : 4, //Nombre de spécialité par filière dans la DB de test
+  numberOfStudentAssociationSection : 5, //Nombre de bureaux (groupes de type StudentAssociationSection) par asso étudiante dans la DB de test
+  numberOfUsers : 500, //Nombre d'utilisateur dans la DB de test
+  numberOfEvents : 50, //Nombre d'événement créer dans la DB
 }
 
-const numberUserDB: number = 500; //Nombre d'utilisateur dans la DB de test
-const numberEvent: number = 50; //Nombre d'événement créer dans la DB
+console.info("Creating schools");
 
-function* range(start: number, end: number): Generator<number> {
-  for (let i = start; i < end; i++) yield i;
-  //js weighted array random
-}
+const schoolsData: Prisma.SchoolCreateInput[] = [];
 
-function randomVisiblity(): Visibility {
-  return faker.helpers.arrayElement(Object.values(Visibility));
-}
-
-//const graduationYears = [...range()]
-const color = (str: string) => {
-  let hash = 0xc0_ff_ee;
-  /* eslint-disable */
-  for (const char of str) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
-  const red = ((hash & 0xff0000) >> 16) + 1;
-  const green = ((hash & 0x00ff00) >> 8) + 1;
-  const blue = (hash & 0x0000ff) + 1;
-  /* eslint-enable */
-  const l = 0.4 * red + 0.4 * green + 0.2 * blue;
-  const h = (n: number) =>
-    Math.min(0xd0, Math.max(0x60, Math.floor((n * 0xd0) / l)))
-      .toString(16)
-      .padStart(2, '0');
-  return `#${h(red)}${h(green)}${h(blue)}`;
-};
-
-function randomChoice<T>(array: T[]): T {
-  return array[Math.floor(Math.random() * array.length)]!;
-}
-
-function weightedRandomEnumValue<T extends Record<string | number, string | number>>(
-  probabilities: Record<keyof T, number>,
-): keyof T {
-  return faker.helpers.weightedArrayElement(
-    Object.keys(probabilities).map((key) => ({ weight: probabilities[key]!, value: key })),
-  ) as keyof T;
-}
-
-// randomizes hours and minutes from given date
-function randomTime(date: Date, hoursIn: Generator<number>): Date {
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    randomChoice([...hoursIn]),
-    Math.floor(Math.random() * 60),
-  );
-}
-
-function randomImageURL(width: number, height: number, seed: string): string {
-  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
-}
-
-// download a random placeholder image from unsplash with the given width and height
-// return a File object (for use with updatePicture)
-async function downloadRandomImage(width: number, height: number, seed: string): Promise<File> {
-  const response = await fetch(randomImageURL(width, height, seed));
-  const blob = await response.blob();
-  return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
-}
-
-// download a random placeholder of a person's photo, using thispersondoesnotexist.com
-// so no real actual people, but realistic AI-generated photos of people
-async function downloadRandomPeoplePhoto(): Promise<File> {
-  const response = await fetch('https://thispersondoesnotexist.com');
-  return new File([await response.blob()], 'profile.jpeg', { type: 'image/jpeg' });
-}
-
-const createUid = async ({
-  firstName,
-  lastName,
-  uid,
-}: {
-  firstName: string;
-  lastName: string;
-  uid?: string;
-}) => {
-  if (uid) return uid;
-  const toAscii = (x: string) =>
-    slug(x.toLocaleLowerCase(), {
-      charmap: {
-        é: 'e',
-        è: 'e',
-        ê: 'e',
-        ë: 'e',
-        à: 'a',
-        â: 'a',
-        ä: 'a',
-        ô: 'o',
-        ö: 'o',
-        û: 'u',
-        ü: 'u',
-        ï: 'i',
-        ç: 'c',
-      },
-    }).replaceAll('-', '');
-  const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
-  const n = await dichotomid(async (n) => {
-    const uid = `${base}${n > 1 ? n : ''}`;
-    const existDB = Boolean(await prisma.user.findFirst({ where: { uid } }));
-    return !existDB;
+for(let i = 0; i < parametres.numberOfSchools; i++){
+  const name = faker.company.buzzNoun();
+  schoolsData.push({
+    name,
+    uid: slug(name),
+    color: faker.color.rgb(),
+    //TODO : Ajouter les services
   });
-  return `${base}${n > 1 ? n : ''}`;
-};
+}
 
-const schoolsData: Prisma.SchoolCreateInput[] = [
-  {
-    name: 'EAU',
-    uid: 'eau',
-    color: '#00ffff',
-    description: 'École de l’Eau',
-    address: faker.location.streetAddress(),
-  },
-  {
-    name: 'FEU',
-    uid: 'feu',
-    color: '#b22222',
-    description: 'École de Feu',
-    address: faker.location.streetAddress(),
-    studentMailDomain: 'etu.inp-n7.fr',
-    aliasMailDomains: ['etu.toulouse-inp.fr'],
-    majors: {
-      create: {
-        name: 'Filière unique',
-        uid: 'filiere-feu',
-      },
-    },
-  },
-  {
-    name: 'TERRE',
-    uid: 'terre',
-    color: '#5e3f13',
-    description: 'École de Terre',
-    address: faker.location.streetAddress(),
-    studentMailDomain: faker.internet.domainName(),
-    aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
-      faker.internet.domainName,
-    ),
-    majors: {
-      create: {
-        name: 'Filière unique TERRE',
-        uid: 'filiere-terre',
-      },
-    },
-  },
-  {
-    name: 'AIR',
-    uid: 'air',
-    color: '#d9eaff',
-    description: 'École de l’Air',
-    address: faker.location.streetAddress(),
-    studentMailDomain: faker.internet.domainName(),
-    aliasMailDomains: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(
-      faker.internet.domainName,
-    ),
-    majors: {
-      create: {
-        name: 'Filière unique AIR',
-        uid: 'filiere-air',
-      },
-    },
-  },
-];
-
-const servicesData = [
-  {
-    name: 'Moodle',
-    description: 'Plateforme de cours',
-    url: 'https://moodle-n7.inp-toulouse.fr/',
-    logo: 'https://copyleaks.com/wp-content/uploads/2022/08/moodle-m-with-grid-1024x1024.png',
-    logoSourceType: LogoSourceType.ExternalLink,
-  },
-  {
-    name: 'EDT',
-    description: 'Emploi du temps',
-    url: 'https://edt-n7.inp-toulouse.fr/',
-    logo: 'Calendar',
-    logoSourceType: LogoSourceType.Icon,
-  },
-];
-
-console.info('Creating schools');
+const schools : School[] = [];
 for (const school of tqdm(schoolsData)) {
-  await prisma.school.create({
+  schools.push(await prisma.school.create({
     data: {
       ...school,
-      services: {
-        createMany: {
-          data: servicesData,
-        },
-      },
     },
+  }));
+}
+
+
+console.info("Creating majors");
+const majorData: Prisma.MajorCreateInput[] = [];
+for(let i = 0; i < parametres.numberOfMajorsPerSchool*parametres.numberOfSchools; i++){
+  const name = faker.commerce.department();
+  majorData.push({
+    name,
+    uid: slug(name),
+    shortName: name.slice(0,5), //Pas vraiment representatif du vrai use case mais ça y est
+    discontinued: Math.floor(i / schools.length) === 0,
+    schools: { connect: { id: schools[i % schools.length]!.id } },
   });
 }
 
-const schools = await prisma.school.findMany();
+const majors : Major[] = [];
+for (const major of tqdm(majorData)) {
+  majors.push(await prisma.major.create({
+    data: {
+      ...major,
+    },
+  }));
+}
 
-const mecaniqueDesFluides = await prisma.major.create({
-  data: {
-    shortName: 'MFEE',
-    uid: 'mfee',
-    name: 'Mécanique des fluides',
-    schools: { connect: { id: schools[0]!.id } },
-  },
-});
-const sciencesDuNumerique = await prisma.major.create({
-  data: {
-    shortName: 'SN',
-    uid: 'sdn',
-    name: 'Sciences du Numérique',
-    schools: { connect: { id: schools[0]!.id } },
-  },
-});
-
-const ir = await prisma.major.create({
-  data: {
-    shortName: 'IR',
-    uid: 'irezo',
-    name: 'Informatique & Réseau',
-    discontinued: true,
-  },
-});
-
-const elec = await prisma.major.create({
-  data: {
-    shortName: 'EEEA',
-    uid: 'eeea',
-    name: 'éléectronique, énergie électrique & automatique',
-    schools: { connect: { id: schools[0]!.id } },
-  },
-});
-
-const majors = [mecaniqueDesFluides, sciencesDuNumerique, elec];
-
-const plomberie = await prisma.minor.create({
-  data: {
-    name: 'Plomberie',
-    slug: 'plomberie',
-    majors: { connect: [{ id: mecaniqueDesFluides.id }] },
+console.info("Creating minors");
+const minorData: Prisma.MinorCreateInput[] = [];
+for(let i = 0; i < parametres.numberOfMinorsPerMajor*parametres.numberOfMajorsPerSchool*parametres.numberOfSchools; i++){
+  const name = faker.animal.petName();
+  minorData.push({
+    name,
+    slug: slug(name),
+    majors: { connect: [{ id: majors[i % majors.length]!.id }] },
     yearTier: 1,
-  },
-});
+  });
+}
 
-const chomeur = await prisma.minor.create({
-  data: {
-    name: 'Chomeur',
-    slug: 'chomeur',
-    majors: { connect: [{ id: mecaniqueDesFluides.id }] },
-    yearTier: 1,
-  },
-});
-
-const transistor = await prisma.minor.create({
-  data: {
-    name: 'Transistor',
-    slug: 'transistor',
-    majors: { connect: [{ id: elec.id }] },
-    yearTier: 1,
-  },
-});
-const cableElec = await prisma.minor.create({
-  data: {
-    name: 'Cable Elec',
-    slug: 'cable-elec',
-    majors: { connect: [{ id: elec.id }] },
-    yearTier: 1,
-  },
-});
-
-const ia = await prisma.minor.create({
-  data: {
-    name: 'IA (fraude)',
-    slug: 'ia',
-    majors: { connect: [{ id: sciencesDuNumerique.id }] },
-    yearTier: 1,
-  },
-});
-
-const rezo = await prisma.minor.create({
-  data: {
-    name: 'Rezo',
-    slug: 'rezo',
-    majors: { connect: [{ id: elec.id }] },
-    yearTier: 1,
-  },
-});
-
-const minors = [plomberie, chomeur, transistor, cableElec, ia, rezo];
+const minors : Minor[] = [];
+for (const minor of tqdm(minorData)) {
+  minors.push(await prisma.minor.create({
+    data: {
+      ...minor,
+    },
+  }));
+}
 
 console.info('Creating student associations');
-for (const [i, name] of tqdm([
-  ...['AE EAU 2022', 'AE FEU 2022', 'AE TERRE 2022', 'AE AIR 2022'].entries(),
-])) {
-  await prisma.studentAssociation.create({
+const studentAssociationData: Prisma.StudentAssociationCreateInput[] = [];
+for(let i = 0; i < schools.length; i++){
+  const name = `AE ${faker.company.buzzNoun()}`;
+  studentAssociationData.push({
+    name,
+    school: { connect: { id: schools[i]!.id } },
+    uid: slug(name),
+    description: faker.company.catchPhrase(),
+    //TODO : Ajouter les services
+    //TODO : Voir comment faire pour les comptes lydia pour avoir le secret (nouveau .env ?)
+  });
+}
+
+const studentAssociations : StudentAssociation[] = [];
+for (const studentAssociation of tqdm(studentAssociationData)) {
+  studentAssociations.push(await prisma.studentAssociation.create({
     data: {
-      uid: slug(name),
-      description: 'Une association étudiante',
-      name,
-      school: { connect: { id: schools[i]!.id } },
-      links: { create: [] },
-      lydiaAccounts: {
-        create: {
-          name,
-          vendorToken: 'b',
-          privateToken: 'b',
-        },
-      },
-      services: {
-        createMany: {
-          data: Array.from({ length: faker.number.int({ min: 3, max: 5 }) }).map(() =>
-            faker.datatype.boolean(0.6)
-              ? {
-                  logo: randomImageURL(400, 400, name),
-                  name: faker.company.name(),
-                  logoSourceType: LogoSourceType.ExternalLink,
-                }
-              : faker.datatype.boolean(0.5)
-                ? {
-                    logo: '',
-                    logoSourceType: LogoSourceType.GroupLogo,
-                    name: faker.company.name(),
-                  }
-                : {
-                    logo: '',
-                    logoSourceType: LogoSourceType.Icon,
-                    name: faker.company.name(),
-                  },
-          ),
-        },
-      },
+      ...studentAssociation,  
+    },
+  }));
+}
+
+console.info('Creating groups (student association sections)');
+const studentAssociationSectionData: Prisma.GroupCreateInput[] = [];
+for(let i = 0; i < parametres.numberOfStudentAssociationSection*parametres.numberOfSchools; i++){
+  const name = faker.helpers.arrayElement(['FOY', 'BDE', 'BDD', 'BDA', 'BDS']);
+  const asso = studentAssociations[i % studentAssociations.length]!;
+  studentAssociationSectionData.push({
+    name: name,
+    uid: slug(name + ' ' + asso.name),
+    color: faker.color.rgb(),
+    type: GroupType.StudentAssociationSection,
+    studentAssociation: { connect: { id: asso.id } },
+    address: faker.location.streetAddress(),
+    email: faker.internet.email({firstName: name, lastName: asso.name}),
+    //TODO : Ajouter les comptes lydia
+  });
+}
+
+for (const group of tqdm(studentAssociationSectionData)) {
+  let pictureFilePath: string | undefined = undefined;
+  if (faker.datatype.boolean(0.8)) {
+    const destinationPath = pictureDestinationFile({
+      folder: 'groups',
+      extension: 'png',
+      identifier: group.uid,
+      root: storageRootDirectory,
+    });
+
+    if(!existsSync(destinationPath)) {
+      try {
+        const file = await downloadRandomImage(400, 400, group.uid);
+        updatePicture({
+          extension: 'png',
+          folder: 'groups',
+          identifier: group.uid,
+          resource: 'group',
+          file,
+          silent: true,
+          root: storageRootDirectory,
+        });
+      }
+      catch (error) {
+        console.warn(
+            `Could not download random image: ${error}. This is not critical, seeding will continue`,
+        );
+      }
+    }
+    else {
+      pictureFilePath = path.relative(storageRootDirectory, destinationPath);
+    }
+  }
+  await prisma.group.create({
+    data: {
+      ...group,
+      pictureFile: pictureFilePath,
     },
   });
 }
 
-const studentAssociations = await prisma.studentAssociation.findMany({ include: { school: true } });
-
-for (const asso of studentAssociations) {
-  for (const name of ['FOY', 'BDE', 'BDD', 'BDA', 'BDS']) {
-    const { uid, id } = await prisma.group.create({
-      data: {
-        name,
-        uid: slug(name + ' ' + asso.name),
-        color: color(name),
-        type: GroupType.StudentAssociationSection,
-        studentAssociation: { connect: { id: asso.id } },
-        links: {
-          create: [],
-        },
-        address: '2 rue Charles Camichel, 31000 Toulouse',
-        email: `${slug(name)}@list.example.com`,
-        lyiaAccounts: {
-          create: {
-            name: `${asso.school.name.toUpperCase()} ${name.toUpperCase()}`,
-            privateToken: 'a',
-            vendorToken: 'a',
-          },
-        },
-      },
-    });
-
-    if (faker.datatype.boolean(0.8)) {
-      const destinationPath = pictureDestinationFile({
-        folder: 'groups',
-        extension: 'png',
-        identifier: uid,
-        root: storageRootDirectory,
-      });
-      await (existsSync(destinationPath)
-        ? prisma.group.update({
-            where: { id },
-            data: {
-              pictureFile: path.relative(storageRootDirectory, destinationPath),
-            },
-          })
-        : downloadRandomImage(400, 400, uid)
-            .then((file) =>
-              updatePicture({
-                extension: 'png',
-                folder: 'groups',
-                identifier: uid,
-                resource: 'group',
-                file,
-                silent: true,
-                root: storageRootDirectory,
-              }),
-            )
-            .catch((error) =>
-              console.warn(
-                `Could not download random image: ${error}. This is not critical, seeding will continue`,
-              ),
-            ));
-    }
-  }
-}
+//TODO les autres groupes
 
 const studentAssociationsWithLydiaAccounts = await prisma.studentAssociation.findMany({
   include: { school: true, lydiaAccounts: true },
@@ -553,7 +299,7 @@ for (const [_, data] of tqdm([...usersData.entries()])) {
     where: { id: faker.helpers.arrayElement(minors).id },
   });
 
-  const uid = await createUid(data);
+  const uid = await createUid(prisma, data);
   await prisma.user.create({
     data: {
       uid,
@@ -695,7 +441,7 @@ const users = await prisma.user.findMany();
 
 const numberSubject: number = 10;
 //creation de nbSubject pour toute les mineurs des filières possible
-
+//TODO : Plus necessaire mtn la frappe est ailleurs
 console.info('Creating minors, subjects and documents');
 for (const [_, minor] of tqdm([...minors.entries()])) {
   for (let j = 0; j < numberSubject; j++) {
@@ -1203,7 +949,7 @@ for (let i = 0; i < 10; i++) {
   const form = await prisma.form.create({
     data: {
       groupId: faker.helpers.arrayElement(groups).id,
-      visibility: randomVisiblity(),
+      visibility: randomVisibility(),
       title: faker.lorem.sentence(),
       description: faker.lorem.paragraphs(faker.helpers.rangeToNumber({ min: 1, max: 3 })),
       createdById: faker.helpers.arrayElement(users).id,
