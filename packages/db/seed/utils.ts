@@ -2,14 +2,13 @@
  * Fonctions utilisées pour le seed
  */
 import { fakerFR } from '@faker-js/faker';
-import { format } from 'date-fns';
 import dichotomid from 'dichotomid';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import slug from 'slug';
 import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
 import { storageRoot } from '../../api/src/lib/storage.js';
-import { Visibility, type PrismaClient, type QuestionKind } from '../src/client/default.js';
+import { type PrismaClient } from '../src/client/default.js';
 
 export const faker = fakerFR;
 faker.seed(5);

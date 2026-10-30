@@ -1,30 +1,27 @@
-import { format } from 'date-fns';
 import { Redis } from 'ioredis';
-import { existsSync } from 'node:fs';
-import path from 'node:path';
 import { exit } from 'node:process';
 import slug from 'slug';
 import { tqdm } from 'ts-tqdm';
-import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
 import {
   CredentialType,
-  DocumentType,
   GroupType,
-  LogoSourceType,
   PrismaClient,
-  QuestionKind,
   Visibility,
+  type ContributionOption,
+  type Event,
   type Group,
   type Major,
   type Minor,
   type Prisma,
   type School,
   type StudentAssociation,
+  type Ticket,
+  type User,
 } from '../src/client/default.js';
 
 // XXX: will break if we change the hashing algorithm (abstracted away in api package but not here)
 import { hash } from 'argon2';
-import { createUid, downloadRandomImage, downloadRandomPeoplePhoto, faker, getRandomLinks, randomImageURL, storageRootDirectory, storePicture } from './utils.js';
+import { createUid, fakeMarkdown, faker, fakeTitle, getRandomLinks, storePicture } from './utils.js';
 
 const prisma = new PrismaClient();
 
@@ -53,24 +50,29 @@ await redis.keys('*').then((keys) => {
   console.info(`Deleted ${keys.length} keys`);
 });
 
-const parametres = {
+const params = {
   numberOfSchools : 4, //Nombre d'école dans la DB de test
   //Il y aura 1 asso etudiante par école (obligé avec la manière dont tout est fait actuellement)
+  //Et pour chaque asso etudiant il y aura 1 option de cotisation
   numberOfMajorsPerSchool : 4, //Nombre de filière par école dans la DB de test
   //la première filière de chaque école sera discontinued pour tester la gestion des filières obsolètes
   numberOfMinorsPerMajor : 4, //Nombre de spécialité par filière dans la DB de test
   numberOfStudentAssociationSection : 5, //Nombre de bureaux (groupes de type StudentAssociationSection) par asso étudiante dans la DB de test
   numberOfGroupsPerSchool : 50, //Nombre de groupes (clubs, assos, groupes) par école dans la DB de test
   numberOfSubGroupsPerSchool: 5, //Nombre de sous groupes dans la db de test (en gros juste des groupes en plus pour tester la hiérarchie de groupes)
-  numberOfUsers : 500, //Nombre d'utilisateur dans la DB de test
-  numberOfEvents : 50, //Nombre d'événement créer dans la DB
+  numberOfUsersPerSchool : 200, //Nombre d'utilisateur par école dans la DB de test à créer (les premiers sont les comptes rigolos legacy, et après c'est des comptes random)
+  numberOfStudentAssociationAdminsPerSchool: 5, //Nombre d'admin par AE dans la DB de test
+  maxNumberOfArticlesPerGroup : 10, //Nombre d'articles max à créer dans la DB de test pour chaque groupe
+  maxNumberOfEventsPerGroup : 10, //Nombre d'événement max par groupe à créer dans la DB
+  numberOfTicketsPerEvent : 5, //Nombre de tickets par événement à créer dans la DB
+  maxNumberOfRegistrationsPerEvent : 100, //Nombre d'inscription max par événement pour un utilisateur aléatoire à créer dans la DB
 }
 
 console.info("Creating schools");
 
 const schoolsData: Prisma.SchoolCreateInput[] = [];
 
-for(let i = 0; i < parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfSchools; i++){
   const name = faker.company.buzzNoun();
   schoolsData.push({
     name,
@@ -92,7 +94,7 @@ for (const school of tqdm(schoolsData)) {
 
 console.info("Creating majors");
 const majorData: Prisma.MajorCreateInput[] = [];
-for(let i = 0; i < parametres.numberOfMajorsPerSchool*parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfMajorsPerSchool*params.numberOfSchools; i++){
   const name = faker.commerce.department();
   majorData.push({
     name,
@@ -114,7 +116,7 @@ for (const major of tqdm(majorData)) {
 
 console.info("Creating minors");
 const minorData: Prisma.MinorCreateInput[] = [];
-for(let i = 0; i < parametres.numberOfMinorsPerMajor*parametres.numberOfMajorsPerSchool*parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfMinorsPerMajor*params.numberOfMajorsPerSchool*params.numberOfSchools; i++){
   const name = faker.animal.petName();
   minorData.push({
     name,
@@ -158,7 +160,7 @@ for (const studentAssociation of tqdm(studentAssociationData)) {
 
 console.info('Creating groups (student association sections)');
 const studentAssociationSectionData: Prisma.GroupCreateInput[] = [];
-for(let i = 0; i < parametres.numberOfStudentAssociationSection*parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfStudentAssociationSection*params.numberOfSchools; i++){
   const name = faker.helpers.arrayElement(['FOY', 'BDE', 'BDD', 'BDA', 'BDS']);
   const asso = studentAssociations[i % studentAssociations.length]!;
   studentAssociationSectionData.push({
@@ -200,18 +202,18 @@ for (const group of tqdm(studentAssociationSectionData)) {
 console.info('Creating groups (lists, clubs, associations, groups, integrations groups)');
 
 let groupsData : Prisma.GroupCreateInput[] = [];
-for(let i = 0; i < parametres.numberOfGroupsPerSchool*parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfGroupsPerSchool*params.numberOfSchools; i++){
   const name = faker.commerce.product();
   groupsData.push({
     name: name,
     uid: slug(name),
     color: faker.color.rgb(),
     type: faker.helpers.weightedArrayElement([
-      { weight: 0.5, value: GroupType.Club },
-      { weight: 0.2, value: GroupType.Association },
-      { weight: 0.1, value: GroupType.Integration },
-      { weight: 0.1, value: GroupType.List },
-      { weight: 0.1, value: GroupType.Group },
+      { weight: 50, value: GroupType.Club },
+      { weight: 20, value: GroupType.Association },
+      { weight: 10, value: GroupType.Integration },
+      { weight: 10, value: GroupType.List },
+      { weight: 10, value: GroupType.Group },
     ]),
     studentAssociation : { connect: { id: studentAssociations[i % studentAssociations.length]?.id } },
     address: faker.location.streetAddress(),
@@ -257,16 +259,16 @@ for (const group of groups) {
 
 console.log(`Creating sub-groups`);
 groupsData = [];
-for(let i = 0; i < parametres.numberOfSubGroupsPerSchool*parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfSubGroupsPerSchool*params.numberOfSchools; i++){
   const name = faker.commerce.productAdjective();
-  const parentGroup = groups[parametres.numberOfStudentAssociationSection*parametres.numberOfSchools + i]; //Pr prendre les groupes qui ne sont pas des sections d'assos étudiantes et avec 1 par école
+  const parentGroup = groups[params.numberOfStudentAssociationSection*params.numberOfSchools + i]; //Pr prendre les groupes qui ne sont pas des sections d'assos étudiantes et avec 1 par école
   groupsData.push({
     name: name,
     uid: slug(name),
     color: faker.color.rgb(),
     type: faker.helpers.weightedArrayElement([
-      { weight: 0.8, value: GroupType.Club },
-      { weight: 0.2, value: GroupType.Group },
+      { weight: 80, value: GroupType.Club },
+      { weight: 20, value: GroupType.Group },
     ]),
     studentAssociation : { connect: { id: parentGroup?.studentAssociationId } },
     address: faker.location.streetAddress(),
@@ -293,7 +295,7 @@ for (const group of tqdm(groupsData)) {
 
 console.log("Creating contribution options");
 const contributionsOptionsData: Prisma.ContributionOptionCreateInput[] = [];
-for(let i = 0; i < parametres.numberOfSchools; i++){
+for(let i = 0; i < params.numberOfSchools; i++){
   contributionsOptionsData.push({
     paysFor: { connect: { id: studentAssociations[i]!.id } },
     name: studentAssociations[i]!.name,
@@ -303,17 +305,19 @@ for(let i = 0; i < parametres.numberOfSchools; i++){
   });
 }
 
+const contibutionOptions : ContributionOption[] = [];
 for (const option of tqdm(contributionsOptionsData)) {
-  await prisma.contributionOption.create({
-    data: option,
-  });
+  contibutionOptions.push(
+    await prisma.contributionOption.create({
+      data: option,
+    })
+  );
 }
 
+console.log("Creating users");
 //User rigolo de l'ancienne DB de test, que personne y touche on en est fier.
-const usersData: Array<Partial<Prisma.UserCreateInput>> = [
-  { firstName: 'Annie', lastName: 'Versaire', admin: true }, //Unique compte de la DB qui possède les droits admin
-  { firstName: 'Gwen', lastName: 'Le Bihan', admin: true, uid: 'lebihae' }, // Pour tester l'oauth
-  { firstName: "Nathan", lastName: "Pagnucco", admin: true, uid: 'pagnuccon2' }, // Pour tester l'oauth
+const funnyUserData: { firstName: string; lastName: string }[] = [
+  { firstName: 'Annie', lastName: 'Versaire' }, 
   { firstName: 'Bernard', lastName: 'Tichaut' },
   { firstName: 'Camille', lastName: 'Honnête' },
   { firstName: 'Denis', lastName: 'Chon' },
@@ -339,174 +343,103 @@ const usersData: Array<Partial<Prisma.UserCreateInput>> = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
-  { uid: 'exte', firstName: 'Jaipa', lastName: 'Dékol', minor: {}, major: {} }, // Compte exté
-  {
-    uid: 'valliet',
-    firstName: 'Theodors',
-    lastName: 'Vieux con',
-  },
 ];
 
-//ajout d'utilisateur aléatoire par Faker
-for (let i = 0; i < numberUserDB - usersData.length; i++)
-  usersData.push({ firstName: faker.person.firstName(), lastName: faker.person.lastName() });
+const usersData: Prisma.UserCreateInput[] = [];
+for(let i = 0; i < params.numberOfUsersPerSchool*params.numberOfSchools; i++){
+  let firstName : string, lastName : string;
+  if(i < funnyUserData.length){
+    firstName = funnyUserData[i]!.firstName;
+    lastName = funnyUserData[i]!.lastName;
+  } else {
+    firstName = faker.person.firstName();
+    lastName = faker.person.lastName();
+  }
+  const uid = await createUid(prisma, { firstName, lastName });
 
-console.info('Creating users');
-for (const [_, data] of tqdm([...usersData.entries()])) {
-  const major = await prisma.major.findUniqueOrThrow({
-    where: { id: faker.helpers.arrayElement(majors).id },
-    include: { schools: true },
-  });
-  const minor = await prisma.minor.findUniqueOrThrow({
-    where: { id: faker.helpers.arrayElement(minors).id },
-  });
+  //Pour avoir un major random parmi ceux de la même école que la contribution option
+  //Avec le min à 0 on prend aussi les majors qui sont discontinued, mettre à 1 pour les eviter
+  const majorIndex = i % params.numberOfSchools + params.numberOfSchools * faker.number.int({ min: 0, max: params.numberOfMajorsPerSchool - 1 }); 
+  //Pour avoir un minor random parmi ceux de la même major que l'utilisateur
+  const minorIndex = majorIndex + majors.length * faker.number.int({ min: 0, max: params.numberOfMinorsPerMajor - 1 });
 
-  const uid = await createUid(prisma, data);
-  await prisma.user.create({
-    data: {
-      uid,
-      email: faker.internet.email({ firstName: data.firstName, lastName: data.lastName }),
-      description: faker.lorem.paragraph({ min: 0, max: 5 }),
-      links: {
-        create: faker.helpers
-          .arrayElements(socialMedia, { min: 2, max: 6 })
-          .map((name) => ({ name, value: `https://${name}/${uid}` })),
-      },
-      contributions:
-        faker.number.int({ min: 0, max: 10 }) % 10 === 0 //génération d'une majorité de cotissant
-          ? {
-              create: {
-                paid: true,
-                option: {
-                  connect: {
-                    id: contributionOptions.find((option) =>
-                      major.schools.some((school) => school.id === option.offeredInId),
-                    )!.id,
-                  },
-                },
-              },
-            }
-          : undefined,
-      phone: faker.phone.number(),
-      address: faker.location.streetAddress(),
-      birthday: faker.date.birthdate({ min: 17, max: 25, mode: 'age' }),
-      graduationYear: faker.helpers.weightedArrayElement([
-        { weight: 10, value: 2026 },
-        { weight: 10, value: 2025 },
-        { weight: 10, value: 2024 },
-        { weight: 3, value: 2023 },
-        { weight: 1, value: 2022 },
-      ]),
-      major: { connect: { id: major.id } },
-      minor: { connect: { id: minor.id } },
-      credentials: { create: { type: CredentialType.Password, value: await hash('a') } },
-      canAccessDocuments: true,
-      ...data,
-    },
-  });
-
-  if (faker.datatype.boolean(0.65)) {
-    const destinationPath = pictureDestinationFile({
-      folder: 'users',
-      extension: 'jpg',
-      identifier: uid,
-      root: storageRootDirectory,
-    });
-
-    if (!existsSync(destinationPath)) {
-      await downloadRandomPeoplePhoto()
-        .then(async (file) =>
-          existsSync(destinationPath)
-            ? prisma.user.update({
-                where: { uid },
-                data: {
-                  pictureFile: path.relative(storageRootDirectory, destinationPath),
-                },
-              })
-            : updatePicture({
-                extension: 'jpg',
-                folder: 'users',
-                identifier: uid,
-                resource: 'user',
-                file,
-                silent: true,
-                root: storageRootDirectory,
-              }),
-        )
-        .catch((error) =>
-          console.warn(
-            `Could not download random image: ${error}. This is not critical, seeding will continue`,
-          ),
-        );
+  let contributes : Prisma.ContributionCreateNestedManyWithoutUserInput | undefined = undefined;
+  if(faker.datatype.boolean(0.6)){ //Chance de 60% d'avoir des cotisants
+    contributes = {
+      create : {
+        paid: faker.datatype.boolean(0.5), //Chance de 50% d'avoir payé
+        option: {
+          connect: {id: contibutionOptions[i % params.numberOfSchools]!.id}, 
+        }
+      }
     }
   }
+
+  usersData.push({ 
+    firstName, 
+    lastName,
+    uid,
+    email: faker.internet.email({ firstName, lastName }),
+    graduationYear: faker.helpers.weightedArrayElement([
+      { weight: 10, value: now.getFullYear() + 2 }, //1A
+      { weight: 10, value: now.getFullYear() + 1 }, //2A
+      { weight: 10, value: now.getFullYear() }, //3A
+      { weight: 3, value: now.getFullYear() - 1 }, //4A
+      { weight: 1, value: now.getFullYear() - 2 }, //5A
+    ]),
+    description: faker.lorem.paragraph({ min: 0, max: 5 }),
+    links: {
+      createMany: {
+        data: getRandomLinks(faker.number.int({ min: 0, max: 5 })),
+      }
+    },
+    phone: faker.phone.number(),
+    address: faker.location.streetAddress(),
+    birthday: faker.date.birthdate({ min: 17, max: 25, mode: 'age' }),
+    credentials: { create: { type: CredentialType.Password, value: passwordHash } },
+    canAccessDocuments: true, //Techniquement plus nécessaire vu que la frappe est ailleurs mais on garde au cas ou
+    contributions: contributes,
+    major: { connect: { id: majors[majorIndex]!.id } },
+    minor: { connect: { id: minors[minorIndex]!.id } },
+  });
 }
 
-// Créer des admins par AE
-await Promise.all(
-  studentAssociations.map(
-    async (ae) =>
-      await prisma.studentAssociation.update({
-        where: { id: ae.id },
-        data: {
-          admins: {
-            connect: faker.helpers
-              .arrayElements(await prisma.user.findMany({ where: { admin: false } }), {
-                min: 1,
-                max: 5,
-              })
-              .map((u) => ({ id: u.id })),
-          },
-        },
-      }),
-  ),
-);
-
-for (const school of await prisma.school.findMany()) {
-  const major = await prisma.major.findFirst({
-    where: {
-      schools: {
-        some: {
-          id: school.id,
-        },
-      },
-    },
-  });
-
-  if (!major) {
-    console.warn(
-      `School ${school.uid} has no associated majors. Skipping kiosk bot account creation.`,
-    );
-    continue;
+const users : User[] = [];
+for (const user of tqdm(usersData)) {
+  let pictureFile: string | undefined = undefined;
+  if (faker.datatype.boolean(0.65)) {
+    pictureFile = await storePicture({
+      folder: 'users',
+      extension: 'jpg',
+      identifier: user.uid,
+      resource: 'user',
+    })
   }
-
-  await prisma.user.create({
-    data: {
-      uid: `kiosk-${major.uid}`,
-      email: `kiosk-${major.uid}@local`,
-      firstName: `Kiosk`,
-      lastName: major.name,
-      graduationYear: 0,
-      major: { connect: { id: major.id } },
-      bot: true,
-      credentials: {
-        create: {
-          type: 'Password',
-          value: await hash('kioskmode'),
-        },
-      },
-    },
-  });
+  users.push(await prisma.user.create({
+    ...user,
+    pictureFile,
+  }));
 }
 
-const users = await prisma.user.findMany();
-
-console.info('Creating groups');
-
+//TODO : Compte de dev pour l'oauth a remettre gwenn et nathan
+//TODO : Compte exté Jaipa Dékol
 
 
+console.log("Creating studentAssociationAdmins");
+for (let i = 0; i < params.numberOfSchools; i++) {
+  for (let j = 0; j < params.numberOfStudentAssociationAdminsPerSchool; j++) {
+    const user = users[i + params.numberOfSchools * j]!;
+
+    await prisma.studentAssociation.update({
+      where: { id: studentAssociations[i]!.id },
+      data: { admins: { connect: { id: user.id } } }, //TODO : Mettre des respos clubs aussi ?
+    });
+  }
+}
+
+
+console.info('Creating group members');
 const groupMembers: Prisma.GroupMemberCreateManyInput[] = [];
-
 for (const group of groups) {
   const randomUserIDs = faker.helpers.arrayElements(users, { min: 10, max: 30 });
   //répartition des roles dans le club entre les membres
@@ -518,6 +451,7 @@ for (const group of groups) {
       president: true,
       canEditArticles: true,
       canEditMembers: true,
+      createdAt: faker.date.past({ years: 1 }),
     },
     {
       groupId: group.id,
@@ -526,6 +460,7 @@ for (const group of groups) {
       treasurer: true,
       canEditArticles: true,
       canEditMembers: true,
+      createdAt: faker.date.past({ years: 1 }),
     },
     {
       groupId: group.id,
@@ -534,6 +469,7 @@ for (const group of groups) {
       vicePresident: true,
       canEditArticles: true,
       canEditMembers: true,
+      createdAt: faker.date.past({ years: 1 }),
     },
     {
       groupId: group.id,
@@ -541,6 +477,7 @@ for (const group of groups) {
       title: 'Secrétaire',
       canEditArticles: true,
       canEditMembers: true,
+      createdAt: faker.date.past({ years: 1 }),
     },
     {
       groupId: group.id,
@@ -554,491 +491,134 @@ for (const group of groups) {
     groupMembers.push({
       groupId: group.id,
       memberId: randomUserIDs[i]!.id,
+      createdAt: faker.date.past({ years: 1 }),
     });
   }
 }
 
 await prisma.groupMember.createMany({ data: groupMembers });
 
-groups = await prisma.group.findMany({ include: { members: { include: { member: true } } } });
+console.log("Creating articles");
 
 const articleData: Prisma.ArticleCreateInput[] = [];
-
-const end = 26 * 5;
-const currentDate = Date.now();
-const startDate = new Date(faker.date.anytime({ refDate: currentDate })).getTime(); //génération d'une date autour de la date actuelle=date où tu build
-const endDate = new Date(faker.date.future({ refDate: startDate })).getTime();
-
-for (let i = 0; i < end; i++) {
-  const group = faker.helpers.arrayElement(groups);
-  articleData.push({
-    slug: `article-${i}`,
-    title: `Article ${i}`,
-    group: {
-      connect: {
-        id: group.id,
-      },
-    },
-    author:
-      i % 11 === 0
-        ? undefined
-        : {
-            connect: { id: faker.helpers.arrayElement(group.members.map((m) => m.member)).id },
-          },
-    body: `**Lorem ipsum dolor sit amet**, consectetur adipiscing elit. Ut feugiat velit sit amet tincidunt gravida. Duis eget laoreet sapien, id.
-
-[Lorem ipsum dolor.](/)
-
-# Partie 1
-
-1. Un
-2. Deux
-3. Trois
-
-# Partie 2
-
-- Un
-- Deux
-- Trois
-`,
-    visibility: i % 3 === 0 ? Visibility.Public : Visibility.GroupRestricted,
-    published: i % 7 > 1,
-    createdAt: new Date(startDate * (1 - i / end) + endDate * (i / end)),
-    publishedAt: new Date( //ce beau bordel je l'édit avec faker ???
-      startDate * (1 - i / end) + endDate * (i / end) + (i % 7) * 24 * 60 * 60 * 1000,
-    ),
-    links: {
-      create: [
-        {
-          name: 'Facebook',
-          value: 'https://facebook.com',
-        },
-        {
-          name: 'Trop cool',
-          value: 'https://youtu.be/dQw4w9WgXcQ',
-        },
-      ],
-    },
-  });
+for(let i = 0; i < groups.length; i++){
+  const nbArticles = faker.number.int({ min: 0, max: params.maxNumberOfArticlesPerGroup });
+  for(let j = 0; j < nbArticles; j++){
+    const createdAt = faker.date.past({ years: 1 });
+    const publishedAt = faker.date.between({ from: faker.date.recent({days: 10}), to: now });
+    articleData.push({
+      slug: `article-${i}-${j}`,
+      title: fakeTitle(),
+      body: fakeMarkdown(),
+      createdAt,
+      published: true,
+      publishedAt,
+      visibility: faker.helpers.weightedArrayElement([
+        { weight: 50, value: Visibility.Public },
+        { weight: 30, value: Visibility.SchoolRestricted },
+        { weight: 30, value: Visibility.GroupRestricted },
+        { weight: 20, value: Visibility.Private },
+        { weight: 10, value: Visibility.Unlisted },        
+      ]),
+      group: { connect: { id: groups[i]!.id } },
+      links: { createMany: { data: getRandomLinks(faker.number.int({ min: 0, max: 5 })) } },
+    })
+  }
 }
 
-console.info('Creating articles');
 for (const data of tqdm(articleData)) await prisma.article.create({ data });
 
-await prisma.article.create({
-  data: {
-    title: "C'est le début de l'inté",
-    body: `début de l'inté, vous allez devenir alcoolique et vomir partout`,
-    slug: 'cest-le-debut-de-l-inte',
-    group: {
-      connect: { id: IntégrationGroup.id },
-    },
-    published: true,
-    links: {
-      create: [],
-    },
-  },
-});
-
-await prisma.article.create({
-  data: {
-    title: 'Le nouveau seeding semble ok',
-    body: `début de l'inté, vous allez devenir alcoolique et vomir partout`,
-    slug: 'le-nouveau-seeding-semble-ok',
-    group: {
-      connect: { id: IntégrationGroup.id },
-    },
-    published: true,
-    links: {
-      create: [],
-    },
-  },
-});
-
-const selectedClub = faker.helpers.arrayElements(groups, numberEvent);
-const eventDate: Date = new Date();
-console.info('Creating events');
-for (const club of tqdm(selectedClub)) {
-  const eventName = faker.lorem.words(3);
-  const capacityEvent = faker.number.int({ min: 30, max: 300 });
-  const minimumPrice = faker.number.int({ min: 0, max: 30 });
-  const maximumPrice = faker.datatype.boolean(0.85)
-    ? minimumPrice
-    : faker.number.int({
-        min: minimumPrice + 0.5,
-        max: minimumPrice + 30,
-      });
-  const { id, tickets } = await prisma.event.create({
-    data: {
-      contactMail: 'hey@ewen.works',
-      description: 'Ceci est un événement',
-      endsAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-      startsAt: new Date(
-        eventDate.getFullYear(),
-        eventDate.getMonth(),
-        eventDate.getDate() + faker.number.int({ min: 0, max: 7 }),
-      ),
-      location: faker.datatype.boolean(0.85) ? faker.location.streetAddress() : '',
-      includeInKiosk: faker.datatype.boolean(0.85),
-      slug: slug(eventName),
-      title: eventName,
-      group: { connect: { id: club!.id } },
-      visibility: Visibility.Public,
-      articles: {
-        createMany: {
-          data: [
-            {
-              body: "Ceci est un article d'événement",
-              groupId: club!.id,
-              slug: 'ceci-est-un-article-d-evenement',
-              title: "Ceci est un article d'événement",
-            },
-          ],
-        },
-      },
-      links: {
-        createMany: {
-          data: [
-            {
-              name: 'Facebook',
-              value: 'https://facebook.com',
-            },
-            {
-              name: 'Trop cool',
-              value: 'https://youtu.be/dQw4w9WgXcQ',
-            },
-          ],
-        },
-      },
-      tickets: {
-        createMany: {
-          data: [
-            {
-              slug: `event-${club!.uid}`,
-              name: `Event ${club!.name}`,
-              description: 'blablabla ramenez vos culs par pitié je vous en supplie',
-              minimumPrice,
-              maximumPrice,
-              capacity: capacityEvent,
-              opensAt: new Date(
-                eventDate.getFullYear(),
-                eventDate.getMonth(),
-                eventDate.getDate() + faker.number.int({ min: 0, max: 7 }),
-              ),
-              closesAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-              allowedPaymentMethods: ['Cash', 'Lydia', 'Card'],
-              openToPromotions: [2024, 2025, 2026],
-              openToAlumni: faker.datatype.boolean(),
-              openToExternal: faker.datatype.boolean(),
-              openToContributors: faker.datatype.boolean(),
-              godsonLimit: 0,
-              onlyManagersCanProvide: faker.datatype.boolean(),
-            },
-          ],
-        },
-      },
-    },
-    include: {
-      tickets: true,
-    },
-  });
-
-  for (const ticket of tickets) {
-    const inviteCode = faker.datatype.boolean(0.2) ? faker.string.nanoid(8) : undefined;
-    await prisma.ticket.update({
-      where: { id: ticket.id },
-      data: {
-        inviteCode,
-        invited: inviteCode
-          ? { connect: faker.helpers.arrayElements(users, 30).map((u) => ({ id: u.id })) }
-          : undefined,
-      },
+const eventsData: Prisma.EventCreateInput[] = [];
+for(let i = 0; i < groups.length; i++){
+  const nbEvents = faker.number.int({ min: 0, max: params.maxNumberOfEventsPerGroup });
+  for(let j = 0; j < nbEvents; j++){
+    const startsAt = faker.date.soon({ days: 30 });
+    eventsData.push({
+      contactMail: faker.internet.email(), //TODO : Ptet mettre un vrai mail pour tester l'envoi des mails
+      description: faker.lorem.paragraph(),
+      startsAt: startsAt,
+      endsAt: faker.date.soon({ days: 3, refDate: startsAt }),
+      group: { connect: { id: groups[i]!.id } },
+      slug: `event-${i}-${j}`,
+      title: fakeTitle(),
+      visibility: faker.helpers.weightedArrayElement([
+        { weight: 50, value: Visibility.Public },
+        { weight: 30, value: Visibility.SchoolRestricted },
+        { weight: 30, value: Visibility.GroupRestricted },
+        { weight: 20, value: Visibility.Private },
+        { weight: 10, value: Visibility.Unlisted },        
+      ]),
+      links: { createMany: { data: getRandomLinks(faker.number.int({ min: 0, max: 5 })) } },
     });
-  }
-
-  if (faker.datatype.boolean(0.45)) {
-    await downloadRandomImage(800, 600, id)
-      .then(async (file) =>
-        prisma.event.update({
-          where: { id },
-          data: {
-            pictureFile: await updatePicture({
-              extension: 'jpg',
-              folder: 'events',
-              resource: 'event',
-              file,
-              identifier: id,
-              silent: true,
-              root: storageRootDirectory,
-            }),
-          },
-        }),
-      )
-      .catch((error) =>
-        console.warn(
-          `Could not download random image: ${error}. This is not critical, seeding will continue`,
-        ),
-      );
   }
 }
 
-const events = await prisma.event.findMany({ include: { tickets: true } });
-let selectedEvent = faker.helpers.arrayElement(events);
+const events : Event[] = [];
+for (const data of tqdm(eventsData)) {
+  let pictureFile: string | undefined = undefined;
+  if (faker.datatype.boolean(0.65)) {
+    pictureFile = await storePicture({
+      folder: 'events',
+      extension: 'jpg',
+      identifier: data.uid,
+      resource: 'event',
+    })
+  }
+  events.push(await prisma.event.create({ ...data, pictureFile }));
+}
 
-const registration = await prisma.registration.create({
-  data: {
-    ticketId: faker.helpers.arrayElement(selectedEvent.tickets).id,
-    authorId: faker.helpers.arrayElement(users).id,
-    paymentMethod: 'Lydia',
-    paid: false,
-    externalBeneficiary: 'annie',
-  },
-});
+console.log("Creating tickets");
+const ticketsData: Prisma.TicketCreateInput[] = [];
+for(let i = 0; i < events.length; i++){
+  for(let j = 0; j < params.numberOfTicketsPerEvent; j++){
+    const minimumPrice = faker.number.int({ min: 0, max: 10000 });
+    const maximumPrice = faker.datatype.boolean(0.85)
+      ? minimumPrice
+      : faker.number.int({
+          min: minimumPrice + 0.5,
+          max: minimumPrice + 3000,
+        });
+    ticketsData.push({
+      slug: `ticket-${i}-${j}`,
+      name: faker.commerce.productName(),
+      description: faker.commerce.productDescription(),
+      minimumPrice,
+      maximumPrice,
+      capacity: faker.number.int({ min: 30, max: 300 }),
+      event: { connect: { id: events[i]!.id } },
+      allowedPaymentMethods: faker.helpers.arrayElements(['Cash', 'Lydia', 'Card'], { min: 1, max: 3 }),
+      inviteCode: faker.datatype.boolean(0.2) ? faker.string.nanoid(8) : undefined,
+      links: { createMany: { data: getRandomLinks(faker.number.int({ min: 0, max: 1 })) } },
+      openToAlumni: faker.datatype.boolean(),
+      openToApprentices: faker.datatype.boolean(),
+      openToExternal: faker.datatype.boolean(),
+      openToContributors: faker.datatype.boolean(),
+    });
+  }
+}
+
+const tickets : Ticket[] = [];
+for (const data of tqdm(ticketsData)) {
+  tickets.push(await prisma.ticket.create({ data }));
+}
 
 console.info('Creating bookings');
- await prisma.registration.createMany({
-  data: [...range(0, 5000)].map((i) => {
-    selectedEvent = faker.helpers.arrayElement(events);
-    return {
-      createdAt: randomTime(registration.createdAt, range(13, 23)),
-      ticketId: faker.helpers.arrayElement(selectedEvent.tickets).id,
-      authorId:
-        i % 4 === 0
-          ? // eslint-disable-next-line unicorn/no-null
-            null
-          : faker.helpers.arrayElement(users.filter((u) => u.id !== registration.authorId)).id, //c'est quoi l'objectif ? uwu :3
-      authorEmail: i % 4 === 0 ? 'feur@quoi.com' : undefined,
-      paymentMethod: i % 2 === 0 ? 'Lydia' : 'Cash',
-      paid: true,
-      ...(i % 4 === 0
-        ? { externalBeneficiary: 'whatcoubeh' }
-        : { internalBeneficiaryId: faker.helpers.arrayElement(users).id }),
-    };
-  }),
-}).then(({count}) => console.info(`Created ${count} bookings`));
-
-
-await prisma.ticket.update({
-  where: { id: events[0]!.tickets[0]!.id },
-  data: {
-    openToGroups: {
-      connect: [{ uid: 'ski' }],
-    },
-    links: {
-      createMany: {
-        data: [
-          {
-            name: "C'est le menu",
-            value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          },
-        ],
-      },
-    },
-  },
-});
-
-for (let i = 0; i < 10; i++) {
-  const opensAt = i === 0 ? faker.date.soon() : faker.date.anytime();
-  const form = await prisma.form.create({
-    data: {
-      groupId: faker.helpers.arrayElement(groups).id,
-      visibility: randomVisibility(),
-      title: faker.lorem.sentence(),
-      description: faker.lorem.paragraphs(faker.helpers.rangeToNumber({ min: 1, max: 3 })),
-      createdById: faker.helpers.arrayElement(users).id,
-      opensAt,
-      closesAt: faker.date.future({ refDate: opensAt }),
-      eventId: faker.datatype.boolean(0.3) ? faker.helpers.arrayElement(events).id : undefined,
-    },
-  });
-
-  for (let ii = 0; ii < faker.number.int({ min: 1, max: 5 }); ii++) {
-    const section = await prisma.formSection.create({
-      data: {
-        formId: form.id,
-        order: ii,
-        title: faker.lorem.sentence(),
-        description: faker.lorem.paragraph(),
-      },
+const registrationData: Prisma.RegistrationCreateInput[] = [];
+for (let i = 0; i < events.length; i++) {
+  const nbRegistrations = faker.number.int({ min: 0, max: params.maxNumberOfRegistrationsPerEvent });
+  for (let j = 0; j < nbRegistrations; j++) {
+    const ticketIndex = i * params.numberOfTicketsPerEvent + faker.number.int({ min: 0, max: params.numberOfTicketsPerEvent - 1 });
+    registrationData.push({
+      createdAt: faker.date.between({ from: faker.date.past({ years: 1 }), to: now }),
+      ticket: { connect: { id: tickets[ticketIndex]!.id } },
+      author: { connect: { id: faker.helpers.arrayElement(users)!.id } },
+      externalBeneficiary: faker.datatype.boolean(0.2) ? faker.person.fullName() : undefined,
+      paid: faker.datatype.boolean(0.5), 
     });
-    const questions = Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 5 }) })
-      .fill(0)
-      .map((_, i) => {
-        const type = faker.helpers.arrayElement(
-          Object.values(QuestionKind).filter((v) => v !== 'FileUpload'),
-        );
-
-        const scaleOptions: Partial<{ scaleStart: number; scaleEnd: number }> =
-          type === 'Scale' ? { scaleStart: faker.number.int({ min: 1, max: 5 }) } : {};
-        scaleOptions.scaleEnd =
-          type === 'Scale' ? faker.number.int({ min: scaleOptions.scaleStart, max: 10 }) : 0;
-
-        return {
-          sectionId: section.id,
-          description: faker.lorem.paragraph(),
-          order: i,
-          title: faker.lorem.sentence(),
-          mandatory: faker.datatype.boolean(0.75),
-          type,
-          options: ['SelectOne', 'SelectMultiple'].includes(type)
-            ? {
-                set: [
-                  ...new Set(
-                    Array.from({ length: faker.helpers.rangeToNumber({ min: 2, max: 5 }) })
-                      .fill(0)
-                      .map(() => faker.lorem.word()),
-                  ),
-                ],
-              }
-            : type === 'Scale'
-              ? { set: [faker.lorem.word(), faker.lorem.word()] }
-              : undefined,
-          allowedFiletypes: undefined,
-          // type === 'FileUpload'
-          //   ? Array.from({ length: faker.helpers.rangeToNumber({ min: 1, max: 10 }) })
-          //       .fill(0)
-          //       .map(() => faker.system.mimeType())
-          //   : undefined,
-          allowOptionOther:
-            type === 'SelectOne' || type === 'SelectMultiple'
-              ? faker.datatype.boolean(0.3)
-              : undefined,
-          ...scaleOptions,
-        };
-      });
-
-    for (const question of questions) {
-      await prisma.question.create({
-        data: {
-          ...question,
-          answers: {
-            createMany: {
-              data: faker.helpers.arrayElements(users, { min: 1, max: 10 }).map((user) => {
-                let value: string[] = [];
-
-                switch (question.type) {
-                  case 'Scale': {
-                    value = [
-                      faker.number.int({
-                        min: 0,
-                        max: question.scaleEnd! - question.scaleStart!,
-                      }) +
-                        '/' +
-                        (question.scaleEnd! - question.scaleStart!),
-                    ];
-                    break;
-                  }
-                  case 'SelectOne': {
-                    value = [faker.helpers.arrayElement(question.options!.set)];
-                    break;
-                  }
-                  case 'SelectMultiple': {
-                    value = faker.helpers.arrayElements(question.options!.set, {
-                      min: 1,
-                      max: 3,
-                    });
-                    break;
-                  }
-                  case 'Text': {
-                    value = [faker.lorem.sentence()];
-                    break;
-                  }
-                  // case 'FileUpload': {
-                  //   value = [faker.system.fileName()];
-                  //   break;
-                  // }
-                  case 'LongText': {
-                    value = [faker.lorem.paragraph()];
-                    break;
-                  }
-                  case 'Number': {
-                    value = [faker.number.float({ min: -5, max: 20 }).toString()];
-                    break;
-                  }
-                  case 'Date': {
-                    value = [format(faker.date.past(), 'yyyy-MM-dd')];
-                    break;
-                  }
-                  case 'Time': {
-                    value = [format(faker.date.past(), 'HH:mm:ss')];
-                    break;
-                  }
-                }
-                return {
-                  createdById: user.id,
-                  createdAt: faker.date.recent(),
-                  answer: {
-                    set: value,
-                  },
-                };
-              }),
-            },
-          },
-        },
-      });
-    }
   }
 }
 
-async function randomPage() {
-  const linkToGroup = faker.datatype.boolean();
-  const page = await prisma.page.create({
-    data: {
-      body: faker.lorem.paragraphs(3),
-      path:
-        Array.from({ length: faker.number.int({ min: 0, max: 5 }) })
-          .map(() => slug(faker.lorem.word()))
-          .join('/') +
-        '/' +
-        faker.string.hexadecimal({ length: 8 }),
-      title: faker.lorem.sentence(),
-      createdAt: faker.date.past(),
-      ...(linkToGroup
-        ? {
-            group: {
-              connect: { id: faker.helpers.arrayElement(await prisma.group.findMany()).id },
-            },
-          }
-        : {
-            studentAssociation: {
-              connect: {
-                id: faker.helpers.arrayElement(await prisma.studentAssociation.findMany()).id,
-              },
-            },
-          }),
-    },
-  });
 
-  return prisma.page.update({
-    where: { id: page.id },
-    data: {
-      lastAuthorId: page.groupId
-        ? // eslint-disable-next-line unicorn/no-await-expression-member
-          (await randomMember(page.groupId)).id
-        : faker.helpers.arrayElement(
-            await prisma.user.findMany({
-              where: {
-                adminOfStudentAssociations: {
-                  some: {
-                    id: page.studentAssociationId!,
-                  },
-                },
-              },
-            }),
-          ).id,
-    },
-  });
-}
-
-await Promise.all(
-  Array.from({ length: 30 }).map(async () => {
-    try {
-      await randomPage();
-    } catch {
-      await randomPage().catch(console.error);
-    }
-  }),
-);
 
 await prisma.blockedUid.createMany({
   data: [{ uid: 'admin' }, { uid: 'root' }],
@@ -1060,28 +640,6 @@ await prisma.user.update({
     bookmarks: {
       create: {
         path: '/users/versairea',
-      },
-    },
-  },
-});
-
-await prisma.theme.create({
-  data: {
-    name: '💖 UwU 💖',
-    author: {
-      connect: {
-        uid: randomChoice(groups.map((g) => g.uid)),
-      },
-    },
-    visibility: Visibility.Public,
-    startsAt: new Date(),
-    endsAt: new Date(new Date().setDate(new Date().getDate() + 7)),
-    values: {
-      createMany: {
-        data: [
-          { variable: 'ColorPrimary', value: 'DeepPink' },
-          { variable: 'ColorPrimaryBackground', value: 'LightPink' },
-        ],
       },
     },
   },
@@ -1123,7 +681,7 @@ await prisma.userCandidate.createMany({
       churrosPassword: await hash('hahahaha'),
       ldapPassword: await hash('hahahaha'),
       uid: faker.internet.username(name),
-      majorId: randomChoice(majors).id,
+      majorId: faker.helpers.arrayElement(majors).id,
       apprentice: faker.datatype.boolean(),
       graduationYear: faker.number.int({min: 2022, max: 2026}),
       token: faker.string.uuid(),
