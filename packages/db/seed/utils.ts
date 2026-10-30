@@ -2,13 +2,11 @@
  * Fonctions utilisées pour le seed
  */
 import { fakerFR } from '@faker-js/faker';
-import dichotomid from 'dichotomid';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import slug from 'slug';
 import { pictureDestinationFile, updatePicture } from '../../api/src/lib/pictures.js';
 import { storageRoot } from '../../api/src/lib/storage.js';
-import { type PrismaClient } from '../src/client/default.js';
 
 export const faker = fakerFR;
 faker.seed(5);
@@ -77,11 +75,32 @@ export async function downloadRandomImage(
   return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
 }
 
-export async function downloadRandomPeoplePhoto(): Promise<File> {
-  const response = await fetch('https://thispersondoesnotexist.com');
-  return new File([await response.blob()], 'profile.jpeg', { type: 'image/jpeg' });
+let portraitUrls: string[] | undefined;
+
+async function getPortraitUrls(): Promise<string[]> {
+  if (portraitUrls) return portraitUrls;
+  const response = await fetch('https://randomuser.me/api/?results=500&inc=picture&noinfo&seed=churros');
+  if (!response.ok) throw new Error(`randomuser API: HTTP ${response.status}`);
+  const json = (await response.json()) as { results?: { picture: { large: string } }[] };
+  if (!json.results?.length) throw new Error(`randomuser API: unexpected payload ${JSON.stringify(json).slice(0, 200)}`);
+  portraitUrls = json.results.map((r) => r.picture.large);
+  return portraitUrls;
 }
 
+async function fetchImage(url: string, filename: string): Promise<File> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.startsWith('image/')) {
+    throw new Error(`Expected an image from ${url}, got "${contentType}"`);
+  }
+  return new File([await response.blob()], filename, { type: contentType });
+}
+
+export async function downloadRandomPeoplePhoto(): Promise<File> {
+  const urls = await getPortraitUrls();
+  return fetchImage(faker.helpers.arrayElement(urls), 'profile.jpg');
+}
 type UpdatePictureOptions = Parameters<typeof updatePicture>[0];
 
 export async function storePicture(
@@ -140,15 +159,10 @@ const toAscii = (x: string) =>
     },
   }).replaceAll('-', '');
 
-export async function createUid(
-  prisma: PrismaClient,
-  { firstName, lastName, uid }: { firstName: string; lastName: string; uid?: string },
-): Promise<string> {
-  if (uid) return uid;
+export function uniqueUid(firstName: string, lastName: string, used: Set<string>): string {
   const base = toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0);
-  const n = await dichotomid(async (n) => {
-    const candidate = `${base}${n > 1 ? n : ''}`;
-    return !(await prisma.user.findFirst({ where: { uid: candidate } }));
-  });
-  return `${base}${n > 1 ? n : ''}`;
+  let candidate = base;
+  for (let n = 2; used.has(candidate); n++) candidate = `${base}${n}`;
+  used.add(candidate);
+  return candidate;
 }

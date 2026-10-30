@@ -21,7 +21,7 @@ import {
 
 // XXX: will break if we change the hashing algorithm (abstracted away in api package but not here)
 import { hash } from 'argon2';
-import { createUid, fakeMarkdown, faker, fakeTitle, getRandomLinks, storePicture } from './utils.js';
+import { fakeMarkdown, faker, fakeTitle, getRandomLinks, storePicture, uniqueUid } from './utils.js';
 
 const prisma = new PrismaClient();
 
@@ -95,7 +95,7 @@ for (const school of tqdm(schoolsData)) {
 console.info("Creating majors");
 const majorData: Prisma.MajorCreateInput[] = [];
 for(let i = 0; i < params.numberOfMajorsPerSchool*params.numberOfSchools; i++){
-  const name = faker.commerce.department();
+  const name = faker.lorem.words({ min: 2, max: 5 });
   majorData.push({
     name,
     uid: slug(name),
@@ -120,9 +120,9 @@ for(let i = 0; i < params.numberOfMinorsPerMajor*params.numberOfMajorsPerSchool*
   const name = faker.animal.petName();
   minorData.push({
     name,
-    slug: slug(name),
+    slug: slug(name+i), //pr eviter les doublons de slug
     majors: { connect: [{ id: majors[i % majors.length]!.id }] },
-    yearTier: 1,
+    yearTier: faker.helpers.arrayElement([1, 2, 3]), //On met des années random pour les spécialités
   });
 }
 
@@ -161,7 +161,7 @@ for (const studentAssociation of tqdm(studentAssociationData)) {
 console.info('Creating groups (student association sections)');
 const studentAssociationSectionData: Prisma.GroupCreateInput[] = [];
 for(let i = 0; i < params.numberOfStudentAssociationSection*params.numberOfSchools; i++){
-  const name = faker.helpers.arrayElement(['FOY', 'BDE', 'BDD', 'BDA', 'BDS']);
+  const name = faker.food.ingredient();
   const asso = studentAssociations[i % studentAssociations.length]!;
   studentAssociationSectionData.push({
     name: name,
@@ -182,21 +182,20 @@ for(let i = 0; i < params.numberOfStudentAssociationSection*params.numberOfSchoo
 
 const groups : Group[] = [];
 for (const group of tqdm(studentAssociationSectionData)) {
-  let pictureFile: string | undefined = undefined;
+  groups.push(await prisma.group.create({
+    data: {
+      ...group,
+    },
+  }));
+
   if (faker.datatype.boolean(0.8)) {
-    pictureFile = await storePicture({
+    await storePicture({
       folder: 'groups',
       extension: 'png',
       identifier: group.uid,
       resource: 'group',
     });
   }
-  groups.push(await prisma.group.create({
-    data: {
-      ...group,
-      pictureFile: pictureFile,
-    },
-  }));
 }
 
 console.info('Creating groups (lists, clubs, associations, groups, integrations groups)');
@@ -206,7 +205,7 @@ for(let i = 0; i < params.numberOfGroupsPerSchool*params.numberOfSchools; i++){
   const name = faker.commerce.product();
   groupsData.push({
     name: name,
-    uid: slug(name),
+    uid: slug(name + i),
     color: faker.color.rgb(),
     type: faker.helpers.weightedArrayElement([
       { weight: 50, value: GroupType.Club },
@@ -231,21 +230,19 @@ for(let i = 0; i < params.numberOfGroupsPerSchool*params.numberOfSchools; i++){
 }
 
 for (const group of tqdm(groupsData)) {
-  let pictureFile: string | undefined = undefined;
+  groups.push(await prisma.group.create({
+    data: {
+      ...group,
+    },
+  }));
   if (faker.datatype.boolean(0.8)) {
-    pictureFile = await storePicture({
+    await storePicture({
       folder: 'groups',
       extension: 'png',
       identifier: group.uid,
       resource: 'group',
     });
   }
-  groups.push(await prisma.group.create({
-    data: {
-      ...group,
-      pictureFile: pictureFile,
-    },
-  }));
 }
 
 for (const group of groups) {
@@ -264,7 +261,7 @@ for(let i = 0; i < params.numberOfSubGroupsPerSchool*params.numberOfSchools; i++
   const parentGroup = groups[params.numberOfStudentAssociationSection*params.numberOfSchools + i]; //Pr prendre les groupes qui ne sont pas des sections d'assos étudiantes et avec 1 par école
   groupsData.push({
     name: name,
-    uid: slug(name),
+    uid: slug(name+i),
     color: faker.color.rgb(),
     type: faker.helpers.weightedArrayElement([
       { weight: 80, value: GroupType.Club },
@@ -343,9 +340,13 @@ const funnyUserData: { firstName: string; lastName: string }[] = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+  //Oauth 
+  { firstName: 'Nathan', lastName: 'Pagnucco' },
 ];
 
 const usersData: Prisma.UserCreateInput[] = [];
+const usedUids = new Set<string>();
 for(let i = 0; i < params.numberOfUsersPerSchool*params.numberOfSchools; i++){
   let firstName : string, lastName : string;
   if(i < funnyUserData.length){
@@ -355,7 +356,9 @@ for(let i = 0; i < params.numberOfUsersPerSchool*params.numberOfSchools; i++){
     firstName = faker.person.firstName();
     lastName = faker.person.lastName();
   }
-  const uid = await createUid(prisma, { firstName, lastName });
+
+  const uid = uniqueUid(firstName, lastName, usedUids);
+  usedUids.add(uid);
 
   //Pour avoir un major random parmi ceux de la même école que la contribution option
   //Avec le min à 0 on prend aussi les majors qui sont discontinued, mettre à 1 pour les eviter
@@ -406,24 +409,21 @@ for(let i = 0; i < params.numberOfUsersPerSchool*params.numberOfSchools; i++){
 
 const users : User[] = [];
 for (const user of tqdm(usersData)) {
-  let pictureFile: string | undefined = undefined;
+  users.push(await prisma.user.create({
+    data : {
+      ...user
+    }
+  }));
   if (faker.datatype.boolean(0.65)) {
-    pictureFile = await storePicture({
+    await storePicture({
       folder: 'users',
       extension: 'jpg',
       identifier: user.uid,
       resource: 'user',
+      kind: 'person',
     })
   }
-  users.push(await prisma.user.create({
-    ...user,
-    pictureFile,
-  }));
 }
-
-//TODO : Compte de dev pour l'oauth a remettre gwenn et nathan
-//TODO : Compte exté Jaipa Dékol
-
 
 console.log("Creating studentAssociationAdmins");
 for (let i = 0; i < params.numberOfSchools; i++) {
@@ -505,7 +505,7 @@ for(let i = 0; i < groups.length; i++){
   const nbArticles = faker.number.int({ min: 0, max: params.maxNumberOfArticlesPerGroup });
   for(let j = 0; j < nbArticles; j++){
     const createdAt = faker.date.past({ years: 1 });
-    const publishedAt = faker.date.between({ from: faker.date.recent({days: 10}), to: now });
+    const publishedAt = faker.date.recent({ days: 10, refDate: now });;
     articleData.push({
       slug: `article-${i}-${j}`,
       title: fakeTitle(),
@@ -528,6 +528,7 @@ for(let i = 0; i < groups.length; i++){
 
 for (const data of tqdm(articleData)) await prisma.article.create({ data });
 
+console.log("Creating events");
 const eventsData: Prisma.EventCreateInput[] = [];
 for(let i = 0; i < groups.length; i++){
   const nbEvents = faker.number.int({ min: 0, max: params.maxNumberOfEventsPerGroup });
@@ -555,16 +556,15 @@ for(let i = 0; i < groups.length; i++){
 
 const events : Event[] = [];
 for (const data of tqdm(eventsData)) {
-  let pictureFile: string | undefined = undefined;
+  events.push(await prisma.event.create({ data: { ...data } }));
   if (faker.datatype.boolean(0.65)) {
-    pictureFile = await storePicture({
+    await storePicture({
       folder: 'events',
       extension: 'jpg',
-      identifier: data.uid,
+      identifier: events[events.length - 1]!.id,
       resource: 'event',
     })
   }
-  events.push(await prisma.event.create({ ...data, pictureFile }));
 }
 
 console.log("Creating tickets");
@@ -581,7 +581,7 @@ for(let i = 0; i < events.length; i++){
     ticketsData.push({
       slug: `ticket-${i}-${j}`,
       name: faker.commerce.productName(),
-      description: faker.commerce.productDescription(),
+      description: faker.company.buzzPhrase(),
       minimumPrice,
       maximumPrice,
       capacity: faker.number.int({ min: 30, max: 300 }),
@@ -609,7 +609,7 @@ for (let i = 0; i < events.length; i++) {
   for (let j = 0; j < nbRegistrations; j++) {
     const ticketIndex = i * params.numberOfTicketsPerEvent + faker.number.int({ min: 0, max: params.numberOfTicketsPerEvent - 1 });
     registrationData.push({
-      createdAt: faker.date.between({ from: faker.date.past({ years: 1 }), to: now }),
+      createdAt: faker.date.recent({ days: 10, refDate: now }),
       ticket: { connect: { id: tickets[ticketIndex]!.id } },
       author: { connect: { id: faker.helpers.arrayElement(users)!.id } },
       externalBeneficiary: faker.datatype.boolean(0.2) ? faker.person.fullName() : undefined,
@@ -622,39 +622,6 @@ for (let i = 0; i < events.length; i++) {
 
 await prisma.blockedUid.createMany({
   data: [{ uid: 'admin' }, { uid: 'root' }],
-});
-await prisma.user.update({
-  where: { uid: 'versairea' },
-  data: {
-    bookmarks: {
-      create: {
-        path: '/users/alamaternitei',
-      },
-    },
-  },
-});
-
-await prisma.user.update({
-  where: { uid: 'alamaternitei' },
-  data: {
-    bookmarks: {
-      create: {
-        path: '/users/versairea',
-      },
-    },
-  },
-});
-
-await prisma.promotion.create({
-  data: {
-    priceOverride: 1,
-    type: 'SIMPPS',
-    validByDefaultOn: {
-      connect: {
-        uid: 'art',
-      },
-    },
-  },
 });
 
 await prisma.ticket
