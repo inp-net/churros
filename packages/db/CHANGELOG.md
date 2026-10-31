@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.6
+
+### Patch Changes
+
+- c18fb51: add seed image for staging
+
 ## 4.3.5
 
 ### Patch Changes
