@@ -202,6 +202,24 @@ RUN yarn install
 
 ENTRYPOINT ["./entrypoint.sh"]
 
+### Seeding job image
+
+
+FROM $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX/node:20.19.0-alpine AS seed
+
+LABEL org.opencontainers.image.source=$REPOSITORY_URL/packages/db
+
+RUN apk add --update --no-cache openssl
+
+WORKDIR /app
+COPY packages/db/package.json /app/package.json
+COPY packages/db/prisma/ /app/prisma/
+COPY packages/db/seed/ /app/seed/
+
+RUN npm install -g corepack
+RUN yarn install
+RUN yarn prisma generate
+
 
 #####
 # Artifacts

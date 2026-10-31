@@ -19,10 +19,14 @@
     "@pothos/core": "^4.4.1",
     "@pothos/plugin-prisma": "^4.4.0",
     "@prisma/client": "^6.4.1",
+    "@types/slug": "^5.0.9",
     "graphql": "^16.10.0",
     "ioredis": "^5.5.0",
     "npm-run-all2": "^7.0.2",
     "npm-upgrade": "^3.1.0",
+    "slug": "^12.0.1",
+    "ts-tqdm": "^0.8.6",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.3"
   },
   "prisma": {
