@@ -54,7 +54,7 @@ const params = {
   maxNumberOfArticlesPerGroup : 10, //Nombre d'articles max à créer dans la DB de test pour chaque groupe
   maxNumberOfEventsPerGroup : 10, //Nombre d'événement max par groupe à créer dans la DB
   numberOfTicketsPerEvent : 5, //Nombre de tickets par événement à créer dans la DB
-  maxNumberOfRegistrationsPerEvent : 100, //Nombre d'inscription max par événement pour un utilisateur aléatoire à créer dans la DB
+  maxNumberOfRegistrationsPerEvent : 20, //Nombre d'inscription max par événement pour un utilisateur aléatoire à créer dans la DB
   numberOfUserCandidates : 50, //Nombre de candidats à l'inscription à créer dans la DB
 }
 
@@ -180,12 +180,16 @@ for(let i = 0; i < params.numberOfStudentAssociationSection*params.numberOfSchoo
   });
 }
 
-const groups : Group[] = [];
+type GroupWithLydiaAccount = Group & { lyiaAccounts: LydiaAccount[] };
+const groups : GroupWithLydiaAccount[] = [];
 for (const group of tqdm(studentAssociationSectionData)) {
   groups.push(await prisma.group.create({
     data: {
       ...group,
     },
+    include: {
+      lyiaAccounts: true,
+    }
   }));
 
   if (!skipPictures && faker.datatype.boolean(0.8)) {
@@ -234,6 +238,9 @@ for (const group of tqdm(groupsData)) {
     data: {
       ...group,
     },
+    include: {
+      lyiaAccounts: true,
+    }
   }));
   if (!skipPictures && faker.datatype.boolean(0.8)) {
     await storePicture({
@@ -288,6 +295,9 @@ for (const group of tqdm(groupsData)) {
     data: {
       ...group,
     },
+    include: {
+      lyiaAccounts: true,
+    }
   }));
 }
 
@@ -341,9 +351,6 @@ const funnyUserData: { firstName: string; lastName: string }[] = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
-
-  //Oauth 
-  { firstName: 'Nathan', lastName: 'Pagnucco' },
 ];
 
 const usersData: Prisma.UserCreateInput[] = [];
@@ -550,6 +557,7 @@ for(let i = 0; i < groups.length; i++){
         { weight: 10, value: Visibility.Unlisted },        
       ]),
       links: { createMany: { data: getRandomLinks(faker.number.int({ min: 0, max: 5 })) } },
+      beneficiary: { connect: { id: groups[i]?.lyiaAccounts[0]?.id } },
     });
   }
 }
@@ -620,8 +628,6 @@ for (let i = 0; i < events.length; i++) {
 
 for (const data of tqdm(registrationData)) await prisma.registration.create({ data });
 
-
-
 await prisma.blockedUid.createMany({
   data: [{ uid: 'admin' }, { uid: 'root' }],
 });
@@ -654,6 +660,13 @@ await prisma.userCandidate.createMany({
     } as Prisma.UserCandidateCreateInput
   })
 })
+
+console.log("Creating random admin user");
+const admin = await prisma.user.update({
+  where: { id: faker.helpers.arrayElement(users)!.id },
+  data: { admin : true },
+});
+console.log(`Admin user created: ${admin.uid}`);
 
 await prisma.$disconnect();
 redis.disconnect();
