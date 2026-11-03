@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.4.2
+
+### Patch Changes
+
+- b99b464: fix: make school ldap not throw an error when it can't connect
+
 ## 14.4.1
 
 ### Patch Changes
