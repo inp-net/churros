@@ -89,11 +89,15 @@ export const findSchoolUser = async (
 
   const { url, attributesMap } = schoolLdapSettings.servers[schoolServer]!;
 
-  const client = ldap.createClient({ url, log: logger });
+  const client = ldap.createClient({ url, log: logger, reconnect: false });
 
   const ldapObject = await new Promise<
     { groups: string[] | undefined; attrs: Record<string, string | undefined> } | undefined
   >((resolve, reject) => {
+    client.on('error', (error) => {
+      console.error('LDAP client error', error);
+      reject(error);
+    });
     client.bind('', '', (err) => {
       if (err) console.log(err);
     });
