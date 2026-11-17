@@ -6,6 +6,7 @@ import {
   GroupType,
   PrismaClient,
   Visibility,
+  type Article,
   type ContributionOption,
   type Event,
   type Group,
@@ -51,8 +52,8 @@ const params = {
   numberOfSubGroupsPerSchool: 5, //Nombre de sous groupes dans la db de test (en gros juste des groupes en plus pour tester la hiérarchie de groupes)
   numberOfUsersPerSchool : 200, //Nombre d'utilisateur par école dans la DB de test à créer (les premiers sont les comptes rigolos legacy, et après c'est des comptes random)
   numberOfStudentAssociationAdminsPerSchool: 5, //Nombre d'admin par AE dans la DB de test
-  maxNumberOfArticlesPerGroup : 10, //Nombre d'articles max à créer dans la DB de test pour chaque groupe
-  maxNumberOfEventsPerGroup : 10, //Nombre d'événement max par groupe à créer dans la DB
+  maxNumberOfArticlesPerGroup : 2, //Nombre d'articles max à créer dans la DB de test pour chaque groupe
+  maxNumberOfEventsPerGroup : 2, //Nombre d'événement max par groupe à créer dans la DB
   numberOfTicketsPerEvent : 5, //Nombre de tickets par événement à créer dans la DB
   maxNumberOfRegistrationsPerEvent : 20, //Nombre d'inscription max par événement pour un utilisateur aléatoire à créer dans la DB
   numberOfUserCandidates : 50, //Nombre de candidats à l'inscription à créer dans la DB
@@ -533,7 +534,18 @@ for(let i = 0; i < groups.length; i++){
   }
 }
 
-for (const data of tqdm(articleData)) await prisma.article.create({ data });
+const articles : Article[] = [];
+for (const data of tqdm(articleData)) {
+     articles.push(await prisma.article.create({ data }));
+    if (!skipPictures && faker.datatype.boolean(0.65)) {
+      await storePicture({
+        folder: 'articles',
+        extension: 'jpg',
+        identifier: articles[articles.length - 1]!.id,
+        resource: 'article',
+    })
+  }
+}
 
 console.log("Creating events");
 const eventsData: Prisma.EventCreateInput[] = [];
