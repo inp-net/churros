@@ -210,15 +210,18 @@ for (const group of tqdm(studentAssociationSectionData)) {
       lyiaAccounts: true,
     }
   }));
-
   if (!skipPictures && faker.datatype.boolean(0.8)) {
-    await storePicture({
+    const pictureFile = await storePicture({
       folder: 'groups',
       extension: 'png',
-      identifier: group.uid,
+      identifier: groups[groups.length - 1]!.id ,
       resource: 'group',
     });
-  }
+    await prisma.group.update({
+      where: { id: groups[groups.length - 1]!.id },
+      data: { pictureFile },
+    });
+  }  
 }
 
 console.info('Creating groups (lists, clubs, associations, groups, integrations groups)');
@@ -262,13 +265,18 @@ for (const group of tqdm(groupsData)) {
     }
   }));
   if (!skipPictures && faker.datatype.boolean(0.8)) {
-    await storePicture({
+    const pictureFile = await storePicture({
       folder: 'groups',
       extension: 'png',
-      identifier: group.uid,
+      identifier: groups[groups.length - 1]!.id ,
       resource: 'group',
     });
-  }
+    await prisma.group.update({
+      where: { id: groups[groups.length - 1]!.id },
+      data: { pictureFile },
+    });
+  } 
+  
 }
 
 for (const group of groups) {
@@ -318,6 +326,18 @@ for (const group of tqdm(groupsData)) {
       lyiaAccounts: true,
     }
   }));
+  if (!skipPictures && faker.datatype.boolean(0.8)) {
+    const pictureFile = await storePicture({
+      folder: 'groups',
+      extension: 'png',
+      identifier: groups[groups.length - 1]!.id ,
+      resource: 'group',
+    });
+    await prisma.group.update({
+      where: { id: groups[groups.length - 1]!.id },
+      data: { pictureFile },
+    });
+  } 
 }
 
 console.log("Creating contribution options");
@@ -443,18 +463,24 @@ const users : User[] = [];
 for (const user of tqdm(usersData)) {
   users.push(await prisma.user.create({
     data : {
-      ...user
+      ...user,
     }
   }));
-  if (!skipPictures && faker.datatype.boolean(0.65)) {
-    await storePicture({
+
+  if (!skipPictures && faker.datatype.boolean(0.8)) {
+    const pictureFile = await storePicture({
       folder: 'users',
-      extension: 'jpg',
-      identifier: user.uid,
+      extension: 'png',
+      identifier: users[users.length - 1]!.id ,
       resource: 'user',
       kind: 'person',
-    })
-  }
+    });
+    await prisma.user.update({
+      where: { id: users[users.length - 1]!.id },
+      data: { pictureFile },
+    });
+  } 
+  
 }
 
 console.log("Creating studentAssociationAdmins");
@@ -560,15 +586,19 @@ for(let i = 0; i < groups.length; i++){
 
 const articles : Article[] = [];
 for (const data of tqdm(articleData)) {
-     articles.push(await prisma.article.create({ data }));
-    if (!skipPictures && faker.datatype.boolean(0.65)) {
-      await storePicture({
-        folder: 'articles',
-        extension: 'jpg',
-        identifier: articles[articles.length - 1]!.id,
-        resource: 'article',
-    })
-  }
+  articles.push(await prisma.article.create({ data : { ...data } }));
+  if (!skipPictures && faker.datatype.boolean(0.8)) {
+    const pictureFile = await storePicture({
+      folder: 'articles',
+      extension: 'jpg',
+      identifier: articles[articles.length - 1]!.id ,
+      resource: 'article',
+    });
+    await prisma.article.update({
+      where: { id: articles[articles.length - 1]!.id },
+      data: { pictureFile },
+    });
+  } 
 }
 
 console.log("Creating events");
@@ -601,14 +631,19 @@ for(let i = 0; i < groups.length; i++){
 const events : Event[] = [];
 for (const data of tqdm(eventsData)) {
   events.push(await prisma.event.create({ data: { ...data } }));
-  if (!skipPictures && faker.datatype.boolean(0.65)) {
-    await storePicture({
+  if (!skipPictures && faker.datatype.boolean(0.8)) {
+    const pictureFile = await storePicture({
       folder: 'events',
-      extension: 'jpg',
-      identifier: events[events.length - 1]!.id,
+      extension: 'png',
+      identifier: events[events.length - 1]!.id ,
       resource: 'event',
-    })
-  }
+    });
+    await prisma.event.update({
+      where: { id: events[events.length - 1]!.id },
+      data: { pictureFile },
+    });
+  } 
+  
 }
 
 console.log("Creating tickets");

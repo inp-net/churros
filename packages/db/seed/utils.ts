@@ -96,13 +96,9 @@ async function downloadRandomImage(width: number, height: number): Promise<Buffe
   return fetchImage(faker.image.urlPicsumPhotos({ width, height }));
 }
 
-async function downloadRandomPeoplePhoto(size: 32 | 64 | 128 | 256 | 512 = 512): Promise<Buffer> {
-  try {
-    return await fetchImage(faker.image.personPortrait({ size }));
-  } catch (error) {
-    console.warn(`personPortrait failed (${error}), falling back to GitHub avatar`);
-    return fetchImage(faker.image.avatarGitHub());
-  }
+async function downloadRandomPeoplePhoto(): Promise<Buffer> {
+  return fetchImage(faker.image.avatarGitHub());
+  
 }
 
 /**
@@ -136,7 +132,7 @@ export async function storePicture({
   try {
     const buffer =
       kind === 'person'
-        ? await downloadRandomPeoplePhoto(Math.max(width, height) <= 128 ? 128 : 512)
+        ? await downloadRandomPeoplePhoto()
         : await downloadRandomImage(width, height);
 
     await mkdir(path.dirname(destination), { recursive: true });
