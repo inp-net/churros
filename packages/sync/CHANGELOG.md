@@ -1,5 +1,12 @@
 # @churros/sync
 
+## 1.71.30
+
+### Patch Changes
+
+- Updated dependencies [c9542c2]
+  - @churros/db@4.3.11
+
 ## 1.71.29
 
 ### Patch Changes

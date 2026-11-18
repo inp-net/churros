@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.11
+
+### Patch Changes
+
+- c9542c2: fix seeding by using the correct photos
+
 ## 4.3.10
 
 ### Patch Changes
