@@ -21,7 +21,7 @@ import {
 } from '../src/client/default.js';
 
 import { createSlugger, fakeMarkdown, faker, fakeTitle, getRandomLinks, storePicture, uniqueUid, getRandomServices, getLydiaAccountData } from './utils.js';
-import { mkdirSync, rmSync,  } from 'node:fs';
+import { readdirSync, rmSync,  } from 'node:fs';
 import path from 'node:path';
 
 const prisma = new PrismaClient();
@@ -47,9 +47,15 @@ console.info("Clearing pictures");
 const storageRoot = process.env['SEED_STORAGE_ROOT'];
 if (storageRoot) {
   //Attention au rmsync
-  rmSync(storageRoot, { recursive: true });
-  mkdirSync(storageRoot, { recursive: true });
-  console.info(`Storage root: ${path.resolve(storageRoot)}`);
+  try {
+    const files = readdirSync(storageRoot);
+    for (const file of files) {
+      rmSync(path.join(storageRoot, file), { recursive: true, force: true });
+    }
+    console.info(`Storage root contents cleared: ${path.resolve(storageRoot)}`);
+  } catch (error) {
+    console.warn("Could not fully clear storage root:", error);
+  }
 }
 
 const params = {
