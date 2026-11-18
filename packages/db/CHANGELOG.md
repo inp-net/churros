@@ -1,5 +1,13 @@
 # @churros/db
 
+## 4.3.8
+
+### Patch Changes
+
+- f0df59b: add seed image for staging
+- f0df59b: fix seeding by adding lydia accounts
+- f0df59b: better image handling and add articles image
+
 ## 4.3.7
 
 ### Patch Changes
