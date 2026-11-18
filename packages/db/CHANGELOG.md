@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.10
+
+### Patch Changes
+
+- 0d6ae50: fix seeding with remove files in folder instead of folder to avoid issue with volume on staging
+
 ## 4.3.9
 
 ### Patch Changes
