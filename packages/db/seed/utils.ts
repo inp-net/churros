@@ -6,6 +6,9 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import slug from 'slug';
 import type { Prisma } from '../src/client/index.js';
+import sharp from 'sharp';
+import { mkdir } from 'node:fs/promises';
+
 
 export const faker = fakerFR;
 faker.seed(5);
@@ -31,7 +34,7 @@ export function getRandomServices(count: number): Prisma.ServiceCreateInput[] {
   for (let i = 0; i < count; i++) {
     services.push({
       name: faker.company.name(),
-      logo: faker.image.urlLoremFlickr({ category: 'business', width: 400, height: 400 }),
+      logo: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       url: faker.internet.url(),
       logoSourceType: 'ExternalLink',
       description: faker.company.catchPhrase(),
@@ -89,110 +92,75 @@ export function fakeMarkdown(): string {
   return parts.join('\n\n');
 }
 
-/**
- * Recupère une image aléatoire depuis picsum.photos avec une taille et un seed donnés
- * @param width la largeur de l'image
- * @param height la hauteur de l'image
- * @param seed le seed pour générer l'image
- * @returns l'URL de l'image aléatoire
- */
-function randomImageURL(width: number, height: number, seed: string): string {
-  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
+async function downloadRandomImage(width: number, height: number): Promise<Buffer> {
+  return fetchImage(faker.image.urlPicsumPhotos({ width, height }));
 }
 
-/**
- * Recupère une image aléatoire depuis picsum.photos avec une taille et un seed donnés et la télécharge en tant que File
- * @param width la largeur de l'image
- * @param height la hauteur de l'image
- * @param seed le seed pour générer l'image
- * @returns un objet File représentant l'image téléchargée
- */
-export async function downloadRandomImage(
-  width: number,
-  height: number,
-  seed: string,
-): Promise<File> {
-  const response = await fetch(randomImageURL(width, height, seed));
-  const blob = await response.blob();
-  return new File([blob], path.basename(new URL(response.url).pathname), { type: 'image/jpeg' });
-}
-
-let portraitUrls: string[] | undefined;
-
-async function getPortraitUrls(): Promise<string[]> {
-  if (portraitUrls) return portraitUrls;
-  const response = await fetch('https://randomuser.me/api/?results=500&inc=picture&noinfo&seed='+faker.string.uuid());
-  if (!response.ok) throw new Error(`randomuser API: HTTP ${response.status}`);
-  const json = (await response.json()) as { results?: { picture: { large: string } }[] };
-  if (!json.results?.length) throw new Error(`randomuser API: unexpected payload ${JSON.stringify(json).slice(0, 200)}`);
-  portraitUrls = json.results.map((r) => r.picture.large);
-  return portraitUrls;
-}
-
-async function fetchImage(url: string, filename: string): Promise<File> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
-  const contentType = response.headers.get('content-type') ?? '';
-  if (!contentType.startsWith('image/')) {
-    throw new Error(`Expected an image from ${url}, got "${contentType}"`);
+async function downloadRandomPeoplePhoto(size: 32 | 64 | 128 | 256 | 512 = 512): Promise<Buffer> {
+  try {
+    return await fetchImage(faker.image.personPortrait({ size }));
+  } catch (error) {
+    console.warn(`personPortrait failed (${error}), falling back to GitHub avatar`);
+    return fetchImage(faker.image.avatarGitHub());
   }
-  return new File([await response.blob()], filename, { type: contentType });
 }
 
-async function downloadRandomPeoplePhoto(): Promise<File> {
-  const urls = await getPortraitUrls();
-  return fetchImage(faker.helpers.arrayElement(urls), 'profile.jpg');
-}
-
-//Copié collé pas très clean de l'api, mais on veut pas importer l'api dans le seed pour le job de seeding
-type UpdatePictureOptions = {
+/**
+ * Downloads a random picture (via faker) and stores it in the storage folder.
+ * No dependency on the API or on the database: the caller writes the returned path
+ * in the appropriate column.
+ * @returns the path relative to the storage root, or undefined on failure
+ */
+export async function storePicture({
+  resource,
+  folder,
+  extension,
+  identifier,
+  width = 400,
+  height = 400,
+  kind = 'image',
+}: {
   resource: 'article' | 'event' | 'user' | 'group' | 'school' | 'student-association' | 'photos';
   folder: string;
   extension: 'png' | 'jpg';
-  file: File;
   identifier: string;
-  propertyName?: string;
-  silent?: boolean;
-  root?: string;
-};
-
-export async function storePicture(
-  options: Omit<UpdatePictureOptions, 'file' | 'silent' | 'root'> & {
-    width?: number;
-    height?: number;
-    kind?: 'image' | 'person';
-  },
-): Promise<string | undefined> {
-  const { width = 400, height = 400, kind = 'image', ...pictureOptions } = options;
-  const { pictureDestinationFile, updatePicture } = await import('../../api/src/lib/pictures.js');
-  const { storageRoot } = await import('../../api/src/lib/storage.js');
-  const storageRootDirectory = storageRoot();
-  
-  const destination = pictureDestinationFile({
-    folder: pictureOptions.folder,
-    extension: pictureOptions.extension,
-    identifier: pictureOptions.identifier,
-    root: storageRootDirectory,
-  });
-  if (existsSync(destination)) return path.relative(storageRootDirectory, destination);
+  width?: number;
+  height?: number;
+  kind?: 'image' | 'person';
+}): Promise<string | undefined> {
+  const root = storageRoot();
+  const destination = path.join(root, folder, `${identifier}.${extension}`);
+  const relativePath = path.relative(root, destination);
+  if (existsSync(destination)) return relativePath;
 
   try {
-    const file =
+    const buffer =
       kind === 'person'
-        ? await downloadRandomPeoplePhoto()
-        : await downloadRandomImage(width, height, pictureOptions.identifier);
-    return await updatePicture({
-      ...pictureOptions,
-      file,
-      silent: true,
-      root: storageRootDirectory,
+        ? await downloadRandomPeoplePhoto(Math.max(width, height) <= 128 ? 128 : 512)
+        : await downloadRandomImage(width, height);
+
+    await mkdir(path.dirname(destination), { recursive: true });
+    await compressPhoto(buffer, destination, extensionToFormat[extension], {
+      square: resource === 'user' || resource === 'group',
     });
+
+    return relativePath;
   } catch (error) {
     console.warn(
       `Could not download random image: ${error}. This is not critical, seeding will continue`,
     );
     return undefined;
   }
+}
+
+async function fetchImage(url: string): Promise<Buffer> {
+  const response = await fetch(url, { redirect: 'follow' });
+  if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.startsWith('image/')) {
+    throw new Error(`Expected an image from ${url}, got "${contentType}"`);
+  }
+  return Buffer.from(await response.arrayBuffer());
 }
 
 const toAscii = (x: string) =>
@@ -248,3 +216,36 @@ export function createSlugger(separator = '-') {
 export function uniqueUid(firstName: string, lastName: string, used: Set<string>): string {
   return uniqueValue(toAscii(lastName).slice(0, 16) + toAscii(firstName).charAt(0), used);
 }
+
+//Those functions and this const are heavily inspired by the API but put in this script to avoid a dependency on the API.
+
+const extensionToFormat = { jpg: 'jpeg', png: 'png' } as const;
+
+function storageRoot(): string {
+  const root = process.env['SEED_STORAGE_ROOT'];
+  if (!root) throw new Error('SEED_STORAGE_ROOT is not set');
+  return root;
+}
+
+//Copié collé de l'api
+async function compressPhoto(
+  buf: Buffer,
+  filename: string,
+  format: 'png' | 'jpeg',
+  { square = false }: { square?: boolean },
+) {
+  const operations = sharp(buf, { failOn: 'none' })
+    .resize({
+      width: 1000,
+      ...(square ? { height: 1000, position: 'entropy' } : {}),
+      withoutEnlargement: true,
+    })
+    // auto-rotate from EXIF data
+    .rotate();
+
+  await (format === 'png' ? operations.png({ quality: 80 }) : operations.jpeg({ quality: 80 })).toFile(
+    filename,
+  );
+}
+
+
