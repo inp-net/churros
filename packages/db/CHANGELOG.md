@@ -1,5 +1,11 @@
 # @churros/db
 
+## 4.3.9
+
+### Patch Changes
+
+- 5b0fd7f: chore: add package to fix
+
 ## 4.3.8
 
 ### Patch Changes
