@@ -638,11 +638,6 @@ for(let i = 0; i < events.length; i++){
 const tickets : Ticket[] = [];
 for (const data of tqdm(ticketsData)) {
   tickets.push(await prisma.ticket.create({ data }));
-  if(data.inviteCode) {
-    console.info(
-    `Ticket ${data.id} invite: http://localhost:5173/events/${data.event.connect?.id.replace(/^e:/, '')}/join/${data.inviteCode}`,
-  );
-  }
 }
 
 console.info('Creating bookings');
@@ -667,10 +662,6 @@ await prisma.blockedUid.createMany({
   data: [{ uid: 'admin' }, { uid: 'root' }],
 });
 
-
-for (const ticket of tickets) {
-  
-}
 console.log("Creating user candidates");
 const userCandidatesData: Prisma.UserCandidateCreateInput[] = [];
 for(let i = 0; i < params.numberOfUserCandidates; i++){
