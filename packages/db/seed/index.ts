@@ -6,6 +6,7 @@ import {
   GroupType,
   PrismaClient,
   Visibility,
+  type Article,
   type ContributionOption,
   type Event,
   type Group,
@@ -20,6 +21,8 @@ import {
 } from '../src/client/default.js';
 
 import { createSlugger, fakeMarkdown, faker, fakeTitle, getRandomLinks, storePicture, uniqueUid, getRandomServices, getLydiaAccountData } from './utils.js';
+import { mkdirSync, rmSync,  } from 'node:fs';
+import path from 'node:path';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +30,8 @@ const now = new Date();
 // On met le mdp par défaut à lovechurros pour tous les users, ou SEED_PASSWORD_HASH si defini.
 // Permet de retirer la dépendance à argon2 pour le seed
 const passwordHash = process.env['SEED_PASSWORD_HASH'] ?? "$argon2id$v=19$m=65536,t=3,p=4$B/AdMNOlXhcmUBebMq0thw$7YgrMXB3Ve1OvNyaEg6EOEfXbEy5hmyD1GOQEmnQecw";
-const skipPictures = process.env["SEED_SKIP_PICTURES"] === "true";
+const skipPictures = process.env["SEED_SKIP_PICTURES"] === "true" || process.env["SEED_STORAGE_ROOT"] === undefined;
+console.log("Skip pictures: ", skipPictures);
 
 const schoolSlug = createSlugger();
 const majorSlug = createSlugger();
@@ -38,6 +42,15 @@ const groupSlug = createSlugger();
 console.info('Clearing redis cache');
 const redis = new Redis(process.env['REDIS_URL'] ?? 'redis://localhost:6379');
 await redis.flushdb();
+
+console.info("Clearing pictures");
+const storageRoot = process.env['SEED_STORAGE_ROOT'];
+if (storageRoot) {
+  //Attention au rmsync
+  rmSync(storageRoot, { recursive: true });
+  mkdirSync(storageRoot, { recursive: true });
+  console.info(`Storage root: ${path.resolve(storageRoot)}`);
+}
 
 const params = {
   numberOfSchools : 4, //Nombre d'école dans la DB de test
@@ -51,8 +64,8 @@ const params = {
   numberOfSubGroupsPerSchool: 5, //Nombre de sous groupes dans la db de test (en gros juste des groupes en plus pour tester la hiérarchie de groupes)
   numberOfUsersPerSchool : 200, //Nombre d'utilisateur par école dans la DB de test à créer (les premiers sont les comptes rigolos legacy, et après c'est des comptes random)
   numberOfStudentAssociationAdminsPerSchool: 5, //Nombre d'admin par AE dans la DB de test
-  maxNumberOfArticlesPerGroup : 10, //Nombre d'articles max à créer dans la DB de test pour chaque groupe
-  maxNumberOfEventsPerGroup : 10, //Nombre d'événement max par groupe à créer dans la DB
+  maxNumberOfArticlesPerGroup : 2, //Nombre d'articles max à créer dans la DB de test pour chaque groupe
+  maxNumberOfEventsPerGroup : 2, //Nombre d'événement max par groupe à créer dans la DB
   numberOfTicketsPerEvent : 5, //Nombre de tickets par événement à créer dans la DB
   maxNumberOfRegistrationsPerEvent : 20, //Nombre d'inscription max par événement pour un utilisateur aléatoire à créer dans la DB
   numberOfUserCandidates : 50, //Nombre de candidats à l'inscription à créer dans la DB
@@ -351,6 +364,12 @@ const funnyUserData: { firstName: string; lastName: string }[] = [
   { firstName: 'Yvon', lastName: 'Enbavé' },
   { firstName: 'Zinédine', lastName: 'Pacesoir' },
   { firstName: 'Rick', lastName: 'Astley' }, //https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+  //Goat en personne
+  { firstName: 'Gwenn', lastName: 'Le Bihan' },
+  //Crétin qui a loupé son inscription
+  { firstName: 'Nath', lastName: 'Pagnucco' },
+  { firstName: 'Nathan', lastName: 'Pagnucco' }, //Pour l'Oauth2 (pagnuccon2 est mon uid)
 ];
 
 const usersData: Prisma.UserCreateInput[] = [];
@@ -533,7 +552,18 @@ for(let i = 0; i < groups.length; i++){
   }
 }
 
-for (const data of tqdm(articleData)) await prisma.article.create({ data });
+const articles : Article[] = [];
+for (const data of tqdm(articleData)) {
+     articles.push(await prisma.article.create({ data }));
+    if (!skipPictures && faker.datatype.boolean(0.65)) {
+      await storePicture({
+        folder: 'articles',
+        extension: 'jpg',
+        identifier: articles[articles.length - 1]!.id,
+        resource: 'article',
+    })
+  }
+}
 
 console.log("Creating events");
 const eventsData: Prisma.EventCreateInput[] = [];
@@ -632,34 +662,28 @@ await prisma.blockedUid.createMany({
   data: [{ uid: 'admin' }, { uid: 'root' }],
 });
 
-
-for (const ticket of tickets) {
-  console.info(
-    `Ticket ${ticket.id} invite: http://localhost:5173/events/${ticket.eventId.replace(/^e:/, '')}/join/${ticket.inviteCode}`,
-  );
-}
 console.log("Creating user candidates");
+const userCandidatesData: Prisma.UserCandidateCreateInput[] = [];
+for(let i = 0; i < params.numberOfUserCandidates; i++){
+  const name = {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+  };
+  userCandidatesData.push({
+    ...name,
+    email: faker.internet.email({firstName: name.firstName, lastName: name.lastName}),
+    churrosPassword: passwordHash,
+    ldapPassword: passwordHash,
+    uid: faker.internet.username(name),
+    major: { connect: { id: faker.helpers.arrayElement(majors).id }},
+    apprentice: faker.datatype.boolean(.3),
+    graduationYear: faker.number.int({min: now.getFullYear()-3, max: now.getFullYear()+3}),
+    token: faker.string.uuid(),
+    emailValidated: faker.datatype.boolean(0.8)
+  });
+}
 
-await prisma.userCandidate.createMany({
-  data: Array.from({length: params.numberOfUserCandidates}).map(() => {
-    const name =  {
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-    }
-    return {
-      ...name,
-      email: faker.internet.email({firstName: name.firstName, lastName: name.lastName}),
-      churrosPassword: passwordHash,
-      ldapPassword: passwordHash,
-      uid: faker.internet.username(name),
-      majorId: faker.helpers.arrayElement(majors).id,
-      apprentice: faker.datatype.boolean(.3),
-      graduationYear: faker.number.int({min: now.getFullYear()-3, max: now.getFullYear()+3}),
-      token: faker.string.uuid(),
-      emailValidated: faker.datatype.boolean(0.8)
-    } as Prisma.UserCandidateCreateInput
-  })
-})
+for (const data of tqdm(userCandidatesData)) await prisma.userCandidate.create({ data });
 
 console.log("Creating random admin user");
 const admin = await prisma.user.update({
