@@ -21,41 +21,29 @@ export function prismaQueryAccessibleArticles(
   user: Context['user'],
   level: 'can' | 'wants',
 ): Prisma.ArticleWhereInput {
-  // Get the user's groups and their ancestors
-  if (user?.admin && level === 'can') return {};
-
-  if (user?.adminOfStudentAssociations.length && level === 'can') {
-    return {
-      group: prismaGroupFilterForStudentAssociationAdmins(user),
-    };
+  // Admin user can see everything
+  if (user?.admin && level === 'can') {
+    return {};
   }
 
-  if (user?.canEditGroups.length && level === 'can') {
-    return {
-      group: prismaGroupFilterForStudentAssociationGroupsEditors(user),
-    };
-  }
-
-  return {
-    OR: [
-      {
-        publishedAt: { lte: new Date() },
-        // Published articles that are
-        OR: [
-          // Public
-          { visibility: Visibility.Public },
-          // SchoolRestricted and the user is a student of this school
-          {
-            visibility: Visibility.SchoolRestricted,
-            group: {
-              studentAssociation: {
-                school: {
-                  majors: {
-                    some: {
-                      students: {
-                        some: {
-                          uid: user?.uid ?? '',
-                        },
+  const permissions: Prisma.ArticleWhereInput[] = [
+    {
+      publishedAt: { lte: new Date() },
+      // Published articles that are
+      OR: [
+        // Public
+        { visibility: Visibility.Public },
+        // SchoolRestricted and the user is a student of this school
+        {
+          visibility: Visibility.SchoolRestricted,
+          group: {
+            studentAssociation: {
+              school: {
+                majors: {
+                  some: {
+                    students: {
+                      some: {
+                        uid: user?.uid ?? '',
                       },
                     },
                   },
@@ -63,55 +51,73 @@ export function prismaQueryAccessibleArticles(
               },
             },
           },
-          // GroupRestricted to the group and the user is a member of the group
-          // or a member of a children group
-          // TODO handle children of children
-          {
-            visibility: Visibility.GroupRestricted,
-            group: {
-              OR: [
-                {
-                  members: {
-                    some: {
-                      member: { uid: user?.uid ?? '' },
-                    },
+        },
+        // GroupRestricted to the group and the user is a member of the group
+        // or a member of a children group
+        // TODO handle children of children
+        {
+          visibility: Visibility.GroupRestricted,
+          group: {
+            OR: [
+              {
+                members: {
+                  some: {
+                    member: { uid: user?.uid ?? '' },
                   },
                 },
-                {
-                  children: {
-                    some: {
-                      members: {
-                        some: {
-                          member: { uid: user?.uid ?? '' },
-                        },
+              },
+              {
+                children: {
+                  some: {
+                    members: {
+                      some: {
+                        member: { uid: user?.uid ?? '' },
                       },
                     },
                   },
                 },
-              ],
-            },
+              },
+            ],
           },
-        ],
-      },
+        },
+      ],
+    },
 
-      // Or the user has permission to create articles
-      {
-        group: {
-          members: {
-            some: {
-              member: { uid: user?.uid ?? '' },
-              canEditArticles: true,
-            },
+    // Or the user has permission to create articles
+    {
+      group: {
+        members: {
+          some: {
+            member: { uid: user?.uid ?? '' },
+            canEditArticles: true,
           },
         },
       },
+    },
 
-      // Or the user is the author
-      {
-        author: {
-          uid: user?.uid ?? '',
-        },
+    // Or the user is the author
+    {
+      author: {
+        uid: user?.uid ?? '',
       },
-    ],
+    },
+  ];
+
+  if (level === 'can') {
+    if (user?.adminOfStudentAssociations.length) {
+      permissions.push({
+        group: prismaGroupFilterForStudentAssociationAdmins(user),
+      });
+    }
+
+    if (user?.canEditGroups.length) {
+      permissions.push({
+        group: prismaGroupFilterForStudentAssociationGroupsEditors(user),
+      });
+    }
+  }
+
+  return {
+    OR: permissions,
   };
 }
