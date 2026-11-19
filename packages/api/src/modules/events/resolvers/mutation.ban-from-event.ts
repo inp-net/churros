@@ -34,8 +34,8 @@ builder.mutationField('banFromEvent', (t) =>
           },
         },
       });
-      if (!bannedUsers.some((m) => m.id === user.id) && bannedUsers.length >= 50)
-        throw new GraphQLError('Impossible de bannir plus de 50 personnes');
+      if (!bannedUsers.some((m) => m.id === user.id) && bannedUsers.length >= 200)
+        throw new GraphQLError('Impossible de bannir plus de 200 personnes');
 
       await log('events', 'ban', { user, id }, id, me);
       return prisma.event.update({
