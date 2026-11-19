@@ -1,5 +1,11 @@
 # @churros/api
 
+## 14.4.3
+
+### Patch Changes
+
+- 83ab82a: fix article permissions and max ban amount
+
 ## 14.4.2
 
 ### Patch Changes
